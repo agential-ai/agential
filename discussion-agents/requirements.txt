@@ -1,8 +1,15 @@
 # local package
 -e .
 
-# external requirements
+# core dependencies
 cookiecutter
+faster-whisper
+openai
+pytube
+torch
+numpy
+
+# dev
 click
 Sphinx
 coverage
