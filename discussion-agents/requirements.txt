@@ -3,11 +3,28 @@
 
 # core dependencies
 cookiecutter
-faster-whisper
 openai
-pytube
+tiktoken
 torch
 numpy
+langchain
+langchain-experimental
+faiss-cpu # For CPU Installation
+chromadb
+langroid
+git+https://github.com/camel-ai/camel.git@v0.1.0
+
+# youtube dependencies
+youtube-dl
+pytube
+pydub
+librosa
+pafy
+yt_dlp
+
+# pip install --upgrade --force-reinstall "git+https://github.com/ytdl-org/youtube-dl.git"
+youtube-transcript-api
+opencv-python
 
 # dev
 click
