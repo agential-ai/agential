@@ -1,0 +1,46 @@
+name: CI
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    paths:
+      - "discussion-agents/**"
+      - "tests/**"
+      - ".github/workflows/ci.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "discussion-agents/**"
+      - "tests/**"
+      - ".github/workflows/ci.yml"
+
+defaults:
+  # This is needed for running steps within conda environments.
+  run:
+    shell: bash -l {0}
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./discussion-agents/
+    strategy:
+      matrix:
+        python-version: ["3.11"]
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run Black auto-formatting
+      run: |
+        black --check src tests
