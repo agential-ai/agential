@@ -5,14 +5,14 @@ on:
     paths:
       - "discussion-agents/**"
       - "tests/**"
-      - ".github/workflows/ci.yml"
+      - ".github/workflows/lint_and_tests.yml"
   push:
     branches:
       - main
     paths:
       - "discussion-agents/**"
       - "tests/**"
-      - ".github/workflows/ci.yml"
+      - ".github/workflows/lint_and_tests.yml"
 
 defaults:
   # This is needed for running steps within conda environments.
