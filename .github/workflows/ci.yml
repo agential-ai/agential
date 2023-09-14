@@ -43,4 +43,4 @@ jobs:
 
     - name: Run Black auto-formatting
       run: |
-        black --check src tests
+        black --check src ../tests
