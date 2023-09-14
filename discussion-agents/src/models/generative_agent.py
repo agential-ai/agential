@@ -72,11 +72,11 @@ class GenerativeAgent(BaseModel):
         """Summarize memories that are most relevant to an observation."""
         prompt = PromptTemplate.from_template(
             """
-{q1}?
-Context from memory:
-{relevant_memories}
-Relevant context: 
-"""
+            {q1}?
+            Context from memory:
+            {relevant_memories}
+            Relevant context: 
+            """
         )
         entity_name = self._get_entity_from_observation(observation)
         entity_action = self._get_entity_action(observation, entity_name)
