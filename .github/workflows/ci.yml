@@ -46,6 +46,10 @@ jobs:
       run: |
         poetry install
 
-    - name: Run Black auto-formatting
+    # - name: Run Black Check
+    #   run: |
+    #     poetry run black --check src ../tests
+
+    - name: Run usort Check
       run: |
-        poetry run black --check src ../tests
+        poetry run usort check [src ../tests]
