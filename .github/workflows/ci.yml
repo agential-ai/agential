@@ -50,7 +50,7 @@ jobs:
     #   run: |
     #     poetry run black --check src ../tests
 
-    # - name: Run usort Check
+    # - name: Check Sorted Imports
     #   run: |
     #     poetry run usort check src ../tests
 
@@ -64,4 +64,8 @@ jobs:
             
             exit 2
         fi
+
+    - name: Run pydocstyle
+      run: |
+        pydocstyle --convention=google src/
 
