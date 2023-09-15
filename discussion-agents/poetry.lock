@@ -360,9 +360,9 @@ redis = ["redis (>=2.10.5)"]
 [[package]]
 name = "camel"
 version = "0.1.0"
-description = ""
+description = "Communicative Agents for AI Society Study"
 optional = false
-python-versions = "*"
+python-versions = ">=3.7"
 files = []
 develop = false
 
