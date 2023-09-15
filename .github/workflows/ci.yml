@@ -14,10 +14,10 @@ on:
       - "tests/**"
       - ".github/workflows/ci.yml"
 
-defaults:
-  # This is needed for running steps within conda environments.
-  run:
-    shell: bash -l {0}
+# defaults:
+#   # This is needed for running steps within conda environments.
+#   run:
+#     shell: bash -l {0}
 
 jobs:
   lint:
