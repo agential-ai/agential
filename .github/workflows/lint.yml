@@ -1,21 +1,21 @@
-name: CI
+name: lint
 on:
   pull_request:
     types: [opened, reopened, synchronize]
     paths:
       - "discussion-agents/**"
       - "tests/**"
-      - ".github/workflows/ci.yml"
+      - ".github/workflows/lint.yml"
   push:
     branches:
       - main
     paths:
       - "discussion-agents/**"
       - "tests/**"
-      - ".github/workflows/ci.yml"
+      - ".github/workflows/lint.yml"
 
 jobs:
-  lint:
+  build:
     runs-on: ubuntu-latest
     defaults:
       run:
