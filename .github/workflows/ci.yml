@@ -55,6 +55,6 @@ jobs:
     #     poetry run usort check src ../tests
 
     - name: Check Unused Imports
-      run: |
-        set -e
-        poetry run unimport check src ../tests
+      uses: hakancelikdev/unimport@stable
+      with:
+        extra_args: --include src/
