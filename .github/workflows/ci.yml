@@ -50,10 +50,10 @@ jobs:
     #   run: |
     #     poetry run black --check src ../tests
 
-    - name: Run usort Check
-      run: |
-        poetry run usort check src ../tests
-
-    # - name: Run unimport Check
+    # - name: Run usort Check
     #   run: |
-    #     poetry run unimport check src ../tests
+    #     poetry run usort check src ../tests
+
+    - name: Run unimport Check
+      run: |
+        poetry run unimport check src ../tests
