@@ -56,4 +56,4 @@ jobs:
 
     - name: Run unimport Check
       run: |
-        poetry run unimport check --diff src ../tests
+        poetry run unimport check src ../tests
