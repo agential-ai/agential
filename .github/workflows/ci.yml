@@ -55,6 +55,13 @@ jobs:
     #     poetry run usort check src ../tests
 
     - name: Check Unused Imports
-      uses: hakancelikdev/unimport@stable
-      with:
-        extra_args: --include src/
+      run: |
+        set -e
+        output =$(poetry run unimport check src ../tests)
+        if [ -n "$output" ]; then
+            echo "Output is not empty:"
+            echo "$output"
+            
+            exit 2
+        fi
+
