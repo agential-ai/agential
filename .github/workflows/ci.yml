@@ -52,8 +52,8 @@ jobs:
 
     - name: Run usort Check
       run: |
-        poetry run usort check [src ../tests]
+        poetry run usort check src ../tests
 
     - name: Run unimport Check
       run: |
-        poetry run unimport check --diff [src ../tests]
+        poetry run unimport check --diff src ../tests
