@@ -53,4 +53,4 @@ jobs:
 
     - name: Run Black auto-formatting
       run: |
-        black --check src ../tests
+        poetry run black --check src ../tests
