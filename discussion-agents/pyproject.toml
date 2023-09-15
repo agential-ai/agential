@@ -1,70 +1,34 @@
+[tool.poetry]
+name = "src"
+version = "0.1.0"
+description = "Multi-agent discussion!"
+authors = ["Vincent Tu <tuvincent0106@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+poetry = "^1.6.1"
+cookiecutter = "^2.3.0"
+openai = "^0.28.0"
+tiktoken = "^0.5.1"
+torch = "^2.0.1"
+numpy = "^1.25.2"
+langchain = "^0.0.291"
+langchain-experimental = "^0.0.17"
+faiss-cpu = "^1.7.4"
+chromadb = "^0.4.10"
+camel = {git = "https://github.com/camel-ai/camel.git", rev = "v0.1.0"}
+pathlib2 = "^2.3.7.post1"
+
+
+[tool.poetry.group.dev.dependencies]
+click = "^8.1.7"
+sphinx = "^7.2.6"
+coverage = "^7.3.1"
+flake8 = "^6.1.0"
+python-dotenv = "^1.0.0"
+
 [build-system]
-requires = ["setuptools", "setuptools-scm"]
-build-backend = "setuptools.build_meta"
-
-[project]
-name = "discussion-agents"
-authors = [
-    {name = "Vincent Tu", email = "tuvincent0106@gmail.com"}
-]
-description = "Multi-agent discussions."
-version = "1.0.0"
-requires-python = ">=3.11"
-keywords = ["multi-agent", "LLM"]
-license = {text = "MIT License"}
-classifiers = [
-    "Programming Language :: Python :: 3.11",
-    "Topic :: Scientific/Engineering :: Artificial Intelligence"
-]
-dependencies = [
-    # core dependencies
-    "cookiecutter",
-    "openai",
-    "tiktoken",
-    "torch",
-    "numpy",
-    "langchain",
-    "langchain-experimental",
-    "faiss-cpu", # For CPU Installation
-    "chromadb",
-    "langroid",
-    "camel @ git+https://github.com/camel-ai/camel.git@v0.1.0",
-
-    # youtube dependencies
-    "youtube-dl",
-    "pytube",
-    "pydub",
-    "librosa",
-    "pafy",
-    "yt_dlp",
-
-    # pip install --upgrade --force-reinstall "git+https://github.com/ytdl-org/youtube-dl.git"
-    "youtube-transcript-api",
-    "opencv-python",
-
-    # backwards compatibility
-    "pathlib2"
-]
-dynamic = ["readme"]
-
-[tool.setuptools.dynamic]
-readme = {file = ["README.md"]}
-
-[project.optional-dependencies]
-dev = [
-    "pytest",
-    "pytest-cov",
-    "black",
-    "pydocstyle",
-    "toml",
-    "ipython",
-    "Sphinx",
-    "flake8",
-    "python-dotenv>=0.5.1",
-    
-    # "twine",
-    # "build"
-]
-
-[project.urls]
-Repository = "https://github.com/alckasoc/discussion-agents"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
