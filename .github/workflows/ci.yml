@@ -57,7 +57,7 @@ jobs:
     - name: Check Unused Imports
       run: |
         set -e
-        output =$(poetry run unimport check src ../tests)
+        output=$(poetry run unimport check src ../tests)
         if [ -n "$output" ]; then
             echo "Output is not empty:"
             echo "$output"
