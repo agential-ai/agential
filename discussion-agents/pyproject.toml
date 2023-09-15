@@ -43,3 +43,7 @@ pydocstyle = "^6.3.0"
 [tool.black]
 line-length = 88
 target-version = ["py310", "py311"]
+
+[tool.pydocstyle]
+convention = "google"
+match-dir = "src/"

@@ -59,7 +59,6 @@ jobs:
         set -e
         output=$(poetry run unimport check src ../tests)
         if [ -n "$output" ]; then
-            echo "Output is not empty:"
             echo "$output"
             
             exit 2
@@ -67,5 +66,5 @@ jobs:
 
     - name: Run pydocstyle
       run: |
-        poetry run pydocstyle --convention=google src/
+        poetry run pydocstyle
 
