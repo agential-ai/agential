@@ -30,4 +30,4 @@ repos:
     rev: 23.9.1
     hooks:
     -   id: black
-        args: [--check]  # Replace with your desired line length and path
+        args: [--check, discussion-agents/src]  # Replace with your desired line length and path
