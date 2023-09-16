@@ -40,7 +40,7 @@ ipython = "^8.15.0"
 
 [tool.black]
 line-length = 88
-target-version = ["py38", "py39", "py310", "py311"]
+target-version = ["py39", "py310", "py311"]
 
 [tool.ruff]
 format = "github"
@@ -48,7 +48,7 @@ select = [
     "D",  # pydocstyle
     "I",  # isort
 ]
-target-version = "py38"
+target-version = "py39"
 
 [tool.ruff.pydocstyle]
 convention = "google"
