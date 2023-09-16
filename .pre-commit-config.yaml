@@ -26,8 +26,7 @@
 #           - "1"
 
 repos:
--   repo: https://github.com/psf/black
-    rev: 23.9.1
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v1.2.3
     hooks:
-    -   id: black
-        args: []  # Replace with your desired line length and path
+    -   id: trailing-whitespace
