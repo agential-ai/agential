@@ -30,5 +30,4 @@ repos:
     rev: 23.9.1
     hooks:
     -   id: black
-        args: [--check]
-
+        args: [--line-length=88, .]  # Replace with your desired line length and path
