@@ -13,7 +13,7 @@ repos:
       - id: ruff
         args:
           - --include
-          - ./discussion-agents/src/*.py
+          - discussion-agents/src/models/generative_agent.py
           - --format
           - github
           - --target-version
