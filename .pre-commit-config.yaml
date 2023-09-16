@@ -4,4 +4,4 @@ repos:
     rev: v0.0.289
     hooks:
       - id: ruff
-        args: [--format github]
+        args: [--format, github]
