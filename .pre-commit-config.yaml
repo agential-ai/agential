@@ -1,7 +1,28 @@
+# repos:
+#   - repo: https://github.com/charliermarsh/ruff-pre-commit
+#     # Ruff version.
+#     rev: v0.0.289
+#     hooks:
+#       - id: ruff
+#         args: [--format, github]
+
 repos:
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    # Ruff version.
     rev: v0.0.289
     hooks:
       - id: ruff
-        args: [--format, github]
+        args:
+          - --include
+          - ./discussion-agents/src/
+          - --format
+          - github
+          - --target-version
+          - py39
+          - --pydocstyle.convention
+          - google
+          - --isort.force-wrap-aliases
+          - "true"
+          - --isort.combine-as-imports
+          - "true"
+          - --isort.lines-between-types
+          - "1"
