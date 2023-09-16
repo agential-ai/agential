@@ -38,8 +38,8 @@ clean: ## Delete all compiled Python files.
 
 lint: ## Lint using black and ruff.
 	poetry run mypy src ../tests
-# poetry run black --check src ../tests
-# poetry run ruff check src ../tests
+	poetry run black --check src ../tests
+	poetry run ruff check src ../tests
 
 create_environment: ## Set up conda environment.
 ifeq (True,$(HAS_CONDA))
