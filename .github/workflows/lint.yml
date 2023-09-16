@@ -54,17 +54,21 @@ jobs:
     #   run: |
     #     poetry run usort check src ../tests
 
-    - name: Check Unused Imports
-      run: |
-        set -e
-        output=$(poetry run unimport check src ../tests)
-        if [ -n "$output" ]; then
-            echo "$output"
+    # - name: Check Unused Imports
+    #   run: |
+    #     set -e
+    #     output=$(poetry run unimport check src ../tests)
+    #     if [ -n "$output" ]; then
+    #         echo "$output"
             
-            exit 2
-        fi
+    #         exit 2
+    #     fi
 
-    - name: Run pydocstyle
+    # - name: Run pydocstyle
+    #   run: |
+    #     poetry run pydocstyle
+
+    - name: Run Ruff
       run: |
-        poetry run pydocstyle
+        poetry run ruff 
 
