@@ -1,3 +1,7 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.poetry]
 name = "src"
 version = "0.1.0"
@@ -5,9 +9,15 @@ description = "Multi-agent discussion!"
 authors = ["Vincent Tu <tuvincent0106@gmail.com>"]
 license = "MIT"
 readme = "README.md"
+repository = "https://github.com/alckasoc/discussion-agents"
+keywords = ["packaging", "poetry", "multi-agent", "LLM"]
+classifiers = [
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence"
+]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.9"
 poetry = "^1.6.1"
 cookiecutter = "^2.3.0"
 openai = "^0.28.0"
@@ -21,15 +31,29 @@ chromadb = "^0.4.10"
 camel = {git = "https://github.com/camel-ai/camel.git", rev = "v0.1.0"}
 pathlib2 = "^2.3.7.post1"
 
-
 [tool.poetry.group.dev.dependencies]
-click = "^8.1.7"
 sphinx = "^7.2.6"
-coverage = "^7.3.1"
-flake8 = "^6.1.0"
 python-dotenv = "^1.0.0"
 black = "^23.9.1"
+ruff = "^0.0.289"
+ipython = "^8.15.0"
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[tool.black]
+line-length = 88
+target-version = ["py39", "py310", "py311"]
+
+[tool.ruff]
+format = "github"
+select = [
+    "D",  # pydocstyle
+    "I",  # isort
+]
+target-version = "py39"
+
+[tool.ruff.pydocstyle]
+convention = "google"
+
+[tool.ruff.isort]
+force-wrap-aliases = true
+combine-as-imports = true
+lines-between-types = 1
