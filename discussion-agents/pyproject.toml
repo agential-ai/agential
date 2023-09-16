@@ -35,6 +35,7 @@ python-dotenv = "^1.0.0"
 black = "^23.9.1"
 ruff = "^0.0.289"
 ipython = "^8.15.0"
+mypy = "^1.5.1"
 
 [tool.black]
 line-length = 88
@@ -55,3 +56,7 @@ convention = "google"
 force-wrap-aliases = true
 combine-as-imports = true
 lines-between-types = 1
+
+[tool.mypy]
+ignore_missing_imports = "True"
+disallow_untyped_defs = "True"
