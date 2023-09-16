@@ -29,8 +29,8 @@ clean: ## Delete all compiled Python files.
 	find . -type d -name "__pycache__" -delete
 
 lint: ## Lint using black and ruff.
-# poetry run black --check src ../tests
-	poetry run ruff check ../tests
+	poetry run black --check src ../tests
+	poetry run ruff check src ../tests
 
 create_environment: ## Set up conda environment.
 ifeq (True,$(HAS_CONDA))
