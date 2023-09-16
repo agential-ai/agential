@@ -117,7 +117,7 @@ class GenerativeAgentMemory(BaseMemory):
         for topic in topics:
             insights = self.get_insights_on_topic(topic, now=now)[0]
             for insight in insights:
-                self.add_memory(insight, now=now)
+                self.add_memories(insight, now=now)
             new_insights.extend(insights)
         return new_insights
 
@@ -254,7 +254,7 @@ class GenerativeAgentMemory(BaseMemory):
         mem = outputs.get(self.add_memory_key)
         now = outputs.get(self.now_key)
         if mem:
-            self.add_memory(mem, now=now)
+            self.add_memories(mem, now=now)
 
     def clear(self) -> None:
         """Clear memory contents."""
