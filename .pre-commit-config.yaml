@@ -1,32 +1,29 @@
-# repos:
-#   - repo: https://github.com/charliermarsh/ruff-pre-commit
-#     # Ruff version.
-#     rev: v0.0.289
-#     hooks:
-#       - id: ruff
-#         args: [--format, github]
-
-# repos:
-#   - repo: https://github.com/charliermarsh/ruff-pre-commit
-#     rev: v0.0.289
-#     hooks:
-#       - id: ruff
-#         args:
-#           - --format
-#           - github
-#           - --target-version
-#           - py39
-#           - --pydocstyle.convention
-#           - google
-#           - --isort.force-wrap-aliases
-#           - "true"
-#           - --isort.combine-as-imports
-#           - "true"
-#           - --isort.lines-between-types
-#           - "1"
+repos:
+-   repo: https://github.com/psf/black
+    rev: 23.9.1
+    hooks:
+    -   id: black
+        args: [--check]
 
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v1.2.3
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.0.289
     hooks:
-    -   id: trailing-whitespace
+      - id: ruff
+        args:
+        - --check
+        - ./discussion-agents/src 
+        - tests
+        - --format
+        - github
+        - --target-version
+        - py39
+        - --pydocstyle.convention
+        - google
+        - --isort.force-wrap-aliases
+        - "true"
+        - --isort.combine-as-imports
+        - "true"
+        - --isort.lines-between-types
+        - "1"
+
