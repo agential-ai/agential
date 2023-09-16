@@ -64,7 +64,8 @@ jobs:
     #   run: |
     #     poetry run black --check src ../tests
 
-    - name: Run Ruff
+    - name: Run Linter
       run: |
-        poetry run ruff check src ../tests
+        make lint
+        # poetry run ruff check src ../tests
 
