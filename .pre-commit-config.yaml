@@ -13,7 +13,7 @@ repos:
       - id: ruff
         args:
           - --include
-          - ./discussion-agents/src/
+          - ./discussion-agents/src/*.py
           - --format
           - github
           - --target-version
