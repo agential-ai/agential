@@ -1,6 +1,6 @@
 import sys
 
-REQUIRED_PYTHON = "python"
+REQUIRED_PYTHON = "python3"
 
 
 def main():

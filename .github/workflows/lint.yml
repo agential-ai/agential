@@ -60,12 +60,6 @@ jobs:
       run: |
         poetry install --with dev
 
-    # - name: Run Black Check
-    #   run: |
-    #     poetry run black --check src ../tests
-
     - name: Run Linter
       run: |
         make lint
-        # poetry run ruff check src ../tests
-
