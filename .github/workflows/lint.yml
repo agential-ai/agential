@@ -43,7 +43,8 @@ jobs:
 
     - name: Install Poetry ${{ env.POETRY_VERSION }}
       run: |
-        pip install poetry==${{ env.POETRY_VERSION }} 
+        python -m pip install pipx
+        pipx install poetry==${{ env.POETRY_VERSION }} 
         poetry --version
 
     - name: Check Poetry File

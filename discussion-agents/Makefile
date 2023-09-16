@@ -9,6 +9,7 @@ PROFILE = default
 PROJECT_NAME = discussion-agents
 PYTHON_INTERPRETER = python
 PYTHON_VERSION = 3.10
+POETRY_VERSION = 1.6.1
 
 ifeq (,$(shell which conda 2>/dev/null))
 HAS_CONDA=False
@@ -20,9 +21,16 @@ endif
 # COMMANDS                                                                      #
 #################################################################################
 
-requirements: test_environment ## Install Python Dependencies.
+requirements: test_environment ## Install Python dependencies with requirements.txt.
 	$(PYTHON_INTERPRETER) -m pip install -U pip setuptools wheel
 	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
+
+poetry_requirements: test_environment ## Install Python dependencies with Poetry.
+	$(PYTHON_INTERPRETER) -m pip install pipx
+	pipx install poetry=$(POETRY_VERSION)
+	poetry check 
+	poetry check --lock
+	poetry install
 
 clean: ## Delete all compiled Python files.
 	find . -type f -name "*.py[co]" -delete
