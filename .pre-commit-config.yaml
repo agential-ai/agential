@@ -6,21 +6,29 @@
 #       - id: ruff
 #         args: [--format, github]
 
+# repos:
+#   - repo: https://github.com/charliermarsh/ruff-pre-commit
+#     rev: v0.0.289
+#     hooks:
+#       - id: ruff
+#         args:
+#           - --format
+#           - github
+#           - --target-version
+#           - py39
+#           - --pydocstyle.convention
+#           - google
+#           - --isort.force-wrap-aliases
+#           - "true"
+#           - --isort.combine-as-imports
+#           - "true"
+#           - --isort.lines-between-types
+#           - "1"
+
 repos:
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.0.289
+  - repo: local
     hooks:
-      - id: ruff
-        args:
-          - --format
-          - github
-          - --target-version
-          - py39
-          - --pydocstyle.convention
-          - google
-          - --isort.force-wrap-aliases
-          - "true"
-          - --isort.combine-as-imports
-          - "true"
-          - --isort.lines-between-types
-          - "1"
+      - id: print-cwd
+        language: python
+        name: Print Current Working Directory
+        entry: python print_cwd.py
