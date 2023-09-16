@@ -26,10 +26,9 @@
 #           - "1"
 
 repos:
-  - repo: local
+-   repo: https://github.com/psf/black
+    rev: 23.9.1
     hooks:
-      - id: print-cwd
-        language: python
-        name: Print Current Working Directory
-        entry: python print_cwd.py
+    -   id: black
+        args: [--check]
 
