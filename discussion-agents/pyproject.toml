@@ -47,6 +47,7 @@ select = [
     "D",  # pydocstyle
     "I",  # isort
 ]
+target-version = "py38"
 
 [tool.ruff.pydocstyle]
 convention = "google"

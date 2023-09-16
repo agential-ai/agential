@@ -14,6 +14,10 @@ on:
       - "tests/**"
       - ".github/workflows/lint.yml"
 
+env:
+  POETRY_VERSION: "1.6.1"
+  SUPPORTED_PYTHON_VERSIONS: "3.8 3.9 3.10 3.11"
+      
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
     steps:
     - uses: actions/checkout@v3
     
@@ -37,36 +41,28 @@ jobs:
     #     python -m pip install --upgrade pip
     #     pip install -r requirements.txt
 
-    - name: Install Poetry
+    - name: Install Poetry ${{ env.POETRY_VERSION }}
       run: |
-        pip install poetry
+        pip install poetry==${{ env.POETRY_VERSION }} 
         poetry --version
+
+    - name: Check Poetry File
+      shell: bash
+      run: |
+        poetry check
+
+    - name: Check lock file
+      shell: bash
+      run: |
+        poetry check --lock
 
     - name: Install Dependencies
       run: |
-        poetry install
+        poetry install --with dev
 
     # - name: Run Black Check
     #   run: |
     #     poetry run black --check src ../tests
-
-    # - name: Check Sorted Imports
-    #   run: |
-    #     poetry run usort check src ../tests
-
-    # - name: Check Unused Imports
-    #   run: |
-    #     set -e
-    #     output=$(poetry run unimport check src ../tests)
-    #     if [ -n "$output" ]; then
-    #         echo "$output"
-            
-    #         exit 2
-    #     fi
-
-    # - name: Run pydocstyle
-    #   run: |
-    #     poetry run pydocstyle
 
     - name: Run Ruff
       run: |
