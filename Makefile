@@ -1,4 +1,4 @@
-.PHONY: requirements clean lint
+.PHONY: requirements clean lint help
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -32,6 +32,10 @@ poetry_requirements: test_environment ## Install Python dependencies with Poetry
 	poetry check --lock
 	poetry install
 
+create_requirements: test_environment  ## Create requirements.txt (and dev) from pyproject.toml.
+	poetry export -f requirements.txt --output requirements.txt --without-hashes
+	poetry export -f requirements.txt --output requirements-dev.txt --without-hashes --only=dev
+
 clean: ## Delete all compiled Python files.
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
@@ -64,8 +68,6 @@ test_environment: ## Test python environment is setup correctly.
 #################################################################################
 # Self Documenting Commands                                                     #
 #################################################################################
-
-.PHONY: help
 
 .DEFAULT_GOAL := help
 
