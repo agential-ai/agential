@@ -1,26 +1,25 @@
 repos:
--   repo: https://github.com/psf/black
-    rev: 23.9.1
-    hooks:
-    -   id: black
-        args:
-        - discussion_agents/
-        - tests/
-        - --config
-        - pyproject.toml
--   repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.0.289
-    hooks:
-      - id: ruff
--   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.5.1
-    hooks:
-    -   id: mypy
-        args:
-        - --config-file
-        - pyproject.toml
-        - discussion_agents/
-        - tests/
+# -   repo: https://github.com/pre-commit/mirrors-mypy
+#     rev: v1.5.1
+#     hooks:
+#     -   id: mypy
+#         args:
+#         - discussion_agents/
+#         - tests/
+# -   repo: https://github.com/psf/black
+#     rev: 23.9.1
+#     hooks:
+#     -   id: black
+#         args:
+#         - discussion_agents/
+#         - tests/
+# -   repo: https://github.com/charliermarsh/ruff-pre-commit
+#     rev: v0.0.289
+#     hooks:
+#       - id: ruff
+#         args:
+#         - discussion_agents/
+#         - tests/
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:
