@@ -3,27 +3,30 @@ repos:
     rev: 23.9.1
     hooks:
     -   id: black
-        args: [--check]
-
-repos:
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.0.289
-    hooks:
-      - id: ruff
         args:
-        - --check
-        - ./discussion-agents/src 
+        - ./discussion-agents/src
         - tests
-        - --format
-        - github
-        - --target-version
-        - py39
-        - --pydocstyle.convention
-        - google
-        - --isort.force-wrap-aliases
-        - "true"
-        - --isort.combine-as-imports
-        - "true"
-        - --isort.lines-between-types
-        - "1"
-
+        - --config
+        - ./discussion-agents/pyproject.toml
+# -   repo: https://github.com/charliermarsh/ruff-pre-commit
+#     rev: v0.0.289
+#     hooks:
+#       - id: ruff
+# -   repo: https://github.com/pre-commit/mirrors-mypy
+#     rev: v1.5.1
+#     hooks:
+#     -   id: mypy
+#         args:
+#         - --config-file
+#         - ./discussion-agents/pyproject.toml
+#         - ./discussion-agents/src
+#         - tests
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-yaml
+    -   id: check-added-large-files
+    -   id: debug-statements
+        language_version: python3

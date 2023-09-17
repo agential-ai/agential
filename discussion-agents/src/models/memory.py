@@ -88,11 +88,11 @@ class GenerativeAgentMemory(BaseMemory):
             "(example format: insight (because of 1, 5, 3))\n"
         )
 
-        if type(topics) is str: topics = [topics]
+        if type(topics) is str:
+            topics = [topics]
 
         results = []
         for topic in topics:
-
             related_memories = self.fetch_memories(topic, now=now)
             related_statements = "\n".join(
                 [
@@ -121,10 +121,13 @@ class GenerativeAgentMemory(BaseMemory):
             new_insights.extend(insights)
         return new_insights
 
-    def score_memories_importance(self, memory_contents: Union[str, List[str]]) -> List[float]:
+    def score_memories_importance(
+        self, memory_contents: Union[str, List[str]]
+    ) -> List[float]:
         """Score the absolute importance of the given memory."""
 
-        if type(memory_contents) is list: memory_contents = "; ".join(memory_contents)
+        if type(memory_contents) is list:
+            memory_contents = "; ".join(memory_contents)
 
         prompt = PromptTemplate.from_template(
             "On the scale of 1 to 10, where 1 is purely mundane"
@@ -143,7 +146,9 @@ class GenerativeAgentMemory(BaseMemory):
             logger.info(f"Importance scores: {scores}")
 
         # Split into list of strings and convert to floats
-        scores_list = [float(x) / 10 * self.importance_weight for x in scores.split(";")]
+        scores_list = [
+            float(x) / 10 * self.importance_weight for x in scores.split(";")
+        ]
 
         return scores_list
 
@@ -153,8 +158,9 @@ class GenerativeAgentMemory(BaseMemory):
         """Add an observations or memories to the agent's memory."""
         importance_scores = self.score_memories_importance(memory_contents)
         self.aggregate_importance += max(importance_scores)
-            
-        if type(memory_contents) is str: memory_contents = [memory_contents]
+
+        if type(memory_contents) is str:
+            memory_contents = [memory_contents]
 
         documents = []
         for i in range(len(memory_contents)):
@@ -195,7 +201,8 @@ class GenerativeAgentMemory(BaseMemory):
     def format_memories_detail(
         self, relevant_memories: Union[Document, List[Document]], prefix: str = ""
     ) -> str:
-        if type(relevant_memories) is Document: relevant_memories = [relevant_memories]
+        if type(relevant_memories) is Document:
+            relevant_memories = [relevant_memories]
 
         content = []
         for mem in relevant_memories:
@@ -266,10 +273,10 @@ class GenerativeAgentMemory(BaseMemory):
         # - clear retriever's vectorstore
 
         # As of now, there is no universal method to clear a vector store.
-        # To my knowledge, to clear the memory (vectorstore-agnostic), 
+        # To my knowledge, to clear the memory (vectorstore-agnostic),
         # we need to delete the memory and re-instantiate the instance.
         # I can do this if a create_vectorstore() method was provided,
-        # but this is too hacky. It'd be better if LangChain had all 
+        # but this is too hacky. It'd be better if LangChain had all
         # vectorstores implement a clear() method.
 
         # The best way, currently, is to just re-instantiate a

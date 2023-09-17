@@ -75,7 +75,7 @@ class GenerativeAgent(BaseModel):
             {q1}?
             Context from memory:
             {relevant_memories}
-            Relevant context: 
+            Relevant context:
             """
         )
         entity_name = self._get_entity_from_observation(observation)
@@ -145,7 +145,7 @@ class GenerativeAgent(BaseModel):
                 self.memory.add_memory_key: f"{self.name} observed "
                 f"{observation} and reacted by {result}",
                 self.memory.now_key: now,
-            }
+            },
         )
         if "REACT:" in result:
             reaction = self._clean_response(result.split("REACT:")[-1])
@@ -177,7 +177,7 @@ class GenerativeAgent(BaseModel):
                     self.memory.add_memory_key: f"{self.name} observed "
                     f"{observation} and said {farewell}",
                     self.memory.now_key: now,
-                }
+                },
             )
             return False, f"{self.name} said {farewell}"
         if "SAY:" in result:
@@ -188,7 +188,7 @@ class GenerativeAgent(BaseModel):
                     self.memory.add_memory_key: f"{self.name} observed "
                     f"{observation} and said {response_text}",
                     self.memory.now_key: now,
-                }
+                },
             )
             return True, f"{self.name} said {response_text}"
         else:
