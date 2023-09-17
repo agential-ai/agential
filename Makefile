@@ -28,7 +28,7 @@ requirements: test_environment ## Install Python dependencies with requirements.
 poetry_requirements: test_environment ## Install Python dependencies with Poetry.
 	$(PYTHON_INTERPRETER) -m pip install pipx
 	pipx install poetry=$(POETRY_VERSION)
-	poetry check 
+	poetry check
 	poetry check --lock
 	poetry install
 
@@ -37,9 +37,9 @@ clean: ## Delete all compiled Python files.
 	find . -type d -name "__pycache__" -delete
 
 lint: ## Lint using black and ruff.
-	poetry run mypy src ../tests
-	poetry run black --check src ../tests
-	poetry run ruff check src ../tests
+	poetry run mypy discussion-agents tests
+	poetry run black --check discussion-agents tests
+	poetry run ruff check discussion-agents tests
 
 create_environment: ## Set up conda environment.
 ifeq (True,$(HAS_CONDA))
