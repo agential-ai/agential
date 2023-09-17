@@ -13,6 +13,7 @@ from langchain.utils import mock_now
 logger = logging.getLogger(__name__)
 
 
+
 class GenerativeAgentMemory(BaseMemory):
     """Memory for the generative agent."""
 

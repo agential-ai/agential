@@ -9,15 +9,6 @@ from langchain.schema.language_model import BaseLanguageModel
 from langchain_experimental.generative_agents.memory import GenerativeAgentMemory
 from langchain_experimental.pydantic_v1 import BaseModel, Field
 
-
-
-
-
-
-
-
-
-
 class GenerativeAgent(BaseModel):
     """An Agent as a character with memory and innate characteristics."""
 
