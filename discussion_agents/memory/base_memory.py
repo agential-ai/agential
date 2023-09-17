@@ -1,4 +1,15 @@
-import logging
+"""Generative Agent Memory implementation from LangChain.
+
+Note: The following classes are versions of LangChain's Generative Agent
+implementations with my improvements.
+
+Original Paper: https://arxiv.org/abs/2304.03442
+LangChain: https://github.com/langchain-ai/langchain
+LangChain Generative Agents:
+https://github.com/langchain-ai/langchain/tree/master/libs/experimental/langchain_experimental/generative_agents
+LangChain Generative Agents Doc Page:
+https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/characters
+"""
 import re
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
@@ -9,9 +20,6 @@ from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.schema import BaseMemory, Document
 from langchain.schema.language_model import BaseLanguageModel
 from langchain.utils import mock_now
-
-logger = logging.getLogger(__name__)
-
 
 
 class GenerativeAgentMemory(BaseMemory):
@@ -111,8 +119,6 @@ class GenerativeAgentMemory(BaseMemory):
 
     def pause_to_reflect(self, now: Optional[datetime] = None) -> List[str]:
         """Reflect on recent observations and generate 'insights'."""
-        if self.verbose:
-            logger.info("Character is reflecting")
         new_insights = []
         topics = self.get_topics_of_reflection()
         for topic in topics:
@@ -142,9 +148,6 @@ class GenerativeAgentMemory(BaseMemory):
             + "\nRating: "
         )
         scores = self.chain(prompt).run(memory_contents=memory_contents).strip()
-
-        if self.verbose:
-            logger.info(f"Importance scores: {scores}")
 
         # Split into list of strings and convert to floats
         scores_list = [

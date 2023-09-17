@@ -1,3 +1,15 @@
+"""Generative Agent implementation from LangChain.
+
+Note: The following classes are versions of LangChain's Generative Agent
+implementations with my improvements.
+
+Original Paper: https://arxiv.org/abs/2304.03442
+LangChain: https://github.com/langchain-ai/langchain
+LangChain Generative Agents:
+https://github.com/langchain-ai/langchain/tree/master/libs/experimental/langchain_experimental/generative_agents
+LangChain Generative Agents Doc Page:
+https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/characters
+"""
 import re
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
@@ -5,9 +17,10 @@ from typing import Any, Dict, List, Optional, Tuple
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain.schema.language_model import BaseLanguageModel
-
-from langchain_experimental.generative_agents.memory import GenerativeAgentMemory
 from langchain_experimental.pydantic_v1 import BaseModel, Field
+
+from discussion_agents.memory.base_memory import GenerativeAgentMemory
+
 
 class GenerativeAgent(BaseModel):
     """An Agent as a character with memory and innate characteristics."""
