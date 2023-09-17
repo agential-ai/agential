@@ -3,14 +3,14 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
     paths:
-      - "discussion-agents/**"
+      - "discussion_agents/**"
       - "tests/**"
       - ".github/workflows/lint.yml"
   push:
     branches:
       - main
     paths:
-      - "discussion-agents/**"
+      - "discussion_agents/**"
       - "tests/**"
       - ".github/workflows/lint.yml"
 
@@ -21,9 +21,6 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./discussion-agents/
     strategy:
       fail-fast: false
       matrix:
