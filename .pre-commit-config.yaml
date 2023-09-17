@@ -6,13 +6,13 @@ repos:
         args:
         - discussion_agents/
         - tests/
-# -   repo: https://github.com/charliermarsh/ruff-pre-commit
-#     rev: v0.0.289
-#     hooks:
-#       - id: ruff
-#         args:
-#         - discussion_agents/
-#         - tests/
+-   repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.0.289
+    hooks:
+      - id: ruff
+        args:
+        - discussion_agents/
+        - tests/
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:
