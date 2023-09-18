@@ -1,0 +1,25 @@
+# credit to https://github.com/langchain-ai/langchain/tree/master/.github/ISSUE_TEMPLATE!
+# credit to https://github.com/jerryjliu/llama_index/tree/main/.github/ISSUE_TEMPLATE!
+name: "🚀 Feature Request"
+description: "Submit a proposal/request for a new feature!"
+title: "[Feature Request]: "
+labels: ["02 Feature Request", "enhancement"]
+body:
+  - type: markdown
+  attributes:
+    value: >
+      Thanks for filling out this feature request!
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Feature Description
+      description: Describe the feature you are requesting. Try to reference existing implementations/papers/examples when possible.
+    validations:
+      required: true
+  - type: textarea
+    id: why-feature
+    attributes:
+      label: Reason
+      description: Describe the significance of this feature.
+    validations:
+      required: false
