@@ -13,6 +13,9 @@ repos:
         args:
         - discussion_agents/
         - tests/
+        - --fix
+        - --show-fixes
+        - --show-source
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:
