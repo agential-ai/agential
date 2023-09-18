@@ -5,9 +5,9 @@ title: "[Bug]: "
 labels: ["01 Bug Report", "bug"]
 body:
   - type: markdown
-  attributes:
-    value: >
-      Thanks for filling out this bug report!
+    attributes:
+      value: >
+        Thanks for filling out this bug report!
   - type: textarea
     id: system-info
     attributes:

@@ -6,9 +6,9 @@ title: "[Feature Request]: "
 labels: ["02 Feature Request", "enhancement"]
 body:
   - type: markdown
-  attributes:
-    value: >
-      Thanks for filling out this feature request!
+    attributes:
+      value: >
+        Thanks for filling out this feature request!
   - type: textarea
     id: feature-description
     attributes:
