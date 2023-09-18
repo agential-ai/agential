@@ -11,6 +11,7 @@ LangChain Generative Agents Doc Page:
 https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/characters
 """
 import re
+
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
 
@@ -132,7 +133,6 @@ class GenerativeAgentMemory(BaseMemory):
         self, memory_contents: Union[str, List[str]]
     ) -> List[float]:
         """Score the absolute importance of the given memory."""
-
         if type(memory_contents) is list:
             memory_contents = "; ".join(memory_contents)
 
@@ -205,13 +205,16 @@ class GenerativeAgentMemory(BaseMemory):
     def format_memories_detail(
         self, relevant_memories: Union[Document, List[Document]], prefix: str = ""
     ) -> str:
-        if type(relevant_memories) is Document:
+        if isinstance(relevant_memories, Document):
             relevant_memories = [relevant_memories]
 
         content = []
         for mem in relevant_memories:
-            created_time = mem.metadata["created_at"].strftime("%B %d, %Y, %I:%M %p")
-            content.append(f"{prefix}[{created_time}] {mem.page_content.strip()}")
+            if isinstance(mem, Document):
+                created_time = mem.metadata["created_at"].strftime(
+                    "%B %d, %Y, %I:%M %p"
+                )
+                content.append(f"{prefix}[{created_time}] {mem.page_content.strip()}")
         return "\n".join([f"{mem}" for mem in content])
 
     def format_memories_simple(self, relevant_memories: List[Document]) -> str:

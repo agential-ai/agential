@@ -11,6 +11,7 @@ LangChain Generative Agents Doc Page:
 https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/characters
 """
 import re
+
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
