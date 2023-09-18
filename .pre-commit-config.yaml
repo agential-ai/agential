@@ -1,6 +1,27 @@
 repos:
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
-    # Ruff version.
+-   repo: https://github.com/psf/black
+    rev: 23.9.1
+    hooks:
+    -   id: black
+        args:
+        - discussion_agents/
+        - tests/
+-   repo: https://github.com/charliermarsh/ruff-pre-commit
     rev: v0.0.289
     hooks:
       - id: ruff
+        args:
+        - discussion_agents/
+        - tests/
+        - --fix
+        - --show-fixes
+        - --show-source
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-yaml
+    -   id: check-added-large-files
+    -   id: debug-statements
+        language_version: python3

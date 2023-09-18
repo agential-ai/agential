@@ -3,7 +3,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "src"
+name = "discussion_agents"
 version = "0.1.0"
 description = "Multi-agent discussion!"
 authors = ["Vincent Tu <tuvincent0106@gmail.com>"]

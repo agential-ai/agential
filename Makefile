@@ -1,4 +1,4 @@
-.PHONY: requirements clean lint
+.PHONY: requirements clean lint help
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -28,18 +28,26 @@ requirements: test_environment ## Install Python dependencies with requirements.
 poetry_requirements: test_environment ## Install Python dependencies with Poetry.
 	$(PYTHON_INTERPRETER) -m pip install pipx
 	pipx install poetry=$(POETRY_VERSION)
-	poetry check 
+	poetry check
 	poetry check --lock
 	poetry install
+
+create_requirements: test_environment  ## Create requirements.txt (and dev) from pyproject.toml.
+	poetry export -f requirements.txt --output requirements.txt --without-hashes
+	poetry export -f requirements.txt --output requirements-dev.txt --without-hashes --only=dev
 
 clean: ## Delete all compiled Python files.
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
 
 lint: ## Lint using black and ruff.
-	poetry run mypy src ../tests
-# poetry run black --check src ../tests
-# poetry run ruff check src ../tests
+	poetry run mypy discussion_agents tests
+	poetry run black --check discussion_agents tests
+	poetry run ruff check discussion_agents tests
+
+auto_lint: ## Automatic format & lint using black and ruff.
+	poetry run black discussion_agents tests
+	poetry run ruff discussion_agents tests --fix --show-fixes --show-source
 
 create_environment: ## Set up conda environment.
 ifeq (True,$(HAS_CONDA))
@@ -64,8 +72,6 @@ test_environment: ## Test python environment is setup correctly.
 #################################################################################
 # Self Documenting Commands                                                     #
 #################################################################################
-
-.PHONY: help
 
 .DEFAULT_GOAL := help
 
