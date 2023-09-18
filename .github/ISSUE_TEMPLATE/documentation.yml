@@ -5,9 +5,9 @@ title: "[Docs]: "
 labels: ["03 Documentation", "documentation"]
 body:
   - type: markdown
-  attributes:
-    value: >
-      Thanks for filling out this documentation request!
+    attributes:
+      value: >
+        Thanks for filling out this documentation request!
   - type: textarea
     attributes: 
       label: "Issue with current documentation:"
