@@ -1,0 +1,23 @@
+# credit to https://github.com/langchain-ai/langchain/tree/master/.github/ISSUE_TEMPLATE!
+name: "📄 Documentation Change"
+description: "Request a change to the documentation!"
+title: "[Docs]: "
+labels: ["03 Documentation", "documentation"]
+body:
+  - type: markdown
+  attributes:
+    value: >
+      Thanks for filling out this documentation request!
+  - type: textarea
+    attributes: 
+      label: "Issue with current documentation:"
+      description: >
+        Please make sure to leave a reference to the document/code you're
+        referring to.
+
+  - type: textarea
+    attributes:
+      label: "Idea or request for content:"
+      description: >
+        Please describe as clearly as possible what topics you think are missing
+        from the current documentation.
