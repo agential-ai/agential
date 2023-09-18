@@ -1,6 +1,6 @@
 # credit to: https://github.com/jerryjliu/llama_index/blob/main/.github/ISSUE_TEMPLATE!
-name: General Question
-description: Ask a general question.
+name: "❓General Question"
+description: "Ask a general question."
 title: "[Question]: "
 labels: ["question"]
 body:
