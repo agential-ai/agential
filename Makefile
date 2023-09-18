@@ -45,6 +45,10 @@ lint: ## Lint using black and ruff.
 	poetry run black --check discussion_agents tests
 	poetry run ruff check discussion_agents tests
 
+auto_lint: ## Automatic format & lint using black and ruff.
+	poetry run black discussion_agents tests
+	poetry run ruff discussion_agents tests --fix --show-fixes --show-source
+
 create_environment: ## Set up conda environment.
 ifeq (True,$(HAS_CONDA))
 		@echo ">>> Detected conda, creating conda environment."
