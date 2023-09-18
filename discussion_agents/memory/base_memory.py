@@ -88,7 +88,7 @@ class GenerativeAgentMemory(BaseMemory):
     reflecting: bool = False
 
     def chain(self, prompt: PromptTemplate) -> LLMChain:
-        """Create a LangChain Language Model (LLM) chain for text generation.
+        """Create a Large Language Model (LLM) chain for text generation.
 
         This method creates a Large Language Model (LLM) chain for text generation
         using the specified prompt template. It allows you to chain together multiple
@@ -102,7 +102,7 @@ class GenerativeAgentMemory(BaseMemory):
                 prompt template.
 
         Example usage:
-            memory = GenerativeAgentMemory()
+            memory = GenerativeAgentMemory(...)
             prompt_template = PromptTemplate.from_template("Generate a creative story.")
             llm_chain = memory.chain(prompt_template)
             generated_text = llm_chain.run()
@@ -158,7 +158,7 @@ class GenerativeAgentMemory(BaseMemory):
                 recent observations.
 
         Example usage:
-            memory = GenerativeAgentMemory()
+            memory = GenerativeAgentMemory(...)
             salient_questions = memory.get_topics_of_reflection()
             # 'salient_questions' contains the three most salient questions for reflection.
 
@@ -203,7 +203,7 @@ class GenerativeAgentMemory(BaseMemory):
                 generated for a specific topic.
 
         Example usage:
-            memory = GenerativeAgentMemory()
+            memory = GenerativeAgentMemory(...)
             topics_to_generate_insights = ["History of space exploration", "Artificial intelligence"]
             insights = memory.get_insights_on_topic(topics_to_generate_insights)
             # 'insights' contains lists of insights generated for the specified topics.
@@ -264,7 +264,7 @@ class GenerativeAgentMemory(BaseMemory):
             List[str]: A list of generated insights as strings.
 
         Example usage:
-            memory = GenerativeAgentMemory()
+            memory = GenerativeAgentMemory(...)
             new_insights = memory.pause_to_reflect()
             # 'new_insights' contains insights generated during reflection.
 
@@ -301,7 +301,7 @@ class GenerativeAgentMemory(BaseMemory):
             List[float]: A list of float values representing the calculated importance scores.
 
         Example usage:
-            memory = GenerativeAgentMemory()
+            memory = GenerativeAgentMemory(...)
             memories_to_score = ["Visited the museum.", "Had a meaningful conversation."]
             importance_scores = memory.score_memories_importance(memories_to_score)
             # 'importance_scores' contains the calculated importance scores for the memories.
@@ -353,7 +353,7 @@ class GenerativeAgentMemory(BaseMemory):
             List[str]: A list of string IDs indicating the results of the memory addition.
 
         Example usage:
-            memory = GenerativeAgentMemory()
+            memory = GenerativeAgentMemory(...)
             memories_to_add = ["Visited the museum.", "Learned about space exploration."]
             ids = memory.add_memories(memories_to_add)
             # 'ids' contains information about the result of the memory addition.
