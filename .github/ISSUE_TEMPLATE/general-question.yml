@@ -1,0 +1,17 @@
+# credit to: https://github.com/jerryjliu/llama_index/blob/main/.github/ISSUE_TEMPLATE!
+name: General Question
+description: Ask a general question.
+title: "[Question]: "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this question form!
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: Ask your question here!
+    validations:
+      required: true
