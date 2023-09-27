@@ -11,6 +11,8 @@ LangChain Generative Agents Doc Page:
 https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/characters
 """
 import re
+import string
+import random
 
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
@@ -32,9 +34,13 @@ class GenerativeAgent(BaseModel):
 
     Attributes:
         name (str): The character's name.
-        age (int, optional): The optional age of the character. Defaults to None.
-        traits (str): Permanent traits ascribed to the character.
+        age (int): The optional age of the character. Defaults to None.
+        innate_traits (str): Permanent traits ascribed to the character.
+        learned_traits (str): Learned traits.
         lifestyle (str): Lifestyle traits of the character that should not change.
+        status (str): Current status of the character (what they are currently doing).
+        daily_req (str): daily requireements for the agent.
+        daily_plan_req (str): Daily plan requirements for the agent.
         memory (GenerativeAgentMemory): The memory object that combines relevance, recency,
             and 'importance' for storing and retrieving memories.
         llm (BaseLanguageModel): The underlying language model used for text generation.
@@ -50,9 +56,15 @@ class GenerativeAgent(BaseModel):
     """
 
     name: str
-    age: Optional[int] = None
-    traits: str = "N/A"
+    age: int
+    innate_traits: str
+    learned_traits: str
     lifestyle: str
+    status: str
+    daily_req: List[str]
+    daily_plan_req: str
+    f_daily_schedule: List[str] = []
+
     memory: GenerativeAgentMemory
     llm: BaseLanguageModel
     verbose: bool = False
@@ -66,7 +78,7 @@ class GenerativeAgent(BaseModel):
 
         arbitrary_types_allowed = True
 
-    def chain(self, prompt: PromptTemplate) -> LLMChain:
+    def chain(self, prompt: PromptTemplate, llm_kwargs: Dict[str, Any] = {}) -> LLMChain:
         """Create a Large Language Model (LLM) chain for text generation.
 
         This method creates a Large Language Model (LLM) chain for text generation
@@ -88,7 +100,7 @@ class GenerativeAgent(BaseModel):
             # 'generated_text' contains the text generated using the specified prompt.
         """
         return LLMChain(
-            llm=self.llm, prompt=prompt, verbose=self.verbose, memory=self.memory
+            llm=self.llm, llm_kwargs=llm_kwargs, prompt=prompt, verbose=self.verbose, memory=self.memory
         )
 
     # LLM-related methods
@@ -119,57 +131,256 @@ class GenerativeAgent(BaseModel):
         lines = re.split(r"\n", text.strip())
         return [re.sub(r"^\s*\d+\.\s*", "", line).strip() for line in lines]
 
-    def generate_daily_schedule(
-        self, wake_up_hour: Optional[int] = 8
+    def generate_daily_req(
+        self, current_day: datetime, wake_up_hour: Optional[int] = 8
     ) -> List[str]:
         prompt = PromptTemplate.from_template(
             "{summary}\n"
-            + "A summary of the previous day: "
-            + "\n".join(self.daily_summaries)
             + "In general, {name}'s lifestyle: {lifestyle}\n"
-            + "Here is {name}'s plan today in detail "
-            + "(with the time of the day. e.g., have a lunch at 12:00 pm, watch TV from 7 to 8 pm): "
+            + "Today is {current_day}. "
+            + "Here is {name}'s plan today in broad-strokes "
+            + "(with the time of the day. e.g., have lunch at 12:00 pm, watch TV from 7 to 8 pm): "
             + "1) wake up and complete the morning routine at {wake_up_hour}, "
-            + "2) <FILL_IN>\n"
+            + "2)\n"
             + "Provide each step on a new line.\n"
         )
-        kwargs: Dict[str, Any] = dict(
+        kwargs = dict(
             summary=self.get_summary(),
             lifestyle=self.lifestyle,
             name=self.name,
+            current_day=current_day.strftime("%A %B %d"),
             wake_up_hour=wake_up_hour,
         )
         result = self._parse_list(self.chain(prompt).run(**kwargs).strip())
-        result = [f"1) wake up and complete the morning routine at {wake_up_hour}."] + result
+        result = (
+            [f"1) wake up and complete the morning routine at {wake_up_hour}:00 am"] + 
+            result
+        )
+        result = [s.split(")")[-1].rstrip(",.").strip() for s in result]
 
         return result
 
-    def plan(
-        self, wake_up_hour: Optional[int] = 8, now: Optional[datetime] = None
-    ):
-        if now is None:
-            now = datetime.now()
+    def update_status_and_daily_plan_req(self, current_day: datetime) -> None:
+        current_day_str = current_day.strftime("%A %B %d, %Y")
+        focal_points = [
+            f"{self.name}'s plan for {current_day_str}.",
+            f"Important recent events for {self.name}'s life."
+        ]
 
-        daily_schedule = self.generate_daily_schedule(wake_up_hour=wake_up_hour)
-        for step in daily_schedule:
-            self.memory.save_context(
-                {},
-                {
-                    self.memory.add_memory_key: f"{self.name} "
-                    + "performed the following task: "
-                    + step.strip(),
-                    self.memory.now_key: now,
-                },
+        relevant_context = []
+        for focal_point in focal_points:
+            fetched_memories = self.memory.fetch_memories(focal_point)
+            relevant_context.append(
+                self.memory.format_memories_detail(fetched_memories)
             )
+        relevant_context = "\n".join(relevant_context)
+
+        plan_prompt = PromptTemplate.from_template(
+            relevant_context + "\n"
+            + "Given the statements above, "
+            + "is there anything that {name} should remember as they plan for"
+            + " *{current_day_str}*? "
+            + "If there is any scheduling information, be as specific as possible "
+            + "(include date, time, and location if stated in the statement)\n\n"
+            + "Write the response from {name}'s perspective."
+        )
+        plan_kwargs = dict(
+            name=self.name,
+            current_day_str=current_day_str
+        )
+        plan_result = self.chain(prompt=plan_prompt).run(**plan_kwargs).strip()
+
+        thought_prompt = PromptTemplate.from_template(
+            relevant_context + "\n"
+            + "Given the statements above, how might we summarize "
+            + "{name}'s feelings about their days up to now?\n\n"
+            + "Write the response from {name}'s perspective."
+        )
+        thought_kwargs = dict(
+            name=self.name
+        )
+        thought_result = self.chain(prompt=thought_prompt).run(**thought_kwargs).strip()
+
+        status_prompt = PromptTemplate.from_template(
+            "{name}'s status from "
+            + "{previous_day}:\n"
+            + "{status}\n\n"
+            + "{name}'s thoughts at the end of "
+            + "{previous_day}:\n" 
+            + (plan_result + " " + thought_result).replace('\n', '') + "\n\n"
+            + "It is now {current_day}. "
+            + "Given the above, write {name}'s status for "
+            + "{current_day} that reflects {name}'s "
+            + "thoughts at the end of {previous_day}. "
+            + "Write this in third-person talking about {name}."
+            + "If there is any scheduling information, be as specific as possible "
+            + "(include date, time, and location if stated in the statement).\n\n"
+            + "Follow this format below:\nStatus: <new status>"
+        )
+        status_kwargs = dict(
+            name=self.name,
+            previous_day=(current_day - timedelta(days=1)).strftime('%A %B %d, %Y'),
+            status=self.status,
+            current_day=current_day.strftime('%A %B %d, %Y')
+        )
+        self.status = self.chain(prompt=status_prompt).run(**status_kwargs).strip()
+
+        daily_plan_req_prompt = PromptTemplate.from_template(
+            self.get_summary() + "\n"
+            + "Today is {current_day}. "
+            + "Here is {name}'s plan today in broad-strokes "
+            + "(with the time of the day. e.g., have a lunch at 12:00 pm, watch TV from 7 to 8 pm).\n\n"
+            + "Follow this format (the list should have 4~6 items but no more):\n"
+            + "1. wake up and complete the morning routine at <time>, 2. ..."
+        )
+        daily_plan_req_kwargs = dict(
+            current_day=current_day.strftime('%A %B %d, %Y'),
+            name=self.name
+        )
+        self.daily_plan_req = (
+            self.chain(prompt=daily_plan_req_prompt)
+            .run(**daily_plan_req_kwargs)
+            .strip()
+            .replace("\n", " ")
+        )
+
+    def rand_id(self, i=6, j=6):
+        k = random.randint(i, j)
+        hash = ''.join(random.choices(string.ascii_letters + string.digits, k=k))
+        return hash
+
+    def generate_hourly_schedule(
+            self, n_m1_activity: List[str], curr_hour_str: str, current_day: datetime
+        ) -> str:
+        hour_str = ["00:00 AM", "01:00 AM", "02:00 AM", "03:00 AM", "04:00 AM", 
+                    "05:00 AM", "06:00 AM", "07:00 AM", "08:00 AM", "09:00 AM", 
+                    "10:00 AM", "11:00 AM", "12:00 PM", "01:00 PM", "02:00 PM", 
+                    "03:00 PM", "04:00 PM", "05:00 PM", "06:00 PM", "07:00 PM",
+                    "08:00 PM", "09:00 PM", "10:00 PM", "11:00 PM"]
+        
+        current_day = current_day.strftime("%A %B %d, %Y")
+        schedule_format = ""
+        for i in hour_str: 
+            schedule_format += f"[{current_day} -- {i}]"
+            schedule_format += f" Activity: [Fill in]\n"
+        schedule_format = schedule_format[:-1]
+
+        intermission_str = f"Here's the originally intended hourly breakdown of"
+        intermission_str += f" {self.name}'s schedule today: "
+        for count, i in enumerate(self.daily_req): 
+            intermission_str += f"{str(count+1)}) {i}, "
+        intermission_str = intermission_str[:-2]
+
+        prior_schedule = "\n"
+        for count, i in enumerate(n_m1_activity): 
+            prior_schedule += f"[(ID:{self.rand_id()})" 
+            prior_schedule += f" {current_day} --"
+            prior_schedule += f" {hour_str[count]}] Activity:"
+            prior_schedule += f" {self.name}"
+            prior_schedule += f" is {i}\n"
 
         prompt = PromptTemplate.from_template(
-            "{summary}\n"
-            + "In general, {name}'s lifestyle: {lifestyle}\n"
-            + "{name}'s previous day: "
-            + "\n".join(self.daily_summaries)
-            + "Summarize {name}'s previous day."
+            schedule_format
+            + "==="
+            + self.get_summary() + "\n"
+            + prior_schedule + "\n"
+            + intermission_str + "\n"
+            + f"[(ID:{self.rand_id()})"
+            + " {current_day}"
+            + " -- {curr_hour_str}] Activity:"
+            + " {name} is"
         )
-        self.daily_summaries = self.chain(prompt).run(summary=self.get_summary(), name=self.name, lifestyle=self.lifestyle).strip()
+        prompt_kwargs = dict(
+            current_day=current_day,
+            curr_hour_str=curr_hour_str,
+            name=self.name
+        )
+        llm_kwargs = dict(
+            max_tokens=50, 
+            temperature=0.5,
+        )
+        result = self.chain(prompt, llm_kwargs=llm_kwargs).run(**prompt_kwargs, stop="\n").rstrip(".").strip()
+        return result
+
+    def generate_hourly_schedule_top_3(
+            self, current_day: datetime, wake_up_hour: Optional[int] = 8
+        ) -> List[str]:
+        hour_str = ["00:00 AM", "01:00 AM", "02:00 AM", "03:00 AM", "04:00 AM", 
+                    "05:00 AM", "06:00 AM", "07:00 AM", "08:00 AM", "09:00 AM", 
+                    "10:00 AM", "11:00 AM", "12:00 PM", "01:00 PM", "02:00 PM", 
+                    "03:00 PM", "04:00 PM", "05:00 PM", "06:00 PM", "07:00 PM",
+                    "08:00 PM", "09:00 PM", "10:00 PM", "11:00 PM"]
+
+        n_m1_activity = []
+        diversity_repeat_count = 3
+        for i in range(diversity_repeat_count): 
+            if len(set(n_m1_activity)) < 5:  # Number of unique activities < 5.
+                n_m1_activity = []
+                for curr_hour_str in hour_str: 
+                    if wake_up_hour > 0: 
+                        n_m1_activity += ["sleeping"]
+                        wake_up_hour -= 1
+                    else: 
+                        n_m1_activity += [self.generate_hourly_schedule(n_m1_activity, curr_hour_str, current_day)]
+
+        # Step 1. Compressing the hourly schedule to the following format: 
+        # The integer indicates the number of hours. They should add up to 24. 
+        # [['sleeping', 6], ['waking up and starting her morning routine', 1], 
+        # ['eating breakfast', 1], ['getting ready for the day', 1], 
+        # ['working on her painting', 2], ['taking a break', 1], 
+        # ['having lunch', 1], ['working on her painting', 3], 
+        # ['taking a break', 2], ['working on her painting', 2], 
+        # ['relaxing and watching TV', 1], ['going to bed', 1], ['sleeping', 2]]
+        _n_m1_hourly_compressed = []
+        prev, prev_count = None, 0 
+        for i in n_m1_activity: 
+            if i != prev:
+                prev_count = 1 
+                _n_m1_hourly_compressed += [[i, prev_count]]
+                prev = i
+            elif _n_m1_hourly_compressed: 
+                    _n_m1_hourly_compressed[-1][1] += 1
+
+        # Step 2. Expand to min scale (from hour scale)
+        # [['sleeping', 360], ['waking up and starting her morning routine', 60], 
+        # ['eating breakfast', 60],..
+        n_m1_hourly_compressed = []
+        for task, duration in _n_m1_hourly_compressed: 
+            n_m1_hourly_compressed += [[task, duration*60]]
+
+        return n_m1_hourly_compressed
+
+    def _long_term_planning(self, new_day: str, current_day: datetime, wake_up_hour: int = 8):
+        # When it is a new day, we start by creating the daily_req of the persona.
+        # Note that the daily_req is a list of strings that describe the persona's
+        # day in broad strokes.
+        if new_day == "First day": 
+            # Bootstrapping the daily plan for the start of then generation:
+            # if this is the start of generation (so there is no previous day's 
+            # daily requirement, or if we are on a new day, we want to create a new
+            # set of daily requirements.
+            self.daily_req = self.generate_daily_req(current_day=current_day, wake_up_hour=wake_up_hour)
+        elif new_day == "New day":
+            self.update_status_and_daily_plan_req(current_day=current_day)
+
+        # Based on the daily_req, we create an hourly schedule for the persona, 
+        # which is a list of todo items with a time duration (in minutes) that 
+        # add up to 24 hours.
+        self.f_daily_schedule = self.generate_hourly_schedule_top_3(current_day=current_day, wake_up_hour=wake_up_hour)
+
+        # Added March 4 -- adding plan to the memory.
+        thought = f"This is {self.name}'s plan for {current_day.strftime('%A %B %d, %Y')}:"
+        for i in self.daily_req: 
+            thought += f" {i},"
+        thought = thought[:-1] + "."
+
+        self.memory.save_context(
+            {},
+            {
+                self.memory.add_memory_key: thought,
+                self.memory.now_key: current_day,
+            },
+        )
 
     def get_entity_from_observation(self, observation: str) -> str:
         """Extract the observed entity from a given observation text.
@@ -299,7 +510,7 @@ class GenerativeAgent(BaseModel):
             if now is None
             else now.strftime("%B %d, %Y, %I:%M %p")
         )
-        kwargs: Dict[str, Any] = dict(
+        kwargs = dict(
             agent_summary_description=agent_summary_description,
             current_time=current_time_str,
             relevant_memories=relevant_memories_str,
@@ -525,11 +736,16 @@ class GenerativeAgent(BaseModel):
         ):
             self.summary = self.compute_agent_summary()
             self.last_refreshed = current_time
-        age = self.age if self.age is not None else "N/A"
         return (
-            f"Name: {self.name} (age: {age})"
-            + f"\nInnate traits: {self.traits}"
-            + f"\n{self.summary}"
+            f"Name: {self.name}\n"
+            + f"Age: {self.age}\n"
+            + f"Innate traits: {self.innate_traits}\n"
+            + f"Learned traits: {self.learned_traits}\n"
+            + f"Status: {self.status}\n"
+            + f"Lifestyle: {self.lifestyle}\n"
+            + f"Daily plan requirement: {self.daily_plan_req}\n"
+            + f"Current Date: {current_time.strftime('%A %B %d')}\n"
+            + f"{self.summary}\n"
         )
 
     def get_full_header(

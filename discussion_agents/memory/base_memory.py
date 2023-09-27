@@ -447,9 +447,9 @@ class GenerativeAgentMemory(BaseMemory):
         for mem in relevant_memories:
             if isinstance(mem, Document):
                 created_time = mem.metadata["created_at"].strftime(
-                    "%B %d, %Y, %I:%M %p"
+                    "%A %B %d, %Y -- %H:%M %p"
                 )
-                content.append(f"{prefix}[{created_time}] {mem.page_content.strip()}")
+                content.append(f"{prefix}[{created_time}]: {mem.page_content.strip()}")
         return "\n".join([f"{mem}" for mem in content])
 
     def format_memories_simple(
