@@ -169,9 +169,9 @@ class GenerativeAgentMemory(BaseMemory):
         """
         prompt = PromptTemplate.from_template(
             "{observations}\n\n"
-            "Given only the information above, what are the 3 most salient "
-            "high-level questions we can answer about the subjects in the statements?\n"
-            "Provide each question on a new line."
+            + "Given only the information above, what are the 3 most salient "
+            + "high-level questions we can answer about the subjects in the statements?\n"
+            + "Provide each question on a new line."
         )
         observations = self.memory_retriever.memory_stream[-last_k:]
         observation_str = "\n".join(
@@ -215,15 +215,15 @@ class GenerativeAgentMemory(BaseMemory):
         """
         prompt = PromptTemplate.from_template(
             "Statements relevant to: '{topic}'\n"
-            "---\n"
-            "{related_statements}\n"
-            "---\n"
-            "What 5 high-level novel insights can you infer from the above statements "
-            "that are relevant for answering the following question?\n"
-            "Do not include any insights that are not relevant to the question.\n"
-            "Do not repeat any insights that have already been made.\n\n"
-            "Question: {topic}\n\n"
-            "(example format: insight (because of 1, 5, 3))\n"
+            + "---\n"
+            + "{related_statements}\n"
+            + "---\n"
+            + "What 5 high-level novel insights can you infer from the above statements "
+            + "that are relevant for answering the following question?\n"
+            + "Do not include any insights that are not relevant to the question.\n"
+            + "Do not repeat any insights that have already been made.\n\n"
+            + "Question: {topic}\n\n"
+            + "(example format: insight (because of 1, 5, 3))\n"
         )
 
         if type(topics) is str:

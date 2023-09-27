@@ -12,7 +12,7 @@ https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/charac
 """
 import re
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
 
 from langchain.chains import LLMChain
@@ -27,14 +27,14 @@ class GenerativeAgent(BaseModel):
     """An Agent as a character with memory and innate characteristics.
 
     This class represents a character or agent with attributes such as name, age, traits,
-    status, memory, and an underlying language model. It combines innate characteristics
+    lifestyle, memory, and an underlying language model. It combines innate characteristics
     with the ability to store and retrieve memories and interact with a language model.
 
     Attributes:
         name (str): The character's name.
         age (int, optional): The optional age of the character. Defaults to None.
         traits (str): Permanent traits ascribed to the character.
-        status (str): Traits of the character that should not change.
+        lifestyle (str): Lifestyle traits of the character that should not change.
         memory (GenerativeAgentMemory): The memory object that combines relevance, recency,
             and 'importance' for storing and retrieving memories.
         llm (BaseLanguageModel): The underlying language model used for text generation.
@@ -52,7 +52,7 @@ class GenerativeAgent(BaseModel):
     name: str
     age: Optional[int] = None
     traits: str = "N/A"
-    status: str
+    lifestyle: str
     memory: GenerativeAgentMemory
     llm: BaseLanguageModel
     verbose: bool = False
@@ -118,6 +118,58 @@ class GenerativeAgent(BaseModel):
         """
         lines = re.split(r"\n", text.strip())
         return [re.sub(r"^\s*\d+\.\s*", "", line).strip() for line in lines]
+
+    def generate_daily_schedule(
+        self, wake_up_hour: Optional[int] = 8
+    ) -> List[str]:
+        prompt = PromptTemplate.from_template(
+            "{summary}\n"
+            + "A summary of the previous day: "
+            + "\n".join(self.daily_summaries)
+            + "In general, {name}'s lifestyle: {lifestyle}\n"
+            + "Here is {name}'s plan today in detail "
+            + "(with the time of the day. e.g., have a lunch at 12:00 pm, watch TV from 7 to 8 pm): "
+            + "1) wake up and complete the morning routine at {wake_up_hour}, "
+            + "2) <FILL_IN>\n"
+            + "Provide each step on a new line.\n"
+        )
+        kwargs: Dict[str, Any] = dict(
+            summary=self.get_summary(),
+            lifestyle=self.lifestyle,
+            name=self.name,
+            wake_up_hour=wake_up_hour,
+        )
+        result = self._parse_list(self.chain(prompt).run(**kwargs).strip())
+        result = [f"1) wake up and complete the morning routine at {wake_up_hour}."] + result
+
+        return result
+
+    def plan(
+        self, wake_up_hour: Optional[int] = 8, now: Optional[datetime] = None
+    ):
+        if now is None:
+            now = datetime.now()
+
+        daily_schedule = self.generate_daily_schedule(wake_up_hour=wake_up_hour)
+        for step in daily_schedule:
+            self.memory.save_context(
+                {},
+                {
+                    self.memory.add_memory_key: f"{self.name} "
+                    + "performed the following task: "
+                    + step.strip(),
+                    self.memory.now_key: now,
+                },
+            )
+
+        prompt = PromptTemplate.from_template(
+            "{summary}\n"
+            + "In general, {name}'s lifestyle: {lifestyle}\n"
+            + "{name}'s previous day: "
+            + "\n".join(self.daily_summaries)
+            + "Summarize {name}'s previous day."
+        )
+        self.daily_summaries = self.chain(prompt).run(summary=self.get_summary(), name=self.name, lifestyle=self.lifestyle).strip()
 
     def get_entity_from_observation(self, observation: str) -> str:
         """Extract the observed entity from a given observation text.
@@ -192,12 +244,10 @@ class GenerativeAgent(BaseModel):
             print(summary)
         """
         prompt = PromptTemplate.from_template(
-            """
-            {q1}?
-            Context from memory:
-            {relevant_memories}
-            Relevant context:
-            """
+            "{q1}?\n"
+            + "Context from memory:\n"
+            + "{relevant_memories}\n"
+            + "Relevant context:\n"
         )
         entity_name = self.get_entity_from_observation(observation)
         entity_action = self.get_entity_action(observation, entity_name)
@@ -234,7 +284,7 @@ class GenerativeAgent(BaseModel):
         prompt = PromptTemplate.from_template(
             "{agent_summary_description}"
             + "\nIt is {current_time}."
-            + "\n{agent_name}'s status: {agent_status}"
+            + "\n{agent_name}'s lifestyle: {lifestyle}"
             + "\nSummary of relevant context from {agent_name}'s memory:"
             + "\n{relevant_memories}"
             + "\nMost recent observations: {most_recent_memories}"
@@ -255,7 +305,7 @@ class GenerativeAgent(BaseModel):
             relevant_memories=relevant_memories_str,
             agent_name=self.name,
             observation=observation,
-            agent_status=self.status,
+            lifestyle=self.lifestyle,
         )
         consumed_tokens = self.llm.get_num_tokens(
             prompt.format(most_recent_memories="", **kwargs)
@@ -485,7 +535,7 @@ class GenerativeAgent(BaseModel):
     def get_full_header(
         self, force_refresh: bool = False, now: Optional[datetime] = None
     ) -> str:
-        """Return a full header of the agent's status, summary, and current time.
+        """Return a full header of the agent's lifestyle, summary, and current time.
 
         Args:
             force_refresh (bool, optional): If True, force a refresh of the summary
@@ -494,9 +544,9 @@ class GenerativeAgent(BaseModel):
                 the summary. Defaults to None, which uses the current system time.
 
         Returns:
-            str: A full header including the agent's status, summary, and current time.
+            str: A full header including the agent's lifestyle, summary, and current time.
 
-        This method returns a full header that includes the agent's status, a descriptive
+        This method returns a full header that includes the agent's lifestyle, a descriptive
         summary of the agent (which can be refreshed using `force_refresh`), and the
         current time in a formatted string.
 
@@ -508,6 +558,4 @@ class GenerativeAgent(BaseModel):
         now = datetime.now() if now is None else now
         summary = self.get_summary(force_refresh=force_refresh, now=now)
         current_time_str = now.strftime("%B %d, %Y, %I:%M %p")
-        return (
-            f"{summary}\nIt is {current_time_str}.\n{self.name}'s status: {self.status}"
-        )
+        return f"{summary}\nIt is {current_time_str}.\n{self.name}'s lifestyle: {self.lifestyle}"
