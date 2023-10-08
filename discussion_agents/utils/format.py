@@ -24,6 +24,8 @@ def format_memories_detail(
     content = []
     for mem in relevant_memories:
         if isinstance(mem, Document):
+            if "created_at" not in mem.metadata:
+                raise TypeError("Input `relevant_memories` Document(s) must have 'created_at' key in metadata.")
             created_time = mem.metadata["created_at"].strftime(
                 "%A %B %d, %Y -- %H:%M %p"
             )
