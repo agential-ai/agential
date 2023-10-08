@@ -39,7 +39,7 @@ def get_topics_of_reflection(
     observations = memory_retriever.memory_stream[-last_k:]
     observation_str = "\n".join([format_memories_detail(o) for o in observations])
     chain = LLMChain(llm=llm, prompt=prompt, verbose=verbose)
-    result = chain(prompt).run(observations=observation_str)
+    result = chain.run(observations=observation_str)
     return parse_list(result)
 
 
@@ -98,7 +98,7 @@ def get_insights_on_topic(
                 for i, memory in enumerate(related_memories)
             ]
         )
-        result = chain(prompt).run(topic=topic, related_statements=related_statements)
+        result = chain.run(topic=topic, related_statements=related_statements)
         results.append(parse_list(result))
 
     return results
