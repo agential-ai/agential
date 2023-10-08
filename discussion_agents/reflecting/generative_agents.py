@@ -1,8 +1,7 @@
 """Generative Agents reflection."""
 
-from typing import List, Union, Optional
-
 from datetime import datetime
+from typing import List, Optional, Union
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
@@ -14,11 +13,12 @@ from langchain.utils import mock_now
 from discussion_agents.utils.format import format_memories_detail
 from discussion_agents.utils.parse import parse_list
 
+
 def get_topics_of_reflection(
     llm: BaseLanguageModel,
-    memory_retriever: TimeWeightedVectorStoreRetriever, 
+    memory_retriever: TimeWeightedVectorStoreRetriever,
     verbose: bool = False,
-    last_k: int = 50
+    last_k: int = 50,
 ) -> List[str]:
     """Return the 3 most salient high-level questions about recent observations.
 
@@ -37,32 +37,31 @@ def get_topics_of_reflection(
         + "Provide each question on a new line."
     )
     observations = memory_retriever.memory_stream[-last_k:]
-    observation_str = "\n".join(
-        [format_memories_detail(o) for o in observations]
-    )
+    observation_str = "\n".join([format_memories_detail(o) for o in observations])
     chain = LLMChain(llm=llm, prompt=prompt, verbose=verbose)
     result = chain(prompt).run(observations=observation_str)
     return parse_list(result)
 
+
 def fetch_memories(
-    memory_retriever: TimeWeightedVectorStoreRetriever, 
-    observation: str, 
-    now: Optional[datetime] = None
+    memory_retriever: TimeWeightedVectorStoreRetriever,
+    observation: str,
+    now: Optional[datetime] = None,
 ) -> List[Document]:
-    """Fetch related memories based on an observation.
-    """
+    """Fetch related memories based on an observation."""
     if now is not None:
         with mock_now(now):
             return memory_retriever.get_relevant_documents(observation)
     else:
         return memory_retriever.get_relevant_documents(observation)
 
+
 def get_insights_on_topic(
-    llm: BaseLanguageModel, 
+    llm: BaseLanguageModel,
     memory_retriever: TimeWeightedVectorStoreRetriever,
-    topics: Union[str, List[str]], 
+    topics: Union[str, List[str]],
     now: Optional[datetime] = None,
-    verbose: bool = False
+    verbose: bool = False,
 ) -> List[List[str]]:
     """Generate insights on a topic of reflection based on pertinent memories.
 
@@ -99,19 +98,18 @@ def get_insights_on_topic(
                 for i, memory in enumerate(related_memories)
             ]
         )
-        result = chain(prompt).run(
-            topic=topic, related_statements=related_statements
-        )
+        result = chain(prompt).run(topic=topic, related_statements=related_statements)
         results.append(parse_list(result))
 
     return results
 
+
 def reflect(
     llm: BaseLanguageModel,
-    memory_retriever: TimeWeightedVectorStoreRetriever, 
+    memory_retriever: TimeWeightedVectorStoreRetriever,
     last_k: int = 50,
     verbose: bool = False,
-    now: Optional[datetime] = None
+    now: Optional[datetime] = None,
 ) -> List[str]:
     """Pause and reflect on recent observations to generate insights.
 
@@ -124,18 +122,11 @@ def reflect(
     """
     new_insights = []
     topics = get_topics_of_reflection(
-        llm, 
-        memory_retriever, 
-        verbose=verbose, 
-        last_k=last_k
+        llm, memory_retriever, verbose=verbose, last_k=last_k
     )
     for topic in topics:
         insights = get_insights_on_topic(
-            llm,
-            memory_retriever,
-            topic, 
-            now=now, 
-            verbose=verbose
+            llm, memory_retriever, topic, now=now, verbose=verbose
         )[0]
         new_insights.extend(insights)
     return new_insights

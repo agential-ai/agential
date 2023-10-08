@@ -1,6 +1,8 @@
 """Utility functions for parsing outputs."""
 import re
+
 from typing import List
+
 
 def parse_list(text: str) -> List[str]:
     r"""Parse a newline-separated string into a list of strings.

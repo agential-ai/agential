@@ -23,16 +23,17 @@ from langchain.schema.language_model import BaseLanguageModel
 from langchain.utils import mock_now
 
 from discussion_agents.reflecting.generative_agents import (
-    get_topics_of_reflection,
     fetch_memories,
     get_insights_on_topic,
-    reflect
-)
-from discussion_agents.utils.format import (
-    format_memories_detail,
-    format_memories_simple
+    get_topics_of_reflection,
+    reflect,
 )
 from discussion_agents.scoring.generative_agents import score_memories_importance
+from discussion_agents.utils.format import (
+    format_memories_detail,
+    format_memories_simple,
+)
+
 
 class GenerativeAgentMemory(BaseMemory):
     """Memory for the generative agent.
@@ -149,7 +150,9 @@ class GenerativeAgentMemory(BaseMemory):
         lines = [line for line in lines if line.strip()]  # remove empty lines
         return [re.sub(r"^\s*\d+\.\s*", "", line).strip() for line in lines]
 
-    def get_topics_of_reflection(self, last_k: int = 50, verbose: bool = False) -> List[str]:
+    def get_topics_of_reflection(
+        self, last_k: int = 50, verbose: bool = False
+    ) -> List[str]:
         """Return the 3 most salient high-level questions about recent observations.
 
         This method analyzes recent observations stored in the agent's memory to identify
@@ -180,13 +183,16 @@ class GenerativeAgentMemory(BaseMemory):
         """
         return get_topics_of_reflection(
             llm=self.llm,
-            memory_retriever=self.memory_retriever, 
+            memory_retriever=self.memory_retriever,
             verbose=verbose,
-            last_k=last_k
+            last_k=last_k,
         )
 
     def get_insights_on_topic(
-        self, topics: Union[str, List[str]], now: Optional[datetime] = None, verbose: bool = False
+        self,
+        topics: Union[str, List[str]],
+        now: Optional[datetime] = None,
+        verbose: bool = False,
     ) -> List[List[str]]:
         """Generate insights on a topic of reflection based on pertinent memories.
 
@@ -219,13 +225,12 @@ class GenerativeAgentMemory(BaseMemory):
             - It supports both single topic string and multiple topics in a list.
         """
         return get_insights_on_topic(
-            llm=self.llm, 
-            memory_retriever=self.memory_retriever,
-            topics=topics, 
-            now=now
+            llm=self.llm, memory_retriever=self.memory_retriever, topics=topics, now=now
         )
 
-    def pause_to_reflect(self, last_k: int = 50, verbose: bool = False, now: Optional[datetime] = None) -> List[str]:
+    def pause_to_reflect(
+        self, last_k: int = 50, verbose: bool = False, now: Optional[datetime] = None
+    ) -> List[str]:
         """Pause and reflect on recent observations to generate insights.
 
         This method initiates a pause in the Generative Agent's operation to reflect
@@ -259,7 +264,7 @@ class GenerativeAgentMemory(BaseMemory):
             memory_retriever=self.memory_retriever,
             last_k=last_k,
             verbose=verbose,
-            now=now
+            now=now,
         )
         self.add_memories(results, now=now)
         return results
@@ -294,7 +299,7 @@ class GenerativeAgentMemory(BaseMemory):
             memory_contents=memory_contents,
             llm=self.llm,
             verbose=verbose,
-            importance_weight=self.importance_weight
+            importance_weight=self.importance_weight,
         )
 
     def add_memories(
@@ -384,9 +389,7 @@ class GenerativeAgentMemory(BaseMemory):
             - 'now' allows setting a specific time context for retrieval.
         """
         return fetch_memories(
-            memory_retriever=self.memory_retriever,
-            observation=observation,
-            now=now
+            memory_retriever=self.memory_retriever, observation=observation, now=now
         )
 
     def format_memories_detail(
@@ -404,8 +407,9 @@ class GenerativeAgentMemory(BaseMemory):
             str: A string containing the formatted memories with timestamps and prefix;
                 newline-character delineated.
         """
-        return format_memories_detail(relevant_memories=relevant_memories, prefix=prefix)
-        
+        return format_memories_detail(
+            relevant_memories=relevant_memories, prefix=prefix
+        )
 
     def format_memories_simple(
         self, relevant_memories: Union[Document, List[Document]]

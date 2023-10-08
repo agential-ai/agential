@@ -1,7 +1,9 @@
 """Utility functions for formatting LangChain Documents, the base class for storing data."""
 
-from typing import Union, List
+from typing import List, Union
+
 from langchain.schema import Document
+
 
 def format_memories_detail(
     relevant_memories: Union[Document, List[Document]], prefix: str = ""
@@ -25,16 +27,17 @@ def format_memories_detail(
     for mem in relevant_memories:
         if isinstance(mem, Document):
             if "created_at" not in mem.metadata:
-                raise TypeError("Input `relevant_memories` Document(s) must have 'created_at' key in metadata.")
+                raise TypeError(
+                    "Input `relevant_memories` Document(s) must have 'created_at' key in metadata."
+                )
             created_time = mem.metadata["created_at"].strftime(
                 "%A %B %d, %Y -- %H:%M %p"
             )
             content.append(f"{prefix}[{created_time}]: {mem.page_content.strip()}")
     return "\n".join([f"{mem}" for mem in content])
 
-def format_memories_simple(
-    relevant_memories: Union[Document, List[Document]]
-) -> str:
+
+def format_memories_simple(relevant_memories: Union[Document, List[Document]]) -> str:
     r"""Formats memories delineated by \';\'.
 
     Args:

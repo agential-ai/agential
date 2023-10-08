@@ -1,4 +1,6 @@
-from typing import Union, List
+from typing import List, Union
+
+import re
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
@@ -6,7 +8,10 @@ from langchain.schema.language_model import BaseLanguageModel
 
 
 def score_memories_importance(
-    memory_contents: Union[str, List[str]], llm: BaseLanguageModel, verbose: bool = False, importance_weight: float = 0.15
+    memory_contents: Union[str, List[str]],
+    llm: BaseLanguageModel,
+    verbose: bool = False,
+    importance_weight: float = 0.15,
 ) -> List[float]:
     """Score the absolute importance of the given memory contents.
 
@@ -47,11 +52,10 @@ def score_memories_importance(
     )
     chain = LLMChain(llm=llm, prompt=prompt, verbose=verbose)
 
-    scores = chain(prompt).run(memory_contents=memory_contents).strip()
+    scores = chain.run(memory_contents=memory_contents).strip()
+    scores = re.findall(r'\d+', scores)  # In place of scores.split(";").
 
     # Split into list of strings and convert to floats
-    scores_list = [
-        float(x) / 10 * importance_weight for x in scores.split(";")
-    ]
+    scores_list = [float(x) / 10 * importance_weight for x in scores]
 
     return scores_list
