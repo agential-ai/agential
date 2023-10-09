@@ -10,17 +10,12 @@ https://github.com/langchain-ai/langchain/tree/master/libs/experimental/langchai
 LangChain Generative Agents Doc Page:
 https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/characters
 """
-import re
-
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
 
-from langchain.chains import LLMChain
-from langchain.prompts import PromptTemplate
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.schema import BaseMemory, Document
 from langchain.schema.language_model import BaseLanguageModel
-from langchain.utils import mock_now
 
 from discussion_agents.reflecting.generative_agents import (
     fetch_memories,
@@ -99,57 +94,6 @@ class GenerativeAgentMemory(BaseMemory):
 
     reflecting: bool = False
 
-    def chain(self, prompt: PromptTemplate) -> LLMChain:
-        """Create a Large Language Model (LLM) chain for text generation.
-
-        This method creates a Large Language Model (LLM) chain for text generation
-        using the specified prompt template. It allows you to chain together multiple
-        prompts and interactions with the LLM for more complex text generation tasks.
-
-        Args:
-            prompt (PromptTemplate): The prompt template to be used for text generation.
-
-        Returns:
-            LLMChain: An instance of the LangChain LLM chain configured with the provided
-                prompt template.
-
-        Example usage:
-            memory = GenerativeAgentMemory(...)
-            prompt_template = PromptTemplate.from_template("Generate a creative story.")
-            llm_chain = memory.chain(prompt_template)
-            generated_text = llm_chain.run()
-            # 'generated_text' contains the text generated using the specified prompt.
-        """
-        return LLMChain(llm=self.llm, prompt=prompt, verbose=self.verbose)
-
-    @staticmethod
-    def _parse_list(text: str) -> List[str]:
-        r"""Parse a newline-separated string into a list of strings.
-
-        This static method takes a string that contains multiple lines separated by
-        newline characters and parses it into a list of strings. It removes any empty
-        lines and also removes any leading numbers followed by a period (commonly used
-        in numbered lists).
-
-        Args:
-            text (str): The input string containing newline-separated lines.
-
-        Returns:
-            List[str]: A list of strings parsed from the input text.
-
-        Example usage:
-            input_text = "1. Item 1\n2. Item 2\n3. Item 3\n\n4. Item 4"
-            parsed_list = GenerativeAgentMemory._parse_list(input_text)
-            # 'parsed_list' contains ["Item 1", "Item 2", "Item 3", "Item 4"]
-
-        Note:
-            - This method is useful for parsing structured text into a list of items.
-            - It removes leading numbers and periods often used in numbered lists.
-        """
-        lines = re.split(r"\n", text.strip())
-        lines = [line for line in lines if line.strip()]  # remove empty lines
-        return [re.sub(r"^\s*\d+\.\s*", "", line).strip() for line in lines]
-
     def get_topics_of_reflection(
         self, last_k: int = 50, verbose: bool = False
     ) -> List[str]:
@@ -225,7 +169,7 @@ class GenerativeAgentMemory(BaseMemory):
             - It supports both single topic string and multiple topics in a list.
         """
         return get_insights_on_topic(
-            llm=self.llm, memory_retriever=self.memory_retriever, topics=topics, now=now
+            llm=self.llm, memory_retriever=self.memory_retriever, topics=topics, now=now, verbose=verbose
         )
 
     def pause_to_reflect(
@@ -366,65 +310,6 @@ class GenerativeAgentMemory(BaseMemory):
             self.reflecting = False
         return result
 
-    def fetch_memories(
-        self, observation: str, now: Optional[datetime] = None
-    ) -> List[Document]:
-        """Fetch related memories based on an observation.
-
-        Args:
-            observation (str): The query or observation used for memory retrieval.
-            now (Optional[datetime], optional): Current time context for retrieval. Defaults to None.
-
-        Returns:
-            List[Document]: A list of related memories.
-
-        Example:
-            memory = GenerativeAgentMemory(...)
-            observation = "Tell me about the history of space exploration."
-            memories = memory.fetch_memories(observation)
-            # 'memories' contains related memories based on the observation.
-
-        Note:
-            - This method uses the associated Memory Retriever to fetch relevant memories.
-            - 'now' allows setting a specific time context for retrieval.
-        """
-        return fetch_memories(
-            memory_retriever=self.memory_retriever, observation=observation, now=now
-        )
-
-    def format_memories_detail(
-        self, relevant_memories: Union[Document, List[Document]], prefix: str = ""
-    ) -> str:
-        """Formats memories with created_at time and an optional prefix.
-
-        Args:
-            relevant_memories (Union[Document, List[Document]]): The memories to be formatted.
-                It can be a single Document or a list of Document objects.
-            prefix (str, optional): A prefix to be added before each formatted memory.
-                Defaults to an empty string.
-
-        Returns:
-            str: A string containing the formatted memories with timestamps and prefix;
-                newline-character delineated.
-        """
-        return format_memories_detail(
-            relevant_memories=relevant_memories, prefix=prefix
-        )
-
-    def format_memories_simple(
-        self, relevant_memories: Union[Document, List[Document]]
-    ) -> str:
-        r"""Formats memories delineated by \';\'.
-
-        Args:
-            relevant_memories (Union[Document, List[Document]]): The memories to be formatted.
-                It can be a single Document or a list of Documents.
-
-        Returns:
-            str: A string containing the formatted memories separated by \';\'.
-        """
-        return format_memories_simple(relevant_memories=relevant_memories)
-
     def get_memories_until_limit(self, consumed_tokens: int) -> str:
         """Get documents from memory until max_tokens_limit reached.
 
@@ -442,7 +327,7 @@ class GenerativeAgentMemory(BaseMemory):
             consumed_tokens += self.llm.get_num_tokens(doc.page_content)
             if consumed_tokens < self.max_tokens_limit:
                 result.append(doc)
-        return self.format_memories_simple(result)
+        return format_memories_simple(result)
 
     @property
     def memory_variables(self) -> List[str]:
@@ -487,13 +372,13 @@ class GenerativeAgentMemory(BaseMemory):
         now = inputs.get(self.now_key)
         if queries is not None:
             relevant_memories = [
-                mem for query in queries for mem in self.fetch_memories(query, now=now)
+                mem for query in queries for mem in fetch_memories(query, now=now)
             ]
             return {
-                self.relevant_memories_key: self.format_memories_detail(
+                self.relevant_memories_key: format_memories_detail(
                     relevant_memories, prefix="- "
                 ),
-                self.relevant_memories_simple_key: self.format_memories_simple(
+                self.relevant_memories_simple_key: format_memories_simple(
                     relevant_memories
                 ),
             }
@@ -532,45 +417,11 @@ class GenerativeAgentMemory(BaseMemory):
             memory = GenerativeAgentMemory(...)
             memory.save_context(inputs, outputs)
             # The 'additional_memory' from 'outputs' will be saved to memory for future use.
-
-        Note:
-            - This function can be customized to save specific information from the 'outputs' dictionary
-            to memory based on the needs of your application.
-            - This function does not have any use for the 'inputs' dictionary yet.
-            - The 'TODO' comment suggests that the 'save memory key' needs to be fixed, and you may
-            need to replace it with the appropriate key used for saving memories to memory storage.
         """
-        # TODO: fix the save memory key
         mem = outputs.get(self.add_memory_key)
         now = outputs.get(self.now_key)
         if mem:
             self.add_memories(mem, now=now)
 
     def clear(self) -> None:
-        """Clear the memory contents of the Generative Agent.
-
-        This method clears the memory contents of the Generative Agent instance.
-        It performs the following actions:
-        - set aggregate_importance = 0
-        - current_plan = []
-        - set reflecting = False
-        - set retriever's memory_stream = []
-        - clear retriever's vectorstore
-
-        As of now, there is no universal method to clear a vector store, so vector store clearing
-        may be specific to the implementation used. Ideally, vector store implementations should
-        provide a clear() method for consistency.
-
-        Note:
-        - Clearing the memory contents is essential for resetting the Generative Agent's state
-        and starting with a clean slate.
-        - Be aware that clearing the memory will remove all stored information, which cannot
-        be undone.
-        -  The best way, currently, is to just re-instantiate a GenerativeAgentMemory.
-
-        Example usage:
-            memory = GenerativeAgentMemory(...)
-            memory.clear()  # Clears the agent's memory contents.
-        """
-        # TODO
         pass

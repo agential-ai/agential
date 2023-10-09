@@ -36,26 +36,31 @@ def score_memories_importance(
         - The method converts the ratings to float values and applies an importance weight.
         - The importance weight can be configured to influence the final scores.
     """
-    if type(memory_contents) is list:
-        memory_contents = "; ".join(memory_contents)
+    if type(memory_contents) is str:
+        memory_contents = [memory_contents]
 
     prompt = PromptTemplate.from_template(
         "On the scale of 1 to 10, where 1 is purely mundane"
         + " (e.g., brushing teeth, making bed) and 10 is"
         + " extremely poignant (e.g., a break up, college"
         + " acceptance), rate the likely poignancy of the"
-        + " following piece of memory. Always answer with only a list of numbers."
-        + " If just given one memory still respond in a list."
-        + " Memories are separated by semi colons (;)"
-        + "\Memories: {memory_contents}"
-        + "\nRating: "
+        + " following piece of memory.\n"
+        + "Provide only a single rating.\n"
+        + "\Memory: {memory_content}\n"
+        + "Rating: "
     )
     chain = LLMChain(llm=llm, prompt=prompt, verbose=verbose)
 
-    scores = chain.run(memory_contents=memory_contents).strip()
-    scores = re.findall(r'\d+', scores)  # In place of scores.split(";").
+    scores = []
+    for i, memory_content in enumerate(memory_contents):
+        score = chain.run(memory_content=memory_content).strip()
+        score = re.findall(r'\d+', score)
+        assert len(score) == 1, f"Found multiple scores in LLM output for memory_content at index {i}: {score}."
+        scores.append(score[0])
+
+    assert len(scores) == len(memory_contents), f"The llm generated {len(scores)} scores for {len(memory_contents)} memories."
 
     # Split into list of strings and convert to floats
-    scores_list = [float(x) / 10 * importance_weight for x in scores]
+    scores = [float(x) / 10 * importance_weight for x in scores]
 
-    return scores_list
+    return scores
