@@ -1,5 +1,6 @@
 from discussion_agents.utils.parse import parse_list
 
+
 def test_parse_list():
     gt = ["Item 1", "Item 2", "Item 3", "Item 4"]
 

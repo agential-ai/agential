@@ -18,12 +18,12 @@ from langchain.schema import BaseMemory, Document
 from langchain.schema.language_model import BaseLanguageModel
 
 from discussion_agents.reflecting.generative_agents import (
-    fetch_memories,
     get_insights_on_topic,
     get_topics_of_reflection,
     reflect,
 )
 from discussion_agents.scoring.generative_agents import score_memories_importance
+from discussion_agents.utils.fetch import fetch_memories
 from discussion_agents.utils.format import (
     format_memories_detail,
     format_memories_simple,
@@ -169,7 +169,11 @@ class GenerativeAgentMemory(BaseMemory):
             - It supports both single topic string and multiple topics in a list.
         """
         return get_insights_on_topic(
-            llm=self.llm, memory_retriever=self.memory_retriever, topics=topics, now=now, verbose=verbose
+            llm=self.llm,
+            memory_retriever=self.memory_retriever,
+            topics=topics,
+            now=now,
+            verbose=verbose,
         )
 
     def pause_to_reflect(
@@ -372,7 +376,9 @@ class GenerativeAgentMemory(BaseMemory):
         now = inputs.get(self.now_key)
         if queries is not None:
             relevant_memories = [
-                mem for query in queries for mem in fetch_memories(query, now=now)
+                mem
+                for query in queries
+                for mem in fetch_memories(self.memory_retriever, query, now=now)
             ]
             return {
                 self.relevant_memories_key: format_memories_detail(

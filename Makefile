@@ -49,6 +49,12 @@ auto_lint: ## Automatic format & lint using black and ruff.
 	poetry run black discussion_agents tests
 	poetry run ruff discussion_agents tests --fix --show-fixes --show-source
 
+test: ## Run all pytest tests.
+	pytest tests/
+
+test_nocost: ## Run pytest tests with no 'cost' marker (don't require funds to run).
+	pytest -m "not cost" tests/
+
 create_environment: ## Set up conda environment.
 ifeq (True,$(HAS_CONDA))
 		@echo ">>> Detected conda, creating conda environment."

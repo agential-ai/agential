@@ -1,6 +1,6 @@
-from typing import List, Union
-
 import re
+
+from typing import List, Union
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
@@ -54,11 +54,18 @@ def score_memories_importance(
     scores = []
     for i, memory_content in enumerate(memory_contents):
         score = chain.run(memory_content=memory_content).strip()
-        score = re.findall(r'\d+', score)
-        assert len(score) == 1, f"Found multiple scores in LLM output for memory_content at index {i}: {score}."
+        score = re.findall(r"\d+", score)
+        score = (
+            [0] if not score else score
+        )  # Default value if the model cannot assign a value.
+        assert (
+            len(score) == 1
+        ), f"Found multiple scores in LLM output for memory_content at index {i}: {score}."
         scores.append(score[0])
 
-    assert len(scores) == len(memory_contents), f"The llm generated {len(scores)} scores for {len(memory_contents)} memories."
+    assert len(scores) == len(
+        memory_contents
+    ), f"The llm generated {len(scores)} scores for {len(memory_contents)} memories."
 
     # Split into list of strings and convert to floats
     scores = [float(x) / 10 * importance_weight for x in scores]
