@@ -22,8 +22,9 @@ from langchain.prompts import PromptTemplate
 from langchain.schema.language_model import BaseLanguageModel
 from langchain_experimental.pydantic_v1 import BaseModel, Field
 
-from discussion_agents.memory.base_memory import GenerativeAgentMemory
-
+from discussion_agents.memory.generative_agents import GenerativeAgentMemory
+from discussion_agents.utils.parse import parse_list
+from discussion_agents.utils.constants import HOUR_STR
 
 class GenerativeAgent(BaseModel):
     """An Agent as a character with memory and innate characteristics.
@@ -109,34 +110,6 @@ class GenerativeAgent(BaseModel):
             memory=self.memory,
         )
 
-    # LLM-related methods
-    @staticmethod
-    def _parse_list(text: str) -> List[str]:
-        r"""Parse a newline-separated string into a list of strings.
-
-        This static method takes a string that contains multiple lines separated by
-        newline characters and parses it into a list of strings. It removes any empty
-        lines and also removes any leading numbers followed by a period (commonly used
-        in numbered lists).
-
-        Args:
-            text (str): The input string containing newline-separated lines.
-
-        Returns:
-            List[str]: A list of strings parsed from the input text.
-
-        Example usage:
-            input_text = "1. Item 1\n2. Item 2\n3. Item 3\n\n4. Item 4"
-            parsed_list = GenerativeAgent._parse_list(input_text)
-            # 'parsed_list' contains ["Item 1", "Item 2", "Item 3", "Item 4"]
-
-        Note:
-            - This method is useful for parsing structured text into a list of items.
-            - It removes leading numbers and periods often used in numbered lists.
-        """
-        lines = re.split(r"\n", text.strip())
-        return [re.sub(r"^\s*\d+\.\s*", "", line).strip() for line in lines]
-
     def generate_daily_req(
         self, current_day: datetime, wake_up_hour: Optional[int] = 8
     ) -> List[str]:
@@ -157,7 +130,7 @@ class GenerativeAgent(BaseModel):
             current_day=current_day.strftime("%A %B %d"),
             wake_up_hour=wake_up_hour,
         )
-        result = self._parse_list(self.chain(prompt).run(**kwargs).strip())
+        result = parse_list(self.chain(prompt).run(**kwargs).strip())
         result = [
             f"1) wake up and complete the morning routine at {wake_up_hour}:00 am"
         ] + result
@@ -255,36 +228,9 @@ class GenerativeAgent(BaseModel):
     def generate_hourly_schedule(
         self, n_m1_activity: List[str], curr_hour_str: str, current_day: datetime
     ) -> str:
-        hour_str = [
-            "00:00 AM",
-            "01:00 AM",
-            "02:00 AM",
-            "03:00 AM",
-            "04:00 AM",
-            "05:00 AM",
-            "06:00 AM",
-            "07:00 AM",
-            "08:00 AM",
-            "09:00 AM",
-            "10:00 AM",
-            "11:00 AM",
-            "12:00 PM",
-            "01:00 PM",
-            "02:00 PM",
-            "03:00 PM",
-            "04:00 PM",
-            "05:00 PM",
-            "06:00 PM",
-            "07:00 PM",
-            "08:00 PM",
-            "09:00 PM",
-            "10:00 PM",
-            "11:00 PM",
-        ]
-
         current_day = current_day.strftime("%A %B %d, %Y")
         schedule_format = ""
-        for i in hour_str:
+        for i in HOUR_STR:
             schedule_format += f"[{current_day} -- {i}]"
             schedule_format += f" Activity: [Fill in]\n"
         schedule_format = schedule_format[:-1]
@@ -299,7 +245,7 @@ class GenerativeAgent(BaseModel):
         for count, i in enumerate(n_m1_activity):
             prior_schedule += f"[(ID:{self.rand_id()})"
             prior_schedule += f" {current_day} --"
-            prior_schedule += f" {hour_str[count]}] Activity:"
+            prior_schedule += f" {HOUR_STR[count]}] Activity:"
             prior_schedule += f" {self.name}"
             prior_schedule += f" is {i}\n"
 
@@ -335,39 +281,12 @@ class GenerativeAgent(BaseModel):
     def generate_hourly_schedule_top_3(
         self, current_day: datetime, wake_up_hour: Optional[int] = 8
     ) -> List[str]:
-        hour_str = [
-            "00:00 AM",
-            "01:00 AM",
-            "02:00 AM",
-            "03:00 AM",
-            "04:00 AM",
-            "05:00 AM",
-            "06:00 AM",
-            "07:00 AM",
-            "08:00 AM",
-            "09:00 AM",
-            "10:00 AM",
-            "11:00 AM",
-            "12:00 PM",
-            "01:00 PM",
-            "02:00 PM",
-            "03:00 PM",
-            "04:00 PM",
-            "05:00 PM",
-            "06:00 PM",
-            "07:00 PM",
-            "08:00 PM",
-            "09:00 PM",
-            "10:00 PM",
-            "11:00 PM",
-        ]
-
         n_m1_activity = []
         diversity_repeat_count = 3
         for i in range(diversity_repeat_count):
             if len(set(n_m1_activity)) < 5:  # Number of unique activities < 5.
                 n_m1_activity = []
-                for curr_hour_str in hour_str:
+                for curr_hour_str in HOUR_STR:
                     if wake_up_hour > 0:
                         n_m1_activity += ["sleeping"]
                         wake_up_hour -= 1

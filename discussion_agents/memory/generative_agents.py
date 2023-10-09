@@ -17,6 +17,7 @@ from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.schema import BaseMemory, Document
 from langchain.schema.language_model import BaseLanguageModel
 
+from discussion_agents.memory.base import AddMemoriesInterface
 from discussion_agents.reflecting.generative_agents import (
     get_insights_on_topic,
     get_topics_of_reflection,
@@ -30,7 +31,7 @@ from discussion_agents.utils.format import (
 )
 
 
-class GenerativeAgentMemory(BaseMemory):
+class GenerativeAgentMemory(BaseMemory, AddMemoriesInterface):
     """Memory for the generative agent.
 
     This class represents the memory system used by the generative agent. It stores

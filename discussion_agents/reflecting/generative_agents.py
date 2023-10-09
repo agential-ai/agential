@@ -83,11 +83,10 @@ def get_insights_on_topic(
         + "{related_statements}\n"
         + "---\n"
         + "What 5 high-level novel insights can you infer from the above statements "
-        + "that are relevant for answering the following question?\n"
+        + "that are relevant to answering the following question?\n"
         + "Do not include any insights that are not relevant to the question.\n"
         + "Do not repeat any insights that have already been made.\n\n"
         + "Question: {topic}\n\n"
-        + "(example format: insight (because of 1, 5, 3))\n"
     )
 
     if type(topics) is str:
