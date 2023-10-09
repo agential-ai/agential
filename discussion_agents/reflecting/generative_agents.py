@@ -1,4 +1,4 @@
-"""Generative Agents reflection."""
+"""Generative Agents methods related to reflection."""
 
 from datetime import datetime
 from typing import List, Optional, Union
@@ -19,15 +19,23 @@ def get_topics_of_reflection(
     verbose: bool = False,
     last_k: int = 50,
 ) -> List[str]:
-    """Return the 3 most salient high-level questions about recent observations.
+    """Identify the three most salient high-level questions based on recent observations.
 
-    This method analyzes recent observations stored in the agent's memory to identify
-    the three most salient high-level questions that can be answered based on these
-    observations. It follows these steps:
-    1. Retrieves the last 'last_k' observations from the agent's memory.
-    2. Formats these observations into a single string.
-    3. Uses a predefined prompt to request the most salient high-level questions.
-    4. Parses and returns the identified questions as a list of strings.
+    Args:
+        llm (BaseLanguageModel): Language model for question generation.
+        memory_retriever (TimeWeightedVectorStoreRetriever): Memory retriever.
+        verbose (bool, optional): Enable verbose mode. Default is False.
+        last_k (int, optional): Number of recent observations to consider. Default is 50.
+
+    Returns:
+        List[str]: List of the three most salient high-level questions.
+
+    Note:
+        This method retrieves recent observations from memory and uses them to
+        generate insightful questions about the observed subjects.
+
+    Example:
+        questions = get_topics_of_reflection(llm_model, memory_retriever, verbose=True)
     """
     prompt = PromptTemplate.from_template(
         "{observations}\n\n"
@@ -49,14 +57,25 @@ def get_insights_on_topic(
     now: Optional[datetime] = None,
     verbose: bool = False,
 ) -> List[List[str]]:
-    """Generate insights on a topic of reflection based on pertinent memories.
+    """Generate high-level insights on a given topic based on pertinent memories.
 
-    This method generates 'insights' on a given topic of reflection by analyzing
-    pertinent memories associated with the topic. It follows these steps:
-    1. Retrieves related memories based on the specified topic.
-    2. Formats these memories into statements.
-    3. Uses a predefined prompt to request high-level novel insights related to the topic.
-    4. Parses and returns the generated insights as lists.
+    Args:
+        llm (BaseLanguageModel): Language model for insight generation.
+        memory_retriever (TimeWeightedVectorStoreRetriever): Memory retriever.
+        topics (Union[str, List[str]]): Topic or list of topics for insight generation.
+        now (Optional[datetime], optional): Current date and time for temporal context. Default is None.
+        verbose (bool, optional): Enable verbose mode. Default is False.
+
+    Returns:
+        List[List[str]]: Lists of high-level novel insights for each specified topic.
+
+    Note:
+        This method extracts pertinent memories related to the given topics and
+        generates unique insights based on the gathered information.
+
+    Example:
+        topics = ["Favorite books", "Hiking experiences"]
+        insights = get_insights_on_topic(llm_model, memory_retriever, topics, verbose=True)
     """
     prompt = PromptTemplate.from_template(
         "Statements relevant to: '{topic}'\n"
@@ -97,14 +116,24 @@ def reflect(
     verbose: bool = False,
     now: Optional[datetime] = None,
 ) -> List[str]:
-    """Pause and reflect on recent observations to generate insights.
+    """Pause to reflect on recent observations and generate insights.
 
-    This method initiates a pause in the Generative Agent's operation to reflect
-    on recent observations and generate 'insights.' It follows these steps:
-    1. Retrieves topics for reflection.
-    2. For each topic, gathers insights using the `get_insights_on_topic` method.
-    3. Adds these insights to the agent's memory for future reference.
-    4. Returns a list of the generated insights.
+    Args:
+        llm (BaseLanguageModel): Language model for insight generation.
+        memory_retriever (TimeWeightedVectorStoreRetriever): Memory retriever.
+        last_k (int, optional): Number of recent observations to consider. Default is 50.
+        verbose (bool, optional): Enable verbose mode. Default is False.
+        now (Optional[datetime], optional): Current date and time for temporal context. Default is None.
+
+    Returns:
+        List[str]: List of generated insights based on recent observations.
+
+    Note:
+        This method retrieves topics for reflection, gathers insights for each topic,
+        and adds these insights to the agent's memory for future reference.
+
+    Example:
+        insights = reflect(llm_model, memory_retriever, last_k=100, verbose=True)
     """
     new_insights = []
     topics = get_topics_of_reflection(

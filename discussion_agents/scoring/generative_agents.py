@@ -1,3 +1,4 @@
+"""Memory-scoring methods for Generative Agents."""
 import re
 
 from typing import List, Union
@@ -13,28 +14,20 @@ def score_memories_importance(
     verbose: bool = False,
     importance_weight: float = 0.15,
 ) -> List[float]:
-    """Score the absolute importance of the given memory contents.
-
-    This method calculates the absolute importance scores for the provided memory contents.
-    It uses a scale from 1 to 10, where 1 represents purely mundane memories, and 10
-    represents extremely poignant memories.
+    """Calculate absolute importance scores for given memory contents.
 
     Args:
-        memory_contents (Union[str, List[str]]): The memory contents to be scored.
-            It can be a single string or a list of strings representing memories.
+        memory_contents (Union[str, List[str]]): Memories to score.
+        llm (BaseLanguageModel): Language model for scoring.
+        verbose (bool, optional): Enable verbose mode. Default is False.
+        importance_weight (float, optional): Weight for importance scores. Default is 0.15.
 
     Returns:
-        List[float]: A list of float values representing the calculated importance scores.
+        List[float]: List of importance scores (1.0 to 10.0 scale).
 
-    Example usage:
-        memory = GenerativeAgentMemory(...)
-        memories_to_score = ["Visited the museum.", "Had a meaningful conversation."]
-        importance_scores = memory.score_memories_importance(memories_to_score)
-        # 'importance_scores' contains the calculated importance scores for the memories.
-
-    Note:
-        - The method converts the ratings to float values and applies an importance weight.
-        - The importance weight can be configured to influence the final scores.
+    Example:
+        memories = ["Visited the museum.", "Had a meaningful conversation."]
+        importance_scores = score_memories_importance(memories, llm)
     """
     if type(memory_contents) is str:
         memory_contents = [memory_contents]

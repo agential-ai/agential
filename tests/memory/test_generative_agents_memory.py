@@ -1,3 +1,4 @@
+"""Unit tests for GenerativeAgentMemory."""
 import warnings
 
 from datetime import datetime
@@ -45,6 +46,7 @@ test_date = datetime(year=2022, month=11, day=14, hour=3, minute=14)
 
 
 def create_memory_retriever():
+    """Creates a TimeWeightedVectorStoreRetriever."""
     embeddings_model = HuggingFaceEmbeddings(
         model_name=model_name, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs
     )
@@ -58,6 +60,7 @@ def create_memory_retriever():
 
 @pytest.mark.cost
 def test_score_memories_importance():
+    """Tests score_memories_importance in GenerativeAgentMemory."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
         llm=llm,
@@ -76,6 +79,7 @@ def test_score_memories_importance():
 
 @pytest.mark.cost
 def test_add_memories():
+    """Tests add_memories."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
         llm=llm,
@@ -93,6 +97,7 @@ def test_add_memories():
 
 @pytest.mark.cost
 def test_pause_to_reflect():
+    """Tests pause_to_reflect."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
         llm=llm,
@@ -107,6 +112,7 @@ def test_pause_to_reflect():
 
 
 def test_get_memories_until_limit():
+    """Tests get_memories_until_limit."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
         llm=llm,
@@ -135,6 +141,7 @@ def test_get_memories_until_limit():
 
 
 def test_memory_variables():
+    """Tests memory_variables property."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
         llm=llm,
@@ -149,6 +156,7 @@ def test_memory_variables():
 
 
 def test_load_memory_variables_empty():
+    """Tests load_memory_variables when input is empty."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
         llm=llm,
@@ -164,6 +172,7 @@ def test_load_memory_variables_empty():
 
 @pytest.mark.cost
 def test_load_memory_variables_query():
+    """Tests load_memory_variables when query is supplied in input."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
         llm=llm,
@@ -181,6 +190,7 @@ def test_load_memory_variables_query():
 
 
 def test_load_memory_variables_relevant():
+    """Tests load_memory_variables when most_recent_memories_token_key is supplied in input."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
         llm=llm,
@@ -197,6 +207,7 @@ def test_load_memory_variables_relevant():
 
 @pytest.mark.cost
 def test_save_context():
+    """Tests save_context."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
         llm=llm,
@@ -214,6 +225,7 @@ def test_save_context():
 
 @pytest.mark.cost
 def test_clear():
+    """Tests clear."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
         llm=llm,

@@ -1,4 +1,4 @@
-"""Unit Tests for Generative Agents reflecting modules."""
+"""Unit tests for utility fetch memory functions."""
 import os
 
 from datetime import datetime
@@ -12,11 +12,7 @@ from langchain.llms.huggingface_hub import HuggingFaceHub
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.vectorstores import FAISS
 
-from discussion_agents.reflecting.generative_agents import (
-    get_insights_on_topic,
-    get_topics_of_reflection,
-    reflect,
-)
+from discussion_agents.utils.fetch import fetch_memories
 
 dotenv.load_dotenv(".env")
 huggingface_hub_api_key = os.getenv("HUGGINGFACE_HUB_API_KEY")
@@ -48,35 +44,13 @@ def create_memory_retriever():
     )
     return retriever
 
+def test_fetch_memories():
+    """Test fetch_memories."""
+    observation = "Some observation."
 
-def test_get_topics_of_reflection():
-    """Tests get_topics_of_reflection."""
-    topics = get_topics_of_reflection(
-        llm=llm, memory_retriever=create_memory_retriever(), verbose=False, last_k=10
-    )
-    assert type(topics) is list
-
-def test_get_insights_on_topic():
-    """Tests get_insights_on_topic."""
-    insights = get_insights_on_topic(
-        llm=llm,
+    memories = fetch_memories(
         memory_retriever=create_memory_retriever(),
-        topics="Some topic.",
-        now=test_date,
-        verbose=False,
-    )
-    assert type(insights) is list
-    assert type(insights[0]) is list
-
-
-def test_reflect():
-    """Tests reflect."""
-    insights = reflect(
-        llm=llm,
-        memory_retriever=create_memory_retriever(),
-        last_k=10,
-        verbose=False,
+        observation=observation,
         now=test_date,
     )
-
-    assert type(insights) is list
+    assert type(memories) is list

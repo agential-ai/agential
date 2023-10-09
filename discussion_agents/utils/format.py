@@ -1,5 +1,4 @@
 """Utility functions for formatting LangChain Documents, the base class for storing data."""
-
 from typing import List, Union
 
 from langchain.schema import Document

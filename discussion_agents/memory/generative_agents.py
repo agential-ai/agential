@@ -92,38 +92,15 @@ class GenerativeAgentMemory(BaseMemory):
     most_recent_memories_key: str = "most_recent_memories"
     now_key: str = "now"
 
+    # Internal reflecting flag.
     reflecting: bool = False
 
     def get_topics_of_reflection(
         self, last_k: int = 50, verbose: bool = False
     ) -> List[str]:
-        """Return the 3 most salient high-level questions about recent observations.
-
-        This method analyzes recent observations stored in the agent's memory to identify
-        the three most salient high-level questions that can be answered based on these
-        observations. It follows these steps:
-        1. Retrieves the last 'last_k' observations from the agent's memory.
-        2. Formats these observations into a single string.
-        3. Uses a predefined prompt to request the most salient high-level questions.
-        4. Parses and returns the identified questions as a list of strings.
-
-        Args:
-            last_k (int, optional): The number of most recent observations to consider.
-                Defaults to 50.
-
-        Returns:
-            List[str]: A list of the three most salient high-level questions based on
-                recent observations.
-
-        Example usage:
-            memory = GenerativeAgentMemory(...)
-            salient_questions = memory.get_topics_of_reflection()
-            # 'salient_questions' contains the three most salient questions for reflection.
-
-        Note:
-            - The method uses a predefined prompt to facilitate question identification.
-            - It analyzes recent observations in the agent's memory.
-            - The number of observations considered can be adjusted using the 'last_k' parameter.
+        """Exposing get_topics_of_reflection.
+        
+        Wrapper for `discussion_agents.reflecting.generative_agents.get_topics_of_reflection`.
         """
         return get_topics_of_reflection(
             llm=self.llm,
@@ -138,35 +115,9 @@ class GenerativeAgentMemory(BaseMemory):
         now: Optional[datetime] = None,
         verbose: bool = False,
     ) -> List[List[str]]:
-        """Generate insights on a topic of reflection based on pertinent memories.
-
-        This method generates 'insights' on a given topic of reflection by analyzing
-        pertinent memories associated with the topic. It follows these steps:
-        1. Retrieves related memories based on the specified topic.
-        2. Formats these memories into statements.
-        3. Uses a predefined prompt to request high-level novel insights related to the topic.
-        4. Parses and returns the generated insights as lists.
-
-        Args:
-            topics (Union[str, List[str]]): The topic or topics for which insights are
-                to be generated. It can be a single string or a list of strings.
-            now (Optional[datetime], optional): Current time context for memory retrieval.
-                Defaults to None.
-
-        Returns:
-            List[List[str]]: A list of lists, where each inner list contains insights
-                generated for a specific topic.
-
-        Example usage:
-            memory = GenerativeAgentMemory(...)
-            topics_to_generate_insights = ["History of space exploration", "Artificial intelligence"]
-            insights = memory.get_insights_on_topic(topics_to_generate_insights)
-            # 'insights' contains lists of insights generated for the specified topics.
-
-        Note:
-            - Insights are generated based on memories related to the given topic.
-            - The method uses a predefined prompt template to facilitate insight generation.
-            - It supports both single topic string and multiple topics in a list.
+        """Exposing get_insights_on_topic.
+        
+        Wrapper for `discussion_agents.reflecting.generative_agents.get_insights_on_topic`.
         """
         return get_insights_on_topic(
             llm=self.llm,
@@ -179,33 +130,10 @@ class GenerativeAgentMemory(BaseMemory):
     def pause_to_reflect(
         self, last_k: int = 50, verbose: bool = False, now: Optional[datetime] = None
     ) -> List[str]:
-        """Pause and reflect on recent observations to generate insights.
-
-        This method initiates a pause in the Generative Agent's operation to reflect
-        on recent observations and generate 'insights.' It follows these steps:
-        1. Retrieves topics for reflection.
-        2. For each topic, gathers insights using the `get_insights_on_topic` method.
-        3. Adds these insights to the agent's memory for future reference.
-        4. Returns a list of the generated insights.
-
-        Args:
-            now (Optional[datetime], optional): Current time context for reflection.
-                Defaults to None.
-
-        Returns:
-            List[str]: A list of generated insights as strings.
-
-        Example usage:
-            memory = GenerativeAgentMemory(...)
-            new_insights = memory.pause_to_reflect()
-            # 'new_insights' contains insights generated during reflection.
-
-        Note:
-            - Reflection is a process of generating insights based on recent observations.
-            - The method relies on the `get_topics_of_reflection` and `get_insights_on_topic`
-            methods for topic retrieval and insight generation.
-            - Reflection may be initiated when the agent's aggregate importance surpasses
-            a specified threshold.
+        """Wrapper for Generative Agents reflection.
+        
+        Wrapper for `discussion_agents.reflecting.generative_agents.reflect`.
+        Adds reflection insights to memory.
         """
         results = reflect(
             llm=self.llm,
@@ -220,28 +148,9 @@ class GenerativeAgentMemory(BaseMemory):
     def score_memories_importance(
         self, memory_contents: Union[str, List[str]], verbose: bool = False
     ) -> List[float]:
-        """Score the absolute importance of the given memory contents.
-
-        This method calculates the absolute importance scores for the provided memory contents.
-        It uses a scale from 1 to 10, where 1 represents purely mundane memories, and 10
-        represents extremely poignant memories.
-
-        Args:
-            memory_contents (Union[str, List[str]]): The memory contents to be scored.
-                It can be a single string or a list of strings representing memories.
-
-        Returns:
-            List[float]: A list of float values representing the calculated importance scores.
-
-        Example usage:
-            memory = GenerativeAgentMemory(...)
-            memories_to_score = ["Visited the museum.", "Had a meaningful conversation."]
-            importance_scores = memory.score_memories_importance(memories_to_score)
-            # 'importance_scores' contains the calculated importance scores for the memories.
-
-        Note:
-            - The method converts the ratings to float values and applies an importance weight.
-            - The importance weight can be configured to influence the final scores.
+        """Wrapper for Generative Agents scoring memory importance.
+        
+        Wrapper for `discussion_agents.scoring.generative_agents.score_memories_importance`.
         """
         return score_memories_importance(
             memory_contents=memory_contents,
@@ -430,4 +339,5 @@ class GenerativeAgentMemory(BaseMemory):
             self.add_memories(mem, now=now)
 
     def clear(self) -> None:
+        """Clear method."""
         pass

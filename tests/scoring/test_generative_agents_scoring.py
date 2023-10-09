@@ -1,3 +1,4 @@
+"""Testing Generative Agents memory scoring method(s)."""
 import os
 import re
 
@@ -17,6 +18,7 @@ llm = HuggingFaceHub(
 
 
 def test_score_memories_importance():
+    """Test score_memories_importance."""
     importance_weight = 0.15
 
     # Testing different outputs.
