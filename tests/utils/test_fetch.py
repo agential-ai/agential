@@ -44,6 +44,7 @@ def create_memory_retriever():
     )
     return retriever
 
+
 def test_fetch_memories():
     """Test fetch_memories."""
     observation = "Some observation."

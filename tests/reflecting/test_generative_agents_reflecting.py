@@ -56,6 +56,7 @@ def test_get_topics_of_reflection():
     )
     assert type(topics) is list
 
+
 def test_get_insights_on_topic():
     """Tests get_insights_on_topic."""
     insights = get_insights_on_topic(

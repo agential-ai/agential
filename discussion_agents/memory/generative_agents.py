@@ -99,7 +99,7 @@ class GenerativeAgentMemory(BaseMemory):
         self, last_k: int = 50, verbose: bool = False
     ) -> List[str]:
         """Exposing get_topics_of_reflection.
-        
+
         Wrapper for `discussion_agents.reflecting.generative_agents.get_topics_of_reflection`.
         """
         return get_topics_of_reflection(
@@ -116,7 +116,7 @@ class GenerativeAgentMemory(BaseMemory):
         verbose: bool = False,
     ) -> List[List[str]]:
         """Exposing get_insights_on_topic.
-        
+
         Wrapper for `discussion_agents.reflecting.generative_agents.get_insights_on_topic`.
         """
         return get_insights_on_topic(
@@ -131,7 +131,7 @@ class GenerativeAgentMemory(BaseMemory):
         self, last_k: int = 50, verbose: bool = False, now: Optional[datetime] = None
     ) -> List[str]:
         """Wrapper for Generative Agents reflection.
-        
+
         Wrapper for `discussion_agents.reflecting.generative_agents.reflect`.
         Adds reflection insights to memory.
         """
@@ -149,7 +149,7 @@ class GenerativeAgentMemory(BaseMemory):
         self, memory_contents: Union[str, List[str]], verbose: bool = False
     ) -> List[float]:
         """Wrapper for Generative Agents scoring memory importance.
-        
+
         Wrapper for `discussion_agents.scoring.generative_agents.score_memories_importance`.
         """
         return score_memories_importance(
