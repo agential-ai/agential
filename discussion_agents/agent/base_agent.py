@@ -23,8 +23,9 @@ from langchain.schema.language_model import BaseLanguageModel
 from langchain_experimental.pydantic_v1 import BaseModel, Field
 
 from discussion_agents.memory.generative_agents import GenerativeAgentMemory
-from discussion_agents.utils.parse import parse_list
 from discussion_agents.utils.constants import HOUR_STR
+from discussion_agents.utils.parse import parse_list
+
 
 class GenerativeAgent(BaseModel):
     """An Agent as a character with memory and innate characteristics.
