@@ -59,17 +59,16 @@ def generate_daily_req(
 
     return result
 
-def update_status_and_daily_plan_req(
+def update_status(
     current_day: datetime,
     name: str,
     status: str,
-    summary: str,
     llm: BaseLanguageModel,
     llm_kwargs: Dict[str, Any],
     memory: GenerativeAgentMemory,
     memory_retriever: TimeWeightedVectorStoreRetriever,
     verbose: bool = False,
-) -> None:
+):
     current_day_str = current_day.strftime("%A %B %d, %Y")
     focal_points = [
         f"{name}'s plan for {current_day_str}.",
@@ -153,6 +152,17 @@ def update_status_and_daily_plan_req(
     )
     status = chain.run(**status_kwargs).strip()
 
+    return status
+
+def update_daily_plan_req(
+    current_day: datetime,
+    name: str,
+    summary: str,
+    llm: BaseLanguageModel,
+    llm_kwargs: Dict[str, Any],
+    memory: GenerativeAgentMemory,
+    verbose: bool = False,
+):
     daily_plan_req_prompt = PromptTemplate.from_template(
         summary
         + "\n"
@@ -179,8 +189,9 @@ def update_status_and_daily_plan_req(
         .replace("\n", " ")
     )
 
-    return status, daily_plan_req
+    return daily_plan_req
 
+# TODO: REMOVE!
 def rand_id(i=6, j=6):
     k = random.randint(i, j)
     hash = "".join(random.choices(string.ascii_letters + string.digits, k=k))
@@ -263,12 +274,12 @@ def generate_hourly_schedule_top_3(
     llm: BaseLanguageModel,
     memory: GenerativeAgentMemory,
     rand_id_: str,
+    k: int = 3,  # Diversity count.
     verbose: bool = False,
     wake_up_hour: Optional[int] = 8,
 ) -> List[str]:
     n_m1_activity = []
-    diversity_repeat_count = 3
-    for i in range(diversity_repeat_count):
+    for i in range(k):
         if len(set(n_m1_activity)) < 5:  # Number of unique activities < 5.
             n_m1_activity = []
             for curr_hour_str in HOUR_STR:
@@ -318,73 +329,76 @@ def generate_hourly_schedule_top_3(
 
     return n_m1_hourly_compressed
 
-def long_term_planning(
-    new_day: str, 
-    current_day: datetime, 
-    summary: str,
-    lifestyle: str,
-    name: str, 
-    status: str,
-    llm: BaseLanguageModel,
-    memory: GenerativeAgentMemory,
-    memory_retriever: TimeWeightedVectorStoreRetriever,
-    rand_id_: str,
-    llm_kwargs: Dict[str, Any],
-    verbose: bool = False,
-    wake_up_hour: int = 8,
-):
-    # When it is a new day, we start by creating the daily_req of the persona.
-    # Note that the daily_req is a list of strings that describe the persona's
-    # day in broad strokes.
-    if new_day == "First day":
-        # Bootstrapping the daily plan for the start of then generation:
-        # if this is the start of generation (so there is no previous day's
-        # daily requirement, or if we are on a new day, we want to create a new
-        # set of daily requirements.
-        daily_req = generate_daily_req(
-            current_day=current_day, 
-            wake_up_hour=wake_up_hour,
-            summary=summary,
-            lifestyle=lifestyle,
-            name=name, 
-            llm=llm,
-            llm_kwargs=llm_kwargs,
-            memory=memory,
-            verbose=verbose,
-            wake_up_hour=wake_up_hour,
-        )
-    elif new_day == "New day":
-        status, daily_plan_req = update_status_and_daily_plan_req(
-            current_day=current_day,
-            name=name,
-            status=status,
-            summary=summary,
-            llm=llm,
-            llm_kwargs=llm_kwargs,
-            memory=memory,
-            memory_retriever=memory_retriever,
-            verbose=verbose
-        )
+# def long_term_planning(
+#     new_day: str, 
+#     current_day: datetime, 
+#     summary: str,
+#     lifestyle: str,
+#     name: str, 
+#     status: str,
+#     llm: BaseLanguageModel,
+#     memory: GenerativeAgentMemory,
+#     memory_retriever: TimeWeightedVectorStoreRetriever,
+#     rand_id_: str,
+#     llm_kwargs: Dict[str, Any],
+#     verbose: bool = False,
+#     wake_up_hour: int = 8,
+# ):
+#     # When it is a new day, we start by creating the daily_req of the persona.
+#     # Note that the daily_req is a list of strings that describe the persona's
+#     # day in broad strokes.
+#     if new_day == "First day":
+#         # Bootstrapping the daily plan for the start of then generation:
+#         # if this is the start of generation (so there is no previous day's
+#         # daily requirement, or if we are on a new day, we want to create a new
+#         # set of daily requirements.
+#         daily_req = generate_daily_req(
+#             current_day=current_day, 
+#             wake_up_hour=wake_up_hour,
+#             summary=summary,
+#             lifestyle=lifestyle,
+#             name=name, 
+#             llm=llm,
+#             llm_kwargs=llm_kwargs,
+#             memory=memory,
+#             verbose=verbose,
+#             wake_up_hour=wake_up_hour,
+#         )
+#     elif new_day == "New day":
+#         status, daily_plan_req = update_status_and_daily_plan_req(
+#             current_day=current_day,
+#             name=name,
+#             status=status,
+#             summary=summary,
+#             llm=llm,
+#             llm_kwargs=llm_kwargs,
+#             memory=memory,
+#             memory_retriever=memory_retriever,
+#             verbose=verbose
+#         )
 
-    # Based on the daily_req, we create an hourly schedule for the persona,
-    # which is a list of todo items with a time duration (in minutes) that
-    # add up to 24 hours.
-    f_daily_schedule = generate_hourly_schedule_top_3(
-        current_day=current_day, 
-        wake_up_hour=wake_up_hour,
-        name=name,
-        daily_req=daily_req,
-        summary=summary,
-        llm=llm,
-        memory=memory,
-        rand_id_=rand_id_,
-        verbose=verbose
-    )
+#     # Based on the daily_req, we create an hourly schedule for the persona,
+#     # which is a list of todo items with a time duration (in minutes) that
+#     # add up to 24 hours.
+#     f_daily_schedule = generate_hourly_schedule_top_3(
+#         current_day=current_day, 
+#         wake_up_hour=wake_up_hour,
+#         name=name,
+#         daily_req=daily_req,
+#         summary=summary,
+#         llm=llm,
+#         memory=memory,
+#         rand_id_=rand_id_,
+#         verbose=verbose
+#     )
 
 
-    if new_day == "First day":
-        return daily_req, f_daily_schedule
-    return status, daily_plan_req, f_daily_schedule
+#     if new_day == "First day":
+#         return daily_req, f_daily_schedule
+#     return status, daily_plan_req, f_daily_schedule
+
+
+
 
     # Added March 4 -- adding plan to the memory.
     # thought = (
