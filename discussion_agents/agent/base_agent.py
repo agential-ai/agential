@@ -25,7 +25,6 @@ from discussion_agents.planning.generative_agents import (
     generate_daily_req,
     update_status,
     update_daily_plan_req,
-    generate_hourly_schedule,
     generate_hourly_schedule_k
 )
 
@@ -86,6 +85,8 @@ class GenerativeAgent(BaseModel):
         wake_up_hour: int = 8, 
         llm_kwargs: Dict[str, Any] = {"max_tokens": 500, "temperature": 1}
     ):
+        summary = self.get_summary() if not self.summary else self.summary
+        
         # When it is a new day, we start by creating the daily_req of the persona.
         # Note that the daily_req is a list of strings that describe the persona's
         # day in broad strokes.
@@ -96,7 +97,7 @@ class GenerativeAgent(BaseModel):
             # set of daily requirements.
             self.daily_req = generate_daily_req(
                 current_day=current_day,
-                summary=self.get_summary(),
+                summary=summary,
                 lifestyle=self.lifestyle,
                 name=self.name,
                 llm=self.llm, 
@@ -106,20 +107,25 @@ class GenerativeAgent(BaseModel):
             )
         elif new_day == "New day":
             self.status = update_status(
-                    current_day=current_day,
-                    name=self.name,
-                    status=self.status,
-                    llm=self.llm,
-                    llm_kwargs=llm_kwargs,
-                    memory=self.memory,
-                    memory_retriever: TimeWeightedVectorStoreRetriever,
-                ):
-            self.update_status_and_daily_plan_req(current_day=current_day)
+                current_day=current_day,
+                name=self.name,
+                status=self.status,
+                llm=self.llm,
+                llm_kwargs=llm_kwargs,
+                memory=self.memory,
+                memory_retriever=self.memory.memory_retriever,
+            )
+            self.daily_plan_req = update_daily_plan_req(
+                current_day=current_day,
+                name=self.name,
+                summary=summary,
+
+            )
 
         # Based on the daily_req, we create an hourly schedule for the persona,
         # which is a list of todo items with a time duration (in minutes) that
         # add up to 24 hours.
-        self.f_daily_schedule = self.generate_hourly_schedule_top_3(
+        self.f_daily_schedule = generate_hourly_schedule_k(
             current_day=current_day, wake_up_hour=wake_up_hour
         )
 
