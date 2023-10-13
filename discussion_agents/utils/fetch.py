@@ -2,8 +2,7 @@
 from datetime import datetime
 from typing import List, Optional
 
-from langchain.schema import BaseRetriever
-from langchain.schema import Document
+from langchain.schema import BaseRetriever, Document
 from langchain.utils import mock_now
 
 

@@ -68,9 +68,7 @@ def test_score_memories_importance():
         reflection_threshold=8,
     )
     # Test score_memories_importance.
-    scores = memory.score_memories_importance(
-        memory_contents=observations
-    )
+    scores = memory.score_memories_importance(memory_contents=observations)
     assert len(scores) == len(observations)
     for score in scores:
         assert type(score) is float

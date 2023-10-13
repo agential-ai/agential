@@ -23,10 +23,11 @@ from langchain_experimental.pydantic_v1 import BaseModel, Field
 from discussion_agents.memory.generative_agents import GenerativeAgentMemory
 from discussion_agents.planning.generative_agents import (
     generate_daily_req,
+    generate_hourly_schedule_k,
+    update_broad_schedule,
     update_status,
-    update_daily_plan_req,
-    generate_hourly_schedule_k
 )
+
 
 class GenerativeAgent(BaseModel):
     """An Agent as a character with memory and innate characteristics.
@@ -38,12 +39,10 @@ class GenerativeAgent(BaseModel):
     Attributes:
         name (str): The character's name.
         age (int): The optional age of the character. Defaults to None.
-        innate_traits (str): Permanent traits ascribed to the character.
-        learned_traits (str): Learned traits.
+        traits (str): Permanent traits ascribed to the character.
         lifestyle (str): Lifestyle traits of the character that should not change.
         status (str): Current status of the character (what they are currently doing).
         daily_req (str): daily requireements for the agent.
-        daily_plan_req (str): Daily plan requirements for the agent.
         memory (GenerativeAgentMemory): The memory object that combines relevance, recency,
             and 'importance' for storing and retrieving memories.
         llm (BaseLanguageModel): The underlying language model used for text generation.
@@ -52,98 +51,94 @@ class GenerativeAgent(BaseModel):
         summary_refresh_seconds (int): How frequently to re-generate the summary. (Private attribute)
         last_refreshed (datetime): The last time the character's summary was regenerated.
             (Private attribute)
-        daily_summaries (List[str]): Summary of the events in the plan that the agent took.
+        plan_req (Dict[str, str]): Dictionary containing summary of the events in the plan that the agent took,
+            broad daily schedule, and hourly schedule.
             (Private attribute)
     """
 
     name: str
     age: int
-    innate_traits: str
-    learned_traits: str
+    traits: str
     lifestyle: str
     status: str
     daily_req: List[str]
-    daily_plan_req: str
-    f_daily_schedule: List[str] = []
 
     memory: GenerativeAgentMemory
     llm: BaseLanguageModel
     summary: str = ""  #: :meta private:
     summary_refresh_seconds: int = 3600  #: :meta private:
     last_refreshed: datetime = Field(default_factory=datetime.now)  # : :meta private:
-    daily_summaries: List[str] = Field(default_factory=list)  # : :meta private:
+    plan_req: Dict[str, str] = Field(default_factory=dict)  # : :meta private:
 
     class Config:
         """Configuration for this pydantic object."""
 
         arbitrary_types_allowed = True
 
-    def long_term_planning(
-        self, 
-        new_day: str, 
-        current_day: datetime, 
-        wake_up_hour: int = 8, 
-        llm_kwargs: Dict[str, Any] = {"max_tokens": 500, "temperature": 1}
+    def plan(
+        self,
+        current_day: datetime,
+        k: int = 3, 
+        wake_up_hour: int = 8,
+        llm_kwargs: Dict[str, Any] = {"max_tokens": 500, "temperature": 1},
     ):
         summary = self.get_summary() if not self.summary else self.summary
-        
-        # When it is a new day, we start by creating the daily_req of the persona.
-        # Note that the daily_req is a list of strings that describe the persona's
-        # day in broad strokes.
-        if new_day == "First day":
-            # Bootstrapping the daily plan for the start of then generation:
-            # if this is the start of generation (so there is no previous day's
-            # daily requirement, or if we are on a new day, we want to create a new
-            # set of daily requirements.
-            self.daily_req = generate_daily_req(
+
+        if "broad_schedule" not in self.plan_req:
+            self.plan_req["broad_schedule"] = generate_daily_req(
                 current_day=current_day,
                 summary=summary,
                 lifestyle=self.lifestyle,
                 name=self.name,
-                llm=self.llm, 
+                llm=self.llm,
                 llm_kwargs=llm_kwargs,
                 memory=self.memory,
                 wake_up_hour=wake_up_hour,
             )
-        elif new_day == "New day":
-            self.status = update_status(
-                current_day=current_day,
-                name=self.name,
-                status=self.status,
-                llm=self.llm,
-                llm_kwargs=llm_kwargs,
-                memory=self.memory,
-                memory_retriever=self.memory.memory_retriever,
-            )
-            self.daily_plan_req = update_daily_plan_req(
-                current_day=current_day,
-                name=self.name,
-                summary=summary,
 
-            )
-
-        # Based on the daily_req, we create an hourly schedule for the persona,
-        # which is a list of todo items with a time duration (in minutes) that
-        # add up to 24 hours.
-        self.f_daily_schedule = generate_hourly_schedule_k(
-            current_day=current_day, wake_up_hour=wake_up_hour
+        self.status = update_status(
+            current_day=current_day,
+            name=self.name,
+            status=self.status,
+            llm=self.llm,
+            llm_kwargs=llm_kwargs,
+            memory=self.memory,
+            memory_retriever=self.memory.memory_retriever,
+        )
+        self.plan_req["broad_schedule"] = update_broad_schedule(
+            current_day=current_day,
+            name=self.name,
+            summary=summary,
+            llm=self.llm,
+            llm_kwargs=llm_kwargs,
+            memory=self.memory,
         )
 
-        # Added March 4 -- adding plan to the memory.
-        thought = (
-            f"This is {self.name}'s plan for {current_day.strftime('%A %B %d, %Y')}:"
+        self.plan_req["refined_schedule"] = generate_hourly_schedule_k(
+            current_day=current_day,
+            name=self.name,
+            daily_req=self.plan_req["broad_schedule"],
+            summary=summary,
+            llm=self.llm,
+            memory=self.memory,
+            k=k,
+            wake_up_hour=wake_up_hour,
         )
-        for i in self.daily_req:
-            thought += f" {i},"
-        thought = thought[:-1] + "."
 
-        self.memory.save_context(
-            {},
-            {
-                self.memory.add_memory_key: thought,
-                self.memory.now_key: current_day,
-            },
-        )
+        # thought = (
+        #     f"This is {self.name}'s plan for {current_day.strftime('%A %B %d, %Y')}:"
+        # )
+        # for i in self.daily_req:
+        #     thought += f" {i},"
+        # thought = thought[:-1] + "."
+
+        # self.memory.save_context(
+        #     {},
+        #     {
+        #         self.memory.add_memory_key: thought,
+        #         self.memory.now_key: current_day,
+        #     },
+        # )
 
     def get_entity_from_observation(self, observation: str) -> str:
         """Extract the observed entity from a given observation text.
@@ -502,11 +497,10 @@ class GenerativeAgent(BaseModel):
         return (
             f"Name: {self.name}\n"
             + f"Age: {self.age}\n"
-            + f"Innate traits: {self.innate_traits}\n"
-            + f"Learned traits: {self.learned_traits}\n"
+            + f"Innate traits: {self.traits}\n"
             + f"Status: {self.status}\n"
             + f"Lifestyle: {self.lifestyle}\n"
-            + f"Daily plan requirement: {self.daily_plan_req}\n"
+            + f"Daily plan requirement: {self.plan_req["broad_schedule"]}\n"
             + f"Current Date: {current_time.strftime('%A %B %d')}\n"
             + f"{self.summary}\n"
         )

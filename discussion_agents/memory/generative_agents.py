@@ -93,9 +93,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
     # Internal reflecting flag.
     reflecting: bool = False
 
-    def get_topics_of_reflection(
-        self, last_k: int = 50
-    ) -> List[str]:
+    def get_topics_of_reflection(self, last_k: int = 50) -> List[str]:
         """Exposing get_topics_of_reflection.
 
         Wrapper for `discussion_agents.reflecting.generative_agents.get_topics_of_reflection`.

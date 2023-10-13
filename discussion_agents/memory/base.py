@@ -3,7 +3,8 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import List, Optional, Union
 
-from langchain.schema import Document, BaseRetriever
+from langchain.schema import BaseRetriever, Document
+
 
 class BaseMemoryInterface(ABC):
     @abstractmethod
@@ -14,7 +15,7 @@ class BaseMemoryInterface(ABC):
 
     @abstractmethod
     def fetch_memories(
-        self, 
+        self,
         observation: str,
         now: Optional[datetime] = None,
     ) -> List[Document]:

@@ -5,8 +5,8 @@ from typing import List, Optional, Union
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from langchain.schema import BaseRetriever
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
+from langchain.schema import BaseRetriever
 from langchain.schema.language_model import BaseLanguageModel
 
 from discussion_agents.utils.fetch import fetch_memories
@@ -36,7 +36,9 @@ def get_topics_of_reflection(
     Example:
         questions = get_topics_of_reflection(llm_model, memory_retriever)
     """
-    assert isinstance(memory_retriever, TimeWeightedVectorStoreRetriever), f"memory_retriever must be of type {TimeWeightedVectorStoreRetriever}."
+    assert isinstance(
+        memory_retriever, TimeWeightedVectorStoreRetriever
+    ), f"memory_retriever must be of type {TimeWeightedVectorStoreRetriever}."
 
     prompt = PromptTemplate.from_template(
         "{observations}\n\n"
@@ -131,15 +133,13 @@ def reflect(
     Example:
         insights = reflect(llm_model, memory_retriever, last_k=100)
     """
-    assert isinstance(memory_retriever, TimeWeightedVectorStoreRetriever), f"memory_retriever must be of type {TimeWeightedVectorStoreRetriever}."
+    assert isinstance(
+        memory_retriever, TimeWeightedVectorStoreRetriever
+    ), f"memory_retriever must be of type {TimeWeightedVectorStoreRetriever}."
 
     new_insights = []
-    topics = get_topics_of_reflection(
-        llm, memory_retriever, last_k=last_k
-    )
+    topics = get_topics_of_reflection(llm, memory_retriever, last_k=last_k)
     for topic in topics:
-        insights = get_insights_on_topic(
-            llm, memory_retriever, topic, now=now
-        )[0]
+        insights = get_insights_on_topic(llm, memory_retriever, topic, now=now)[0]
         new_insights.extend(insights)
     return new_insights
