@@ -52,7 +52,7 @@ def create_memory_retriever():
 def test_get_topics_of_reflection():
     """Tests get_topics_of_reflection."""
     topics = get_topics_of_reflection(
-        llm=llm, memory_retriever=create_memory_retriever(), verbose=False, last_k=10
+        llm=llm, memory_retriever=create_memory_retriever(), last_k=10
     )
     assert type(topics) is list
 
@@ -64,7 +64,6 @@ def test_get_insights_on_topic():
         memory_retriever=create_memory_retriever(),
         topics="Some topic.",
         now=test_date,
-        verbose=False,
     )
     assert type(insights) is list
     assert type(insights[0]) is list
@@ -76,7 +75,6 @@ def test_reflect():
         llm=llm,
         memory_retriever=create_memory_retriever(),
         last_k=10,
-        verbose=False,
         now=test_date,
     )
 

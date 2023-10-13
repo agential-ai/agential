@@ -17,7 +17,7 @@ from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.schema import BaseMemory, Document
 from langchain.schema.language_model import BaseLanguageModel
 
-from discussion_agents.memory.base import AddMemoriesInterface
+from discussion_agents.memory.base import BaseMemoryInterface
 from discussion_agents.reflecting.generative_agents import (
     get_insights_on_topic,
     get_topics_of_reflection,
@@ -31,7 +31,7 @@ from discussion_agents.utils.format import (
 )
 
 
-class GenerativeAgentMemory(BaseMemory, AddMemoriesInterface):
+class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
     """Memory for the generative agent.
 
     This class represents the memory system used by the generative agent. It stores
@@ -42,8 +42,6 @@ class GenerativeAgentMemory(BaseMemory, AddMemoriesInterface):
         llm (BaseLanguageModel): The core language model used for text generation.
         memory_retriever (TimeWeightedVectorStoreRetriever):
             The retriever responsible for fetching related memories.
-        verbose (bool, optional): A flag to enable verbose mode for debugging and
-            logging. Defaults to False.
         reflection_threshold (float, optional): When the aggregate importance of recent
             memories exceeds this threshold, the agent triggers a reflection process.
             Defaults to None.
@@ -71,7 +69,6 @@ class GenerativeAgentMemory(BaseMemory, AddMemoriesInterface):
 
     llm: BaseLanguageModel
     memory_retriever: TimeWeightedVectorStoreRetriever
-    verbose: bool = False
     reflection_threshold: Optional[float] = None
     current_plan: List[str] = []
     # A weight of 0.15 makes this less important than it
@@ -97,7 +94,7 @@ class GenerativeAgentMemory(BaseMemory, AddMemoriesInterface):
     reflecting: bool = False
 
     def get_topics_of_reflection(
-        self, last_k: int = 50, verbose: bool = False
+        self, last_k: int = 50
     ) -> List[str]:
         """Exposing get_topics_of_reflection.
 
@@ -106,7 +103,6 @@ class GenerativeAgentMemory(BaseMemory, AddMemoriesInterface):
         return get_topics_of_reflection(
             llm=self.llm,
             memory_retriever=self.memory_retriever,
-            verbose=verbose,
             last_k=last_k,
         )
 
@@ -114,7 +110,6 @@ class GenerativeAgentMemory(BaseMemory, AddMemoriesInterface):
         self,
         topics: Union[str, List[str]],
         now: Optional[datetime] = None,
-        verbose: bool = False,
     ) -> List[List[str]]:
         """Exposing get_insights_on_topic.
 
@@ -125,11 +120,10 @@ class GenerativeAgentMemory(BaseMemory, AddMemoriesInterface):
             memory_retriever=self.memory_retriever,
             topics=topics,
             now=now,
-            verbose=verbose,
         )
 
     def pause_to_reflect(
-        self, last_k: int = 50, verbose: bool = False, now: Optional[datetime] = None
+        self, last_k: int = 50, now: Optional[datetime] = None
     ) -> List[str]:
         """Wrapper for Generative Agents reflection.
 
@@ -140,14 +134,13 @@ class GenerativeAgentMemory(BaseMemory, AddMemoriesInterface):
             llm=self.llm,
             memory_retriever=self.memory_retriever,
             last_k=last_k,
-            verbose=verbose,
             now=now,
         )
         self.add_memories(results, now=now)
         return results
 
     def score_memories_importance(
-        self, memory_contents: Union[str, List[str]], verbose: bool = False
+        self, memory_contents: Union[str, List[str]]
     ) -> List[float]:
         """Wrapper for Generative Agents scoring memory importance.
 
@@ -156,7 +149,6 @@ class GenerativeAgentMemory(BaseMemory, AddMemoriesInterface):
         return score_memories_importance(
             memory_contents=memory_contents,
             llm=self.llm,
-            verbose=verbose,
             importance_weight=self.importance_weight,
         )
 

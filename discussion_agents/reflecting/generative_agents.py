@@ -5,6 +5,7 @@ from typing import List, Optional, Union
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
+from langchain.schema import BaseRetriever
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.schema.language_model import BaseLanguageModel
 
@@ -16,7 +17,6 @@ from discussion_agents.utils.parse import parse_list
 def get_topics_of_reflection(
     llm: BaseLanguageModel,
     memory_retriever: TimeWeightedVectorStoreRetriever,
-    verbose: bool = False,
     last_k: int = 50,
 ) -> List[str]:
     """Identify the three most salient high-level questions based on recent observations.
@@ -24,7 +24,6 @@ def get_topics_of_reflection(
     Args:
         llm (BaseLanguageModel): Language model for question generation.
         memory_retriever (TimeWeightedVectorStoreRetriever): Memory retriever.
-        verbose (bool, optional): Enable verbose mode. Default is False.
         last_k (int, optional): Number of recent observations to consider. Default is 50.
 
     Returns:
@@ -35,8 +34,10 @@ def get_topics_of_reflection(
         generate insightful questions about the observed subjects.
 
     Example:
-        questions = get_topics_of_reflection(llm_model, memory_retriever, verbose=True)
+        questions = get_topics_of_reflection(llm_model, memory_retriever)
     """
+    assert isinstance(memory_retriever, TimeWeightedVectorStoreRetriever), f"memory_retriever must be of type {TimeWeightedVectorStoreRetriever}."
+
     prompt = PromptTemplate.from_template(
         "{observations}\n\n"
         + "Given only the information above, what are the 3 most salient "
@@ -45,17 +46,16 @@ def get_topics_of_reflection(
     )
     observations = memory_retriever.memory_stream[-last_k:]
     observation_str = "\n".join([format_memories_detail(o) for o in observations])
-    chain = LLMChain(llm=llm, prompt=prompt, verbose=verbose)
+    chain = LLMChain(llm=llm, prompt=prompt)
     result = chain.run(observations=observation_str)
     return parse_list(result)
 
 
 def get_insights_on_topic(
     llm: BaseLanguageModel,
-    memory_retriever: TimeWeightedVectorStoreRetriever,
+    memory_retriever: BaseRetriever,
     topics: Union[str, List[str]],
     now: Optional[datetime] = None,
-    verbose: bool = False,
 ) -> List[List[str]]:
     """Generate high-level insights on a given topic based on pertinent memories.
 
@@ -64,7 +64,6 @@ def get_insights_on_topic(
         memory_retriever (TimeWeightedVectorStoreRetriever): Memory retriever.
         topics (Union[str, List[str]]): Topic or list of topics for insight generation.
         now (Optional[datetime], optional): Current date and time for temporal context. Default is None.
-        verbose (bool, optional): Enable verbose mode. Default is False.
 
     Returns:
         List[List[str]]: Lists of high-level novel insights for each specified topic.
@@ -75,7 +74,7 @@ def get_insights_on_topic(
 
     Example:
         topics = ["Favorite books", "Hiking experiences"]
-        insights = get_insights_on_topic(llm_model, memory_retriever, topics, verbose=True)
+        insights = get_insights_on_topic(llm_model, memory_retriever, topics)
     """
     prompt = PromptTemplate.from_template(
         "Statements relevant to: '{topic}'\n"
@@ -92,7 +91,7 @@ def get_insights_on_topic(
     if type(topics) is str:
         topics = [topics]
 
-    chain = LLMChain(llm=llm, prompt=prompt, verbose=verbose)
+    chain = LLMChain(llm=llm, prompt=prompt)
     results = []
     for topic in topics:
         related_memories = fetch_memories(memory_retriever, topic, now=now)
@@ -112,7 +111,6 @@ def reflect(
     llm: BaseLanguageModel,
     memory_retriever: TimeWeightedVectorStoreRetriever,
     last_k: int = 50,
-    verbose: bool = False,
     now: Optional[datetime] = None,
 ) -> List[str]:
     """Pause to reflect on recent observations and generate insights.
@@ -121,7 +119,6 @@ def reflect(
         llm (BaseLanguageModel): Language model for insight generation.
         memory_retriever (TimeWeightedVectorStoreRetriever): Memory retriever.
         last_k (int, optional): Number of recent observations to consider. Default is 50.
-        verbose (bool, optional): Enable verbose mode. Default is False.
         now (Optional[datetime], optional): Current date and time for temporal context. Default is None.
 
     Returns:
@@ -132,15 +129,17 @@ def reflect(
         and adds these insights to the agent's memory for future reference.
 
     Example:
-        insights = reflect(llm_model, memory_retriever, last_k=100, verbose=True)
+        insights = reflect(llm_model, memory_retriever, last_k=100)
     """
+    assert isinstance(memory_retriever, TimeWeightedVectorStoreRetriever), f"memory_retriever must be of type {TimeWeightedVectorStoreRetriever}."
+
     new_insights = []
     topics = get_topics_of_reflection(
-        llm, memory_retriever, verbose=verbose, last_k=last_k
+        llm, memory_retriever, last_k=last_k
     )
     for topic in topics:
         insights = get_insights_on_topic(
-            llm, memory_retriever, topic, now=now, verbose=verbose
+            llm, memory_retriever, topic, now=now
         )[0]
         new_insights.extend(insights)
     return new_insights

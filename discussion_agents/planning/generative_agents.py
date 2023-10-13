@@ -6,11 +6,11 @@ from datetime import datetime, timedelta
 
 from langchain.chains import LLMChain
 from langchain.schema.language_model import BaseLanguageModel
+from langchain.schema import BaseMemory, BaseRetriever
 
 from langchain.prompts import PromptTemplate
-from langchain.retrievers import TimeWeightedVectorStoreRetriever
 
-from discussion_agents.memory.generative_agents import GenerativeAgentMemory
+
 from discussion_agents.utils.parse import parse_list
 from discussion_agents.utils.format import format_memories_detail
 from discussion_agents.utils.fetch import fetch_memories
@@ -23,8 +23,7 @@ def generate_daily_req(
     name: str, 
     llm: BaseLanguageModel,
     llm_kwargs: Dict[str, Any],
-    memory: GenerativeAgentMemory,
-    verbose: bool = False,
+    memory: BaseMemory,
     wake_up_hour: Optional[int] = 8
 ) -> List[str]:
     prompt = PromptTemplate.from_template(
@@ -41,7 +40,6 @@ def generate_daily_req(
         llm=llm,
         llm_kwargs=llm_kwargs,
         prompt=prompt,
-        verbose=verbose,
         memory=memory
     )
     kwargs = dict(
@@ -65,9 +63,8 @@ def update_status(
     status: str,
     llm: BaseLanguageModel,
     llm_kwargs: Dict[str, Any],
-    memory: GenerativeAgentMemory,
-    memory_retriever: TimeWeightedVectorStoreRetriever,
-    verbose: bool = False,
+    memory: BaseMemory,
+    memory_retriever: BaseRetriever,
 ):
     current_day_str = current_day.strftime("%A %B %d, %Y")
     focal_points = [
@@ -97,7 +94,6 @@ def update_status(
         llm=llm,
         llm_kwargs=llm_kwargs,
         prompt=plan_prompt,
-        verbose=verbose,
         memory=memory
     )
     plan_kwargs = dict(name=name, current_day_str=current_day_str)
@@ -114,7 +110,6 @@ def update_status(
         llm=llm,
         llm_kwargs=llm_kwargs,
         prompt=thought_prompt,
-        verbose=verbose,
         memory=memory
     )
     thought_kwargs = dict(name=name)
@@ -147,7 +142,6 @@ def update_status(
         llm=llm,
         llm_kwargs=llm_kwargs,
         prompt=status_prompt,
-        verbose=verbose,
         memory=memory
     )
     status = chain.run(**status_kwargs).strip()
@@ -160,8 +154,7 @@ def update_daily_plan_req(
     summary: str,
     llm: BaseLanguageModel,
     llm_kwargs: Dict[str, Any],
-    memory: GenerativeAgentMemory,
-    verbose: bool = False,
+    memory: BaseMemory,
 ):
     daily_plan_req_prompt = PromptTemplate.from_template(
         summary
@@ -179,7 +172,6 @@ def update_daily_plan_req(
         llm=llm,
         llm_kwargs=llm_kwargs,
         prompt=daily_plan_req_prompt,
-        verbose=verbose,
         memory=memory
     )
     daily_plan_req = (
@@ -191,23 +183,15 @@ def update_daily_plan_req(
 
     return daily_plan_req
 
-# TODO: REMOVE!
-def rand_id(i=6, j=6):
-    k = random.randint(i, j)
-    hash = "".join(random.choices(string.ascii_letters + string.digits, k=k))
-    return hash
-
 def generate_hourly_schedule(
     n_m1_activity: List[str], 
     curr_hour_str: str, 
     current_day: datetime,
     name: str,
     daily_req: str,
-    rand_id_: str,
     summary: str,
     llm: BaseLanguageModel,
-    memory: GenerativeAgentMemory,
-    verbose: bool = False
+    memory: BaseMemory,
 ) -> str:
     current_day = current_day.strftime("%A %B %d, %Y")
     schedule_format = ""
@@ -224,8 +208,7 @@ def generate_hourly_schedule(
 
     prior_schedule = "\n"
     for count, i in enumerate(n_m1_activity):
-        prior_schedule += f"[(ID:{rand_id_})"
-        prior_schedule += f" {current_day} --"
+        prior_schedule += f"[{current_day} --"
         prior_schedule += f" {HOUR_STR[count]}] Activity:"
         prior_schedule += f" {name}"
         prior_schedule += f" is {i}\n"
@@ -239,8 +222,7 @@ def generate_hourly_schedule(
         + "\n"
         + intermission_str
         + "\n"
-        + f"[(ID:{rand_id_})"
-        + " {current_day}"
+        + "[{current_day}"
         + " -- {curr_hour_str}] Activity:"
         + " {name} is"
     )
@@ -255,7 +237,6 @@ def generate_hourly_schedule(
         llm=llm,
         llm_kwargs=llm_kwargs,
         prompt=prompt,
-        verbose=verbose,
         memory=memory
     )
     result = (
@@ -266,16 +247,14 @@ def generate_hourly_schedule(
     )
     return result
 
-def generate_hourly_schedule_top_3(
+def generate_hourly_schedule_k(
     current_day: datetime, 
     name: str,
     daily_req: str,
     summary: str,
     llm: BaseLanguageModel,
-    memory: GenerativeAgentMemory,
-    rand_id_: str,
+    memory: BaseMemory,
     k: int = 3,  # Diversity count.
-    verbose: bool = False,
     wake_up_hour: Optional[int] = 8,
 ) -> List[str]:
     n_m1_activity = []
@@ -294,11 +273,9 @@ def generate_hourly_schedule_top_3(
                             current_day=current_day,
                             name=name,
                             daily_req=daily_req,
-                            rand_id=rand_id_,
                             summary=summary,
                             llm=llm,
                             memory=memory,
-                            verbose=verbose
                         )
                     ]
 
@@ -329,6 +306,21 @@ def generate_hourly_schedule_top_3(
 
     return n_m1_hourly_compressed
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # def long_term_planning(
 #     new_day: str, 
 #     current_day: datetime, 
@@ -339,9 +331,7 @@ def generate_hourly_schedule_top_3(
 #     llm: BaseLanguageModel,
 #     memory: GenerativeAgentMemory,
 #     memory_retriever: TimeWeightedVectorStoreRetriever,
-#     rand_id_: str,
 #     llm_kwargs: Dict[str, Any],
-#     verbose: bool = False,
 #     wake_up_hour: int = 8,
 # ):
 #     # When it is a new day, we start by creating the daily_req of the persona.
@@ -361,7 +351,6 @@ def generate_hourly_schedule_top_3(
 #             llm=llm,
 #             llm_kwargs=llm_kwargs,
 #             memory=memory,
-#             verbose=verbose,
 #             wake_up_hour=wake_up_hour,
 #         )
 #     elif new_day == "New day":
@@ -374,13 +363,12 @@ def generate_hourly_schedule_top_3(
 #             llm_kwargs=llm_kwargs,
 #             memory=memory,
 #             memory_retriever=memory_retriever,
-#             verbose=verbose
 #         )
 
 #     # Based on the daily_req, we create an hourly schedule for the persona,
 #     # which is a list of todo items with a time duration (in minutes) that
 #     # add up to 24 hours.
-#     f_daily_schedule = generate_hourly_schedule_top_3(
+#     f_daily_schedule = generate_hourly_schedule_top_k(
 #         current_day=current_day, 
 #         wake_up_hour=wake_up_hour,
 #         name=name,
@@ -388,8 +376,6 @@ def generate_hourly_schedule_top_3(
 #         summary=summary,
 #         llm=llm,
 #         memory=memory,
-#         rand_id_=rand_id_,
-#         verbose=verbose
 #     )
 
 

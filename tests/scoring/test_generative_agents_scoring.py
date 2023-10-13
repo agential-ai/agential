@@ -52,6 +52,5 @@ def test_score_memories_importance():
     scores = score_memories_importance(
         memory_contents="Some memory.",
         llm=llm,
-        verbose=False,
         importance_weight=importance_weight,
     )

@@ -65,12 +65,11 @@ def test_score_memories_importance():
     memory = GenerativeAgentMemory(
         llm=llm,
         memory_retriever=create_memory_retriever(),
-        verbose=False,
         reflection_threshold=8,
     )
     # Test score_memories_importance.
     scores = memory.score_memories_importance(
-        memory_contents=observations, verbose=False
+        memory_contents=observations
     )
     assert len(scores) == len(observations)
     for score in scores:
@@ -84,7 +83,6 @@ def test_add_memories():
     memory = GenerativeAgentMemory(
         llm=llm,
         memory_retriever=create_memory_retriever(),
-        verbose=False,
         reflection_threshold=8,
     )
 
@@ -102,12 +100,11 @@ def test_pause_to_reflect():
     memory = GenerativeAgentMemory(
         llm=llm,
         memory_retriever=create_memory_retriever(),
-        verbose=False,
         reflection_threshold=8,
     )
 
     # Test pause_to_reflect.
-    insights = memory.pause_to_reflect(last_k=50, verbose=False, now=None)
+    insights = memory.pause_to_reflect(last_k=50, now=None)
     assert type(insights) is list
 
 
@@ -117,7 +114,6 @@ def test_get_memories_until_limit():
     memory = GenerativeAgentMemory(
         llm=llm,
         memory_retriever=create_memory_retriever(),
-        verbose=False,
         reflection_threshold=8,
     )
 
@@ -146,7 +142,6 @@ def test_memory_variables():
     memory = GenerativeAgentMemory(
         llm=llm,
         memory_retriever=create_memory_retriever(),
-        verbose=False,
         reflection_threshold=8,
     )
 
@@ -161,7 +156,6 @@ def test_load_memory_variables_empty():
     memory = GenerativeAgentMemory(
         llm=llm,
         memory_retriever=create_memory_retriever(),
-        verbose=False,
         reflection_threshold=8,
     )
 
@@ -177,7 +171,6 @@ def test_load_memory_variables_query():
     memory = GenerativeAgentMemory(
         llm=llm,
         memory_retriever=create_memory_retriever(),
-        verbose=False,
         reflection_threshold=8,
     )
 
@@ -195,7 +188,6 @@ def test_load_memory_variables_relevant():
     memory = GenerativeAgentMemory(
         llm=llm,
         memory_retriever=create_memory_retriever(),
-        verbose=False,
         reflection_threshold=8,
     )
 
@@ -212,7 +204,6 @@ def test_save_context():
     memory = GenerativeAgentMemory(
         llm=llm,
         memory_retriever=create_memory_retriever(),
-        verbose=False,
         reflection_threshold=8,
     )
 
@@ -230,7 +221,6 @@ def test_clear():
     memory = GenerativeAgentMemory(
         llm=llm,
         memory_retriever=create_memory_retriever(),
-        verbose=False,
         reflection_threshold=8,
     )
 

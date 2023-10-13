@@ -2,13 +2,13 @@
 from datetime import datetime
 from typing import List, Optional
 
-from langchain.retrievers import TimeWeightedVectorStoreRetriever
+from langchain.schema import BaseRetriever
 from langchain.schema import Document
 from langchain.utils import mock_now
 
 
 def fetch_memories(
-    memory_retriever: TimeWeightedVectorStoreRetriever,
+    memory_retriever: BaseRetriever,
     observation: str,
     now: Optional[datetime] = None,
 ) -> List[Document]:

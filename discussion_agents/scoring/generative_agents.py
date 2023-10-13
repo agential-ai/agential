@@ -11,7 +11,6 @@ from langchain.schema.language_model import BaseLanguageModel
 def score_memories_importance(
     memory_contents: Union[str, List[str]],
     llm: BaseLanguageModel,
-    verbose: bool = False,
     importance_weight: float = 0.15,
 ) -> List[float]:
     """Calculate absolute importance scores for given memory contents.
@@ -19,7 +18,6 @@ def score_memories_importance(
     Args:
         memory_contents (Union[str, List[str]]): Memories to score.
         llm (BaseLanguageModel): Language model for scoring.
-        verbose (bool, optional): Enable verbose mode. Default is False.
         importance_weight (float, optional): Weight for importance scores. Default is 0.15.
 
     Returns:
@@ -42,7 +40,7 @@ def score_memories_importance(
         + "\Memory: {memory_content}\n"
         + "Rating: "
     )
-    chain = LLMChain(llm=llm, prompt=prompt, verbose=verbose)
+    chain = LLMChain(llm=llm, prompt=prompt)
 
     scores = []
     for i, memory_content in enumerate(memory_contents):
