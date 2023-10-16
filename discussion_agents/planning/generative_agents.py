@@ -1,274 +1,173 @@
 """Planning module for Generative Agents."""
-import random
-import string
-
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from langchain.schema import BaseMemory, BaseRetriever
+from langchain.schema import BaseMemory
 from langchain.schema.language_model import BaseLanguageModel
 
-from discussion_agents.utils.constants import HOUR_STR
-from discussion_agents.utils.fetch import fetch_memories
-from discussion_agents.utils.format import format_memories_detail
 from discussion_agents.utils.parse import parse_list
 
-
-def generate_broad_schedule(
-    current_day: datetime,
-    summary: str,
+def generate_broad_plan(
+    instruction: str,
     lifestyle: str,
     name: str,
     llm: BaseLanguageModel,
     llm_kwargs: Dict[str, Any],
     memory: BaseMemory,
-    wake_up_hour: Optional[int] = 8,
 ) -> List[str]:
     prompt = PromptTemplate.from_template(
-        "{summary}\n"
+        "{instruction}\n"
         + "In general, {name}'s lifestyle: {lifestyle}\n"
-        + "Today is {current_day}. "
-        + "Here is {name}'s plan today in broad-strokes "
-        + "(with the time of the day. e.g., have lunch at 12:00 pm, watch TV from 7 to 8 pm): "
-        + "1) wake up and complete the morning routine at {wake_up_hour}, "
-        + "2)\n"
-        + "Provide each step on a new line.\n"
+        + "Provide each step on a new line. "
+        + "Here is {name}'s plan in broad-strokes:\n"
+        + "1) "
     )
     chain = LLMChain(llm=llm, llm_kwargs=llm_kwargs, prompt=prompt, memory=memory)
-    kwargs = dict(
-        summary=summary,
-        lifestyle=lifestyle,
-        name=name,
-        current_day=current_day.strftime("%A %B %d"),
-        wake_up_hour=wake_up_hour,
-    )
-    result = parse_list(chain.run(**kwargs).strip())
-    result = [
-        f"1) wake up and complete the morning routine at {wake_up_hour}:00 am"
-    ] + result
+    result = parse_list(chain.run(instruction=instruction, name=name, lifestyle=lifestyle).strip())
     result = [s.split(")")[-1].rstrip(",.").strip() for s in result]
 
     return result
 
 
 def update_status(
-    current_day: datetime,
+    previous_steps: List[str],
+    plan_step: str,
     name: str,
     status: str,
     llm: BaseLanguageModel,
     llm_kwargs: Dict[str, Any],
     memory: BaseMemory,
-    memory_retriever: BaseRetriever,
-):
-    current_day_str = current_day.strftime("%A %B %d, %Y")
-    focal_points = [
-        f"{name}'s plan for {current_day_str}.",
-        f"Important recent events for {name}'s life.",
-    ]
-
-    relevant_context = []
-    for focal_point in focal_points:
-        fetched_memories = fetch_memories(memory_retriever, focal_point)
-        relevant_context.append(format_memories_detail(fetched_memories))
-    relevant_context = "\n".join(relevant_context)
+) -> str:
+    previous_steps = "\n".join(previous_steps)
 
     plan_prompt = PromptTemplate.from_template(
-        relevant_context
+        previous_steps
         + "\n"
         + "Given the statements above, "
-        + "is there anything that {name} should remember as they plan for"
-        + " *{current_day_str}*? "
-        + "If there is any scheduling information, be as specific as possible "
-        + "(include date, time, and location if stated in the statement)\n\n"
+        + "is there anything that {name} should remember as they plan for:\n"
+        + plan_step
         + "Write the response from {name}'s perspective."
     )
     chain = LLMChain(llm=llm, llm_kwargs=llm_kwargs, prompt=plan_prompt, memory=memory)
-    plan_kwargs = dict(name=name, current_day_str=current_day_str)
-    plan_result = chain.run(**plan_kwargs).strip()
+    plan_result = chain.run(name=name).strip()
 
     thought_prompt = PromptTemplate.from_template(
-        relevant_context
+        previous_steps
         + "\n"
         + "Given the statements above, how might we summarize "
-        + "{name}'s feelings about their days up to now?\n\n"
+        + "{name}'s thoughts about the plan up till now?\n\n"
         + "Write the response from {name}'s perspective."
     )
     chain = LLMChain(
         llm=llm, llm_kwargs=llm_kwargs, prompt=thought_prompt, memory=memory
     )
-    thought_kwargs = dict(name=name)
-    thought_result = chain.run(**thought_kwargs).strip()
+    thought_result = chain.run(name=name).strip()
 
     status_prompt = PromptTemplate.from_template(
-        "{name}'s status from "
-        + "{previous_day}:\n"
+        "{name}'s status from the previous step: "
         + "{status}\n\n"
-        + "{name}'s thoughts at the end of "
-        + "{previous_day}:\n"
+        + "{name}'s thoughts at the end of the previous step: "
         + (plan_result + " " + thought_result).replace("\n", "")
         + "\n\n"
-        + "It is now {current_day}. "
-        + "Given the above, write {name}'s status for "
-        + "{current_day} that reflects {name}'s "
-        + "thoughts at the end of {previous_day}. "
+        + "Given the above, write {name}'s status "
+        + "that reflects {name}'s "
+        + "thoughts at the end of the previous step. "
         + "Write this in third-person talking about {name}."
-        + "If there is any scheduling information, be as specific as possible "
-        + "(include date, time, and location if stated in the statement).\n\n"
         + "Follow this format below:\nStatus: <new status>"
-    )
-    status_kwargs = dict(
-        name=name,
-        previous_day=(current_day - timedelta(days=1)).strftime("%A %B %d, %Y"),
-        status=status,
-        current_day=current_day.strftime("%A %B %d, %Y"),
     )
     chain = LLMChain(
         llm=llm, llm_kwargs=llm_kwargs, prompt=status_prompt, memory=memory
     )
-    status = chain.run(**status_kwargs).strip()
+    status = chain.run(name=name, status=status).strip()
 
     return status
 
 
-def update_broad_schedule(
-    current_day: datetime,
+def update_broad_plan(
+    instruction: str, 
     name: str,
-    summary: str,
+    plan: List[str],
     llm: BaseLanguageModel,
     llm_kwargs: Dict[str, Any],
     memory: BaseMemory,
-):
+) -> List[str]:
+    plan = "\n".join(plan)
+
     daily_plan_req_prompt = PromptTemplate.from_template(
-        summary
-        + "\n"
-        + "Today is {current_day}. "
-        + "Here is {name}'s plan today in broad-strokes "
-        + "(with the time of the day. e.g., have a lunch at 12:00 pm, watch TV from 7 to 8 pm).\n\n"
-        + "Follow this format (the list should have 4~6 items but no more):\n"
-        + "1. wake up and complete the morning routine at <time>, 2. ..."
+        "Instruction: {instruction}\n"
+        + "Here is {name}'s plan in broad-strokes:\n"
+        + plan
+        + "Are there any updates or changes to be made to this plan? "
+        + "Update the plan to incorporate the changes. "
+        + "If there are no changes to be made, simply return the same plan."
+        + "Follow this format for the plan:\n"
+        + "1) <text>\n2) <text>\n3) ..."
     )
     daily_plan_req_kwargs = dict(
-        current_day=current_day.strftime("%A %B %d, %Y"), name=name
+        instruction=instruction,
+        name=name
     )
     chain = LLMChain(
         llm=llm, llm_kwargs=llm_kwargs, prompt=daily_plan_req_prompt, memory=memory
     )
-    daily_plan_req = chain.run(**daily_plan_req_kwargs).strip().replace("\n", " ")
+    result = parse_list(chain.run(**daily_plan_req_kwargs).strip())
+    result = [s.split(")")[-1].rstrip(",.").strip() for s in result]
 
-    return daily_plan_req
-
-
-def generate_hourly_schedule(
-    n_m1_activity: List[str],
-    curr_hour_str: str,
-    current_day: datetime,
-    name: str,
-    daily_req: str,
-    summary: str,
-    llm: BaseLanguageModel,
-    memory: BaseMemory,
-) -> str:
-    current_day = current_day.strftime("%A %B %d, %Y")
-    schedule_format = ""
-    for i in HOUR_STR:
-        schedule_format += f"[{current_day} -- {i}]"
-        schedule_format += f" Activity: [Fill in]\n"
-    schedule_format = schedule_format[:-1]
-
-    intermission_str = f"Here's the originally intended hourly breakdown of"
-    intermission_str += f" {name}'s schedule today: "
-    for count, i in enumerate(daily_req):
-        intermission_str += f"{str(count+1)}) {i}, "
-    intermission_str = intermission_str[:-2]
-
-    prior_schedule = "\n"
-    for count, i in enumerate(n_m1_activity):
-        prior_schedule += f"[{current_day} --"
-        prior_schedule += f" {HOUR_STR[count]}] Activity:"
-        prior_schedule += f" {name}"
-        prior_schedule += f" is {i}\n"
-
-    prompt = PromptTemplate.from_template(
-        schedule_format
-        + "==="
-        + summary
-        + "\n"
-        + prior_schedule
-        + "\n"
-        + intermission_str
-        + "\n"
-        + "[{current_day}"
-        + " -- {curr_hour_str}] Activity:"
-        + " {name} is"
-    )
-    prompt_kwargs = dict(
-        current_day=current_day, curr_hour_str=curr_hour_str, name=name
-    )
-    llm_kwargs = dict(
-        max_tokens=50,
-        temperature=0.5,
-    )
-    chain = LLMChain(llm=llm, llm_kwargs=llm_kwargs, prompt=prompt, memory=memory)
-    result = chain.run(**prompt_kwargs, stop="\n").rstrip(".").strip()
     return result
 
-def generate_refined_schedule(
-    current_day: datetime,
+
+def generate_refined_plan(
+    instruction: str, 
+    plan: List[str],
     name: str,
-    daily_req: str,
-    summary: str,
     llm: BaseLanguageModel,
     memory: BaseMemory,
-    k: int = 3,
-    wake_up_hour: Optional[int] = 8,
+    k: int = 1,
+    llm_kwargs: Dict[str, Any] = {"max_tokens": 3000, "temperature": 0.8}
 ) -> List[str]:
-    n_m1_activity = []
-    for i in range(k):
-        if len(set(n_m1_activity)) < 5:  # Number of unique activities < 5.
-            n_m1_activity = []
-            for curr_hour_str in HOUR_STR:
-                if wake_up_hour > 0:
-                    n_m1_activity += ["sleeping"]
-                    wake_up_hour -= 1
-                else:
-                    n_m1_activity += [
-                        generate_hourly_schedule(
-                            n_m1_activity=n_m1_activity,
-                            curr_hour_str=curr_hour_str,
-                            current_day=current_day,
-                            name=name,
-                            daily_req=daily_req,
-                            summary=summary,
-                            llm=llm,
-                            memory=memory,
-                        )
-                    ]
+    plan_format = ""
+    for i, step in enumerate(plan):
+        plan_format += f"{i}. {step}\n"
+        plan_format += f"Substep: <Fill in>\n"
+    plan_format = plan_format[:-1]
 
-    # Step 1. Compressing the hourly schedule to the following format:
-    # The integer indicates the number of hours. They should add up to 24.
-    # [['sleeping', 6], ['waking up and starting her morning routine', 1],
-    # ['eating breakfast', 1], ['getting ready for the day', 1],
-    # ['working on her painting', 2], ['taking a break', 1],
-    # ['having lunch', 1], ['working on her painting', 3],
-    # ['taking a break', 2], ['working on her painting', 2],
-    # ['relaxing and watching TV', 1], ['going to bed', 1], ['sleeping', 2]]
-    _n_m1_hourly_compressed = []
-    prev, prev_count = None, 0
-    for i in n_m1_activity:
-        if i != prev:
-            prev_count = 1
-            _n_m1_hourly_compressed += [[i, prev_count]]
-            prev = i
-        elif _n_m1_hourly_compressed:
-            _n_m1_hourly_compressed[-1][1] += 1
+    prompt = PromptTemplate.from_template(
+        "Instruction: \n{instruction}\n\n"
+        + "Plan format: \n"
+        + "{plan_format}\n\n"
+        + "Given the instruction and the current plan above, "
+        + "for each planning step, fill in 'Substep:', "
+        + "which describes in detail what the substeps for that given planning step are. "
+        + "If a planning step does not require a substep(s), then do not specify any substep. "
+        + "Return the entire plan with the included substeps. Keep the steps descriptive, but concise."
+        + "Output format example: \n"
+        + "1) <first step>\n"
+        + "1.1) <first step, first substep>\n"
+        + "1.2) <first step, second substep>\n"
+    )
+    chain = LLMChain(llm=llm, llm_kwargs=llm_kwargs, prompt=prompt, memory=memory)
 
-    # Step 2. Expand to min scale (from hour scale)
-    # [['sleeping', 360], ['waking up and starting her morning routine', 60],
-    # ['eating breakfast', 60],..
-    n_m1_hourly_compressed = []
-    for task, duration in _n_m1_hourly_compressed:
-        n_m1_hourly_compressed += [[task, duration * 60]]
+    results = []
+    for _ in range(k):
+        result = chain.run(instruction=instruction, plan_format=plan_format).strip()
+        results.append(result)
 
-    return n_m1_hourly_compressed
+    if k == 1:
+        results = results[0]
+    else:
+        plans = [f"Plan {i}:\n{result}\n\n" for i, result in enumerate(results)]
+
+        prompt = PromptTemplate.from_template(
+            "Instruction: \n{instruction}\n\n"
+            + "Below are {k} different plans for the instruction above. "
+            + "Consolidate them into 1 plan."
+            + "{plans}"
+        )
+        chain = LLMChain(llm=llm, llm_kwargs=llm_kwargs, prompt=prompt, memory=memory)
+        results = chain.run(instruction=instruction, k=k, plans=plans).strip()
+
+    result = parse_list(results)
+    result = [s.split(")")[-1].rstrip(",.").strip() for s in result]
+
+    return results

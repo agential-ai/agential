@@ -16,6 +16,7 @@ from typing import Any, Dict, List, Optional, Union
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.schema import BaseMemory, Document
 from langchain.schema.language_model import BaseLanguageModel
+from langchain.utils import mock_now
 
 from discussion_agents.memory.base import BaseMemoryInterface
 from discussion_agents.reflecting.generative_agents import (
@@ -45,7 +46,6 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         reflection_threshold (float, optional): When the aggregate importance of recent
             memories exceeds this threshold, the agent triggers a reflection process.
             Defaults to None.
-        current_plan (List[str]): The current plan of the agent.
         importance_weight (float): A weight to assign to memory importance when
             calculating aggregate importance. Defaults to 0.15.
         aggregate_importance (float): A running sum of the importance scores of recent
@@ -70,7 +70,6 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
     llm: BaseLanguageModel
     memory_retriever: TimeWeightedVectorStoreRetriever
     reflection_threshold: Optional[float] = None
-    current_plan: List[str] = []
     # A weight of 0.15 makes this less important than it
     # would be otherwise, relative to salience and time
     importance_weight: float = 0.15
@@ -138,7 +137,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         return results
 
     def score_memories_importance(
-        self, memory_contents: Union[str, List[str]]
+        self, memory_contents: Union[str, List[str]], relevant_memories: Union[str, List[str]]
     ) -> List[float]:
         """Wrapper for Generative Agents scoring memory importance.
 
@@ -146,6 +145,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         """
         return score_memories_importance(
             memory_contents=memory_contents,
+            relevant_memories=relevant_memories,
             llm=self.llm,
             importance_weight=self.importance_weight,
         )
@@ -182,11 +182,13 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
             - If the aggregate importance surpasses a reflection threshold, the agent may
             enter a reflection phase to add synthesized memories.
         """
-        importance_scores = self.score_memories_importance(memory_contents)
-        self.aggregate_importance += max(importance_scores)
-
         if type(memory_contents) is str:
             memory_contents = [memory_contents]
+
+        relevant_memories = fetch_memories(memory_retriever=self.memory_retriever, observation="\n".join(memory_contents))
+        relevant_memories = [mem.page_content for mem in relevant_memories]
+        importance_scores = self.score_memories_importance(memory_contents, relevant_memories=relevant_memories)
+        self.aggregate_importance += max(importance_scores)
 
         documents = []
         for i in range(len(memory_contents)):

@@ -22,9 +22,9 @@ from langchain_experimental.pydantic_v1 import BaseModel, Field
 
 from discussion_agents.memory.generative_agents import GenerativeAgentMemory
 from discussion_agents.planning.generative_agents import (
-    generate_daily_req,
-    generate_hourly_schedule_k,
-    update_broad_schedule,
+    generate_broad_plan,
+    generate_refined_plan,
+    update_broad_plan,
     update_status,
 )
 
@@ -42,7 +42,6 @@ class GenerativeAgent(BaseModel):
         traits (str): Permanent traits ascribed to the character.
         lifestyle (str): Lifestyle traits of the character that should not change.
         status (str): Current status of the character (what they are currently doing).
-        daily_req (str): daily requireements for the agent.
         memory (GenerativeAgentMemory): The memory object that combines relevance, recency,
             and 'importance' for storing and retrieving memories.
         llm (BaseLanguageModel): The underlying language model used for text generation.
@@ -61,7 +60,6 @@ class GenerativeAgent(BaseModel):
     traits: str
     lifestyle: str
     status: str
-    daily_req: List[str]
 
     memory: GenerativeAgentMemory
     llm: BaseLanguageModel
@@ -79,33 +77,28 @@ class GenerativeAgent(BaseModel):
         self,
         current_day: datetime,
         k: int = 3, 
-        wake_up_hour: int = 8,
         llm_kwargs: Dict[str, Any] = {"max_tokens": 500, "temperature": 1},
     ):
         summary = self.get_summary() if not self.summary else self.summary
 
         if "broad_schedule" not in self.plan_req:
-            self.plan_req["broad_schedule"] = generate_daily_req(
-                current_day=current_day,
+            self.plan_req["broad_schedule"] = generate_broad_plan(
                 summary=summary,
                 lifestyle=self.lifestyle,
                 name=self.name,
                 llm=self.llm,
                 llm_kwargs=llm_kwargs,
                 memory=self.memory,
-                wake_up_hour=wake_up_hour,
             )
 
         self.status = update_status(
-            current_day=current_day,
             name=self.name,
             status=self.status,
             llm=self.llm,
             llm_kwargs=llm_kwargs,
             memory=self.memory,
-            memory_retriever=self.memory.memory_retriever,
         )
-        self.plan_req["broad_schedule"] = update_broad_schedule(
+        self.plan_req["broad_schedule"] = update_broad_plan(
             current_day=current_day,
             name=self.name,
             summary=summary,
@@ -114,7 +107,7 @@ class GenerativeAgent(BaseModel):
             memory=self.memory,
         )
 
-        self.plan_req["refined_schedule"] = generate_hourly_schedule_k(
+        self.plan_req["refined_schedule"] = generate_refined_plan(
             current_day=current_day,
             name=self.name,
             daily_req=self.plan_req["broad_schedule"],
@@ -122,7 +115,6 @@ class GenerativeAgent(BaseModel):
             llm=self.llm,
             memory=self.memory,
             k=k,
-            wake_up_hour=wake_up_hour,
         )
 
         # thought = (
@@ -162,7 +154,8 @@ class GenerativeAgent(BaseModel):
             "What is the observed entity in the following observation? {observation}"
             + "\nEntity="
         )
-        return self.chain(prompt).run(observation=observation).strip()
+        chain = LLMChain(llm=self.llm, prompt=prompt, memory=self.memory)
+        return chain.run(observation=observation).strip()
 
     def get_entity_action(self, observation: str, entity_name: str) -> str:
         """Determine the action performed by the specified entity in an observation.
@@ -188,8 +181,9 @@ class GenerativeAgent(BaseModel):
             "What is the {entity} doing in the following observation? {observation}"
             + "\nThe {entity} is"
         )
+        chain = LLMChain(llm=self.llm, prompt=prompt, memory=self.memory)
         return (
-            self.chain(prompt).run(entity=entity_name, observation=observation).strip()
+            chain.run(entity=entity_name, observation=observation).strip()
         )
 
     def summarize_related_memories(self, observation: str) -> str:
@@ -222,7 +216,8 @@ class GenerativeAgent(BaseModel):
         entity_action = self.get_entity_action(observation, entity_name)
         q1 = f"What is the relationship between {self.name} and {entity_name}"
         q2 = f"{entity_name} is {entity_action}"
-        return self.chain(prompt=prompt).run(q1=q1, queries=[q1, q2]).strip()
+        chain = LLMChain(llm=self.llm, prompt=prompt, memory=self.memory)
+        return chain.run(q1=q1, queries=[q1, q2]).strip()
 
     def _generate_reaction(
         self, observation: str, suffix: str, now: Optional[datetime] = None
@@ -280,7 +275,9 @@ class GenerativeAgent(BaseModel):
             prompt.format(most_recent_memories="", **kwargs)
         )
         kwargs[self.memory.most_recent_memories_token_key] = consumed_tokens
-        return self.chain(prompt=prompt).run(**kwargs).strip()
+        chain = LLMChain(llm=self.llm, prompt=prompt, memory=self.memory)
+
+        return chain.run(**kwargs).strip()
 
     def _clean_response(self, text: str) -> str:
         """Clean the response text by removing the agent's name prefix.
@@ -454,9 +451,11 @@ class GenerativeAgent(BaseModel):
             + "Do not embellish."
             + "\n\nSummary: "
         )
+        chain = LLMChain(llm=self.llm, prompt=prompt, memory=self.memory)
+
         # The agent seeks to think about their core characteristics.
         return (
-            self.chain(prompt)
+            chain
             .run(name=self.name, queries=[f"{self.name}'s core characteristics"])
             .strip()
         )
@@ -494,13 +493,16 @@ class GenerativeAgent(BaseModel):
         ):
             self.summary = self.compute_agent_summary()
             self.last_refreshed = current_time
+
+        if "broad_schedule" not in self.plan_req:
+            self.plan(current_day=current_time)
         return (
             f"Name: {self.name}\n"
             + f"Age: {self.age}\n"
             + f"Innate traits: {self.traits}\n"
             + f"Status: {self.status}\n"
             + f"Lifestyle: {self.lifestyle}\n"
-            + f"Daily plan requirement: {self.plan_req["broad_schedule"]}\n"
+            + f"Daily plan requirement: {broad_schedule}\n"
             + f"Current Date: {current_time.strftime('%A %B %d')}\n"
             + f"{self.summary}\n"
         )

@@ -14,6 +14,7 @@ from langchain.schema import Document
 from langchain.vectorstores import FAISS
 
 from discussion_agents.memory.generative_agents import GenerativeAgentMemory
+from discussion_agents.utils.fetch import fetch_memories
 
 warnings.filterwarnings("ignore")
 
@@ -68,7 +69,7 @@ def test_score_memories_importance():
         reflection_threshold=8,
     )
     # Test score_memories_importance.
-    scores = memory.score_memories_importance(memory_contents=observations)
+    scores = memory.score_memories_importance(memory_contents=observations[0], relevant_memories=observations[1:])
     assert len(scores) == len(observations)
     for score in scores:
         assert type(score) is float

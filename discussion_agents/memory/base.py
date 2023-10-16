@@ -12,11 +12,3 @@ class BaseMemoryInterface(ABC):
         self, memory_contents: Union[str, List[str]], now: Optional[datetime] = None
     ) -> List[str]:
         pass
-
-    @abstractmethod
-    def fetch_memories(
-        self,
-        observation: str,
-        now: Optional[datetime] = None,
-    ) -> List[Document]:
-        pass

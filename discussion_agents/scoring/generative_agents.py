@@ -10,6 +10,7 @@ from langchain.schema.language_model import BaseLanguageModel
 
 def score_memories_importance(
     memory_contents: Union[str, List[str]],
+    relevant_memories: Union[str, List[str]],
     llm: BaseLanguageModel,
     importance_weight: float = 0.15,
 ) -> List[float]:
@@ -29,13 +30,17 @@ def score_memories_importance(
     """
     if type(memory_contents) is str:
         memory_contents = [memory_contents]
+    if type(relevant_memories) is str:
+        relevant_memories = [relevant_memories]
+        
+    relevant_memories = "\n".join(relevant_memories)
 
     prompt = PromptTemplate.from_template(
-        "On the scale of 1 to 10, where 1 is purely mundane"
-        + " (e.g., brushing teeth, making bed) and 10 is"
-        + " extremely poignant (e.g., a break up, college"
-        + " acceptance), rate the likely poignancy of the"
-        + " following piece of memory.\n"
+        "On the scale of 1 to 10, where 1 is purely mundane " 
+        + "and 10 is extremely poignant "
+        + ", rate the likely poignancy of the "
+        + "following piece of memory with respect to these following relevant memories:\n"
+        + "{relevant_memories}\n\n"
         + "Provide only a single rating.\n"
         + "\Memory: {memory_content}\n"
         + "Rating: "
@@ -44,7 +49,7 @@ def score_memories_importance(
 
     scores = []
     for i, memory_content in enumerate(memory_contents):
-        score = chain.run(memory_content=memory_content).strip()
+        score = chain.run(relevant_memories=relevant_memories, memory_content=memory_content).strip()
         score = re.findall(r"\d+", score)
         score = (
             [0] if not score else score
