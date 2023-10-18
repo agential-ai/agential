@@ -10,30 +10,31 @@ from discussion_agents.utils.parse import parse_list
 
 def generate_broad_plan(
     instruction: str,
-    lifestyle: str,
-    name: str,
+    summary: str,
     llm: BaseLanguageModel,
     llm_kwargs: Dict[str, Any],
     memory: BaseMemory,
 ) -> List[str]:
     prompt = PromptTemplate.from_template(
-        "{instruction}\n"
-        + "In general, {name}'s lifestyle: {lifestyle}\n"
+        "Below is a summary of you."
+        + "{summary}\n\n"
+        + "Instruction: {instruction}\n"
         + "Provide each step on a new line. "
-        + "Here is {name}'s plan in broad-strokes:\n"
+        + "Here is your plan for the instruction in broad-strokes:\n"
         + "1) "
     )
     chain = LLMChain(llm=llm, llm_kwargs=llm_kwargs, prompt=prompt, memory=memory)
-    result = parse_list(chain.run(instruction=instruction, name=name, lifestyle=lifestyle).strip())
+    result = parse_list(chain.run(instruction=instruction, summary=summary).strip())
     result = [s.split(")")[-1].rstrip(",.").strip() for s in result]
 
     return result
 
 
 def update_status(
+    instruction: str, 
     previous_steps: List[str],
     plan_step: str,
-    name: str,
+    summary: str,
     status: str,
     llm: BaseLanguageModel,
     llm_kwargs: Dict[str, Any],
@@ -42,79 +43,97 @@ def update_status(
     previous_steps = "\n".join(previous_steps)
 
     plan_prompt = PromptTemplate.from_template(
-        previous_steps
-        + "\n"
+        "Below is a summary of you."
+        + "{summary}\n\n"
+        + "Instruction: {instruction}\n"
+        + "Previous steps for the above instruction: {previous_steps}\n"
         + "Given the statements above, "
-        + "is there anything that {name} should remember as they plan for:\n"
-        + plan_step
-        + "Write the response from {name}'s perspective."
+        + "is there anything that you should remember as you plan for: {plan_step}\n"
+        + "Write the response from your perspective."
     )
     chain = LLMChain(llm=llm, llm_kwargs=llm_kwargs, prompt=plan_prompt, memory=memory)
-    plan_result = chain.run(name=name).strip()
+    plan_result = chain.run(
+        summary=summary, 
+        instruction=instruction, 
+        previous_steps=previous_steps,
+        plan_step=plan_step
+    ).strip()
 
     thought_prompt = PromptTemplate.from_template(
-        previous_steps
-        + "\n"
+        "Below is a summary of you."
+        + "{summary}\n\n"
+        + "Instruction: {instruction}\n"
+        + "Previous steps for the above instruction: {previous_steps}\n"
         + "Given the statements above, how might we summarize "
-        + "{name}'s thoughts about the plan up till now?\n\n"
-        + "Write the response from {name}'s perspective."
+        + "your thoughts about the plan up till now?\n"
+        + "Write the response from your perspective."
     )
     chain = LLMChain(
         llm=llm, llm_kwargs=llm_kwargs, prompt=thought_prompt, memory=memory
     )
-    thought_result = chain.run(name=name).strip()
+    thought_result = chain.run(
+        summary=summary,
+        instruction=instruction,
+        previous_steps=previous_steps
+    ).strip()
+
+    plan_and_thought = (plan_result + " " + thought_result).replace("\n", "")
 
     status_prompt = PromptTemplate.from_template(
-        "{name}'s status from the previous step: "
-        + "{status}\n\n"
-        + "{name}'s thoughts at the end of the previous step: "
-        + (plan_result + " " + thought_result).replace("\n", "")
-        + "\n\n"
-        + "Given the above, write {name}'s status "
-        + "that reflects {name}'s "
-        + "thoughts at the end of the previous step. "
-        + "Write this in third-person talking about {name}."
+        "Below is a summary of you."
+        + "{summary}\n\n"
+        + "Instruction: {instruction}\n"
+        + "Your status from the previous step: {status}\n\n"
+        + "Your thoughts at the end of the previous step: {plan_and_thought}\n\n"
+        + "Given the above, write a status "
+        + "that reflects your status at the end of the previous step. "
+        + "Write this in third-person talking about yourself."
         + "Follow this format below:\nStatus: <new status>"
     )
     chain = LLMChain(
         llm=llm, llm_kwargs=llm_kwargs, prompt=status_prompt, memory=memory
     )
-    status = chain.run(name=name, status=status).strip()
+    status = chain.run(
+        summary=summary, 
+        instruction=instruction, 
+        status=status,
+        plan_and_thought=plan_and_thought
+    ).strip()
 
     return status
 
 
 def update_broad_plan(
     instruction: str, 
-    name: str,
+    summary: str,
     plan: List[str],
     llm: BaseLanguageModel,
     llm_kwargs: Dict[str, Any],
     memory: BaseMemory,
 ) -> List[str]:
-    plan = "\n".join(plan)
-
     daily_plan_req_prompt = PromptTemplate.from_template(
-        "Instruction: {instruction}\n"
-        + "Here is {name}'s plan in broad-strokes:\n"
-        + plan
+        "Below is a summary of you."
+        + "{summary}\n\n"
+        + "Instruction: {instruction}\n"
+        + "Here is your current plan in broad-strokes: \n{plan}"
         + "Are there any updates or changes to be made to this plan? "
         + "Update the plan to incorporate the changes. "
         + "If there are no changes to be made, simply return the same plan."
         + "Follow this format for the plan:\n"
         + "1) <text>\n2) <text>\n3) ..."
     )
-    daily_plan_req_kwargs = dict(
-        instruction=instruction,
-        name=name
-    )
     chain = LLMChain(
         llm=llm, llm_kwargs=llm_kwargs, prompt=daily_plan_req_prompt, memory=memory
     )
-    result = parse_list(chain.run(**daily_plan_req_kwargs).strip())
-    result = [s.split(")")[-1].rstrip(",.").strip() for s in result]
+    broad_plan = chain.run(
+        summary=summary,
+        instruction=instruction,
+        plan="\n".join(plan)
+    ).strip()
+    broad_plan = parse_list(broad_plan)
+    broad_plan = [s.split(")")[-1].rstrip(",.").strip() for s in broad_plan]
 
-    return result
+    return broad_plan
 
 
 def generate_refined_plan(
