@@ -29,4 +29,10 @@ def parse_list(text: str) -> List[str]:
     """
     lines = re.split(r"\n", text.strip())
     lines = [line for line in lines if line.strip()]  # remove empty lines
-    return [re.sub(r"^\s*\d+\.\s*", "", line).strip() for line in lines]
+    result = [re.sub(r"^\s*\d+\.\s*", "", line).strip() for line in lines]
+    return result
+
+def parse_numbered_list(text: str) -> List[str]:
+    result = parse_list(text)
+    result = [s.split(")")[-1].rstrip(",.").strip() for s in result]
+    return result

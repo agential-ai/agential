@@ -6,7 +6,7 @@ from langchain.prompts import PromptTemplate
 from langchain.schema import BaseMemory
 from langchain.schema.language_model import BaseLanguageModel
 
-from discussion_agents.utils.parse import parse_list
+from discussion_agents.utils.parse import parse_list, parse_numbered_list
 
 def generate_broad_plan(
     instruction: str,
@@ -28,8 +28,7 @@ def generate_broad_plan(
         + "1) "
     )
     chain = LLMChain(llm=llm, llm_kwargs=llm_kwargs, prompt=prompt, memory=memory)
-    result = parse_list(chain.run(summary=summary, instruction=instruction).strip())
-    result = [s.split(")")[-1].rstrip(",.").strip() for s in result]
+    result = parse_numbered_list(chain.run(summary=summary, instruction=instruction).strip())
 
     return result
 
@@ -163,7 +162,6 @@ def generate_refined_plan(
         chain = LLMChain(llm=llm, llm_kwargs=llm_kwargs, prompt=prompt, memory=memory)
         results = chain.run(instruction=instruction, k=k, plans=plans).strip()
 
-    result = parse_list(results)
-    result = [s.split(")")[-1].rstrip(",.").strip() for s in result]
+    result = parse_numbered_list(results)
 
     return results
