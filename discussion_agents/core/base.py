@@ -18,21 +18,11 @@ class BaseCore(BaseCoreInterface):
     llm: BaseLanguageModel
     llm_kwargs: Dict[str, Any] = Field(default_factory=dict)
     retriever: BaseRetriever = Field(default=None)
+    memory: BaseMemory = Field(default=None)
 
     def chain(self, prompt: str) -> LLMChain:
         return LLMChain(
             llm=self.llm,
             llm_kwargs=self.llm_kwargs,
             prompt=prompt
-        )
-    
-class BaseCoreWithMemory(BaseCore):
-    memory: BaseMemory
-
-    def chain(self, prompt: str) -> LLMChain:
-        return LLMChain(
-            llm=self.llm,
-            llm_kwargs=self.llm_kwargs,
-            prompt=prompt,
-            memory=self.memory
         )
