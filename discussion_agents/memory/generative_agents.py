@@ -11,18 +11,16 @@ LangChain Generative Agents Doc Page:
 https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/characters
 """
 from datetime import datetime
+from itertools import chain
 from typing import Any, Dict, List, Optional, Union
 
-from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.schema import BaseMemory, Document
-from langchain.schema.language_model import BaseLanguageModel
 
 from discussion_agents.memory.base import BaseMemoryInterface
 from discussion_agents.core.base import BaseCore
 from discussion_agents.reflecting.generative_agents import (
     get_insights_on_topic,
     get_topics_of_reflection,
-    reflect,
 )
 from discussion_agents.scoring.generative_agents import score_memories_importance
 from discussion_agents.utils.fetch import fetch_memories
@@ -118,7 +116,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
                     for i, memory in enumerate(topic_related_memories)
                 ]
             )
-            related_memories.append(topic_related_memories)
+            related_memories.extend(topic_related_memories)
 
         new_insights = get_insights_on_topic(related_memories, topics, self.core)
 
@@ -133,8 +131,8 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         Adds reflection insights to memory.
         """
         observations = self.get_topics_of_reflection(last_k=last_k)
-        related_memories = self.get_insights_on_topic(topics=observations, now=now)
-        reflections = reflect(observations, related_memories, self.core)
+        reflections = self.get_insights_on_topic(topics=observations, now=now)
+        reflections = list(chain(*reflections))
 
         self.add_memories(reflections, now=now)
         return reflections
