@@ -1,7 +1,7 @@
 """Base agent core."""
 from typing import Dict, Any
 
-from pydantic.v1 import BaseModel, Field, validator
+from pydantic.v1 import BaseModel, Field
 from abc import ABC, abstractmethod
 
 from langchain.schema.language_model import BaseLanguageModel
@@ -17,6 +17,7 @@ class BaseCoreInterface(BaseModel, ABC):
 class BaseCore(BaseCoreInterface):
     llm: BaseLanguageModel
     llm_kwargs: Dict[str, Any] = Field(default_factory=dict)
+    retriever: BaseRetriever = Field(default=None)
 
     def chain(self, prompt: str) -> LLMChain:
         return LLMChain(
@@ -24,9 +25,8 @@ class BaseCore(BaseCoreInterface):
             llm_kwargs=self.llm_kwargs,
             prompt=prompt
         )
-
+    
 class BaseCoreWithMemory(BaseCore):
-    retriever: BaseRetriever
     memory: BaseMemory
 
     def chain(self, prompt: str) -> LLMChain:

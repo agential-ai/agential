@@ -1,23 +1,18 @@
 """Generative Agents methods related to reflection."""
 
-from datetime import datetime
-from typing import List, Optional, Union
+from typing import List, Union
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from langchain.retrievers import TimeWeightedVectorStoreRetriever
-from langchain.schema import BaseRetriever
-from langchain.schema.language_model import BaseLanguageModel
 
-from discussion_agents.utils.fetch import fetch_memories
-from discussion_agents.utils.format import format_memories_detail
+from discussion_agents.core.base import BaseCore
+
 from discussion_agents.utils.parse import parse_list
 
 
 def get_topics_of_reflection(
-    llm: BaseLanguageModel,
-    memory_retriever: TimeWeightedVectorStoreRetriever,
-    last_k: int = 50,
+    observations: str,
+    core: BaseCore,
 ) -> List[str]:
     """Identify the three most salient high-level questions based on recent observations.
 
@@ -36,28 +31,21 @@ def get_topics_of_reflection(
     Example:
         questions = get_topics_of_reflection(llm_model, memory_retriever)
     """
-    assert isinstance(
-        memory_retriever, TimeWeightedVectorStoreRetriever
-    ), f"memory_retriever must be of type {TimeWeightedVectorStoreRetriever}."
-
     prompt = PromptTemplate.from_template(
         "{observations}\n\n"
         + "Given only the information above, what are the 3 most salient "
         + "high-level questions we can answer about the subjects in the statements?\n"
         + "Provide each question on a new line."
     )
-    observations = memory_retriever.memory_stream[-last_k:]
-    observation_str = "\n".join([format_memories_detail(o) for o in observations])
-    chain = LLMChain(llm=llm, prompt=prompt)
-    result = chain.run(observations=observation_str)
+    chain = LLMChain(llm=core.llm, prompt=prompt)
+    result = chain.run(observations=observations)
     return parse_list(result)
 
 
 def get_insights_on_topic(
-    llm: BaseLanguageModel,
-    memory_retriever: BaseRetriever,
+    related_memories: Union[str, List[str]],
     topics: Union[str, List[str]],
-    now: Optional[datetime] = None,
+    core: BaseCore,
 ) -> List[List[str]]:
     """Generate high-level insights on a given topic based on pertinent memories.
 
@@ -81,7 +69,7 @@ def get_insights_on_topic(
     prompt = PromptTemplate.from_template(
         "Statements relevant to: '{topic}'\n"
         + "---\n"
-        + "{related_statements}\n"
+        + "{related_memory}\n"
         + "---\n"
         + "What 5 high-level novel insights can you infer from the above statements "
         + "that are relevant to answering the following question?\n"
@@ -90,30 +78,28 @@ def get_insights_on_topic(
         + "Question: {topic}\n\n"
     )
 
-    if type(topics) is str:
-        topics = [topics]
+    assert type(topics) is type(related_memories)
+    if type(topics) is list and type(related_memories) is list:
+        assert len(topics) == len(related_memories)
 
-    chain = LLMChain(llm=llm, prompt=prompt)
+    if type(topics) is str and type(related_memories) is str:
+        topics = [topics]
+        related_memories = [related_memories]
+
+    chain = LLMChain(llm=core.llm, prompt=prompt)
+
     results = []
-    for topic in topics:
-        related_memories = fetch_memories(memory_retriever, topic, now=now)
-        related_statements = "\n".join(
-            [
-                format_memories_detail(memory, prefix=f"{i+1}. ")
-                for i, memory in enumerate(related_memories)
-            ]
-        )
-        result = chain.run(topic=topic, related_statements=related_statements)
+    for topic, related_memory in zip(topics, related_memories):
+        result = chain.run(topic=topic, related_memory=related_memory)
         results.append(parse_list(result))
 
     return results
 
 
 def reflect(
-    llm: BaseLanguageModel,
-    memory_retriever: TimeWeightedVectorStoreRetriever,
-    last_k: int = 50,
-    now: Optional[datetime] = None,
+    observations: str,
+    related_memories: str,
+    core: BaseCore,
 ) -> List[str]:
     """Pause to reflect on recent observations and generate insights.
 
@@ -133,13 +119,6 @@ def reflect(
     Example:
         insights = reflect(llm_model, memory_retriever, last_k=100)
     """
-    assert isinstance(
-        memory_retriever, TimeWeightedVectorStoreRetriever
-    ), f"memory_retriever must be of type {TimeWeightedVectorStoreRetriever}."
-
-    new_insights = []
-    topics = get_topics_of_reflection(llm, memory_retriever, last_k=last_k)
-    for topic in topics:
-        insights = get_insights_on_topic(llm, memory_retriever, topic, now=now)[0]
-        new_insights.extend(insights)
+    topics = get_topics_of_reflection(observations, core)
+    new_insights = get_insights_on_topic(related_memories, topics, core)
     return new_insights

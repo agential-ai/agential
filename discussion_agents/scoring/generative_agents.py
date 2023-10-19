@@ -5,13 +5,13 @@ from typing import List, Union
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from langchain.schema.language_model import BaseLanguageModel
 
+from discussion_agents.core.base import BaseCore
 
 def score_memories_importance(
     memory_contents: Union[str, List[str]],
     relevant_memories: Union[str, List[str]],
-    llm: BaseLanguageModel,
+    core: BaseCore,
     importance_weight: float = 0.15,
 ) -> List[float]:
     """Calculate absolute importance scores for given memory contents.
@@ -45,7 +45,7 @@ def score_memories_importance(
         + "\Memory: {memory_content}\n"
         + "Rating: "
     )
-    chain = LLMChain(llm=llm, prompt=prompt)
+    chain = LLMChain(llm=core.llm, prompt=prompt)
 
     scores = []
     for i, memory_content in enumerate(memory_contents):

@@ -16,9 +16,9 @@ from typing import Any, Dict, List, Optional, Union
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.schema import BaseMemory, Document
 from langchain.schema.language_model import BaseLanguageModel
-from langchain.utils import mock_now
 
 from discussion_agents.memory.base import BaseMemoryInterface
+from discussion_agents.core.base import BaseCore
 from discussion_agents.reflecting.generative_agents import (
     get_insights_on_topic,
     get_topics_of_reflection,
@@ -67,12 +67,8 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         - now_key (str): The key for loading the current timestamp.
     """
 
-    llm: BaseLanguageModel
-    memory_retriever: TimeWeightedVectorStoreRetriever
-    reflection_threshold: Optional[float] = None
-    # A weight of 0.15 makes this less important than it
-    # would be otherwise, relative to salience and time
-    importance_weight: float = 0.15
+    core: BaseCore  # Must Use retriever=TimeWeightedVectorStoreRetriever!
+    reflection_threshold: Optional[float] = 8
     aggregate_importance: float = 0.0  # : :meta private:
     max_tokens_limit: int = 1200  # : :meta private:
 
@@ -97,10 +93,11 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
 
         Wrapper for `discussion_agents.reflecting.generative_agents.get_topics_of_reflection`.
         """
+        observations = self.core.retriever.memory_stream[-last_k:]
+        observations = "\n".join([format_memories_detail(o) for o in observations])
         return get_topics_of_reflection(
-            llm=self.llm,
-            memory_retriever=self.memory_retriever,
-            last_k=last_k,
+            observations=observations,
+            core=self.core
         )
 
     def get_insights_on_topic(
@@ -112,12 +109,20 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
 
         Wrapper for `discussion_agents.reflecting.generative_agents.get_insights_on_topic`.
         """
-        return get_insights_on_topic(
-            llm=self.llm,
-            memory_retriever=self.memory_retriever,
-            topics=topics,
-            now=now,
-        )
+        related_memories = []
+        for topic in topics:
+            topic_related_memories = fetch_memories(self.core.retriever, topic, now=now)
+            topic_related_memories = "\n".join(
+                [
+                    format_memories_detail(memory, prefix=f"{i+1}. ")
+                    for i, memory in enumerate(topic_related_memories)
+                ]
+            )
+            related_memories.append(topic_related_memories)
+
+        new_insights = get_insights_on_topic(related_memories, topics, self.core)
+
+        return new_insights
 
     def pause_to_reflect(
         self, last_k: int = 50, now: Optional[datetime] = None
@@ -127,19 +132,18 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         Wrapper for `discussion_agents.reflecting.generative_agents.reflect`.
         Adds reflection insights to memory.
         """
-        results = reflect(
-            llm=self.llm,
-            memory_retriever=self.memory_retriever,
-            last_k=last_k,
-            now=now,
-        )
-        self.add_memories(results, now=now)
-        return results
+        observations = self.get_topics_of_reflection(last_k=last_k)
+        related_memories = self.get_insights_on_topic(topics=observations, now=now)
+        reflections = reflect(observations, related_memories, self.core)
+
+        self.add_memories(reflections, now=now)
+        return reflections
 
     def score_memories_importance(
         self,
         memory_contents: Union[str, List[str]],
         relevant_memories: Union[str, List[str]],
+        importance_weight: float = 0.15  # Less important than relevance and recency.
     ) -> List[float]:
         """Wrapper for Generative Agents scoring memory importance.
 
@@ -148,12 +152,16 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         return score_memories_importance(
             memory_contents=memory_contents,
             relevant_memories=relevant_memories,
-            llm=self.llm,
-            importance_weight=self.importance_weight,
+            core=self.core,
+            importance_weight=importance_weight,
         )
 
     def add_memories(
-        self, memory_contents: Union[str, List[str]], now: Optional[datetime] = None
+        self, 
+        memory_contents: Union[str, List[str]], 
+        now: Optional[datetime] = None,
+        importance_weight: float = 0.15,
+        last_k: int = 50,
     ) -> List[str]:
         """Add observations/memories to the agent's memory.
 
@@ -188,12 +196,14 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
             memory_contents = [memory_contents]
 
         relevant_memories = fetch_memories(
-            memory_retriever=self.memory_retriever,
+            memory_retriever=self.core.retriever,
             observation="\n".join(memory_contents),
         )
         relevant_memories = [mem.page_content for mem in relevant_memories]
         importance_scores = self.score_memories_importance(
-            memory_contents, relevant_memories=relevant_memories
+            memory_contents, 
+            relevant_memories=relevant_memories, 
+            importance_weight=importance_weight
         )
         self.aggregate_importance += max(importance_scores)
 
@@ -206,7 +216,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
                 )
             )
 
-        result = self.memory_retriever.add_documents(documents, current_time=now)
+        result = self.core.retriever.add_documents(documents, current_time=now)
 
         # After an agent has processed a certain amount of memories (as measured by
         # aggregate importance), it is time to reflect on recent events to add
@@ -217,8 +227,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
             and not self.reflecting
         ):
             self.reflecting = True
-            self.pause_to_reflect(now=now)
-            # Hack to clear the importance from reflection
+            self.pause_to_reflect(last_k=last_k, now=now)
             self.aggregate_importance = 0.0
             self.reflecting = False
         return result
@@ -234,10 +243,10 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
                 semi-colon delineated.
         """
         result = []
-        for doc in self.memory_retriever.memory_stream[::-1]:
+        for doc in self.core.retriever.memory_stream[::-1]:
             if consumed_tokens >= self.max_tokens_limit:
                 break
-            consumed_tokens += self.llm.get_num_tokens(doc.page_content)
+            consumed_tokens += self.core.llm.get_num_tokens(doc.page_content)
             if consumed_tokens < self.max_tokens_limit:
                 result.append(doc)
         return format_memories_simple(result)
@@ -287,7 +296,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
             relevant_memories = [
                 mem
                 for query in queries
-                for mem in fetch_memories(self.memory_retriever, query, now=now)
+                for mem in fetch_memories(self.core.retriever, query, now=now)
             ]
             return {
                 self.relevant_memories_key: format_memories_detail(
