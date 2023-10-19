@@ -10,10 +10,8 @@ https://github.com/langchain-ai/langchain/tree/master/libs/experimental/langchai
 LangChain Generative Agents Doc Page:
 https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/characters
 """
-import re
-
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
@@ -27,6 +25,7 @@ from discussion_agents.planning.generative_agents import (
     update_broad_plan,
     update_status,
 )
+from discussion_agents.utils.parse import remove_name
 
 
 class GenerativeAgent(BaseModel):
@@ -151,8 +150,8 @@ class GenerativeAgent(BaseModel):
             print(entity)
         """
         prompt = PromptTemplate.from_template(
-            "What is the observed entity in the following observation? {observation}"
-            + "\nEntity="
+            "What is the observed entity in the following observation? {observation}\n"
+            + "Entity="
         )
         chain = LLMChain(llm=self.llm, prompt=prompt, memory=self.memory)
         return chain.run(observation=observation).strip()
@@ -178,8 +177,8 @@ class GenerativeAgent(BaseModel):
             print(action)
         """
         prompt = PromptTemplate.from_template(
-            "What is the {entity} doing in the following observation? {observation}"
-            + "\nThe {entity} is"
+            "What is the {entity} doing in the following observation? {observation}\n"
+            + "The {entity} is"
         )
         chain = LLMChain(llm=self.llm, prompt=prompt, memory=self.memory)
         return (
@@ -246,15 +245,14 @@ class GenerativeAgent(BaseModel):
             print(reaction)
         """
         prompt = PromptTemplate.from_template(
-            "{agent_summary_description}"
-            + "\nIt is {current_time}."
-            + "\n{agent_name}'s lifestyle: {lifestyle}"
-            + "\nSummary of relevant context from {agent_name}'s memory:"
-            + "\n{relevant_memories}"
-            + "\nMost recent observations: {most_recent_memories}"
-            + "\nObservation: {observation}"
-            + "\n\n"
-            + suffix
+            "{agent_summary_description}\n"
+            + "It is {current_time}.\n"
+            + "{agent_name}'s lifestyle: {lifestyle}\n"
+            + "Summary of relevant context from {agent_name}'s memory:\n"
+            + "{relevant_memories}\n"
+            + "Most recent observations: {most_recent_memories}\n"
+            + "Observation: {observation}\n\n"
+            + "{suffix}"
         )
         agent_summary_description = self.get_summary(now=now)
         relevant_memories_str = self.summarize_related_memories(observation)
@@ -266,10 +264,11 @@ class GenerativeAgent(BaseModel):
         kwargs = dict(
             agent_summary_description=agent_summary_description,
             current_time=current_time_str,
-            relevant_memories=relevant_memories_str,
             agent_name=self.name,
-            observation=observation,
             lifestyle=self.lifestyle,
+            relevant_memories=relevant_memories_str,
+            observation=observation,
+            suffix=suffix
         )
         consumed_tokens = self.llm.get_num_tokens(
             prompt.format(most_recent_memories="", **kwargs)
@@ -298,7 +297,7 @@ class GenerativeAgent(BaseModel):
             cleaned_response = agent._clean_response(response)
             print(cleaned_response)
         """
-        return re.sub(f"^{self.name} ", "", text.strip()).strip()
+        return remove_name(text, self.name)
 
     def generate_reaction(
         self, observation: str, now: Optional[datetime] = None

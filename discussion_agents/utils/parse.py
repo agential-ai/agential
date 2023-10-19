@@ -36,3 +36,7 @@ def parse_numbered_list(text: str) -> List[str]:
     result = parse_list(text)
     result = [s.split(")")[-1].rstrip(",.").strip() for s in result]
     return result
+
+def remove_name(text: str, name: str) -> str:
+    result = re.sub(f"^{name} ", "", text.strip()).strip()
+    return result
