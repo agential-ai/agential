@@ -20,11 +20,15 @@ def generate_broad_plan(
         + "{summary}\n\n"
         + "Instruction: {instruction}\n"
         + "Provide each step on a new line. "
+        + "Follow this format for the plan:\n"
+        + "1) <text>\n"
+        + "2) <text>\n"
+        + "3) ...\n"
         + "Here is your plan for the instruction in broad-strokes:\n"
         + "1) "
     )
     chain = LLMChain(llm=llm, llm_kwargs=llm_kwargs, prompt=prompt, memory=memory)
-    result = parse_list(chain.run(instruction=instruction, summary=summary).strip())
+    result = parse_list(chain.run(summary=summary, instruction=instruction).strip())
     result = [s.split(")")[-1].rstrip(",.").strip() for s in result]
 
     return result
@@ -102,44 +106,10 @@ def update_status(
 
     return status
 
-
-def update_broad_plan(
-    instruction: str, 
-    summary: str,
-    plan: List[str],
-    llm: BaseLanguageModel,
-    llm_kwargs: Dict[str, Any],
-    memory: BaseMemory,
-) -> List[str]:
-    daily_plan_req_prompt = PromptTemplate.from_template(
-        "Below is a summary of you."
-        + "{summary}\n\n"
-        + "Instruction: {instruction}\n"
-        + "Here is your current plan in broad-strokes: \n{plan}"
-        + "Are there any updates or changes to be made to this plan? "
-        + "Update the plan to incorporate the changes. "
-        + "If there are no changes to be made, simply return the same plan."
-        + "Follow this format for the plan:\n"
-        + "1) <text>\n2) <text>\n3) ..."
-    )
-    chain = LLMChain(
-        llm=llm, llm_kwargs=llm_kwargs, prompt=daily_plan_req_prompt, memory=memory
-    )
-    broad_plan = chain.run(
-        summary=summary,
-        instruction=instruction,
-        plan="\n".join(plan)
-    ).strip()
-    broad_plan = parse_list(broad_plan)
-    broad_plan = [s.split(")")[-1].rstrip(",.").strip() for s in broad_plan]
-
-    return broad_plan
-
-
 def generate_refined_plan(
     instruction: str, 
     plan: List[str],
-    name: str,
+    summary: str,
     llm: BaseLanguageModel,
     memory: BaseMemory,
     k: int = 1,
@@ -152,24 +122,31 @@ def generate_refined_plan(
     plan_format = plan_format[:-1]
 
     prompt = PromptTemplate.from_template(
-        "Instruction: \n{instruction}\n\n"
+        "Below is a summary of you."
+        + "{summary}\n\n"
+        + "Instruction: \n{instruction}\n\n"
         + "Plan format: \n"
         + "{plan_format}\n\n"
         + "Given the instruction and the current plan above, "
         + "for each planning step, fill in 'Substep:', "
         + "which describes in detail what the substeps for that given planning step are. "
         + "If a planning step does not require a substep(s), then do not specify any substep. "
-        + "Return the entire plan with the included substeps. Keep the steps descriptive, but concise."
+        + "Return the entire plan with the included substeps. Keep the steps descriptive and concise."
         + "Output format example: \n"
         + "1) <first step>\n"
         + "1.1) <first step, first substep>\n"
         + "1.2) <first step, second substep>\n"
+        + "2) <second step>\n"
     )
     chain = LLMChain(llm=llm, llm_kwargs=llm_kwargs, prompt=prompt, memory=memory)
 
     results = []
     for _ in range(k):
-        result = chain.run(instruction=instruction, plan_format=plan_format).strip()
+        result = chain.run(
+            summary=summary,
+            instruction=instruction, 
+            plan_format=plan_format
+        ).strip()
         results.append(result)
 
     if k == 1:
@@ -180,7 +157,7 @@ def generate_refined_plan(
         prompt = PromptTemplate.from_template(
             "Instruction: \n{instruction}\n\n"
             + "Below are {k} different plans for the instruction above. "
-            + "Consolidate them into 1 plan."
+            + "Consolidate them into 1 plan such that the plan best answers the instruction."
             + "{plans}"
         )
         chain = LLMChain(llm=llm, llm_kwargs=llm_kwargs, prompt=prompt, memory=memory)
