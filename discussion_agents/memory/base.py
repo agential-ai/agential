@@ -3,8 +3,6 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import List, Optional, Union
 
-from langchain.schema import BaseRetriever, Document
-
 
 class BaseMemoryInterface(ABC):
     @abstractmethod

@@ -29,6 +29,7 @@ faiss-cpu = "^1.7.4"
 chromadb = "^0.4.10"
 camel = {git = "https://github.com/camel-ai/camel.git", rev = "v0.1.0"}
 sentence-transformers = "^2.2.2"
+pydantic = "^2.4.2"
 
 [tool.poetry.group.dev.dependencies]
 sphinx = "^7.2.6"

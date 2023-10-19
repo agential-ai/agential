@@ -22,7 +22,6 @@ from discussion_agents.memory.generative_agents import GenerativeAgentMemory
 from discussion_agents.planning.generative_agents import (
     generate_broad_plan,
     generate_refined_plan,
-    update_broad_plan,
     update_status,
 )
 from discussion_agents.utils.parse import remove_name
@@ -93,14 +92,6 @@ class GenerativeAgent(BaseModel):
         self.status = update_status(
             name=self.name,
             status=self.status,
-            llm=self.llm,
-            llm_kwargs=llm_kwargs,
-            memory=self.memory,
-        )
-        self.plan_req["broad_schedule"] = update_broad_plan(
-            current_day=current_day,
-            name=self.name,
-            summary=summary,
             llm=self.llm,
             llm_kwargs=llm_kwargs,
             memory=self.memory,
