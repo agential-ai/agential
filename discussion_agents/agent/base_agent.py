@@ -75,7 +75,7 @@ class GenerativeAgent(BaseModel):
     def plan(
         self,
         current_day: datetime,
-        k: int = 3, 
+        k: int = 3,
         llm_kwargs: Dict[str, Any] = {"max_tokens": 500, "temperature": 1},
     ):
         summary = self.get_summary() if not self.summary else self.summary
@@ -181,9 +181,7 @@ class GenerativeAgent(BaseModel):
             + "The {entity} is"
         )
         chain = LLMChain(llm=self.llm, prompt=prompt, memory=self.memory)
-        return (
-            chain.run(entity=entity_name, observation=observation).strip()
-        )
+        return chain.run(entity=entity_name, observation=observation).strip()
 
     def summarize_related_memories(self, observation: str) -> str:
         """Generate a summary of memories most relevant to an observation.
@@ -268,7 +266,7 @@ class GenerativeAgent(BaseModel):
             lifestyle=self.lifestyle,
             relevant_memories=relevant_memories_str,
             observation=observation,
-            suffix=suffix
+            suffix=suffix,
         )
         consumed_tokens = self.llm.get_num_tokens(
             prompt.format(most_recent_memories="", **kwargs)
@@ -453,11 +451,9 @@ class GenerativeAgent(BaseModel):
         chain = LLMChain(llm=self.llm, prompt=prompt, memory=self.memory)
 
         # The agent seeks to think about their core characteristics.
-        return (
-            chain
-            .run(name=self.name, queries=[f"{self.name}'s core characteristics"])
-            .strip()
-        )
+        return chain.run(
+            name=self.name, queries=[f"{self.name}'s core characteristics"]
+        ).strip()
 
     def get_summary(
         self, force_refresh: bool = False, now: Optional[datetime] = None

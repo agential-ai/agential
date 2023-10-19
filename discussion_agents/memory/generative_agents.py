@@ -137,7 +137,9 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         return results
 
     def score_memories_importance(
-        self, memory_contents: Union[str, List[str]], relevant_memories: Union[str, List[str]]
+        self,
+        memory_contents: Union[str, List[str]],
+        relevant_memories: Union[str, List[str]],
     ) -> List[float]:
         """Wrapper for Generative Agents scoring memory importance.
 
@@ -185,9 +187,14 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         if type(memory_contents) is str:
             memory_contents = [memory_contents]
 
-        relevant_memories = fetch_memories(memory_retriever=self.memory_retriever, observation="\n".join(memory_contents))
+        relevant_memories = fetch_memories(
+            memory_retriever=self.memory_retriever,
+            observation="\n".join(memory_contents),
+        )
         relevant_memories = [mem.page_content for mem in relevant_memories]
-        importance_scores = self.score_memories_importance(memory_contents, relevant_memories=relevant_memories)
+        importance_scores = self.score_memories_importance(
+            memory_contents, relevant_memories=relevant_memories
+        )
         self.aggregate_importance += max(importance_scores)
 
         documents = []

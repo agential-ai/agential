@@ -6,7 +6,8 @@ from langchain.prompts import PromptTemplate
 from langchain.schema import BaseMemory
 from langchain.schema.language_model import BaseLanguageModel
 
-from discussion_agents.utils.parse import parse_list, parse_numbered_list
+from discussion_agents.utils.parse import parse_numbered_list
+
 
 def generate_broad_plan(
     instruction: str,
@@ -28,13 +29,15 @@ def generate_broad_plan(
         + "1) "
     )
     chain = LLMChain(llm=llm, llm_kwargs=llm_kwargs, prompt=prompt, memory=memory)
-    result = parse_numbered_list(chain.run(summary=summary, instruction=instruction).strip())
+    result = parse_numbered_list(
+        chain.run(summary=summary, instruction=instruction).strip()
+    )
 
     return result
 
 
 def update_status(
-    instruction: str, 
+    instruction: str,
     previous_steps: List[str],
     plan_step: str,
     summary: str,
@@ -56,10 +59,10 @@ def update_status(
     )
     chain = LLMChain(llm=llm, llm_kwargs=llm_kwargs, prompt=plan_prompt, memory=memory)
     plan_result = chain.run(
-        summary=summary, 
-        instruction=instruction, 
+        summary=summary,
+        instruction=instruction,
         previous_steps=previous_steps,
-        plan_step=plan_step
+        plan_step=plan_step,
     ).strip()
 
     thought_prompt = PromptTemplate.from_template(
@@ -75,9 +78,7 @@ def update_status(
         llm=llm, llm_kwargs=llm_kwargs, prompt=thought_prompt, memory=memory
     )
     thought_result = chain.run(
-        summary=summary,
-        instruction=instruction,
-        previous_steps=previous_steps
+        summary=summary, instruction=instruction, previous_steps=previous_steps
     ).strip()
 
     plan_and_thought = (plan_result + " " + thought_result).replace("\n", "")
@@ -97,22 +98,23 @@ def update_status(
         llm=llm, llm_kwargs=llm_kwargs, prompt=status_prompt, memory=memory
     )
     status = chain.run(
-        summary=summary, 
-        instruction=instruction, 
+        summary=summary,
+        instruction=instruction,
         status=status,
-        plan_and_thought=plan_and_thought
+        plan_and_thought=plan_and_thought,
     ).strip()
 
     return status
 
+
 def generate_refined_plan(
-    instruction: str, 
+    instruction: str,
     plan: List[str],
     summary: str,
     llm: BaseLanguageModel,
     memory: BaseMemory,
     k: int = 1,
-    llm_kwargs: Dict[str, Any] = {"max_tokens": 3000, "temperature": 0.8}
+    llm_kwargs: Dict[str, Any] = {"max_tokens": 3000, "temperature": 0.8},
 ) -> List[str]:
     plan_format = ""
     for i, step in enumerate(plan):
@@ -142,9 +144,7 @@ def generate_refined_plan(
     results = []
     for _ in range(k):
         result = chain.run(
-            summary=summary,
-            instruction=instruction, 
-            plan_format=plan_format
+            summary=summary, instruction=instruction, plan_format=plan_format
         ).strip()
         results.append(result)
 
