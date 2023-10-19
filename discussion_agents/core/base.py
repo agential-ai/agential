@@ -1,7 +1,7 @@
 """Base agent core."""
-from typing import Dict
+from typing import Dict, Any
 
-from pydantic import BaseModel, Field
+from pydantic.v1 import BaseModel, Field, validator
 from abc import ABC, abstractmethod
 
 from langchain.schema.language_model import BaseLanguageModel
@@ -16,7 +16,7 @@ class BaseCoreInterface(BaseModel, ABC):
 
 class BaseCore(BaseCoreInterface):
     llm: BaseLanguageModel
-    llm_kwargs: Dict[str, any] = Field(default_factory=dict)
+    llm_kwargs: Dict[str, Any] = Field(default_factory=dict)
 
     def chain(self, prompt: str) -> LLMChain:
         return LLMChain(
