@@ -50,8 +50,8 @@ def test_fetch_memories():
     observation = "Some observation."
 
     memories = fetch_memories(
-        memory_retriever=create_memory_retriever(),
         observation=observation,
+        memory_retriever=create_memory_retriever(),
         now=test_date,
     )
     assert type(memories) is list

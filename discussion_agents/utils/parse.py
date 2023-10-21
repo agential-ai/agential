@@ -28,17 +28,50 @@ def parse_list(text: str) -> List[str]:
         - It removes leading numbers and periods often used in numbered lists.
     """
     lines = re.split(r"\n", text.strip())
-    lines = [line for line in lines if line.strip()]  # remove empty lines
-    result = [re.sub(r"^\s*\d+\.\s*", "", line).strip() for line in lines]
-    return result
+    lines = [line for line in lines if line.strip()]   # Remove empty lines.
+    lines = [re.sub(r"^\s*\d+\.\s*", "", line).strip() for line in lines]
+    return lines
 
 
 def parse_numbered_list(text: str) -> List[str]:
-    result = parse_list(text)
-    result = [s.split(")")[-1].rstrip(",.").strip() for s in result]
-    return result
+    """Parse a numbered list from a given text and return a list of list items.
+
+    This function extracts the content following the last ")" character, removes any trailing
+    commas or periods, and trims leading/trailing spaces from each line in the input text.
+    
+    Args:
+        text (str): The input text containing a numbered list.
+
+    Returns:
+        List[str]: A list of strings from the numbered list.
+
+    Example:
+        input_text = "1) Item One.\n2) Item Two.\n3) Item Three,\n"
+        parsed_list = parse_numbered_list(input_text)
+        # Result: ["Item One", "Item Two", "Item Three"]
+    """
+    lines = parse_list(text)
+    lines = [s.split(")")[-1].rstrip(",.").strip() for s in lines]
+    return lines
 
 
 def remove_name(text: str, name: str) -> str:
-    result = re.sub(f"^{name} ", "", text.strip()).strip()
-    return result
+    """Remove a specified name prefix from the beginning of each line in the text.
+
+    This function removes the specified 'name' prefix followed by a space from the
+    beginning of each line in the input text.
+
+    Args:
+        text (str): The input text containing lines with name prefixes.
+        name (str): The name prefix to remove from each line.
+
+    Returns:
+        str: The text with the specified name prefix removed from each line.
+
+    Example:
+        input_text = "John Smith: Hello, Jane. Jane Doe: Hi, John."
+        clean_text = remove_name(input_text, "John Smith")
+        # Result: "Hello, Jane. Jane Doe: Hi, John."
+    """
+    lines = re.sub(f"^{name} ", "", text.strip()).strip()
+    return lines

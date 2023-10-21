@@ -107,7 +107,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         related_memories = []
         for topic in topics:
             topic_related_memories = fetch_memories(
-                memory_retriever=self.core.retriever, query=topic, now=now
+                observation=topic, memory_retriever=self.core.retriever, now=now
             )
             topic_related_memories = "\n".join(
                 [
@@ -195,8 +195,8 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
             memory_contents = [memory_contents]
 
         relevant_memories = fetch_memories(
-            memory_retriever=self.core.retriever,
             observation="\n".join(memory_contents),
+            memory_retriever=self.core.retriever,
         )
         relevant_memories = [mem.page_content for mem in relevant_memories]
         importance_scores = self.score_memories_importance(
@@ -295,11 +295,15 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
             relevant_memories = [
                 mem
                 for query in queries
-                for mem in fetch_memories(self.core.retriever, query, now=now)
+                for mem in fetch_memories(
+                    observation=query, 
+                    memory_retriever=self.core.retriever, 
+                    now=now
+                )
             ]
             return {
                 self.relevant_memories_key: format_memories_detail(
-                    relevant_memories, prefix="- "
+                    memories=relevant_memories, prefix="- "
                 ),
                 self.relevant_memories_simple_key: format_memories_simple(
                     relevant_memories

@@ -21,7 +21,7 @@ def test_format_memories_detail():
     doc = Document(
         page_content="Some page content.", metadata={"created_at": test_date}
     )
-    doc_out = format_memories_detail(relevant_memories=doc, prefix="-")
+    doc_out = format_memories_detail(memories=doc, prefix="-")
     assert doc_out == gt_doc_out
 
     # Test formatting multiple Documents.
@@ -33,7 +33,7 @@ def test_format_memories_detail():
             Document(page_content=f"Number {i}.", metadata={"created_at": test_date})
         )
 
-    docs_out = format_memories_detail(relevant_memories=docs, prefix="> ")
+    docs_out = format_memories_detail(memories=docs, prefix="> ")
     assert docs_out == gt_docs_out
 
     # Test error raise.

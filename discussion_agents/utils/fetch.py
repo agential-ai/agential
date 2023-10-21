@@ -7,17 +7,17 @@ from langchain.utils import mock_now
 
 
 def fetch_memories(
-    memory_retriever: BaseRetriever,
     observation: str,
+    memory_retriever: BaseRetriever,
     now: Optional[datetime] = None,
 ) -> List[Document]:
-    """Retrieve relevant memories based on the provided observation.
+    """Retrieve relevant memories based on the observation and time.
 
     Args:
-        memory_retriever (TimeWeightedVectorStoreRetriever):
-            The retriever used to access memory data.
         observation (str):
             The observation or query used to fetch related memories.
+        memory_retriever (BaseRetriever):
+            The retriever used to access memory data.
         now (Optional[datetime], optional):
             The current date and time for temporal context (default: None).
 

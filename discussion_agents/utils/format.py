@@ -9,9 +9,12 @@ def format_memories_detail(
 ) -> str:
     """Formats memories with created_at time and an optional prefix.
 
+    Note: All memory documents must have a 'created_at' key within the
+    metadata.
+
     Args:
-        relevant_memories (Union[Document, List[Document]]): The memories to be formatted.
-            It can be a single Document or a list of Document objects.
+        memories (Union[Document, List[Document]]): The memories to be formatted.
+            It can be a single LangChain Document or a list of Document objects.
         prefix (str, optional): A prefix to be added before each formatted memory.
             Defaults to an empty string.
 
@@ -37,14 +40,14 @@ def format_memories_detail(
 
 
 def format_memories_simple(relevant_memories: Union[Document, List[Document]]) -> str:
-    r"""Formats memories delineated by \';\'.
+    """Formats memories delineated by ';'.
 
     Args:
         relevant_memories (Union[Document, List[Document]]): The memories to be formatted.
-            It can be a single Document or a list of Documents.
+            It can be a single LangChain Document or a list of Documents.
 
     Returns:
-        str: A string containing the formatted memories separated by \';\'.
+        str: A string containing the formatted memories separated by ';'.
     """
     if isinstance(relevant_memories, Document):
         relevant_memories = [relevant_memories]
