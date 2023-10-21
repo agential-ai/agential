@@ -1,12 +1,11 @@
 """Generative Agents methods related to reflection."""
 
-from typing import List, Union
+from typing import List
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 
 from discussion_agents.core.base import BaseCore
-
 from discussion_agents.utils.parse import parse_list
 
 
@@ -43,8 +42,8 @@ def get_topics_of_reflection(
 
 
 def get_insights_on_topic(
-    related_memories: Union[str, List[str]],
-    topics: Union[str, List[str]],
+    topics: List[str],
+    related_memories: List[str],
     core: BaseCore,
 ) -> List[List[str]]:
     """Generate high-level insights on a given topic based on pertinent memories.
@@ -66,6 +65,9 @@ def get_insights_on_topic(
         topics = ["Favorite books", "Hiking experiences"]
         insights = get_insights_on_topic(llm_model, memory_retriever, topics)
     """
+    assert type(topics) == type(related_memories) == list
+    assert len(topics) == len(related_memories)
+
     prompt = PromptTemplate.from_template(
         "Statements relevant to: '{topic}'\n"
         + "---\n"
@@ -77,14 +79,6 @@ def get_insights_on_topic(
         + "Do not repeat any insights that have already been made.\n\n"
         + "Question: {topic}\n\n"
     )
-
-    assert type(topics) is type(related_memories)
-    if type(topics) is list and type(related_memories) is list:
-        assert len(topics) == len(related_memories)
-
-    if type(topics) is str and type(related_memories) is str:
-        topics = [topics]
-        related_memories = [related_memories]
 
     chain = LLMChain(llm=core.llm, prompt=prompt)
 
@@ -98,7 +92,7 @@ def get_insights_on_topic(
 
 def reflect(
     observations: str,
-    related_memories: str,
+    related_memories: List[str],
     core: BaseCore,
 ) -> List[str]:
     """Pause to reflect on recent observations and generate insights.
@@ -119,6 +113,8 @@ def reflect(
     Example:
         insights = reflect(llm_model, memory_retriever, last_k=100)
     """
-    topics = get_topics_of_reflection(observations, core)
-    new_insights = get_insights_on_topic(related_memories, topics, core)
+    topics = get_topics_of_reflection(observations=observations, core=core)
+    new_insights = get_insights_on_topic(
+        topics=topics, related_memories=related_memories, core=core
+    )
     return new_insights

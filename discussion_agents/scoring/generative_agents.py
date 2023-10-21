@@ -8,6 +8,7 @@ from langchain.prompts import PromptTemplate
 
 from discussion_agents.core.base import BaseCore
 
+
 def score_memories_importance(
     memory_contents: Union[str, List[str]],
     relevant_memories: Union[str, List[str]],

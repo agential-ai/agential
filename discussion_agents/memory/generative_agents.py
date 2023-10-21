@@ -16,8 +16,8 @@ from typing import Any, Dict, List, Optional, Union
 
 from langchain.schema import BaseMemory, Document
 
-from discussion_agents.memory.base import BaseMemoryInterface
 from discussion_agents.core.base import BaseCore
+from discussion_agents.memory.base import BaseMemoryInterface
 from discussion_agents.reflecting.generative_agents import (
     get_insights_on_topic,
     get_topics_of_reflection,
@@ -93,14 +93,11 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         """
         observations = self.core.retriever.memory_stream[-last_k:]
         observations = "\n".join([format_memories_detail(o) for o in observations])
-        return get_topics_of_reflection(
-            observations=observations,
-            core=self.core
-        )
+        return get_topics_of_reflection(observations=observations, core=self.core)
 
     def get_insights_on_topic(
         self,
-        topics: Union[str, List[str]],
+        topics: List[str],
         now: Optional[datetime] = None,
     ) -> List[List[str]]:
         """Exposing get_insights_on_topic.
@@ -109,16 +106,20 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         """
         related_memories = []
         for topic in topics:
-            topic_related_memories = fetch_memories(self.core.retriever, topic, now=now)
+            topic_related_memories = fetch_memories(
+                memory_retriever=self.core.retriever, query=topic, now=now
+            )
             topic_related_memories = "\n".join(
                 [
-                    format_memories_detail(memory, prefix=f"{i+1}. ")
+                    format_memories_detail(memories=memory, prefix=f"{i+1}. ")
                     for i, memory in enumerate(topic_related_memories)
                 ]
             )
-            related_memories.extend(topic_related_memories)
+            related_memories.append(topic_related_memories)
 
-        new_insights = get_insights_on_topic(related_memories, topics, self.core)
+        new_insights = get_insights_on_topic(
+            topics=topics, related_memories=related_memories, core=self.core
+        )
 
         return new_insights
 
@@ -130,18 +131,18 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         Wrapper for `discussion_agents.reflecting.generative_agents.reflect`.
         Adds reflection insights to memory.
         """
-        observations = self.get_topics_of_reflection(last_k=last_k)
-        reflections = self.get_insights_on_topic(topics=observations, now=now)
+        topics = self.get_topics_of_reflection(last_k=last_k)
+        reflections = self.get_insights_on_topic(topics=topics, now=now)
         reflections = list(chain(*reflections))
 
-        self.add_memories(reflections, now=now)
+        self.add_memories(memory_contents=reflections, now=now)
         return reflections
 
     def score_memories_importance(
         self,
         memory_contents: Union[str, List[str]],
         relevant_memories: Union[str, List[str]],
-        importance_weight: float = 0.15  # Less important than relevance and recency.
+        importance_weight: float = 0.15,  # Less important than relevance and recency.
     ) -> List[float]:
         """Wrapper for Generative Agents scoring memory importance.
 
@@ -155,8 +156,8 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         )
 
     def add_memories(
-        self, 
-        memory_contents: Union[str, List[str]], 
+        self,
+        memory_contents: Union[str, List[str]],
         now: Optional[datetime] = None,
         importance_weight: float = 0.15,
         last_k: int = 50,
@@ -199,9 +200,9 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         )
         relevant_memories = [mem.page_content for mem in relevant_memories]
         importance_scores = self.score_memories_importance(
-            memory_contents, 
-            relevant_memories=relevant_memories, 
-            importance_weight=importance_weight
+            memory_contents,
+            relevant_memories=relevant_memories,
+            importance_weight=importance_weight,
         )
         self.aggregate_importance += max(importance_scores)
 

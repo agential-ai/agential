@@ -5,8 +5,8 @@ from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain.schema.language_model import BaseLanguageModel
 
-from discussion_agents.utils.parse import parse_numbered_list
 from discussion_agents.core.base import BaseCore
+from discussion_agents.utils.parse import parse_numbered_list
 
 
 def generate_broad_plan(
@@ -70,9 +70,7 @@ def update_status(
         + "your thoughts about the plan up till now?\n"
         + "Write the response from your perspective."
     )
-    chain = LLMChain(
-        llm=core.llm, llm_kwargs=core.llm_kwargs, prompt=thought_prompt
-    )
+    chain = LLMChain(llm=core.llm, llm_kwargs=core.llm_kwargs, prompt=thought_prompt)
     thought_result = chain.run(
         summary=summary, instruction=instruction, previous_steps=previous_steps
     ).strip()
@@ -90,9 +88,7 @@ def update_status(
         + "Write this in third-person talking about yourself."
         + "Follow this format below:\nStatus: <new status>"
     )
-    chain = LLMChain(
-        llm=core.llm, llm_kwargs=core.llm_kwargs, prompt=status_prompt
-    )
+    chain = LLMChain(llm=core.llm, llm_kwargs=core.llm_kwargs, prompt=status_prompt)
     status = chain.run(
         summary=summary,
         instruction=instruction,

@@ -5,7 +5,7 @@ from langchain.schema import Document
 
 
 def format_memories_detail(
-    relevant_memories: Union[Document, List[Document]], prefix: str = ""
+    memories: Union[Document, List[Document]], prefix: str = ""
 ) -> str:
     """Formats memories with created_at time and an optional prefix.
 
@@ -19,15 +19,15 @@ def format_memories_detail(
         str: A string containing the formatted memories with timestamps and prefix;
             newline-character delineated.
     """
-    if isinstance(relevant_memories, Document):
-        relevant_memories = [relevant_memories]
+    if isinstance(memories, Document):
+        memories = [memories]
 
     content = []
-    for mem in relevant_memories:
+    for mem in memories:
         if isinstance(mem, Document):
             if "created_at" not in mem.metadata:
                 raise TypeError(
-                    "Input `relevant_memories` Document(s) must have 'created_at' key in metadata."
+                    "Input `memories` Document(s) must have 'created_at' key in metadata."
                 )
             created_time = mem.metadata["created_at"].strftime(
                 "%A %B %d, %Y -- %H:%M %p"
