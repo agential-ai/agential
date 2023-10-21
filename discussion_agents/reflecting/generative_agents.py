@@ -1,13 +1,13 @@
 """Generative Agents methods related to reflection."""
 
-from typing import List, Union, Optional
+from typing import List, Union, Optional, Tuple
 from datetime import datetime
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
+from langchain.schema import BaseRetriever
 
 from discussion_agents.core.base import BaseCore
-from discussion_agents.core.memory import BaseCoreWithMemory
 from discussion_agents.utils.parse import parse_list
 from discussion_agents.utils.fetch import fetch_memories
 from discussion_agents.utils.format import format_memories_detail
@@ -113,28 +113,32 @@ def get_insights_on_topics(
 
 def reflect(
     observations: Union[str, List[str]],
-    core: BaseCoreWithMemory,
+    core: BaseCore,
     now: Optional[datetime] = None
-) -> List[List[str]]:
-    """Generate insights through reflection on recent observations.
+) -> Tuple[List[str], List[List[str]]]:
+    """Generate insights on recent observations through reflection.
 
     This function generates a list of topics w.r.t observations and extracts
-    salient insights on each of these topics using related_memories as context.
-    Related memories are usually specific to each topic/observation.
+    salient insights from each of these topics using related memories (to these topics)
+    as context. Related memories are specific to each topic/observation.
 
     Args:
         observations (Union[str, List[str]]): Observations to derive reflections from.
-        core (BaseCoreWithMemory): The agent's core component; needs memory and a retriever.
+        core (BaseCore): The agent's core component; needs a retriever.
         now (Optional[datetime]): current datetime or one specified.
 
     Returns:
-        List[str]: A list of generated insights based on the provided observations.
+        Tuple[List[str], List[List[str]]]: A list of generated topics from the
+            observation and a list of lists of insights, a list of insights for
+            every topic.
 
     Example:
-        recent_observations = "Attended a tech conference on AI advancements."
-        core = BaseCoreWithMemory(llm=llm, memory=memory, retriever=retriever)
-        generated_insights = reflect(recent_observations, core, now=datetime.now())
+        observations = "Attended a tech conference on AI advancements."
+        core = BaseCore(llm=llm, retriever=retriever)
+        topics, insights = reflect(observations, core, now=datetime.now())
     """
+    assert isinstance(core.retriever, BaseRetriever) 
+
     topics = get_topics_of_reflection(observations=observations, core=core)
 
     related_memories = []
@@ -153,4 +157,4 @@ def reflect(
     insights = get_insights_on_topics(
         topics=topics, related_memories=related_memories, core=core
     )
-    return insights
+    return topics, insights

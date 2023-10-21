@@ -37,10 +37,6 @@ encode_kwargs = {"normalize_embeddings": False}
 
 test_date = datetime(year=2022, month=11, day=14, hour=3, minute=14)
 
-core = BaseCore(
-    llm=llm
-)
-
 def create_memory_retriever():
     """Creates a TimeWeightedVectorStoreRetriever."""
     embeddings_model = HuggingFaceEmbeddings(
@@ -52,6 +48,11 @@ def create_memory_retriever():
         vectorstore=vectorstore, otherScoreKeys=["importance"], k=5
     )
     return retriever
+
+core = BaseCore(
+    llm=llm,
+    retriever=create_memory_retriever()
+)
 
 @pytest.mark.slow
 def test_get_topics_of_reflection():
@@ -114,11 +115,13 @@ def test_get_insights_on_topics():
 
 def test_reflect():
     """Tests reflect."""
-    insights = reflect(
-        llm=llm,
-        memory_retriever=create_memory_retriever(),
-        last_k=10,
-        now=test_date,
+    observations = "This is an observation."
+    topics, insights = reflect(
+        observations=observations,
+        core=core,
+        now=test_date
     )
 
+    assert type(topics) is list
     assert type(insights) is list
+    assert type(insights[0]) is list
