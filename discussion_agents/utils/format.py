@@ -21,6 +21,13 @@ def format_memories_detail(
     Returns:
         str: A string containing the formatted memories with timestamps and prefix;
             newline-character delineated.
+
+    Example:
+        doc = Document(
+            page_content="Some page content.", metadata={"created_at": test_date}
+        )
+        doc_out = format_memories_detail(memories=doc, prefix="-")
+        # "-[Monday November 14, 2022 -- 03:14 AM]: Some page content."
     """
     if isinstance(memories, Document):
         memories = [memories]
@@ -48,6 +55,13 @@ def format_memories_simple(relevant_memories: Union[Document, List[Document]]) -
 
     Returns:
         str: A string containing the formatted memories separated by ';'.
+    
+    Example:
+        docs = []
+        for i in range(2):
+            docs.append(Document(page_content=f"Number {i}."))
+        docs_out = format_memories_simple(relevant_memories=docs)
+        # "Number 0.; Number 1."
     """
     if isinstance(relevant_memories, Document):
         relevant_memories = [relevant_memories]

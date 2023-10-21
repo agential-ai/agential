@@ -18,7 +18,7 @@ def parse_list(text: str) -> List[str]:
     Returns:
         List[str]: A list of strings parsed from the input text.
 
-    Example usage:
+    Example:
         input_text = "1. Item 1\n2. Item 2\n3. Item 3\n\n4. Item 4"
         parsed_list = GenerativeAgentMemory._parse_list(input_text)
         # 'parsed_list' contains ["Item 1", "Item 2", "Item 3", "Item 4"]
@@ -69,9 +69,9 @@ def remove_name(text: str, name: str) -> str:
         str: The text with the specified name prefix removed from each line.
 
     Example:
-        input_text = "John Smith: Hello, Jane. Jane Doe: Hi, John."
-        clean_text = remove_name(input_text, "John Smith")
-        # Result: "Hello, Jane. Jane Doe: Hi, John."
+        input_text = "John Smith"
+        clean_text = remove_name(input_text, "John")
+        # Result: "Smith"
     """
     lines = re.sub(f"^{name} ", "", text.strip()).strip()
     return lines

@@ -24,6 +24,12 @@ def fetch_memories(
     Returns:
         List[Document]:
             A list of relevant documents representing memories.
+    
+    Example:
+        retriever = TimeWeightedVectorStoreRetriever(
+            vectorstore=vectorstore, otherScoreKeys=["importance"], k=5
+        )
+        result = fetch_memories("An observation", retriever, now=datetime.now())
     """
     if now is not None:
         with mock_now(now):

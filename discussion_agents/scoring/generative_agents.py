@@ -18,12 +18,13 @@ def score_memories_importance(
     """Calculate absolute importance scores for given memory contents.
 
     Args:
-        memory_contents (Union[str, List[str]]): Memories to score.
-        llm (BaseLanguageModel): Language model for scoring.
+        memory_contents (Union[str, List[str]): Memories or memory contents to score.
+        relevant_memories (Union[str, List[str]): Relevant memories for context.
+        core (BaseCore): The agent core component.
         importance_weight (float, optional): Weight for importance scores. Default is 0.15.
 
     Returns:
-        List[float]: List of importance scores (1.0 to 10.0 scale).
+        List[float]: List of importance scores (1.0 to 10.0 scale normalized and weighted).
 
     Example:
         memories = ["Visited the museum.", "Had a meaningful conversation."]
