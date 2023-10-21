@@ -1,9 +1,8 @@
 """Planning module for Generative Agents."""
-from typing import Any, Dict, List
+from typing import List
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from langchain.schema.language_model import BaseLanguageModel
 
 from discussion_agents.core.base import BaseCore
 from discussion_agents.utils.parse import parse_numbered_list

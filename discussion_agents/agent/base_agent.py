@@ -16,7 +16,8 @@ from typing import Any, Dict, Optional, Tuple
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain.schema.language_model import BaseLanguageModel
-from langchain_experimental.pydantic_v1 import BaseModel, Field
+# from langchain_experimental.pydantic_v1 import BaseModel, Field
+from pydantic.v1 import BaseModel, Field
 
 from discussion_agents.memory.generative_agents import GenerativeAgentMemory
 from discussion_agents.planning.generative_agents import (
