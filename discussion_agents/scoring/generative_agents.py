@@ -19,7 +19,7 @@ def score_memories_importance(
 
     Args:
         memory_contents (Union[str, List[str]): Memories or memory contents to score.
-        relevant_memories (Union[str, List[str]): Relevant memories for context.
+        relevant_memories (Union[str, List[str]): Relevant memories to all memory_contents.
         core (BaseCore): The agent core component.
         importance_weight (float, optional): Weight for importance scores. Default is 0.15.
 
@@ -27,13 +27,18 @@ def score_memories_importance(
         List[float]: List of importance scores (1.0 to 10.0 scale normalized and weighted).
 
     Example:
-        memories = ["Visited the museum.", "Had a meaningful conversation."]
-        importance_scores = score_memories_importance(memories, llm)
+        memories = ["Visited the museum."]
+        relevant_memories = ["Enjoyed the outdoors at the museum.", "Took lots of pictures at the museum."]
+        core = ...
+        importance_scores = score_memories_importance(memories, relevant_memories, core)
+        # [0.9]
     """
     if type(memory_contents) is str:
         memory_contents = [memory_contents]
     if type(relevant_memories) is str:
         relevant_memories = [relevant_memories]
+
+    assert len(memory_contents) == len(relevant_memories)
 
     relevant_memories = "\n".join(relevant_memories)
 
@@ -67,7 +72,7 @@ def score_memories_importance(
         memory_contents
     ), f"The llm generated {len(scores)} scores for {len(memory_contents)} memories."
 
-    # Split into list of strings and convert to floats
+    # Split into list of strings and convert to floats.
     scores = [float(x) / 10 * importance_weight for x in scores]
 
     return scores

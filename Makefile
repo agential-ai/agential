@@ -55,6 +55,9 @@ test: ## Run all pytest tests.
 test_nocost: ## Run pytest tests with no 'cost' marker (don't require funds to run).
 	pytest -m "not cost" tests/
 
+test_fast: ## Run pytest tests with no 'slow' marker and no 'cost' marker.
+	pytest -m "not slow and not cost" tests/
+
 create_environment: ## Set up conda environment.
 ifeq (True,$(HAS_CONDA))
 		@echo ">>> Detected conda, creating conda environment."
