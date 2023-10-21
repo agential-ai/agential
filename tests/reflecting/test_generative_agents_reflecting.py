@@ -1,5 +1,6 @@
 """Unit Tests for Generative Agents reflecting modules."""
 import os
+import pytest 
 
 from datetime import datetime
 
@@ -14,7 +15,7 @@ from langchain.vectorstores import FAISS
 
 from discussion_agents.core.base import BaseCore
 from discussion_agents.reflecting.generative_agents import (
-    get_insights_on_topic,
+    get_insights_on_topics,
     get_topics_of_reflection,
     reflect,
 )
@@ -52,21 +53,59 @@ def create_memory_retriever():
     )
     return retriever
 
-
+@pytest.mark.slow
 def test_get_topics_of_reflection():
     """Tests get_topics_of_reflection."""
-    observations = "This is ann observation."
+
+    # Test observations string.
+    observations = "This is an observation."
+    topics = get_topics_of_reflection(
+        observations=observations, core=core
+    )
+    assert type(topics) is list
+
+    # Test observations list.
+    observations = ["This is an observation."]
     topics = get_topics_of_reflection(
         observations=observations, core=core
     )
     assert type(topics) is list
 
 
-def test_get_insights_on_topic():
-    """Tests get_insights_on_topic."""
-    insights = get_insights_on_topic(
+def test_get_insights_on_topics():
+    """Tests get_insights_on_topics."""
+
+    # Test topics list and related_memories list.
+    insights = get_insights_on_topics(
         topics=["Some topic."],
         related_memories=["This is another topic."],
+        core=core,
+    )
+    assert type(insights) is list
+    assert type(insights[0]) is list
+
+    # Test topics str and related_memories str.
+    insights = get_insights_on_topics(
+        topics="Some topic.",
+        related_memories="This is another topic.",
+        core=core,
+    )
+    assert type(insights) is list
+    assert type(insights[0]) is list
+
+    # Test topics str and related_memories list.
+    insights = get_insights_on_topics(
+        topics="Some topic.",
+        related_memories=["This is another topic."],
+        core=core,
+    )
+    assert type(insights) is list
+    assert type(insights[0]) is list
+
+    # Test topics list and related_memories str.
+    insights = get_insights_on_topics(
+        topics=["Some topic."],
+        related_memories="This is another topic.",
         core=core,
     )
     assert type(insights) is list

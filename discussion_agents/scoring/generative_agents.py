@@ -33,9 +33,9 @@ def score_memories_importance(
         importance_scores = score_memories_importance(memories, relevant_memories, core)
         # [0.9]
     """
-    if type(memory_contents) is str:
+    if isinstance(memory_contents, str):
         memory_contents = [memory_contents]
-    if type(relevant_memories) is str:
+    if isinstance(relevant_memories, str):
         relevant_memories = [relevant_memories]
 
     assert len(memory_contents) == len(relevant_memories)

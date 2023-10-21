@@ -16,10 +16,10 @@ from typing import Any, Dict, List, Optional, Union
 
 from langchain.schema import BaseMemory, Document
 
-from discussion_agents.core.base import BaseCore
+from discussion_agents.core.memory import BaseCoreWithMemory
 from discussion_agents.memory.base import BaseMemoryInterface
 from discussion_agents.reflecting.generative_agents import (
-    get_insights_on_topic,
+    get_insights_on_topics,
     get_topics_of_reflection,
 )
 from discussion_agents.scoring.generative_agents import score_memories_importance
@@ -65,13 +65,13 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         - now_key (str): The key for loading the current timestamp.
     """
 
-    core: BaseCore  # Must Use retriever=TimeWeightedVectorStoreRetriever!
+    core: BaseCoreWithMemory  # Must Use retriever=TimeWeightedVectorStoreRetriever!
     reflection_threshold: Optional[float] = 8
     aggregate_importance: float = 0.0  # : :meta private:
     max_tokens_limit: int = 1200  # : :meta private:
 
     # Keys for loading memory variables.
-
+    
     # Input keys.
     queries_key: str = "queries"
     most_recent_memories_token_key: str = "recent_memories_token"
@@ -117,7 +117,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
             )
             related_memories.append(topic_related_memories)
 
-        new_insights = get_insights_on_topic(
+        new_insights = get_insights_on_topics(
             topics=topics, related_memories=related_memories, core=self.core
         )
 
