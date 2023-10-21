@@ -12,6 +12,7 @@ from langchain.llms.huggingface_hub import HuggingFaceHub
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.vectorstores import FAISS
 
+from discussion_agents.core.base import BaseCore
 from discussion_agents.reflecting.generative_agents import (
     get_insights_on_topic,
     get_topics_of_reflection,
@@ -35,6 +36,9 @@ encode_kwargs = {"normalize_embeddings": False}
 
 test_date = datetime(year=2022, month=11, day=14, hour=3, minute=14)
 
+core = BaseCore(
+    llm=llm
+)
 
 def create_memory_retriever():
     """Creates a TimeWeightedVectorStoreRetriever."""
@@ -51,8 +55,9 @@ def create_memory_retriever():
 
 def test_get_topics_of_reflection():
     """Tests get_topics_of_reflection."""
+    observations = "This is ann observation."
     topics = get_topics_of_reflection(
-        llm=llm, memory_retriever=create_memory_retriever(), last_k=10
+        observations=observations, core=core
     )
     assert type(topics) is list
 
@@ -60,10 +65,9 @@ def test_get_topics_of_reflection():
 def test_get_insights_on_topic():
     """Tests get_insights_on_topic."""
     insights = get_insights_on_topic(
-        llm=llm,
-        memory_retriever=create_memory_retriever(),
-        topics="Some topic.",
-        now=test_date,
+        topics=["Some topic."],
+        related_memories=["This is another topic."],
+        core=core,
     )
     assert type(insights) is list
     assert type(insights[0]) is list

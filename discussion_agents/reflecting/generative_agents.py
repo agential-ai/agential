@@ -1,6 +1,6 @@
 """Generative Agents methods related to reflection."""
 
-from typing import List
+from typing import List, Union
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
@@ -10,26 +10,31 @@ from discussion_agents.utils.parse import parse_list
 
 
 def get_topics_of_reflection(
-    observations: str,
+    observations: Union[str, List[str]],
     core: BaseCore,
 ) -> List[str]:
-    """Identify the three most salient high-level questions based on recent observations.
+    """Generate three insightful high-level questions based on recent observation(s).
 
     Args:
-        llm (BaseLanguageModel): Language model for question generation.
-        memory_retriever (TimeWeightedVectorStoreRetriever): Memory retriever.
-        last_k (int, optional): Number of recent observations to consider. Default is 50.
+        observations (Union[str, List[str]]): Recent observations to derive questions from; can be multiple but must be str.
+        core (BaseCore): The agent's core component.
 
     Returns:
-        List[str]: List of the three most salient high-level questions.
+        List[str]: A list of the three most salient high-level questions.
 
     Note:
-        This method retrieves recent observations from memory and uses them to
-        generate insightful questions about the observed subjects.
+        This function takes recent observations as input and utilizes the specified core
+        component to generate meaningful and high-level questions related to the observed
+        subjects.
 
     Example:
-        questions = get_topics_of_reflection(llm_model, memory_retriever)
+        recent_observations = "Attended a scientific lecture on AI advancements."
+        core = BaseCore(llm=llm)
+        generated_questions = get_topics_of_reflection(recent_observations, core)
     """
+    if type(observations) is list:
+        observations = "\n".join(observations)
+
     prompt = PromptTemplate.from_template(
         "{observations}\n\n"
         + "Given only the information above, what are the 3 most salient "
@@ -46,25 +51,32 @@ def get_insights_on_topic(
     related_memories: List[str],
     core: BaseCore,
 ) -> List[List[str]]:
-    """Generate high-level insights on a given topic based on pertinent memories.
+    """Generate high-level insights on specified topics using relevant memories.
 
     Args:
-        llm (BaseLanguageModel): Language model for insight generation.
-        memory_retriever (TimeWeightedVectorStoreRetriever): Memory retriever.
-        topics (Union[str, List[str]]): Topic or list of topics for insight generation.
-        now (Optional[datetime], optional): Current date and time for temporal context. Default is None.
+        topics (List[str]): A list of topics for which insights are to be generated.
+        related_memories (List[str]): Memories relevant to the specified topics.
+        core (BaseCore): The core component used for insight generation.
 
     Returns:
-        List[List[str]]: Lists of high-level novel insights for each specified topic.
+        List[List[str]]: Lists of high-level, unique insights corresponding to each topic.
 
     Note:
-        This method extracts pertinent memories related to the given topics and
-        generates unique insights based on the gathered information.
+        This function leverages pertinent memories associated with the specified topics
+        and employs the provided core component to create novel, high-level insights
+        based on the gathered information.
 
     Example:
-        topics = ["Favorite books", "Hiking experiences"]
-        insights = get_insights_on_topic(llm_model, memory_retriever, topics)
-    """
+        selected_topics = ["Artificial Intelligence trends", "Recent travel experiences"]
+        relevant_memories = ["Attended an AI conference.", "Traveled to Japan last month."]
+        generated_insights = get_insights_on_topic(selected_topics, relevant_memories, insight_core)
+    """   
+
+    # str list
+    # list str
+    # str str
+    # list list
+
     assert type(topics) == type(related_memories) == list
     assert len(topics) == len(related_memories)
 
