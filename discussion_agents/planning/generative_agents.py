@@ -13,6 +13,26 @@ def generate_broad_plan(
     summary: str,
     core: BaseCore,
 ) -> List[str]:
+    """Generate a broad plan based on provided instruction and agent summary.
+
+    This function generates a broad plan in response to a given instruction and summary.
+    It utilizes the provided BaseCore to create a prompt template and use it with an
+    LLMChain to generate the plan.
+
+    Args:
+        instruction (str): The instruction to create a plan for.
+        summary (str): A summary of your agent's relevant characteristics.
+        core (BaseCore): The agent's core component used for generating plan.
+
+    Returns:
+        List[str]: A list of steps representing the generated broad plan.
+
+    Example:
+        instruction = "Prepare for a business presentation."
+        summary = "..."
+        core = BaseCore(...)  # Initialize with the necessary components.
+        broad_plan = generate_broad_plan(instruction, summary, core)
+    """
     prompt = PromptTemplate.from_template(
         "Below is a summary of your characteristics."
         + "{summary}\n\n"
@@ -22,7 +42,7 @@ def generate_broad_plan(
         + "1) <text>\n"
         + "2) <text>\n"
         + "3) ...\n"
-        + "Devise the plan as according to your characteristics. "
+        + "Devise the plan according to your characteristics. "
         + "Here is your plan for the instruction in broad-strokes:\n"
         + "1) "
     )
@@ -42,10 +62,38 @@ def update_status(
     status: str,
     core: BaseCore,
 ) -> str:
+    """Update the status of a plan step in response to provided information.
+
+    This function takes an instruction, a list of previous steps, the current plan step, 
+    a summary, and a status update to incorporate into the plan. It uses the provided 
+    BaseCore to facilitate the update.
+
+    Args:
+        instruction (str): The original instruction related to the plan.
+        previous_steps (List[str]): A list of previously generated plan steps.
+        plan_step (str): The new/current plan step.
+        summary (str): A summary of the agent's relevant characteristics.
+        status (str): The status to update for the plan step.
+        core (BaseCore): The core component used for plan update.
+
+    Returns:
+        str: A string representing the updated plan with the new status.
+
+    Example:
+        instruction = "Prepare for a business presentation."
+        previous_steps = ["1) Research market trends.", "2) Create a product demo."]
+        plan_step = "3) Prepare presentation slides."
+        summary = "..."
+        status = "Product demo requires Figma design and Notion"
+        core = BaseCore(...)  # Initialize with the necessary components.
+        updated_status = update_status(
+            instruction, previous_steps, plan_step, summary, status, core
+        )
+    """
     previous_steps = "\n".join(previous_steps)
 
     plan_prompt = PromptTemplate.from_template(
-        "Below is a summary of you."
+        "Below is a summary of your characteristics."
         + "{summary}\n\n"
         + "Instruction: {instruction}\n"
         + "Previous steps for the above instruction: {previous_steps}\n"
@@ -62,7 +110,7 @@ def update_status(
     ).strip()
 
     thought_prompt = PromptTemplate.from_template(
-        "Below is a summary of you."
+        "Below is a summary of your characteristics."
         + "{summary}\n\n"
         + "Instruction: {instruction}\n"
         + "Previous steps for the above instruction: {previous_steps}\n"
@@ -78,7 +126,7 @@ def update_status(
     plan_and_thought = (plan_result + " " + thought_result).replace("\n", "")
 
     status_prompt = PromptTemplate.from_template(
-        "Below is a summary of you."
+        "Below is a summary of your characteristics."
         + "{summary}\n\n"
         + "Instruction: {instruction}\n"
         + "Your status from the previous step: {status}\n\n"
@@ -108,10 +156,36 @@ def generate_refined_plan(
     k: int = 1,
     # llm_kwargs: Dict[str, Any] = {"max_tokens": 3000, "temperature": 0.8},
 ) -> List[str]:
+    """Generate a refined plan by incorporating new plan substep(s) given the current plan step and previous steps.
+
+    This function takes an original instruction, a list of previous plan steps, a new/current plan step,
+    a summary, and a BaseCore component to refine the current step in the existing plan. 
+
+    Args:
+        instruction (str): The original instruction related to the plan.
+        previous_steps (List[str]): A list of previously generated plan steps.
+        plan_step (str): The new/current plan step.
+        summary (str): A summary of relevant characteristics or context.
+        core (BaseCore): The agent's core component.
+        k (int, optional): The number of alternative refined plans to generate. Default is 1.
+
+    Returns:
+        List[str]: A list of steps representing the refined plan, including the new step.
+
+    Example:
+        instruction = "Prepare for a business presentation."
+        previous_steps = ["1) Research market trends.", "2) Create a product demo."]
+        plan_step = "3) Prepare presentation slides."
+        summary = "Key points: product features, market analysis, competition."
+        core_instance = BaseCore(...)  # Initialize with the necessary components.
+        refined_steps = generate_refined_plan(
+            instruction, previous_steps, plan_step, summary, core_instance, k=2
+        )
+    """
     previous_steps = "\n".join(previous_steps)
 
     prompt = PromptTemplate.from_template(
-        "Below is a summary of you."
+        "Below is a summary of your characteristics."
         + "{summary}\n\n"
         + "Instruction: \n{instruction}\n\n"
         + "Previous steps in the plan for the above instruction: \n"
@@ -149,7 +223,11 @@ def generate_refined_plan(
             + "The current plan step is: {plan_step}\n\n"
             + "Below are {k} different sub-plans for the instruction above. "
             + "Consolidate them into 1 plan such that the plan best answers the instruction."
-            + "{plans}"
+            + "{plans}\n\n"
+            + "Output format example: \n"
+            + "1) <first substep>\n"
+            + "2) <second substep>\n"
+            + "3) <third substep>\n"
         )
         chain = LLMChain(llm=core.llm, llm_kwargs=core.llm_kwargs, prompt=prompt)
         results = chain.run(

@@ -1,3 +1,4 @@
+"""Unit tests for generative agent planning."""
 import os
 
 import dotenv
@@ -80,6 +81,7 @@ summary = (
 )
 
 def test_generate_broad_plan():
+    """Test generate_broad_plan."""
     broad_plan = generate_broad_plan(
         instruction=instruction,
         summary=summary,
@@ -91,6 +93,7 @@ def test_generate_broad_plan():
 
 
 def test_update_status():
+    """Test update_status."""
     new_status = update_status(
         instruction=instruction,
         previous_steps=broad_plan[:1],
@@ -102,6 +105,7 @@ def test_update_status():
     assert type(new_status) is str
 
 def test_generate_refined_plan():
+    """Test generate_refined_plan."""
     refined_steps = generate_refined_plan(
         instruction=instruction,
         previous_steps=broad_plan[:1],
