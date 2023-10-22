@@ -9,11 +9,10 @@ from langchain.llms.huggingface_hub import HuggingFaceHub
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.vectorstores import FAISS
 
-from discussion_agents.memory.generative_agents import GenerativeAgentMemory
+from discussion_agents.core.base import BaseCore
 from discussion_agents.planning.generative_agents import (
     generate_broad_plan,
     generate_refined_plan,
-    update_broad_plan,
     update_status,
 )
 
@@ -58,26 +57,33 @@ def create_memory_retriever():
     )
     return retriever
 
+core = BaseCore(
+    llm=llm,
+    retriever=create_memory_retriever()
+)
+
+instruction = "Describe what makes a table reliable."
+name = "Bob"
+age = 25
+traits = "talkative, enthusiastic"
+lifestyle = "lazy, likes to sleep late"
+status = ""
+_summary = "Bob is a socialite with lots of friends and a heart for enthusiasm and extrovertedness."
+
+summary = (
+    f"Name: {name}\n"
+    + f"Age: {age}\n"
+    + f"Innate traits: {traits}\n"
+    + f"Status: {status}\n"
+    + f"Lifestyle: {lifestyle}\n"
+    + f"{_summary}\n"
+)
 
 def test_generate_broad_plan():
-    instruction = "Describe what makes a table reliable."
-    lifestyle = "lazy, likes to sleep late"
-    name = "Bob"
-
-    memory = GenerativeAgentMemory(
-        llm=llm,
-        memory_retriever=create_memory_retriever(),
-        verbose=False,
-        reflection_threshold=8,
-    )
-
     broad_plan = generate_broad_plan(
         instruction=instruction,
-        lifestyle=lifestyle,
-        name=name,
-        llm=llm,
-        llm_kwargs={},
-        memory=memory,
+        summary=summary,
+        core=core
     )
     assert type(broad_plan) is list
     for p in broad_plan:
@@ -85,58 +91,22 @@ def test_generate_broad_plan():
 
 
 def test_update_status():
-    memory = GenerativeAgentMemory(
-        llm=llm,
-        memory_retriever=create_memory_retriever(),
-        verbose=False,
-        reflection_threshold=8,
-    )
-
-    status = update_status(
+    new_status = update_status(
+        instruction=instruction,
         previous_steps=broad_plan[:1],
         plan_step=broad_plan[1],
-        name="Bob",
-        status="Sturdy and durable tables are reliable.",
-        llm=llm,
-        llm_kwargs={},
-        memory=memory,
+        summary=summary,
+        status=status,
+        core=core
     )
-    assert type(status) is str
-
-
-def test_update_broad_plan():
-    memory = GenerativeAgentMemory(
-        llm=llm,
-        memory_retriever=create_memory_retriever(),
-        verbose=False,
-        reflection_threshold=8,
-    )
-
-    updated_broad_plan = update_broad_plan(
-        instruction="Describe what makes a table reliable.",
-        name="Bob",
-        plan=broad_plan,
-        llm=llm,
-        llm_kwargs={},
-        memory=memory,
-    )
-    assert type(updated_broad_plan) is str
-
+    assert type(new_status) is str
 
 def test_generate_refined_plan():
-    memory = GenerativeAgentMemory(
-        llm=llm,
-        memory_retriever=create_memory_retriever(),
-        verbose=False,
-        reflection_threshold=8,
+    refined_steps = generate_refined_plan(
+        instruction=instruction,
+        previous_steps=broad_plan[:1],
+        plan_step=broad_plan[1],
+        summary=summary,
+        core=core
     )
-
-    refined_plan = generate_refined_plan(
-        instruction="Describe what makes a table reliable.",
-        plan=broad_plan,
-        name="Bob",
-        llm=llm,
-        llm_kwargs={},
-        memory=memory,
-    )
-    assert type(refined_plan) is list
+    assert type(refined_steps) is list

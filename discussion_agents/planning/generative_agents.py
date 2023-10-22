@@ -14,7 +14,7 @@ def generate_broad_plan(
     core: BaseCore,
 ) -> List[str]:
     prompt = PromptTemplate.from_template(
-        "Below is a summary of you."
+        "Below is a summary of your characteristics."
         + "{summary}\n\n"
         + "Instruction: {instruction}\n"
         + "Provide each step on a new line. "
@@ -22,6 +22,7 @@ def generate_broad_plan(
         + "1) <text>\n"
         + "2) <text>\n"
         + "3) ...\n"
+        + "Devise the plan as according to your characteristics. "
         + "Here is your plan for the instruction in broad-strokes:\n"
         + "1) "
     )
@@ -159,6 +160,6 @@ def generate_refined_plan(
             plans=plans
         ).strip()
 
-    result = parse_numbered_list(results)
+    results = parse_numbered_list(results)
 
     return results
