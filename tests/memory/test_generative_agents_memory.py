@@ -14,7 +14,6 @@ from langchain.schema import Document
 from langchain.vectorstores import FAISS
 
 from discussion_agents.memory.generative_agents import GenerativeAgentMemory
-from discussion_agents.utils.fetch import fetch_memories
 
 warnings.filterwarnings("ignore")
 
