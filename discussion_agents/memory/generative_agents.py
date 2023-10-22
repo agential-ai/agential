@@ -16,7 +16,7 @@ from typing import Any, Dict, List, Optional, Union
 
 from langchain.schema import BaseMemory, Document
 
-from discussion_agents.core.memory import BaseCoreWithMemory
+from discussion_agents.core.base import BaseCore
 from discussion_agents.memory.base import BaseMemoryInterface
 from discussion_agents.reflecting.generative_agents import (
     get_insights_on_topics,
@@ -65,7 +65,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         - now_key (str): The key for loading the current timestamp.
     """
 
-    core: BaseCoreWithMemory  # Must Use retriever=TimeWeightedVectorStoreRetriever!
+    core: BaseCore  # Must Use retriever=TimeWeightedVectorStoreRetriever!
     reflection_threshold: Optional[float] = 8
     aggregate_importance: float = 0.0  # : :meta private:
     max_tokens_limit: int = 1200  # : :meta private:
@@ -147,7 +147,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         """Wrapper for Generative Agents scoring memory importance.
 
         Wrapper for `discussion_agents.scoring.generative_agents.score_memories_importance`.
-        """
+        """ 
         return score_memories_importance(
             memory_contents=memory_contents,
             relevant_memories=relevant_memories,
@@ -194,17 +194,23 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         if type(memory_contents) is str:
             memory_contents = [memory_contents]
 
-        relevant_memories = fetch_memories(
-            observation="\n".join(memory_contents),
-            memory_retriever=self.core.retriever,
-        )
-        relevant_memories = [mem.page_content for mem in relevant_memories]
-        importance_scores = self.score_memories_importance(
-            memory_contents,
-            relevant_memories=relevant_memories,
-            importance_weight=importance_weight,
-        )
+        importance_scores = []
+        for memory_content in memory_contents:
+            relevant_memories = fetch_memories(
+                observation=memory_content,
+                memory_retriever=self.core.retriever,
+            )
+            relevant_memories = "\n".join([mem.page_content for mem in relevant_memories])
+            relevant_memories = "N/A" if not relevant_memories else relevant_memories
+            importance_score = self.score_memories_importance(
+                memory_contents=memory_content,
+                relevant_memories=relevant_memories,
+                importance_weight=importance_weight,
+            )
+            importance_scores.append(importance_score[0])
         self.aggregate_importance += max(importance_scores)
+
+        assert len(importance_scores) == len(memory_contents)
 
         documents = []
         for i in range(len(memory_contents)):

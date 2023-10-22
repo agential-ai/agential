@@ -33,10 +33,13 @@ def score_memories_importance(
         importance_scores = score_memories_importance(memories, relevant_memories, core)
         # [0.9]
     """
-    if isinstance(memory_contents, str):
+    if isinstance(memory_contents, str) and isinstance(relevant_memories, str):
+        memory_contents, relevant_memories = [memory_contents], [relevant_memories]
+    elif isinstance(memory_contents, str) and isinstance(relevant_memories, list):
         memory_contents = [memory_contents]
-    if isinstance(relevant_memories, str):
-        relevant_memories = [relevant_memories]
+        relevant_memories = ["\n".join(relevant_memories)]
+    elif isinstance(memory_contents, list) and isinstance(relevant_memories, str):
+        relevant_memories = [relevant_memories] * len(memory_contents)
 
     assert len(memory_contents) == len(relevant_memories)
 
@@ -55,9 +58,9 @@ def score_memories_importance(
     chain = LLMChain(llm=core.llm, prompt=prompt)
 
     scores = []
-    for i, memory_content in enumerate(memory_contents):
+    for i, (memory_content, relevant_memory) in enumerate(zip(memory_contents, relevant_memories)):
         score = chain.run(
-            relevant_memories=relevant_memories, memory_content=memory_content
+            relevant_memories=relevant_memory, memory_content=memory_content
         ).strip()
         score = re.findall(r"\d+", score)
         score = (
