@@ -54,9 +54,39 @@ def test_score_memories_importance():
         llm=llm
     )
 
+    # Test memory_contents str relevant_memories str.
+    scores = score_memories_importance(
+        memory_contents="Some memory.",
+        relevant_memories="some relevant memories.",
+        core=core,
+        importance_weight=importance_weight,
+    )
+    assert type(scores) is list
+
+
+    # Test memory_contents str relevant_memories list.
     scores = score_memories_importance(
         memory_contents="Some memory.",
         relevant_memories=["some relevant memories."],
         core=core,
         importance_weight=importance_weight,
     )
+    assert type(scores) is list
+
+    # Test memory_contents list relevant_memories str.
+    scores = score_memories_importance(
+        memory_contents=["Some memory."],
+        relevant_memories="some relevant memories.",
+        core=core,
+        importance_weight=importance_weight,
+    )
+    assert type(scores) is list
+
+    # Test memory_contents list relevant_memories list.
+    scores = score_memories_importance(
+        memory_contents=["Some memory."],
+        relevant_memories=["some relevant memories."],
+        core=core,
+        importance_weight=importance_weight,
+    )
+    assert type(scores) is list

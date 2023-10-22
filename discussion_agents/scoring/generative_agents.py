@@ -19,7 +19,10 @@ def score_memories_importance(
 
     Args:
         memory_contents (Union[str, List[str]): Memories or memory contents to score.
-        relevant_memories (Union[str, List[str]): Relevant memories to all memory_contents.
+        relevant_memories (Union[str, List[str]): Relevant memories to all memory_contents;
+            if memory_contents and relevant_memories are both str/list, then they correspond 1-to-1;
+            if memory_contents is str and relevant_memories is list, then the topic will use all relevant_memories;
+            if memory_contents is list and relevant_memories is str, then relevant_memories is broadcasted to all memory_contents.
         core (BaseCore): The agent core component.
         importance_weight (float, optional): Weight for importance scores. Default is 0.15.
 
