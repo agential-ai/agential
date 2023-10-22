@@ -2,8 +2,6 @@
 
 import os
 
-from datetime import datetime
-
 import dotenv
 import faiss
 
@@ -30,8 +28,6 @@ embedding_size = (
 model_name = "sentence-transformers/all-mpnet-base-v2"
 model_kwargs = {"device": "cpu"}
 encode_kwargs = {"normalize_embeddings": False}
-
-test_date = datetime(year=2022, month=11, day=14, hour=3, minute=14)
 
 def create_memory_retriever():
     """Creates a TimeWeightedVectorStoreRetriever."""
