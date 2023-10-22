@@ -100,57 +100,64 @@ def update_status(
 
 def generate_refined_plan(
     instruction: str,
-    plan: List[str],
+    previous_steps: List[str],
+    plan_step: str,
     summary: str,
     core: BaseCore,
     k: int = 1,
     # llm_kwargs: Dict[str, Any] = {"max_tokens": 3000, "temperature": 0.8},
 ) -> List[str]:
-    plan_format = ""
-    for i, step in enumerate(plan):
-        plan_format += f"{i}. {step}\n"
-        plan_format += f"Substep: <Fill in>\n"
-    plan_format = plan_format[:-1]
+    previous_steps = "\n".join(previous_steps)
 
     prompt = PromptTemplate.from_template(
         "Below is a summary of you."
         + "{summary}\n\n"
         + "Instruction: \n{instruction}\n\n"
-        + "Plan format: \n"
-        + "{plan_format}\n\n"
-        + "Given the instruction and the current plan above, "
-        + "for each planning step, fill in 'Substep:', "
-        + "which describes in detail what the substeps for that given planning step are. "
-        + "If a planning step does not require a substep(s), then do not specify any substep. "
-        + "Return the entire plan with the included substeps. Keep the steps descriptive and concise."
+        + "Previous steps in the plan for the above instruction: \n"
+        + "{previous_steps}\n\n"
+        + "Given the instruction and the steps taken thus far above, "
+        + "should you generate more detailed substeps for the current step: {plan_step}?\n"
+        + "If no substeps are required, simply generate <NO_SUBSTEPS_REQUIRED>."
+        + "If substeps are required, return the  Keep the steps descriptive and concise."
         + "Output format example: \n"
-        + "1) <first step>\n"
-        + "1.1) <first step, first substep>\n"
-        + "1.2) <first step, second substep>\n"
-        + "2) <second step>\n"
+        + "1) <first substep>\n"
+        + "2) <second substep>\n"
+        + "3) <third substep>\n"
     )
     chain = LLMChain(llm=core.llm, llm_kwargs=core.llm_kwargs, prompt=prompt)
 
     results = []
     for _ in range(k):
         result = chain.run(
-            summary=summary, instruction=instruction, plan_format=plan_format
+            summary=summary, 
+            instruction=instruction, 
+            previous_steps=previous_steps,
+            plan_step=plan_step
         ).strip()
         results.append(result)
 
     if k == 1:
         results = results[0]
     else:
-        plans = [f"Plan {i}:\n{result}\n\n" for i, result in enumerate(results)]
+        plans = [f"Sub-Plan {i}:\n{result}\n\n" for i, result in enumerate(results)]
 
         prompt = PromptTemplate.from_template(
             "Instruction: \n{instruction}\n\n"
-            + "Below are {k} different plans for the instruction above. "
+            + "Previous steps in the plan for the above instruction: \n"
+            + "{previous_steps}\n\n"
+            + "The current plan step is: {plan_step}\n\n"
+            + "Below are {k} different sub-plans for the instruction above. "
             + "Consolidate them into 1 plan such that the plan best answers the instruction."
             + "{plans}"
         )
         chain = LLMChain(llm=core.llm, llm_kwargs=core.llm_kwargs, prompt=prompt)
-        results = chain.run(instruction=instruction, k=k, plans=plans).strip()
+        results = chain.run(
+            instruction=instruction, 
+            previous_steps=previous_steps,
+            plan_step=plan_step,
+            k=k, 
+            plans=plans
+        ).strip()
 
     result = parse_numbered_list(results)
 

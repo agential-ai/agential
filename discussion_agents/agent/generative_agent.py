@@ -15,11 +15,10 @@ from typing import Any, Dict, Optional, Tuple
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from langchain.schema.language_model import BaseLanguageModel
 
-# from langchain_experimental.pydantic_v1 import BaseModel, Field
 from pydantic.v1 import BaseModel, Field
 
+from discussion_agents.core.memory import BaseCoreWithMemory
 from discussion_agents.memory.generative_agents import GenerativeAgentMemory
 from discussion_agents.planning.generative_agents import (
     generate_broad_plan,
@@ -35,6 +34,7 @@ class GenerativeAgent(BaseModel):
     This class represents a character or agent with attributes such as name, age, traits,
     lifestyle, memory, and an underlying language model. It combines innate characteristics
     with the ability to store and retrieve memories and interact with a language model.
+    The GenerativeAgent has the ability to plan, reflect, summarize, and add memories.
 
     Attributes:
         name (str): The character's name.
@@ -42,17 +42,7 @@ class GenerativeAgent(BaseModel):
         traits (str): Permanent traits ascribed to the character.
         lifestyle (str): Lifestyle traits of the character that should not change.
         status (str): Current status of the character (what they are currently doing).
-        memory (GenerativeAgentMemory): The memory object that combines relevance, recency,
-            and 'importance' for storing and retrieving memories.
-        llm (BaseLanguageModel): The underlying language model used for text generation.
-        summary (str): A stateful self-summary generated via reflection on the character's
-            memory. (Private attribute)
-        summary_refresh_seconds (int): How frequently to re-generate the summary. (Private attribute)
-        last_refreshed (datetime): The last time the character's summary was regenerated.
-            (Private attribute)
-        plan_req (Dict[str, str]): Dictionary containing summary of the events in the plan that the agent took,
-            broad daily schedule, and hourly schedule.
-            (Private attribute)
+        core (BaseCoreWithMemory): The agent core with memory.
     """
 
     name: str
@@ -60,9 +50,8 @@ class GenerativeAgent(BaseModel):
     traits: str
     lifestyle: str
     status: str
+    core: BaseCoreWithMemory
 
-    memory: GenerativeAgentMemory
-    llm: BaseLanguageModel
     summary: str = ""  #: :meta private:
     summary_refresh_seconds: int = 3600  #: :meta private:
     last_refreshed: datetime = Field(default_factory=datetime.now)  # : :meta private:
@@ -75,39 +64,26 @@ class GenerativeAgent(BaseModel):
 
     def plan(
         self,
-        current_day: datetime,
+        instruction: str,
+        step: str,
         k: int = 3,
         llm_kwargs: Dict[str, Any] = {"max_tokens": 500, "temperature": 1},
     ):
         summary = self.get_summary() if not self.summary else self.summary
 
-        if "broad_schedule" not in self.plan_req:
-            self.plan_req["broad_schedule"] = generate_broad_plan(
-                summary=summary,
-                lifestyle=self.lifestyle,
-                name=self.name,
-                llm=self.llm,
-                llm_kwargs=llm_kwargs,
-                memory=self.memory,
+        # Initial broad plan generation.
+        if "broad" not in self.plan_req:
+            self.plan_req["broad"] = generate_broad_plan(
+                instruction=instruction, 
+                summary=summary, 
+                core=self.core
             )
+        
+        # At each step, determine whether we should generate substeps or not.
+        
 
-        self.status = update_status(
-            name=self.name,
-            status=self.status,
-            llm=self.llm,
-            llm_kwargs=llm_kwargs,
-            memory=self.memory,
-        )
 
-        self.plan_req["refined_schedule"] = generate_refined_plan(
-            current_day=current_day,
-            name=self.name,
-            daily_req=self.plan_req["broad_schedule"],
-            summary=summary,
-            llm=self.llm,
-            memory=self.memory,
-            k=k,
-        )
+        
 
         # thought = (
         #     f"This is {self.name}'s plan for {current_day.strftime('%A %B %d, %Y')}:"
@@ -490,7 +466,6 @@ class GenerativeAgent(BaseModel):
             + f"Innate traits: {self.traits}\n"
             + f"Status: {self.status}\n"
             + f"Lifestyle: {self.lifestyle}\n"
-            + f"Daily plan requirement: {broad_schedule}\n"
             + f"Current Date: {current_time.strftime('%A %B %d')}\n"
             + f"{self.summary}\n"
         )
