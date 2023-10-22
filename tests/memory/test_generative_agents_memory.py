@@ -13,6 +13,7 @@ from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.schema import Document
 from langchain.vectorstores import FAISS
 
+from discussion_agents.core.base import BaseCore
 from discussion_agents.memory.generative_agents import GenerativeAgentMemory
 
 warnings.filterwarnings("ignore")
@@ -57,21 +58,24 @@ def create_memory_retriever():
     )
     return retriever
 
+core = BaseCore(
+    llm=llm,
+    retriever=create_memory_retriever()
+)
 
 @pytest.mark.cost
 def test_score_memories_importance():
     """Tests score_memories_importance in GenerativeAgentMemory."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
-        llm=llm,
-        memory_retriever=create_memory_retriever(),
+        core=core,
         reflection_threshold=8,
     )
     # Test score_memories_importance.
     scores = memory.score_memories_importance(
         memory_contents=observations[0], relevant_memories=observations[1:]
     )
-    assert len(scores) == len(observations)
+    assert len(scores) == 1
     for score in scores:
         assert type(score) is float
 
@@ -81,39 +85,38 @@ def test_add_memories():
     """Tests add_memories."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
-        llm=llm,
-        memory_retriever=create_memory_retriever(),
+        core=core,
         reflection_threshold=8,
     )
 
     # Test add_memories.
     hashes = memory.add_memories(observations)
     assert type(hashes) is list
-    assert type(memory.memory_retriever.memory_stream) is list
-    assert len(memory.memory_retriever.memory_stream) == 6
+    assert type(memory.core.retriever.memory_stream) is list
+    assert len(memory.core.retriever.memory_stream) == 6
 
 
 @pytest.mark.cost
+@pytest.mark.slow
 def test_pause_to_reflect():
     """Tests pause_to_reflect."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
-        llm=llm,
-        memory_retriever=create_memory_retriever(),
+        core=core,
         reflection_threshold=8,
     )
 
     # Test pause_to_reflect.
-    insights = memory.pause_to_reflect(last_k=50, now=None)
+    topics, insights = memory.pause_to_reflect(last_k=50, now=None)
     assert type(insights) is list
+    assert type(topics) is list
 
 
 def test_get_memories_until_limit():
     """Tests get_memories_until_limit."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
-        llm=llm,
-        memory_retriever=create_memory_retriever(),
+        core=core,
         reflection_threshold=8,
     )
 
@@ -130,7 +133,7 @@ def test_get_memories_until_limit():
                 },
             )
         )
-    memory.memory_retriever.memory_stream.extend(docs)
+    memory.core.retriever.memory_stream.extend(docs)
 
     mem_str = memory.get_memories_until_limit(consumed_tokens=10)
     assert type(mem_str) is str
@@ -140,8 +143,7 @@ def test_memory_variables():
     """Tests memory_variables property."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
-        llm=llm,
-        memory_retriever=create_memory_retriever(),
+        core=core,
         reflection_threshold=8,
     )
 
@@ -154,8 +156,7 @@ def test_load_memory_variables_empty():
     """Tests load_memory_variables when input is empty."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
-        llm=llm,
-        memory_retriever=create_memory_retriever(),
+        core=core,
         reflection_threshold=8,
     )
 
@@ -169,8 +170,7 @@ def test_load_memory_variables_query():
     """Tests load_memory_variables when query is supplied in input."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
-        llm=llm,
-        memory_retriever=create_memory_retriever(),
+        core=core,
         reflection_threshold=8,
     )
 
@@ -186,8 +186,7 @@ def test_load_memory_variables_relevant():
     """Tests load_memory_variables when most_recent_memories_token_key is supplied in input."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
-        llm=llm,
-        memory_retriever=create_memory_retriever(),
+        core=core,
         reflection_threshold=8,
     )
 
@@ -202,8 +201,7 @@ def test_save_context():
     """Tests save_context."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
-        llm=llm,
-        memory_retriever=create_memory_retriever(),
+        core=core,
         reflection_threshold=8,
     )
 
@@ -219,8 +217,7 @@ def test_clear():
     """Tests clear."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
-        llm=llm,
-        memory_retriever=create_memory_retriever(),
+        core=core,
         reflection_threshold=8,
     )
 

@@ -12,7 +12,7 @@ https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/charac
 """
 from datetime import datetime
 from itertools import chain
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, Tuple
 
 from langchain.schema import BaseMemory, Document
 
@@ -21,6 +21,7 @@ from discussion_agents.memory.base import BaseMemoryInterface
 from discussion_agents.reflecting.generative_agents import (
     get_insights_on_topics,
     get_topics_of_reflection,
+    reflect
 )
 from discussion_agents.scoring.generative_agents import score_memories_importance
 from discussion_agents.utils.fetch import fetch_memories
@@ -83,9 +84,22 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
     reflecting: bool = False
 
     def get_topics_of_reflection(self, last_k: int = 50) -> List[str]:
-        """Exposing get_topics_of_reflection.
+        """Generate high-level reflection topics based on recent observations.
 
-        Wrapper for `discussion_agents.reflecting.generative_agents.get_topics_of_reflection`.
+        This method leverages the `get_topics_of_reflection` function to generate a list of
+        high-level reflection topics based on recent observations from the agent's retriever
+        memory. The method considers the last 'last_k' observations and formats them for
+        reflection.
+
+        Args:
+            last_k (int, optional): The number of recent observations to consider. Default is 50.
+
+        Returns:
+            List[str]: A list of high-level reflection topics.
+
+        Example:
+            memory = GenerativeAgentMemory(...)
+            reflection_topics = memory.get_topics_of_reflection(last_k=100)
         """
         observations = self.core.retriever.memory_stream[-last_k:]
         observations = "\n".join([format_memories_detail(o) for o in observations])
@@ -96,9 +110,22 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         topics: List[str],
         now: Optional[datetime] = None,
     ) -> List[List[str]]:
-        """Exposing get_insights_on_topic.
+        """Generate insights on specified topics based on related memories.
 
-        Wrapper for `discussion_agents.reflecting.generative_agents.get_insights_on_topic`.
+        This method acts as a wrapper for generating insights on specified topics. It leverages
+        the `discussion_agents.reflecting.generative_agents.get_insights_on_topic` function.
+
+        Args:
+            topics (List[str]): A list of topics for which insights are to be generated.
+            now (Optional[datetime], optional): The current date and time for temporal context. Default is None.
+
+        Returns:
+            List[List[str]]: Lists of high-level insights corresponding to each specified topic.
+
+        Example:
+            selected_topics = ["Artificial Intelligence trends", "Recent travel experiences"]
+            memory = GenerativeAgentMemory(...)
+            generated_insights = memory.get_insights_on_topic(selected_topics, now=datetime.now())
         """
         related_memories = []
         for topic in topics:
@@ -121,18 +148,33 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
 
     def pause_to_reflect(
         self, last_k: int = 50, now: Optional[datetime] = None
-    ) -> List[str]:
-        """Wrapper for Generative Agents reflection.
+    ) -> Tuple[List[str], List[str]]:
+        """Pause for reflection and enrich memory with insights.
 
-        Wrapper for `discussion_agents.reflecting.generative_agents.reflect`.
-        Adds reflection insights to memory.
+        This method acts as a wrapper for the reflection process, leveraging the
+        `discussion_agents.reflecting.generative_agents.reflect` functionality. It aims to
+        generate insights on recent observations, add these insights to the agent's memory,
+        and return the generated insights.
+
+        Args:
+            last_k (int, optional): The number of recent observations to consider. Default is 50.
+            now (Optional[datetime], optional): The current date and time for temporal context. Default is None.
+
+        Returns:
+            Tuple[List[str], List[str]]: A list of topics and insights generated during the reflection process.
+
+        Example:
+            memory = GenerativeAgentMemory(...)
+            topics, reflection_insights = memory.pause_to_reflect(last_k=100, now=datetime.now())
         """
-        topics = self.get_topics_of_reflection(last_k=last_k)
-        reflections = self.get_insights_on_topic(topics=topics, now=now)
-        reflections = list(chain(*reflections))
+        observations = self.core.retriever.memory_stream[-last_k:]
+        observations = "\n".join([format_memories_detail(o) for o in observations])
+        
+        topics, insights = reflect(observations=observations, core=self.core, now=now)
+        insights = list(chain(*insights))
 
-        self.add_memories(memory_contents=reflections, now=now)
-        return reflections
+        self.add_memories(memory_contents=insights, now=now)
+        return topics, insights
 
     def score_memories_importance(
         self,
@@ -140,10 +182,26 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         relevant_memories: Union[str, List[str]],
         importance_weight: float = 0.15,  # Less important than relevance and recency.
     ) -> List[float]:
-        """Wrapper for Generative Agents scoring memory importance.
+        """Calculate importance scores for agent memories w.r.t. relevant_memories.
 
-        Wrapper for `discussion_agents.scoring.generative_agents.score_memories_importance`.
-        """ 
+        This method serves as a wrapper for calculating importance scores for agent memories. It
+        leverages the `discussion_agents.scoring.generative_agents.score_memories_importance` function.
+        Refer to the aforementioned method for more information.
+
+        Args:
+            memory_contents (Union[str, List[str]): The memory contents to be scored.
+            relevant_memories (Union[str, List[str]): Relevant memories for context.
+            importance_weight (float, optional): Weight for importance scores. Default is 0.15.
+
+        Returns:
+            List[float]: A list of importance scores for each memory content.
+
+        Example:
+            memories = ["Visited the museum.", "Had a meaningful conversation."]
+            relevance_context = ["History buffs meeting.", "Art gallery visit."]
+            memory = GenerativeAgentMemory(...)
+            importance_scores = memory.score_memories_importance(memories, relevance_context, importance_weight=0.2)
+        """
         return score_memories_importance(
             memory_contents=memory_contents,
             relevant_memories=relevant_memories,
@@ -170,7 +228,9 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
                 or memories.
             now (Optional[datetime], optional): Current time context for memory addition.
                 Defaults to None.
-
+            importance_weight (float, optional): Weight for importance scores. Default is 0.15.
+            last_k (int, optional): The number of recent observations to consider. Default is 50.
+                
         Returns:
             List[str]: A list of string IDs indicating the results of the memory addition.
 
@@ -184,8 +244,8 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
             - Importance scores are calculated for the added memories and contribute to
             the agent's aggregate importance.
             - The method handles both single string and list input for memory addition.
-            - If the aggregate importance surpasses a reflection threshold, the agent may
-            enter a reflection phase to add synthesized memories.
+            - If the aggregate importance surpasses a reflection threshold, the agent
+            enters a reflection phase to add synthesized memories.
         """
         if type(memory_contents) is str:
             memory_contents = [memory_contents]
@@ -228,20 +288,27 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
             and not self.reflecting
         ):
             self.reflecting = True
-            self.pause_to_reflect(last_k=last_k, now=now)
+            _, _ = self.pause_to_reflect(last_k=last_k, now=now)
             self.aggregate_importance = 0.0
             self.reflecting = False
         return result
 
     def get_memories_until_limit(self, consumed_tokens: int) -> str:
-        """Get documents from memory until max_tokens_limit reached.
+        """Retrieve memories from the agent's memory until a token consumption limit is reached.
+
+        This method retrieves documents from the agent's memory until the total number of tokens
+        consumed by the retrieved documents reaches or exceeds the specified token limit.
 
         Args:
             consumed_tokens (int): The current number of tokens consumed.
 
         Returns:
-            str: A formatted string representing the retrieved documents;
-                semi-colon delineated.
+            str: A formatted string containing the retrieved documents, separated by semicolons.
+
+        Example:
+            consumed_tokens = 1000
+            memory = GenerativeAgentMemory(...)
+            retrieved_docs = memory.get_memories_until_limit(consumed_tokens)
         """
         result = []
         for doc in self.core.retriever.memory_stream[::-1]:
