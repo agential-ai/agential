@@ -58,10 +58,8 @@ def create_memory_retriever():
     )
     return retriever
 
-core = BaseCore(
-    llm=llm,
-    retriever=create_memory_retriever()
-)
+
+core = BaseCore(llm=llm, retriever=create_memory_retriever())
 
 instruction = "Describe what makes a table reliable."
 name = "Bob"
@@ -80,12 +78,11 @@ summary = (
     + f"{_summary}\n"
 )
 
+
 def test_generate_broad_plan():
     """Test generate_broad_plan."""
     broad_plan = generate_broad_plan(
-        instruction=instruction,
-        summary=summary,
-        core=core
+        instruction=instruction, summary=summary, core=core
     )
     assert type(broad_plan) is list
     for p in broad_plan:
@@ -100,9 +97,10 @@ def test_update_status():
         plan_step=broad_plan[1],
         summary=summary,
         status=status,
-        core=core
+        core=core,
     )
     assert type(new_status) is str
+
 
 def test_generate_refined_plan():
     """Test generate_refined_plan."""
@@ -111,6 +109,6 @@ def test_generate_refined_plan():
         previous_steps=broad_plan[:1],
         plan_step=broad_plan[1],
         summary=summary,
-        core=core
+        core=core,
     )
     assert type(refined_steps) is list

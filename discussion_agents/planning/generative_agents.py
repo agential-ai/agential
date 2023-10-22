@@ -64,8 +64,8 @@ def update_status(
 ) -> str:
     """Update the status of a plan step in response to provided information.
 
-    This function takes an instruction, a list of previous steps, the current plan step, 
-    a summary, and a status update to incorporate into the plan. It uses the provided 
+    This function takes an instruction, a list of previous steps, the current plan step,
+    a summary, and a status update to incorporate into the plan. It uses the provided
     BaseCore to facilitate the update.
 
     Args:
@@ -159,7 +159,7 @@ def generate_refined_plan(
     """Generate a refined plan by incorporating new plan substep(s) given the current plan step and previous steps.
 
     This function takes an original instruction, a list of previous plan steps, a new/current plan step,
-    a summary, and a BaseCore component to refine the current step in the existing plan. 
+    a summary, and a BaseCore component to refine the current step in the existing plan.
 
     Args:
         instruction (str): The original instruction related to the plan.
@@ -204,10 +204,10 @@ def generate_refined_plan(
     results = []
     for _ in range(k):
         result = chain.run(
-            summary=summary, 
-            instruction=instruction, 
+            summary=summary,
+            instruction=instruction,
             previous_steps=previous_steps,
-            plan_step=plan_step
+            plan_step=plan_step,
         ).strip()
         results.append(result)
 
@@ -231,11 +231,11 @@ def generate_refined_plan(
         )
         chain = LLMChain(llm=core.llm, llm_kwargs=core.llm_kwargs, prompt=prompt)
         results = chain.run(
-            instruction=instruction, 
+            instruction=instruction,
             previous_steps=previous_steps,
             plan_step=plan_step,
-            k=k, 
-            plans=plans
+            k=k,
+            plans=plans,
         ).strip()
 
     results = parse_numbered_list(results)

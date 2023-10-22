@@ -15,7 +15,6 @@ from typing import Any, Dict, Optional, Tuple
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-
 from pydantic.v1 import BaseModel, Field
 
 from discussion_agents.core.memory import BaseCoreWithMemory
@@ -74,16 +73,10 @@ class GenerativeAgent(BaseModel):
         # Initial broad plan generation.
         if "broad" not in self.plan_req:
             self.plan_req["broad"] = generate_broad_plan(
-                instruction=instruction, 
-                summary=summary, 
-                core=self.core
+                instruction=instruction, summary=summary, core=self.core
             )
-        
+
         # At each step, determine whether we should generate substeps or not.
-        
-
-
-        
 
         # thought = (
         #     f"This is {self.name}'s plan for {current_day.strftime('%A %B %d, %Y')}:"
