@@ -38,16 +38,12 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
     for reflection, and scores importance.
 
     Attributes:
-        llm (BaseLanguageModel): The core language model used for text generation.
-        memory_retriever (TimeWeightedVectorStoreRetriever):
-            The retriever responsible for fetching related memories.
+        core (BaseCore): The agent core for this class. Note, GenerativeAgentMemory
+            requires a TimeWeightedVectorStoreRetriever instance to be specified
+            as the core's retriever.
         reflection_threshold (float, optional): When the aggregate importance of recent
             memories exceeds this threshold, the agent triggers a reflection process.
             Defaults to None.
-        importance_weight (float): A weight to assign to memory importance when
-            calculating aggregate importance. Defaults to 0.15.
-        aggregate_importance (float): A running sum of the importance scores of recent
-            memories. Triggers reflection when it reaches the reflection threshold.
         max_tokens_limit (int): The maximum token limit for text generation. Defaults
             to 1200 tokens.
 
