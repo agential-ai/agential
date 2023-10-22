@@ -28,17 +28,17 @@ def parse_list(text: str) -> List[str]:
         - It removes leading numbers and periods often used in numbered lists.
     """
     lines = re.split(r"\n", text.strip())
-    lines = [line for line in lines if line.strip()]   # Remove empty lines.
+    lines = [line for line in lines if line.strip()]  # Remove empty lines.
     lines = [re.sub(r"^\s*\d+\.\s*", "", line).strip() for line in lines]
     return lines
 
 
 def parse_numbered_list(text: str) -> List[str]:
-    """Parse a numbered list from a given text and return a list of list items.
+    r"""Parse a numbered list from a given text and return a list of list items.
 
     This function extracts the content following the last ")" character, removes any trailing
     commas or periods, and trims leading/trailing spaces from each line in the input text.
-    
+
     Args:
         text (str): The input text containing a numbered list.
 

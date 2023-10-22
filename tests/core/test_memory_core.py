@@ -3,16 +3,15 @@
 import os
 
 import dotenv
-
 import faiss
 
-from langchain.prompts import PromptTemplate
 from langchain.docstore import InMemoryDocstore
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.llms.huggingface_hub import HuggingFaceHub
+from langchain.memory.buffer import ConversationBufferMemory
+from langchain.prompts import PromptTemplate
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.vectorstores import FAISS
-from langchain.memory.buffer import ConversationBufferMemory
 
 from discussion_agents.core.memory import BaseCoreWithMemory
 
@@ -31,6 +30,7 @@ model_name = "sentence-transformers/all-mpnet-base-v2"
 model_kwargs = {"device": "cpu"}
 encode_kwargs = {"normalize_embeddings": False}
 
+
 def create_memory_retriever():
     """Creates a TimeWeightedVectorStoreRetriever."""
     embeddings_model = HuggingFaceEmbeddings(
@@ -42,6 +42,7 @@ def create_memory_retriever():
         vectorstore=vectorstore, otherScoreKeys=["importance"], k=5
     )
     return retriever
+
 
 def test_base_core_with_memory():
     """Test BaseCore & chain method."""
@@ -57,10 +58,7 @@ def test_base_core_with_memory():
     memory = ConversationBufferMemory(memory_key="chat_history")
 
     core = BaseCoreWithMemory(
-        llm=llm,
-        llm_kwargs={},
-        retriever=create_memory_retriever(),
-        memory=memory
+        llm=llm, llm_kwargs={}, retriever=create_memory_retriever(), memory=memory
     )
 
     chain = core.chain(prompt=prompt)

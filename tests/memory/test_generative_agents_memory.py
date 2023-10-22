@@ -58,10 +58,9 @@ def create_memory_retriever():
     )
     return retriever
 
-core = BaseCore(
-    llm=llm,
-    retriever=create_memory_retriever()
-)
+
+core = BaseCore(llm=llm, retriever=create_memory_retriever())
+
 
 @pytest.mark.cost
 def test_score_memories_importance():

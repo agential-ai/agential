@@ -55,7 +55,7 @@ def format_memories_simple(relevant_memories: Union[Document, List[Document]]) -
 
     Returns:
         str: A string containing the formatted memories separated by ';'.
-    
+
     Example:
         docs = []
         for i in range(2):

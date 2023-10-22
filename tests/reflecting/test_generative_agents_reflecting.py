@@ -1,11 +1,11 @@
 """Unit Tests for Generative Agents reflecting modules."""
 import os
-import pytest 
 
 from datetime import datetime
 
 import dotenv
 import faiss
+import pytest
 
 from langchain.docstore import InMemoryDocstore
 from langchain.embeddings import HuggingFaceEmbeddings
@@ -37,6 +37,7 @@ encode_kwargs = {"normalize_embeddings": False}
 
 test_date = datetime(year=2022, month=11, day=14, hour=3, minute=14)
 
+
 def create_memory_retriever():
     """Creates a TimeWeightedVectorStoreRetriever."""
     embeddings_model = HuggingFaceEmbeddings(
@@ -49,33 +50,26 @@ def create_memory_retriever():
     )
     return retriever
 
-core = BaseCore(
-    llm=llm,
-    retriever=create_memory_retriever()
-)
+
+core = BaseCore(llm=llm, retriever=create_memory_retriever())
+
 
 @pytest.mark.slow
 def test_get_topics_of_reflection():
     """Tests get_topics_of_reflection."""
-
     # Test observations string.
     observations = "This is an observation."
-    topics = get_topics_of_reflection(
-        observations=observations, core=core
-    )
+    topics = get_topics_of_reflection(observations=observations, core=core)
     assert type(topics) is list
 
     # Test observations list.
     observations = ["This is an observation."]
-    topics = get_topics_of_reflection(
-        observations=observations, core=core
-    )
+    topics = get_topics_of_reflection(observations=observations, core=core)
     assert type(topics) is list
 
 
 def test_get_insights_on_topics():
     """Tests get_insights_on_topics."""
-
     # Test topics list and related_memories list.
     insights = get_insights_on_topics(
         topics=["Some topic."],
@@ -116,11 +110,7 @@ def test_get_insights_on_topics():
 def test_reflect():
     """Tests reflect."""
     observations = "This is an observation."
-    topics, insights = reflect(
-        observations=observations,
-        core=core,
-        now=test_date
-    )
+    topics, insights = reflect(observations=observations, core=core, now=test_date)
 
     assert type(topics) is list
     assert type(insights) is list

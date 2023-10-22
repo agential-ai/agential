@@ -61,7 +61,9 @@ def score_memories_importance(
     chain = LLMChain(llm=core.llm, prompt=prompt)
 
     scores = []
-    for i, (memory_content, relevant_memory) in enumerate(zip(memory_contents, relevant_memories)):
+    for i, (memory_content, relevant_memory) in enumerate(
+        zip(memory_contents, relevant_memories)
+    ):
         score = chain.run(
             relevant_memories=relevant_memory, memory_content=memory_content
         ).strip()

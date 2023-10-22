@@ -6,8 +6,7 @@ from discussion_agents.core.base import BaseCore
 
 
 class BaseCoreWithMemory(BaseCore):
-    """
-    Agent core class with memory support and a retriever, extending the BaseCore.
+    """Agent core class with memory support and a retriever, extending the BaseCore.
 
     This class extends BaseCore, enforcing a retriever and memory component
     as arguments. Additionally, it uses the memory in the LLMChain.
@@ -26,6 +25,16 @@ class BaseCoreWithMemory(BaseCore):
     memory: BaseMemory
 
     def chain(self, prompt: str) -> LLMChain:
+        """Create an LLMChain based on a given prompt template.
+
+        BaseCoreWithMemoryreturns a stateful LLMChain (with memory).
+
+        Args:
+            prompt (BasePromptTemplate): The prompt template used to initialize the LLMChain.
+
+        Returns:
+            LLMChain: An instance of the LLMChain with the specified prompt template.
+        """
         return LLMChain(
             llm=self.llm, llm_kwargs=self.llm_kwargs, prompt=prompt, memory=self.memory
         )

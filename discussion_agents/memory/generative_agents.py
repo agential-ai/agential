@@ -12,7 +12,7 @@ https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/charac
 """
 from datetime import datetime
 from itertools import chain
-from typing import Any, Dict, List, Optional, Union, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from langchain.schema import BaseMemory, Document
 
@@ -21,7 +21,7 @@ from discussion_agents.memory.base import BaseMemoryInterface
 from discussion_agents.reflecting.generative_agents import (
     get_insights_on_topics,
     get_topics_of_reflection,
-    reflect
+    reflect,
 )
 from discussion_agents.scoring.generative_agents import score_memories_importance
 from discussion_agents.utils.fetch import fetch_memories
@@ -68,7 +68,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
     max_tokens_limit: int = 1200  # : :meta private:
 
     # Keys for loading memory variables.
-    
+
     # Input keys.
     queries_key: str = "queries"
     most_recent_memories_token_key: str = "recent_memories_token"
@@ -169,7 +169,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         """
         observations = self.core.retriever.memory_stream[-last_k:]
         observations = "\n".join([format_memories_detail(o) for o in observations])
-        
+
         topics, insights = reflect(observations=observations, core=self.core, now=now)
         insights = list(chain(*insights))
 
@@ -230,7 +230,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
                 Defaults to None.
             importance_weight (float, optional): Weight for importance scores. Default is 0.15.
             last_k (int, optional): The number of recent observations to consider. Default is 50.
-                
+
         Returns:
             List[str]: A list of string IDs indicating the results of the memory addition.
 
@@ -256,7 +256,9 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
                 observation=memory_content,
                 memory_retriever=self.core.retriever,
             )
-            relevant_memories = "\n".join([mem.page_content for mem in relevant_memories])
+            relevant_memories = "\n".join(
+                [mem.page_content for mem in relevant_memories]
+            )
             relevant_memories = "N/A" if not relevant_memories else relevant_memories
             importance_score = self.score_memories_importance(
                 memory_contents=memory_content,
@@ -365,9 +367,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
                 mem
                 for query in queries
                 for mem in fetch_memories(
-                    observation=query, 
-                    memory_retriever=self.core.retriever, 
-                    now=now
+                    observation=query, memory_retriever=self.core.retriever, now=now
                 )
             ]
             return {

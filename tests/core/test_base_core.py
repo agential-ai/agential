@@ -5,10 +5,10 @@ import os
 import dotenv
 import faiss
 
-from langchain.prompts import PromptTemplate
 from langchain.docstore import InMemoryDocstore
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.llms.huggingface_hub import HuggingFaceHub
+from langchain.prompts import PromptTemplate
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.vectorstores import FAISS
 
@@ -29,6 +29,7 @@ model_name = "sentence-transformers/all-mpnet-base-v2"
 model_kwargs = {"device": "cpu"}
 encode_kwargs = {"normalize_embeddings": False}
 
+
 def create_memory_retriever():
     """Creates a TimeWeightedVectorStoreRetriever."""
     embeddings_model = HuggingFaceEmbeddings(
@@ -41,13 +42,10 @@ def create_memory_retriever():
     )
     return retriever
 
+
 def test_base_core():
     """Test BaseCore & chain method."""
-    core = BaseCore(
-        llm=llm,
-        llm_kwargs={},
-        retriever=create_memory_retriever()
-    )
+    core = BaseCore(llm=llm, llm_kwargs={}, retriever=create_memory_retriever())
 
     prompt = PromptTemplate.from_template(
         "Explain the importance of eating a proper meal."

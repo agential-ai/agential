@@ -1,9 +1,9 @@
 """Testing Generative Agents memory scoring method(s)."""
 import os
 import re
-import pytest
 
 import dotenv
+import pytest
 
 from langchain.llms.huggingface_hub import HuggingFaceHub
 
@@ -17,6 +17,7 @@ llm = HuggingFaceHub(
     repo_id="gpt2",
     huggingfacehub_api_token=huggingface_hub_api_key,
 )
+
 
 @pytest.mark.slow
 def test_score_memories_importance():
@@ -50,9 +51,7 @@ def test_score_memories_importance():
         assert type(score) is float
 
     # Testing the entire function.
-    core = BaseCore(
-        llm=llm
-    )
+    core = BaseCore(llm=llm)
 
     # Test memory_contents str relevant_memories str.
     scores = score_memories_importance(
@@ -62,7 +61,6 @@ def test_score_memories_importance():
         importance_weight=importance_weight,
     )
     assert type(scores) is list
-
 
     # Test memory_contents str relevant_memories list.
     scores = score_memories_importance(

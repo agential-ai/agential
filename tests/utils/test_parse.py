@@ -1,9 +1,5 @@
 """Unit tests for parsing-related functions."""
-from discussion_agents.utils.parse import (
-    parse_list,
-    parse_numbered_list,
-    remove_name
-)
+from discussion_agents.utils.parse import parse_list, parse_numbered_list, remove_name
 
 
 def test_parse_list():
@@ -17,6 +13,7 @@ def test_parse_list():
     for i, j in zip(gt, out):
         assert i == j
 
+
 def test_parse_numbered_list():
     """Test parse_numbered_list function."""
     gt = ["Item One", "Item Two", "Item Three"]
@@ -27,6 +24,7 @@ def test_parse_numbered_list():
     assert len(gt) == len(out)
     for i, j in zip(gt, out):
         assert i == j
+
 
 def test_remove_name():
     """Test remove_name function."""

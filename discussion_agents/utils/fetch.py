@@ -24,7 +24,7 @@ def fetch_memories(
     Returns:
         List[Document]:
             A list of relevant documents representing memories.
-    
+
     Example:
         retriever = TimeWeightedVectorStoreRetriever(
             vectorstore=vectorstore, otherScoreKeys=["importance"], k=5

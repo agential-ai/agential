@@ -1,16 +1,17 @@
 """Generative Agents methods related to reflection."""
 
-from typing import List, Union, Optional, Tuple
 from datetime import datetime
+from typing import List, Optional, Tuple, Union
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain.schema import BaseRetriever
 
 from discussion_agents.core.base import BaseCore
-from discussion_agents.utils.parse import parse_list
 from discussion_agents.utils.fetch import fetch_memories
 from discussion_agents.utils.format import format_memories_detail
+from discussion_agents.utils.parse import parse_list
+
 
 def get_topics_of_reflection(
     observations: Union[str, List[str]],
@@ -58,7 +59,7 @@ def get_insights_on_topics(
 
     Args:
         topics (Union[str, List[str]]): A list of topics (or a str for 1 topic) for which insights are to be generated.
-        related_memories (Union[str, List[str]]): Memories relevant to the specified topic(s); 
+        related_memories (Union[str, List[str]]): Memories relevant to the specified topic(s);
             if topics and related_memories are both str/list, then they correspond 1-to-1;
             if topics is str and related_memories is list, then the topic will use all related_memories;
             if topics is list and related_memories is str, then related_memories is broadcasted to all topics.
@@ -112,9 +113,7 @@ def get_insights_on_topics(
 
 
 def reflect(
-    observations: Union[str, List[str]],
-    core: BaseCore,
-    now: Optional[datetime] = None
+    observations: Union[str, List[str]], core: BaseCore, now: Optional[datetime] = None
 ) -> Tuple[List[str], List[List[str]]]:
     """Generate insights on recent observations through reflection.
 
@@ -137,7 +136,7 @@ def reflect(
         core = BaseCore(llm=llm, retriever=retriever)
         topics, insights = reflect(observations, core, now=datetime.now())
     """
-    assert isinstance(core.retriever, BaseRetriever) 
+    assert isinstance(core.retriever, BaseRetriever)
 
     topics = get_topics_of_reflection(observations=observations, core=core)
 
