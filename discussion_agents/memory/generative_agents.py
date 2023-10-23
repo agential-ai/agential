@@ -14,6 +14,7 @@ from datetime import datetime
 from itertools import chain
 from typing import Any, Dict, List, Optional, Tuple, Union
 
+from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.schema import BaseMemory, Document
 
 from discussion_agents.core.base import BaseCore
@@ -101,7 +102,11 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
             memory = GenerativeAgentMemory(...)
             reflection_topics = memory.get_topics_of_reflection(last_k=100)
         """
-        observations = self.core.retriever.memory_stream[-last_k:]
+        if not isinstance(self.core.get_retriever(), TimeWeightedVectorStoreRetriever):
+            raise TypeError(
+                "The core's 'retriever' attribute must be an instance of TimeWeightedVectorStoreRetriever."
+            )
+        observations = self.core.get_retriever().memory_stream[-last_k:]
         observations = "\n".join([format_memories_detail(o) for o in observations])
         return get_topics_of_reflection(observations=observations, core=self.core)
 
@@ -130,7 +135,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         related_memories = []
         for topic in topics:
             topic_related_memories = fetch_memories(
-                observation=topic, memory_retriever=self.core.retriever, now=now
+                observation=topic, memory_retriever=self.core.get_retriever(), now=now
             )
             topic_related_memories = "\n".join(
                 [
@@ -167,7 +172,11 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
             memory = GenerativeAgentMemory(...)
             topics, reflection_insights = memory.pause_to_reflect(last_k=100, now=datetime.now())
         """
-        observations = self.core.retriever.memory_stream[-last_k:]
+        if not isinstance(self.core.get_retriever(), TimeWeightedVectorStoreRetriever):
+            raise TypeError(
+                "The core's 'retriever' attribute must be an instance of TimeWeightedVectorStoreRetriever."
+            )
+        observations = self.core.get_retriever().memory_stream[-last_k:]
         observations = "\n".join([format_memories_detail(o) for o in observations])
 
         topics, insights = reflect(observations=observations, core=self.core, now=now)
@@ -254,7 +263,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         for memory_content in memory_contents:
             relevant_memories = fetch_memories(
                 observation=memory_content,
-                memory_retriever=self.core.retriever,
+                memory_retriever=self.core.get_retriever(),
             )
             relevant_memories = "\n".join(
                 [mem.page_content for mem in relevant_memories]
@@ -279,7 +288,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
                 )
             )
 
-        result = self.core.retriever.add_documents(documents, current_time=now)
+        result = self.core.get_retriever().add_documents(documents, current_time=now)
 
         # After an agent has processed a certain amount of memories (as measured by
         # aggregate importance), it is time to reflect on recent events to add
@@ -312,11 +321,15 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
             memory = GenerativeAgentMemory(...)
             retrieved_docs = memory.get_memories_until_limit(consumed_tokens)
         """
+        if not isinstance(self.core.get_retriever(), TimeWeightedVectorStoreRetriever):
+            raise TypeError(
+                "The core's 'retriever' attribute must be an instance of TimeWeightedVectorStoreRetriever."
+            )
         result = []
-        for doc in self.core.retriever.memory_stream[::-1]:
+        for doc in self.core.get_retriever().memory_stream[::-1]:
             if consumed_tokens >= self.max_tokens_limit:
                 break
-            consumed_tokens += self.core.llm.get_num_tokens(doc.page_content)
+            consumed_tokens += self.core.get_llm().get_num_tokens(doc.page_content)
             if consumed_tokens < self.max_tokens_limit:
                 result.append(doc)
         return format_memories_simple(result)
@@ -367,7 +380,9 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
                 mem
                 for query in queries
                 for mem in fetch_memories(
-                    observation=query, memory_retriever=self.core.retriever, now=now
+                    observation=query,
+                    memory_retriever=self.core.get_retriever(),
+                    now=now,
                 )
             ]
             return {

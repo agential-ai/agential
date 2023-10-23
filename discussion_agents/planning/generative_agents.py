@@ -46,7 +46,7 @@ def generate_broad_plan(
         + "Here is your plan for the instruction in broad-strokes:\n"
         + "1) "
     )
-    chain = LLMChain(llm=core.llm, llm_kwargs=core.llm_kwargs, prompt=prompt)
+    chain = core.chain(prompt=prompt)
     result = parse_numbered_list(
         chain.run(summary=summary, instruction=instruction).strip()
     )
@@ -101,7 +101,7 @@ def update_status(
         + "is there anything that you should remember as you plan for: {plan_step}\n"
         + "Write the response from your perspective."
     )
-    chain = LLMChain(llm=core.llm, llm_kwargs=core.llm_kwargs, prompt=plan_prompt)
+    chain = core.chain(prompt=plan_prompt)
     plan_result = chain.run(
         summary=summary,
         instruction=instruction,
@@ -118,7 +118,7 @@ def update_status(
         + "your thoughts about the plan up till now?\n"
         + "Write the response from your perspective."
     )
-    chain = LLMChain(llm=core.llm, llm_kwargs=core.llm_kwargs, prompt=thought_prompt)
+    chain = core.chain(prompt=thought_prompt)
     thought_result = chain.run(
         summary=summary, instruction=instruction, previous_steps=previous_steps
     ).strip()
@@ -136,7 +136,7 @@ def update_status(
         + "Write this in third-person talking about yourself."
         + "Follow this format below:\nStatus: <new status>"
     )
-    chain = LLMChain(llm=core.llm, llm_kwargs=core.llm_kwargs, prompt=status_prompt)
+    chain = core.chain(prompt=status_prompt)
     status = chain.run(
         summary=summary,
         instruction=instruction,
@@ -200,7 +200,7 @@ def generate_refined_plan_step(
         + "2) <second substep>\n"
         + "3) <third substep>\n"
     )
-    chain = LLMChain(llm=core.llm, llm_kwargs=core.llm_kwargs, prompt=prompt)
+    chain = core.chain(prompt=prompt)
 
     results = []
     for _ in range(k):
@@ -230,7 +230,7 @@ def generate_refined_plan_step(
             + "2) <second substep>\n"
             + "3) <third substep>\n"
         )
-        chain = LLMChain(llm=core.llm, llm_kwargs=core.llm_kwargs, prompt=prompt)
+        chain = core.chain(prompt=prompt)
         results = chain.run(
             instruction=instruction,
             previous_steps=previous_steps,

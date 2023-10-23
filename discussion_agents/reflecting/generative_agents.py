@@ -45,7 +45,7 @@ def get_topics_of_reflection(
         + "high-level questions we can answer about the subjects in the statements?\n"
         + "Provide each question on a new line."
     )
-    chain = LLMChain(llm=core.llm, prompt=prompt)
+    chain = core.chain(prompt=prompt)
     result = parse_list(chain.run(observations=observations))
     return result
 
@@ -102,7 +102,7 @@ def get_insights_on_topics(
         + "Question: {topic}\n\n"
     )
 
-    chain = LLMChain(llm=core.llm, prompt=prompt)
+    chain = core.chain(prompt=prompt)
 
     results = []
     for topic, related_memory in zip(topics, related_memories):
@@ -136,14 +136,12 @@ def reflect(
         core = BaseCore(llm=llm, retriever=retriever)
         topics, insights = reflect(observations, core, now=datetime.now())
     """
-    assert isinstance(core.retriever, BaseRetriever)
-
     topics = get_topics_of_reflection(observations=observations, core=core)
 
     related_memories = []
     for topic in topics:
         topic_related_memories = fetch_memories(
-            observation=topic, memory_retriever=core.retriever, now=now
+            observation=topic, memory_retriever=core.get_retriever(), now=now
         )
         topic_related_memories = "\n".join(
             [

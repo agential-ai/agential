@@ -58,7 +58,7 @@ def score_memories_importance(
         + "\Memory: {memory_content}\n"
         + "Rating: "
     )
-    chain = LLMChain(llm=core.llm, prompt=prompt)
+    chain = core.chain(prompt=prompt)
 
     scores = []
     for i, (memory_content, relevant_memory) in enumerate(
