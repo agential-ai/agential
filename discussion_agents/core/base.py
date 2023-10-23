@@ -51,6 +51,60 @@ class BaseCore(BaseCoreInterface):
     retriever: BaseRetriever = Field(default=None)
     memory: BaseMemory = Field(default=None)
 
+    def get_llm(self) -> BaseLanguageModel:
+        """Get llm."""
+        if not isinstance(self.llm, BaseLanguageModel):
+            raise TypeError(
+                "The 'llm' attribute is not an instance of BaseLanguageModel."
+            )
+        return self.llm
+
+    def set_llm(self, llm) -> None:
+        """Set llm."""
+        if not isinstance(llm, BaseLanguageModel):
+            raise TypeError("The 'llm' input is not an instance of BaseLanguageModel.")
+        self.llm = llm
+
+    def get_llm_kwargs(self) -> Dict[str, Any]:
+        """Get llm kwargs."""
+        if not isinstance(self.llm_kwargs, dict):
+            raise TypeError("The 'llm_kwargs' attribute is not an instance of dict.")
+        return self.llm_kwargs
+
+    def set_llm_kwargs(self, llm_kwargs) -> None:
+        """Set llm kwargs."""
+        if not isinstance(llm_kwargs, dict):
+            raise TypeError("The 'llm_kwargs' input is not an instance of dict.")
+        self.llm_kwargs = llm_kwargs
+
+    def get_retriever(self) -> BaseRetriever:
+        """Get retriever."""
+        if not isinstance(self.retriever, BaseRetriever):
+            raise TypeError(
+                "The 'retriever' attribute is not an instance of BaseRetriever."
+            )
+        return self.retriever
+
+    def set_retriever(self, retriever) -> None:
+        """Set retriever."""
+        if not isinstance(retriever, BaseRetriever):
+            raise TypeError(
+                "The 'retriever' input is not an instance of BaseRetriever."
+            )
+        self.retriever = retriever
+
+    def get_memory(self) -> BaseMemory:
+        """Get memory."""
+        if not isinstance(self.memory, BaseMemory):
+            raise TypeError("The 'memory' attribute is not an instance of BaseMemory.")
+        return self.memory
+
+    def set_memory(self, memory) -> None:
+        """Set memory."""
+        if not isinstance(memory, BaseMemory):
+            raise TypeError("The 'memory' input is not an instance of BaseMemory.")
+        self.memory = memory
+
     def chain(self, prompt: BasePromptTemplate) -> LLMChain:
         """Create an LLMChain based on a given prompt template.
 

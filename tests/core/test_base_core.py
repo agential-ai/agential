@@ -4,12 +4,17 @@ import os
 
 import dotenv
 import faiss
+import pytest
 
 from langchain.docstore import InMemoryDocstore
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.llms.huggingface_hub import HuggingFaceHub
+from langchain.memory import ConversationBufferMemory
 from langchain.prompts import PromptTemplate
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
+from langchain.schema.language_model import BaseLanguageModel
+from langchain.schema.memory import BaseMemory
+from langchain.schema.retriever import BaseRetriever
 from langchain.vectorstores import FAISS
 
 from discussion_agents.core.base import BaseCore
@@ -51,6 +56,59 @@ def test_base_core():
         "Explain the importance of eating a proper meal."
     )
 
+    # Test chain.
     chain = core.chain(prompt=prompt)
     out = chain.run({})
     assert type(out) is str
+
+    # Test getters and setters.
+    assert isinstance(core.get_llm(), BaseLanguageModel)
+    assert isinstance(core.get_llm_kwargs(), dict)
+    assert isinstance(core.get_retriever(), BaseRetriever)
+
+    core.llm = None
+    core.llm_kwargs = None
+    core.retriever = None
+
+    with pytest.raises(TypeError):
+        _ = core.get_llm()
+
+    with pytest.raises(TypeError):
+        _ = core.get_llm_kwargs()
+
+    with pytest.raises(TypeError):
+        _ = core.get_retriever()
+
+    core = BaseCore(llm=llm, llm_kwargs={}, retriever=create_memory_retriever())
+
+    assert (core.set_llm(llm)) is None
+    assert (core.set_llm_kwargs({})) is None
+    assert (core.set_retriever(create_memory_retriever())) is None
+
+    with pytest.raises(TypeError):
+        core.set_llm(None)
+
+    with pytest.raises(TypeError):
+        core.set_llm_kwargs([])
+
+    with pytest.raises(TypeError):
+        core.set_retriever("invalid input")
+
+    # Test memory.
+    core = BaseCore(
+        llm=llm,
+        llm_kwargs={},
+        retriever=create_memory_retriever(),
+        memory=ConversationBufferMemory(),
+    )
+
+    assert isinstance(core.get_memory(), BaseMemory)
+
+    core.memory = None
+    with pytest.raises(TypeError):
+        _ = core.get_memory()
+
+    with pytest.raises(TypeError):
+        core.set_memory(None)
+
+    assert (core.set_memory(ConversationBufferMemory())) is None

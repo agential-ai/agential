@@ -18,7 +18,6 @@ from langchain.prompts import PromptTemplate
 from pydantic.v1 import BaseModel, Field
 
 from discussion_agents.core.memory import BaseCoreWithMemory
-from discussion_agents.memory.generative_agents import GenerativeAgentMemory
 from discussion_agents.planning.generative_agents import (
     generate_broad_plan,
     generate_refined_plan_step,
@@ -40,7 +39,9 @@ class GenerativeAgent(BaseModel):
         age (int): The agent's age.
         traits (str): Permanent traits associated with the agent.
         lifestyle (str): Lifestyle characteristics that remain relatively stable.
-        core (BaseCoreWithMemory): The core component for language model interaction and memory management.
+        core (BaseCoreWithMemory): The core component for language model interaction and memory management;
+            must have `discussion_agents.memory.generative_agents.GenerativeAgentMemory` for
+            the core's memory.
     """
 
     name: str
