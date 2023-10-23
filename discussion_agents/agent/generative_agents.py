@@ -343,27 +343,6 @@ class GenerativeAgent(BaseModel):
 
         return chain.run(**kwargs).strip()
 
-    def _clean_response(self, text: str) -> str:
-        """Clean the response text by removing the agent's name prefix.
-
-        Args:
-            text (str): The response text to clean.
-
-        Returns:
-            str: The cleaned response text with the agent's name prefix removed.
-
-        This method is used to remove the agent's name prefix from the response text
-        if it exists. This can be useful when presenting the response in a dialogue
-        format where the agent's name prefix is not needed.
-
-        Example:
-            response = "GenerativeAgent: Hello! How can I help you?"
-            agent = GenerativeAgent(...)
-            cleaned_response = agent._clean_response(response)
-            print(cleaned_response)
-        """
-        return remove_name(text, self.name)
-
     def generate_reaction(
         self, observation: str, now: Optional[datetime] = None
     ) -> Tuple[bool, str]:
@@ -413,10 +392,10 @@ class GenerativeAgent(BaseModel):
             },
         )
         if "REACT:" in result:
-            reaction = self._clean_response(result.split("REACT:")[-1])
+            reaction = remove_name(result.split("REACT:")[-1])
             return False, f"{self.name} {reaction}"
         if "SAY:" in result:
-            said_value = self._clean_response(result.split("SAY:")[-1])
+            said_value = remove_name(result.split("SAY:")[-1])
             return True, f"{self.name} said {said_value}"
         else:
             return False, result
@@ -461,7 +440,7 @@ class GenerativeAgent(BaseModel):
         )
         result = full_result.strip().split("\n")[0]
         if "GOODBYE:" in result:
-            farewell = self._clean_response(result.split("GOODBYE:")[-1])
+            farewell = remove_name(result.split("GOODBYE:")[-1])
             self.memory.save_context(
                 {},
                 {
@@ -472,7 +451,7 @@ class GenerativeAgent(BaseModel):
             )
             return False, f"{self.name} said {farewell}"
         if "SAY:" in result:
-            response_text = self._clean_response(result.split("SAY:")[-1])
+            response_text = remove_name(result.split("SAY:")[-1])
             self.memory.save_context(
                 {},
                 {
