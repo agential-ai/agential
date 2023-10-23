@@ -217,8 +217,11 @@ def generate_refined_plan_step(
         results = results[0]
     else:
         # Filter out results with no substeps required.
-        results = [result for result in results if "<NO_SUBSTEPS_REQUIRED>" not in result]
-        if not results: return ["<NO_SUBSTEPS_REQUIRED>"]
+        results = [
+            result for result in results if "<NO_SUBSTEPS_REQUIRED>" not in result
+        ]
+        if not results:
+            return ["<NO_SUBSTEPS_REQUIRED>"]
 
         plans = [f"Sub-Plan {i}:\n{result}\n\n" for i, result in enumerate(results)]
 

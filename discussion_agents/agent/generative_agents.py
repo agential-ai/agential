@@ -17,12 +17,12 @@ from langchain.prompts import PromptTemplate
 from pydantic.v1 import BaseModel, Field
 
 from discussion_agents.core.memory import BaseCoreWithMemory
+from discussion_agents.memory.generative_agents import GenerativeAgentMemory
 from discussion_agents.planning.generative_agents import (
     generate_broad_plan,
     generate_refined_plan_step,
     update_status,
 )
-from discussion_agents.memory.generative_agents import GenerativeAgentMemory
 from discussion_agents.utils.parse import remove_name
 
 
@@ -182,7 +182,7 @@ class GenerativeAgent(BaseModel):
         """
         self.plan_req = {}
         self.status = ""
-        
+
         return True
 
     def get_entity_from_observation(self, observation: str) -> str:
@@ -210,7 +210,7 @@ class GenerativeAgent(BaseModel):
         chain = self.core.chain(prompt=prompt)
         result = chain.run(observation=observation).strip()
 
-        return result 
+        return result
 
     def get_entity_action(self, observation: str, entity_name: str) -> str:
         """Determine the action performed by the specified entity in an observation.
@@ -238,7 +238,7 @@ class GenerativeAgent(BaseModel):
         )
         chain = self.core.chain(prompt=prompt)
         result = chain.run(entity=entity_name, observation=observation).strip()
-        
+
         return result
 
     def summarize_related_memories(self, observation: str) -> str:
@@ -265,7 +265,7 @@ class GenerativeAgent(BaseModel):
             raise TypeError(
                 "The core's 'memory' attribute must be an instance of GenerativeAgentMemory."
             )
-        
+
         prompt = PromptTemplate.from_template(
             "{q1}?\n"
             + "Context from memory:\n"
