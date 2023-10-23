@@ -183,21 +183,6 @@ class GenerativeAgent(BaseModel):
         self.status = ""
         return True
 
-        # thought = (
-        #     f"This is {self.name}'s plan for {current_day.strftime('%A %B %d, %Y')}:"
-        # )
-        # for i in self.daily_req:
-        #     thought += f" {i},"
-        # thought = thought[:-1] + "."
-
-        # self.memory.save_context(
-        #     {},
-        #     {
-        #         self.memory.add_memory_key: thought,
-        #         self.memory.now_key: current_day,
-        #     },
-        # )
-
     def get_entity_from_observation(self, observation: str) -> str:
         """Extract the observed entity from a given observation text.
 
@@ -286,7 +271,7 @@ class GenerativeAgent(BaseModel):
     def _generate_reaction(
         self, observation: str, suffix: str, now: Optional[datetime] = None
     ) -> str:
-        """Generate a reaction or response to a given observation or dialogue act.
+        """A helper method that generates a reaction or response to a given observation or dialogue act.
 
         Args:
             observation (str): The observation or dialogue act to react to.
