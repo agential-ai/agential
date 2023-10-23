@@ -3,7 +3,9 @@ import os
 
 import dotenv
 import faiss
+import pytest
 
+from langchain.chat_models import ChatOpenAI
 from langchain.docstore import InMemoryDocstore
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.llms.huggingface_hub import HuggingFaceHub
@@ -19,6 +21,7 @@ from discussion_agents.planning.generative_agents import (
 
 dotenv.load_dotenv(".env")
 huggingface_hub_api_key = os.getenv("HUGGINGFACE_HUB_API_KEY")
+openai_api_key = os.getenv("OPENAI_API_KEY")
 
 llm = HuggingFaceHub(
     repo_id="gpt2",
@@ -89,6 +92,7 @@ def test_generate_broad_plan():
         assert type(p) is str
 
 
+@pytest.mark.slow
 def test_update_status():
     """Test update_status."""
     new_status = update_status(
@@ -102,6 +106,7 @@ def test_update_status():
     assert type(new_status) is str
 
 
+@pytest.mark.slow
 def test_generate_refined_plan_step():
     """Test generate_refined_plan_step."""
     refined_steps = generate_refined_plan_step(
@@ -112,3 +117,33 @@ def test_generate_refined_plan_step():
         core=core,
     )
     assert type(refined_steps) is list
+
+
+@pytest.mark.cost
+def test_generate_refined_plan_step_no_substep():
+    """Test generate_refined_plan_step where no substeps are required."""
+    LLM = ChatOpenAI(openai_api_key=openai_api_key, max_tokens=1500)
+
+    refined_steps = generate_refined_plan_step(
+        instruction="Something",
+        previous_steps=["Something"],
+        plan_step="Something",
+        summary=summary,
+        core=BaseCore(llm=LLM, retriever=create_memory_retriever()),
+        k=1,
+    )
+    assert isinstance(refined_steps, list)
+    assert len(refined_steps) == 1
+    assert refined_steps[0] == "<NO_SUBSTEPS_REQUIRED>"
+
+    refined_steps = generate_refined_plan_step(
+        instruction="Something",
+        previous_steps=["Something"],
+        plan_step="Something",
+        summary=summary,
+        core=BaseCore(llm=LLM, retriever=create_memory_retriever()),
+        k=2,
+    )
+    assert isinstance(refined_steps, list)
+    assert len(refined_steps) == 1
+    assert refined_steps[0] == "<NO_SUBSTEPS_REQUIRED>"
