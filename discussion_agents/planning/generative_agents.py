@@ -192,7 +192,8 @@ def generate_refined_plan_step(
         + "{previous_steps}\n\n"
         + "Given the instruction and the steps taken thus far above, "
         + "should you generate more detailed substeps for the current step: {plan_step}?\n"
-        + "If no substeps are required, simply generate <NO_SUBSTEPS_REQUIRED>."
+        + "If no substeps are required, simply generate <NO_SUBSTEPS_REQUIRED>. "
+        + "If the instruction is unclear, simply generate <NO_SUBSTEPS_REQUIRED>. "
         + "If substeps are required, return the list of substeps. "
         + "Keep the steps descriptive and concise."
         + "Output format example: \n"
@@ -215,6 +216,10 @@ def generate_refined_plan_step(
     if k == 1:
         results = results[0]
     else:
+        # Filter out results with no substeps required.
+        results = [result for result in results if "<NO_SUBSTEPS_REQUIRED>" not in result]
+        if not results: return ["<NO_SUBSTEPS_REQUIRED>"]
+
         plans = [f"Sub-Plan {i}:\n{result}\n\n" for i, result in enumerate(results)]
 
         prompt = PromptTemplate.from_template(
