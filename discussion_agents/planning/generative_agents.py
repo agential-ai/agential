@@ -147,7 +147,7 @@ def update_status(
     return status
 
 
-def generate_refined_plan(
+def generate_refined_plan_step(
     instruction: str,
     previous_steps: List[str],
     plan_step: str,

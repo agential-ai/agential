@@ -11,7 +11,7 @@ LangChain Generative Agents Doc Page:
 https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/characters
 """
 from datetime import datetime
-from typing import Any, Dict, Optional, Tuple, List
+from typing import Any, Dict, List, Optional, Tuple
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
@@ -21,8 +21,8 @@ from discussion_agents.core.memory import BaseCoreWithMemory
 from discussion_agents.memory.generative_agents import GenerativeAgentMemory
 from discussion_agents.planning.generative_agents import (
     generate_broad_plan,
-    update_status,
     generate_refined_plan_step,
+    update_status,
 )
 from discussion_agents.utils.parse import remove_name
 
@@ -64,32 +64,68 @@ class GenerativeAgent(BaseModel):
         self,
         instruction: str,
     ) -> List[str]:
+        """Wrapper for `discussion_agents.planning.generative_agents.generate_broad_plan`.
+
+        Refer to `discussion_agents.planning.generative_agents.generate_broad_plan`
+        for more information on `generate_broad_plan`.
+
+        Args:
+            instruction (str): The instruction for plan generation.
+
+        Returns:
+            List[str]: A list of steps representing the generated broad plan.
+
+        Example:
+            instruction = "Plan a weekend getaway."
+            agent = GenerativeAgent(...)
+            broad_plan = agent.generate_broad_plan(instruction)
+        """
         broad_plan = generate_broad_plan(
             instruction=instruction,
             summary=self.summary if self.summary else self.get_summary(),
-            core=self.core
+            core=self.core,
         )
         self.plan_req["broad"] = broad_plan
 
         return broad_plan
-    
+
     def update_status(
         self,
         instruction: str,
         previous_steps: List[str],
         plan_step: str,
     ) -> str:
+        """Update the status of a plan step, considering previous steps.
+
+        This method updates the status of a plan step based on the provided instruction, previous steps,
+        and the new plan step. It incorporates a summary of the agent's characteristics.
+
+        Args:
+            instruction (str): The original instruction related to the plan.
+            previous_steps (List[str]): A list of previously generated plan steps.
+            plan_step (str): The new plan step to be added or updated.
+
+        Returns:
+            str: The updated status for the plan step.
+
+        Example:
+            instruction = "Prepare for a hiking trip."
+            previous_steps = ["1) Pack hiking gear.", "2) Plan the route."]
+            plan_step = "3) Check the weather forecast."
+            agent = GenerativeAgent(...)
+            updated_status = agent.update_status(instruction, previous_steps, plan_step)
+        """
         new_status = update_status(
             instruction=instruction,
             previous_steps=previous_steps,
             plan_step=plan_step,
             summary=self.summary if self.summary else self.get_summary(),
-            status=self.status
+            status=self.status,
         )
         self.status = new_status
 
         return new_status
-    
+
     def generate_refined_plan_step(
         self,
         instruction: str,
@@ -97,14 +133,34 @@ class GenerativeAgent(BaseModel):
         plan_step: str,
         k: int = 1,
     ) -> List[str]:
-        
+        """Generate a refined plan step for an existing plan.
+
+        This method generates a refined plan step within an existing plan based on the provided instruction,
+        previous steps, and the new plan step. It incorporates a summary of the agent's characteristics.
+
+        Args:
+            instruction (str): The original instruction related to the plan.
+            previous_steps (List[str]): A list of previously generated plan steps.
+            plan_step (str): The new plan step to be added or updated.
+            k (int, optional): The number of alternative refined plan steps to generate. Default is 1.
+
+        Returns:
+            List[str]: A list of steps representing the refined plan step(s).
+
+        Example:
+            instruction = "Enhance the presentation slides."
+            previous_steps = ["1) Review content.", "2) Apply design improvements."]
+            plan_step = "3) Incorporate visual aids."
+            agent = GenerativeAgent(...)
+            refined_steps = agent.generate_refined_plan_step(instruction, previous_steps, plan_step, k=2)
+        """
         refined_plan_step = generate_refined_plan_step(
             instruction=instruction,
             previous_steps=previous_steps,
             plan_step=plan_step,
             summary=self.summary if self.summary else self.get_summary(),
             core=self.core,
-            k=k
+            k=k,
         )
 
         self.plan_req["refined_step"] = refined_plan_step
@@ -112,7 +168,19 @@ class GenerativeAgent(BaseModel):
         return refined_plan_step
 
     def clear_plan(self) -> bool:
+        """Clear the plan and status of the agent.
+
+        This method clears the agent's plan and status.
+
+        Returns:
+            bool: True if the plan and status are successfully cleared.
+
+        Example:
+            agent = GenerativeAgent(...)
+            cleared = agent.clear_plan()
+        """
         self.plan_req = {}
+        self.status = ""
         return True
 
         # thought = (
@@ -336,7 +404,6 @@ class GenerativeAgent(BaseModel):
             observation, call_to_action_template, now=now
         )
         result = full_result.strip().split("\n")[0]
-        # AAA
         self.memory.save_context(
             {},
             {
