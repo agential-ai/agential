@@ -11,9 +11,8 @@ LangChain Generative Agents Doc Page:
 https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/characters
 """
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
-from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from pydantic.v1 import BaseModel, Field
 
@@ -23,6 +22,7 @@ from discussion_agents.planning.generative_agents import (
     generate_refined_plan_step,
     update_status,
 )
+from discussion_agents.memory.generative_agents import GenerativeAgentMemory
 from discussion_agents.utils.parse import remove_name
 
 
@@ -182,6 +182,7 @@ class GenerativeAgent(BaseModel):
         """
         self.plan_req = {}
         self.status = ""
+        
         return True
 
     def get_entity_from_observation(self, observation: str) -> str:
@@ -206,8 +207,10 @@ class GenerativeAgent(BaseModel):
             "What is the observed entity in the following observation? {observation}\n"
             + "Entity="
         )
-        chain = LLMChain(llm=self.llm, prompt=prompt, memory=self.memory)
-        return chain.run(observation=observation).strip()
+        chain = self.core.chain(prompt=prompt)
+        result = chain.run(observation=observation).strip()
+
+        return result 
 
     def get_entity_action(self, observation: str, entity_name: str) -> str:
         """Determine the action performed by the specified entity in an observation.
@@ -233,8 +236,10 @@ class GenerativeAgent(BaseModel):
             "What is the {entity} doing in the following observation? {observation}\n"
             + "The {entity} is"
         )
-        chain = LLMChain(llm=self.llm, prompt=prompt, memory=self.memory)
-        return chain.run(entity=entity_name, observation=observation).strip()
+        chain = self.core.chain(prompt=prompt)
+        result = chain.run(entity=entity_name, observation=observation).strip()
+        
+        return result
 
     def summarize_related_memories(self, observation: str) -> str:
         """Generate a summary of memories most relevant to an observation.
@@ -256,6 +261,11 @@ class GenerativeAgent(BaseModel):
             summary = agent.summarize_related_memories(observation)
             print(summary)
         """
+        if not isinstance(self.core.get_memory(), GenerativeAgentMemory):
+            raise TypeError(
+                "The core's 'memory' attribute must be an instance of GenerativeAgentMemory."
+            )
+        
         prompt = PromptTemplate.from_template(
             "{q1}?\n"
             + "Context from memory:\n"
@@ -266,8 +276,10 @@ class GenerativeAgent(BaseModel):
         entity_action = self.get_entity_action(observation, entity_name)
         q1 = f"What is the relationship between {self.name} and {entity_name}"
         q2 = f"{entity_name} is {entity_action}"
-        chain = LLMChain(llm=self.llm, prompt=prompt, memory=self.memory)
-        return chain.run(q1=q1, queries=[q1, q2]).strip()
+        chain = self.core.chain(prompt=prompt)
+        result = chain.run(q1=q1, queries=[q1, q2]).strip()
+
+        return result
 
     def _generate_reaction(
         self, observation: str, suffix: str, now: Optional[datetime] = None
@@ -295,6 +307,10 @@ class GenerativeAgent(BaseModel):
             reaction = agent._generate_reaction(observation, suffix)
             print(reaction)
         """
+        if not isinstance(self.core.get_memory(), GenerativeAgentMemory):
+            raise TypeError(
+                "The core's 'memory' attribute must be an instance of GenerativeAgentMemory."
+            )
         prompt = PromptTemplate.from_template(
             "{agent_summary_description}\n"
             + "It is {current_time}.\n"
@@ -321,13 +337,14 @@ class GenerativeAgent(BaseModel):
             observation=observation,
             suffix=suffix,
         )
-        consumed_tokens = self.llm.get_num_tokens(
+        consumed_tokens = self.core.get_llm().get_num_tokens(
             prompt.format(most_recent_memories="", **kwargs)
         )
-        kwargs[self.memory.most_recent_memories_token_key] = consumed_tokens
-        chain = LLMChain(llm=self.llm, prompt=prompt, memory=self.memory)
+        kwargs[self.core.get_memory().most_recent_memories_token_key] = consumed_tokens
+        chain = self.core.chain(prompt=prompt)
+        result = chain.run(**kwargs).strip()
 
-        return chain.run(**kwargs).strip()
+        return result
 
     def generate_reaction(
         self, observation: str, now: Optional[datetime] = None
@@ -358,6 +375,10 @@ class GenerativeAgent(BaseModel):
             else:
                 print(f"{self.name} chose not to respond.")
         """
+        if not isinstance(self.core.get_memory(), GenerativeAgentMemory):
+            raise TypeError(
+                "The core's 'memory' attribute must be an instance of GenerativeAgentMemory."
+            )
         call_to_action_template = (
             "Should {agent_name} react to the observation, and if so,"
             + " what would be an appropriate reaction? Respond in one line."
@@ -369,12 +390,12 @@ class GenerativeAgent(BaseModel):
             observation, call_to_action_template, now=now
         )
         result = full_result.strip().split("\n")[0]
-        self.memory.save_context(
+        self.core.get_memory().save_context(
             {},
             {
-                self.memory.add_memory_key: f"{self.name} observed "
+                self.core.get_memory().add_memory_key: f"{self.name} observed "
                 f"{observation} and reacted by {result}",
-                self.memory.now_key: now,
+                self.core.get_memory().now_key: now,
             },
         )
         if "REACT:" in result:
@@ -416,6 +437,10 @@ class GenerativeAgent(BaseModel):
             else:
                 print(f"{self.name} said: {response} (End of conversation)")
         """
+        if not isinstance(self.core.get_memory(), GenerativeAgentMemory):
+            raise TypeError(
+                "The core's 'memory' attribute must be an instance of GenerativeAgentMemory."
+            )
         call_to_action_template = (
             "What would {agent_name} say? To end the conversation, write:"
             ' GOODBYE: "what to say". Otherwise to continue the conversation,'
@@ -427,23 +452,23 @@ class GenerativeAgent(BaseModel):
         result = full_result.strip().split("\n")[0]
         if "GOODBYE:" in result:
             farewell = remove_name(result.split("GOODBYE:")[-1])
-            self.memory.save_context(
+            self.core.get_memory().save_context(
                 {},
                 {
-                    self.memory.add_memory_key: f"{self.name} observed "
+                    self.core.get_memory().add_memory_key: f"{self.name} observed "
                     f"{observation} and said {farewell}",
-                    self.memory.now_key: now,
+                    self.core.get_memory().memory.now_key: now,
                 },
             )
             return False, f"{self.name} said {farewell}"
         if "SAY:" in result:
             response_text = remove_name(result.split("SAY:")[-1])
-            self.memory.save_context(
+            self.core.get_memory().save_context(
                 {},
                 {
-                    self.memory.add_memory_key: f"{self.name} observed "
+                    self.core.get_memory().add_memory_key: f"{self.name} observed "
                     f"{observation} and said {response_text}",
-                    self.memory.now_key: now,
+                    self.core.get_memory().now_key: now,
                 },
             )
             return True, f"{self.name} said {response_text}"
@@ -479,12 +504,14 @@ class GenerativeAgent(BaseModel):
             + "Do not embellish."
             + "\n\nSummary: "
         )
-        chain = LLMChain(llm=self.llm, prompt=prompt, memory=self.memory)
+        chain = self.core.chain(prompt=prompt)
 
         # The agent seeks to think about their core characteristics.
-        return chain.run(
+        result = chain.run(
             name=self.name, queries=[f"{self.name}'s core characteristics"]
         ).strip()
+
+        return result
 
     def get_summary(
         self, force_refresh: bool = False, now: Optional[datetime] = None
@@ -520,17 +547,16 @@ class GenerativeAgent(BaseModel):
             self.summary = self.compute_agent_summary()
             self.last_refreshed = current_time
 
-        if "broad_schedule" not in self.plan_req:
-            self.plan(current_day=current_time)
-        return (
+        summary = (
             f"Name: {self.name}\n"
             + f"Age: {self.age}\n"
             + f"Innate traits: {self.traits}\n"
             + f"Status: {self.status}\n"
             + f"Lifestyle: {self.lifestyle}\n"
-            + f"Current Date: {current_time.strftime('%A %B %d')}\n"
             + f"{self.summary}\n"
         )
+
+        return summary
 
     def get_full_header(
         self, force_refresh: bool = False, now: Optional[datetime] = None
@@ -557,5 +583,6 @@ class GenerativeAgent(BaseModel):
         """
         now = datetime.now() if now is None else now
         summary = self.get_summary(force_refresh=force_refresh, now=now)
-        current_time_str = now.strftime("%B %d, %Y, %I:%M %p")
-        return f"{summary}\nIt is {current_time_str}.\n{self.name}'s lifestyle: {self.lifestyle}"
+        result = f"{summary}\n{self.name}'s lifestyle: {self.lifestyle}"
+
+        return result
