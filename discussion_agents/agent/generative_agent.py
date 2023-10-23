@@ -11,7 +11,7 @@ LangChain Generative Agents Doc Page:
 https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/characters
 """
 from datetime import datetime
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple, List
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
@@ -21,36 +21,35 @@ from discussion_agents.core.memory import BaseCoreWithMemory
 from discussion_agents.memory.generative_agents import GenerativeAgentMemory
 from discussion_agents.planning.generative_agents import (
     generate_broad_plan,
-    generate_refined_plan,
     update_status,
+    generate_refined_plan_step,
 )
 from discussion_agents.utils.parse import remove_name
 
 
 class GenerativeAgent(BaseModel):
-    """An Agent as a character with memory and innate characteristics.
+    """A Generative Agent with memory, innate characteristics, and language model interaction.
 
-    This class represents a character or agent with attributes such as name, age, traits,
-    lifestyle, memory, and an underlying language model. It combines innate characteristics
-    with the ability to store and retrieve memories and interact with a language model.
-    The GenerativeAgent has the ability to plan, reflect, summarize, and add memories.
+    This class serves as a representation of an agent. It includes attributes
+    such as the character's name, age, permanent traits, lifestyle characteristics, current
+    status, and an agent core with memory capabilities. The core enables interactions with a
+    language model, empowering the GenerativeAgent to plan, reflect, summarize, and store memories.
 
     Attributes:
-        name (str): The character's name.
-        age (int): The optional age of the character. Defaults to None.
-        traits (str): Permanent traits ascribed to the character.
-        lifestyle (str): Lifestyle traits of the character that should not change.
-        status (str): Current status of the character (what they are currently doing).
-        core (BaseCoreWithMemory): The agent core with memory.
+        name (str): The agent's name.
+        age (int): The agent's age.
+        traits (str): Permanent traits associated with the agent.
+        lifestyle (str): Lifestyle characteristics that remain relatively stable.
+        core (BaseCoreWithMemory): The core component for language model interaction and memory management.
     """
 
     name: str
     age: int
     traits: str
     lifestyle: str
-    status: str
     core: BaseCoreWithMemory
 
+    status: str = ""  #: :meta private:
     summary: str = ""  #: :meta private:
     summary_refresh_seconds: int = 3600  #: :meta private:
     last_refreshed: datetime = Field(default_factory=datetime.now)  # : :meta private:
@@ -61,22 +60,60 @@ class GenerativeAgent(BaseModel):
 
         arbitrary_types_allowed = True
 
-    def plan(
+    def generate_broad_plan(
         self,
         instruction: str,
-        step: str,
-        k: int = 3,
-        llm_kwargs: Dict[str, Any] = {"max_tokens": 500, "temperature": 1},
-    ):
-        summary = self.get_summary() if not self.summary else self.summary
+    ) -> List[str]:
+        broad_plan = generate_broad_plan(
+            instruction=instruction,
+            summary=self.summary if self.summary else self.get_summary(),
+            core=self.core
+        )
+        self.plan_req["broad"] = broad_plan
 
-        # Initial broad plan generation.
-        if "broad" not in self.plan_req:
-            self.plan_req["broad"] = generate_broad_plan(
-                instruction=instruction, summary=summary, core=self.core
-            )
+        return broad_plan
+    
+    def update_status(
+        self,
+        instruction: str,
+        previous_steps: List[str],
+        plan_step: str,
+    ) -> str:
+        new_status = update_status(
+            instruction=instruction,
+            previous_steps=previous_steps,
+            plan_step=plan_step,
+            summary=self.summary if self.summary else self.get_summary(),
+            status=self.status
+        )
+        self.status = new_status
 
-        # At each step, determine whether we should generate substeps or not.
+        return new_status
+    
+    def generate_refined_plan_step(
+        self,
+        instruction: str,
+        previous_steps: List[str],
+        plan_step: str,
+        k: int = 1,
+    ) -> List[str]:
+        
+        refined_plan_step = generate_refined_plan_step(
+            instruction=instruction,
+            previous_steps=previous_steps,
+            plan_step=plan_step,
+            summary=self.summary if self.summary else self.get_summary(),
+            core=self.core,
+            k=k
+        )
+
+        self.plan_req["refined_step"] = refined_plan_step
+
+        return refined_plan_step
+
+    def clear_plan(self) -> bool:
+        self.plan_req = {}
+        return True
 
         # thought = (
         #     f"This is {self.name}'s plan for {current_day.strftime('%A %B %d, %Y')}:"

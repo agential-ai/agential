@@ -13,7 +13,7 @@ from langchain.vectorstores import FAISS
 from discussion_agents.core.base import BaseCore
 from discussion_agents.planning.generative_agents import (
     generate_broad_plan,
-    generate_refined_plan,
+    generate_refined_plan_step,
     update_status,
 )
 
@@ -102,9 +102,9 @@ def test_update_status():
     assert type(new_status) is str
 
 
-def test_generate_refined_plan():
-    """Test generate_refined_plan."""
-    refined_steps = generate_refined_plan(
+def test_generate_refined_plan_step():
+    """Test generate_refined_plan_step."""
+    refined_steps = generate_refined_plan_step(
         instruction=instruction,
         previous_steps=broad_plan[:1],
         plan_step=broad_plan[1],
