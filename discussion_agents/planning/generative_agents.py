@@ -1,5 +1,8 @@
 """Planning module for Generative Agents.
 
+Original Generative Agents planning module:
+https://github.com/joonspk-research/generative_agents/blob/main/reverie/backend_server/persona/cognitive_modules/plan.py 
+
 The original Generative Agents planning architecture involved 
 temporally-aware prompts and was made with simulating daily behavior 
 in mind. Planning, here, is a generalized, instructional adaptation of the 
@@ -7,6 +10,21 @@ original generative Agents planning cognitive module.
 
 The methods below are capable of recursively generating a broad -> detailed
 plan while keeping track of the agent's status.
+
+A list of changes on how this implementation deviates from the original paper:
+- no temporal component
+    - no wake up hour generation
+    - no track of the day (new day or first day)
+    - all planning components exclude timestamps (or day)
+    - planning is irrespective of time
+- simplified internal planning component
+    - (our implementation): `plan_req` dict tracks the broad and refined plan of the agent and their `status`
+    - compacting the following components from the original paper:
+        - scratch memory currently (what the agent is currently doing) -> status
+        - daily_req, daily_plan_req, f_daily_schedule, f_daily_schedule_hourly_org -> plan_req
+    - `generate_hourly_schedule` in the original paper generates refined schedules until a threshold is met
+    - (our implementation): multiple refined plans for a step are generated and combined via an LLM 
+- planning is done by step, iteratively and not altogether at once 
 """
 from typing import List
 
