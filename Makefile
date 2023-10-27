@@ -40,8 +40,8 @@ clean: ## Delete all compiled Python files.
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
 
-lint: ## Lint using black and ruff.
-	poetry run mypy discussion_agents tests
+lint: ## Lint using black and ruff, static check mypy exclude tests.
+	poetry run mypy discussion_agents
 	poetry run black --check discussion_agents tests
 	poetry run ruff check discussion_agents tests
 

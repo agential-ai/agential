@@ -70,4 +70,4 @@ lines-between-types = 1
 [tool.mypy]
 ignore_missing_imports = "True"
 disallow_untyped_defs = "True"
-exclude = ["tests/"]
+# exclude = ["tests/"]
