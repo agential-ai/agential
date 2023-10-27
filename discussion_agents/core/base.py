@@ -59,7 +59,7 @@ class BaseCore(BaseCoreInterface):
             )
         return self.llm
 
-    def set_llm(self, llm) -> None:
+    def set_llm(self, llm: BaseLanguageModel) -> None:
         """Set llm."""
         if not isinstance(llm, BaseLanguageModel):
             raise TypeError("The 'llm' input is not an instance of BaseLanguageModel.")
@@ -71,7 +71,7 @@ class BaseCore(BaseCoreInterface):
             raise TypeError("The 'llm_kwargs' attribute is not an instance of dict.")
         return self.llm_kwargs
 
-    def set_llm_kwargs(self, llm_kwargs) -> None:
+    def set_llm_kwargs(self, llm_kwargs: Dict[str, Any]) -> None:
         """Set llm kwargs."""
         if not isinstance(llm_kwargs, dict):
             raise TypeError("The 'llm_kwargs' input is not an instance of dict.")
@@ -85,7 +85,7 @@ class BaseCore(BaseCoreInterface):
             )
         return self.retriever
 
-    def set_retriever(self, retriever) -> None:
+    def set_retriever(self, retriever: BaseRetriever) -> None:
         """Set retriever."""
         if not isinstance(retriever, BaseRetriever):
             raise TypeError(
@@ -99,7 +99,7 @@ class BaseCore(BaseCoreInterface):
             raise TypeError("The 'memory' attribute is not an instance of BaseMemory.")
         return self.memory
 
-    def set_memory(self, memory) -> None:
+    def set_memory(self, memory: BaseMemory) -> None:
         """Set memory."""
         if not isinstance(memory, BaseMemory):
             raise TypeError("The 'memory' input is not an instance of BaseMemory.")

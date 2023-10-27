@@ -1,6 +1,7 @@
 """Memory-related cores."""
 from langchain.chains import LLMChain
 from langchain.schema.memory import BaseMemory
+from langchain.schema.prompt_template import BasePromptTemplate
 
 from discussion_agents.core.base import BaseCore
 
@@ -24,7 +25,7 @@ class BaseCoreWithMemory(BaseCore):
 
     memory: BaseMemory
 
-    def chain(self, prompt: str) -> LLMChain:
+    def chain(self, prompt: BasePromptTemplate) -> LLMChain:
         """Create an LLMChain based on a given prompt template.
 
         BaseCoreWithMemoryreturns a stateful LLMChain (with memory).

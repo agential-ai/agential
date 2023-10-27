@@ -20,7 +20,7 @@ llm = HuggingFaceHub(
 
 
 @pytest.mark.slow
-def test_score_memories_importance():
+def test_score_memories_importance() -> None:
     """Test score_memories_importance."""
     importance_weight = 0.15
 

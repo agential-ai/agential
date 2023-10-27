@@ -10,6 +10,7 @@ from langchain.docstore import InMemoryDocstore
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.llms.huggingface_hub import HuggingFaceHub
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
+from langchain.schema import BaseRetriever
 from langchain.vectorstores import FAISS
 
 from discussion_agents.utils.fetch import fetch_memories
@@ -32,7 +33,7 @@ encode_kwargs = {"normalize_embeddings": False}
 test_date = datetime(year=2022, month=11, day=14, hour=3, minute=14)
 
 
-def create_memory_retriever():
+def create_memory_retriever() -> BaseRetriever:
     """Creates a TimeWeightedVectorStoreRetriever."""
     embeddings_model = HuggingFaceEmbeddings(
         model_name=model_name, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs
@@ -45,7 +46,7 @@ def create_memory_retriever():
     return retriever
 
 
-def test_fetch_memories():
+def test_fetch_memories() -> None:
     """Test fetch_memories."""
     observation = "Some observation."
 

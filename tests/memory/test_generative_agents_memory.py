@@ -10,7 +10,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.docstore import InMemoryDocstore
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
-from langchain.schema import Document
+from langchain.schema import BaseRetriever, Document
 from langchain.vectorstores import FAISS
 
 from discussion_agents.core.base import BaseCore
@@ -46,7 +46,7 @@ observations = [
 test_date = datetime(year=2022, month=11, day=14, hour=3, minute=14)
 
 
-def create_memory_retriever():
+def create_memory_retriever() -> BaseRetriever:
     """Creates a TimeWeightedVectorStoreRetriever."""
     embeddings_model = HuggingFaceEmbeddings(
         model_name=model_name, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs
@@ -63,7 +63,7 @@ core = BaseCore(llm=llm, retriever=create_memory_retriever())
 
 
 @pytest.mark.cost
-def test_score_memories_importance():
+def test_score_memories_importance() -> None:
     """Tests score_memories_importance in GenerativeAgentMemory."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
@@ -80,7 +80,7 @@ def test_score_memories_importance():
 
 
 @pytest.mark.cost
-def test_add_memories():
+def test_add_memories() -> None:
     """Tests add_memories."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
@@ -97,7 +97,7 @@ def test_add_memories():
 
 @pytest.mark.cost
 @pytest.mark.slow
-def test_pause_to_reflect():
+def test_pause_to_reflect() -> None:
     """Tests pause_to_reflect."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
@@ -111,7 +111,7 @@ def test_pause_to_reflect():
     assert type(topics) is list
 
 
-def test_get_memories_until_limit():
+def test_get_memories_until_limit() -> None:
     """Tests get_memories_until_limit."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
@@ -138,7 +138,7 @@ def test_get_memories_until_limit():
     assert type(mem_str) is str
 
 
-def test_memory_variables():
+def test_memory_variables() -> None:
     """Tests memory_variables property."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
@@ -151,7 +151,7 @@ def test_memory_variables():
     assert not memory.memory_variables
 
 
-def test_load_memory_variables_empty():
+def test_load_memory_variables_empty() -> None:
     """Tests load_memory_variables when input is empty."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
@@ -165,7 +165,7 @@ def test_load_memory_variables_empty():
 
 
 @pytest.mark.cost
-def test_load_memory_variables_query():
+def test_load_memory_variables_query() -> None:
     """Tests load_memory_variables when query is supplied in input."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
@@ -181,7 +181,7 @@ def test_load_memory_variables_query():
     assert type(mem_detail_simple[memory.relevant_memories_simple_key]) is str
 
 
-def test_load_memory_variables_relevant():
+def test_load_memory_variables_relevant() -> None:
     """Tests load_memory_variables when most_recent_memories_token_key is supplied in input."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
@@ -196,7 +196,7 @@ def test_load_memory_variables_relevant():
 
 
 @pytest.mark.cost
-def test_save_context():
+def test_save_context() -> None:
     """Tests save_context."""
     # Test instantiation.
     memory = GenerativeAgentMemory(
@@ -212,7 +212,7 @@ def test_save_context():
 
 
 @pytest.mark.cost
-def test_clear():
+def test_clear() -> None:
     """Tests clear."""
     # Test instantiation.
     memory = GenerativeAgentMemory(

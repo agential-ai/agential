@@ -2,7 +2,7 @@
 from discussion_agents.utils.parse import parse_list, parse_numbered_list, remove_name
 
 
-def test_parse_list():
+def test_parse_list() -> None:
     """Test parse list function."""
     gt = ["Item 1", "Item 2", "Item 3", "Item 4"]
 
@@ -14,7 +14,7 @@ def test_parse_list():
         assert i == j
 
 
-def test_parse_numbered_list():
+def test_parse_numbered_list() -> None:
     """Test parse_numbered_list function."""
     gt = ["Item One", "Item Two", "Item Three"]
 
@@ -26,7 +26,7 @@ def test_parse_numbered_list():
         assert i == j
 
 
-def test_remove_name():
+def test_remove_name() -> None:
     """Test remove_name function."""
     gt = "Smith"
 

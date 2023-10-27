@@ -11,6 +11,7 @@ from langchain.docstore import InMemoryDocstore
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.llms.huggingface_hub import HuggingFaceHub
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
+from langchain.schema import BaseRetriever
 from langchain.vectorstores import FAISS
 
 from discussion_agents.core.base import BaseCore
@@ -38,7 +39,7 @@ encode_kwargs = {"normalize_embeddings": False}
 test_date = datetime(year=2022, month=11, day=14, hour=3, minute=14)
 
 
-def create_memory_retriever():
+def create_memory_retriever() -> BaseRetriever:
     """Creates a TimeWeightedVectorStoreRetriever."""
     embeddings_model = HuggingFaceEmbeddings(
         model_name=model_name, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs
@@ -55,7 +56,7 @@ core = BaseCore(llm=llm, retriever=create_memory_retriever())
 
 
 @pytest.mark.slow
-def test_get_topics_of_reflection():
+def test_get_topics_of_reflection() -> None:
     """Tests get_topics_of_reflection."""
     # Test observations string.
     observations = "This is an observation."
@@ -68,7 +69,7 @@ def test_get_topics_of_reflection():
     assert type(topics) is list
 
 
-def test_get_insights_on_topics():
+def test_get_insights_on_topics() -> None:
     """Tests get_insights_on_topics."""
     # Test topics list and related_memories list.
     insights = get_insights_on_topics(
@@ -107,7 +108,7 @@ def test_get_insights_on_topics():
     assert type(insights[0]) is list
 
 
-def test_reflect():
+def test_reflect() -> None:
     """Tests reflect."""
     observations = "This is an observation."
     topics, insights = reflect(observations=observations, core=core, now=test_date)

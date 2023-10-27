@@ -1,11 +1,11 @@
 """Planning module for Generative Agents.
 
 Original Generative Agents planning module:
-https://github.com/joonspk-research/generative_agents/blob/main/reverie/backend_server/persona/cognitive_modules/plan.py 
+https://github.com/joonspk-research/generative_agents/blob/main/reverie/backend_server/persona/cognitive_modules/plan.py
 
-The original Generative Agents planning architecture involved 
-temporally-aware prompts and was made with simulating daily behavior 
-in mind. Planning, here, is a generalized, instructional adaptation of the 
+The original Generative Agents planning architecture involved
+temporally-aware prompts and was made with simulating daily behavior
+in mind. Planning, here, is a generalized, instructional adaptation of the
 original generative Agents planning cognitive module.
 
 The methods below are capable of recursively generating a broad -> detailed
@@ -23,7 +23,7 @@ A list of changes on how this implementation deviates from the original paper:
         - scratch memory currently (what the agent is currently doing) -> status
         - daily_req, daily_plan_req, f_daily_schedule, f_daily_schedule_hourly_org -> plan_req
     - `generate_hourly_schedule` in the original paper generates refined schedules until a threshold is met
-    - (our implementation): multiple refined plans for a step are generated and combined via an LLM 
+    - (our implementation): multiple refined plans for a step are generated and combined via an LLM
 - planning is done by step, iteratively and not altogether at once
 """
 from typing import List
@@ -116,7 +116,7 @@ def update_status(
             instruction, previous_steps, plan_step, summary, status, core
         )
     """
-    previous_steps = "\n".join(previous_steps)
+    previous_steps_joined = "\n".join(previous_steps)
 
     plan_prompt = PromptTemplate.from_template(
         "Below is a summary of your characteristics."
@@ -131,7 +131,7 @@ def update_status(
     plan_result = chain.run(
         summary=summary,
         instruction=instruction,
-        previous_steps=previous_steps,
+        previous_steps=previous_steps_joined,
         plan_step=plan_step,
     ).strip()
 
@@ -146,7 +146,7 @@ def update_status(
     )
     chain = core.chain(prompt=thought_prompt)
     thought_result = chain.run(
-        summary=summary, instruction=instruction, previous_steps=previous_steps
+        summary=summary, instruction=instruction, previous_steps=previous_steps_joined
     ).strip()
 
     plan_and_thought = (plan_result + " " + thought_result).replace("\n", "")
@@ -208,7 +208,7 @@ def generate_refined_plan_step(
             instruction, previous_steps, plan_step, summary, core_instance, k=2
         )
     """
-    previous_steps = "\n".join(previous_steps)
+    previous_steps_joined = "\n".join(previous_steps)
 
     prompt = PromptTemplate.from_template(
         "Below is a summary of your characteristics."
@@ -234,7 +234,7 @@ def generate_refined_plan_step(
         result = chain.run(
             summary=summary,
             instruction=instruction,
-            previous_steps=previous_steps,
+            previous_steps=previous_steps_joined,
             plan_step=plan_step,
         ).strip()
         results.append(result)
@@ -267,12 +267,12 @@ def generate_refined_plan_step(
         chain = core.chain(prompt=prompt)
         results = chain.run(
             instruction=instruction,
-            previous_steps=previous_steps,
+            previous_steps=previous_steps_joined,
             plan_step=plan_step,
             k=k,
             plans=plans,
         ).strip()
 
-    results = parse_numbered_list(results)
+    results = parse_numbered_list(results)  # type: ignore
 
     return results

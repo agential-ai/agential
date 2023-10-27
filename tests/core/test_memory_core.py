@@ -11,6 +11,7 @@ from langchain.llms.huggingface_hub import HuggingFaceHub
 from langchain.memory.buffer import ConversationBufferMemory
 from langchain.prompts import PromptTemplate
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
+from langchain.schema import BaseRetriever
 from langchain.vectorstores import FAISS
 
 from discussion_agents.core.memory import BaseCoreWithMemory
@@ -31,7 +32,7 @@ model_kwargs = {"device": "cpu"}
 encode_kwargs = {"normalize_embeddings": False}
 
 
-def create_memory_retriever():
+def create_memory_retriever() -> BaseRetriever:
     """Creates a TimeWeightedVectorStoreRetriever."""
     embeddings_model = HuggingFaceEmbeddings(
         model_name=model_name, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs
@@ -44,7 +45,7 @@ def create_memory_retriever():
     return retriever
 
 
-def test_base_core_with_memory():
+def test_base_core_with_memory() -> None:
     """Test BaseCore & chain method."""
     template = """You are a chatbot having a conversation with a human.
 

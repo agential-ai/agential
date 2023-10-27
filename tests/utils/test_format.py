@@ -11,7 +11,7 @@ from discussion_agents.utils.format import (
 )
 
 
-def test_format_memories_detail():
+def test_format_memories_detail() -> None:
     """Test format_memories_detail."""
     test_date = datetime(year=2022, month=11, day=14, hour=3, minute=14)
 
@@ -42,7 +42,7 @@ def test_format_memories_detail():
         _ = format_memories_detail(doc)
 
 
-def test_format_memories_simple():
+def test_format_memories_simple() -> None:
     """Test format_memories_simple."""
     # Test formatting 1 Document.
     gt_doc_out = "Some page content."

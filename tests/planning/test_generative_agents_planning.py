@@ -10,6 +10,7 @@ from langchain.docstore import InMemoryDocstore
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.llms.huggingface_hub import HuggingFaceHub
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
+from langchain.schema import BaseRetriever
 from langchain.vectorstores import FAISS
 
 from discussion_agents.core.base import BaseCore
@@ -49,7 +50,7 @@ broad_plan = [
 ]
 
 
-def create_memory_retriever():
+def create_memory_retriever() -> BaseRetriever:
     """Creates a TimeWeightedVectorStoreRetriever."""
     embeddings_model = HuggingFaceEmbeddings(
         model_name=model_name, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs
@@ -82,7 +83,7 @@ summary = (
 )
 
 
-def test_generate_broad_plan():
+def test_generate_broad_plan() -> None:
     """Test generate_broad_plan."""
     broad_plan = generate_broad_plan(
         instruction=instruction, summary=summary, core=core
@@ -93,7 +94,7 @@ def test_generate_broad_plan():
 
 
 @pytest.mark.slow
-def test_update_status():
+def test_update_status() -> None:
     """Test update_status."""
     new_status = update_status(
         instruction=instruction,
@@ -107,7 +108,7 @@ def test_update_status():
 
 
 @pytest.mark.slow
-def test_generate_refined_plan_step():
+def test_generate_refined_plan_step() -> None:
     """Test generate_refined_plan_step."""
     refined_steps = generate_refined_plan_step(
         instruction=instruction,
@@ -120,7 +121,7 @@ def test_generate_refined_plan_step():
 
 
 @pytest.mark.cost
-def test_generate_refined_plan_step_no_substep():
+def test_generate_refined_plan_step_no_substep() -> None:
     """Test generate_refined_plan_step where no substeps are required."""
     LLM = ChatOpenAI(openai_api_key=openai_api_key, max_tokens=1500)
 

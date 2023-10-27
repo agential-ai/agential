@@ -35,7 +35,7 @@ model_kwargs = {"device": "cpu"}
 encode_kwargs = {"normalize_embeddings": False}
 
 
-def create_memory_retriever():
+def create_memory_retriever() -> BaseRetriever:
     """Creates a TimeWeightedVectorStoreRetriever."""
     embeddings_model = HuggingFaceEmbeddings(
         model_name=model_name, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs
@@ -48,7 +48,7 @@ def create_memory_retriever():
     return retriever
 
 
-def test_base_core():
+def test_base_core() -> None:
     """Test BaseCore & chain method."""
     core = BaseCore(llm=llm, llm_kwargs={}, retriever=create_memory_retriever())
 
