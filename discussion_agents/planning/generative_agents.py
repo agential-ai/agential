@@ -24,7 +24,7 @@ A list of changes on how this implementation deviates from the original paper:
         - daily_req, daily_plan_req, f_daily_schedule, f_daily_schedule_hourly_org -> plan_req
     - `generate_hourly_schedule` in the original paper generates refined schedules until a threshold is met
     - (our implementation): multiple refined plans for a step are generated and combined via an LLM 
-- planning is done by step, iteratively and not altogether at once 
+- planning is done by step, iteratively and not altogether at once
 """
 from typing import List
 
