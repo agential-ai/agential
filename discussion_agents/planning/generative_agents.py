@@ -1,7 +1,15 @@
-"""Planning module for Generative Agents."""
+"""Planning module for Generative Agents.
+
+The original Generative Agents planning architecture involved 
+temporally-aware prompts and was made with simulating daily behavior 
+in mind. Planning, here, is a generalized, instructional adaptation of the 
+original generative Agents planning cognitive module.
+
+The methods below are capable of recursively generating a broad -> detailed
+plan while keeping track of the agent's status.
+"""
 from typing import List
 
-from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 
 from discussion_agents.core.base import BaseCore
