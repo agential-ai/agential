@@ -122,6 +122,7 @@ class GenerativeAgent(BaseModel):
             plan_step=plan_step,
             summary=self.summary if self.summary else self.get_summary(),
             status=self.status,
+            core=self.core,
         )
         self.status = new_status
 
@@ -399,10 +400,10 @@ class GenerativeAgent(BaseModel):
             },
         )
         if "REACT:" in result:
-            reaction = remove_name(result.split("REACT:")[-1])
+            reaction = remove_name(text=result.split("REACT:")[-1], name=self.name)
             return False, f"{self.name} {reaction}"
         if "SAY:" in result:
-            said_value = remove_name(result.split("SAY:")[-1])
+            said_value = remove_name(text=result.split("SAY:")[-1], name=self.name)
             return True, f"{self.name} said {said_value}"
         else:
             return False, result
@@ -451,7 +452,7 @@ class GenerativeAgent(BaseModel):
         )
         result = full_result.strip().split("\n")[0]
         if "GOODBYE:" in result:
-            farewell = remove_name(result.split("GOODBYE:")[-1])
+            farewell = remove_name(text=result.split("GOODBYE:")[-1], name=self.name)
             self.core.get_memory().save_context(
                 {},
                 {
@@ -462,7 +463,7 @@ class GenerativeAgent(BaseModel):
             )
             return False, f"{self.name} said {farewell}"
         if "SAY:" in result:
-            response_text = remove_name(result.split("SAY:")[-1])
+            response_text = remove_name(text=result.split("SAY:")[-1], name=self.name)
             self.core.get_memory().save_context(
                 {},
                 {

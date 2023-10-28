@@ -27,8 +27,26 @@ model_kwargs = {"device": "cpu"}
 encode_kwargs = {"normalize_embeddings": False}
 
 
-def test_base_core_with_memory(memory_retriever: BaseRetriever) -> None:
-    """Test BaseCore & chain method."""
+def test_base_core_with_memory_instantiation(memory_retriever: BaseRetriever) -> None:
+    """Test instantiation of BaseCoreWithMemory."""
+    template = """You are a chatbot having a conversation with a human.
+
+    {chat_history}
+    Human: {human_input}
+    Chatbot:"""
+
+    prompt = PromptTemplate(
+        input_variables=["chat_history", "human_input"], template=template
+    )
+    memory = ConversationBufferMemory(memory_key="chat_history")
+
+    core = BaseCoreWithMemory(
+        llm=llm, llm_kwargs={}, retriever=memory_retriever, memory=memory
+    )
+
+
+def test_base_core_with_memory_chain_method(memory_retriever: BaseRetriever) -> None:
+    """Test the chain method of BaseCoreWithMemory."""
     template = """You are a chatbot having a conversation with a human.
 
     {chat_history}

@@ -7,7 +7,6 @@ import dotenv
 import pytest
 
 from langchain.llms.huggingface_hub import HuggingFaceHub
-from langchain.schema import BaseRetriever
 
 from discussion_agents.core.base import BaseCore
 from discussion_agents.reflecting.generative_agents import (

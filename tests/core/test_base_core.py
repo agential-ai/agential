@@ -30,8 +30,8 @@ model_kwargs = {"device": "cpu"}
 encode_kwargs = {"normalize_embeddings": False}
 
 
-def test_base_core(memory_retriever: BaseRetriever) -> None:
-    """Test BaseCore & chain method."""
+def test_chain_method(memory_retriever: BaseRetriever) -> None:
+    """Test the chain method of BaseCore."""
     core = BaseCore(llm=llm, llm_kwargs={}, retriever=memory_retriever)
 
     prompt = PromptTemplate.from_template(
@@ -43,40 +43,60 @@ def test_base_core(memory_retriever: BaseRetriever) -> None:
     out = chain.run({})
     assert type(out) is str
 
-    # Test getters and setters.
+
+def test_get_llm_and_set_llm(memory_retriever: BaseRetriever) -> None:
+    """Test getters and setters for the language model in BaseCore."""
+    core = BaseCore(llm=llm, llm_kwargs={}, retriever=memory_retriever)
+
     assert isinstance(core.get_llm(), BaseLanguageModel)
-    assert isinstance(core.get_llm_kwargs(), dict)
-    assert isinstance(core.get_retriever(), BaseRetriever)
 
     core.llm = None
-    core.llm_kwargs = None
-    core.retriever = None
 
     with pytest.raises(TypeError):
         _ = core.get_llm()
 
-    with pytest.raises(TypeError):
-        _ = core.get_llm_kwargs()
-
-    with pytest.raises(TypeError):
-        _ = core.get_retriever()
-
-    core = BaseCore(llm=llm, llm_kwargs={}, retriever=memory_retriever)
-
     assert (core.set_llm(llm)) is None
-    assert (core.set_llm_kwargs({})) is None
-    assert (core.set_retriever(memory_retriever)) is None
 
     with pytest.raises(TypeError):
         core.set_llm(None)
 
+
+def test_get_llm_kwargs_and_set_llm_kwargs(memory_retriever: BaseRetriever) -> None:
+    """Test getters and setters for the language model kwargs in BaseCore."""
+    core = BaseCore(llm=llm, llm_kwargs={}, retriever=memory_retriever)
+
+    assert isinstance(core.get_llm_kwargs(), dict)
+
+    core.llm_kwargs = None
+
+    with pytest.raises(TypeError):
+        _ = core.get_llm_kwargs()
+
+    assert (core.set_llm_kwargs({})) is None
+
     with pytest.raises(TypeError):
         core.set_llm_kwargs([])
+
+
+def test_get_retriever_and_set_retriever(memory_retriever: BaseRetriever) -> None:
+    """Test getters and setters for the retriever in BaseCore."""
+    core = BaseCore(llm=llm, llm_kwargs={}, retriever=memory_retriever)
+
+    assert isinstance(core.get_retriever(), BaseRetriever)
+
+    core.retriever = None
+
+    with pytest.raises(TypeError):
+        _ = core.get_retriever()
+
+    assert (core.set_retriever(memory_retriever)) is None
 
     with pytest.raises(TypeError):
         core.set_retriever("invalid input")
 
-    # Test memory.
+
+def test_memory_related_methods(memory_retriever: BaseRetriever) -> None:
+    """Test memory-related methods of BaseCore."""
     core = BaseCore(
         llm=llm,
         llm_kwargs={},
