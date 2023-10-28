@@ -2,16 +2,11 @@
 import os
 
 import dotenv
-import faiss
 import pytest
 
 from langchain.chat_models import ChatOpenAI
-from langchain.docstore import InMemoryDocstore
-from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.llms.huggingface_hub import HuggingFaceHub
-from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.schema import BaseRetriever
-from langchain.vectorstores import FAISS
 
 from discussion_agents.core.base import BaseCore
 from discussion_agents.planning.generative_agents import (
@@ -19,6 +14,7 @@ from discussion_agents.planning.generative_agents import (
     generate_refined_plan_step,
     update_status,
 )
+from tests.fixtures.retriever import memory_retriever
 
 dotenv.load_dotenv(".env")
 huggingface_hub_api_key = os.getenv("HUGGINGFACE_HUB_API_KEY")
@@ -49,22 +45,6 @@ broad_plan = [
     "Consider purchasing a table from a reputable and trustworthy manufacturer or retailer to ensure quality and reliability",
 ]
 
-
-def create_memory_retriever() -> BaseRetriever:
-    """Creates a TimeWeightedVectorStoreRetriever."""
-    embeddings_model = HuggingFaceEmbeddings(
-        model_name=model_name, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs
-    )
-    index = faiss.IndexFlatL2(embedding_size)
-    vectorstore = FAISS(embeddings_model.embed_query, index, InMemoryDocstore({}), {})
-    retriever = TimeWeightedVectorStoreRetriever(
-        vectorstore=vectorstore, otherScoreKeys=["importance"], k=5
-    )
-    return retriever
-
-
-core = BaseCore(llm=llm, retriever=create_memory_retriever())
-
 instruction = "Describe what makes a table reliable."
 name = "Bob"
 age = 25
@@ -81,6 +61,8 @@ summary = (
     + f"Lifestyle: {lifestyle}\n"
     + f"{_summary}\n"
 )
+
+core = BaseCore(llm=llm, retriever=memory_retriever())
 
 
 def test_generate_broad_plan() -> None:
@@ -121,7 +103,7 @@ def test_generate_refined_plan_step() -> None:
 
 
 @pytest.mark.cost
-def test_generate_refined_plan_step_no_substep() -> None:
+def test_generate_refined_plan_step_no_substep(memory_retriever: BaseRetriever) -> None:
     """Test generate_refined_plan_step where no substeps are required."""
     LLM = ChatOpenAI(openai_api_key=openai_api_key, max_tokens=1500)
 
@@ -130,7 +112,7 @@ def test_generate_refined_plan_step_no_substep() -> None:
         previous_steps=["Something"],
         plan_step="Something",
         summary=summary,
-        core=BaseCore(llm=LLM, retriever=create_memory_retriever()),
+        core=BaseCore(llm=LLM, retriever=memory_retriever),
         k=1,
     )
     assert isinstance(refined_steps, list)
@@ -142,7 +124,7 @@ def test_generate_refined_plan_step_no_substep() -> None:
         previous_steps=["Something"],
         plan_step="Something",
         summary=summary,
-        core=BaseCore(llm=LLM, retriever=create_memory_retriever()),
+        core=BaseCore(llm=LLM, retriever=memory_retriever),
         k=2,
     )
     assert isinstance(refined_steps, list)

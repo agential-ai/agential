@@ -12,7 +12,7 @@ https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/charac
 """
 from datetime import datetime
 from itertools import chain
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.schema import BaseMemory, Document
@@ -106,7 +106,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
             raise TypeError(
                 "The core's 'retriever' attribute must be an instance of TimeWeightedVectorStoreRetriever."
             )
-        observations = self.core.get_retriever().memory_stream[-last_k:]
+        observations = self.core.get_retriever().memory_stream[-last_k:]  # type: ignore
         observations = "\n".join([format_memories_detail(o) for o in observations])
         return get_topics_of_reflection(observations=observations, core=self.core)
 
@@ -134,13 +134,13 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         """
         related_memories = []
         for topic in topics:
-            topic_related_memories = fetch_memories(
+            fetched_memories = fetch_memories(
                 observation=topic, memory_retriever=self.core.get_retriever(), now=now
             )
             topic_related_memories = "\n".join(
                 [
                     format_memories_detail(memories=memory, prefix=f"{i+1}. ")
-                    for i, memory in enumerate(topic_related_memories)
+                    for i, memory in enumerate(fetched_memories)
                 ]
             )
             related_memories.append(topic_related_memories)
@@ -176,11 +176,13 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
             raise TypeError(
                 "The core's 'retriever' attribute must be an instance of TimeWeightedVectorStoreRetriever."
             )
-        observations = self.core.get_retriever().memory_stream[-last_k:]
+        observations = self.core.get_retriever().memory_stream[-last_k:]  # type: ignore
         observations = "\n".join([format_memories_detail(o) for o in observations])
 
-        topics, insights = reflect(observations=observations, core=self.core, now=now)
-        insights = list(chain(*insights))
+        topics, topics_insights = reflect(
+            observations=observations, core=self.core, now=now
+        )
+        insights = list(chain(*topics_insights))
 
         self.add_memories(memory_contents=insights, now=now)
         return topics, insights
@@ -256,17 +258,22 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
             - If the aggregate importance surpasses a reflection threshold, the agent
             enters a reflection phase to add synthesized memories.
         """
+        if not isinstance(self.core.get_retriever(), TimeWeightedVectorStoreRetriever):
+            raise TypeError(
+                "The core's 'retriever' attribute must be an instance of TimeWeightedVectorStoreRetriever."
+            )
+
         if type(memory_contents) is str:
             memory_contents = [memory_contents]
 
         importance_scores = []
         for memory_content in memory_contents:
-            relevant_memories = fetch_memories(
+            fetched_memories = fetch_memories(
                 observation=memory_content,
                 memory_retriever=self.core.get_retriever(),
             )
-            relevant_memories = "\n".join(
-                [mem.page_content for mem in relevant_memories]
+            relevant_memories: str = "\n".join(
+                [mem.page_content for mem in fetched_memories]
             )
             relevant_memories = "N/A" if not relevant_memories else relevant_memories
             importance_score = self.score_memories_importance(
@@ -288,7 +295,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
                 )
             )
 
-        result = self.core.get_retriever().add_documents(documents, current_time=now)
+        result = self.core.get_retriever().add_documents(documents, current_time=now)  # type: ignore
 
         # After an agent has processed a certain amount of memories (as measured by
         # aggregate importance), it is time to reflect on recent events to add
@@ -326,7 +333,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
                 "The core's 'retriever' attribute must be an instance of TimeWeightedVectorStoreRetriever."
             )
         result = []
-        for doc in self.core.get_retriever().memory_stream[::-1]:
+        for doc in self.core.get_retriever().memory_stream[::-1]:  # type: ignore
             if consumed_tokens >= self.max_tokens_limit:
                 break
             consumed_tokens += self.core.get_llm().get_num_tokens(doc.page_content)

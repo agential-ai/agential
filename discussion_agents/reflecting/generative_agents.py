@@ -140,16 +140,16 @@ def reflect(
 
     related_memories = []
     for topic in topics:
-        topic_related_memories = fetch_memories(
+        fetched_memories = fetch_memories(
             observation=topic, memory_retriever=core.get_retriever(), now=now
         )
-        topic_related_memories_joined = "\n".join(
+        topic_related_memories = "\n".join(
             [
                 format_memories_detail(memories=memory, prefix=f"{i+1}. ")
-                for i, memory in enumerate(topic_related_memories)
+                for i, memory in enumerate(fetched_memories)
             ]
         )
-        related_memories.append(topic_related_memories_joined)
+        related_memories.append(topic_related_memories)
 
     insights = get_insights_on_topics(
         topics=topics, related_memories=related_memories, core=core

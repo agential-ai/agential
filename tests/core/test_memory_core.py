@@ -3,16 +3,11 @@
 import os
 
 import dotenv
-import faiss
 
-from langchain.docstore import InMemoryDocstore
-from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.llms.huggingface_hub import HuggingFaceHub
 from langchain.memory.buffer import ConversationBufferMemory
 from langchain.prompts import PromptTemplate
-from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.schema import BaseRetriever
-from langchain.vectorstores import FAISS
 
 from discussion_agents.core.memory import BaseCoreWithMemory
 
@@ -32,20 +27,7 @@ model_kwargs = {"device": "cpu"}
 encode_kwargs = {"normalize_embeddings": False}
 
 
-def create_memory_retriever() -> BaseRetriever:
-    """Creates a TimeWeightedVectorStoreRetriever."""
-    embeddings_model = HuggingFaceEmbeddings(
-        model_name=model_name, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs
-    )
-    index = faiss.IndexFlatL2(embedding_size)
-    vectorstore = FAISS(embeddings_model.embed_query, index, InMemoryDocstore({}), {})
-    retriever = TimeWeightedVectorStoreRetriever(
-        vectorstore=vectorstore, otherScoreKeys=["importance"], k=5
-    )
-    return retriever
-
-
-def test_base_core_with_memory() -> None:
+def test_base_core_with_memory(memory_retriever: BaseRetriever) -> None:
     """Test BaseCore & chain method."""
     template = """You are a chatbot having a conversation with a human.
 
@@ -59,7 +41,7 @@ def test_base_core_with_memory() -> None:
     memory = ConversationBufferMemory(memory_key="chat_history")
 
     core = BaseCoreWithMemory(
-        llm=llm, llm_kwargs={}, retriever=create_memory_retriever(), memory=memory
+        llm=llm, llm_kwargs={}, retriever=memory_retriever, memory=memory
     )
 
     chain = core.chain(prompt=prompt)

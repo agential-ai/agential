@@ -4,14 +4,9 @@ import os
 from datetime import datetime
 
 import dotenv
-import faiss
 
-from langchain.docstore import InMemoryDocstore
-from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.llms.huggingface_hub import HuggingFaceHub
-from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.schema import BaseRetriever
-from langchain.vectorstores import FAISS
 
 from discussion_agents.utils.fetch import fetch_memories
 
@@ -33,26 +28,13 @@ encode_kwargs = {"normalize_embeddings": False}
 test_date = datetime(year=2022, month=11, day=14, hour=3, minute=14)
 
 
-def create_memory_retriever() -> BaseRetriever:
-    """Creates a TimeWeightedVectorStoreRetriever."""
-    embeddings_model = HuggingFaceEmbeddings(
-        model_name=model_name, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs
-    )
-    index = faiss.IndexFlatL2(embedding_size)
-    vectorstore = FAISS(embeddings_model.embed_query, index, InMemoryDocstore({}), {})
-    retriever = TimeWeightedVectorStoreRetriever(
-        vectorstore=vectorstore, otherScoreKeys=["importance"], k=5
-    )
-    return retriever
-
-
-def test_fetch_memories() -> None:
+def test_fetch_memories(memory_retriever: BaseRetriever) -> None:
     """Test fetch_memories."""
     observation = "Some observation."
 
     memories = fetch_memories(
         observation=observation,
-        memory_retriever=create_memory_retriever(),
+        memory_retriever=memory_retriever,
         now=test_date,
     )
     assert type(memories) is list

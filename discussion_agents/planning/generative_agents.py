@@ -116,8 +116,6 @@ def update_status(
             instruction, previous_steps, plan_step, summary, status, core
         )
     """
-    previous_steps_joined = "\n".join(previous_steps)
-
     plan_prompt = PromptTemplate.from_template(
         "Below is a summary of your characteristics."
         + "{summary}\n\n"
@@ -131,7 +129,7 @@ def update_status(
     plan_result = chain.run(
         summary=summary,
         instruction=instruction,
-        previous_steps=previous_steps_joined,
+        previous_steps="\n".join(previous_steps),
         plan_step=plan_step,
     ).strip()
 
@@ -146,7 +144,9 @@ def update_status(
     )
     chain = core.chain(prompt=thought_prompt)
     thought_result = chain.run(
-        summary=summary, instruction=instruction, previous_steps=previous_steps_joined
+        summary=summary,
+        instruction=instruction,
+        previous_steps="\n".join(previous_steps),
     ).strip()
 
     plan_and_thought = (plan_result + " " + thought_result).replace("\n", "")
@@ -208,8 +208,6 @@ def generate_refined_plan_step(
             instruction, previous_steps, plan_step, summary, core_instance, k=2
         )
     """
-    previous_steps_joined = "\n".join(previous_steps)
-
     prompt = PromptTemplate.from_template(
         "Below is a summary of your characteristics."
         + "{summary}\n\n"
@@ -234,13 +232,13 @@ def generate_refined_plan_step(
         result = chain.run(
             summary=summary,
             instruction=instruction,
-            previous_steps=previous_steps_joined,
+            previous_steps="\n".join(previous_steps),
             plan_step=plan_step,
         ).strip()
         results.append(result)
 
     if k == 1:
-        results = results[0]
+        out = results[0]
     else:
         # Filter out results with no substeps required.
         results = [
@@ -265,14 +263,14 @@ def generate_refined_plan_step(
             + "3) <third substep>\n"
         )
         chain = core.chain(prompt=prompt)
-        results = chain.run(
+        out = chain.run(
             instruction=instruction,
-            previous_steps=previous_steps_joined,
+            previous_steps="\n".join(previous_steps),
             plan_step=plan_step,
             k=k,
             plans=plans,
         ).strip()
 
-    results = parse_numbered_list(results)  # type: ignore
+    out = parse_numbered_list(out)
 
-    return results
+    return out

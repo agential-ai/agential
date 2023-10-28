@@ -4,15 +4,10 @@ import os
 from datetime import datetime
 
 import dotenv
-import faiss
 import pytest
 
-from langchain.docstore import InMemoryDocstore
-from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.llms.huggingface_hub import HuggingFaceHub
-from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.schema import BaseRetriever
-from langchain.vectorstores import FAISS
 
 from discussion_agents.core.base import BaseCore
 from discussion_agents.reflecting.generative_agents import (
@@ -20,6 +15,7 @@ from discussion_agents.reflecting.generative_agents import (
     get_topics_of_reflection,
     reflect,
 )
+from tests.fixtures.retriever import memory_retriever
 
 dotenv.load_dotenv(".env")
 huggingface_hub_api_key = os.getenv("HUGGINGFACE_HUB_API_KEY")
@@ -38,21 +34,7 @@ encode_kwargs = {"normalize_embeddings": False}
 
 test_date = datetime(year=2022, month=11, day=14, hour=3, minute=14)
 
-
-def create_memory_retriever() -> BaseRetriever:
-    """Creates a TimeWeightedVectorStoreRetriever."""
-    embeddings_model = HuggingFaceEmbeddings(
-        model_name=model_name, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs
-    )
-    index = faiss.IndexFlatL2(embedding_size)
-    vectorstore = FAISS(embeddings_model.embed_query, index, InMemoryDocstore({}), {})
-    retriever = TimeWeightedVectorStoreRetriever(
-        vectorstore=vectorstore, otherScoreKeys=["importance"], k=5
-    )
-    return retriever
-
-
-core = BaseCore(llm=llm, retriever=create_memory_retriever())
+core = BaseCore(llm=llm, retriever=memory_retriever())
 
 
 @pytest.mark.slow

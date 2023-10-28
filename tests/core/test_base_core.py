@@ -3,19 +3,14 @@
 import os
 
 import dotenv
-import faiss
 import pytest
 
-from langchain.docstore import InMemoryDocstore
-from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.llms.huggingface_hub import HuggingFaceHub
 from langchain.memory import ConversationBufferMemory
 from langchain.prompts import PromptTemplate
-from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.schema.language_model import BaseLanguageModel
 from langchain.schema.memory import BaseMemory
 from langchain.schema.retriever import BaseRetriever
-from langchain.vectorstores import FAISS
 
 from discussion_agents.core.base import BaseCore
 
@@ -35,22 +30,9 @@ model_kwargs = {"device": "cpu"}
 encode_kwargs = {"normalize_embeddings": False}
 
 
-def create_memory_retriever() -> BaseRetriever:
-    """Creates a TimeWeightedVectorStoreRetriever."""
-    embeddings_model = HuggingFaceEmbeddings(
-        model_name=model_name, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs
-    )
-    index = faiss.IndexFlatL2(embedding_size)
-    vectorstore = FAISS(embeddings_model.embed_query, index, InMemoryDocstore({}), {})
-    retriever = TimeWeightedVectorStoreRetriever(
-        vectorstore=vectorstore, otherScoreKeys=["importance"], k=5
-    )
-    return retriever
-
-
-def test_base_core() -> None:
+def test_base_core(memory_retriever: BaseRetriever) -> None:
     """Test BaseCore & chain method."""
-    core = BaseCore(llm=llm, llm_kwargs={}, retriever=create_memory_retriever())
+    core = BaseCore(llm=llm, llm_kwargs={}, retriever=memory_retriever)
 
     prompt = PromptTemplate.from_template(
         "Explain the importance of eating a proper meal."
@@ -79,11 +61,11 @@ def test_base_core() -> None:
     with pytest.raises(TypeError):
         _ = core.get_retriever()
 
-    core = BaseCore(llm=llm, llm_kwargs={}, retriever=create_memory_retriever())
+    core = BaseCore(llm=llm, llm_kwargs={}, retriever=memory_retriever)
 
     assert (core.set_llm(llm)) is None
     assert (core.set_llm_kwargs({})) is None
-    assert (core.set_retriever(create_memory_retriever())) is None
+    assert (core.set_retriever(memory_retriever)) is None
 
     with pytest.raises(TypeError):
         core.set_llm(None)
@@ -98,7 +80,7 @@ def test_base_core() -> None:
     core = BaseCore(
         llm=llm,
         llm_kwargs={},
-        retriever=create_memory_retriever(),
+        retriever=memory_retriever,
         memory=ConversationBufferMemory(),
     )
 
