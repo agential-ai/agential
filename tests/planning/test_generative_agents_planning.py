@@ -14,7 +14,6 @@ from discussion_agents.planning.generative_agents import (
     generate_refined_plan_step,
     update_status,
 )
-from tests.fixtures.retriever import memory_retriever
 
 dotenv.load_dotenv(".env")
 huggingface_hub_api_key = os.getenv("HUGGINGFACE_HUB_API_KEY")
@@ -62,11 +61,11 @@ summary = (
     + f"{_summary}\n"
 )
 
-core = BaseCore(llm=llm, retriever=memory_retriever())
 
-
-def test_generate_broad_plan() -> None:
+def test_generate_broad_plan(memory_retriever: BaseRetriever) -> None:
     """Test generate_broad_plan."""
+    core = BaseCore(llm=llm, retriever=memory_retriever)
+
     broad_plan = generate_broad_plan(
         instruction=instruction, summary=summary, core=core
     )
@@ -76,8 +75,10 @@ def test_generate_broad_plan() -> None:
 
 
 @pytest.mark.slow
-def test_update_status() -> None:
+def test_update_status(memory_retriever: BaseRetriever) -> None:
     """Test update_status."""
+    core = BaseCore(llm=llm, retriever=memory_retriever)
+
     new_status = update_status(
         instruction=instruction,
         previous_steps=broad_plan[:1],
@@ -90,8 +91,10 @@ def test_update_status() -> None:
 
 
 @pytest.mark.slow
-def test_generate_refined_plan_step() -> None:
+def test_generate_refined_plan_step(memory_retriever: BaseRetriever) -> None:
     """Test generate_refined_plan_step."""
+    core = BaseCore(llm=llm, retriever=memory_retriever)
+
     refined_steps = generate_refined_plan_step(
         instruction=instruction,
         previous_steps=broad_plan[:1],

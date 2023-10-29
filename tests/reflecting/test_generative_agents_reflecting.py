@@ -7,6 +7,7 @@ import dotenv
 import pytest
 
 from langchain.llms.huggingface_hub import HuggingFaceHub
+from langchain.schema import BaseRetriever
 
 from discussion_agents.core.base import BaseCore
 from discussion_agents.reflecting.generative_agents import (
@@ -14,7 +15,6 @@ from discussion_agents.reflecting.generative_agents import (
     get_topics_of_reflection,
     reflect,
 )
-from tests.fixtures.retriever import memory_retriever
 
 dotenv.load_dotenv(".env")
 huggingface_hub_api_key = os.getenv("HUGGINGFACE_HUB_API_KEY")
@@ -33,12 +33,12 @@ encode_kwargs = {"normalize_embeddings": False}
 
 test_date = datetime(year=2022, month=11, day=14, hour=3, minute=14)
 
-core = BaseCore(llm=llm, retriever=memory_retriever())
-
 
 @pytest.mark.slow
-def test_get_topics_of_reflection() -> None:
+def test_get_topics_of_reflection(memory_retriever: BaseRetriever) -> None:
     """Tests get_topics_of_reflection."""
+    core = BaseCore(llm=llm, retriever=memory_retriever)
+
     # Test observations string.
     observations = "This is an observation."
     topics = get_topics_of_reflection(observations=observations, core=core)
@@ -50,8 +50,10 @@ def test_get_topics_of_reflection() -> None:
     assert type(topics) is list
 
 
-def test_get_insights_on_topics() -> None:
+def test_get_insights_on_topics(memory_retriever: BaseRetriever) -> None:
     """Tests get_insights_on_topics."""
+    core = BaseCore(llm=llm, retriever=memory_retriever)
+
     # Test topics list and related_memories list.
     insights = get_insights_on_topics(
         topics=["Some topic."],
@@ -89,8 +91,10 @@ def test_get_insights_on_topics() -> None:
     assert type(insights[0]) is list
 
 
-def test_reflect() -> None:
+def test_reflect(memory_retriever: BaseRetriever) -> None:
     """Tests reflect."""
+    core = BaseCore(llm=llm, retriever=memory_retriever)
+
     observations = "This is an observation."
     topics, insights = reflect(observations=observations, core=core, now=test_date)
 

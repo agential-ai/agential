@@ -207,10 +207,34 @@ def test_generative_agent_update_status(memory_retriever: BaseRetriever) -> None
 def test_generative_agent_generate_refined_plan_step(
     memory_retriever: BaseRetriever,
 ) -> None:
-    """Tests generate_refined_plan_step."""
-    pass
+    """Test the generate_refined_plan_step method."""
+    memory_core = BaseCore(llm=LLM, retriever=memory_retriever)
+
+    memory = GenerativeAgentMemory(core=memory_core)
+
+    agent_core = BaseCoreWithMemory(llm=LLM, memory=memory)
+
+    agent = GenerativeAgent(**characteristics, core=agent_core)
+    instruction = "Enhance the presentation slides."
+    previous_steps = ["1) Review content.", "2) Apply design improvements."]
+    plan_step = "3) Incorporate visual aids."
+    refined_steps = agent.generate_refined_plan_step(
+        instruction, previous_steps, plan_step
+    )
+    assert isinstance(refined_steps, list)
 
 
 def test_generative_agent_clear_plan(memory_retriever: BaseRetriever) -> None:
     """Tests clear_plan."""
-    pass
+    memory_core = BaseCore(llm=LLM, retriever=memory_retriever)
+
+    memory = GenerativeAgentMemory(core=memory_core)
+
+    agent_core = BaseCoreWithMemory(llm=LLM, memory=memory)
+
+    agent = GenerativeAgent(**characteristics, core=agent_core)
+
+    out = agent.clear_plan()
+    assert out is True
+    assert agent.plan_req == {}
+    assert agent.status == ""

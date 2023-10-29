@@ -6,11 +6,10 @@ from datetime import datetime
 import pytest
 
 from langchain.chat_models import ChatOpenAI
-from langchain.schema import Document
+from langchain.schema import BaseRetriever, Document
 
 from discussion_agents.core.base import BaseCore
 from discussion_agents.memory.generative_agents import GenerativeAgentMemory
-from tests.fixtures.retriever import memory_retriever
 
 warnings.filterwarnings("ignore")
 
@@ -41,13 +40,12 @@ observations = [
 
 test_date = datetime(year=2022, month=11, day=14, hour=3, minute=14)
 
-core = BaseCore(llm=llm, retriever=memory_retriever())
-
 
 @pytest.mark.cost
-def test_score_memories_importance() -> None:
+def test_score_memories_importance(memory_retriever: BaseRetriever) -> None:
     """Tests score_memories_importance in GenerativeAgentMemory."""
-    # Test instantiation.
+    core = BaseCore(llm=llm, retriever=memory_retriever)
+
     memory = GenerativeAgentMemory(
         core=core,
         reflection_threshold=8,
@@ -62,9 +60,10 @@ def test_score_memories_importance() -> None:
 
 
 @pytest.mark.cost
-def test_add_memories() -> None:
+def test_add_memories(memory_retriever: BaseRetriever) -> None:
     """Tests add_memories."""
-    # Test instantiation.
+    core = BaseCore(llm=llm, retriever=memory_retriever)
+
     memory = GenerativeAgentMemory(
         core=core,
         reflection_threshold=8,
@@ -79,9 +78,10 @@ def test_add_memories() -> None:
 
 @pytest.mark.cost
 @pytest.mark.slow
-def test_pause_to_reflect() -> None:
+def test_pause_to_reflect(memory_retriever: BaseRetriever) -> None:
     """Tests pause_to_reflect."""
-    # Test instantiation.
+    core = BaseCore(llm=llm, retriever=memory_retriever)
+
     memory = GenerativeAgentMemory(
         core=core,
         reflection_threshold=8,
@@ -93,9 +93,10 @@ def test_pause_to_reflect() -> None:
     assert type(topics) is list
 
 
-def test_get_memories_until_limit() -> None:
+def test_get_memories_until_limit(memory_retriever: BaseRetriever) -> None:
     """Tests get_memories_until_limit."""
-    # Test instantiation.
+    core = BaseCore(llm=llm, retriever=memory_retriever)
+
     memory = GenerativeAgentMemory(
         core=core,
         reflection_threshold=8,
@@ -120,9 +121,10 @@ def test_get_memories_until_limit() -> None:
     assert type(mem_str) is str
 
 
-def test_memory_variables() -> None:
+def test_memory_variables(memory_retriever: BaseRetriever) -> None:
     """Tests memory_variables property."""
-    # Test instantiation.
+    core = BaseCore(llm=llm, retriever=memory_retriever)
+
     memory = GenerativeAgentMemory(
         core=core,
         reflection_threshold=8,
@@ -133,9 +135,10 @@ def test_memory_variables() -> None:
     assert not memory.memory_variables
 
 
-def test_load_memory_variables_empty() -> None:
+def test_load_memory_variables_empty(memory_retriever: BaseRetriever) -> None:
     """Tests load_memory_variables when input is empty."""
-    # Test instantiation.
+    core = BaseCore(llm=llm, retriever=memory_retriever)
+
     memory = GenerativeAgentMemory(
         core=core,
         reflection_threshold=8,
@@ -147,9 +150,10 @@ def test_load_memory_variables_empty() -> None:
 
 
 @pytest.mark.cost
-def test_load_memory_variables_query() -> None:
+def test_load_memory_variables_query(memory_retriever: BaseRetriever) -> None:
     """Tests load_memory_variables when query is supplied in input."""
-    # Test instantiation.
+    core = BaseCore(llm=llm, retriever=memory_retriever)
+
     memory = GenerativeAgentMemory(
         core=core,
         reflection_threshold=8,
@@ -163,9 +167,10 @@ def test_load_memory_variables_query() -> None:
     assert type(mem_detail_simple[memory.relevant_memories_simple_key]) is str
 
 
-def test_load_memory_variables_relevant() -> None:
+def test_load_memory_variables_relevant(memory_retriever: BaseRetriever) -> None:
     """Tests load_memory_variables when most_recent_memories_token_key is supplied in input."""
-    # Test instantiation.
+    core = BaseCore(llm=llm, retriever=memory_retriever)
+
     memory = GenerativeAgentMemory(
         core=core,
         reflection_threshold=8,
@@ -178,9 +183,10 @@ def test_load_memory_variables_relevant() -> None:
 
 
 @pytest.mark.cost
-def test_save_context() -> None:
+def test_save_context(memory_retriever: BaseRetriever) -> None:
     """Tests save_context."""
-    # Test instantiation.
+    core = BaseCore(llm=llm, retriever=memory_retriever)
+
     memory = GenerativeAgentMemory(
         core=core,
         reflection_threshold=8,
@@ -194,9 +200,10 @@ def test_save_context() -> None:
 
 
 @pytest.mark.cost
-def test_clear() -> None:
+def test_clear(memory_retriever: BaseRetriever) -> None:
     """Tests clear."""
-    # Test instantiation.
+    core = BaseCore(llm=llm, retriever=memory_retriever)
+
     memory = GenerativeAgentMemory(
         core=core,
         reflection_threshold=8,
