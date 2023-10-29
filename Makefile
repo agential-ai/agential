@@ -50,13 +50,13 @@ auto_lint: ## Automatic format & lint using black and ruff.
 	poetry run ruff discussion_agents tests --fix --show-fixes --show-source
 
 test: ## Run all pytest tests.
-	pytest tests/
+	poetry pytest tests/
 
 test_nocost: ## Run pytest tests with no 'cost' marker (don't require funds to run).
-	pytest -m "not cost" tests/
+	poetry pytest -m "not cost" tests/
 
 test_fast: ## Run pytest tests with no 'slow' marker and no 'cost' marker.
-	pytest -m "not slow and not cost" tests/
+	poetry pytest -m "not slow and not cost" tests/
 
 create_environment: ## Set up conda environment.
 ifeq (True,$(HAS_CONDA))
