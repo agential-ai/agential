@@ -60,6 +60,6 @@ jobs:
 
     - name: Run Test (No Cost)
       run: |
-        OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}"
-        HUGGINGFACEHUB_API_TOKEN="${{ secrets.HUGGINGFACEHUB_API_TOKEN }}"
+        export OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}"
+        export HUGGINGFACEHUB_API_TOKEN="${{ secrets.HUGGINGFACEHUB_API_TOKEN }}"
         make test_nocost
