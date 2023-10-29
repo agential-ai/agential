@@ -11,7 +11,7 @@ LangChain Generative Agents Doc Page:
 https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/characters
 """
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from langchain.prompts import PromptTemplate
 from pydantic.v1 import BaseModel, Field
@@ -54,7 +54,7 @@ class GenerativeAgent(BaseModel):
     summary: str = ""  #: :meta private:
     summary_refresh_seconds: int = 3600  #: :meta private:
     last_refreshed: datetime = Field(default_factory=datetime.now)  # : :meta private:
-    plan_req: Dict[str, str] = Field(default_factory=dict)  # : :meta private:
+    plan_req: Dict[str, Any] = Field(default_factory=dict)  # : :meta private:
 
     class Config:
         """Configuration for this pydantic object."""
@@ -329,7 +329,7 @@ class GenerativeAgent(BaseModel):
             if now is None
             else now.strftime("%B %d, %Y, %I:%M %p")
         )
-        kwargs = dict(
+        kwargs: Dict[str, Any] = dict(
             agent_summary_description=agent_summary_description,
             current_time=current_time_str,
             agent_name=self.name,
@@ -341,7 +341,7 @@ class GenerativeAgent(BaseModel):
         consumed_tokens = self.core.get_llm().get_num_tokens(
             prompt.format(most_recent_memories="", **kwargs)
         )
-        kwargs[self.core.get_memory().most_recent_memories_token_key] = consumed_tokens
+        kwargs[self.core.get_memory().most_recent_memories_token_key] = consumed_tokens  # type: ignore
         chain = self.core.chain(prompt=prompt)
         result = chain.run(**kwargs).strip()
 
@@ -394,9 +394,9 @@ class GenerativeAgent(BaseModel):
         self.core.get_memory().save_context(
             {},
             {
-                self.core.get_memory().add_memory_key: f"{self.name} observed "
+                self.core.get_memory().add_memory_key: f"{self.name} observed "  # type: ignore
                 f"{observation} and reacted by {result}",
-                self.core.get_memory().now_key: now,
+                self.core.get_memory().now_key: now,  # type: ignore
             },
         )
         if "REACT:" in result:
@@ -456,9 +456,9 @@ class GenerativeAgent(BaseModel):
             self.core.get_memory().save_context(
                 {},
                 {
-                    self.core.get_memory().add_memory_key: f"{self.name} observed "
+                    self.core.get_memory().add_memory_key: f"{self.name} observed "  # type: ignore
                     f"{observation} and said {farewell}",
-                    self.core.get_memory().memory.now_key: now,
+                    self.core.get_memory().memory.now_key: now,  # type: ignore
                 },
             )
             return False, f"{self.name} said {farewell}"
@@ -467,9 +467,9 @@ class GenerativeAgent(BaseModel):
             self.core.get_memory().save_context(
                 {},
                 {
-                    self.core.get_memory().add_memory_key: f"{self.name} observed "
+                    self.core.get_memory().add_memory_key: f"{self.name} observed "  # type: ignore
                     f"{observation} and said {response_text}",
-                    self.core.get_memory().now_key: now,
+                    self.core.get_memory().now_key: now,  # type: ignore
                 },
             )
             return True, f"{self.name} said {response_text}"
