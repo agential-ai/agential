@@ -11,14 +11,28 @@ Project Organization
     │   ├── processed        <- The final, canonical data sets for modeling.
     │   └── raw              <- The original, immutable data dump.
     │
-    ├── discussion_agents    <- Source code for use in this project.
-    │   ├── __init__.py
+    ├── discussion_agents    <- Source code for this project.
     │   │
     │   ├── memory           <- Memory-related modules.
-    │   │   └── base_memory
+    │   │   └── ...
     │   │
-    │   └── model            <- Model/agent-related modules.
-    │       └── base_agent
+    │   ├── agent            <- Model/agent-related modules.
+    │   │   └── ...
+    │   │
+    │   ├── core             <- Agent core modules.
+    │   │   └── ...
+    │   │
+    │   ├── planning         <- Planning-related modules.
+    │   │   └── ...
+    │   │
+    │   ├── reflecting       <- Reflecting-related modules.
+    │   │   └── ...
+    │   │
+    │   ├── scoring          <- Scoring-related modules.
+    │   │   └── ...
+    │   │
+    │   ├── utils            <- Utility methods.
+    │   │   └── ...
     │
     ├── docs                 <- A default Sphinx project; see sphinx-doc.org for details.
     │
