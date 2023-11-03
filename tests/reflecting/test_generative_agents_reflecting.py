@@ -95,7 +95,7 @@ def test_reflect(memory_retriever: BaseRetriever) -> None:
     """Tests reflect."""
     core = BaseCore(llm=llm, retriever=memory_retriever)
 
-    observations = "This is an observation."
+    observations = "Chairs have 4 legs."
     topics, insights = reflect(observations=observations, core=core, now=test_date)
 
     assert type(topics) is list
