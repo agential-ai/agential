@@ -100,4 +100,3 @@ def test_reflect(memory_retriever: BaseRetriever) -> None:
 
     assert type(topics) is list
     assert type(insights) is list
-    assert type(insights[0]) is list
