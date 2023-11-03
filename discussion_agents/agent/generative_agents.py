@@ -1,7 +1,8 @@
 """Generative Agent implementation from LangChain.
 
 Note: The following classes are versions of LangChain's Generative Agent
-implementations with my improvements.
+implementations with my improvements. This class is still under development.
+I plan on adding a more accurate implementation of Generative Agents.
 
 Original Paper: https://arxiv.org/abs/2304.03442
 LangChain: https://github.com/langchain-ai/langchain
