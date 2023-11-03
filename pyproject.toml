@@ -21,13 +21,15 @@ python = "^3.9"
 cookiecutter = "^2.3.0"
 openai = "^0.28.0"
 tiktoken = "^0.5.1"
-torch = "^2.0.1"
+torch = ">=2.0.0, !=2.0.1, !=2.1.0"
 numpy = "^1.25.2"
 langchain = "^0.0.291"
 langchain-experimental = "^0.0.17"
 faiss-cpu = "^1.7.4"
 chromadb = "^0.4.10"
 camel = {git = "https://github.com/camel-ai/camel.git", rev = "v0.1.0"}
+sentence-transformers = "^2.2.2"
+pydantic = "^2.4.2"
 
 [tool.poetry.group.dev.dependencies]
 sphinx = "^7.2.6"
@@ -37,6 +39,14 @@ ruff = "^0.0.289"
 ipython = "^8.15.0"
 mypy = "^1.5.1"
 pre-commit = "^3.4.0"
+pytest = "^7.4.2"
+pytest-cov = "^4.1.0"
+
+[tool.pytest.ini_options]
+markers = [
+    "cost: marks tests that cost funds to run (deselect with '-m \"not cost\"')",
+    "slow: marks tests that are slow to run (deselect with '-m \"not slow\"')"
+]
 
 [tool.black]
 line-length = 88

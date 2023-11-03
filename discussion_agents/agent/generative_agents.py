@@ -1,7 +1,8 @@
 """Generative Agent implementation from LangChain.
 
 Note: The following classes are versions of LangChain's Generative Agent
-implementations with my improvements.
+implementations with my improvements. This class is still under development.
+I plan on adding a more accurate implementation of Generative Agents.
 
 Original Paper: https://arxiv.org/abs/2304.03442
 LangChain: https://github.com/langchain-ai/langchain
@@ -10,114 +11,181 @@ https://github.com/langchain-ai/langchain/tree/master/libs/experimental/langchai
 LangChain Generative Agents Doc Page:
 https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/characters
 """
-import re
-
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
-from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from langchain.schema.language_model import BaseLanguageModel
-from langchain_experimental.pydantic_v1 import BaseModel, Field
+from pydantic.v1 import BaseModel, Field
 
-from discussion_agents.memory.base_memory import GenerativeAgentMemory
+from discussion_agents.core.memory import BaseCoreWithMemory
+from discussion_agents.memory.generative_agents import GenerativeAgentMemory
+from discussion_agents.planning.generative_agents import (
+    generate_broad_plan,
+    generate_refined_plan_step,
+    update_status,
+)
+from discussion_agents.utils.parse import remove_name
 
 
 class GenerativeAgent(BaseModel):
-    """An Agent as a character with memory and innate characteristics.
+    """A Generative Agent with memory, innate characteristics, and language model interaction.
 
-    This class represents a character or agent with attributes such as name, age, traits,
-    status, memory, and an underlying language model. It combines innate characteristics
-    with the ability to store and retrieve memories and interact with a language model.
+    This class serves as a representation of an agent. It includes attributes
+    such as the character's name, age, permanent traits, lifestyle characteristics, current
+    status, and an agent core with memory capabilities. The core enables interactions with a
+    language model, empowering the GenerativeAgent to plan, reflect, summarize, and store memories.
 
     Attributes:
-        name (str): The character's name.
-        age (int, optional): The optional age of the character. Defaults to None.
-        traits (str): Permanent traits ascribed to the character.
-        status (str): Traits of the character that should not change.
-        memory (GenerativeAgentMemory): The memory object that combines relevance, recency,
-            and 'importance' for storing and retrieving memories.
-        llm (BaseLanguageModel): The underlying language model used for text generation.
-        verbose (bool, optional): A flag to enable verbose mode for debugging and logging.
-            Defaults to False.
-        summary (str): A stateful self-summary generated via reflection on the character's
-            memory. (Private attribute)
-        summary_refresh_seconds (int): How frequently to re-generate the summary. (Private attribute)
-        last_refreshed (datetime): The last time the character's summary was regenerated.
-            (Private attribute)
-        daily_summaries (List[str]): Summary of the events in the plan that the agent took.
-            (Private attribute)
+        name (str): The agent's name.
+        age (int): The agent's age.
+        traits (str): Permanent traits associated with the agent.
+        lifestyle (str): Lifestyle characteristics that remain relatively stable.
+        core (BaseCoreWithMemory): The core component for language model interaction and memory management;
+            must have `discussion_agents.memory.generative_agents.GenerativeAgentMemory` for
+            the core's memory.
     """
 
     name: str
-    age: Optional[int] = None
-    traits: str = "N/A"
-    status: str
-    memory: GenerativeAgentMemory
-    llm: BaseLanguageModel
-    verbose: bool = False
+    age: int
+    traits: str
+    lifestyle: str
+    core: BaseCoreWithMemory
+
+    status: str = ""  #: :meta private:
     summary: str = ""  #: :meta private:
     summary_refresh_seconds: int = 3600  #: :meta private:
     last_refreshed: datetime = Field(default_factory=datetime.now)  # : :meta private:
-    daily_summaries: List[str] = Field(default_factory=list)  # : :meta private:
+    plan_req: Dict[str, Any] = Field(default_factory=dict)  # : :meta private:
 
     class Config:
         """Configuration for this pydantic object."""
 
         arbitrary_types_allowed = True
 
-    def chain(self, prompt: PromptTemplate) -> LLMChain:
-        """Create a Large Language Model (LLM) chain for text generation.
+    def generate_broad_plan(
+        self,
+        instruction: str,
+    ) -> List[str]:
+        """Wrapper for `discussion_agents.planning.generative_agents.generate_broad_plan`.
 
-        This method creates a Large Language Model (LLM) chain for text generation
-        using the specified prompt template. It allows you to chain together multiple
-        prompts and interactions with the LLM for more complex text generation tasks.
+        Refer to `discussion_agents.planning.generative_agents.generate_broad_plan`
+        for more information on `generate_broad_plan`.
 
         Args:
-            prompt (PromptTemplate): The prompt template to be used for text generation.
+            instruction (str): The instruction for plan generation.
 
         Returns:
-            LLMChain: An instance of the LangChain LLM chain configured with the provided
-                prompt template.
+            List[str]: A list of steps representing the generated broad plan.
 
-        Example usage:
+        Example:
+            instruction = "Plan a weekend getaway."
             agent = GenerativeAgent(...)
-            prompt_template = PromptTemplate.from_template("Generate a creative story.")
-            llm_chain = agent.chain(prompt_template)
-            generated_text = llm_chain.run()
-            # 'generated_text' contains the text generated using the specified prompt.
+            broad_plan = agent.generate_broad_plan(instruction)
         """
-        return LLMChain(
-            llm=self.llm, prompt=prompt, verbose=self.verbose, memory=self.memory
+        broad_plan = generate_broad_plan(
+            instruction=instruction,
+            summary=self.summary if self.summary else self.get_summary(),
+            core=self.core,
+        )
+        self.plan_req["broad"] = broad_plan
+
+        return broad_plan
+
+    def update_status(
+        self,
+        instruction: str,
+        previous_steps: List[str],
+        plan_step: str,
+    ) -> str:
+        """Update the status of a plan step, considering previous steps.
+
+        This method updates the status of a plan step based on the provided instruction, previous steps,
+        and the new plan step. It incorporates a summary of the agent's characteristics.
+
+        Args:
+            instruction (str): The original instruction related to the plan.
+            previous_steps (List[str]): A list of previously generated plan steps.
+            plan_step (str): The new plan step to be added or updated.
+
+        Returns:
+            str: The updated status for the plan step.
+
+        Example:
+            instruction = "Prepare for a hiking trip."
+            previous_steps = ["1) Pack hiking gear.", "2) Plan the route."]
+            plan_step = "3) Check the weather forecast."
+            agent = GenerativeAgent(...)
+            updated_status = agent.update_status(instruction, previous_steps, plan_step)
+        """
+        new_status = update_status(
+            instruction=instruction,
+            previous_steps=previous_steps,
+            plan_step=plan_step,
+            summary=self.summary if self.summary else self.get_summary(),
+            status=self.status,
+            core=self.core,
+        )
+        self.status = new_status
+
+        return new_status
+
+    def generate_refined_plan_step(
+        self,
+        instruction: str,
+        previous_steps: List[str],
+        plan_step: str,
+        k: int = 1,
+    ) -> List[str]:
+        """Generate a refined plan step for an existing plan.
+
+        This method generates a refined plan step within an existing plan based on the provided instruction,
+        previous steps, and the new plan step. It incorporates a summary of the agent's characteristics.
+
+        Args:
+            instruction (str): The original instruction related to the plan.
+            previous_steps (List[str]): A list of previously generated plan steps.
+            plan_step (str): The new plan step to be added or updated.
+            k (int, optional): The number of alternative refined plan steps to generate. Default is 1.
+
+        Returns:
+            List[str]: A list of steps representing the refined plan step(s).
+
+        Example:
+            instruction = "Enhance the presentation slides."
+            previous_steps = ["1) Review content.", "2) Apply design improvements."]
+            plan_step = "3) Incorporate visual aids."
+            agent = GenerativeAgent(...)
+            refined_steps = agent.generate_refined_plan_step(instruction, previous_steps, plan_step, k=2)
+        """
+        refined_plan_step = generate_refined_plan_step(
+            instruction=instruction,
+            previous_steps=previous_steps,
+            plan_step=plan_step,
+            summary=self.summary if self.summary else self.get_summary(),
+            core=self.core,
+            k=k,
         )
 
-    # LLM-related methods
-    @staticmethod
-    def _parse_list(text: str) -> List[str]:
-        r"""Parse a newline-separated string into a list of strings.
+        self.plan_req["refined_step"] = refined_plan_step
 
-        This static method takes a string that contains multiple lines separated by
-        newline characters and parses it into a list of strings. It removes any empty
-        lines and also removes any leading numbers followed by a period (commonly used
-        in numbered lists).
+        return refined_plan_step
 
-        Args:
-            text (str): The input string containing newline-separated lines.
+    def clear_plan(self) -> bool:
+        """Clear the plan and status of the agent.
+
+        This method clears the agent's plan and status.
 
         Returns:
-            List[str]: A list of strings parsed from the input text.
+            bool: True if the plan and status are successfully cleared.
 
-        Example usage:
-            input_text = "1. Item 1\n2. Item 2\n3. Item 3\n\n4. Item 4"
-            parsed_list = GenerativeAgent._parse_list(input_text)
-            # 'parsed_list' contains ["Item 1", "Item 2", "Item 3", "Item 4"]
-
-        Note:
-            - This method is useful for parsing structured text into a list of items.
-            - It removes leading numbers and periods often used in numbered lists.
+        Example:
+            agent = GenerativeAgent(...)
+            cleared = agent.clear_plan()
         """
-        lines = re.split(r"\n", text.strip())
-        return [re.sub(r"^\s*\d+\.\s*", "", line).strip() for line in lines]
+        self.plan_req = {}
+        self.status = ""
+
+        return True
 
     def get_entity_from_observation(self, observation: str) -> str:
         """Extract the observed entity from a given observation text.
@@ -138,10 +206,13 @@ class GenerativeAgent(BaseModel):
             print(entity)
         """
         prompt = PromptTemplate.from_template(
-            "What is the observed entity in the following observation? {observation}"
-            + "\nEntity="
+            "What is the observed entity in the following observation? {observation}\n"
+            + "Entity="
         )
-        return self.chain(prompt).run(observation=observation).strip()
+        chain = self.core.chain(prompt=prompt)
+        result = chain.run(observation=observation).strip()
+
+        return result
 
     def get_entity_action(self, observation: str, entity_name: str) -> str:
         """Determine the action performed by the specified entity in an observation.
@@ -164,12 +235,13 @@ class GenerativeAgent(BaseModel):
             print(action)
         """
         prompt = PromptTemplate.from_template(
-            "What is the {entity} doing in the following observation? {observation}"
-            + "\nThe {entity} is"
+            "What is the {entity} doing in the following observation? {observation}\n"
+            + "The {entity} is"
         )
-        return (
-            self.chain(prompt).run(entity=entity_name, observation=observation).strip()
-        )
+        chain = self.core.chain(prompt=prompt)
+        result = chain.run(entity=entity_name, observation=observation).strip()
+
+        return result
 
     def summarize_related_memories(self, observation: str) -> str:
         """Generate a summary of memories most relevant to an observation.
@@ -191,24 +263,30 @@ class GenerativeAgent(BaseModel):
             summary = agent.summarize_related_memories(observation)
             print(summary)
         """
+        if not isinstance(self.core.get_memory(), GenerativeAgentMemory):
+            raise TypeError(
+                "The core's 'memory' attribute must be an instance of GenerativeAgentMemory."
+            )
+
         prompt = PromptTemplate.from_template(
-            """
-            {q1}?
-            Context from memory:
-            {relevant_memories}
-            Relevant context:
-            """
+            "{q1}?\n"
+            + "Context from memory:\n"
+            + "{relevant_memories}\n"
+            + "Relevant context:\n"
         )
         entity_name = self.get_entity_from_observation(observation)
         entity_action = self.get_entity_action(observation, entity_name)
         q1 = f"What is the relationship between {self.name} and {entity_name}"
         q2 = f"{entity_name} is {entity_action}"
-        return self.chain(prompt=prompt).run(q1=q1, queries=[q1, q2]).strip()
+        chain = self.core.chain(prompt=prompt)
+        result = chain.run(q1=q1, queries=[q1, q2]).strip()
+
+        return result
 
     def _generate_reaction(
         self, observation: str, suffix: str, now: Optional[datetime] = None
     ) -> str:
-        """Generate a reaction or response to a given observation or dialogue act.
+        """A helper method that generates a reaction or response to a given observation or dialogue act.
 
         Args:
             observation (str): The observation or dialogue act to react to.
@@ -231,16 +309,19 @@ class GenerativeAgent(BaseModel):
             reaction = agent._generate_reaction(observation, suffix)
             print(reaction)
         """
+        if not isinstance(self.core.get_memory(), GenerativeAgentMemory):
+            raise TypeError(
+                "The core's 'memory' attribute must be an instance of GenerativeAgentMemory."
+            )
         prompt = PromptTemplate.from_template(
-            "{agent_summary_description}"
-            + "\nIt is {current_time}."
-            + "\n{agent_name}'s status: {agent_status}"
-            + "\nSummary of relevant context from {agent_name}'s memory:"
-            + "\n{relevant_memories}"
-            + "\nMost recent observations: {most_recent_memories}"
-            + "\nObservation: {observation}"
-            + "\n\n"
-            + suffix
+            "{agent_summary_description}\n"
+            + "It is {current_time}.\n"
+            + "{agent_name}'s lifestyle: {lifestyle}\n"
+            + "Summary of relevant context from {agent_name}'s memory:\n"
+            + "{relevant_memories}\n"
+            + "Most recent observations: {most_recent_memories}\n"
+            + "Observation: {observation}\n\n"
+            + "{suffix}"
         )
         agent_summary_description = self.get_summary(now=now)
         relevant_memories_str = self.summarize_related_memories(observation)
@@ -252,37 +333,20 @@ class GenerativeAgent(BaseModel):
         kwargs: Dict[str, Any] = dict(
             agent_summary_description=agent_summary_description,
             current_time=current_time_str,
-            relevant_memories=relevant_memories_str,
             agent_name=self.name,
+            lifestyle=self.lifestyle,
+            relevant_memories=relevant_memories_str,
             observation=observation,
-            agent_status=self.status,
+            suffix=suffix,
         )
-        consumed_tokens = self.llm.get_num_tokens(
+        consumed_tokens = self.core.get_llm().get_num_tokens(
             prompt.format(most_recent_memories="", **kwargs)
         )
-        kwargs[self.memory.most_recent_memories_token_key] = consumed_tokens
-        return self.chain(prompt=prompt).run(**kwargs).strip()
+        kwargs[self.core.get_memory().most_recent_memories_token_key] = consumed_tokens  # type: ignore
+        chain = self.core.chain(prompt=prompt)
+        result = chain.run(**kwargs).strip()
 
-    def _clean_response(self, text: str) -> str:
-        """Clean the response text by removing the agent's name prefix.
-
-        Args:
-            text (str): The response text to clean.
-
-        Returns:
-            str: The cleaned response text with the agent's name prefix removed.
-
-        This method is used to remove the agent's name prefix from the response text
-        if it exists. This can be useful when presenting the response in a dialogue
-        format where the agent's name prefix is not needed.
-
-        Example:
-            response = "GenerativeAgent: Hello! How can I help you?"
-            agent = GenerativeAgent(...)
-            cleaned_response = agent._clean_response(response)
-            print(cleaned_response)
-        """
-        return re.sub(f"^{self.name} ", "", text.strip()).strip()
+        return result
 
     def generate_reaction(
         self, observation: str, now: Optional[datetime] = None
@@ -313,6 +377,10 @@ class GenerativeAgent(BaseModel):
             else:
                 print(f"{self.name} chose not to respond.")
         """
+        if not isinstance(self.core.get_memory(), GenerativeAgentMemory):
+            raise TypeError(
+                "The core's 'memory' attribute must be an instance of GenerativeAgentMemory."
+            )
         call_to_action_template = (
             "Should {agent_name} react to the observation, and if so,"
             + " what would be an appropriate reaction? Respond in one line."
@@ -324,20 +392,19 @@ class GenerativeAgent(BaseModel):
             observation, call_to_action_template, now=now
         )
         result = full_result.strip().split("\n")[0]
-        # AAA
-        self.memory.save_context(
+        self.core.get_memory().save_context(
             {},
             {
-                self.memory.add_memory_key: f"{self.name} observed "
+                self.core.get_memory().add_memory_key: f"{self.name} observed "  # type: ignore
                 f"{observation} and reacted by {result}",
-                self.memory.now_key: now,
+                self.core.get_memory().now_key: now,  # type: ignore
             },
         )
         if "REACT:" in result:
-            reaction = self._clean_response(result.split("REACT:")[-1])
+            reaction = remove_name(text=result.split("REACT:")[-1], name=self.name)
             return False, f"{self.name} {reaction}"
         if "SAY:" in result:
-            said_value = self._clean_response(result.split("SAY:")[-1])
+            said_value = remove_name(text=result.split("SAY:")[-1], name=self.name)
             return True, f"{self.name} said {said_value}"
         else:
             return False, result
@@ -372,6 +439,10 @@ class GenerativeAgent(BaseModel):
             else:
                 print(f"{self.name} said: {response} (End of conversation)")
         """
+        if not isinstance(self.core.get_memory(), GenerativeAgentMemory):
+            raise TypeError(
+                "The core's 'memory' attribute must be an instance of GenerativeAgentMemory."
+            )
         call_to_action_template = (
             "What would {agent_name} say? To end the conversation, write:"
             ' GOODBYE: "what to say". Otherwise to continue the conversation,'
@@ -382,24 +453,24 @@ class GenerativeAgent(BaseModel):
         )
         result = full_result.strip().split("\n")[0]
         if "GOODBYE:" in result:
-            farewell = self._clean_response(result.split("GOODBYE:")[-1])
-            self.memory.save_context(
+            farewell = remove_name(text=result.split("GOODBYE:")[-1], name=self.name)
+            self.core.get_memory().save_context(
                 {},
                 {
-                    self.memory.add_memory_key: f"{self.name} observed "
+                    self.core.get_memory().add_memory_key: f"{self.name} observed "  # type: ignore
                     f"{observation} and said {farewell}",
-                    self.memory.now_key: now,
+                    self.core.get_memory().memory.now_key: now,  # type: ignore
                 },
             )
             return False, f"{self.name} said {farewell}"
         if "SAY:" in result:
-            response_text = self._clean_response(result.split("SAY:")[-1])
-            self.memory.save_context(
+            response_text = remove_name(text=result.split("SAY:")[-1], name=self.name)
+            self.core.get_memory().save_context(
                 {},
                 {
-                    self.memory.add_memory_key: f"{self.name} observed "
+                    self.core.get_memory().add_memory_key: f"{self.name} observed "  # type: ignore
                     f"{observation} and said {response_text}",
-                    self.memory.now_key: now,
+                    self.core.get_memory().now_key: now,  # type: ignore
                 },
             )
             return True, f"{self.name} said {response_text}"
@@ -435,12 +506,14 @@ class GenerativeAgent(BaseModel):
             + "Do not embellish."
             + "\n\nSummary: "
         )
+        chain = self.core.chain(prompt=prompt)
+
         # The agent seeks to think about their core characteristics.
-        return (
-            self.chain(prompt)
-            .run(name=self.name, queries=[f"{self.name}'s core characteristics"])
-            .strip()
-        )
+        result = chain.run(
+            name=self.name, queries=[f"{self.name}'s core characteristics"]
+        ).strip()
+
+        return result
 
     def get_summary(
         self, force_refresh: bool = False, now: Optional[datetime] = None
@@ -475,17 +548,22 @@ class GenerativeAgent(BaseModel):
         ):
             self.summary = self.compute_agent_summary()
             self.last_refreshed = current_time
-        age = self.age if self.age is not None else "N/A"
-        return (
-            f"Name: {self.name} (age: {age})"
-            + f"\nInnate traits: {self.traits}"
-            + f"\n{self.summary}"
+
+        summary = (
+            f"Name: {self.name}\n"
+            + f"Age: {self.age}\n"
+            + f"Innate traits: {self.traits}\n"
+            + f"Status: {self.status}\n"
+            + f"Lifestyle: {self.lifestyle}\n"
+            + f"{self.summary}\n"
         )
+
+        return summary
 
     def get_full_header(
         self, force_refresh: bool = False, now: Optional[datetime] = None
     ) -> str:
-        """Return a full header of the agent's status, summary, and current time.
+        """Return a full header of the agent's lifestyle, summary, and current time.
 
         Args:
             force_refresh (bool, optional): If True, force a refresh of the summary
@@ -494,9 +572,9 @@ class GenerativeAgent(BaseModel):
                 the summary. Defaults to None, which uses the current system time.
 
         Returns:
-            str: A full header including the agent's status, summary, and current time.
+            str: A full header including the agent's lifestyle, summary, and current time.
 
-        This method returns a full header that includes the agent's status, a descriptive
+        This method returns a full header that includes the agent's lifestyle, a descriptive
         summary of the agent (which can be refreshed using `force_refresh`), and the
         current time in a formatted string.
 
@@ -507,7 +585,6 @@ class GenerativeAgent(BaseModel):
         """
         now = datetime.now() if now is None else now
         summary = self.get_summary(force_refresh=force_refresh, now=now)
-        current_time_str = now.strftime("%B %d, %Y, %I:%M %p")
-        return (
-            f"{summary}\nIt is {current_time_str}.\n{self.name}'s status: {self.status}"
-        )
+        result = f"{summary}\n{self.name}'s lifestyle: {self.lifestyle}"
+
+        return result

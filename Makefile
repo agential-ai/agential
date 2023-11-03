@@ -40,14 +40,34 @@ clean: ## Delete all compiled Python files.
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
 
-lint: ## Lint using black and ruff.
-	poetry run mypy discussion_agents tests
+lint: ## Lint using black and ruff, static check mypy exclude tests.
+	poetry run mypy discussion_agents
 	poetry run black --check discussion_agents tests
 	poetry run ruff check discussion_agents tests
 
 auto_lint: ## Automatic format & lint using black and ruff.
 	poetry run black discussion_agents tests
 	poetry run ruff discussion_agents tests --fix --show-fixes --show-source
+
+test: ## Run all pytest tests.
+	poetry run pytest --cov=discussion_agents \
+		--cov-report xml \
+		--cov-report term-missing:skip-covered \
+		tests/
+
+test_nocost: ## Run pytest tests with no 'cost' marker (don't require funds to run).
+	poetry run pytest --cov=discussion_agents \
+		--cov-report xml \
+		--cov-report term-missing:skip-covered \
+		-m "not cost" \
+		tests/
+
+test_fast: ## Run pytest tests with no 'slow' marker and no 'cost' marker.
+	poetry run pytest --cov=discussion_agents \
+		--cov-report xml \
+		--cov-report term-missing:skip-covered \
+		-m "not slow and not cost" \
+		tests/
 
 create_environment: ## Set up conda environment.
 ifeq (True,$(HAS_CONDA))
