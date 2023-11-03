@@ -50,13 +50,27 @@ auto_lint: ## Automatic format & lint using black and ruff.
 	poetry run ruff discussion_agents tests --fix --show-fixes --show-source
 
 test: ## Run all pytest tests.
-	poetry run pytest tests/
+	poetry run pytest --cov \
+		cov-config=.coveragerc \
+		--cov-report xml \
+		--cov-report term-missing:skip-covered \
+		tests/
 
 test_nocost: ## Run pytest tests with no 'cost' marker (don't require funds to run).
-	poetry run pytest -m "not cost" tests/
+	poetry run pytest --cov \
+		cov-config=.coveragerc \
+		--cov-report xml \
+		--cov-report term-missing:skip-covered \
+		-m "not cost" \
+		tests/
 
 test_fast: ## Run pytest tests with no 'slow' marker and no 'cost' marker.
-	poetry run pytest -m "not slow and not cost" tests/
+	poetry run pytest --cov \
+		cov-config=.coveragerc \
+		--cov-report xml \
+		--cov-report term-missing:skip-covered \
+		-m "not slow and not cost" \
+		tests/
 
 create_environment: ## Set up conda environment.
 ifeq (True,$(HAS_CONDA))
