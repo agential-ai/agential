@@ -1,1 +1,1 @@
-"""Scoring module for Generative Agent."""
+"""Scoring module for Generative Agents."""

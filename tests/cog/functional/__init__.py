@@ -1,1 +1,1 @@
-"""Functional module unit tests."""
+"""Unit tests for functional module."""
