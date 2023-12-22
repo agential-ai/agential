@@ -381,6 +381,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
                 - If none of the supported keys are present, an empty dictionary is returned.
         """
         queries = inputs.get(self.queries_key)
+        if type(queries) is str: queries = [queries]
         now = inputs.get(self.now_key)
         most_recent_memories_token = inputs.get(self.most_recent_memories_token_key)
 
