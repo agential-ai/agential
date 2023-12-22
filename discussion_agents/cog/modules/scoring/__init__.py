@@ -1,1 +1,1 @@
-"""Memory scoring modules."""
+"""Scoring modules."""
