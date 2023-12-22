@@ -1,4 +1,4 @@
-"""Functional module for generative agents."""
+"""Functional module for Generative Agents."""
 
 import re
 
@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from langchain_core.language_models.base import BaseLanguageModel
+from langchain_core.language_models import LLM
 from langchain_core.retrievers import BaseRetriever
 
 from discussion_agents.utils.fetch import fetch_memories
@@ -18,7 +18,7 @@ from discussion_agents.utils.parse import parse_list
 def score_memories_importance(
     memory_contents: Union[str, List[str]],
     relevant_memories: Union[str, List[str]],
-    llm: BaseLanguageModel,
+    llm: LLM,
     llm_kwargs: Dict[str, Any] = {},
     importance_weight: float = 0.15,
 ) -> List[float]:
@@ -30,8 +30,8 @@ def score_memories_importance(
             if memory_contents and relevant_memories are both str/list, then they correspond 1-to-1;
             if memory_contents is str and relevant_memories is list, then the topic will use all relevant_memories;
             if memory_contents is list and relevant_memories is str, then relevant_memories is broadcasted to all memory_contents.
-        llm (BaseLanguageModel): a LangChain BaseLanguageModel instance.
-        llm_kwargs (Dict[str, Any]): kwargs to override the BaseLanguageModel.
+        llm (LLM): a LangChain LLM instance.
+        llm_kwargs (Dict[str, Any]): kwargs to override the LLM.
         importance_weight (float, optional): Weight for importance scores. Default is 0.15.
 
     Returns:
@@ -93,15 +93,15 @@ def score_memories_importance(
 
 def get_topics_of_reflection(
     observations: Union[str, List[str]],
-    llm: BaseLanguageModel,
+    llm: LLM,
     llm_kwargs: Dict[str, Any] = {},
 ) -> List[str]:
     """Generate three insightful high-level questions based on recent observation(s).
 
     Args:
         observations (Union[str, List[str]]): Recent observations to derive questions from; can be multiple but must be str.
-        llm (BaseLanguageModel): a LangChain BaseLanguageModel instance.
-        llm_kwargs (Dict[str, Any]): kwargs to override the BaseLanguageModel.
+        llm (LLM): a LangChain LLM instance.
+        llm_kwargs (Dict[str, Any]): kwargs to override the LLM.
 
     Returns:
         List[str]: A list of the three most salient high-level questions.
@@ -133,7 +133,7 @@ def get_topics_of_reflection(
 def get_insights_on_topics(
     topics: Union[str, List[str]],
     related_memories: Union[str, List[str]],
-    llm: BaseLanguageModel,
+    llm: LLM,
     llm_kwargs: Dict[str, Any] = {},
 ) -> List[List[str]]:
     """Generate high-level insights on specified topics using relevant memories.
@@ -144,8 +144,8 @@ def get_insights_on_topics(
             if topics and related_memories are both str/list, then they correspond 1-to-1;
             if topics is str and related_memories is list, then the topic will use all related_memories;
             if topics is list and related_memories is str, then related_memories is broadcasted to all topics.
-        llm (BaseLanguageModel): a LangChain BaseLanguageModel instance.
-        llm_kwargs (Dict[str, Any]): kwargs to override the BaseLanguageModel.
+        llm (LLM): a LangChain LLM instance.
+        llm_kwargs (Dict[str, Any]): kwargs to override the LLM.
 
     Returns:
         List[List[str]]: Lists of high-level, unique insights corresponding to each topic.
@@ -195,7 +195,7 @@ def get_insights_on_topics(
 
 def reflect(
     observations: Union[str, List[str]],
-    llm: BaseLanguageModel,
+    llm: LLM,
     retriever: BaseRetriever,
     llm_kwargs: Dict[str, Any] = {},
     now: Optional[datetime] = None,
@@ -208,9 +208,9 @@ def reflect(
 
     Args:
         observations (Union[str, List[str]]): Observations to derive reflections from.
-        llm (BaseLanguageModel): a LangChain BaseLanguageModel instance.
+        llm (LLM): a LangChain LLM instance.
         retriever (BaseRetriever): A BaseRetriever to extract relevant memories.
-        llm_kwargs (Dict[str, Any]): kwargs to override the BaseLanguageModel.
+        llm_kwargs (Dict[str, Any]): kwargs to override the LLM.
         now (Optional[datetime]): current datetime or one specified.
 
     Returns:
