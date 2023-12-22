@@ -43,7 +43,6 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
     Attributes:
         llm (BaseLanguageModel): a LangChain BaseLanguageModel instance.
         retriever (TimeWeightedVectorStoreRetriever): A TimeWeightedVectorStoreRetriever to extract relevant memories.
-        llm_kwargs (Dict[str, Any]): kwargs to override the BaseLanguageModel.
         reflection_threshold (float, optional): When the aggregate importance of recent
             memories exceeds this threshold, the agent triggers a reflection process.
             Defaults to None.
@@ -65,7 +64,6 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
     """
 
     llm: BaseLanguageModel
-    llm_kwargs: Dict[str, Any]
     retriever: TimeWeightedVectorStoreRetriever
     reflection_threshold: Optional[float] = 8
     max_tokens_limit: int = 1200
@@ -107,7 +105,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         """
         observations = self.retriever.memory_stream[-last_k:]  # type: ignore
         observations = "\n".join([format_memories_detail(o) for o in observations])
-        return get_topics_of_reflection(observations=observations, core=self.core)
+        return get_topics_of_reflection(observations=observations, llm=self.llm)
 
     def get_insights_on_topic(
         self,
@@ -134,7 +132,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         related_memories = []
         for topic in topics:
             fetched_memories = fetch_memories(
-                observation=topic, memory_retriever=self.core.get_retriever(), now=now
+                observation=topic, memory_retriever=self.retriever, now=now
             )
             topic_related_memories = "\n".join(
                 [
@@ -145,7 +143,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
             related_memories.append(topic_related_memories)
 
         new_insights = get_insights_on_topics(
-            topics=topics, related_memories=related_memories, core=self.core
+            topics=topics, related_memories=related_memories, llm=self.llm
         )
 
         return new_insights
@@ -171,15 +169,11 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
             memory = GenerativeAgentMemory(...)
             topics, reflection_insights = memory.pause_to_reflect(last_k=100, now=datetime.now())
         """
-        if not isinstance(self.core.get_retriever(), TimeWeightedVectorStoreRetriever):
-            raise TypeError(
-                "The core's 'retriever' attribute must be an instance of TimeWeightedVectorStoreRetriever."
-            )
-        observations = self.core.get_retriever().memory_stream[-last_k:]  # type: ignore
+        observations = self.retriever.memory_stream[-last_k:]  # type: ignore
         observations = "\n".join([format_memories_detail(o) for o in observations])
 
         topics, topics_insights = reflect(
-            observations=observations, core=self.core, now=now
+            observations=observations, llm=self.llm, retriever=self.retriever, now=now
         )
         insights = list(chain(*topics_insights))
 
@@ -215,7 +209,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         return score_memories_importance(
             memory_contents=memory_contents,
             relevant_memories=relevant_memories,
-            core=self.core,
+            llm=self.llm,
             importance_weight=importance_weight,
         )
 
@@ -257,11 +251,6 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
             - If the aggregate importance surpasses a reflection threshold, the agent
             enters a reflection phase to add synthesized memories.
         """
-        if not isinstance(self.core.get_retriever(), TimeWeightedVectorStoreRetriever):
-            raise TypeError(
-                "The core's 'retriever' attribute must be an instance of TimeWeightedVectorStoreRetriever."
-            )
-
         if type(memory_contents) is str:
             memory_contents = [memory_contents]
 
@@ -269,7 +258,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         for memory_content in memory_contents:
             fetched_memories = fetch_memories(
                 observation=memory_content,
-                memory_retriever=self.core.get_retriever(),
+                memory_retriever=self.retriever,
             )
             relevant_memories: str = "\n".join(
                 [mem.page_content for mem in fetched_memories]
@@ -294,7 +283,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
                 )
             )
 
-        result = self.core.get_retriever().add_documents(documents, current_time=now)  # type: ignore
+        result = self.retriever.add_documents(documents, current_time=now)  # type: ignore
 
         # After an agent has processed a certain amount of memories (as measured by
         # aggregate importance), it is time to reflect on recent events to add
@@ -327,15 +316,11 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
             memory = GenerativeAgentMemory(...)
             retrieved_docs = memory.get_memories_until_limit(consumed_tokens)
         """
-        if not isinstance(self.core.get_retriever(), TimeWeightedVectorStoreRetriever):
-            raise TypeError(
-                "The core's 'retriever' attribute must be an instance of TimeWeightedVectorStoreRetriever."
-            )
         result = []
-        for doc in self.core.get_retriever().memory_stream[::-1]:  # type: ignore
+        for doc in self.retriever.memory_stream[::-1]:  # type: ignore
             if consumed_tokens >= self.max_tokens_limit:
                 break
-            consumed_tokens += self.core.get_llm().get_num_tokens(doc.page_content)
+            consumed_tokens += self.llm.get_num_tokens(doc.page_content)
             if consumed_tokens < self.max_tokens_limit:
                 result.append(doc)
         return format_memories_simple(result)
@@ -387,7 +372,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
                 for query in queries
                 for mem in fetch_memories(
                     observation=query,
-                    memory_retriever=self.core.get_retriever(),
+                    memory_retriever=self.retriever,
                     now=now,
                 )
             ]
