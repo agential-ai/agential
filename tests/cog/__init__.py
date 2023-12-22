@@ -1,1 +1,1 @@
-"""Unit tests for cognition functions."""
+"""Unit tests for cognition (cog) modules."""
