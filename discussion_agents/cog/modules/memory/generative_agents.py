@@ -15,7 +15,8 @@ from itertools import chain
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
-from langchain.schema import BaseMemory, Document
+from langchain_core.memory import BaseMemory
+from langchain_core.documents.base import Document
 from langchain_core.language_models.base import BaseLanguageModel
 
 from discussion_agents.cog.modules.memory.base import BaseMemoryInterface
@@ -40,9 +41,9 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
     for reflection, and scores importance.
 
     Attributes:
-        core (BaseCore): The agent core for this class. Note, GenerativeAgentMemory
-            requires a TimeWeightedVectorStoreRetriever instance to be specified
-            as the core's retriever.
+        llm (BaseLanguageModel): a LangChain BaseLanguageModel instance.
+        retriever (TimeWeightedVectorStoreRetriever): A TimeWeightedVectorStoreRetriever to extract relevant memories.
+        llm_kwargs (Dict[str, Any]): kwargs to override the BaseLanguageModel.
         reflection_threshold (float, optional): When the aggregate importance of recent
             memories exceeds this threshold, the agent triggers a reflection process.
             Defaults to None.
@@ -67,24 +68,24 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
     llm_kwargs: Dict[str, Any]
     retriever: TimeWeightedVectorStoreRetriever
     reflection_threshold: Optional[float] = 8
-    aggregate_importance: float = 0.0  # : :meta private:
-    max_tokens_limit: int = 1200  # : :meta private:
+    max_tokens_limit: int = 1200
 
     # Keys for loading memory variables.
 
     # Input keys.
-    queries_key: str = "queries"
-    most_recent_memories_token_key: str = "recent_memories_token"
-    add_memory_key: str = "add_memory"
+    queries_key: str = "queries"  
+    most_recent_memories_token_key: str = "recent_memories_token"  
+    add_memory_key: str = "add_memory"  
 
     # Output keys.
-    relevant_memories_key: str = "relevant_memories"
-    relevant_memories_simple_key: str = "relevant_memories_simple"
-    most_recent_memories_key: str = "most_recent_memories"
-    now_key: str = "now"
+    relevant_memories_key: str = "relevant_memories"  
+    relevant_memories_simple_key: str = "relevant_memories_simple"  
+    most_recent_memories_key: str = "most_recent_memories"  
+    now_key: str = "now"  
 
-    # Internal reflecting flag.
-    reflecting: bool = False
+    # Internal variables.
+    reflecting: bool = False  #: :meta private:
+    aggregate_importance: float = 0.0  #: :meta private:
 
     def get_topics_of_reflection(self, last_k: int = 50) -> List[str]:
         """Generate high-level reflection topics based on recent observations.
@@ -104,11 +105,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
             memory = GenerativeAgentMemory(...)
             reflection_topics = memory.get_topics_of_reflection(last_k=100)
         """
-        if not isinstance(self.core.get_retriever(), TimeWeightedVectorStoreRetriever):
-            raise TypeError(
-                "The core's 'retriever' attribute must be an instance of TimeWeightedVectorStoreRetriever."
-            )
-        observations = self.core.get_retriever().memory_stream[-last_k:]  # type: ignore
+        observations = self.retriever.memory_stream[-last_k:]  # type: ignore
         observations = "\n".join([format_memories_detail(o) for o in observations])
         return get_topics_of_reflection(observations=observations, core=self.core)
 
