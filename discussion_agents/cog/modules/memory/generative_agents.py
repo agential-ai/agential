@@ -366,7 +366,10 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         """
         queries = inputs.get(self.queries_key)
         now = inputs.get(self.now_key)
-        if queries is not None:
+        most_recent_memories_token = inputs.get(self.most_recent_memories_token_key)
+
+        out = {}
+        if queries:
             relevant_memories = [
                 mem
                 for query in queries
@@ -376,23 +379,26 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
                     now=now,
                 )
             ]
-            return {
-                self.relevant_memories_key: format_memories_detail(
-                    memories=relevant_memories, prefix="- "
-                ),
-                self.relevant_memories_simple_key: format_memories_simple(
-                    relevant_memories
-                ),
-            }
+            out.update(
+                {
+                    self.relevant_memories_key: format_memories_detail(
+                        memories=relevant_memories, prefix="- "
+                    ),
+                    self.relevant_memories_simple_key: format_memories_simple(
+                        relevant_memories
+                    ),
+                }
+            )
+        if most_recent_memories_token:
+            out.update(
+                {
+                    self.most_recent_memories_key: self.get_memories_until_limit(
+                        most_recent_memories_token
+                    )
+                }
+            )
 
-        most_recent_memories_token = inputs.get(self.most_recent_memories_token_key)
-        if most_recent_memories_token is not None:
-            return {
-                self.most_recent_memories_key: self.get_memories_until_limit(
-                    most_recent_memories_token
-                )
-            }
-        return {}
+        return out
 
     def save_context(self, inputs: Dict[str, Any], outputs: Dict[str, Any]) -> None:
         """Save the context of this model run to memory.
@@ -426,5 +432,5 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
             self.add_memories(mem, now=now)
 
     def clear(self, retriever: TimeWeightedVectorStoreRetriever) -> None:
-        """Clear method."""
+        """Reset the retriever with a new TimeWeightedVectorStoreRetriever instance."""
         self.retriever = retriever
