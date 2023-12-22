@@ -7,8 +7,8 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from langchain_core.retrievers import BaseRetriever
 from langchain_core.language_models.base import BaseLanguageModel
+from langchain_core.retrievers import BaseRetriever
 
 from discussion_agents.utils.fetch import fetch_memories
 from discussion_agents.utils.format import format_memories_detail

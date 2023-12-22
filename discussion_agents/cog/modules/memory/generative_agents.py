@@ -15,17 +15,17 @@ from itertools import chain
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
-from langchain_core.memory import BaseMemory
 from langchain_core.documents.base import Document
 from langchain_core.language_models.base import BaseLanguageModel
+from langchain_core.memory import BaseMemory
 
-from discussion_agents.cog.modules.memory.base import BaseMemoryInterface
 from discussion_agents.cog.functional.generative_agents import (
-    score_memories_importance,
     get_insights_on_topics,
     get_topics_of_reflection,
     reflect,
+    score_memories_importance,
 )
+from discussion_agents.cog.modules.memory.base import BaseMemoryInterface
 from discussion_agents.utils.fetch import fetch_memories
 from discussion_agents.utils.format import (
     format_memories_detail,
@@ -61,6 +61,22 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
           memories.
         - most_recent_memories_key (str): The key for loading most recent memories.
         - now_key (str): The key for loading the current timestamp.
+
+    Mapping for the keys:
+        Input-to-function/Input-key -> keys used = output key (load only) 
+
+        most_recent_memories_key is directly mapped to the input prompt and is conditioned
+        on most_recent_memories_token_key. 
+        queries_key (which also gets the now_key) is specified in calling the LLMChain (not in input prompt) 
+        and returns a dictionary with relevant_memories_key and relevant_memories_simple_key keys.
+        add_memory_key (and now_key) are used in save_context (only for outputs).
+
+        load_memory_variables 
+        - queries_key -> relevant_memories_key + relevant_memories_simple_key + now_key = relevant_memories_key
+        - most_recent_memories_token_key -> most_recent_memories_key = most_recent_memories_key
+
+        save_context
+        - outputs -> add_memory_key + now_key
     """
 
     llm: BaseLanguageModel
@@ -71,15 +87,15 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
     # Keys for loading memory variables.
 
     # Input keys.
-    queries_key: str = "queries"  
-    most_recent_memories_token_key: str = "recent_memories_token"  
-    add_memory_key: str = "add_memory"  
+    queries_key: str = "queries"
+    most_recent_memories_token_key: str = "recent_memories_token"
+    add_memory_key: str = "add_memory"
 
     # Output keys.
-    relevant_memories_key: str = "relevant_memories"  
-    relevant_memories_simple_key: str = "relevant_memories_simple"  
-    most_recent_memories_key: str = "most_recent_memories"  
-    now_key: str = "now"  
+    relevant_memories_key: str = "relevant_memories"
+    relevant_memories_simple_key: str = "relevant_memories_simple"
+    most_recent_memories_key: str = "most_recent_memories"
+    now_key: str = "now"
 
     # Internal variables.
     reflecting: bool = False  #: :meta private:
