@@ -1,15 +1,14 @@
 """Functional module for generative agents."""
 
 import re
-from datetime import datetime
 
-from typing import Any, Dict, List, Union, Tuple, Optional
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from langchain_core.language_models.base import BaseLanguageModel
-
 from langchain.schema import BaseRetriever
+from langchain_core.language_models.base import BaseLanguageModel
 
 from discussion_agents.utils.fetch import fetch_memories
 from discussion_agents.utils.format import format_memories_detail
@@ -195,11 +194,11 @@ def get_insights_on_topics(
 
 
 def reflect(
-    observations: Union[str, List[str]], 
+    observations: Union[str, List[str]],
     llm: BaseLanguageModel,
     retriever: BaseRetriever,
     llm_kwargs: Dict[str, Any] = {},
-    now: Optional[datetime] = None
+    now: Optional[datetime] = None,
 ) -> Tuple[List[str], List[List[str]]]:
     """Generate insights on recent observations through reflection.
 
@@ -225,17 +224,13 @@ def reflect(
         topics, insights = reflect(observations, core, now=datetime.now())
     """
     topics = get_topics_of_reflection(
-        observations=observations, 
-        llm=llm,
-        llm_kwargs=llm_kwargs
+        observations=observations, llm=llm, llm_kwargs=llm_kwargs
     )
 
     related_memories = []
     for topic in topics:
         fetched_memories = fetch_memories(
-            observation=topic, 
-            memory_retriever=retriever, 
-            now=now
+            observation=topic, memory_retriever=retriever, now=now
         )
         topic_related_memories = "\n".join(
             [
@@ -246,9 +241,6 @@ def reflect(
         related_memories.append(topic_related_memories)
 
     insights = get_insights_on_topics(
-        topics=topics, 
-        related_memories=related_memories, 
-        llm=llm,
-        llm_kwargs=llm_kwargs
+        topics=topics, related_memories=related_memories, llm=llm, llm_kwargs=llm_kwargs
     )
     return topics, insights
