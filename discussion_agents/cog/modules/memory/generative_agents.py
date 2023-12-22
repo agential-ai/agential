@@ -425,6 +425,6 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         if mem:
             self.add_memories(mem, now=now)
 
-    def clear(self) -> None:
+    def clear(self, retriever: TimeWeightedVectorStoreRetriever) -> None:
         """Clear method."""
-        pass
+        self.retriever = retriever
