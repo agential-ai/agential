@@ -1,4 +1,4 @@
-"""Generative Agent Memory implementation from LangChain.
+"""Generative Agents Memory module implementation from LangChain.
 
 Note: The following classes are versions of LangChain's Generative Agent
 implementations with my improvements.
@@ -12,19 +12,19 @@ https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/charac
 """
 from datetime import datetime
 from itertools import chain
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.schema import BaseMemory, Document
+from langchain_core.language_models.base import BaseLanguageModel
 
-from discussion_agents.core.base import BaseCore
-from discussion_agents.memory.base import BaseMemoryInterface
-from discussion_agents.reflecting.generative_agents import (
+from discussion_agents.cog.modules.memory.base import BaseMemoryInterface
+from discussion_agents.cog.functional.generative_agents import (
+    score_memories_importance,
     get_insights_on_topics,
     get_topics_of_reflection,
     reflect,
 )
-from discussion_agents.scoring.generative_agents import score_memories_importance
 from discussion_agents.utils.fetch import fetch_memories
 from discussion_agents.utils.format import (
     format_memories_detail,
@@ -63,7 +63,9 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         - now_key (str): The key for loading the current timestamp.
     """
 
-    core: BaseCore  # Must Use retriever=TimeWeightedVectorStoreRetriever!
+    llm: BaseLanguageModel
+    llm_kwargs: Dict[str, Any]
+    retriever: TimeWeightedVectorStoreRetriever
     reflection_threshold: Optional[float] = 8
     aggregate_importance: float = 0.0  # : :meta private:
     max_tokens_limit: int = 1200  # : :meta private:
