@@ -63,15 +63,15 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
         - now_key (str): The key for loading the current timestamp.
 
     Mapping for the keys:
-        Input-to-function/Input-key -> keys used = output key (load only) 
+        Input-to-function/Input-key -> keys used = output key (load only)
 
         most_recent_memories_key is directly mapped to the input prompt and is conditioned
-        on most_recent_memories_token_key. 
-        queries_key (which also gets the now_key) is specified in calling the LLMChain (not in input prompt) 
+        on most_recent_memories_token_key.
+        queries_key (which also gets the now_key) is specified in calling the LLMChain (not in input prompt)
         and returns a dictionary with relevant_memories_key and relevant_memories_simple_key keys.
         add_memory_key (and now_key) are used in save_context (only for outputs).
 
-        load_memory_variables 
+        load_memory_variables
         - queries_key -> relevant_memories_key + relevant_memories_simple_key + now_key = relevant_memories_key
         - most_recent_memories_token_key -> most_recent_memories_key = most_recent_memories_key
 
@@ -381,7 +381,8 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
                 - If none of the supported keys are present, an empty dictionary is returned.
         """
         queries = inputs.get(self.queries_key)
-        if type(queries) is str: queries = [queries]
+        if type(queries) is str:
+            queries = [queries]
         now = inputs.get(self.now_key)
         most_recent_memories_token = inputs.get(self.most_recent_memories_token_key)
 
