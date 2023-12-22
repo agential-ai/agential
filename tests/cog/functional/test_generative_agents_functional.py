@@ -1,17 +1,18 @@
 """Testing Generative Agents memory functional methods."""
 from datetime import datetime
 
-from langchain.schema import BaseRetriever
 from langchain.llms.fake import FakeListLLM
+from langchain.schema import BaseRetriever
 
 from discussion_agents.cog.functional.generative_agents import (
-    score_memories_importance,
     get_insights_on_topics,
     get_topics_of_reflection,
-    reflect
+    reflect,
+    score_memories_importance,
 )
 
 test_date = datetime(year=2022, month=11, day=14, hour=3, minute=14)
+
 
 def test_score_memories_importance() -> None:
     """Test score_memories_importance."""
@@ -100,7 +101,6 @@ def test_get_insights_on_topics() -> None:
     assert len(insights[0]) == 1
     assert insights[0] == ["That's an interesting observation!"]
 
-
     # Test topics str and related_memories str.
     insights = get_insights_on_topics(
         topics="Some topic.",
@@ -143,7 +143,9 @@ def test_reflect(memory_retriever: BaseRetriever) -> None:
     llm = FakeListLLM(responses=["That's an interesting observation!"])
 
     observations = "Chairs have 4 legs."
-    topics, insights = reflect(observations=observations, llm=llm, retriever=memory_retriever, now=test_date)
+    topics, insights = reflect(
+        observations=observations, llm=llm, retriever=memory_retriever, now=test_date
+    )
 
     assert type(topics) is list
     assert topics == ["That's an interesting observation!"]

@@ -1,1 +1,1 @@
-"""Test Generative Agents scoring module."""
+"""Test the Generative Agents scoring module."""

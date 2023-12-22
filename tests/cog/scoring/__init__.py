@@ -1,1 +1,1 @@
-"""Unit tests for scoring module."""
+"""Unit tests for scoring modules."""
