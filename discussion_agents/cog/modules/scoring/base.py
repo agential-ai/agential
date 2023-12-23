@@ -16,6 +16,6 @@ class BaseScoring(ABC):
         self,
         memory_contents: Union[str, List[str]],
         relevant_memories: Union[str, List[str]],
-    ) -> List[str]:
-        """Score memory_contents with respect to relevant memories."""
+    ) -> List[float]:
+        """Score memory_contents with respect to relevant memories and returns a list of scores."""
         pass
