@@ -2,12 +2,12 @@
 from abc import ABC, abstractmethod
 from typing import List, Union
 
-from pydantic import BaseModel
+from pydantic.v1 import BaseModel
 
 from langchain_core.language_models import LLM
 
 
-class BaseScoring(BaseModel, ABC):
+class BaseScorer(BaseModel, ABC):
     """Base scoring class."""
 
     llm: LLM
