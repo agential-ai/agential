@@ -267,7 +267,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
             - If the aggregate importance surpasses a reflection threshold, the agent
             enters a reflection phase to add synthesized memories.
         """
-        if type(memory_contents) is str:
+        if isinstance(memory_contents, str):
             memory_contents = [memory_contents]
 
         importance_scores = []
@@ -381,7 +381,7 @@ class GenerativeAgentMemory(BaseMemory, BaseMemoryInterface):
                 - If none of the supported keys are present, an empty dictionary is returned.
         """
         queries = inputs.get(self.queries_key)
-        if type(queries) is str:
+        if isinstance(queries, str):
             queries = [queries]
         now = inputs.get(self.now_key)
         most_recent_memories_token = inputs.get(self.most_recent_memories_token_key)

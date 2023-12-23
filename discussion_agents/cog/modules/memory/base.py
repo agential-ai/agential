@@ -33,12 +33,3 @@ class BaseMemory(BaseModel, ABC):
         to load memories. Specific parameters and return types depend on the implementation.
         """
         pass
-
-    @abstractmethod
-    def delete_memories(self):
-        """Delete memories.
-
-        Implementations should override this method to provide the functionality
-        to delete memories. Specific parameters and return types depend on the implementation.
-        """
-        pass

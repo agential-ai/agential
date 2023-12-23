@@ -112,7 +112,7 @@ def get_topics_of_reflection(
         llm = ...
         generated_questions = get_topics_of_reflection(recent_observations, llm)
     """
-    if type(observations) is list:
+    if isinstance(observations, list):
         observations = "\n".join(observations)
 
     prompt = PromptTemplate.from_template(
