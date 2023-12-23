@@ -19,7 +19,6 @@ def score_memories_importance(
     memory_contents: Union[str, List[str]],
     relevant_memories: Union[str, List[str]],
     llm: LLM,
-    llm_kwargs: Dict[str, Any] = {},
     importance_weight: float = 0.15,
 ) -> List[float]:
     """Calculate absolute importance scores for given memory contents.
@@ -31,7 +30,6 @@ def score_memories_importance(
             if memory_contents is str and relevant_memories is list, then the topic will use all relevant_memories;
             if memory_contents is list and relevant_memories is str, then relevant_memories is broadcasted to all memory_contents.
         llm (LLM): a LangChain LLM instance.
-        llm_kwargs (Dict[str, Any]): kwargs to override the LLM.
         importance_weight (float, optional): Weight for importance scores. Default is 0.15.
 
     Returns:
@@ -66,7 +64,7 @@ def score_memories_importance(
         + "\Memory: {memory_content}\n"
         + "Rating: "
     )
-    chain = LLMChain(llm=llm, llm_kwargs=llm_kwargs, prompt=prompt)
+    chain = LLMChain(llm=llm, prompt=prompt)
 
     scores = []
     for i, (memory_content, relevant_memory) in enumerate(
@@ -94,14 +92,12 @@ def score_memories_importance(
 def get_topics_of_reflection(
     observations: Union[str, List[str]],
     llm: LLM,
-    llm_kwargs: Dict[str, Any] = {},
 ) -> List[str]:
     """Generate three insightful high-level questions based on recent observation(s).
 
     Args:
         observations (Union[str, List[str]]): Recent observations to derive questions from; can be multiple but must be str.
         llm (LLM): a LangChain LLM instance.
-        llm_kwargs (Dict[str, Any]): kwargs to override the LLM.
 
     Returns:
         List[str]: A list of the three most salient high-level questions.
@@ -125,7 +121,7 @@ def get_topics_of_reflection(
         + "high-level questions we can answer about the subjects in the statements?\n"
         + "Provide each question on a new line."
     )
-    chain = LLMChain(llm=llm, llm_kwargs=llm_kwargs, prompt=prompt)
+    chain = LLMChain(llm=llm, prompt=prompt)
     result = parse_list(chain.run(observations=observations))
     return result
 
@@ -134,7 +130,6 @@ def get_insights_on_topics(
     topics: Union[str, List[str]],
     related_memories: Union[str, List[str]],
     llm: LLM,
-    llm_kwargs: Dict[str, Any] = {},
 ) -> List[List[str]]:
     """Generate high-level insights on specified topics using relevant memories.
 
@@ -145,7 +140,6 @@ def get_insights_on_topics(
             if topics is str and related_memories is list, then the topic will use all related_memories;
             if topics is list and related_memories is str, then related_memories is broadcasted to all topics.
         llm (LLM): a LangChain LLM instance.
-        llm_kwargs (Dict[str, Any]): kwargs to override the LLM.
 
     Returns:
         List[List[str]]: Lists of high-level, unique insights corresponding to each topic.
@@ -183,7 +177,7 @@ def get_insights_on_topics(
         + "Do not repeat any insights that have already been made.\n\n"
         + "Question: {topic}\n\n"
     )
-    chain = LLMChain(llm=llm, llm_kwargs=llm_kwargs, prompt=prompt)
+    chain = LLMChain(llm=llm, prompt=prompt)
 
     results = []
     for topic, related_memory in zip(topics, related_memories):
@@ -197,7 +191,6 @@ def reflect(
     observations: Union[str, List[str]],
     llm: LLM,
     retriever: BaseRetriever,
-    llm_kwargs: Dict[str, Any] = {},
     now: Optional[datetime] = None,
 ) -> Tuple[List[str], List[List[str]]]:
     """Generate insights on recent observations through reflection.
@@ -210,7 +203,6 @@ def reflect(
         observations (Union[str, List[str]]): Observations to derive reflections from.
         llm (LLM): a LangChain LLM instance.
         retriever (BaseRetriever): A BaseRetriever to extract relevant memories.
-        llm_kwargs (Dict[str, Any]): kwargs to override the LLM.
         now (Optional[datetime]): current datetime or one specified.
 
     Returns:
@@ -224,7 +216,7 @@ def reflect(
         topics, insights = reflect(observations, core, now=datetime.now())
     """
     topics = get_topics_of_reflection(
-        observations=observations, llm=llm, llm_kwargs=llm_kwargs
+        observations=observations, llm=llm
     )
 
     related_memories = []
@@ -241,6 +233,6 @@ def reflect(
         related_memories.append(topic_related_memories)
 
     insights = get_insights_on_topics(
-        topics=topics, related_memories=related_memories, llm=llm, llm_kwargs=llm_kwargs
+        topics=topics, related_memories=related_memories, llm=llm
     )
     return topics, insights

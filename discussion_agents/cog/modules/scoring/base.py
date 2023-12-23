@@ -1,15 +1,16 @@
 """Base scoring module."""
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Union
+from typing import List, Union
+
+from pydantic import BaseModel
 
 from langchain_core.language_models import LLM
 
 
-class BaseScoring(ABC):
+class BaseScoring(BaseModel, ABC):
     """Base scoring class."""
 
     llm: LLM
-    llm_kwargs: Dict[str, Any] = {}
 
     @abstractmethod
     def score(
