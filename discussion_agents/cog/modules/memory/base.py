@@ -1,15 +1,46 @@
 """Base memory interface class."""
 from abc import ABC, abstractmethod
-from datetime import datetime
-from typing import List, Optional, Union
+from pydantic.v1 import BaseModel
 
-
-class BaseMemoryInterface(ABC):
-    """Requires memory classes to have an add_memories method."""
+class BaseMemory(BaseModel, ABC):
+    """Base memory class providing a general interface for memory operations."""
 
     @abstractmethod
-    def add_memories(
-        self, memory_contents: Union[str, List[str]], now: Optional[datetime] = None
-    ) -> List[str]:
-        """Memory classes must have some way to add memories to its memory bank."""
+    def clear(self):
+        """
+        Clear all memories.
+        
+        Implementations should override this method to provide the functionality
+        to clear memories. Specific parameters and return types depend on the implementation.
+        """
+        pass
+
+    @abstractmethod
+    def add_memories(self):
+        """
+        Add memories.
+        
+        Implementations should override this method to provide the functionality
+        to add memories. Specific parameters and return types depend on the implementation.
+        """
+        pass
+
+    @abstractmethod
+    def load_memories(self):
+        """
+        Load memories.
+        
+        Implementations should override this method to provide the functionality
+        to load memories. Specific parameters and return types depend on the implementation.
+        """
+        pass
+
+    @abstractmethod
+    def delete_memories(self):
+        """
+        Delete memories.
+        
+        Implementations should override this method to provide the functionality
+        to delete memories. Specific parameters and return types depend on the implementation.
+        """
         pass
