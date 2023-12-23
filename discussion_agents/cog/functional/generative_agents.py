@@ -3,7 +3,7 @@
 import re
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
@@ -215,9 +215,7 @@ def reflect(
         core = BaseCore(llm=llm, retriever=retriever)
         topics, insights = reflect(observations, core, now=datetime.now())
     """
-    topics = get_topics_of_reflection(
-        observations=observations, llm=llm
-    )
+    topics = get_topics_of_reflection(observations=observations, llm=llm)
 
     related_memories = []
     for topic in topics:

@@ -2,9 +2,8 @@
 from abc import ABC, abstractmethod
 from typing import List, Union
 
-from pydantic.v1 import BaseModel
-
 from langchain_core.language_models import LLM
+from pydantic.v1 import BaseModel
 
 
 class BaseScorer(BaseModel, ABC):
