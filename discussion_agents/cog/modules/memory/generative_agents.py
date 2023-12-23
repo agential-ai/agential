@@ -10,14 +10,14 @@ LangChain Generative Agents Doc Page:
 https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/characters
 """
 from datetime import datetime
-from typing import List, Optional, Union, Dict, Any
+from typing import Any, Dict, List, Optional, Union
 
-from langchain_core.language_models import LLM
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain_core.documents.base import Document
+from langchain_core.language_models import LLM
 
-from discussion_agents.utils.fetch import fetch_memories
 from discussion_agents.cog.modules.memory.base import BaseMemory
+from discussion_agents.utils.fetch import fetch_memories
 
 
 class GenerativeAgentMemory(BaseMemory):
@@ -55,7 +55,7 @@ class GenerativeAgentMemory(BaseMemory):
         _ = self.retriever.add_documents(documents, current_time=now)
 
     def load_memories(
-        self, 
+        self,
         queries: Optional[Union[str, List[str]]] = None,
         last_k: Optional[int] = None,
         consumed_tokens: Optional[int] = None,
@@ -64,12 +64,12 @@ class GenerativeAgentMemory(BaseMemory):
         now: Optional[datetime] = None,
         queries_key: str = "relevant_memories",
         most_recent_key: str = "most_recent_memories",
-        consumed_tokens_key: str = "most_recent_memories_limit"
+        consumed_tokens_key: str = "most_recent_memories_limit",
     ) -> Dict[str, Any]:
         if isinstance(queries, str):
             queries = [queries]
-        
-        if consumed_tokens and (not max_tokens_limit or not llm): 
+
+        if consumed_tokens and (not max_tokens_limit or not llm):
             raise ValueError(
                 "max_tokens_limit and llm must be defined if consumed_tokens is defined."
             )

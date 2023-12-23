@@ -1,29 +1,29 @@
 """Unit tests for Generative Agents memory module."""
 
-import faiss
-import pytest
 from datetime import datetime
 
-from langchain.llms.fake import FakeListLLM
+import faiss
+import pytest
+
 from langchain.docstore import InMemoryDocstore
 from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.llms.fake import FakeListLLM
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.vectorstores import FAISS
-
-from langchain.retrievers import TimeWeightedVectorStoreRetriever
 
 from discussion_agents.cog.modules.memory.generative_agents import GenerativeAgentMemory
 
 test_date = datetime(year=2022, month=11, day=14, hour=3, minute=14)
+
 
 def test_clear(memory_retriever: TimeWeightedVectorStoreRetriever) -> None:
     mem = GenerativeAgentMemory(retriever=memory_retriever)
     mem.retriever.memory_stream = ["Populating memory stream..."]
 
     embeddings_model = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-mpnet-base-v2", 
-        model_kwargs={"device": "cpu"}, 
-        encode_kwargs={"normalize_embeddings": False}
+        model_name="sentence-transformers/all-mpnet-base-v2",
+        model_kwargs={"device": "cpu"},
+        encode_kwargs={"normalize_embeddings": False},
     )
     index = faiss.IndexFlatL2(768)
     vectorstore = FAISS(embeddings_model.embed_query, index, InMemoryDocstore({}), {})
@@ -34,9 +34,12 @@ def test_clear(memory_retriever: TimeWeightedVectorStoreRetriever) -> None:
     mem.clear(retriever=retriever)
     assert mem.retriever.memory_stream == []
 
+
 def test_add_memories(memory_retriever: TimeWeightedVectorStoreRetriever) -> None:
     mem = GenerativeAgentMemory(retriever=memory_retriever)
-    mem.add_memories(memory_contents="An observation.", importance_scores=0.1, now=test_date)
+    mem.add_memories(
+        memory_contents="An observation.", importance_scores=0.1, now=test_date
+    )
     assert len(mem.retriever.memory_stream) == 1
     assert mem.retriever.memory_stream[0].page_content == "An observation."
     assert mem.retriever.memory_stream[0].metadata["last_accessed_at"] == test_date
@@ -46,11 +49,7 @@ def test_add_memories(memory_retriever: TimeWeightedVectorStoreRetriever) -> Non
     obs = ["Another observation.", "Yet another observation."]
     scores = [0.3, 0.4]
 
-    mem.add_memories(
-        memory_contents=obs,
-        importance_scores=scores,
-        now=test_date
-    )
+    mem.add_memories(memory_contents=obs, importance_scores=scores, now=test_date)
 
     for i, m in enumerate(mem.retriever.memory_stream[1:]):
         assert m.page_content == obs[i]
@@ -63,7 +62,11 @@ def test_add_memories(memory_retriever: TimeWeightedVectorStoreRetriever) -> Non
 
     with pytest.raises(ValueError) as excinfo:
         mem.add_memories(memory_contents, importance_scores)
-    assert str(excinfo.value) == "The length of memory_contents must match the length of importance_scores."
+    assert (
+        str(excinfo.value)
+        == "The length of memory_contents must match the length of importance_scores."
+    )
+
 
 def test_load_memories(memory_retriever: TimeWeightedVectorStoreRetriever) -> None:
     mem = GenerativeAgentMemory(retriever=memory_retriever)
@@ -81,17 +84,28 @@ def test_load_memories(memory_retriever: TimeWeightedVectorStoreRetriever) -> No
 
     with pytest.raises(ValueError) as excinfo:
         mem.load_memories(consumed_tokens=1)
-    assert str(excinfo.value) == "max_tokens_limit and llm must be defined if consumed_tokens is defined."
+    assert (
+        str(excinfo.value)
+        == "max_tokens_limit and llm must be defined if consumed_tokens is defined."
+    )
 
     with pytest.raises(ValueError) as excinfo:
         mem.load_memories(consumed_tokens=1, max_tokens_limit=1)
-    assert str(excinfo.value) == "max_tokens_limit and llm must be defined if consumed_tokens is defined."
+    assert (
+        str(excinfo.value)
+        == "max_tokens_limit and llm must be defined if consumed_tokens is defined."
+    )
 
     with pytest.raises(ValueError) as excinfo:
         mem.load_memories(consumed_tokens=1, llm=FakeListLLM(responses=[""]))
-    assert str(excinfo.value) == "max_tokens_limit and llm must be defined if consumed_tokens is defined."
+    assert (
+        str(excinfo.value)
+        == "max_tokens_limit and llm must be defined if consumed_tokens is defined."
+    )
 
-    out = mem.load_memories(consumed_tokens=1, max_tokens_limit=5, llm=FakeListLLM(responses=[""]))
+    out = mem.load_memories(
+        consumed_tokens=1, max_tokens_limit=5, llm=FakeListLLM(responses=[""])
+    )
     assert isinstance(out["most_recent_memories_limit"], list)
     assert len(out["most_recent_memories_limit"]) == 1
     assert out["most_recent_memories_limit"][0].page_content == "An observation 50"
