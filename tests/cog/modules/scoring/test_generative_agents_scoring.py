@@ -6,7 +6,7 @@ from discussion_agents.cog.modules.scoring.generative_agents import (
 )
 
 
-def test_generative_agent_scorer():
+def test_generative_agent_scorer() -> None:
     """Test GenerativeAgentScorer."""
     llm = FakeListLLM(responses=["1"])
     scorer = GenerativeAgentScorer(llm=llm, importance_weight=0.15)
