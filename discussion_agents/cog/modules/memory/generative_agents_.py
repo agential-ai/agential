@@ -1,4 +1,12 @@
-"""Generative Agents memory module implementation adapted from LangChain."""
+"""Generative Agents memory module implementation adapted from LangChain.
+
+Original Paper: https://arxiv.org/abs/2304.03442
+LangChain: https://github.com/langchain-ai/langchain
+LangChain Generative Agents:
+https://github.com/langchain-ai/langchain/tree/master/libs/experimental/langchain_experimental/generative_agents
+LangChain Generative Agents Doc Page:
+https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/characters
+"""
 from datetime import datetime
 from typing import List, Optional, Union
 
@@ -11,8 +19,8 @@ from discussion_agents.cog.modules.memory.base import BaseMemory
 class GenerativeAgentMemory(BaseMemory):
     retriever: TimeWeightedVectorStoreRetriever
 
-    def clear(self):
-        pass
+    def clear(self, retriever: TimeWeightedVectorStoreRetriever):
+        self.retriever = retriever
 
     def add_memories(
         self,
