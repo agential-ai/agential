@@ -2,7 +2,7 @@
 from datetime import datetime
 
 from langchain.llms.fake import FakeListLLM
-from langchain.schema import BaseRetriever
+from langchain.retrievers import TimeWeightedVectorStoreRetriever
 
 from discussion_agents.cog.functional.generative_agents import (
     get_insights_on_topics,
@@ -138,13 +138,16 @@ def test_get_insights_on_topics() -> None:
     assert insights[0] == ["That's an interesting observation!"]
 
 
-def test_reflect(memory_retriever: BaseRetriever) -> None:
+def test_reflect(time_weighted_retriever: TimeWeightedVectorStoreRetriever) -> None:
     """Tests reflect."""
     llm = FakeListLLM(responses=["That's an interesting observation!"])
 
     observations = "Chairs have 4 legs."
     topics, insights = reflect(
-        observations=observations, llm=llm, retriever=memory_retriever, now=test_date
+        observations=observations,
+        llm=llm,
+        retriever=time_weighted_retriever,
+        now=test_date,
     )
 
     assert type(topics) is list

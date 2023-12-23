@@ -17,7 +17,7 @@ encode_kwargs = {"normalize_embeddings": False}
 
 
 @pytest.fixture
-def memory_retriever() -> TimeWeightedVectorStoreRetriever:
+def time_weighted_retriever() -> TimeWeightedVectorStoreRetriever:
     """Creates a TimeWeightedVectorStoreRetriever."""
     embeddings_model = HuggingFaceEmbeddings(
         model_name=model_name, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs
