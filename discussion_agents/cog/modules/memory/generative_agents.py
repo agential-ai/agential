@@ -22,9 +22,6 @@ from discussion_agents.cog.modules.memory.base import BaseMemory
 
 class GenerativeAgentMemory(BaseMemory):
     retriever: TimeWeightedVectorStoreRetriever
-    queries_key: str = "relevant_memories"
-    most_recent_key: str = "most_recent_memories"
-    consumed_tokens_key: str = "most_recent_memories_limit"
 
     def clear(self, retriever: TimeWeightedVectorStoreRetriever) -> None:
         self.retriever = retriever
@@ -65,11 +62,14 @@ class GenerativeAgentMemory(BaseMemory):
         max_tokens_limit: Optional[int] = None,
         llm: LLM = None,
         now: Optional[datetime] = None,
+        queries_key: str = "relevant_memories",
+        most_recent_key: str = "most_recent_memories",
+        consumed_tokens_key: str = "most_recent_memories_limit"
     ) -> Dict[str, Any]:
         if isinstance(queries, str):
             queries = [queries]
         
-        if consumed_tokens and (not max_tokens_limit and not llm): 
+        if consumed_tokens and (not max_tokens_limit or not llm): 
             raise ValueError(
                 "max_tokens_limit and llm must be defined if consumed_tokens is defined."
             )
@@ -85,11 +85,11 @@ class GenerativeAgentMemory(BaseMemory):
                     now=now,
                 )
             ]
-            memories.update({self.queries_key: relevant_memories})
+            memories.update({queries_key: relevant_memories})
 
         if last_k:
             most_recent_memories = self.retriever.memory_stream[-last_k:]
-            memories.update({self.most_recent_key: most_recent_memories})
+            memories.update({most_recent_key: most_recent_memories})
 
         if consumed_tokens:
             results = []
@@ -99,6 +99,6 @@ class GenerativeAgentMemory(BaseMemory):
                 consumed_tokens += llm.get_num_tokens(doc.page_content)
                 if consumed_tokens < max_tokens_limit:
                     results.append(doc)
-            memories.update({self.consumed_tokens_key: results})
+            memories.update({consumed_tokens_key: results})
 
         return memories
