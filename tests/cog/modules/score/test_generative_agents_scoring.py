@@ -1,7 +1,7 @@
 """Unit tests for Generative Agents scoring module."""
 from langchain.llms.fake import FakeListLLM
 
-from discussion_agents.cog.modules.scoring.generative_agents import (
+from discussion_agents.cog.modules.score.generative_agents import (
     GenerativeAgentScorer,
 )
 

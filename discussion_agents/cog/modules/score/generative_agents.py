@@ -7,7 +7,7 @@ from langchain_core.language_models import LLM
 from discussion_agents.cog.functional.generative_agents import (
     score_memories_importance,
 )
-from discussion_agents.cog.modules.scoring.base import BaseScorer
+from discussion_agents.cog.modules.score.base import BaseScorer
 
 
 class GenerativeAgentScorer(BaseScorer):
