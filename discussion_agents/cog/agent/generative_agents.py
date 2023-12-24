@@ -151,16 +151,15 @@ class GenerativeAgent(BaseAgent):
         )
         insights = list(chain(*topics_insights))
 
-        self.memory.add_memories(memory_contents=insights, now=now)  # What do we do here?
+        self.add_memories(memory_contents=insights, now=now)
         return insights
     
     def add_memories(
         self,
         memory_contents: Union[str, List[str]],
         now: Optional[datetime] = None,
-        importance_weight: float = 0.15,
         last_k: int = 50,
-    ) -> List[str]:
+    ) -> None:
         """Add observations/memories to the agent's memory.
 
         This method allows adding new observations or memories to the agent's memory store.
@@ -206,18 +205,10 @@ class GenerativeAgent(BaseAgent):
             importance_scores.append(importance_score[0])
         self.aggregate_importance += max(importance_scores)
 
-        assert len(importance_scores) == len(memory_contents)
+        assert len(importance_scores) == len(memory_contents), \
+            "The length of the generated list of importance_scores does not match the length of memory_contents."
 
-        documents = []
-        for i in range(len(memory_contents)):
-            documents.append(
-                Document(
-                    page_content=memory_contents[i],
-                    metadata={"importance": importance_scores[i]},
-                )
-            )
-
-        result = self.retriever.add_documents(documents, current_time=now)  # type: ignore
+        self.memory.add_memories(memory_contents=memory_contents, importance_scores=importance_scores, now=now)
 
         # After an agent has processed a certain amount of memories (as measured by
         # aggregate importance), it is time to reflect on recent events to add
@@ -228,7 +219,6 @@ class GenerativeAgent(BaseAgent):
             and not self.reflecting
         ):
             self.reflecting = True
-            _, _ = self.pause_to_reflect(last_k=last_k, now=now)
+            _ = self.reflect(last_k=last_k, now=now)
             self.aggregate_importance = 0.0
             self.reflecting = False
-        return result
