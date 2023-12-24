@@ -1,8 +1,10 @@
 """Base agent interface class."""
 
 from abc import ABC
-from pydantic import BaseModel
 from typing import Any
+
+from pydantic import BaseModel
+
 
 class BaseAgent(BaseModel, ABC):
     """Base agent class providing a general interface for agent operations."""
