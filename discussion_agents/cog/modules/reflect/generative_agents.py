@@ -32,7 +32,7 @@ class GenerativeAgentReflector(BaseReflector):
         self,
         observations: Union[str, List[str]],
         now: Optional[datetime] = None,
-    ) -> List[str]:
+    ) -> List[List[str]]:
         """Analyzes observations and generates insights using the language model and retriever.
 
         This method processes a given set of observations and interprets them to produce insights. It uses the class's language model and retrieval system to understand and contextualize the observations, taking into account the current time if provided.

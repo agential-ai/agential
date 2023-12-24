@@ -10,4 +10,22 @@ https://github.com/langchain-ai/langchain/tree/master/libs/experimental/langchai
 LangChain Generative Agents Doc Page:
 https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/characters
 """
+from typing import Optional, List
+from langchain_core.language_models import LLM
 
+from discussion_agents.cog.agent.base import BaseAgent
+from discussion_agents.cog.modules.memory.generative_agents import GenerativeAgentMemory
+
+
+class GenerativeAgent(BaseAgent):
+    llm: LLM
+    memory: GenerativeAgentMemory
+    
+    reflection_threshold: Optional[int] = 8
+
+    # Internal variables.
+    reflecting: bool = False  #: :meta private:
+    aggregate_importance: float = 0.0  #: :meta private:
+
+    def reflect(self, last_k: int = 50) -> List[str]:
+        pass

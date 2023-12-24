@@ -15,6 +15,6 @@ class BaseReflector(BaseModel, ABC):
     def reflect(
         self,
         observations: Union[str, List[str]],
-    ) -> List[str]:
+    ) -> List[List[str]]:
         """Reflect on memory_contents w.r.t. relevant memories and returns a list of reflections."""
         pass
