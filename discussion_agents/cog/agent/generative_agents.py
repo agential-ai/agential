@@ -123,7 +123,7 @@ class GenerativeAgent(BaseAgent):
     
     def reflect(
         self, last_k: int = 50, now: Optional[datetime] = None
-    ) -> Tuple[List[str], List[str]]:
+    ) -> List[List[str]]:
         """Pause for reflection and enrich memory with insights.
 
         This method acts as a wrapper for the reflection process, leveraging the
@@ -145,10 +145,10 @@ class GenerativeAgent(BaseAgent):
         observations = self.memory.load_memories(last_k=last_k)["most_recent_memories"]
         observations = "\n".join([format_memories_detail(o) for o in observations])
 
-        topics, topics_insights = reflect(
-            observations=observations, llm=self.llm, retriever=self.retriever, now=now
+        topics_insights = self.reflector.reflect(
+            observations=observations, now=now
         )
         insights = list(chain(*topics_insights))
 
-        self.add_memories(memory_contents=insights, now=now)
-        return topics, insights
+        self.memory.add_memories(memory_contents=insights, now=now)  # What do we do here?
+        return insights
