@@ -10,31 +10,30 @@ https://github.com/langchain-ai/langchain/tree/master/libs/experimental/langchai
 LangChain Generative Agents Doc Page:
 https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/characters
 """
-from typing import List, Optional, Union
 from datetime import datetime
 from itertools import chain
+from typing import List, Optional, Union
 
 from langchain_core.documents.base import Document
 from langchain_core.language_models import LLM
-
 from pydantic.v1 import root_validator
 
 from discussion_agents.cog.agent.base import BaseAgent
-from discussion_agents.cog.modules.reflect.base import BaseReflector
-from discussion_agents.cog.modules.score.base import BaseScorer
-from discussion_agents.cog.modules.memory.generative_agents import GenerativeAgentMemory
-from discussion_agents.cog.modules.reflect.generative_agents import GenerativeAgentReflector
-from discussion_agents.cog.modules.score.generative_agents import GenerativeAgentScorer
 from discussion_agents.cog.functional.generative_agents import (
     get_insights_on_topics,
     get_topics_of_reflection,
-    reflect,
-    score_memories_importance,
 )
+from discussion_agents.cog.modules.memory.generative_agents import GenerativeAgentMemory
+from discussion_agents.cog.modules.reflect.base import BaseReflector
+from discussion_agents.cog.modules.reflect.generative_agents import (
+    GenerativeAgentReflector,
+)
+from discussion_agents.cog.modules.score.base import BaseScorer
+from discussion_agents.cog.modules.score.generative_agents import GenerativeAgentScorer
 from discussion_agents.utils.format import (
     format_memories_detail,
 )
-from discussion_agents.utils.fetch import fetch_memories
+
 
 class GenerativeAgent(BaseAgent):
     llm: LLM
@@ -47,13 +46,13 @@ class GenerativeAgent(BaseAgent):
     # A bit petty, but it allows us to define the class attributes in a specific order.
     @root_validator
     def set_default_components(cls, values):
-        if 'reflector' not in values or values['reflector'] is None:
-            values['reflector'] = GenerativeAgentReflector(
-                llm=values['llm'], retriever=values['memory'].retriever
+        if "reflector" not in values or values["reflector"] is None:
+            values["reflector"] = GenerativeAgentReflector(
+                llm=values["llm"], retriever=values["memory"].retriever
             )
-        if 'scorer' not in values or values['scorer'] is None:
-            values['scorer'] = GenerativeAgentScorer(
-                llm=values['llm'], importance_weight=values['importance_weight']
+        if "scorer" not in values or values["scorer"] is None:
+            values["scorer"] = GenerativeAgentScorer(
+                llm=values["llm"], importance_weight=values["importance_weight"]
             )
         return values
 
@@ -107,7 +106,9 @@ class GenerativeAgent(BaseAgent):
         """
         related_memories = []
         for topic in topics:
-            fetched_memories = self.memory.load_memories(queries=topic, now=now)["relevant_memories"]
+            fetched_memories = self.memory.load_memories(queries=topic, now=now)[
+                "relevant_memories"
+            ]
             topic_related_memories = "\n".join(
                 [
                     format_memories_detail(memories=memory, prefix=f"{i+1}. ")
@@ -121,7 +122,7 @@ class GenerativeAgent(BaseAgent):
         )
 
         return new_insights
-    
+
     def reflect(
         self, last_k: int = 50, now: Optional[datetime] = None
     ) -> List[List[str]]:
@@ -146,14 +147,12 @@ class GenerativeAgent(BaseAgent):
         observations = self.memory.load_memories(last_k=last_k)["most_recent_memories"]
         observations = "\n".join([format_memories_detail(o) for o in observations])
 
-        topics_insights = self.reflector.reflect(
-            observations=observations, now=now
-        )
+        topics_insights = self.reflector.reflect(observations=observations, now=now)
         insights = list(chain(*topics_insights))
 
         self.add_memories(memory_contents=insights, now=now)
         return insights
-    
+
     def add_memories(
         self,
         memory_contents: Union[str, List[str]],
@@ -196,19 +195,28 @@ class GenerativeAgent(BaseAgent):
 
         importance_scores = []
         for memory_content in memory_contents:
-            fetched_memories = self.memory.load_memories(queries=memory_content)["relevant_memories"]
+            fetched_memories = self.memory.load_memories(queries=memory_content)[
+                "relevant_memories"
+            ]
             relevant_memories: str = "\n".join(
                 [mem.page_content for mem in fetched_memories]
             )
             relevant_memories = "N/A" if not relevant_memories else relevant_memories
-            importance_score = self.scorer.score(memory_contents=memory_content, relevant_memories=relevant_memories)
+            importance_score = self.scorer.score(
+                memory_contents=memory_content, relevant_memories=relevant_memories
+            )
             importance_scores.append(importance_score[0])
         self.aggregate_importance += max(importance_scores)
 
-        assert len(importance_scores) == len(memory_contents), \
-            "The length of the generated list of importance_scores does not match the length of memory_contents."
+        assert len(importance_scores) == len(
+            memory_contents
+        ), "The length of the generated list of importance_scores does not match the length of memory_contents."
 
-        self.memory.add_memories(memory_contents=memory_contents, importance_scores=importance_scores, now=now)
+        self.memory.add_memories(
+            memory_contents=memory_contents,
+            importance_scores=importance_scores,
+            now=now,
+        )
 
         # After an agent has processed a certain amount of memories (as measured by
         # aggregate importance), it is time to reflect on recent events to add
@@ -223,7 +231,7 @@ class GenerativeAgent(BaseAgent):
             self.aggregate_importance = 0.0
             self.reflecting = False
 
-    def score_memories_importance(
+    def score(
         self,
         memory_contents: Union[str, List[str]],
         relevant_memories: Union[str, List[str]],
@@ -249,4 +257,8 @@ class GenerativeAgent(BaseAgent):
             memory = GenerativeAgentMemory(...)
             importance_scores = memory.score_memories_importance(memories, relevance_context, importance_weight=0.2)
         """
-        return self.scorer.score(memory_contents=memory_contents, relevant_memories=relevant_memories, importance_weight=importance_weight)
+        return self.scorer.score(
+            memory_contents=memory_contents,
+            relevant_memories=relevant_memories,
+            importance_weight=importance_weight,
+        )
