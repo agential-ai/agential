@@ -17,6 +17,7 @@ test_date = datetime(year=2022, month=11, day=14, hour=3, minute=14)
 
 
 def test_clear(time_weighted_retriever: TimeWeightedVectorStoreRetriever) -> None:
+    """Test clear method."""
     mem = GenerativeAgentMemory(retriever=time_weighted_retriever)
     mem.retriever.memory_stream = ["Populating memory stream..."]
 
@@ -38,6 +39,7 @@ def test_clear(time_weighted_retriever: TimeWeightedVectorStoreRetriever) -> Non
 def test_add_memories(
     time_weighted_retriever: TimeWeightedVectorStoreRetriever,
 ) -> None:
+    """Test add_memories."""
     mem = GenerativeAgentMemory(retriever=time_weighted_retriever)
     mem.add_memories(
         memory_contents="An observation.", importance_scores=0.1, now=test_date
@@ -73,6 +75,7 @@ def test_add_memories(
 def test_load_memories(
     time_weighted_retriever: TimeWeightedVectorStoreRetriever,
 ) -> None:
+    """Test load_memories."""
     mem = GenerativeAgentMemory(retriever=time_weighted_retriever)
     obs = [f"An observation {i}" for i in range(51)]
     scores = [0.1] * 51

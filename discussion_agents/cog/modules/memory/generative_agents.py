@@ -21,9 +21,26 @@ from discussion_agents.utils.fetch import fetch_memories
 
 
 class GenerativeAgentMemory(BaseMemory):
+    """A memory management class for Generative Agents, interfacing
+    with a time-weighted vector store retriever.
+
+    This class extends BaseMemory and manages the storage and retrieval of
+    memories using a TimeWeightedVectorStoreRetriever. It provides
+    functionalities to clear, add, and load memories in the context of
+    generative agents' operations.
+
+    Attributes:
+        retriever (TimeWeightedVectorStoreRetriever): A retriever for handling memory storage and retrieval operations.
+    """
+
     retriever: TimeWeightedVectorStoreRetriever
 
     def clear(self, retriever: TimeWeightedVectorStoreRetriever) -> None:
+        """Clears the current retriever and sets it to a new one.
+
+        Args:
+            retriever (TimeWeightedVectorStoreRetriever): The new retriever to be set for handling memory operations.
+        """
         self.retriever = retriever
 
     def add_memories(
@@ -32,6 +49,19 @@ class GenerativeAgentMemory(BaseMemory):
         importance_scores: Union[float, List[float]],
         now: Optional[datetime] = None,
     ) -> None:
+        """Adds a list of memories to the retriever with corresponding importance scores.
+
+        Each memory content is associated with an importance score. The method validates the matching lengths of memory contents and importance scores and then adds these memories to the retriever.
+
+        Args:
+            memory_contents (Union[str, List[str]]): The memory contents to be added. memory_contents and importance scores
+                must of the same length.
+            importance_scores (Union[float, List[float]]): The importance scores corresponding to each memory content.
+            now (Optional[datetime], optional): The current time, used for time-weighting the memories. Defaults to None.
+
+        Raises:
+            ValueError: If the lengths of memory_contents and importance_scores do not match.
+        """
         if isinstance(memory_contents, str):
             memory_contents = [memory_contents]
 
@@ -66,6 +96,39 @@ class GenerativeAgentMemory(BaseMemory):
         most_recent_key: str = "most_recent_memories",
         consumed_tokens_key: str = "most_recent_memories_limit",
     ) -> Dict[str, Any]:
+        """Loads memories based on various criteria such as queries, recency, and token consumption limits.
+
+        This method retrieves memories based on provided queries, the most recent memories, or a token consumption limit.
+        It can combine these criteria for a comprehensive retrieval.
+
+        Args:
+            queries (Optional[Union[str, List[str]]], optional): Queries to filter memories. Defaults to None.
+            last_k (Optional[int], optional): The number of most recent memories to retrieve. Defaults to None.
+            consumed_tokens (Optional[int], optional): The token limit for fetching memories.
+                If consumed_tokens is not `None`, then max_tokens_limit and llm must be defined. Defaults to None.
+            max_tokens_limit (Optional[int], optional): The maximum token limit for memory retrieval. Defaults to None.
+            llm (LLM, optional): The language model used for token calculations. Defaults to None.
+            now (Optional[datetime], optional): The current time, used for time-weighting. Defaults to None.
+            queries_key (str, optional): Key for storing queried memories. Defaults to "relevant_memories".
+            most_recent_key (str, optional): Key for storing most recent memories. Defaults to "most_recent_memories".
+            consumed_tokens_key (str, optional): Key for storing memories within token limit. Defaults to "most_recent_memories_limit".
+
+        Raises:
+            ValueError: If consumed_tokens is defined but max_tokens_limit or llm is not.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing retrieved memories categorized by the specified criteria.
+
+        Example Output:
+        The output dictionary can be any combination of the 3 keys: queries_key, most_recent_key,
+        and consumed_tokens_key.
+
+        {
+            "relevant_memories": [Document, ..., Document],
+            "most_recent_memories": [Document, ..., Document],
+            "most_recent_memories_limit": [Document, ..., Document]
+        }
+        """
         if isinstance(queries, str):
             queries = [queries]
 
