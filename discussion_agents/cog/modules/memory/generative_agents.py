@@ -98,7 +98,7 @@ class GenerativeAgentMemory(BaseMemory):
     ) -> Dict[str, Any]:
         """Loads memories based on various criteria such as queries, recency, and token consumption limits.
 
-        This method retrieves memories based on provided queries, the most recent memories, or a token consumption limit.
+        This method retrieves memories based on 3 options: provided queries, the most recent memories, or a token consumption limit.
         It can combine these criteria for a comprehensive retrieval.
 
         Args:
