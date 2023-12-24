@@ -222,3 +222,31 @@ class GenerativeAgent(BaseAgent):
             _ = self.reflect(last_k=last_k, now=now)
             self.aggregate_importance = 0.0
             self.reflecting = False
+
+    def score_memories_importance(
+        self,
+        memory_contents: Union[str, List[str]],
+        relevant_memories: Union[str, List[str]],
+        importance_weight: float = 0.15,  # Less important than relevance and recency.
+    ) -> List[float]:
+        """Calculate importance scores for agent memories w.r.t. relevant_memories.
+
+        This method serves as a wrapper for calculating importance scores for agent memories. It
+        leverages the `discussion_agents.scoring.generative_agents.score_memories_importance` function.
+        Refer to the aforementioned method for more information.
+
+        Args:
+            memory_contents (Union[str, List[str]): The memory contents to be scored.
+            relevant_memories (Union[str, List[str]): Relevant memories for context.
+            importance_weight (float, optional): Weight for importance scores. Default is 0.15.
+
+        Returns:
+            List[float]: A list of importance scores for each memory content.
+
+        Example:
+            memories = ["Visited the museum.", "Had a meaningful conversation."]
+            relevance_context = ["History buffs meeting.", "Art gallery visit."]
+            memory = GenerativeAgentMemory(...)
+            importance_scores = memory.score_memories_importance(memories, relevance_context, importance_weight=0.2)
+        """
+        return self.scorer.score(memory_contents=memory_contents, relevant_memories=relevant_memories, importance_weight=importance_weight)
