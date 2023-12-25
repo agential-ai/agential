@@ -59,5 +59,5 @@ class GenerativeAgentScorer(BaseScorer):
             memory_contents=memory_contents,
             relevant_memories=relevant_memories,
             llm=self.llm,
-            importance_weight=importance_weight
+            importance_weight=importance_weight,
         )

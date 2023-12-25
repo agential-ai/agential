@@ -50,9 +50,7 @@ class GenerativeAgent(BaseAgent):
                 llm=values["llm"], retriever=values["memory"].retriever
             )
         if "scorer" not in values or values["scorer"] is None:
-            values["scorer"] = GenerativeAgentScorer(
-                llm=values["llm"]
-            )
+            values["scorer"] = GenerativeAgentScorer(llm=values["llm"])
         return values
 
     # Internal variables.
@@ -63,9 +61,9 @@ class GenerativeAgent(BaseAgent):
         """Generate high-level reflection topics based on recent observations.
 
         This method leverages the `get_topics_of_reflection` function to generate a list of
-        high-level reflection topics based on recent observations from the agent's memory. 
+        high-level reflection topics based on recent observations from the agent's memory.
         The method considers the last 'last_k' observations and formats them for
-        reflection. This method exposes the `get_topics_of_reflection` method from 
+        reflection. This method exposes the `get_topics_of_reflection` method from
         the functional counterpart of Generative Agents.
 
         Args:
@@ -85,7 +83,7 @@ class GenerativeAgent(BaseAgent):
     ) -> List[List[str]]:
         """Generate insights on specified topics based on related memories.
 
-        This method exposes the `get_insights_on_topic` method from 
+        This method exposes the `get_insights_on_topic` method from
         the functional counterpart of Generative Agents.
 
         Args:
@@ -120,7 +118,7 @@ class GenerativeAgent(BaseAgent):
         """Pause for reflection and enrich memory with insights.
 
         This method acts as a wrapper for the reflector's reflect method. It aims to
-        find topics to reflect on, generate insights on recent observations, 
+        find topics to reflect on, generate insights on recent observations,
         add these insights to the agent's memory, and return the generated insights.
 
         Args:
@@ -162,7 +160,7 @@ class GenerativeAgent(BaseAgent):
                 Defaults to None.
             importance_weight (float, optional): Weight for importance scores. Default is 0.15.
             last_k (int, optional): The number of recent observations to consider. Default is 50.
-            
+
         Note:
             - Importance scores are calculated for the added memories and contribute to
             the agent's aggregate importance.
@@ -182,7 +180,9 @@ class GenerativeAgent(BaseAgent):
             )
             relevant_memories = "N/A" if not relevant_memories else relevant_memories
             importance_score = self.scorer.score(
-                memory_contents=memory_content, relevant_memories=relevant_memories, importance_weight=importance_weight
+                memory_contents=memory_content,
+                relevant_memories=relevant_memories,
+                importance_weight=importance_weight,
             )
             importance_scores.append(importance_score[0])
         self.aggregate_importance += max(importance_scores)
@@ -218,7 +218,7 @@ class GenerativeAgent(BaseAgent):
     ) -> List[float]:
         """Calculate importance scores for agent memories w.r.t. relevant_memories.
 
-        This method serves as a wrapper around the scorer's score method for calculating importance scores 
+        This method serves as a wrapper around the scorer's score method for calculating importance scores
         for agent memories. It scores methods based on their importance to the relevant_memories.
 
         Args:
