@@ -34,13 +34,6 @@ def score_memories_importance(
 
     Returns:
         List[float]: List of importance scores (1.0 to 10.0 scale normalized and weighted).
-
-    Example:
-        memories = ["Visited the museum."]
-        relevant_memories = ["Enjoyed the outdoors at the museum.", "Took lots of pictures at the museum."]
-        llm = ...
-        importance_scores = score_memories_importance(memories, relevant_memories, llm)
-        >>> [0.9]
     """
     if isinstance(memory_contents, str) and isinstance(relevant_memories, str):
         memory_contents, relevant_memories = [memory_contents], [relevant_memories]
@@ -106,11 +99,6 @@ def get_topics_of_reflection(
         This function takes recent observations as input and utilizes the specified core
         component to generate meaningful and high-level questions related to the observed
         subjects.
-
-    Example:
-        recent_observations = "Attended a scientific lecture on AI advancements."
-        llm = ...
-        generated_questions = get_topics_of_reflection(recent_observations, llm)
     """
     if isinstance(observations, list):
         observations = "\n".join(observations)
@@ -148,12 +136,6 @@ def get_insights_on_topics(
         This function leverages pertinent memories associated with the specified topics
         and employs the provided core component to create novel, high-level insights
         based on the gathered information.
-
-    Example:
-        selected_topics = ["Artificial Intelligence trends", "Recent travel experiences"]
-        relevant_memories = ["Attended an AI conference.", "Traveled to Japan last month."]
-        llm = ...
-        generated_insights = get_insights_on_topics(selected_topics, relevant_memories, llm)
     """
     if isinstance(topics, str) and isinstance(related_memories, str):
         topics, related_memories = [topics], [related_memories]
@@ -209,11 +191,6 @@ def reflect(
         Tuple[List[str], List[List[str]]]: A list of generated topics from the
             observation and a list of lists of insights, a list of insights for
             every topic.
-
-    Example:
-        observations = "Attended a tech conference on AI advancements."
-        core = BaseCore(llm=llm, retriever=retriever)
-        topics, insights = reflect(observations, core, now=datetime.now())
     """
     topics = get_topics_of_reflection(observations=observations, llm=llm)
 
