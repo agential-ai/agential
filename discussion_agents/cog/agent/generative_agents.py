@@ -12,10 +12,10 @@ https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/charac
 """
 from datetime import datetime
 from itertools import chain
-from typing import List, Optional, Union, Dict, Any, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
-from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
+from langchain.prompts import PromptTemplate
 from langchain_core.language_models import LLM
 from pydantic.v1 import root_validator
 
@@ -47,11 +47,13 @@ class GenerativeAgent(BaseAgent):
 
     @root_validator(pre=False)
     def set_reflector_and_scorer(cls, values):
-        llm = values.get('llm')
-        memory = values.get('memory')
+        llm = values.get("llm")
+        memory = values.get("memory")
         if llm is not None:
-            values['reflector'] = GenerativeAgentReflector(llm=llm, retriever=memory.retriever)
-            values['scorer'] = GenerativeAgentScorer(llm=llm)
+            values["reflector"] = GenerativeAgentReflector(
+                llm=llm, retriever=memory.retriever
+            )
+            values["scorer"] = GenerativeAgentScorer(llm=llm)
         return values
 
     # Personal state.
@@ -314,7 +316,9 @@ class GenerativeAgent(BaseAgent):
         q2 = f"{entity_name} is {entity_action}"
 
         chain = LLMChain(llm=self.llm, prompt=prompt)
-        relevant_memories = self.memory.load_memories(queries=[q1, q2])["relevant_memories"]
+        relevant_memories = self.memory.load_memories(queries=[q1, q2])[
+            "relevant_memories"
+        ]
         relevant_memories = "\n".join([mem.page_content for mem in relevant_memories])
         result = chain.run(q1=q1, relevant_memories=relevant_memories).strip()
 
@@ -356,8 +360,12 @@ class GenerativeAgent(BaseAgent):
             chain = LLMChain(llm=self.llm, prompt=prompt)
 
             # The agent seeks to think about their core characteristics.
-            relevant_memories = self.memory.load_memories(queries=[f"{self.name}'s core characteristics"])["relevant_memories"]
-            relevant_memories = "\n".join([mem.page_content for mem in relevant_memories])
+            relevant_memories = self.memory.load_memories(
+                queries=[f"{self.name}'s core characteristics"]
+            )["relevant_memories"]
+            relevant_memories = "\n".join(
+                [mem.page_content for mem in relevant_memories]
+            )
             self.summary = chain.run(
                 name=self.name, relevant_memories=relevant_memories
             ).strip()
@@ -376,7 +384,11 @@ class GenerativeAgent(BaseAgent):
         return summary
 
     def _generate_reaction(
-        self, observation: str, suffix: str, now: Optional[datetime] = None, max_tokens_limit: Optional[int] = 1200
+        self,
+        observation: str,
+        suffix: str,
+        now: Optional[datetime] = None,
+        max_tokens_limit: Optional[int] = 1200,
     ) -> str:
         """A helper method that generates a reaction or response to a given observation or dialogue act.
 
@@ -427,13 +439,19 @@ class GenerativeAgent(BaseAgent):
         consumed_tokens = self.llm.get_num_tokens(
             prompt.format(most_recent_memories="", **kwargs)
         )
-        most_recent_memories_limit = self.memory.load_memories(consumed_tokens=consumed_tokens, max_tokens_limit=max_tokens_limit, llm=self.llm)["most_recent_memories_limit"]
-        most_recent_memories_limit = "\n".join([mem.page_content for mem in most_recent_memories_limit])
+        most_recent_memories_limit = self.memory.load_memories(
+            consumed_tokens=consumed_tokens,
+            max_tokens_limit=max_tokens_limit,
+            llm=self.llm,
+        )["most_recent_memories_limit"]
+        most_recent_memories_limit = "\n".join(
+            [mem.page_content for mem in most_recent_memories_limit]
+        )
         kwargs["most_recent_memories_limit"] = most_recent_memories_limit
         result = chain.run(**kwargs).strip()
 
         return result
-    
+
     def generate_reaction(
         self, observation: str, now: Optional[datetime] = None
     ) -> Tuple[bool, str]:
@@ -476,7 +494,7 @@ class GenerativeAgent(BaseAgent):
             return True, f"{self.name} said {said_value}"
         else:
             return False, result
-        
+
     def generate_dialogue_response(
         self, observation: str, now: Optional[datetime] = None
     ) -> Tuple[bool, str]:
@@ -514,7 +532,9 @@ class GenerativeAgent(BaseAgent):
             return False, farewell
         if "SAY:" in result:
             response_text = remove_name(text=result.split("SAY:")[-1], name=self.name)
-            response_text = f"{self.name} observed {observation} and said {response_text}"
+            response_text = (
+                f"{self.name} observed {observation} and said {response_text}"
+            )
             self.add_memories(memory_contents=response_text, now=now)
             return True, response_text
         else:

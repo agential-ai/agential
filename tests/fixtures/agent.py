@@ -8,8 +8,11 @@ from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from discussion_agents.cog.agent.generative_agents import GenerativeAgent
 from discussion_agents.cog.modules.memory.generative_agents import GenerativeAgentMemory
 
+
 @pytest.fixture
-def generative_agent(time_weighted_retriever: TimeWeightedVectorStoreRetriever) -> GenerativeAgent:
+def generative_agent(
+    time_weighted_retriever: TimeWeightedVectorStoreRetriever,
+) -> GenerativeAgent:
     """Creates a GenerativeAgent."""
     memory = GenerativeAgentMemory(retriever=time_weighted_retriever)
     agent = GenerativeAgent(llm=FakeListLLM(responses=["1"]), memory=memory)
