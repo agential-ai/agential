@@ -437,7 +437,7 @@ class GenerativeAgent(BaseAgent):
             suffix=suffix,
         )
         consumed_tokens = self.llm.get_num_tokens(
-            prompt.format(most_recent_memories="", **kwargs)
+            prompt.format(most_recent_memories_limit="", **kwargs)
         )
         most_recent_memories_limit = self.memory.load_memories(
             consumed_tokens=consumed_tokens,
