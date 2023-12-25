@@ -12,7 +12,7 @@ https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/charac
 """
 from datetime import datetime
 from itertools import chain
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Dict, Any
 
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
@@ -44,6 +44,13 @@ class GenerativeAgent(BaseAgent):
     importance_weight: float = 0.15
     reflection_threshold: Optional[int] = 8
 
+    # Personal state.
+    name: str = "Vincent"
+    age: int = 20
+    traits: str = "Enjoys working on this library"
+    status: str = ""
+    lifestyle: str = ""
+
     # A bit petty, but it allows us to define the class attributes in a specific order.
     @root_validator
     def set_default_components(cls, values):
@@ -56,6 +63,9 @@ class GenerativeAgent(BaseAgent):
         return values
 
     # Internal variables.
+    summary: str = ""  #: :meta private:
+    last_refreshed: datetime = datetime.now  # : :meta private:
+    summary_refresh_seconds: int = 3600  #: :meta private:
     is_reflecting: bool = False  #: :meta private:
     aggregate_importance: float = 0.0  #: :meta private:
 
@@ -307,6 +317,135 @@ class GenerativeAgent(BaseAgent):
 
         chain = LLMChain(llm=self.llm, prompt=prompt)
         relevant_memories = self.memory.load_memories(queries=[q1, q2])["relevant_memories"]
+        relevant_memories = "\n".join([mem.page_content for mem in relevant_memories])
         result = chain.run(q1=q1, relevant_memories=relevant_memories).strip()
+
+        return result
+    
+    def compute_agent_summary(self) -> str:
+        """Compute a summary of the agent's core characteristics based on relevant memories.
+
+        Returns:
+            str: A summary of the agent's core characteristics.
+
+        This method generates a summary of the agent's core characteristics based on
+        relevant memories stored in the agent's memory. It uses a template to instruct
+        the agent to think about and summarize its core characteristics, focusing on
+        what has been learned from previous observations and experiences.
+        """
+        prompt = PromptTemplate.from_template(
+            "How would you summarize {name}'s core characteristics given the"
+            + " following statements:\n"
+            + "{relevant_memories}"
+            + "Do not embellish."
+            + "\n\nSummary: "
+        )
+        chain = LLMChain(llm=self.llm, prompt=prompt)
+
+        # The agent seeks to think about their core characteristics.
+        relevant_memories = self.memory.load_memories(queries=[f"{self.name}'s core characteristics"])["relevant_memories"]
+        relevant_memories = "\n".join([mem.page_content for mem in relevant_memories])
+        result = chain.run(
+            name=self.name, relevant_memories=relevant_memories
+        ).strip()
+
+        return result
+
+    def get_summary(
+        self, force_refresh: bool = False, now: Optional[datetime] = None
+    ) -> str:
+        """Return a descriptive summary of the agent.
+
+        Args:
+            force_refresh (bool, optional): If True, force a refresh of the summary
+                even if it was recently computed. Defaults to False.
+            now (datetime, optional): The current datetime to use for refreshing
+                the summary. Defaults to None, which uses the current system time.
+
+        Returns:
+            str: A descriptive summary of the agent.
+
+        This method returns a descriptive summary of the agent, including the agent's
+        name, age (if available), innate traits, and a summary of the agent's core
+        characteristics based on relevant memories. The summary is refreshed
+        periodically, but it can be forced to refresh by setting `force_refresh` to True.
+        """
+        current_time = datetime.now() if now is None else now
+        since_refresh = (current_time - self.last_refreshed).seconds
+        if (
+            not self.summary
+            or since_refresh >= self.summary_refresh_seconds
+            or force_refresh
+        ):
+            self.summary = self.compute_agent_summary()
+            self.last_refreshed = current_time
+
+        summary = (
+            f"Name: {self.name}\n"
+            + f"Age: {self.age}\n"
+            + f"Innate traits: {self.traits}\n"
+            + f"Status: {self.status}\n"
+            + f"Lifestyle: {self.lifestyle}\n"
+            + f"{self.summary}\n"
+        )
+
+        return summary
+
+    def _generate_reaction(
+        self, observation: str, suffix: str, now: Optional[datetime] = None, max_tokens_limit: Optional[int] = 1200
+    ) -> str:
+        """A helper method that generates a reaction or response to a given observation or dialogue act.
+
+        Args:
+            observation (str): The observation or dialogue act to react to.
+            suffix (str): The suffix to append to the generated reaction; a call-to-action.
+            now (Optional[datetime], optional): The timestamp for the current time.
+                Defaults to None.
+            max_tokens_limit (Optional[int], optional): Max number of tokens to be fed into
+                the llm for it to generate a reaction. Defaults to 1200.
+
+        Returns:
+            str: The generated reaction or response.
+
+        This helper method generates a reaction or response by providing contextual information
+        about the agent, including a summary, current time, relevant memories, and
+        recent observations. It then adds the provided `suffix` to create a complete
+        reaction or response.
+        """
+        prompt = PromptTemplate.from_template(
+            "{agent_summary_description}\n"
+            + "It is {current_time}.\n"
+            + "{agent_name}'s lifestyle: {lifestyle}\n"
+            + "Summary of relevant context from {agent_name}'s memory:\n"
+            + "{relevant_memories}\n"
+            + "Most recent observations: {most_recent_memories_limit}\n"
+            + "Observation: {observation}\n\n"
+            + "{suffix}"
+        )
+        chain = LLMChain(llm=self.llm, prompt=prompt)
+
+        agent_summary_description = self.get_summary(now=now)
+        relevant_memories_str = self.summarize_related_memories(observation)
+        current_time_str = (
+            datetime.now().strftime("%B %d, %Y, %I:%M %p")
+            if now is None
+            else now.strftime("%B %d, %Y, %I:%M %p")
+        )
+        kwargs: Dict[str, Any] = dict(
+            agent_summary_description=agent_summary_description,
+            current_time=current_time_str,
+            agent_name=self.name,
+            lifestyle=self.lifestyle,
+            relevant_memories=relevant_memories_str,
+            observation=observation,
+            suffix=suffix,
+        )
+        consumed_tokens = self.llm.get_num_tokens(
+            prompt.format(most_recent_memories="", **kwargs)
+        )
+        most_recent_memories_limit = self.memory.load_memories(consumed_tokens=consumed_tokens, max_tokens_limit=max_tokens_limit, llm=self.llm)["most_recent_memories_limit"]
+        most_recent_memories_limit = "\n".join([mem.page_content for mem in most_recent_memories_limit])
+        kwargs["most_recent_memories_limit"] = most_recent_memories_limit
+        result = chain.run(**kwargs).strip()
 
         return result
