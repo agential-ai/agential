@@ -62,7 +62,7 @@ class GenerativeAgent(BaseAgent):
 
     # Internal variables.
     summary: str = ""  #: :meta private:
-    last_refreshed: datetime = datetime.now  # : :meta private:
+    last_refreshed: datetime = datetime.now()  # : :meta private:
     summary_refresh_seconds: int = 3600  #: :meta private:
     is_reflecting: bool = False  #: :meta private:
     aggregate_importance: float = 0.0  #: :meta private:
@@ -318,35 +318,6 @@ class GenerativeAgent(BaseAgent):
         result = chain.run(q1=q1, relevant_memories=relevant_memories).strip()
 
         return result
-    
-    def compute_agent_summary(self) -> str:
-        """Compute a summary of the agent's core characteristics based on relevant memories.
-
-        Returns:
-            str: A summary of the agent's core characteristics.
-
-        This method generates a summary of the agent's core characteristics based on
-        relevant memories stored in the agent's memory. It uses a template to instruct
-        the agent to think about and summarize its core characteristics, focusing on
-        what has been learned from previous observations and experiences.
-        """
-        prompt = PromptTemplate.from_template(
-            "How would you summarize {name}'s core characteristics given the"
-            + " following statements:\n"
-            + "{relevant_memories}"
-            + "Do not embellish."
-            + "\n\nSummary: "
-        )
-        chain = LLMChain(llm=self.llm, prompt=prompt)
-
-        # The agent seeks to think about their core characteristics.
-        relevant_memories = self.memory.load_memories(queries=[f"{self.name}'s core characteristics"])["relevant_memories"]
-        relevant_memories = "\n".join([mem.page_content for mem in relevant_memories])
-        result = chain.run(
-            name=self.name, relevant_memories=relevant_memories
-        ).strip()
-
-        return result
 
     def get_summary(
         self, force_refresh: bool = False, now: Optional[datetime] = None
@@ -374,7 +345,22 @@ class GenerativeAgent(BaseAgent):
             or since_refresh >= self.summary_refresh_seconds
             or force_refresh
         ):
-            self.summary = self.compute_agent_summary()
+            prompt = PromptTemplate.from_template(
+                "How would you summarize {name}'s core characteristics given the"
+                + " following statements:\n"
+                + "{relevant_memories}"
+                + "Do not embellish."
+                + "\n\nSummary: "
+            )
+            chain = LLMChain(llm=self.llm, prompt=prompt)
+
+            # The agent seeks to think about their core characteristics.
+            relevant_memories = self.memory.load_memories(queries=[f"{self.name}'s core characteristics"])["relevant_memories"]
+            relevant_memories = "\n".join([mem.page_content for mem in relevant_memories])
+            self.summary = chain.run(
+                name=self.name, relevant_memories=relevant_memories
+            ).strip()
+
             self.last_refreshed = current_time
 
         summary = (
