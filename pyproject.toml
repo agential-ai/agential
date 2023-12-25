@@ -44,7 +44,6 @@ pytest-cov = "^4.1.0"
 
 [tool.pytest.ini_options]
 markers = [
-    "cost: marks tests that cost funds to run (deselect with '-m \"not cost\"')",
     "slow: marks tests that are slow to run (deselect with '-m \"not slow\"')"
 ]
 

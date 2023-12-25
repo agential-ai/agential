@@ -55,18 +55,11 @@ test: ## Run all pytest tests.
 		--cov-report term-missing:skip-covered \
 		tests/
 
-test_nocost: ## Run pytest tests with no 'cost' marker (don't require funds to run).
+test_fast: ## Run pytest tests with no 'slow' marker.
 	poetry run pytest --cov=discussion_agents \
 		--cov-report xml \
 		--cov-report term-missing:skip-covered \
-		-m "not cost" \
-		tests/
-
-test_fast: ## Run pytest tests with no 'slow' marker and no 'cost' marker.
-	poetry run pytest --cov=discussion_agents \
-		--cov-report xml \
-		--cov-report term-missing:skip-covered \
-		-m "not slow and not cost" \
+		-m "not slow" \
 		tests/
 
 create_environment: ## Set up conda environment.
