@@ -44,23 +44,21 @@ class GenerativeAgent(BaseAgent):
     importance_weight: float = 0.15
     reflection_threshold: Optional[int] = 8
 
+    @root_validator(pre=False)
+    def set_reflector_and_scorer(cls, values):
+        llm = values.get('llm')
+        memory = values.get('memory')
+        if llm is not None:
+            values['reflector'] = GenerativeAgentReflector(llm=llm, retriever=memory.retriever)
+            values['scorer'] = GenerativeAgentScorer(llm=llm)
+        return values
+
     # Personal state.
     name: str = "Vincent"
     age: int = 20
     traits: str = "Enjoys working on this library"
     status: str = ""
     lifestyle: str = ""
-
-    # A bit petty, but it allows us to define the class attributes in a specific order.
-    @root_validator
-    def set_default_components(cls, values):
-        if "reflector" not in values or values["reflector"] is None:
-            values["reflector"] = GenerativeAgentReflector(
-                llm=values["llm"], retriever=values["memory"].retriever
-            )
-        if "scorer" not in values or values["scorer"] is None:
-            values["scorer"] = GenerativeAgentScorer(llm=values["llm"])
-        return values
 
     # Internal variables.
     summary: str = ""  #: :meta private:
@@ -145,10 +143,9 @@ class GenerativeAgent(BaseAgent):
         observations = "\n".join([format_memories_detail(o) for o in observations])
 
         topics_insights = self.reflector.reflect(observations=observations, now=now)
-        insights = list(chain(*topics_insights))
 
-        self.add_memories(memory_contents=insights, now=now)
-        return insights
+        self.add_memories(memory_contents=list(chain(*topics_insights)), now=now)
+        return topics_insights
 
     def add_memories(
         self,
