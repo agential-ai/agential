@@ -14,6 +14,8 @@ from datetime import datetime
 from itertools import chain
 from typing import List, Optional, Union
 
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
 from langchain_core.language_models import LLM
 from pydantic.v1 import root_validator
 
@@ -234,3 +236,46 @@ class GenerativeAgent(BaseAgent):
             relevant_memories=relevant_memories,
             importance_weight=importance_weight,
         )
+
+    def get_entity_from_observation(self, observation: str) -> str:
+        """Extract the observed entity from a given observation text.
+
+        Args:
+            observation (str): The observation text from which to extract the entity.
+
+        Returns:
+            str: The extracted entity name.
+
+        This method uses a prompt to extract and identify the entity mentioned in the
+        observation text.
+        """
+        prompt = PromptTemplate.from_template(
+            "What is the observed entity in the following observation? {observation}\n"
+            + "Entity="
+        )
+        chain = LLMChain(llm=self.llm, prompt=prompt)
+        result = chain.run(observation=observation).strip()
+
+        return result
+
+    def get_entity_action(self, observation: str, entity_name: str) -> str:
+        """Determine the action performed by the specified entity in an observation.
+
+        Args:
+            observation (str): The observation text containing the entity's action.
+            entity_name (str): The name of the entity whose action to determine.
+
+        Returns:
+            str: The action performed by the specified entity.
+
+        This method uses a prompt to identify and describe the action performed by the
+        specified entity in the given observation.
+        """
+        prompt = PromptTemplate.from_template(
+            "What is the {entity} doing in the following observation? {observation}\n"
+            + "The {entity} is"
+        )
+        chain = LLMChain(llm=self.llm, prompt=prompt)
+        result = chain.run(entity=entity_name, observation=observation).strip()
+
+        return result
