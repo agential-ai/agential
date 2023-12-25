@@ -9,7 +9,7 @@ from discussion_agents.cog.modules.score.generative_agents import (
 def test_generative_agent_scorer() -> None:
     """Test GenerativeAgentScorer."""
     llm = FakeListLLM(responses=["1"])
-    scorer = GenerativeAgentScorer(llm=llm, importance_weight=0.15)
+    scorer = GenerativeAgentScorer(llm=llm)
     scores = scorer.score(
         memory_contents="Some memory.", relevant_memories="some relevant memories."
     )

@@ -21,25 +21,18 @@ class GenerativeAgentScorer(BaseScorer):
     Attributes:
         llm (LLM): An instance of a language model used for scoring the memories.
             This model plays a key role in determining the relevance of memory contents.
-        importance_weight (float): A weight factor (default: 0.15) used in the scoring calculation
-            to adjust the influence of certain criteria in the final score.
 
     The class primarily provides a `score` method that takes memory contents and relevant memories as
     inputs and returns a list of importance scores for each memory content.
-
-    Example:
-        generative_scorer = GenerativeAgentScorer(llm=llm)
-        scores = generative_scorer.score(["memory1", "memory2"], ["relevant memory"])
     """
 
     llm: LLM
-    importance_weight: float = 0.15
 
     def score(
         self,
         memory_contents: Union[str, List[str]],
         relevant_memories: Union[str, List[str]],
-        importance_weight: float = None,
+        importance_weight: float = 0.15,
     ) -> List[float]:
         """Scores the importance of memory contents based on their relevance to a set of given memories.
 
@@ -67,6 +60,4 @@ class GenerativeAgentScorer(BaseScorer):
             relevant_memories=relevant_memories,
             llm=self.llm,
             importance_weight=importance_weight
-            if importance_weight
-            else self.importance_weight,
         )
