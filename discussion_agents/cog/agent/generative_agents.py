@@ -12,7 +12,7 @@ https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/charac
 """
 from datetime import datetime
 from itertools import chain
-from typing import List, Optional, Union, Dict, Any
+from typing import List, Optional, Union, Dict, Any, Tuple
 
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
@@ -34,6 +34,7 @@ from discussion_agents.cog.modules.score.generative_agents import GenerativeAgen
 from discussion_agents.utils.format import (
     format_memories_detail,
 )
+from discussion_agents.utils.parse import remove_name
 
 
 class GenerativeAgent(BaseAgent):
@@ -430,5 +431,115 @@ class GenerativeAgent(BaseAgent):
         most_recent_memories_limit = "\n".join([mem.page_content for mem in most_recent_memories_limit])
         kwargs["most_recent_memories_limit"] = most_recent_memories_limit
         result = chain.run(**kwargs).strip()
+
+        return result
+    
+    def generate_reaction(
+        self, observation: str, now: Optional[datetime] = None
+    ) -> Tuple[bool, str]:
+        """Generate a reaction to a given observation.
+
+        Args:
+            observation (str): The observation or input to react to.
+            now (Optional[datetime], optional): The current timestamp for the reaction.
+                Defaults to None.
+
+        Returns:
+            Tuple[bool, str]: A tuple containing a boolean value indicating whether the
+            agent should respond (True) or not (False), and the generated reaction or
+            response text.
+
+        This method generates a reaction or response to a given observation. It uses a
+        template that instructs the agent on how to react to the observation. The
+        agent can choose to react, say something, or do nothing based on the
+        instructions in the template.
+        """
+        call_to_action_template = (
+            "Should {agent_name} react to the observation, and if so,"
+            + " what would be an appropriate reaction? Respond in one line."
+            + ' If the action is to engage in dialogue, write:\nSAY: "what to say"'
+            + "\notherwise, write:\nREACT: {agent_name}'s reaction (if anything)."
+            + "\nEither do nothing, react, or say something but not both.\n\n"
+        )
+        full_result = self._generate_reaction(
+            observation, call_to_action_template, now=now
+        )
+        result = full_result.strip().split("\n")[0]
+        result = f"{self.name} observed {observation} and reacted by {result}"
+        self.add_memories(memory_contents=result, now=now)
+
+        if "REACT:" in result:
+            reaction = remove_name(text=result.split("REACT:")[-1], name=self.name)
+            return False, f"{self.name} {reaction}"
+        if "SAY:" in result:
+            said_value = remove_name(text=result.split("SAY:")[-1], name=self.name)
+            return True, f"{self.name} said {said_value}"
+        else:
+            return False, result
+        
+    def generate_dialogue_response(
+        self, observation: str, now: Optional[datetime] = None
+    ) -> Tuple[bool, str]:
+        """Generate a dialogue response to a given observation.
+
+        Args:
+            observation (str): The observation or input to respond to.
+            now (Optional[datetime], optional): The current timestamp for the response.
+                Defaults to None.
+
+        Returns:
+            Tuple[bool, str]: A tuple containing a boolean value indicating whether the
+            agent should continue the dialogue (True) or end it (False), and the
+            generated dialogue response text.
+
+        This method generates a dialogue response to a given observation. It uses a
+        template that instructs the agent on how to respond to the observation, either
+        by ending the conversation or continuing it. The agent can choose to say
+        something in response or end the conversation based on the instructions in the
+        template.
+        """
+        call_to_action_template = (
+            "What would {agent_name} say? To end the conversation, write:"
+            ' GOODBYE: "what to say". Otherwise to continue the conversation,'
+            ' write: SAY: "what to say next"\n\n'
+        )
+        full_result = self._generate_reaction(
+            observation, call_to_action_template, now=now
+        )
+        result = full_result.strip().split("\n")[0]
+        if "GOODBYE:" in result:
+            farewell = remove_name(text=result.split("GOODBYE:")[-1], name=self.name)
+            farewell = f"{self.name} observed {observation} and said {farewell}"
+            self.add_memories(memory_contents=farewell, now=now)
+            return False, farewell
+        if "SAY:" in result:
+            response_text = remove_name(text=result.split("SAY:")[-1], name=self.name)
+            response_text = f"{self.name} observed {observation} and said {response_text}"
+            self.add_memories(memory_contents=response_text, now=now)
+            return True, response_text
+        else:
+            return False, result
+        
+    def get_full_header(
+        self, force_refresh: bool = False, now: Optional[datetime] = None
+    ) -> str:
+        """Return a full header of the agent's lifestyle, summary, and current time.
+
+        Args:
+            force_refresh (bool, optional): If True, force a refresh of the summary
+                even if it was recently computed. Defaults to False.
+            now (datetime, optional): The current datetime to use for refreshing
+                the summary. Defaults to None, which uses the current system time.
+
+        Returns:
+            str: A full header including the agent's lifestyle, summary, and current time.
+
+        This method returns a full header that includes the agent's lifestyle, a descriptive
+        summary of the agent (which can be refreshed using `force_refresh`), and the
+        current time in a formatted string.
+        """
+        now = datetime.now() if now is None else now
+        summary = self.get_summary(force_refresh=force_refresh, now=now)
+        result = f"{summary}\n{self.name}'s lifestyle: {self.lifestyle}"
 
         return result
