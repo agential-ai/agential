@@ -279,3 +279,34 @@ class GenerativeAgent(BaseAgent):
         result = chain.run(entity=entity_name, observation=observation).strip()
 
         return result
+
+    def summarize_related_memories(self, observation: str) -> str:
+        """Generate a summary of memories most relevant to an observation.
+
+        Args:
+            observation (str): The observation for which to summarize related memories.
+
+        Returns:
+            str: A summary of the most relevant memories in the context of the observation.
+
+        This method generates a summary by posing questions about the relationship between
+        the character represented by this `GenerativeAgent` and the entity mentioned in
+        the observation. It then incorporates relevant context from memory to provide a
+        coherent summary.
+        """
+        prompt = PromptTemplate.from_template(
+            "{q1}?\n"
+            + "Context from memory:\n"
+            + "{relevant_memories}\n"
+            + "Relevant context:\n"
+        )
+        entity_name = self.get_entity_from_observation(observation)
+        entity_action = self.get_entity_action(observation, entity_name)
+        q1 = f"What is the relationship between {self.name} and {entity_name}"
+        q2 = f"{entity_name} is {entity_action}"
+
+        chain = LLMChain(llm=self.llm, prompt=prompt)
+        relevant_memories = self.memory.load_memories(queries=[q1, q2])["relevant_memories"]
+        result = chain.run(q1=q1, relevant_memories=relevant_memories).strip()
+
+        return result
