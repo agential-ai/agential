@@ -99,12 +99,14 @@ def test__generate_reaction(generative_agent: GenerativeAgent) -> None:
     assert isinstance(out, str)
     assert out == "1"
 
+
 def test_generate_reaction(generative_agent: GenerativeAgent) -> None:
     """Test generate_reaction method."""
     out = generative_agent.generate_reaction(observation="An observation.")
     assert isinstance(out, tuple)
     assert not out[0]
     assert isinstance(out[1], str)
+
 
 def test_generate_dialogue_response(generative_agent: GenerativeAgent) -> None:
     """Test generate_dialogue_response method."""
