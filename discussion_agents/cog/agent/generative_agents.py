@@ -519,27 +519,3 @@ class GenerativeAgent(BaseAgent):
             return True, response_text
         else:
             return False, result
-        
-    def get_full_header(
-        self, force_refresh: bool = False, now: Optional[datetime] = None
-    ) -> str:
-        """Return a full header of the agent's lifestyle, summary, and current time.
-
-        Args:
-            force_refresh (bool, optional): If True, force a refresh of the summary
-                even if it was recently computed. Defaults to False.
-            now (datetime, optional): The current datetime to use for refreshing
-                the summary. Defaults to None, which uses the current system time.
-
-        Returns:
-            str: A full header including the agent's lifestyle, summary, and current time.
-
-        This method returns a full header that includes the agent's lifestyle, a descriptive
-        summary of the agent (which can be refreshed using `force_refresh`), and the
-        current time in a formatted string.
-        """
-        now = datetime.now() if now is None else now
-        summary = self.get_summary(force_refresh=force_refresh, now=now)
-        result = f"{summary}\n{self.name}'s lifestyle: {self.lifestyle}"
-
-        return result
