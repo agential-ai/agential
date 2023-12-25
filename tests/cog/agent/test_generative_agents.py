@@ -57,3 +57,14 @@ def test_score(generative_agents: GenerativeAgent) -> None:
     assert isinstance(scores, list)
     assert len(scores) == 1
     assert isinstance(scores[0], float)
+
+def test_get_entity_from_observation(generative_agents: GenerativeAgent):
+    observation = "Observation about an entity."
+    out = generative_agents.get_entity_from_observation(observation)
+    assert out == "1"
+
+def test_get_entity_action(generative_agents: GenerativeAgent):
+    observation = "Observation about an entity doing something."
+    entity_name = "EntityName"
+    out = generative_agents.get_entity_action(observation, entity_name)
+    assert out == "1"
