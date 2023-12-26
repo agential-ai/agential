@@ -568,3 +568,34 @@ class GenerativeAgent(BaseAgent):
             Dict[str, Any]: A dictionary containing the stored memories, keyed by `memories_key`.
         """
         return self.memory.show_memories(memories_key=memories_key)
+    
+    def retrieve(
+        self,
+        queries: Optional[Union[str, List[str]]] = None,
+        last_k: Optional[int] = None,
+        consumed_tokens: Optional[int] = None,
+        max_tokens_limit: Optional[int] = None,
+        llm: LLM = None,
+        now: Optional[datetime] = None,
+        queries_key: str = "relevant_memories",
+        most_recent_key: str = "most_recent_memories",
+        consumed_tokens_key: str = "most_recent_memories_limit",
+    ) -> Dict[str, Any]:
+        """Wraps around the memory's `load_memories` method."""
+        return self.memory.load_memories(
+            queries=queries,
+            last_k=last_k,
+            consumed_tokens=consumed_tokens,
+            max_tokens_limit=max_tokens_limit,
+            llm=llm,
+            now=now,
+            queries_key=queries_key,
+            most_recent_key=most_recent_key,
+            consumed_tokens_key=consumed_tokens_key,
+        )
+    
+    def generate(self, is_react: bool, observation: str, now: Optional[datetime] = None) -> Tuple[bool, str]:
+        """Wrapper around `generate_reaction` and `generate_dialogue_response`."""
+        if is_react:
+            return self.generate_reaction(observation=observation, now=now)
+        return self.generate_dialogue_response(observation=observation, now=now)
