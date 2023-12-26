@@ -117,3 +117,11 @@ def test_load_memories(
     assert len(out["most_recent_memories_limit"]) == 1
     assert out["most_recent_memories_limit"][0].page_content == "An observation 50"
     assert out["most_recent_memories_limit"][0].metadata["importance"] == 0.1
+
+def test_show_memories(
+    time_weighted_retriever: TimeWeightedVectorStoreRetriever,
+) -> None:
+    """Test show_memories."""
+    mem = GenerativeAgentMemory(retriever=time_weighted_retriever)
+    out = mem.show_memories()
+    assert out["memory_stream"] == []

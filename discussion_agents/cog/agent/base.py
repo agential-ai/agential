@@ -28,5 +28,3 @@ class BaseAgent(BaseModel, ABC):
     def generate(self) -> Any:
         """Optionally implementable method to generate a response."""
         raise NotImplementedError("Generate method not implemented.")
-
-

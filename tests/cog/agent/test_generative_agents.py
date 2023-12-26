@@ -114,3 +114,15 @@ def test_generate_dialogue_response(generative_agent: GenerativeAgent) -> None:
     assert isinstance(out, tuple)
     assert not out[0]
     assert isinstance(out[1], str)
+
+def test_show_memories(generative_agent: GenerativeAgent) -> None:
+    """Test show_memories method."""
+    pass
+
+def test_retrieve(generative_agent: GenerativeAgent) -> None:
+    """Test retrieve method."""
+    pass
+
+def test_generate(generative_agent: GenerativeAgent) -> None:
+    """Test generate method."""
+    pass

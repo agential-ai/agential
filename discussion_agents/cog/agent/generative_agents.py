@@ -30,9 +30,9 @@ from discussion_agents.cog.modules.reflect.base import BaseReflector
 from discussion_agents.cog.modules.reflect.generative_agents import (
     GenerativeAgentReflector,
 )
-from discussion_agents.cog.persona.base import BasePersona
 from discussion_agents.cog.modules.score.base import BaseScorer
 from discussion_agents.cog.modules.score.generative_agents import GenerativeAgentScorer
+from discussion_agents.cog.persona.base import BasePersona
 from discussion_agents.cog.persona.generative_agents import GenerativeAgentPersona
 from discussion_agents.utils.format import (
     format_memories_detail,
@@ -55,7 +55,7 @@ class GenerativeAgent(BaseAgent):
     traits: str = "kind, inquisitive, passionate"
     status: str = "Klaus Mueller is writing a research paper on the effects of gentrification in low-income communities."
     lifestyle: str = "Klaus Mueller goes to bed around 11pm, awakes up around 7am, eats dinner around 5pm."
-    
+
     @root_validator(pre=False)
     def set_args(cls, values):
         llm = values.get("llm")
@@ -75,7 +75,7 @@ class GenerativeAgent(BaseAgent):
                 age=values.get("age"),
                 traits=values.get("traits"),
                 status=values.get("status"),
-                lifestyle=values.get("lifestyle")
+                lifestyle=values.get("lifestyle"),
             )
         return values
 
@@ -568,7 +568,7 @@ class GenerativeAgent(BaseAgent):
             Dict[str, Any]: A dictionary containing the stored memories, keyed by `memories_key`.
         """
         return self.memory.show_memories(memories_key=memories_key)
-    
+
     def retrieve(
         self,
         queries: Optional[Union[str, List[str]]] = None,
@@ -593,8 +593,10 @@ class GenerativeAgent(BaseAgent):
             most_recent_key=most_recent_key,
             consumed_tokens_key=consumed_tokens_key,
         )
-    
-    def generate(self, is_react: bool, observation: str, now: Optional[datetime] = None) -> Tuple[bool, str]:
+
+    def generate(
+        self, is_react: bool, observation: str, now: Optional[datetime] = None
+    ) -> Tuple[bool, str]:
         """Wrapper around `generate_reaction` and `generate_dialogue_response`."""
         if is_react:
             return self.generate_reaction(observation=observation, now=now)
