@@ -1,6 +1,6 @@
 """Base memory interface class."""
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from pydantic.v1 import BaseModel
 
@@ -32,5 +32,14 @@ class BaseMemory(BaseModel, ABC):
 
         Implementations should override this method to provide the functionality
         to load memories. Specific parameters and return types depend on the implementation.
+        """
+        pass
+
+    @abstractmethod
+    def show_memories(self) -> Dict[str, Any]:
+        """Show all memories.
+
+        Implementations should override this method to provide the functionality
+        to show memories. Specific parameters and return types depend on the implementation.
         """
         pass

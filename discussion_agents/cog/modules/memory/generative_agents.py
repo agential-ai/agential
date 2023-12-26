@@ -165,3 +165,14 @@ class GenerativeAgentMemory(BaseMemory):
             memories.update({consumed_tokens_key: results})
 
         return memories
+
+    def show_memories(self, memories_key: str = "memory_stream") -> Dict[str, Any]:
+        """Retrieves all stored memories and returns them in a dictionary.
+
+        Args:
+            memories_key (str, optional): The key under which the memories are stored. Defaults to "memory_stream".
+
+        Returns:
+            Dict[str, Any]: A dictionary containing the stored memories, keyed by `memories_key`.
+        """
+        return {memories_key: self.retriever.memory_stream}

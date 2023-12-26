@@ -555,3 +555,16 @@ class GenerativeAgent(BaseAgent):
             return True, response_text
         else:
             return False, result
+
+    def show_memories(self, memories_key: str = "memory_stream") -> Dict[str, Any]:
+        """Retrieves all stored memories and returns them in a dictionary.
+
+        This method wraps around and exposes the memory module's `show_memories` method.
+
+        Args:
+            memories_key (str, optional): The key under which the memories are stored. Defaults to "memory_stream".
+
+        Returns:
+            Dict[str, Any]: A dictionary containing the stored memories, keyed by `memories_key`.
+        """
+        return self.memory.show_memories(memories_key=memories_key)
