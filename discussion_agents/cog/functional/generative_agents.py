@@ -48,14 +48,14 @@ def score_memories_importance(
     relevant_memories = "\n".join(relevant_memories)
 
     prompt = PromptTemplate.from_template(
-        "On the scale of 1 to 10, where 1 is purely mundane "
-        + "and 10 is extremely poignant "
+        "On the scale of 1 to 10, where 1 is purely mundane (e.g., routine morning greetings) "
+        + "and 10 is extremely poignant (e.g., a conversation about breaking up, a fight) "
         + ", rate the likely poignancy of the "
         + "following piece of memory with respect to these following relevant memories:\n"
         + "{relevant_memories}\n\n"
         + "Provide only a single rating.\n"
         + "\Memory: {memory_content}\n"
-        + "Rating: "
+        + "Rating (return a number between 1 to 10): "
     )
     chain = LLMChain(llm=llm, prompt=prompt)
 

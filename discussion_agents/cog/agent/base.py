@@ -20,3 +20,13 @@ class BaseAgent(BaseModel, ABC):
     def score(self) -> Any:
         """Optionally implementable method to score or evaluate something."""
         raise NotImplementedError("Score method not implemented.")
+
+    def retrieve(self) -> Any:
+        """Optionally implementable method to retrieve memory."""
+        raise NotImplementedError("Retrieve method not implemented.")
+
+    def generate(self) -> Any:
+        """Optionally implementable method to generate a response."""
+        raise NotImplementedError("Generate method not implemented.")
+
+

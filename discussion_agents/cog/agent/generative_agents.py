@@ -4,6 +4,7 @@ This implementation includes functions for performing the operations
 in the Generative Agents paper without the graphic interface.
 
 Original Paper: https://arxiv.org/abs/2304.03442
+Paper Repository: https://github.com/joonspk-research/generative_agents
 LangChain: https://github.com/langchain-ai/langchain
 LangChain Generative Agents:
 https://github.com/langchain-ai/langchain/tree/master/libs/experimental/langchain_experimental/generative_agents
@@ -29,8 +30,10 @@ from discussion_agents.cog.modules.reflect.base import BaseReflector
 from discussion_agents.cog.modules.reflect.generative_agents import (
     GenerativeAgentReflector,
 )
+from discussion_agents.cog.persona.base import BasePersona
 from discussion_agents.cog.modules.score.base import BaseScorer
 from discussion_agents.cog.modules.score.generative_agents import GenerativeAgentScorer
+from discussion_agents.cog.persona.generative_agents import GenerativeAgentPersona
 from discussion_agents.utils.format import (
     format_memories_detail,
 )
@@ -42,10 +45,11 @@ class GenerativeAgent(BaseAgent):
     memory: GenerativeAgentMemory
     reflector: Optional[BaseReflector] = None
     scorer: Optional[BaseScorer] = None
+    persona: Optional[BasePersona] = None
     importance_weight: float = 0.15
     reflection_threshold: Optional[int] = 8
 
-    # Personal state.
+    # Persona.
     name: str = "Klaus Mueller"
     age: int = 20
     traits: str = "kind, inquisitive, passionate"
@@ -53,16 +57,27 @@ class GenerativeAgent(BaseAgent):
     lifestyle: str = "Klaus Mueller goes to bed around 11pm, awakes up around 7am, eats dinner around 5pm."
     
     @root_validator(pre=False)
-    def set_reflector_and_scorer(cls, values):
+    def set_args(cls, values):
         llm = values.get("llm")
         memory = values.get("memory")
-        if llm is not None:
+        reflector = values.get("reflector")
+        scorer = values.get("scorer")
+        persona = values.get("persona")
+        if llm and not reflector:
             values["reflector"] = GenerativeAgentReflector(
                 llm=llm, retriever=memory.retriever
             )
+        if llm and not scorer:
             values["scorer"] = GenerativeAgentScorer(llm=llm)
+        if not persona:
+            values["persona"] = GenerativeAgentPersona(
+                name=values.get("name"),
+                age=values.get("age"),
+                traits=values.get("traits"),
+                status=values.get("status"),
+                lifestyle=values.get("lifestyle")
+            )
         return values
-
 
     # Internal variables.
     summary: str = ""  #: :meta private:
