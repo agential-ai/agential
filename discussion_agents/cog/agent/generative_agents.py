@@ -45,6 +45,13 @@ class GenerativeAgent(BaseAgent):
     importance_weight: float = 0.15
     reflection_threshold: Optional[int] = 8
 
+    # Personal state.
+    name: str = "Klaus Mueller"
+    age: int = 20
+    traits: str = "kind, inquisitive, passionate"
+    status: str = "Klaus Mueller is writing a research paper on the effects of gentrification in low-income communities."
+    lifestyle: str = "Klaus Mueller goes to bed around 11pm, awakes up around 7am, eats dinner around 5pm."
+    
     @root_validator(pre=False)
     def set_reflector_and_scorer(cls, values):
         llm = values.get("llm")
@@ -56,12 +63,6 @@ class GenerativeAgent(BaseAgent):
             values["scorer"] = GenerativeAgentScorer(llm=llm)
         return values
 
-    # Personal state.
-    name: str = "Vincent"
-    age: int = 20
-    traits: str = "Enjoys working on this library"
-    status: str = ""
-    lifestyle: str = ""
 
     # Internal variables.
     summary: str = ""  #: :meta private:
