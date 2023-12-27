@@ -9,7 +9,7 @@ class BaseMemory(BaseModel, ABC):
     """Base memory class providing a general interface for memory operations."""
 
     @abstractmethod
-    def clear(self) -> None:
+    def clear(self, *args: Any, **kwargs: Any) -> None:
         """Clear all memories.
 
         Implementations should override this method to provide the functionality
@@ -18,7 +18,7 @@ class BaseMemory(BaseModel, ABC):
         pass
 
     @abstractmethod
-    def add_memories(self) -> None:
+    def add_memories(self, *args: Any, **kwargs: Any) -> None:
         """Add memories.
 
         Implementations should override this method to provide the functionality
@@ -27,7 +27,7 @@ class BaseMemory(BaseModel, ABC):
         pass
 
     @abstractmethod
-    def load_memories(self) -> Dict[str, Any]:
+    def load_memories(self, *args: Any, **kwargs: Any) -> Dict[str, Any]:
         """Load memories and return a dictionary.
 
         Implementations should override this method to provide the functionality
@@ -36,7 +36,7 @@ class BaseMemory(BaseModel, ABC):
         pass
 
     @abstractmethod
-    def show_memories(self) -> Dict[str, Any]:
+    def show_memories(self, *args: Any, **kwargs: Any) -> Dict[str, Any]:
         """Show all memories.
 
         Implementations should override this method to provide the functionality

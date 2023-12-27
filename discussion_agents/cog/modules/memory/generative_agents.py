@@ -89,7 +89,7 @@ class GenerativeAgentMemory(BaseMemory):
         last_k: Optional[int] = None,
         consumed_tokens: Optional[int] = None,
         max_tokens_limit: Optional[int] = None,
-        llm: LLM = None,
+        llm: Optional[LLM] = None,
         now: Optional[datetime] = None,
         queries_key: str = "relevant_memories",
         most_recent_key: str = "most_recent_memories",
@@ -106,7 +106,7 @@ class GenerativeAgentMemory(BaseMemory):
             consumed_tokens (Optional[int], optional): The token limit for fetching memories.
                 If consumed_tokens is not `None`, then max_tokens_limit and llm must be defined. Defaults to None.
             max_tokens_limit (Optional[int], optional): The maximum token limit for memory retrieval. Defaults to None.
-            llm (LLM, optional): The language model used for token calculations. Defaults to None.
+            llm (Optional[LLM], optional): The language model used for token calculations. Defaults to None.
             now (Optional[datetime], optional): The current time, used for time-weighting. Defaults to None.
             queries_key (str, optional): Key for storing queried memories. Defaults to "relevant_memories".
             most_recent_key (str, optional): Key for storing most recent memories. Defaults to "most_recent_memories".
@@ -156,10 +156,11 @@ class GenerativeAgentMemory(BaseMemory):
         if consumed_tokens:
             results = []
             for doc in self.retriever.memory_stream[::-1]:  # type: ignore
-                if consumed_tokens >= max_tokens_limit:
+                if max_tokens_limit and consumed_tokens >= max_tokens_limit:
                     break
-                consumed_tokens += llm.get_num_tokens(doc.page_content)
-                if consumed_tokens < max_tokens_limit:
+                if llm:
+                    consumed_tokens += llm.get_num_tokens(doc.page_content)
+                if max_tokens_limit and consumed_tokens < max_tokens_limit:
                     results.append(doc)
             memories.update({consumed_tokens_key: results})
 

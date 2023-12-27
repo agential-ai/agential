@@ -119,8 +119,8 @@ def test_generate_dialogue_response(generative_agent: GenerativeAgent) -> None:
 def test_show_memories(generative_agent: GenerativeAgent) -> None:
     """Test show_memories method."""
     out = generative_agent.show_memories()
-    assert isinstance(out, list)
-    assert out == []
+    assert isinstance(out, dict)
+    assert out["memory_stream"] == []
 
 
 def test_retrieve(generative_agent: GenerativeAgent) -> None:

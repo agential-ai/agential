@@ -13,7 +13,7 @@ https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/charac
 """
 from datetime import datetime
 from itertools import chain
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
@@ -76,8 +76,6 @@ class GenerativeAgent(BaseAgent):
     persona: Optional[BasePersona] = None
     importance_weight: float = 0.15
     reflection_threshold: Optional[int] = 8
-
-    # Persona.
     name: str = "Klaus Mueller"
     age: int = 20
     traits: str = "kind, inquisitive, passionate"
@@ -85,14 +83,14 @@ class GenerativeAgent(BaseAgent):
     lifestyle: str = "Klaus Mueller goes to bed around 11pm, awakes up around 7am, eats dinner around 5pm."
 
     @root_validator(pre=False)
-    def set_args(cls, values):
+    def set_args(cls: Any, values: Dict[str, Any]) -> Dict[str, Any]:
         """Set default arguments."""
         llm = values.get("llm")
         memory = values.get("memory")
         reflector = values.get("reflector")
         scorer = values.get("scorer")
         persona = values.get("persona")
-        if llm and not reflector:
+        if llm and memory and not reflector:
             values["reflector"] = GenerativeAgentReflector(
                 llm=llm, retriever=memory.retriever
             )
@@ -100,11 +98,11 @@ class GenerativeAgent(BaseAgent):
             values["scorer"] = GenerativeAgentScorer(llm=llm)
         if not persona:
             values["persona"] = GenerativeAgentPersona(
-                name=values.get("name"),
-                age=values.get("age"),
-                traits=values.get("traits"),
-                status=values.get("status"),
-                lifestyle=values.get("lifestyle"),
+                name=values.get("name", ""),
+                age=values.get("age", 0),
+                traits=values.get("traits", ""),
+                status=values.get("status", ""),
+                lifestyle=values.get("lifestyle", ""),
             )
         return values
 
@@ -190,8 +188,10 @@ class GenerativeAgent(BaseAgent):
         observations = self.memory.load_memories(last_k=last_k)["most_recent_memories"]
         observations = "\n".join([format_memories_detail(o) for o in observations])
 
-        topics_insights = self.reflector.reflect(observations=observations, now=now)
-
+        if self.reflector:
+            topics_insights = self.reflector.reflect(observations=observations, now=now)
+        else:
+            raise ValueError("`reflector` was incorrectly defined.")
         self.add_memories(memory_contents=list(chain(*topics_insights)), now=now)
         return topics_insights
 
@@ -236,11 +236,14 @@ class GenerativeAgent(BaseAgent):
                 [mem.page_content for mem in fetched_memories]
             )
             relevant_memories = "N/A" if not relevant_memories else relevant_memories
-            importance_score = self.scorer.score(
-                memory_contents=memory_content,
-                relevant_memories=relevant_memories,
-                importance_weight=importance_weight,
-            )
+            if self.scorer:
+                importance_score = self.scorer.score(
+                    memory_contents=memory_content,
+                    relevant_memories=relevant_memories,
+                    importance_weight=importance_weight,
+                )
+            else:
+                raise ValueError("`scorer` was incorrectly defined.")
             importance_scores.append(importance_score[0])
         self.aggregate_importance += max(importance_scores)
 
@@ -260,12 +263,12 @@ class GenerativeAgent(BaseAgent):
         if (
             self.reflection_threshold is not None
             and self.aggregate_importance > self.reflection_threshold
-            and not self.reflecting
+            and not self.is_reflecting
         ):
-            self.reflecting = True
+            self.is_reflecting = True
             _ = self.reflect(last_k=last_k, now=now)
             self.aggregate_importance = 0.0
-            self.reflecting = False
+            self.is_reflecting = False
 
     def score(
         self,
@@ -286,11 +289,14 @@ class GenerativeAgent(BaseAgent):
         Returns:
             List[float]: A list of importance scores for each memory content.
         """
-        return self.scorer.score(
-            memory_contents=memory_contents,
-            relevant_memories=relevant_memories,
-            importance_weight=importance_weight,
-        )
+        if self.scorer:
+            return self.scorer.score(
+                memory_contents=memory_contents,
+                relevant_memories=relevant_memories,
+                importance_weight=importance_weight,
+            )
+        else:
+            raise ValueError("`scorer` was incorrectly defined.")
 
     def get_entity_from_observation(self, observation: str) -> str:
         """Extract the observed entity from a given observation text.
@@ -604,7 +610,7 @@ class GenerativeAgent(BaseAgent):
         last_k: Optional[int] = None,
         consumed_tokens: Optional[int] = None,
         max_tokens_limit: Optional[int] = None,
-        llm: LLM = None,
+        llm: Optional[LLM] = None,
         now: Optional[datetime] = None,
         queries_key: str = "relevant_memories",
         most_recent_key: str = "most_recent_memories",
