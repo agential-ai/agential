@@ -115,11 +115,13 @@ def test_generate_dialogue_response(generative_agent: GenerativeAgent) -> None:
     assert not out[0]
     assert isinstance(out[1], str)
 
+
 def test_show_memories(generative_agent: GenerativeAgent) -> None:
     """Test show_memories method."""
     out = generative_agent.show_memories()
     assert isinstance(out, list)
     assert out == []
+
 
 def test_retrieve(generative_agent: GenerativeAgent) -> None:
     """Test retrieve method."""
@@ -127,6 +129,7 @@ def test_retrieve(generative_agent: GenerativeAgent) -> None:
     assert isinstance(out, dict)
     assert "relevant_memories" in out
     assert out["relevant_memories"] == []
+
 
 def test_generate(generative_agent: GenerativeAgent) -> None:
     """Test generate method."""
