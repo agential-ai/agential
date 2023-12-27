@@ -62,7 +62,7 @@ jobs:
       run: |
         export OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}"
         export HUGGINGFACEHUB_API_TOKEN="${{ secrets.HUGGINGFACEHUB_API_TOKEN }}"
-        make test_nocost
+        make test
 
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
