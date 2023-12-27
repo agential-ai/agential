@@ -123,8 +123,19 @@ def test_show_memories(generative_agent: GenerativeAgent) -> None:
 
 def test_retrieve(generative_agent: GenerativeAgent) -> None:
     """Test retrieve method."""
-    pass
+    out = generative_agent.retrieve(queries="A query.")
+    assert isinstance(out, dict)
+    assert "relevant_memories" in out
+    assert out["relevant_memories"] == []
 
 def test_generate(generative_agent: GenerativeAgent) -> None:
     """Test generate method."""
-    pass
+    out = generative_agent.generate(is_react=True, observation="An observation.")
+    assert isinstance(out, tuple)
+    assert not out[0]
+    assert isinstance(out[1], str)
+
+    out = generative_agent.generate(is_react=False, observation="An observation.")
+    assert isinstance(out, tuple)
+    assert not out[0]
+    assert isinstance(out[1], str)
