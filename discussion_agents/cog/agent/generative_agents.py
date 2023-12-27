@@ -41,6 +41,34 @@ from discussion_agents.utils.parse import remove_name
 
 
 class GenerativeAgent(BaseAgent):
+    """GenerateAgent class complete with memory, reflecting, and scoring capabilities.
+
+    This class extends BaseAgent and implements `reflect`, `score`, `retrieve`, and `generate`.
+
+    Attributes:
+        llm (LLM): An instance of a language model used for processing and generating content.
+        memory (GenerativeAgentMemory): A memory management component responsible for handling
+            storage and retrieval of memories.
+        reflector (Optional[BaseReflector]): A component for reflecting on observations and memories.
+            Automatically set based on the LLM and memory if not provided.
+        scorer (Optional[BaseScorer]): A component for scoring and evaluating memories or observations.
+            Automatically set based on the LLM if not provided.
+        persona (Optional[BasePersona]): A persona component representing agent's characteristics.
+            Automatically set based on provided personal attributes below if not provided.
+        importance_weight (float): A weight factor used in scoring calculations.
+        reflection_threshold (Optional[int]): A threshold value used in reflection decisions.
+
+        name (str): The name of the agent's persona. Defaults to "Klaus Mueller".
+        age (int): The age of the agent's persona. Defaults to 20.
+        traits (str): The traits of the agent's persona, described as a string. Defaults to "kind, inquisitive, passionate".
+        status (str): The current status of the agent's persona. Defaults to a predefined status about writing a research paper.
+        lifestyle (str): The lifestyle description of the agent's persona, including typical daily routines.
+
+    The `set_args` root validator is used to automatically set the `reflector`, `scorer`, and `persona` components
+    if they are not explicitly provided. It ensures that these components are appropriately initialized based on the LLM,
+    memory, and persona attributes.
+    """
+
     llm: LLM
     memory: GenerativeAgentMemory
     reflector: Optional[BaseReflector] = None
@@ -58,6 +86,7 @@ class GenerativeAgent(BaseAgent):
 
     @root_validator(pre=False)
     def set_args(cls, values):
+        """Set default arguments."""
         llm = values.get("llm")
         memory = values.get("memory")
         reflector = values.get("reflector")

@@ -21,8 +21,7 @@ from discussion_agents.utils.fetch import fetch_memories
 
 
 class GenerativeAgentMemory(BaseMemory):
-    """A memory management class for Generative Agents, interfacing
-    with a time-weighted vector store retriever.
+    """A memory management class for Generative Agents, interfacing with a time-weighted vector store retriever.
 
     This class extends BaseMemory and manages the storage and retrieval of
     memories using a TimeWeightedVectorStoreRetriever. It provides

@@ -44,9 +44,9 @@ class GenerativeAgentScorer(BaseScorer):
                 Each memory content is a string representing an individual memory.
             relevant_memories (Union[str, List[str]]): A single relevant memory or a list of relevant memories that the memory contents
                 are being compared to. Each relevant memory is a string.
-        importance_weight (float): A weight factor (default: 0.15) used in the scoring calculation
-            to adjust the influence of certain criteria in the final score. Overrides self.importance_weight attribute if this
-            parameter is supplied.
+            importance_weight (float): A weight factor (default: 0.15) used in the scoring calculation
+                to adjust the influence of certain criteria in the final score. Overrides self.importance_weight attribute if this
+                parameter is supplied.
 
         Returns:
             List[float]: A list of float scores corresponding to the importance of each memory content in relation to the relevant memories.
