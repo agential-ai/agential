@@ -3,11 +3,10 @@
 import re
 
 from datetime import datetime
-from typing import List, Optional, Tuple, Union
+from typing import Any, List, Optional, Tuple, Union
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from langchain_core.language_models import LLM
 from langchain_core.retrievers import BaseRetriever
 
 from discussion_agents.utils.fetch import fetch_memories
@@ -18,7 +17,7 @@ from discussion_agents.utils.parse import parse_list
 def score_memories_importance(
     memory_contents: Union[str, List[str]],
     relevant_memories: Union[str, List[str]],
-    llm: LLM,
+    llm: Any,
     importance_weight: float = 0.15,
 ) -> List[float]:
     """Calculate absolute importance scores for given memory contents.
@@ -84,7 +83,7 @@ def score_memories_importance(
 
 def get_topics_of_reflection(
     observations: Union[str, List[str]],
-    llm: LLM,
+    llm: Any,
 ) -> List[str]:
     """Generate three insightful high-level questions based on recent observation(s).
 
@@ -117,7 +116,7 @@ def get_topics_of_reflection(
 def get_insights_on_topics(
     topics: Union[str, List[str]],
     related_memories: Union[str, List[str]],
-    llm: LLM,
+    llm: Any,
 ) -> List[List[str]]:
     """Generate high-level insights on specified topics using relevant memories.
 
@@ -171,7 +170,7 @@ def get_insights_on_topics(
 
 def reflect(
     observations: Union[str, List[str]],
-    llm: LLM,
+    llm: Any,
     retriever: BaseRetriever,
     now: Optional[datetime] = None,
 ) -> Tuple[List[str], List[List[str]]]:

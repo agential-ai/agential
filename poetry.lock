@@ -271,6 +271,24 @@ files = [
 ]
 
 [[package]]
+name = "beautifulsoup4"
+version = "4.12.2"
+description = "Screen-scraping library"
+optional = false
+python-versions = ">=3.6.0"
+files = [
+    {file = "beautifulsoup4-4.12.2-py3-none-any.whl", hash = "sha256:bd2520ca0d9d7d12694a53d44ac482d181b4ec1888909b035a3dbf40d0f57d4a"},
+    {file = "beautifulsoup4-4.12.2.tar.gz", hash = "sha256:492bbc69dca35d12daac71c4db1bfff0c876c00ef4a2ffacce226d4638eb72da"},
+]
+
+[package.dependencies]
+soupsieve = ">1.2"
+
+[package.extras]
+html5lib = ["html5lib"]
+lxml = ["lxml"]
+
+[[package]]
 name = "binaryornot"
 version = "0.4.4"
 description = "Ultra-lightweight pure Python package to check if a file is binary or text."
@@ -1223,6 +1241,21 @@ langchain-core = ">=0.1,<0.2"
 
 [package.extras]
 extended-testing = ["faker (>=19.3.1,<20.0.0)", "jinja2 (>=3,<4)", "presidio-analyzer (>=2.2.33,<3.0.0)", "presidio-anonymizer (>=2.2.33,<3.0.0)", "sentence-transformers (>=2,<3)", "vowpal-wabbit-next (==0.6.0)"]
+
+[[package]]
+name = "langchainhub"
+version = "0.1.14"
+description = ""
+optional = false
+python-versions = ">=3.8.1,<4.0"
+files = [
+    {file = "langchainhub-0.1.14-py3-none-any.whl", hash = "sha256:3d58a050a3a70684bca2e049a2425a2418d199d0b14e3c8aa318123b7f18b21a"},
+    {file = "langchainhub-0.1.14.tar.gz", hash = "sha256:c1aeda38d66df1146f9e60e47bde7fb12bad902eb19dba78ac02f89e0f1f1867"},
+]
+
+[package.dependencies]
+requests = ">=2,<3"
+types-requests = ">=2.31.0.2,<3.0.0.0"
 
 [[package]]
 name = "langsmith"
@@ -2832,6 +2865,17 @@ files = [
 ]
 
 [[package]]
+name = "soupsieve"
+version = "2.5"
+description = "A modern CSS selector implementation for Beautiful Soup."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "soupsieve-2.5-py3-none-any.whl", hash = "sha256:eaa337ff55a1579b6549dc679565eac1e3d000563bcb1c8ab0d0fefbc0c2cdc7"},
+    {file = "soupsieve-2.5.tar.gz", hash = "sha256:5663d5a7b3bfaeee0bc4372e7fc48f9cff4940b3eec54a6451cc5299f1097690"},
+]
+
+[[package]]
 name = "sphinx"
 version = "7.2.6"
 description = "Python documentation generator"
@@ -3542,6 +3586,20 @@ files = [
 ]
 
 [[package]]
+name = "types-requests"
+version = "2.31.0.10"
+description = "Typing stubs for requests"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "types-requests-2.31.0.10.tar.gz", hash = "sha256:dc5852a76f1eaf60eafa81a2e50aefa3d1f015c34cf0cba130930866b1b22a92"},
+    {file = "types_requests-2.31.0.10-py3-none-any.whl", hash = "sha256:b32b9a86beffa876c0c3ac99a4cd3b8b51e973fb8e3bd4e0a6bb32c7efad80fc"},
+]
+
+[package.dependencies]
+urllib3 = ">=2"
+
+[[package]]
 name = "typing-extensions"
 version = "4.8.0"
 description = "Backported and Experimental Type Hints for Python 3.8+"
@@ -3628,6 +3686,20 @@ files = [
 
 [package.extras]
 test = ["pytest (>=6.0.0)", "setuptools (>=65)"]
+
+[[package]]
+name = "wikipedia"
+version = "1.4.0"
+description = "Wikipedia API for Python"
+optional = false
+python-versions = "*"
+files = [
+    {file = "wikipedia-1.4.0.tar.gz", hash = "sha256:db0fad1829fdd441b1852306e9856398204dc0786d2996dd2e0c8bb8e26133b2"},
+]
+
+[package.dependencies]
+beautifulsoup4 = "*"
+requests = ">=2.0.0,<3.0.0"
 
 [[package]]
 name = "yarl"
@@ -3734,4 +3806,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "86edab5d3f6fd3b8455ba8444eb3c9bee68ad738e1f32dadeb6463e263bfac9f"
+content-hash = "834ccbaf5c64f685087c1c7cb31b8ce6c42ad0b46255b339f40e5e697e8e0536"
