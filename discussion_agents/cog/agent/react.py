@@ -9,7 +9,10 @@ Paper Repository: https://github.com/ysymyth/ReAct
 LangChain: https://github.com/langchain-ai/langchain
 LangChain ReAct: https://python.langchain.com/docs/modules/agents/agent_types/react
 """
-from typing import Any
+from typing import Any, List
+
+import requests
+from bs4 import BeautifulSoup
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
@@ -26,6 +29,9 @@ class ReActAgent(BaseAgent):
 
     llm: Any  # TODO: Why is `LLM` not usable here? 
     i: int = 0  # Count.
+    lookup_keyword: str = ""
+    lookup_list: List = []
+    lookup_cnt: int = 0
 
     def search(self, query: str):
         docs = WikipediaLoader(
@@ -35,6 +41,46 @@ class ReActAgent(BaseAgent):
         ).load()
         return docs
 
+    def search_step(self, entity):
+        entity_ = entity.replace(" ", "+")
+        search_url = f"https://en.wikipedia.org/w/index.php?search={entity_}"
+        response_text = requests.get(search_url).text
+        self.num_searches += 1
+        soup = BeautifulSoup(response_text, features="html.parser")
+        result_divs = soup.find_all("div", {"class": "mw-search-result-heading"})
+        if result_divs:  # mismatch
+            self.result_titles = [clean_str(div.get_text().strip()) for div in result_divs]
+            self.obs = f"Could not find {entity}. Similar: {self.result_titles[:5]}."
+        else:
+            page = [p.get_text().strip() for p in soup.find_all("p") + soup.find_all("ul")]
+            if any("may refer to:" in p for p in page):
+            self.search_step("[" + entity + "]")
+            else:
+            self.page = ""
+            for p in page:
+                if len(p.split(" ")) > 2:
+                self.page += clean_str(p)
+                if not p.endswith("\n"):
+                    self.page += "\n"
+            self.obs = self.get_page_obs(self.page)
+            self.lookup_keyword = self.lookup_list = self.lookup_cnt = None
+
+    def construct_lookup_list(self, keyword):
+        # find all paragraphs
+        if self.page is None:
+            return []
+        paragraphs = self.page.split("\n")
+        paragraphs = [p.strip() for p in paragraphs if p.strip()]
+
+        # find all sentence
+        sentences = []
+        for p in paragraphs:
+        sentences += p.split('. ')
+        sentences = [s.strip() + '.' for s in sentences if s.strip()]
+
+        parts = sentences
+        parts = [p for p in parts if keyword.lower() in p.lower()]
+        return parts
 
     def generate(self, observation: str) -> str:
         """Main method for interacting with zero-shot ReAct agent."""
@@ -69,5 +115,19 @@ class ReActAgent(BaseAgent):
             else:
                 obs = " ".join(docs[0].page_content.replace("\n", "").split(". ")[:5])
             out += f"Observation {self.i}: {obs}\n"
+        elif action.lower().startswith("lookup[") and action.endswith("]"):
+            keyword = action[len("lookup["):-1]
 
+            # Reset lookup.
+            if self.lookup_keyword != keyword:
+                self.lookup_keyword = keyword
+                self.lookup_list = self.construct_lookup_list(keyword)
+                self.lookup_cnt = 0
+
+            # All lookups used.
+            if self.lookup_cnt >= len(self.lookup_list):
+                obs = "No more results.\n"
+            else:
+                obs = f"(Result {self.lookup_cnt + 1} / {len(self.lookup_list)}) " + self.lookup_list[self.lookup_cnt]
+                self.lookup_cnt += 1
         return out

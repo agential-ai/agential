@@ -66,3 +66,21 @@ def format_memories_simple(relevant_memories: Union[Document, List[Document]]) -
     if isinstance(relevant_memories, Document):
         relevant_memories = [relevant_memories]
     return "; ".join([f"{mem.page_content}" for mem in relevant_memories])
+
+def clean_str(s: str) -> str:
+    """Converts a string with mixed encoding to proper UTF-8 format.
+
+    This function takes a string `s` that may contain Unicode escape sequences and/or Latin-1 encoded characters. 
+    It processes the string to interpret Unicode escape sequences and correct any Latin-1 encoded parts, returning the string in UTF-8 format.
+
+    Args:
+        s (str): The input string potentially containing Unicode escape sequences and Latin-1 encoded characters.
+
+    Returns:
+        str: The UTF-8 encoded string with properly interpreted characters.
+
+    Note:
+        This function assumes that the input string is a mix of UTF-8 encoded characters and Unicode escape sequences. 
+        It may not work as intended if the input string has a different encoding or if it contains characters outside the Latin-1 range.
+    """
+    return s.encode().decode("unicode-escape").encode("latin1").decode("utf-8")
