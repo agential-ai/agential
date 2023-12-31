@@ -13,6 +13,7 @@ from typing import Any
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
+from langchain_community.document_loaders.wikipedia import WikipediaLoader
 
 from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.prompts.react import (
@@ -26,8 +27,14 @@ class ReActAgent(BaseAgent):
     llm: Any  # TODO: Why is `LLM` not usable here? 
     i: int = 0  # Count.
 
-    def search(self, entity: str):
-        pass
+    def search(self, query: str):
+        docs = WikipediaLoader(
+            query=query, 
+            load_max_docs=1, 
+            doc_content_chars_max=-1
+        ).load()
+        return docs
+
 
     def generate(self, observation: str) -> str:
         """Main method for interacting with zero-shot ReAct agent."""
@@ -44,6 +51,7 @@ class ReActAgent(BaseAgent):
         thought_action = chain.run(observation=observation, i=self.i).split(f"\nObservation {self.i}:")[0]
 
         # TODO: Find a way to enforce llm outputs.
+        out = prompt_template
         try:
             thought, action = thought_action.strip().split(f"\nAction {self.i}: ")
         except:
@@ -51,9 +59,15 @@ class ReActAgent(BaseAgent):
             revised_prompt = prompt_template + f"{thought}\n" + "Action {i}: "
             chain = LLMChain(llm=self.llm, prompt=PromptTemplate.from_template(revised_prompt))
             action = chain.run(observation=observation, i=self.i).strip().split("\n")[0]
+        out += f"Thought {self.i}: {thought}\n" + f"Action {self.i}: {action}\n"
 
         if action.lower().startswith("search[") and action.endswith("]"):
-            entity = action[len("search["):-1]
-            self.search(entity)
+            query = action[len("search["):-1]
+            docs = self.search(query)
+            if not docs:
+                obs = f"Could not find {query}."
+            else:
+                obs = " ".join(docs[0].page_content.replace("\n", "").split(". ")[:5])
+            out += f"Observation {self.i}: {obs}\n"
 
-        return thought, action
+        return out
