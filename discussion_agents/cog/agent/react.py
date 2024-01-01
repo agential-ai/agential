@@ -30,11 +30,11 @@ class ReActAgent(BaseAgent):
 
     llm: Any  # TODO: Why is `LLM` not usable here? 
 
-    page: str = ""
-    result_titles: list = []
-    lookup_keyword: str = None
-    lookup_list: list = None
-    lookup_cnt: int = None
+    page: str = ""  #: :meta private:
+    result_titles: list = []  #: :meta private:
+    lookup_keyword: str = ""  #: :meta private:
+    lookup_list: list = []  #: :meta private:
+    lookup_cnt: int = 0  #: :meta private:
 
     def search(self, query: str):
         docs = WikipediaLoader(
@@ -65,14 +65,19 @@ class ReActAgent(BaseAgent):
                         if not p.endswith("\n"):
                             self.page += "\n"
                 obs = get_page_obs(self.page, k=k)
-                self.lookup_keyword = self.lookup_list = self.lookup_cnt = None
+
+                # Reset lookup attributes.
+                self.lookup_keyword = ""
+                self.lookup_list = []
+                self.lookup_cnt = 0
+                
         return obs
 
-    def generate(self, observation: str) -> str:
+    def generate(self, observation: str, fewshot_examples: str = HOTPOTQA_FEWSHOT_EXAMPLES) -> str:
         """Main method for interacting with zero-shot ReAct agent."""
         prompt_template = [
             INSTRUCTION,
-            HOTPOTQA_FEWSHOT_EXAMPLES,
+            fewshot_examples,
             "\n",
             "Question: ",
             "{observation}",
@@ -81,15 +86,17 @@ class ReActAgent(BaseAgent):
         ]
 
         # TODO: Find a way to enforce llm outputs.
+        done = False
         out = ""
         for i in range(1, 8):
-            # Generate thought and action.
+            # Create and run prompt.
             prompt = PromptTemplate.from_template(
                 "".join(prompt_template) if not out else "".join(prompt_template[:-1]) + out
             )
             chain = LLMChain(llm=self.llm, prompt=prompt)
             thought_action = chain.run(observation=observation, i=i).split(f"\nObservation {i}:")[0]
 
+            # Get thought and action.
             try:
                 thought, action = thought_action.strip().split(f"\nAction {i}: ")
             except:
@@ -122,11 +129,16 @@ class ReActAgent(BaseAgent):
             elif action.lower().startswith("finish[") and action.endswith("]"):
                 answer = action[len("finish["):-1].lower()
                 done = True
-                obs = f"Episode finished.\n"
+                obs = f"Episode finished. Answer: {answer}\n"
             else:
                 obs = "Invalid action: {}".format(action)
 
+            # Update out.
             obs = obs.replace('\\n', '')
             out += f"Thought {i}: {thought}\n" + f"Action {i}: {action}\n" + f"Observation {i}: {obs}\n"
+
+            # Break, if done.
+            if done:
+                break
 
         return out
