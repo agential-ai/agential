@@ -91,6 +91,7 @@ class ReActAgent(BaseAgent):
             # Get thought and action.
             try:
                 thought, action = thought_action.strip().split(f"\nAction {i}: ")
+                thought = thought.split(f"Thought {i}: ")[-1]
             except:
                 thought = thought_action.strip().split('\n')[0]
                 revised_prompt_template = ("".join(prompt_template) if not out else "".join(prompt_template[:-1]) + out) + \
@@ -103,6 +104,7 @@ class ReActAgent(BaseAgent):
             if action.lower().startswith("search[") and action.endswith("]"):
                 query = action[len("search["):-1].lower()
                 obs = self.search_step(query)
+                if not obs.endswith("\n"): obs = obs + "\n"
             elif action.lower().startswith("lookup[") and action.endswith("]"):
                 keyword = action[len("lookup["):-1].lower()
 
