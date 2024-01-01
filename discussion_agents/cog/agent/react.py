@@ -36,14 +36,6 @@ class ReActAgent(BaseAgent):
     lookup_list: list = []  #: :meta private:
     lookup_cnt: int = 0  #: :meta private:
 
-    def search(self, query: str):
-        docs = WikipediaLoader(
-            query=query, 
-            load_max_docs=1, 
-            doc_content_chars_max=-1
-        ).load()
-        return docs
-
     def search_step(self, entity: str, k: Optional[int] = 5):
         entity_ = entity.replace(" ", "+")
         search_url = f"https://en.wikipedia.org/w/index.php?search={entity_}"
@@ -70,7 +62,7 @@ class ReActAgent(BaseAgent):
                 self.lookup_keyword = ""
                 self.lookup_list = []
                 self.lookup_cnt = 0
-                
+
         return obs
 
     def generate(self, observation: str, fewshot_examples: str = HOTPOTQA_FEWSHOT_EXAMPLES) -> str:
@@ -142,3 +134,15 @@ class ReActAgent(BaseAgent):
                 break
 
         return out
+    
+class ZeroShotReActAgent(BaseAgent):
+
+    llm: Any  # TODO: Why is `LLM` not usable here? 
+
+    def search(self, query: str):
+        docs = WikipediaLoader(
+            query=query, 
+            load_max_docs=1, 
+            doc_content_chars_max=-1
+        ).load()
+        return docs
