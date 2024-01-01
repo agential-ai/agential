@@ -9,7 +9,7 @@ Paper Repository: https://github.com/ysymyth/ReAct
 LangChain: https://github.com/langchain-ai/langchain
 LangChain ReAct: https://python.langchain.com/docs/modules/agents/agent_types/react
 """
-from typing import Any, List
+from typing import Any, Optional
 
 import requests
 from bs4 import BeautifulSoup
@@ -18,6 +18,7 @@ from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain_community.document_loaders.wikipedia import WikipediaLoader
 
+from discussion_agents.utils.parse import clean_str, get_page_obs, construct_lookup_list
 from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.prompts.react import (
     INSTRUCTION,
@@ -28,9 +29,12 @@ from discussion_agents.cog.prompts.react import (
 class ReActAgent(BaseAgent):
 
     llm: Any  # TODO: Why is `LLM` not usable here? 
+
     i: int = 0  # Count.
+    page: str = ""
+    result_titles: list = []
     lookup_keyword: str = ""
-    lookup_list: List = []
+    lookup_list: list = []
     lookup_cnt: int = 0
 
     def search(self, query: str):
@@ -41,46 +45,29 @@ class ReActAgent(BaseAgent):
         ).load()
         return docs
 
-    def search_step(self, entity):
+    def search_step(self, entity: str, k: Optional[int] = 5):
         entity_ = entity.replace(" ", "+")
         search_url = f"https://en.wikipedia.org/w/index.php?search={entity_}"
         response_text = requests.get(search_url).text
-        self.num_searches += 1
         soup = BeautifulSoup(response_text, features="html.parser")
         result_divs = soup.find_all("div", {"class": "mw-search-result-heading"})
-        if result_divs:  # mismatch
+        if result_divs:  # Mismatch.
             self.result_titles = [clean_str(div.get_text().strip()) for div in result_divs]
-            self.obs = f"Could not find {entity}. Similar: {self.result_titles[:5]}."
+            obs = f"Could not find {entity}. Similar: {self.result_titles[:5]}."
         else:
             page = [p.get_text().strip() for p in soup.find_all("p") + soup.find_all("ul")]
             if any("may refer to:" in p for p in page):
-            self.search_step("[" + entity + "]")
+                obs = self.search_step("[" + entity + "]")
             else:
-            self.page = ""
-            for p in page:
-                if len(p.split(" ")) > 2:
-                self.page += clean_str(p)
-                if not p.endswith("\n"):
-                    self.page += "\n"
-            self.obs = self.get_page_obs(self.page)
-            self.lookup_keyword = self.lookup_list = self.lookup_cnt = None
-
-    def construct_lookup_list(self, keyword):
-        # find all paragraphs
-        if self.page is None:
-            return []
-        paragraphs = self.page.split("\n")
-        paragraphs = [p.strip() for p in paragraphs if p.strip()]
-
-        # find all sentence
-        sentences = []
-        for p in paragraphs:
-        sentences += p.split('. ')
-        sentences = [s.strip() + '.' for s in sentences if s.strip()]
-
-        parts = sentences
-        parts = [p for p in parts if keyword.lower() in p.lower()]
-        return parts
+                self.page = ""
+                for p in page:
+                    if len(p.split(" ")) > 2:
+                        self.page += clean_str(p)
+                        if not p.endswith("\n"):
+                            self.page += "\n"
+                obs = get_page_obs(self.page, k=k)
+                self.lookup_keyword = self.lookup_list = self.lookup_cnt = None
+        return obs
 
     def generate(self, observation: str) -> str:
         """Main method for interacting with zero-shot ReAct agent."""
@@ -93,10 +80,12 @@ class ReActAgent(BaseAgent):
             "\n" + 
             "Thought {i}: "
         )
+        # TODO: Find a way to enforce llm outputs.
+
+        # Generate thought and action.
         chain = LLMChain(llm=self.llm, prompt=PromptTemplate.from_template(prompt_template))
         thought_action = chain.run(observation=observation, i=self.i).split(f"\nObservation {self.i}:")[0]
 
-        # TODO: Find a way to enforce llm outputs.
         out = prompt_template
         try:
             thought, action = thought_action.strip().split(f"\nAction {self.i}: ")
@@ -107,13 +96,10 @@ class ReActAgent(BaseAgent):
             action = chain.run(observation=observation, i=self.i).strip().split("\n")[0]
         out += f"Thought {self.i}: {thought}\n" + f"Action {self.i}: {action}\n"
 
+        # Execute action and get observation.
         if action.lower().startswith("search[") and action.endswith("]"):
             query = action[len("search["):-1]
-            docs = self.search(query)
-            if not docs:
-                obs = f"Could not find {query}."
-            else:
-                obs = " ".join(docs[0].page_content.replace("\n", "").split(". ")[:5])
+            obs = self.search_step(query)
             out += f"Observation {self.i}: {obs}\n"
         elif action.lower().startswith("lookup[") and action.endswith("]"):
             keyword = action[len("lookup["):-1]
@@ -121,7 +107,7 @@ class ReActAgent(BaseAgent):
             # Reset lookup.
             if self.lookup_keyword != keyword:
                 self.lookup_keyword = keyword
-                self.lookup_list = self.construct_lookup_list(keyword)
+                self.lookup_list = construct_lookup_list(keyword)
                 self.lookup_cnt = 0
 
             # All lookups used.
