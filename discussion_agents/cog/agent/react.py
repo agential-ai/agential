@@ -30,12 +30,11 @@ class ReActAgent(BaseAgent):
 
     llm: Any  # TODO: Why is `LLM` not usable here? 
 
-    i: int = 0  # Count.
     page: str = ""
     result_titles: list = []
-    lookup_keyword: str = ""
-    lookup_list: list = []
-    lookup_cnt: int = 0
+    lookup_keyword: str = None
+    lookup_list: list = None
+    lookup_cnt: int = None
 
     def search(self, query: str):
         docs = WikipediaLoader(
@@ -71,49 +70,63 @@ class ReActAgent(BaseAgent):
 
     def generate(self, observation: str) -> str:
         """Main method for interacting with zero-shot ReAct agent."""
-        prompt_template = (
-            INSTRUCTION + 
-            HOTPOTQA_FEWSHOT_EXAMPLES + 
-            "\n" + 
-            "Question: " + 
-            "{observation}" +
-            "\n" + 
+        prompt_template = [
+            INSTRUCTION,
+            HOTPOTQA_FEWSHOT_EXAMPLES,
+            "\n",
+            "Question: ",
+            "{observation}",
+            "\n",
             "Thought {i}: "
-        )
+        ]
+
         # TODO: Find a way to enforce llm outputs.
+        out = ""
+        for i in range(1, 8):
+            # Generate thought and action.
+            prompt = PromptTemplate.from_template(
+                "".join(prompt_template) if not out else "".join(prompt_template[:-1]) + out
+            )
+            chain = LLMChain(llm=self.llm, prompt=prompt)
+            thought_action = chain.run(observation=observation, i=i).split(f"\nObservation {i}:")[0]
 
-        # Generate thought and action.
-        chain = LLMChain(llm=self.llm, prompt=PromptTemplate.from_template(prompt_template))
-        thought_action = chain.run(observation=observation, i=self.i).split(f"\nObservation {self.i}:")[0]
+            try:
+                thought, action = thought_action.strip().split(f"\nAction {i}: ")
+            except:
+                thought = thought_action.strip().split('\n')[0]
+                revised_prompt_template = ("".join(prompt_template) if not out else "".join(prompt_template[:-1]) + out) + \
+                    f"{thought}\n" + "Action {i}: "
+                revised_prompt = PromptTemplate.from_template(revised_prompt_template)
+                chain = LLMChain(llm=self.llm, prompt=revised_prompt)
+                action = chain.run(observation=observation, i=i).strip().split("\n")[0]
 
-        out = prompt_template
-        try:
-            thought, action = thought_action.strip().split(f"\nAction {self.i}: ")
-        except:
-            thought = thought_action.strip().split('\n')[0]
-            revised_prompt = prompt_template + f"{thought}\n" + "Action {i}: "
-            chain = LLMChain(llm=self.llm, prompt=PromptTemplate.from_template(revised_prompt))
-            action = chain.run(observation=observation, i=self.i).strip().split("\n")[0]
-        out += f"Thought {self.i}: {thought}\n" + f"Action {self.i}: {action}\n"
+            # Execute action and get observation.
+            if action.lower().startswith("search[") and action.endswith("]"):
+                query = action[len("search["):-1].lower()
+                obs = self.search_step(query)
+            elif action.lower().startswith("lookup[") and action.endswith("]"):
+                keyword = action[len("lookup["):-1].lower()
 
-        # Execute action and get observation.
-        if action.lower().startswith("search[") and action.endswith("]"):
-            query = action[len("search["):-1]
-            obs = self.search_step(query)
-            out += f"Observation {self.i}: {obs}\n"
-        elif action.lower().startswith("lookup[") and action.endswith("]"):
-            keyword = action[len("lookup["):-1]
+                # Reset lookup.
+                if self.lookup_keyword != keyword:
+                    self.lookup_keyword = keyword
+                    self.lookup_list = construct_lookup_list(keyword, page=self.page)
+                    self.lookup_cnt = 0
 
-            # Reset lookup.
-            if self.lookup_keyword != keyword:
-                self.lookup_keyword = keyword
-                self.lookup_list = construct_lookup_list(keyword)
-                self.lookup_cnt = 0
-
-            # All lookups used.
-            if self.lookup_cnt >= len(self.lookup_list):
-                obs = "No more results.\n"
+                # All lookups used.
+                if self.lookup_cnt >= len(self.lookup_list):
+                    obs = "No more results.\n"
+                else:
+                    obs = f"(Result {self.lookup_cnt + 1} / {len(self.lookup_list)}) " + self.lookup_list[self.lookup_cnt]
+                    self.lookup_cnt += 1
+            elif action.lower().startswith("finish[") and action.endswith("]"):
+                answer = action[len("finish["):-1].lower()
+                done = True
+                obs = f"Episode finished.\n"
             else:
-                obs = f"(Result {self.lookup_cnt + 1} / {len(self.lookup_list)}) " + self.lookup_list[self.lookup_cnt]
-                self.lookup_cnt += 1
+                obs = "Invalid action: {}".format(action)
+
+            obs = obs.replace('\\n', '')
+            out += f"Thought {i}: {thought}\n" + f"Action {i}: {action}\n" + f"Observation {i}: {obs}\n"
+
         return out
