@@ -25,8 +25,29 @@ from discussion_agents.cog.prompts.react import (
     HOTPOTQA_FEWSHOT_EXAMPLES
 )
 
-# TODO: We should also have zero-shot ReAct.
 class ReActAgent(BaseAgent):
+    """ReAct agent from the original paper.
+
+    This agent has 2 methods: `search` and `generate`. It does not 
+    have any memory, planning, reflecting, or scoring capabilities. 
+    Given a question, this agent, equipped with Wikipedia search, 
+    attempts to answer the question in, a maximum of, 7 steps. Each step
+    is a thought-action-observation sequence. 
+
+    Available actions are:
+        - Search[], search for relevant info on Wikipedia (5 sentences)
+        - Lookup[], lookup keywords in Wikipedia search
+        - Finish[], finish task
+
+    Note:
+        By default, HOTPOTQA_FEWSHOT_EXAMPLES are used as fewshot context examples.
+        You have the option to provide your own fewshot examples in the `generate` method. 
+
+    Attributes:
+        llm (LLM): An instance of a language model used for processing and generating content.
+
+    See: https://github.com/ysymyth/ReAct
+    """
 
     llm: Any  # TODO: Why is `LLM` not usable here? 
 
@@ -36,7 +57,20 @@ class ReActAgent(BaseAgent):
     lookup_list: list = []  #: :meta private:
     lookup_cnt: int = 0  #: :meta private:
 
-    def search_step(self, entity: str, k: Optional[int] = 5):
+    def search(self, entity: str, k: Optional[int] = 5) -> str:
+        """Performs a search operation for a given entity on Wikipedia. It parses the search results 
+        and either returns a list of similar topics (if the exact entity is not found) or the content 
+        of the Wikipedia page related to the entity.
+
+        Args:
+            entity (str): The entity to be searched for.
+            k (Optional[int]): An optional argument to specify the number of sentences to be returned 
+                from the Wikipedia page content.
+
+        Returns:
+            str: A string containing either the Wikipedia page content (trimmed to 'k' sentences) or 
+                 a list of similar topics if the exact match is not found.
+        """
         entity_ = entity.replace(" ", "+")
         search_url = f"https://en.wikipedia.org/w/index.php?search={entity_}"
         response_text = requests.get(search_url).text
@@ -48,7 +82,7 @@ class ReActAgent(BaseAgent):
         else:
             page = [p.get_text().strip() for p in soup.find_all("p") + soup.find_all("ul")]
             if any("may refer to:" in p for p in page):
-                obs = self.search_step("[" + entity + "]")
+                obs = self.search("[" + entity + "]")
             else:
                 self.page = ""
                 for p in page:
@@ -65,8 +99,20 @@ class ReActAgent(BaseAgent):
 
         return obs
 
-    def generate(self, observation: str, fewshot_examples: str = HOTPOTQA_FEWSHOT_EXAMPLES) -> str:
-        """Main method for interacting with zero-shot ReAct agent."""
+    def generate(self, observation: str, fewshot_examples: Optional[str] = HOTPOTQA_FEWSHOT_EXAMPLES) -> str:
+        """It takes an observation/question as input and generates a multi-step reasoning process. 
+        The method involves generating thoughts and corresponding actions based on the observation, 
+        and executing those actions which may include web searches, lookups, or concluding the reasoning process.
+
+        Args:
+            observation (str): The observation based on which the reasoning process is to be performed.
+            fewshot_examples (Optional[str]): A string containing few-shot examples to guide the language model. 
+                                    Defaults to HOTPOTQA_FEWSHOT_EXAMPLES.
+
+        Returns:
+            str: A string representing the entire reasoning process, including thoughts, actions, and observations 
+                 at each step, culminating in a final answer or conclusion.
+        """
         prompt_template = [
             INSTRUCTION,
             fewshot_examples,
@@ -103,7 +149,7 @@ class ReActAgent(BaseAgent):
             # Execute action and get observation.
             if action.lower().startswith("search[") and action.endswith("]"):
                 query = action[len("search["):-1].lower()
-                obs = self.search_step(query)
+                obs = self.search(query)
                 if not obs.endswith("\n"): obs = obs + "\n"
             elif action.lower().startswith("lookup[") and action.endswith("]"):
                 keyword = action[len("lookup["):-1].lower()
