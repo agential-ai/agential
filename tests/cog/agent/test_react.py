@@ -16,13 +16,32 @@ def test_init() -> None:
 
 def test_search() -> None:
     """Tests search method."""
+    # Test unknown search.
     llm = FakeListLLM(responses=["1"])
     agent = ReActAgent(llm=llm)
-    obs = agent.search(entity="best kick boxer in the world")
+    obs = agent.search(entity="SDFKJSHDFKJSDHF")
+    assert "There were no results matching the query." in obs
+    assert agent.page
     assert isinstance(obs, str)
+    assert not agent.lookup_cnt
+    assert not agent.lookup_list
+    assert not agent.lookup_keyword
+
+    # Test mismatch.
+    llm = FakeListLLM(responses=["1"])
+    agent = ReActAgent(llm=llm)
+    obs = agent.search(entity="American Dad! creator")
+    assert isinstance(obs, str)
+    assert not agent.page
+    assert "Could not find American Dad! creator. Similar: " in obs
+    assert not agent.lookup_cnt
+    assert not agent.lookup_list
+    assert not agent.lookup_keyword
 
 def test_generate() -> None:
     """Tests generate method."""
+
+    # Test search.
     responses = [
         'I need to search for the best kick boxer in the world and find information about his controversies and crimes.\nAction 1: Search[best kick boxer in the world]',
         'Thought 2: Since the question mentions "he", I need to search for male kick boxers.\nAction 2: Search[male kick boxers]',
@@ -38,3 +57,32 @@ def test_generate() -> None:
     agent = ReActAgent(llm=llm)
     out = agent.generate(observation=q)
     assert isinstance(out, str)
+
+    # Test except catch.
+    thought = "Thought 2: Since the question mentions \"he\", I need to search for male kick boxers."
+    responses = responses[:1] + [thought] + ["Search[male kick boxers]"] + responses[2:]
+    llm = FakeListLLM(responses=responses)
+    agent = ReActAgent(llm=llm)
+    out = agent.generate(observation=q)
+    assert isinstance(out, str)
+    assert not agent.page
+    assert not agent.lookup_cnt
+    assert not agent.lookup_keyword
+    assert not agent.lookup_list
+
+    # Test lookup.
+    q = "What movie did actress Irene Jacob complete before the American action crime thriller film directed by Stuart Bird?"
+    responses = [
+        "Thought 1: I need to search Irene Jacob and find the movie she completed before the American action crime thriller film directed by Stuart Bird.\nAction 1: Search[Irene Jacob]",
+        "Thought 2: The passage does not mention the movie Irene Jacob completed before the American action crime thriller film directed by Stuart Bird. Maybe I can look up \"before\".\nAction 2: Lookup[before]",
+        "Thought 3: The movie Irene Jacob completed before the American action crime thriller film directed by Stuart Bird is Eternity.\nAction 3: Finish[Eternity]"
+    ]
+    llm = FakeListLLM(responses=responses)
+    agent = ReActAgent(llm=llm)
+    out = agent.generate(observation=q)
+    assert isinstance(out, str)
+    assert agent.page
+    assert agent.lookup_cnt == 1
+    assert agent.lookup_keyword == "before"
+    assert agent.lookup_list
+
