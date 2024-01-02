@@ -180,7 +180,7 @@ class ReActAgent(BaseAgent):
             # Break, if done.
             if done:
                 break
-
+            
         return out
     
 class ZeroShotReActAgent(BaseAgent):
