@@ -76,10 +76,11 @@ def remove_name(text: str, name: str) -> str:
     lines = re.sub(f"^{name} ", "", text.strip()).strip()
     return lines
 
+
 def clean_str(s: str) -> str:
     """Converts a string with mixed encoding to proper UTF-8 format.
 
-    This function takes a string `s` that may contain Unicode escape sequences and/or Latin-1 encoded characters. 
+    This function takes a string `s` that may contain Unicode escape sequences and/or Latin-1 encoded characters.
     It processes the string to interpret Unicode escape sequences and correct any Latin-1 encoded parts, returning the string in UTF-8 format.
 
     Args:
@@ -90,18 +91,19 @@ def clean_str(s: str) -> str:
 
     Note:
         This function is used in the ReACt implementation.
-        This function assumes that the input string is a mix of UTF-8 encoded characters and Unicode escape sequences. 
+        This function assumes that the input string is a mix of UTF-8 encoded characters and Unicode escape sequences.
         It may not work as intended if the input string has a different encoding or if it contains characters outside the Latin-1 range.
-    
+
     See: https://github.com/ysymyth/ReAct/blob/master/wikienv.py.
     """
     return s.encode().decode("unicode-escape").encode("latin1").decode("utf-8")
 
+
 def get_page_obs(page: str, k: Optional[int] = 5) -> str:
     """Extracts and returns the first five sentences from a given text page.
 
-    This function splits a text `page` into paragraphs, then further into sentences. 
-    It returns the first five sentences of the text, concatenating them into a single string. 
+    This function splits a text `page` into paragraphs, then further into sentences.
+    It returns the first five sentences of the text, concatenating them into a single string.
     Each sentence is cleaned of leading and trailing spaces.
 
     Args:
@@ -113,12 +115,11 @@ def get_page_obs(page: str, k: Optional[int] = 5) -> str:
 
     Note:
         This function is used in the ReACt implementation.
-        The function assumes sentences end with a period followed by a space. 
+        The function assumes sentences end with a period followed by a space.
         It may not correctly identify sentences in texts with different punctuation styles.
 
     See: https://github.com/ysymyth/ReAct/blob/master/wikienv.py.
     """
-    
     # Split the page into paragraphs and remove leading/trailing spaces.
     paragraphs = page.split("\n")
     paragraphs = [p.strip() for p in paragraphs if p.strip()]
@@ -126,17 +127,18 @@ def get_page_obs(page: str, k: Optional[int] = 5) -> str:
     # Split paragraphs into sentences and clean each sentence.
     sentences = []
     for p in paragraphs:
-        sentences += p.split('. ')
-    sentences = [s.strip() + '.' for s in sentences if s.strip()]
+        sentences += p.split(". ")
+    sentences = [s.strip() + "." for s in sentences if s.strip()]
 
     # Return the first five sentences joined as a single string.
-    return ' '.join(sentences[:k])
+    return " ".join(sentences[:k])
+
 
 def construct_lookup_list(keyword: str, page: Optional[str] = None) -> list[str]:
     """Creates a list of sentences from a text page that contain a specified keyword.
 
-    This function takes a keyword and an optional text `page`. 
-    It finds all sentences in the text that contain the keyword, irrespective of the case. 
+    This function takes a keyword and an optional text `page`.
+    It finds all sentences in the text that contain the keyword, irrespective of the case.
     If no page is provided, it returns an empty list. The function is case-insensitive.
 
     Args:
@@ -148,12 +150,11 @@ def construct_lookup_list(keyword: str, page: Optional[str] = None) -> list[str]
 
     Note:
         This function is used in the ReACt implementation.
-        The function assumes sentences are separated by a period followed by a space. 
+        The function assumes sentences are separated by a period followed by a space.
         It may not work correctly for texts with different sentence delimiters.
 
     See: https://github.com/ysymyth/ReAct/blob/master/wikienv.py.
     """
-    
     # Return an empty list if no page is provided.
     if page is None:
         return []
@@ -165,8 +166,8 @@ def construct_lookup_list(keyword: str, page: Optional[str] = None) -> list[str]
     # Split paragraphs into sentences and clean each sentence.
     sentences = []
     for p in paragraphs:
-        sentences += p.split('. ')
-    sentences = [s.strip() + '.' for s in sentences if s.strip()]
+        sentences += p.split(". ")
+    sentences = [s.strip() + "." for s in sentences if s.strip()]
 
     # Filter sentences that contain the keyword, case-insensitive.
     return [p for p in sentences if keyword.lower() in p.lower()]

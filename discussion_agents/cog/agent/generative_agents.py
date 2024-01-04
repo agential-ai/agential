@@ -616,7 +616,7 @@ class GenerativeAgent(BaseAgent):
         consumed_tokens_key: str = "most_recent_memories_limit",
     ) -> Dict[str, Any]:
         """Wraps around the memory's `load_memories` method.
-        
+
         If `load_memories` uses `consumed_tokens` and `max_tokens_limit`,
         llm will default to `GenerativeAgent` llm if not specified.
         """

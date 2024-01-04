@@ -6,7 +6,7 @@ INSTRUCTION = """Solve a question answering task with interleaving Thought, Acti
 (2) Lookup[keyword], which returns the next sentence containing keyword in the current passage.
 (3) Finish[answer], which returns the answer and finishes the task.
 Here are some examples.
-""" 
+"""
 
 HOTPOTQA_FEWSHOT_EXAMPLES = """
 Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
