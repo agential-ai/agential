@@ -1,7 +1,7 @@
 """ReAct Agent implementation adapted from LangChain's zero-shot ReAct.
 
 LangChain-adapted Zero-shot ReAct, except the default tool is the wikipedia searcher.
-This implementation uses parts of the zero-shot ReAct prompt from langchain-hub, but it's 
+This implementation uses parts of the zero-shot ReAct prompt from langchain-hub, but it's
 structured to match the original paper's implementation. It is open to other tools.
 
 Original Paper: https://arxiv.org/abs/2210.03629
@@ -60,9 +60,10 @@ class ReActAgent(BaseAgent):
     lookup_cnt: int = 0  #: :meta private:
 
     def search(self, entity: str, k: Optional[int] = 5) -> str:
-        """Performs a search operation for a given entity on Wikipedia. It parses the search results
-        and either returns a list of similar topics (if the exact entity is not found) or the content
-        of the Wikipedia page related to the entity.
+        """Performs a search operation for a given entity on Wikipedia.
+
+        It parses the search results and either returns a list of similar topics
+        (if the exact entity is not found) or the content of the Wikipedia page related to the entity.
 
         Args:
             entity (str): The entity to be searched for.
@@ -111,6 +112,7 @@ class ReActAgent(BaseAgent):
         fewshot_examples: Optional[str] = HOTPOTQA_FEWSHOT_EXAMPLES,
     ) -> str:
         """It takes an observation/question as input and generates a multi-step reasoning process.
+
         The method involves generating thoughts and corresponding actions based on the observation,
         and executing those actions which may include web searches, lookups, or concluding the reasoning process.
 
@@ -139,9 +141,9 @@ class ReActAgent(BaseAgent):
         for i in range(1, 8):
             # Create and run prompt.
             prompt = PromptTemplate.from_template(
-                "".join(prompt_template)
+                "".join(prompt_template)  # type: ignore
                 if not out
-                else "".join(prompt_template[:-1]) + out
+                else "".join(prompt_template[:-1]) + out  # type: ignore
             )
             chain = LLMChain(llm=self.llm, prompt=prompt)
             thought_action = chain.run(observation=observation, i=i).split(
@@ -156,9 +158,9 @@ class ReActAgent(BaseAgent):
                 thought = thought_action.strip().split("\n")[0]
                 revised_prompt_template = (
                     (
-                        "".join(prompt_template)
+                        "".join(prompt_template)  # type: ignore
                         if not out
-                        else "".join(prompt_template[:-1]) + out
+                        else "".join(prompt_template[:-1]) + out  # type: ignore
                     )
                     + f"{thought}\n"
                     + "Action {i}: "
@@ -235,8 +237,8 @@ class ZeroShotReActAgent(BaseAgent):
     """
 
     llm: Any  # TODO: Why is `LLM` not usable here?
-    tools: List[BaseTool] = []
-    prompt: str = None
+    tools: Optional[List[BaseTool]] = []
+    prompt: Optional[str] = None
 
     @root_validator(pre=False)
     def set_args(cls: Any, values: Dict[str, Any]) -> Dict[str, Any]:
@@ -246,9 +248,9 @@ class ZeroShotReActAgent(BaseAgent):
         tools.append(search)
         prompt = values["prompt"]
         prompt = hub.pull("hwchase17/react") if not prompt else prompt
-        if llm:
+        if llm and tools and prompt:
             agent = create_react_agent(llm, tools, prompt)
-            agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+            agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)  # type: ignore
             values["agent"] = agent_executor
         return values
 
@@ -263,4 +265,4 @@ class ZeroShotReActAgent(BaseAgent):
         Returns:
             str: The generated response.
         """
-        return self.agent.invoke(observation_dict)
+        return self.agent.invoke(observation_dict)  # type: ignore
