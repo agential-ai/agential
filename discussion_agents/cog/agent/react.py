@@ -19,7 +19,7 @@ from langchain.chains import LLMChain
 from langchain import hub
 from langchain.prompts import PromptTemplate
 from langchain.agents import AgentExecutor
-from langchain.agents.react import create_react_agent
+from langchain.agents import create_react_agent
 from langchain_core.tools import BaseTool, tool
 from langchain_community.document_loaders.wikipedia import WikipediaLoader
 
@@ -188,10 +188,27 @@ class ReActAgent(BaseAgent):
             
         return out
     
-class ZeroShotReActAgent(BaseAgent):
+@tool
+def search(query: str) -> str:
+    """Searches Wikipedia with a given query and returns first document found."""
+    docs = WikipediaLoader(
+        query=query, 
+        load_max_docs=1, 
+    ).load()
+    return docs[0].page_content
 
+class ZeroShotReActAgent(BaseAgent):
+    """The Zero-Shot ReAct Agent class adapted from LangChain.
+
+    Attributes:
+        llm (Any): An attribute for a language model or a similar interface. The exact type is to be determined.
+        tools (List[BaseTool]): A list of tools that the agent can use to interact or perform tasks.
+        prompt (str, optional): An initial prompt for the agent. If not provided, a default prompt is fetched from a specified hub.
+
+    See: https://github.com/langchain-ai/langchain/tree/master/libs/langchain/langchain/agents/react
+    """
     llm: Any  # TODO: Why is `LLM` not usable here? 
-    tools: List[BaseTool]
+    tools: List[BaseTool] = []
     prompt: str = None
 
     @root_validator(pre=False)
@@ -199,7 +216,7 @@ class ZeroShotReActAgent(BaseAgent):
         """Set default arguments."""
         llm = values["llm"]
         tools = values["tools"]
-        tools = tools.append()
+        tools.append(search)
         prompt = values["prompt"]
         prompt = hub.pull("hwchase17/react") if not prompt else prompt
         if llm:
@@ -207,15 +224,16 @@ class ZeroShotReActAgent(BaseAgent):
             agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
             values["agent"] = agent_executor
         return values
-
-    @tool
-    def search(self, query: str):
-        docs = WikipediaLoader(
-            query=query, 
-            load_max_docs=1, 
-            doc_content_chars_max=-1
-        ).load()
-        return docs[0].page_content
     
-    def generate(self, observation: str) -> str:
-        pass
+    def generate(self, observation_dict: Dict[str, str]) -> str:
+        """Generates a response based on the provided observation dictionary.
+
+        This method wraps around the `AgentExecutor`'s `invoke` method.
+
+        Args:
+            observation_dict (Dict[str, str]): A dictionary containing observation data.
+
+        Returns:
+            str: The generated response.
+        """
+        return self.agent.invoke(observation_dict)
