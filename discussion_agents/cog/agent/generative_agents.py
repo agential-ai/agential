@@ -13,11 +13,10 @@ https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/charac
 """
 from datetime import datetime
 from itertools import chain
-from typing import Any, Dict, List, Optional, Tuple, Type, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from langchain_core.language_models import LLM
 from pydantic.v1 import root_validator
 
 from discussion_agents.cog.agent.base import BaseAgent
@@ -69,7 +68,7 @@ class GenerativeAgent(BaseAgent):
     memory, and persona attributes.
     """
 
-    llm: LLM
+    llm: Any
     memory: GenerativeAgentMemory
     reflector: Optional[BaseReflector] = None
     scorer: Optional[BaseScorer] = None
@@ -610,19 +609,23 @@ class GenerativeAgent(BaseAgent):
         last_k: Optional[int] = None,
         consumed_tokens: Optional[int] = None,
         max_tokens_limit: Optional[int] = None,
-        llm: Optional[LLM] = None,
+        llm: Optional[Any] = None,
         now: Optional[datetime] = None,
         queries_key: str = "relevant_memories",
         most_recent_key: str = "most_recent_memories",
         consumed_tokens_key: str = "most_recent_memories_limit",
     ) -> Dict[str, Any]:
-        """Wraps around the memory's `load_memories` method."""
+        """Wraps around the memory's `load_memories` method.
+
+        If `load_memories` uses `consumed_tokens` and `max_tokens_limit`,
+        llm will default to `GenerativeAgent` llm if not specified.
+        """
         return self.memory.load_memories(
             queries=queries,
             last_k=last_k,
             consumed_tokens=consumed_tokens,
             max_tokens_limit=max_tokens_limit,
-            llm=llm,
+            llm=llm if llm else self.llm,
             now=now,
             queries_key=queries_key,
             most_recent_key=most_recent_key,
@@ -630,7 +633,7 @@ class GenerativeAgent(BaseAgent):
         )
 
     def generate(
-        self, is_react: bool, observation: str, now: Optional[datetime] = None
+        self, observation: str, is_react: bool, now: Optional[datetime] = None
     ) -> Tuple[bool, str]:
         """Wrapper around `generate_reaction` and `generate_dialogue_response`."""
         if is_react:

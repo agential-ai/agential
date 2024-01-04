@@ -2,8 +2,6 @@
 
 from typing import Any, List, Union
 
-from langchain_core.language_models import LLM
-
 from discussion_agents.cog.functional.generative_agents import (
     score_memories_importance,
 )
@@ -26,7 +24,7 @@ class GenerativeAgentScorer(BaseScorer):
     inputs and returns a list of importance scores for each memory content.
     """
 
-    llm: LLM
+    llm: Any
 
     def score(
         self,

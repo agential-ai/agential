@@ -24,7 +24,7 @@ class GenerativeAgentReflector(BaseReflector):
     The class offers a `reflect` method, which takes a set of observations and returns insights based on these observations.
     """
 
-    llm: LLM
+    llm: Any
     retriever: BaseRetriever
 
     def reflect(
