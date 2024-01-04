@@ -9,13 +9,18 @@ Paper Repository: https://github.com/ysymyth/ReAct
 LangChain: https://github.com/langchain-ai/langchain
 LangChain ReAct: https://python.langchain.com/docs/modules/agents/agent_types/react
 """
-from typing import Any, Optional
+from typing import Any, Optional, List, Dict
 
 import requests
 from bs4 import BeautifulSoup
+from pydantic.v1 import root_validator
 
 from langchain.chains import LLMChain
+from langchain import hub
 from langchain.prompts import PromptTemplate
+from langchain.agents import AgentExecutor
+from langchain.agents.react import create_react_agent
+from langchain_core.tools import BaseTool, tool
 from langchain_community.document_loaders.wikipedia import WikipediaLoader
 
 from discussion_agents.utils.parse import clean_str, get_page_obs, construct_lookup_list
@@ -186,11 +191,31 @@ class ReActAgent(BaseAgent):
 class ZeroShotReActAgent(BaseAgent):
 
     llm: Any  # TODO: Why is `LLM` not usable here? 
+    tools: List[BaseTool]
+    prompt: str = None
 
+    @root_validator(pre=False)
+    def set_args(cls: Any, values: Dict[str, Any]) -> Dict[str, Any]:
+        """Set default arguments."""
+        llm = values["llm"]
+        tools = values["tools"]
+        tools = tools.append()
+        prompt = values["prompt"]
+        prompt = hub.pull("hwchase17/react") if not prompt else prompt
+        if llm:
+            agent = create_react_agent(llm, tools, prompt)
+            agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+            values["agent"] = agent_executor
+        return values
+
+    @tool
     def search(self, query: str):
         docs = WikipediaLoader(
             query=query, 
             load_max_docs=1, 
             doc_content_chars_max=-1
         ).load()
-        return docs
+        return docs[0].page_content
+    
+    def generate(self, observation: str) -> str:
+        pass
