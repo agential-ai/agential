@@ -8,7 +8,7 @@ INSTRUCTION = """Solve a question answering task with interleaving Thought, Acti
 Here are some examples.
 """
 
-HOTPOTQA_FEWSHOT_EXAMPLES = """
+WEBTHINK_SIMPLE6 = """
 Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
 Thought 1: I need to search Colorado orogeny, find the area that the eastern sector of the Colorado orogeny extends into, then find the elevation range of the area.
 Action 1: Search[Colorado orogeny]

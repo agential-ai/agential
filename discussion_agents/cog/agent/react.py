@@ -23,7 +23,7 @@ from langchain_core.tools import BaseTool, tool
 from pydantic.v1 import root_validator
 
 from discussion_agents.cog.agent.base import BaseAgent
-from discussion_agents.cog.prompts.react import HOTPOTQA_FEWSHOT_EXAMPLES, INSTRUCTION
+from discussion_agents.cog.prompts.react import WEBTHINK_SIMPLE6, INSTRUCTION
 from discussion_agents.utils.parse import clean_str, construct_lookup_list, get_page_obs
 
 
@@ -109,7 +109,7 @@ class ReActAgent(BaseAgent):
     def generate(
         self,
         observation: str,
-        fewshot_examples: Optional[str] = HOTPOTQA_FEWSHOT_EXAMPLES,
+        fewshot_examples: Optional[str] = WEBTHINK_SIMPLE6,
     ) -> str:
         """It takes an observation/question as input and generates a multi-step reasoning process.
 
@@ -119,7 +119,7 @@ class ReActAgent(BaseAgent):
         Args:
             observation (str): The observation based on which the reasoning process is to be performed.
             fewshot_examples (Optional[str]): A string containing few-shot examples to guide the language model.
-                                    Defaults to HOTPOTQA_FEWSHOT_EXAMPLES.
+                                    Defaults to WEBTHINK_SIMPLE6.
 
         Returns:
             str: A string representing the entire reasoning process, including thoughts, actions, and observations
