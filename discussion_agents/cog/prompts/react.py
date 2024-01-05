@@ -1,4 +1,4 @@
-"""ReAct prompt constants."""
+"""ReAct prompts and fewshot examples."""
 
 
 INSTRUCTION = """Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: 
