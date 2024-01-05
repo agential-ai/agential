@@ -1,5 +1,6 @@
 """Utility functions for parsing outputs."""
 import re
+import string
 
 from typing import List, Optional
 
@@ -171,3 +172,52 @@ def construct_lookup_list(keyword: str, page: Optional[str] = None) -> list[str]
 
     # Filter sentences that contain the keyword, case-insensitive.
     return [p for p in sentences if keyword.lower() in p.lower()]
+
+
+def remove_articles(text: str) -> str:
+    """Remove articles ('a', 'an', 'the') from the text.
+
+    Args:
+        text (str): The input string from which articles need to be removed.
+
+    Returns:
+        str: The modified string with articles removed.
+    """
+    return re.sub(r"\b(a|an|the)\b", " ", text)
+
+
+def white_space_fix(text: str) -> str:
+    """Fix any irregular white spaces in the text.
+
+    Args:
+        text (str): The input string with potential irregular white spaces.
+
+    Returns:
+        str: The modified string with normalized white spaces.
+    """
+    return " ".join(text.split())
+
+
+def remove_punc(text: str) -> str:
+    """Remove punctuation from the text.
+
+    Args:
+        text (str): The input string from which punctuation needs to be removed.
+
+    Returns:
+        str: The modified string with punctuation removed.
+    """
+    exclude = set(string.punctuation)
+    return "".join(ch for ch in text if ch not in exclude)
+
+
+def normalize_answer(s: str) -> str:
+    """Normalize an answer by removing articles, fixing white spaces, and removing punctuation.
+
+    Args:
+        s (str): The input string to be normalized.
+
+    Returns:
+        str: The normalized string.
+    """
+    return white_space_fix(remove_articles(remove_punc(s.lower())))
