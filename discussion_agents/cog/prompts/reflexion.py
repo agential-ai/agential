@@ -1,4 +1,5 @@
 """Reflexion prompts and fewshot examples."""
+from langchain.prompts import PromptTemplate
 
 COT = """
 Relevant Context: The Nile River is the longest river in the world, spanning approximately 6,650 kilometers (4,132 miles) in length. It flows through eleven countries in northeastern Africa, including Egypt, Sudan, and Uganda.
@@ -58,3 +59,18 @@ Here are some examples:
 Relevant Context: {context}
 Question: {question}{scratchpad}
 """
+
+REFLECTION_AFTER_LAST_TRIAL_HEADER = 'The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\n'
+REFLECTION_HEADER = 'You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\n'
+LAST_TRIAL_HEADER = 'You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\n'
+
+
+cot_reflect_agent_prompt = PromptTemplate(
+    input_variables=["examples", "reflections", "context", "question", "scratchpad"],
+    template = COT_AGENT_REFLECT_INSTRUCTION,
+)
+
+cot_reflect_prompt = PromptTemplate(
+    input_variables=["examples", "context", "question", "scratchpad"],
+    template = COT_REFLECT_INSTRUCTION,
+)
