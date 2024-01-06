@@ -25,11 +25,9 @@ from discussion_agents.cog.functional.generative_agents import (
     get_topics_of_reflection,
 )
 from discussion_agents.cog.modules.memory.generative_agents import GenerativeAgentMemory
-from discussion_agents.cog.modules.reflect.base import BaseReflector
 from discussion_agents.cog.modules.reflect.generative_agents import (
     GenerativeAgentReflector,
 )
-from discussion_agents.cog.modules.score.base import BaseScorer
 from discussion_agents.cog.modules.score.generative_agents import GenerativeAgentScorer
 from discussion_agents.cog.persona.base import BasePersona
 from discussion_agents.cog.persona.generative_agents import GenerativeAgentPersona
@@ -48,9 +46,9 @@ class GenerativeAgent(BaseAgent):
         llm (LLM): An instance of a language model used for processing and generating content.
         memory (GenerativeAgentMemory): A memory management component responsible for handling
             storage and retrieval of memories.
-        reflector (Optional[BaseReflector]): A component for reflecting on observations and memories.
+        reflector (Optional[GenerativeAgentReflector]): A component for reflecting on observations and memories.
             Automatically set based on the LLM and memory if not provided.
-        scorer (Optional[BaseScorer]): A component for scoring and evaluating memories or observations.
+        scorer (Optional[GenerativeAgentScorer]): A component for scoring and evaluating memories or observations.
             Automatically set based on the LLM if not provided.
         persona (Optional[BasePersona]): A persona component representing agent's characteristics.
             Automatically set based on provided personal attributes below if not provided.
@@ -70,8 +68,8 @@ class GenerativeAgent(BaseAgent):
 
     llm: Any
     memory: GenerativeAgentMemory
-    reflector: Optional[BaseReflector] = None
-    scorer: Optional[BaseScorer] = None
+    reflector: Optional[GenerativeAgentReflector] = None
+    scorer: Optional[GenerativeAgentScorer] = None
     persona: Optional[BasePersona] = None
     importance_weight: float = 0.15
     reflection_threshold: Optional[int] = 8
