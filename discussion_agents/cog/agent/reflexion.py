@@ -16,6 +16,7 @@ from langchain_core.messages.human import (
 )
 from langchain_core.language_models.chat_models import BaseChatModel
 from discussion_agents.cog.agent.base import BaseAgent
+from discussion_agents.cog.modules.memory.reflexion import ReflexionMemory
 from discussion_agents.cog.eval.reflexion import EM
 from discussion_agents.cog.prompts.reflexion import (
     COT,
@@ -73,6 +74,7 @@ def parse_action(string: str) -> Optional[Tuple[str, str]]:
 class ReflexionCoTAgent(BaseAgent):
     self_reflect_llm: BaseChatModel
     action_llm: BaseChatModel
+    memory: ReflexionMemory
 
     question: str
     context: str
@@ -86,29 +88,28 @@ class ReflexionCoTAgent(BaseAgent):
     answer: str = ""
     reflections: List[str] = []
     reflections_str: str = ""
-    scratchpad: str = ""
     finished: bool = False
 
     def step(self) -> None:
         # Think.
-        self.scratchpad += f'\nThought:'
-        self.scratchpad += ' ' + self.prompt_agent()
-        print(self.scratchpad.split('\n')[-1])
+        self.memory.add_memories("\nThought:")
+        self.memory.add_memories(" " + self.prompt_agent())
+        print(self.memory.load_memories()["scratchpad"].split('\n')[-1])
 
         # Act.
         action = self.prompt_agent()
-        self.scratchpad += f'\nAction:'
-        self.scratchpad += ' ' + action
         action_type, argument = parse_action(action)
-        print(self.scratchpad.split('\n')[-1])  
+        self.memory.add_memories("\nAction:")
+        self.memory.add_memories(" " + action)
+        print(self.memory.load_memories()["scratchpad"].split('\n')[-1])  
 
-        self.scratchpad += f'\nObservation: '
-        if action_type == 'Finish':
+        self.memory.add_memories("\nObservation:")
+        if action_type == "Finish":
             self.answer = argument
             if self.is_correct():
-                self.scratchpad += 'Answer is CORRECT'
+                self.memory.add_memories("Answer is CORRECT")
             else: 
-                self.scratchpad += 'Answer is INCORRECT'
+                self.memory.add_memories("Answer is INCORRECT")
             self.finished = True
         else:
             print('Invalid action type, please try again.')
@@ -123,13 +124,13 @@ class ReflexionCoTAgent(BaseAgent):
     def reflect(self, strategy: str) -> None:
         print('Running Reflexion strategy...')
         if strategy == "last_attempt":
-            self.reflections = [self.scratchpad]
+            self.reflections = [self.memory.load_memories()["scratchpad"]]
             self.reflections_str = format_last_attempt(self.question, self.reflections[0])
         elif strategy == "reflexion":
             self.reflections += [self.prompt_reflection()]
             self.reflections_str = format_reflections(self.reflections)
         elif strategy == "last_attempt_and_reflexion":
-            self.reflections_str = format_last_attempt(self.question, self.scratchpad)
+            self.reflections_str = format_last_attempt(self.question, self.memory.load_memories()["scratchpad"])
             self.reflections = [self.prompt_reflection()]
             self.reflections_str += '\n'+ format_reflections(self.reflections, header = REFLECTION_AFTER_LAST_TRIAL_HEADER)
         else:
@@ -137,7 +138,7 @@ class ReflexionCoTAgent(BaseAgent):
         print(self.reflections_str)
 
     def reset(self) -> None:
-        self.scratchpad = ""
+        self.memory.clear()
         self.finished = False
 
     def prompt_reflection(self) -> str:
@@ -145,7 +146,7 @@ class ReflexionCoTAgent(BaseAgent):
             examples = self.reflect_examples,
             context = self.context,
             question = self.question,
-            scratchpad = self.scratchpad
+            scratchpad = self.memory.load_memories()["scratchpad"]
         )
 
         out = self.self_reflect_llm(
@@ -163,7 +164,7 @@ class ReflexionCoTAgent(BaseAgent):
             reflections = self.reflections_str,
             context = self.context,
             question = self.question,
-            scratchpad = self.scratchpad
+            scratchpad = self.memory.load_memories()["scratchpad"]
         )
 
         out = self.action_llm(
@@ -174,6 +175,9 @@ class ReflexionCoTAgent(BaseAgent):
             ]
         ).content
         return format_step(out)
+
+    def is_finished(self) -> bool:
+        return self.finished
 
     def is_correct(self) -> bool:
         return EM(self.answer, self.key)
