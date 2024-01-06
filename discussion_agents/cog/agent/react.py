@@ -1,8 +1,7 @@
-"""ReAct Agent implementation adapted from LangChain's zero-shot ReAct.
+"""ReAct Agent implementation and LangChain's zero-shot ReAct.
 
-LangChain-adapted Zero-shot ReAct, except the default tool is the wikipedia searcher.
-This implementation uses parts of the zero-shot ReAct prompt from langchain-hub, but it's
-structured to match the original paper's implementation. It is open to other tools.
+This includes the original ReAct agent implementation and the LangChain-adapted
+Zero-shot ReAct, with a wikipedia searcher default tool.
 
 Original Paper: https://arxiv.org/abs/2210.03629
 Paper Repository: https://github.com/ysymyth/ReAct

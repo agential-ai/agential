@@ -30,6 +30,7 @@ wikipedia = "^1.4.0"
 langchain = "^0.0.354"
 langchainhub = "^0.1.14"
 langchain-core = "^0.1.5"
+pandas = "1.5.3"
 
 [tool.poetry.group.dev.dependencies]
 sphinx = "^7.2.6"

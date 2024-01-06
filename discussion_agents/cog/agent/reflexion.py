@@ -1,11 +1,20 @@
-"""Reflexion Agent."""
+"""Reflexion Agent implementation.
+
+Original Paper: https://arxiv.org/abs/2303.11366
+Paper Repositories: 
+    - https://github.com/noahshinn/reflexion-draft
+    - https://github.com/noahshinn/reflexion
+"""
 import re
 import tiktoken
 from tiktoken.core import Encoding
 from typing import Any, List, Optional, Tuple
 
 from langchain.prompts import PromptTemplate
-
+from langchain_core.messages.human import (
+    HumanMessage
+)
+from langchain_core.language_models.chat_models import BaseChatModel
 from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.eval.reflexion import EM
 from discussion_agents.cog.prompts.reflexion import (
@@ -61,9 +70,9 @@ def parse_action(string: str) -> Optional[Tuple[str, str]]:
     else:
         return None
 
-class ReflexionCoT(BaseAgent):
-    self_reflect_llm: Any
-    action_llm: Any
+class ReflexionCoTAgent(BaseAgent):
+    self_reflect_llm: BaseChatModel
+    action_llm: BaseChatModel
 
     question: str
     context: str
@@ -87,8 +96,8 @@ class ReflexionCoT(BaseAgent):
         print(self.scratchpad.split('\n')[-1])
 
         # Act.
-        self.scratchpad += f'\nAction:'
         action = self.prompt_agent()
+        self.scratchpad += f'\nAction:'
         self.scratchpad += ' ' + action
         action_type, argument = parse_action(action)
         print(self.scratchpad.split('\n')[-1])  
@@ -101,7 +110,6 @@ class ReflexionCoT(BaseAgent):
             else: 
                 self.scratchpad += 'Answer is INCORRECT'
             self.finished = True
-            return
         else:
             print('Invalid action type, please try again.')
 
@@ -132,19 +140,25 @@ class ReflexionCoT(BaseAgent):
         self.scratchpad = ""
         self.finished = False
 
-    def _build_reflection_prompt(self) -> str:
-        return self.reflect_prompt.format(
+    def prompt_reflection(self) -> str:
+        prompt = self.reflect_prompt.format(
             examples = self.reflect_examples,
             context = self.context,
             question = self.question,
             scratchpad = self.scratchpad
         )
 
-    def prompt_reflection(self) -> str:
-        return format_step(self.self_reflect_llm(self._build_reflection_prompt()))
-    
-    def _build_agent_prompt(self) -> str:
-        return self.agent_prompt.format(
+        out = self.self_reflect_llm(
+            [
+                HumanMessage(
+                    content=prompt,
+                )
+            ]
+        ).content
+        return format_step(out)
+
+    def prompt_agent(self) -> str:
+        prompt = self.agent_prompt.format(
             examples = self.cot_examples,
             reflections = self.reflections_str,
             context = self.context,
@@ -152,11 +166,14 @@ class ReflexionCoT(BaseAgent):
             scratchpad = self.scratchpad
         )
 
-    def prompt_agent(self) -> str:
-        return format_step(self.action_llm(self._build_agent_prompt()))
-
-    def is_finished(self) -> bool:
-        return self.finished
+        out = self.action_llm(
+            [
+                HumanMessage(
+                    content=prompt,
+                )
+            ]
+        ).content
+        return format_step(out)
 
     def is_correct(self) -> bool:
         return EM(self.answer, self.key)
