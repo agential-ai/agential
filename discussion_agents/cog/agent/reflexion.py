@@ -34,15 +34,11 @@ class ReflexionCoTAgent(BaseAgent):
     context: str
     key: str
     agent_prompt: PromptTemplate = cot_reflect_agent_prompt
-    reflect_prompt: PromptTemplate = cot_reflect_prompt
     cot_examples: str = COT
     reflect_examples: str = COT_REFLECT
 
     step_n: int = 0
     answer: str = ""
-
-    reflections: List[str] = []
-    reflections_str: str = ""
 
     finished: bool = False
 
