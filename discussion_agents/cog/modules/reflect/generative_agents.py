@@ -45,7 +45,6 @@ class GenerativeAgentReflector(BaseReflector):
 
         The method internally calls the `reflect` function, delegating the process of generating insights.
         """
-        now = kwargs.get("now", None)
         _, insights = reflect(
             observations=observations, llm=self.llm, retriever=self.retriever, now=now
         )

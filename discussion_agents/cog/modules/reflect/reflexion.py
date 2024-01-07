@@ -8,7 +8,6 @@ from discussion_agents.cog.functional.reflexion import reflect
 class ReflexionReflector(BaseReflector):
     llm: BaseChatModel
     reflections: List[str] = []
-    reflections_str: str = ""
 
     def reflect(
         self,
@@ -17,8 +16,8 @@ class ReflexionReflector(BaseReflector):
         context: str,
         question: str,
         scratchpad: str
-    ) -> Tuple[List[str], str]:
-        reflections, reflections_str = reflect(
+    ) -> List[str]:
+        reflections = reflect(
             strategy=strategy,
             llm=self.llm,
             reflections=self.reflections,
@@ -29,6 +28,5 @@ class ReflexionReflector(BaseReflector):
         )
 
         self.reflections = reflections
-        self.reflections_str = reflections_str
 
-        return reflections, reflections_str
+        return reflections
