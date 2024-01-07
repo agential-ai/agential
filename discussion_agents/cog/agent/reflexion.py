@@ -5,7 +5,7 @@ Paper Repositories:
     - https://github.com/noahshinn/reflexion-draft
     - https://github.com/noahshinn/reflexion
 """
-from typing import List, Optional
+from typing import Optional
 
 from langchain.prompts import PromptTemplate
 from langchain_core.messages.human import (
@@ -15,8 +15,6 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.functional.reflexion import (
     _parse_action,
-    _format_last_attempt,
-    _format_reflections
 )
 from discussion_agents.cog.modules.memory.reflexion import ReflexionMemory
 from discussion_agents.cog.modules.reflect.reflexion import ReflexionReflector
@@ -24,7 +22,6 @@ from discussion_agents.cog.eval.reflexion import EM
 from discussion_agents.cog.prompts.reflexion import (
     COT,
     COT_REFLECT,
-    REFLECTION_AFTER_LAST_TRIAL_HEADER,
     cot_reflect_agent_prompt,
 )
 
@@ -43,7 +40,6 @@ class ReflexionCoTAgent(BaseAgent):
 
     step_n: int = 0
     answer: str = ""
-
     finished: bool = False
 
     def step(self) -> None:
@@ -78,7 +74,7 @@ class ReflexionCoTAgent(BaseAgent):
         self.step_n += 1
 
     def reflect(self, strategy: str) -> str:
-        reflections = self.reflector.reflect(
+        _, reflections_str = self.reflector.reflect(
             strategy=strategy, 
             examples=self.reflect_examples,
             context=self.context,
@@ -86,19 +82,13 @@ class ReflexionCoTAgent(BaseAgent):
             scratchpad=self.memory.load_memories()["scratchpad"]
         )
 
-        if strategy == "last_attempt":
-            reflections_str = _format_last_attempt(self.question, self.memory.load_memories()["scratchpad"])
-        elif strategy == "reflexion":
-            reflections_str = _format_reflections(reflections) 
-        elif strategy == "last_attempt_and_reflexion":
-            reflections_str = _format_last_attempt(self.question, self.memory.load_memories()["scratchpad"])
-            reflections_str += "\n" + _format_reflections(reflections, REFLECTION_AFTER_LAST_TRIAL_HEADER)
-
         return reflections_str
 
     def reset(self) -> None:
         self.memory.clear()
         self.finished = False
+        self.step_n = 0
+        self.answer = ""
 
     def prompt_agent(self) -> str:
         prompt = self.agent_prompt.format(

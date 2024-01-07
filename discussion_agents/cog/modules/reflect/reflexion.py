@@ -1,9 +1,16 @@
 """Reflecting module for Reflexion."""
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from discussion_agents.cog.modules.reflect.base import BaseReflector
 from discussion_agents.cog.functional.reflexion import reflect
+from discussion_agents.cog.functional.reflexion import (
+    _format_last_attempt,
+    _format_reflections
+)
+from discussion_agents.cog.prompts.reflexion import (
+    REFLECTION_AFTER_LAST_TRIAL_HEADER,
+)
 
 class ReflexionReflector(BaseReflector):
     """Reflexion module for reflecting.
@@ -13,10 +20,12 @@ class ReflexionReflector(BaseReflector):
 
     Attributes:
         llm (BaseChatModel): A language model used for generating reflections.
-        reflections (List[str]): A list to store the generated reflections.
+        reflections (Optional[List[str]]): A list to store the generated reflections.
+        reflections_str (Optional[str]): The reflections formatted into a string.
     """
     llm: BaseChatModel
     reflections: Optional[List[str]] = []
+    reflections_str: Optional[str] = ""
 
     def reflect(
         self,
@@ -25,7 +34,7 @@ class ReflexionReflector(BaseReflector):
         context: str,
         question: str,
         scratchpad: str
-    ) -> List[str]:
+    ) -> Tuple[List[str], str]:
         """Wrapper around Reflexion's `reflect` method in functional.
 
         This method calls the appropriate reflection function based on the provided strategy, passing in the necessary
@@ -40,7 +49,8 @@ class ReflexionReflector(BaseReflector):
             scratchpad (str): The scratchpad content related to the question.
 
         Returns:
-            List[str]: The updated list of reflections based on the selected strategy.
+            Tuple[List[str], str]: A tuple of the updated list of reflections based on the selected strategy and the formatted
+                reflections.
 
         Raises:
             NotImplementedError: If an unknown reflection strategy is specified.
@@ -55,6 +65,15 @@ class ReflexionReflector(BaseReflector):
             scratchpad=scratchpad
         )
 
-        self.reflections = reflections
+        if strategy == "last_attempt":
+            reflections_str = _format_last_attempt(question, scratchpad)
+        elif strategy == "reflexion":
+            reflections_str = _format_reflections(reflections) 
+        elif strategy == "last_attempt_and_reflexion":
+            reflections_str = _format_last_attempt(question, scratchpad)
+            reflections_str += "\n" + _format_reflections(reflections, REFLECTION_AFTER_LAST_TRIAL_HEADER)
 
-        return reflections
+        self.reflections = reflections
+        self.reflections_str = reflections_str
+
+        return reflections, reflections_str
