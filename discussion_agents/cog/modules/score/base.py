@@ -13,9 +13,8 @@ class BaseScorer(BaseModel, ABC):
     @abstractmethod
     def score(
         self,
-        memory_contents: Union[str, List[str]],
-        relevant_memories: Union[str, List[str]],
+        *args: Any,
         **kwargs: Any,
-    ) -> List[float]:
+    ) -> Any:
         """Score memory_contents with respect to relevant memories and returns a list of scores."""
         pass
