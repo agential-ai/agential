@@ -20,7 +20,6 @@ from discussion_agents.cog.eval.reflexion import EM
 from discussion_agents.cog.prompts.reflexion import (
     COT,
     COT_REFLECT,
-    REFLECTION_AFTER_LAST_TRIAL_HEADER,
     cot_reflect_agent_prompt,
 )
 

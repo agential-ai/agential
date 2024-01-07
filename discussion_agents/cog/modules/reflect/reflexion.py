@@ -1,5 +1,5 @@
 """Reflecting module for Reflexion."""
-from typing import Any, List, Union, Tuple
+from typing import Any, List, Tuple
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from discussion_agents.cog.modules.reflect.base import BaseReflector
@@ -20,8 +20,8 @@ class ReflexionReflector(BaseReflector):
     ) -> Tuple[List[str], str]:
         reflections, reflections_str = reflect(
             strategy=strategy,
-            reflections=self.reflections,
             llm=self.llm,
+            reflections=self.reflections,
             examples=examples,
             context=context,
             question=question,

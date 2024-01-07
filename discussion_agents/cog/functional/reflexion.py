@@ -167,8 +167,8 @@ def reflect_last_attempt(question:str, scratchpad: str) -> Tuple[List[str], str]
     return [scratchpad], _format_last_attempt(question, scratchpad)
 
 def reflect_reflexion(
-    reflections: List[str],
     llm: BaseChatModel,
+    reflections: List[str],
     examples: str, 
     context: str, 
     question: str, 
@@ -180,8 +180,8 @@ def reflect_reflexion(
     and scratchpad. The new reflection is added to the existing list of reflections, and the list is formatted.
 
     Args:
-        reflections (List[str]): Existing list of reflections.
         llm (BaseChatModel): The language model used for generating the reflection.
+        reflections (List[str]): Existing list of reflections.
         examples (str): Example inputs for the prompt template.
         context (str): The context of the conversation or query.
         question (str): The question being addressed.
@@ -237,8 +237,8 @@ def reflect_last_attempt_and_reflexion(
 
 def reflect(
     strategy: str,
-    reflections: List[str],
     llm: BaseChatModel,
+    reflections: List[str],
     examples: str, 
     context: str, 
     question: str, 
@@ -252,8 +252,8 @@ def reflect(
 
     Args:
         strategy (str): The reflection strategy to be used ('last_attempt', 'reflexion', or 'last_attempt_and_reflexion').
-        reflections (List[str]): A list of existing reflections.
         llm (BaseChatModel): The language model used for generating new reflections.
+        reflections (List[str]): A list of existing reflections.
         examples (str): Example inputs for the prompt template.
         context (str): The context of the conversation or query.
         question (str): The question being addressed.
@@ -275,8 +275,8 @@ def reflect(
         reflections, reflections_str = reflect_last_attempt(question, scratchpad)
     elif strategy == "reflexion":
         reflections, reflections_str = reflect_reflexion(
-            reflections=reflections, 
             llm=llm, 
+            reflections=reflections, 
             examples=examples, 
             context=context, 
             question=question, 
