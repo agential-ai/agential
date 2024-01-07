@@ -69,8 +69,3 @@ cot_reflect_agent_prompt = PromptTemplate(
     input_variables=["examples", "reflections", "context", "question", "scratchpad"],
     template = COT_AGENT_REFLECT_INSTRUCTION,
 )
-
-cot_reflect_prompt = PromptTemplate(
-    input_variables=["examples", "context", "question", "scratchpad"],
-    template = COT_REFLECT_INSTRUCTION,
-)
