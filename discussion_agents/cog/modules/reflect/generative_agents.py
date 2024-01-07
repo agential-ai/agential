@@ -1,7 +1,7 @@
 """Reflecting module for Generative Agents."""
-from typing import Any, List, Union
+from typing import Any, List, Union, Optional
+from datetime import datetime
 
-from langchain_core.language_models import LLM
 from langchain_core.retrievers import BaseRetriever
 
 from discussion_agents.cog.functional.generative_agents import (
@@ -30,7 +30,7 @@ class GenerativeAgentReflector(BaseReflector):
     def reflect(
         self,
         observations: Union[str, List[str]],
-        **kwargs: Any,
+        now: Optional[datetime] = None
     ) -> List[List[str]]:
         """Analyzes observations and generates insights using the language model and retriever.
 
@@ -39,7 +39,6 @@ class GenerativeAgentReflector(BaseReflector):
         Args:
             observations (Union[str, List[str]]): The observations to be reflected upon. This can be a single observation or a list of observations.
             now (Optional[datetime], optional): The current time, used to provide temporal context to the reflection process. Defaults to None.
-            **kwargs (Any): other keyword arguments for reflect. This implementation has `now`.
 
         Returns:
             List[str]: A list of insights generated from the observations. These insights are strings that represent the model's interpretation and understanding of the input observations.
