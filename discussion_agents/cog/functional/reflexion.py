@@ -124,6 +124,7 @@ def _prompt_cot_agent(
     Args:
         llm (BaseChatModel): The language model to be used for generating the reflection.
         examples (str): Example inputs for the prompt template.
+        reflections (List[str]): Existing list of reflections.
         context (str): The context of the conversation or query.
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
