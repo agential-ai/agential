@@ -62,7 +62,7 @@ class ReflexionCoTAgent(BaseAgent):
         # Act.
         action = _prompt_cot_agent(
             llm=self.action_llm,
-            examples=COT_REFLECT,
+            examples=COT,
             reflections=self.reflector.reflections_str,
             context=context,
             question=question,
@@ -90,7 +90,7 @@ class ReflexionCoTAgent(BaseAgent):
     def reflect(self, context: str, question: str, strategy: str) -> str:
         _, reflections_str = self.reflector.reflect(
             strategy=strategy, 
-            examples=self.reflect_examples,
+            examples=COT_REFLECT,
             context=context,
             question=question,
             scratchpad=self.memory.load_memories()["scratchpad"]
