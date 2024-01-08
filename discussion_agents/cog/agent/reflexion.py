@@ -7,10 +7,6 @@ Paper Repositories:
 """
 from typing import Optional
 
-from langchain.prompts import PromptTemplate
-from langchain_core.messages.human import (
-    HumanMessage
-)
 from langchain_core.language_models.chat_models import BaseChatModel
 from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.functional.reflexion import (
@@ -19,10 +15,10 @@ from discussion_agents.cog.functional.reflexion import (
 from discussion_agents.cog.modules.memory.reflexion import ReflexionMemory
 from discussion_agents.cog.modules.reflect.reflexion import ReflexionReflector
 from discussion_agents.cog.eval.reflexion import EM
+from discussion_agents.cog.functional.reflexion import _prompt_cot_agent
 from discussion_agents.cog.prompts.reflexion import (
     COT,
     COT_REFLECT,
-    cot_reflect_agent_prompt,
 )
 
 class ReflexionCoTAgent(BaseAgent):
@@ -31,30 +27,53 @@ class ReflexionCoTAgent(BaseAgent):
     memory: Optional[ReflexionMemory] = None
     reflector: Optional[ReflexionReflector] = None
 
-    question: str
-    context: str
-    key: str
-    agent_prompt: PromptTemplate = cot_reflect_agent_prompt
-    cot_examples: str = COT
-    reflect_examples: str = COT_REFLECT
-
     step_n: int = 0
     answer: str = ""
     finished: bool = False
 
-    def step(self) -> None:
+    def generate(
+        self, 
+        context: str, 
+        question: str, 
+        key: str, 
+        reflexion_strategy: str = None
+    ) -> None:
+        # Reflect if possible.
+        if self.step_n > 0 and not self.is_correct(self.answer, key) and reflexion_strategy:
+            self.reflect(context, question, reflexion_strategy)
+
+        # Reset.
+        self.reset()
+
         # Think.
         self.memory.add_memories("\nThought:")
-        self.memory.add_memories(" " + self.prompt_agent())
+        self.memory.add_memories(" " + \
+            _prompt_cot_agent(
+                llm=self.action_llm,
+                examples=COT,
+                reflections=self.reflector.reflections_str,
+                context=context,
+                question=question,
+                scratchpad=self.memory.load_memories()["scratchpad"]
+            )
+        )
         print(self.memory.load_memories()["scratchpad"].split('\n')[-1])
 
         # Act.
-        action = self.prompt_agent()
+        action = _prompt_cot_agent(
+            llm=self.action_llm,
+            examples=COT_REFLECT,
+            reflections=self.reflector.reflections_str,
+            context=context,
+            question=question,
+            scratchpad=self.memory.load_memories()["scratchpad"]
+        )
         action_type, argument = _parse_action(action)
         self.memory.add_memories("\nAction:")
         self.memory.add_memories(" " + action)
         print(self.memory.load_memories()["scratchpad"].split('\n')[-1])  
 
+        # Observe.
         self.memory.add_memories("\nObservation:")
         if action_type == "Finish":
             self.answer = argument
@@ -66,19 +85,14 @@ class ReflexionCoTAgent(BaseAgent):
         else:
             print('Invalid action type, please try again.')
 
-    def run(self, reflexion_strategy: str = None) -> None:
-        if self.step_n > 0 and not self.is_correct() and reflexion_strategy:
-            self.reflect(reflexion_strategy)
-        self.reset()
-        self.step()
         self.step_n += 1
 
-    def reflect(self, strategy: str) -> str:
+    def reflect(self, context: str, question: str, strategy: str) -> str:
         _, reflections_str = self.reflector.reflect(
             strategy=strategy, 
             examples=self.reflect_examples,
-            context=self.context,
-            question=self.question,
+            context=context,
+            question=question,
             scratchpad=self.memory.load_memories()["scratchpad"]
         )
 
@@ -87,30 +101,10 @@ class ReflexionCoTAgent(BaseAgent):
     def reset(self) -> None:
         self.memory.clear()
         self.finished = False
-        self.step_n = 0
-        self.answer = ""
-
-    def prompt_agent(self) -> str:
-        prompt = self.agent_prompt.format(
-            examples=self.cot_examples,
-            reflections=self.reflector.reflections_str,
-            context=self.context,
-            question=self.question,
-            scratchpad=self.memory.load_memories()["scratchpad"]
-        )
-
-        out = self.action_llm(
-            [
-                HumanMessage(
-                    content=prompt,
-                )
-            ]
-        ).content
-        return format_step(out)
 
     def is_finished(self) -> bool:
         return self.finished
 
-    def is_correct(self) -> bool:
-        return EM(self.answer, self.key)
+    def is_correct(self, answer: str, key: str) -> bool:
+        return EM(answer, key)
         
