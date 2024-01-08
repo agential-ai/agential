@@ -15,6 +15,7 @@ from discussion_agents.cog.prompts.reflexion import (
     REFLECTION_HEADER,
     LAST_TRIAL_HEADER,
     COT_REFLECT_INSTRUCTION,
+    COT_AGENT_REFLECT_INSTRUCTION
 )
 
 gpt3_5_turbo_enc = tiktoken.encoding_for_model("gpt-3.5-turbo")  # https://openai.com/blog/gpt-4-api-general-availability
@@ -110,6 +111,46 @@ def _parse_action(string: str) -> Optional[Tuple[str, str]]:
     else:
         return None
 
+def _prompt_cot_agent(
+    llm: BaseChatModel, 
+    examples: str, 
+    reflections: str, 
+    context: str, 
+    question: str, 
+    scratchpad: str
+) -> str:
+    """Generates a CoT prompt for thought and action.
+
+    Args:
+        llm (BaseChatModel): The language model to be used for generating the reflection.
+        examples (str): Example inputs for the prompt template.
+        context (str): The context of the conversation or query.
+        question (str): The question being addressed.
+        scratchpad (str): The scratchpad content related to the question.
+
+    Returns:
+        str: The generated reflection prompt.
+    """
+    prompt = PromptTemplate(
+        input_variables=["examples", "reflections", "context", "question", "scratchpad"],
+        template=COT_AGENT_REFLECT_INSTRUCTION,
+    ).format(
+        examples=examples,
+        reflections=reflections,
+        context=context,
+        question=question,
+        scratchpad=scratchpad
+    )
+
+    out = llm(
+        [
+            HumanMessage(
+                content=prompt,
+            )
+        ]
+    ).content
+    return _format_step(out)
+
 def _prompt_cot_reflection(
     llm: BaseChatModel,
     examples: str, 
@@ -117,8 +158,7 @@ def _prompt_cot_reflection(
     question: str, 
     scratchpad: str
 ) -> str:
-    """
-    Generates a reflection prompt using the provided inputs and a language model.
+    """Generates a reflection prompt.
 
     Args:
         llm (BaseChatModel): The language model to be used for generating the reflection.
