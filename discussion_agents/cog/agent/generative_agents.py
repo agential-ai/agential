@@ -17,7 +17,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from pydantic.v1 import root_validator
+from pydantic import root_validator
 
 from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.functional.generative_agents import (

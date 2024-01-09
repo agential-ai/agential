@@ -5,7 +5,8 @@ Paper Repositories:
     - https://github.com/noahshinn/reflexion-draft
     - https://github.com/noahshinn/reflexion
 """
-from typing import Optional
+from typing import Optional, Dict, Any
+from pydantic import root_validator
 
 from langchain_core.language_models.chat_models import BaseChatModel
 from discussion_agents.cog.agent.base import BaseAgent
@@ -26,6 +27,30 @@ class ReflexionCoTAgent(BaseAgent):
     action_llm: BaseChatModel
     memory: Optional[ReflexionMemory] = None
     reflector: Optional[ReflexionReflector] = None
+
+    @root_validator(pre=False)
+    def set_args(cls: Any, values: Dict[str, Any]) -> Dict[str, Any]:
+        """Set default arguments."""
+        llm = values.get("llm")
+        memory = values.get("memory")
+        reflector = values.get("reflector")
+        scorer = values.get("scorer")
+        persona = values.get("persona")
+        if llm and memory and not reflector:
+            values["reflector"] = GenerativeAgentReflector(
+                llm=llm, retriever=memory.retriever
+            )
+        if llm and not scorer:
+            values["scorer"] = GenerativeAgentScorer(llm=llm)
+        if not persona:
+            values["persona"] = GenerativeAgentPersona(
+                name=values.get("name", ""),
+                age=values.get("age", 0),
+                traits=values.get("traits", ""),
+                status=values.get("status", ""),
+                lifestyle=values.get("lifestyle", ""),
+            )
+        return values
 
     step_n: int = 0
     answer: str = ""
@@ -97,6 +122,9 @@ class ReflexionCoTAgent(BaseAgent):
         )
 
         return reflections_str
+
+    def retrieve(self) -> Dict[str, Any]:
+        return self.memory.load_memories()
 
     def reset(self) -> None:
         self.memory.clear()

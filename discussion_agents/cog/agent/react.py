@@ -19,7 +19,7 @@ from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain_community.document_loaders.wikipedia import WikipediaLoader
 from langchain_core.tools import BaseTool, tool
-from pydantic.v1 import root_validator
+from pydantic import root_validator
 
 from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.prompts.react import WEBTHINK_SIMPLE6, INSTRUCTION
