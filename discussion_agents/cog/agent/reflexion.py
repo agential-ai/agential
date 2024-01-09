@@ -31,25 +31,14 @@ class ReflexionCoTAgent(BaseAgent):
     @root_validator(pre=False)
     def set_args(cls: Any, values: Dict[str, Any]) -> Dict[str, Any]:
         """Set default arguments."""
-        llm = values.get("llm")
+        self_reflect_llm = values.get("self_reflect_llm")
         memory = values.get("memory")
         reflector = values.get("reflector")
-        scorer = values.get("scorer")
-        persona = values.get("persona")
-        if llm and memory and not reflector:
-            values["reflector"] = GenerativeAgentReflector(
-                llm=llm, retriever=memory.retriever
-            )
-        if llm and not scorer:
-            values["scorer"] = GenerativeAgentScorer(llm=llm)
-        if not persona:
-            values["persona"] = GenerativeAgentPersona(
-                name=values.get("name", ""),
-                age=values.get("age", 0),
-                traits=values.get("traits", ""),
-                status=values.get("status", ""),
-                lifestyle=values.get("lifestyle", ""),
-            )
+
+        if not memory:
+            values["memory"] = ReflexionMemory()
+        if not reflector:
+            values["reflector"] = ReflexionReflector(llm=self_reflect_llm) 
         return values
 
     step_n: int = 0
