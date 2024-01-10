@@ -1,5 +1,4 @@
 """Reflexion prompts and fewshot examples."""
-from langchain.prompts import PromptTemplate
 
 COT = """
 Relevant Context: The Nile River is the longest river in the world, spanning approximately 6,650 kilometers (4,132 miles) in length. It flows through eleven countries in northeastern Africa, including Egypt, Sudan, and Uganda.

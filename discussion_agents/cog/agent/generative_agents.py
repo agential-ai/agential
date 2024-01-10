@@ -17,7 +17,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from pydantic import root_validator
+from pydantic.v1 import root_validator
 
 from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.functional.generative_agents import (
@@ -79,7 +79,7 @@ class GenerativeAgent(BaseAgent):
     status: str = "Klaus Mueller is writing a research paper on the effects of gentrification in low-income communities."
     lifestyle: str = "Klaus Mueller goes to bed around 11pm, awakes up around 7am, eats dinner around 5pm."
 
-    @root_validator(pre=False)
+    @root_validator(pre=False, skip_on_failure=True)
     def set_args(cls: Any, values: Dict[str, Any]) -> Dict[str, Any]:
         """Set default arguments."""
         llm = values.get("llm")

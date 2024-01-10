@@ -19,7 +19,7 @@ from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain_community.document_loaders.wikipedia import WikipediaLoader
 from langchain_core.tools import BaseTool, tool
-from pydantic import root_validator
+from pydantic.v1 import root_validator
 
 from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.prompts.react import WEBTHINK_SIMPLE6, INSTRUCTION
@@ -239,9 +239,10 @@ class ZeroShotReActAgent(BaseAgent):
     tools: Optional[List[BaseTool]] = []
     prompt: Optional[str] = None
 
-    @root_validator(pre=False)
+    @root_validator(pre=False, skip_on_failure=True)
     def set_args(cls: Any, values: Dict[str, Any]) -> Dict[str, Any]:
         """Set default arguments."""
+        print(values)
         llm = values["llm"]
         tools = values["tools"]
         tools.append(search)

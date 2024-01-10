@@ -2,7 +2,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict
 
-from pydantic import BaseModel
+from pydantic.v1 import BaseModel
 
 
 class BaseMemory(BaseModel, ABC):

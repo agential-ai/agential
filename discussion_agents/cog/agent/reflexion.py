@@ -6,7 +6,7 @@ Paper Repositories:
     - https://github.com/noahshinn/reflexion
 """
 from typing import Optional, Dict, Any
-from pydantic import root_validator
+from pydantic.v1 import root_validator
 
 from langchain_core.language_models.chat_models import BaseChatModel
 from discussion_agents.cog.agent.base import BaseAgent
@@ -28,7 +28,7 @@ class ReflexionCoTAgent(BaseAgent):
     memory: Optional[ReflexionMemory] = None
     reflector: Optional[ReflexionReflector] = None
 
-    @root_validator(pre=False)
+    @root_validator(pre=False, skip_on_failure=True)
     def set_args(cls: Any, values: Dict[str, Any]) -> Dict[str, Any]:
         """Set default arguments."""
         self_reflect_llm = values.get("self_reflect_llm")
@@ -37,7 +37,7 @@ class ReflexionCoTAgent(BaseAgent):
 
         if not memory:
             values["memory"] = ReflexionMemory()
-        if not reflector:
+        if self_reflect_llm and not reflector:
             values["reflector"] = ReflexionReflector(llm=self_reflect_llm) 
         return values
 

@@ -3,7 +3,7 @@
 from abc import ABC
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic.v1 import BaseModel
 
 
 class BaseAgent(BaseModel, ABC):
