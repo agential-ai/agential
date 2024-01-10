@@ -1,6 +1,6 @@
 """Reflecting module for Generative Agents."""
-from typing import Any, List, Union, Optional
 from datetime import datetime
+from typing import Any, List, Optional, Union
 
 from langchain_core.retrievers import BaseRetriever
 
@@ -28,9 +28,7 @@ class GenerativeAgentReflector(BaseReflector):
     retriever: BaseRetriever
 
     def reflect(
-        self,
-        observations: Union[str, List[str]],
-        now: Optional[datetime] = None
+        self, observations: Union[str, List[str]], now: Optional[datetime] = None
     ) -> List[List[str]]:
         """Analyzes observations and generates insights using the language model and retriever.
 

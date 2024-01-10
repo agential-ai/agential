@@ -2,6 +2,7 @@
 
 from discussion_agents.utils.parse import normalize_answer
 
+
 def EM(answer: str, key: str) -> bool:
     """Compares two strings, `answer` and `key`, after normalizing them.
 

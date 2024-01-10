@@ -6,7 +6,9 @@ Paper Repositories:
     - https://github.com/noahshinn/reflexion
 """
 from typing import Any, Dict
+
 from discussion_agents.cog.modules.memory.base import BaseMemory
+
 
 class ReflexionMemory(BaseMemory):
     """A memory storage class for Reflexion.
@@ -16,9 +18,12 @@ class ReflexionMemory(BaseMemory):
     Attributes:
         scratchpad (str): A string attribute that stores all the memories.
     """
-    scratchpad: str = "" 
 
-    def clear(self,) -> None:
+    scratchpad: str = ""
+
+    def clear(
+        self,
+    ) -> None:
         """Clears the contents of the scratchpad.
 
         This method resets the scratchpad to an empty string, erasing all stored memories.
@@ -29,7 +34,7 @@ class ReflexionMemory(BaseMemory):
         """Adds a new observation to the scratchpad.
 
         This method appends the given observation text to the existing contents of the scratchpad.
-        
+
         Args:
             observation (str): The observation text to be added to the memory.
 

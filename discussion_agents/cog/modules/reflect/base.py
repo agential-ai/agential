@@ -11,8 +11,6 @@ class BaseReflector(BaseModel, ABC):
     llm: Any
 
     @abstractmethod
-    def reflect(
-        self, *args: Any, **kwargs: Any
-    ) -> Any:
+    def reflect(self, *args: Any, **kwargs: Any) -> Any:
         """Reflect on memory_contents w.r.t. relevant memories and returns a list of reflections."""
         pass

@@ -1,16 +1,18 @@
 """Reflecting module for Reflexion."""
 from typing import List, Optional, Tuple
+
 from langchain_core.language_models.chat_models import BaseChatModel
 
-from discussion_agents.cog.modules.reflect.base import BaseReflector
-from discussion_agents.cog.functional.reflexion import reflect
 from discussion_agents.cog.functional.reflexion import (
     _format_last_attempt,
-    _format_reflections
+    _format_reflections,
+    reflect,
 )
+from discussion_agents.cog.modules.reflect.base import BaseReflector
 from discussion_agents.cog.prompts.reflexion import (
     REFLECTION_AFTER_LAST_TRIAL_HEADER,
 )
+
 
 class ReflexionReflector(BaseReflector):
     """Reflexion module for reflecting.
@@ -23,17 +25,13 @@ class ReflexionReflector(BaseReflector):
         reflections (Optional[List[str]]): A list to store the generated reflections.
         reflections_str (Optional[str]): The reflections formatted into a string.
     """
+
     llm: BaseChatModel
     reflections: Optional[List[str]] = []
     reflections_str: Optional[str] = ""
 
     def reflect(
-        self,
-        strategy: str,
-        examples: str,
-        context: str,
-        question: str,
-        scratchpad: str
+        self, strategy: str, examples: str, context: str, question: str, scratchpad: str
     ) -> Tuple[List[str], str]:
         """Wrapper around Reflexion's `reflect` method in functional.
 
@@ -62,16 +60,18 @@ class ReflexionReflector(BaseReflector):
             examples=examples,
             context=context,
             question=question,
-            scratchpad=scratchpad
+            scratchpad=scratchpad,
         )
 
         if strategy == "last_attempt":
             reflections_str = _format_last_attempt(question, scratchpad)
         elif strategy == "reflexion":
-            reflections_str = _format_reflections(reflections) 
+            reflections_str = _format_reflections(reflections)
         elif strategy == "last_attempt_and_reflexion":
             reflections_str = _format_last_attempt(question, scratchpad)
-            reflections_str += "\n" + _format_reflections(reflections, REFLECTION_AFTER_LAST_TRIAL_HEADER)
+            reflections_str += "\n" + _format_reflections(
+                reflections, REFLECTION_AFTER_LAST_TRIAL_HEADER
+            )
 
         self.reflections = reflections
         self.reflections_str = reflections_str
