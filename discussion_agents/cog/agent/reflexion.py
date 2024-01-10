@@ -50,11 +50,11 @@ class ReflexionCoTAgent(BaseAgent):
         context: str, 
         question: str, 
         key: str, 
-        reflexion_strategy: str = None
+        strategy: str = None
     ) -> None:
         # Reflect if possible.
-        if self.step_n > 0 and not self.is_correct(self.answer, key) and reflexion_strategy:
-            self.reflect(context, question, reflexion_strategy)
+        if self.step_n > 0 and not self.is_correct(self.answer, key) and strategy:
+            self.reflect(context, question, strategy)
 
         # Reset.
         self.reset()
@@ -74,6 +74,7 @@ class ReflexionCoTAgent(BaseAgent):
         print(self.memory.load_memories()["scratchpad"].split('\n')[-1])
 
         # Act.
+        self.memory.add_memories("\nAction:")
         action = _prompt_cot_agent(
             llm=self.action_llm,
             examples=COT,
@@ -83,7 +84,6 @@ class ReflexionCoTAgent(BaseAgent):
             scratchpad=self.memory.load_memories()["scratchpad"]
         )
         action_type, argument = _parse_action(action)
-        self.memory.add_memories("\nAction:")
         self.memory.add_memories(" " + action)
         print(self.memory.load_memories()["scratchpad"].split('\n')[-1])  
 
@@ -91,7 +91,7 @@ class ReflexionCoTAgent(BaseAgent):
         self.memory.add_memories("\nObservation:")
         if action_type == "Finish":
             self.answer = argument
-            if self.is_correct():
+            if self.is_correct(self.answer, key):
                 self.memory.add_memories("Answer is CORRECT")
             else: 
                 self.memory.add_memories("Answer is INCORRECT")
