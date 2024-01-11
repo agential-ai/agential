@@ -1,4 +1,4 @@
-"""Unit tests for Generative Agents reflecting module."""
+"""Unit tests for Generative Agents reflect module."""
 from datetime import datetime
 
 from langchain.llms.fake import FakeListLLM

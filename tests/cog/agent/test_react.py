@@ -1,4 +1,4 @@
-"""Unit tests for ReActAgent."""
+"""Unit tests for ReAct."""
 from langchain.llms.fake import FakeListLLM
 
 from discussion_agents.cog.agent.react import ReActAgent, ZeroShotReActAgent
