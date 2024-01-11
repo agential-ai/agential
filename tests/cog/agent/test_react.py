@@ -16,22 +16,19 @@ def test_init() -> None:
     assert not agent.lookup_list
 
 
-def test_search() -> None:
+def test_search(react_agent: ReActAgent) -> None:
     """Tests search method."""
     # Test unknown search.
-    llm = FakeListLLM(responses=["1"])
-    agent = ReActAgent(llm=llm)
-    obs = agent.search(entity="SDFKJSHDFKJSDHF")
+    obs = react_agent.search(entity="SDFKJSHDFKJSDHF")
     assert "There were no results matching the query." in obs
-    assert agent.page
+    assert react_agent.page
     assert isinstance(obs, str)
-    assert not agent.lookup_cnt
-    assert not agent.lookup_list
-    assert not agent.lookup_keyword
+    assert not react_agent.lookup_cnt
+    assert not react_agent.lookup_list
+    assert not react_agent.lookup_keyword
 
     # Test mismatch.
-    llm = FakeListLLM(responses=["1"])
-    agent = ReActAgent(llm=llm)
+    agent = ReActAgent(llm=FakeListLLM(responses=["1"]))
     obs = agent.search(entity="American Dad! creator")
     assert isinstance(obs, str)
     assert not agent.page
@@ -55,16 +52,14 @@ def test_generate() -> None:
     ]
 
     q = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
-    llm = FakeListLLM(responses=responses)
-    agent = ReActAgent(llm=llm)
+    agent = ReActAgent(llm=FakeListLLM(responses=responses))
     out = agent.generate(observation=q)
     assert isinstance(out, str)
 
     # Test except catch.
     thought = 'Thought 2: Since the question mentions "he", I need to search for male kick boxers.'
     responses = responses[:1] + [thought] + ["Search[male kick boxers]"] + responses[2:]
-    llm = FakeListLLM(responses=responses)
-    agent = ReActAgent(llm=llm)
+    agent = ReActAgent(llm=FakeListLLM(responses=responses))
     out = agent.generate(observation=q)
     assert isinstance(out, str)
     assert not agent.page
@@ -91,8 +86,7 @@ def test_generate() -> None:
 
 def test_zeroshot_react_init() -> None:
     """Tests ZeroShotReActAgent's initialization."""
-    llm = FakeListLLM(responses=["1"])
-    agent = ZeroShotReActAgent(llm=llm)
+    agent = ZeroShotReActAgent(llm=FakeListLLM(responses=["1"]))
     assert agent is not None
     assert agent.llm is not None
     assert len(agent.tools) >= 1

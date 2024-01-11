@@ -23,6 +23,7 @@ from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.functional.generative_agents import (
     get_insights_on_topics,
     get_topics_of_reflection,
+    _create_default_time_weighted_retriever
 )
 from discussion_agents.cog.modules.memory.generative_agents import GenerativeAgentMemory
 from discussion_agents.cog.modules.reflect.generative_agents import (
@@ -44,8 +45,8 @@ class GenerativeAgent(BaseAgent):
 
     Attributes:
         llm (LLM): An instance of a language model used for processing and generating content.
-        memory (GenerativeAgentMemory): A memory management component responsible for handling
-            storage and retrieval of memories.
+        memory (Optional[GenerativeAgentMemory]): A memory management component responsible for handling
+            storage and retrieval of memories. Automatically set if not provided.
         reflector (Optional[GenerativeAgentReflector]): A component for reflecting on observations and memories.
             Automatically set based on the LLM and memory if not provided.
         scorer (Optional[GenerativeAgentScorer]): A component for scoring and evaluating memories or observations.
@@ -67,7 +68,7 @@ class GenerativeAgent(BaseAgent):
     """
 
     llm: Any
-    memory: GenerativeAgentMemory
+    memory: Optional[GenerativeAgentMemory] = None
     reflector: Optional[GenerativeAgentReflector] = None
     scorer: Optional[GenerativeAgentScorer] = None
     persona: Optional[BasePersona] = None
@@ -87,6 +88,11 @@ class GenerativeAgent(BaseAgent):
         reflector = values.get("reflector")
         scorer = values.get("scorer")
         persona = values.get("persona")
+        if not memory:
+            memory = GenerativeAgentMemory(
+                retriever=_create_default_time_weighted_retriever()
+            )
+            values["memory"] = memory
         if llm and memory and not reflector:
             values["reflector"] = GenerativeAgentReflector(
                 llm=llm, retriever=memory.retriever
