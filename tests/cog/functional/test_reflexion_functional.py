@@ -1,20 +1,22 @@
 """Unit tests for Reflexion functional methods."""
 import pytest
+
 from langchain_community.chat_models.fake import FakeListChatModel
 
 from discussion_agents.cog.functional.reflexion import (
-    _truncate_scratchpad,
-    _format_reflections,
     _format_last_attempt,
+    _format_reflections,
     _format_step,
     _parse_action,
     _prompt_cot_agent,
     _prompt_cot_reflection,
+    _truncate_scratchpad,
+    reflect,
     reflect_last_attempt,
-    reflect_reflexion,
     reflect_last_attempt_and_reflexion,
-    reflect
+    reflect_reflexion,
 )
+
 
 def test__truncate_scratchpad() -> None:
     """Test _truncate_scratchpad function."""
@@ -47,18 +49,18 @@ def test__format_reflections() -> None:
 
     # Test: Non-empty reflections
     reflections = ["Reflection 1", "Reflection 2"]
-    expected_result = 'You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- Reflection 1\n- Reflection 2'
+    expected_result = "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- Reflection 1\n- Reflection 2"
     assert _format_reflections(reflections) == expected_result
 
     # Test: Reflections with spaces
     reflections = ["  Reflection 1  ", "  Reflection 2"]
-    expected_result = 'You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- Reflection 1\n- Reflection 2'
+    expected_result = "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- Reflection 1\n- Reflection 2"
     assert _format_reflections(reflections) == expected_result
 
     # Test: Custom header
     reflections = ["Reflection"]
     custom_header = "Custom Header: "
-    expected_result = 'Custom Header: Reflections:\n- Reflection'
+    expected_result = "Custom Header: Reflections:\n- Reflection"
     assert _format_reflections(reflections, custom_header) == expected_result
 
 
@@ -66,9 +68,10 @@ def test__format_last_attempt() -> None:
     """Test _format_last_attempt function."""
     question = "What is the capital of France?"
     scratchpad = "The capital of France is Paris."
-    expected_format = 'You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nThe capital of France is Paris.\n(END PREVIOUS TRIAL)\n'
+    expected_format = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nThe capital of France is Paris.\n(END PREVIOUS TRIAL)\n"
     result = _format_last_attempt(question, scratchpad)
     assert result == expected_format
+
 
 def test__format_step() -> None:
     """Test _format_step function."""
@@ -83,9 +86,10 @@ def test__format_step() -> None:
     step = "Already formatted step"
     assert _format_step(step) == "Already formatted step"
 
+
 def test__parse_action() -> None:
     """Test _parse_action function."""
-        # Test with a valid action string.
+    # Test with a valid action string.
     valid_string = "ActionType[Argument]"
     assert _parse_action(valid_string) == ("ActionType", "Argument")
 
@@ -101,6 +105,7 @@ def test__parse_action() -> None:
     invalid_string = "ActionType[]"
     assert _parse_action(invalid_string) is None
 
+
 def test__prompt_cot_agent() -> None:
     """Test _prompt_cot_agent function."""
     out = _prompt_cot_agent(
@@ -109,10 +114,11 @@ def test__prompt_cot_agent() -> None:
         reflections="",
         context="",
         question="",
-        scratchpad=""
+        scratchpad="",
     )
     assert isinstance(out, str)
     assert out == "1"
+
 
 def test__prompt_cot_reflection() -> None:
     """Test _prompt_cot_reflection function."""
@@ -121,16 +127,18 @@ def test__prompt_cot_reflection() -> None:
         examples="",
         context="",
         question="",
-        scratchpad=""
+        scratchpad="",
     )
     assert isinstance(out, str)
     assert out == "1"
+
 
 def test_reflect_last_attempt() -> None:
     """Test reflect_last_attempt function."""
     scratchpad = ""
     out = reflect_last_attempt(scratchpad)
     assert out == [""]
+
 
 def test_reflect_reflexion() -> None:
     """Test reflect_reflexion function."""
@@ -140,10 +148,11 @@ def test_reflect_reflexion() -> None:
         examples="",
         context="",
         question="",
-        scratchpad=""
+        scratchpad="",
     )
     assert isinstance(out, list)
     assert out == ["", "1"]
+
 
 def test_reflect_last_attempt_and_reflexion() -> None:
     """Test reflect_last_attempt_and_reflexion function."""
@@ -152,10 +161,11 @@ def test_reflect_last_attempt_and_reflexion() -> None:
         examples="",
         context="",
         question="",
-        scratchpad=""
+        scratchpad="",
     )
     assert isinstance(out, list)
     assert out == ["1"]
+
 
 def test_reflect() -> None:
     """Test reflection function."""
@@ -168,7 +178,7 @@ def test_reflect() -> None:
             examples="",
             context="",
             question="",
-            scratchpad=""
+            scratchpad="",
         )
 
     # Last attempt.
@@ -179,7 +189,7 @@ def test_reflect() -> None:
         examples="",
         context="",
         question="",
-        scratchpad=""
+        scratchpad="",
     )
     assert out == [""]
 
@@ -191,11 +201,11 @@ def test_reflect() -> None:
         examples="",
         context="",
         question="",
-        scratchpad=""
+        scratchpad="",
     )
     assert isinstance(out, list)
     assert out == ["", "1"]
-    
+
     # Last attempt and Reflexion.
     out = reflect(
         strategy="last_attempt_and_reflexion",
@@ -204,7 +214,7 @@ def test_reflect() -> None:
         examples="",
         context="",
         question="",
-        scratchpad=""
+        scratchpad="",
     )
     assert isinstance(out, list)
     assert out == ["1"]

@@ -1,15 +1,15 @@
 """Unit tests for parsing-related functions."""
 from discussion_agents.utils.parse import (
-    parse_list, 
-    parse_numbered_list, 
-    remove_name,
-    clean_str, 
-    get_page_obs,
+    clean_str,
     construct_lookup_list,
+    get_page_obs,
+    normalize_answer,
+    parse_list,
+    parse_numbered_list,
     remove_articles,
-    white_space_fix,
+    remove_name,
     remove_punc,
-    normalize_answer
+    white_space_fix,
 )
 
 
@@ -68,7 +68,7 @@ def test_get_page_obs() -> None:
 
     Mathematics is the language of science. It is used to describe the laws of nature.
     """
-    
+
     gt = "The quick brown fox jumps over the lazy dog. This sentence contains all the letters of the alphabet.. It's often used for typing practice.. Science is fascinating. It covers many areas, like physics, biology, and chemistry."
 
     result = get_page_obs(sample_page)
@@ -90,15 +90,15 @@ def test_construct_lookup_list() -> None:
     # Test with keyword "fox".
     result1 = construct_lookup_list(keyword1, sample_page)
     expected1 = [
-        'The quick brown fox jumps over the lazy dog.',
-        'Foxes are wild animals..',
-        'In many cultures, foxes are depicted as cunning creatures..'
+        "The quick brown fox jumps over the lazy dog.",
+        "Foxes are wild animals..",
+        "In many cultures, foxes are depicted as cunning creatures..",
     ]
     assert result1 == expected1
 
     # Test with keyword "Lions".
     result2 = construct_lookup_list(keyword2, sample_page)
-    expected2 = ['For instance, lions are considered the king of the jungle..']
+    expected2 = ["For instance, lions are considered the king of the jungle.."]
     assert result2 == expected2, "Test with keyword 'Lions' failed."
 
     # Test with no page provided.
@@ -109,10 +109,14 @@ def test_construct_lookup_list() -> None:
 
 def test_remove_articles() -> None:
     """Test remove_articles function."""
-    sample_text = "A fox jumped over the fence. An apple was on the table. The quick brown fox."
+    sample_text = (
+        "A fox jumped over the fence. An apple was on the table. The quick brown fox."
+    )
 
     result = remove_articles(sample_text)
-    expected = 'A fox jumped over   fence. An apple was on   table. The quick brown fox.'
+    expected = (
+        "A fox jumped over   fence. An apple was on   table. The quick brown fox."
+    )
     assert result == expected, f"Test failed: Expected '{expected}', got '{result}'"
 
 
@@ -132,8 +136,10 @@ def test_remove_punc() -> None:
 
 def test_normalize_answer() -> None:
     """Test normalize_answer function."""
-    sample_text = "A fox jumped over the fence. An apple was on the table. The quick brown fox."
+    sample_text = (
+        "A fox jumped over the fence. An apple was on the table. The quick brown fox."
+    )
 
     result = normalize_answer(sample_text)
-    expected = 'fox jumped over fence apple was on table quick brown fox'
+    expected = "fox jumped over fence apple was on table quick brown fox"
     assert result == expected
