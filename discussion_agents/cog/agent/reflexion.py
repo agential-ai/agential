@@ -40,7 +40,6 @@ class ReflexionCoTAgent(BaseAgent):
         retrieve(): Retrieves the current memory state of the agent.
         reset(): Resets the agent's state for a new problem-solving session.
         is_finished(): Checks if the problem-solving process has concluded.
-        is_correct(answer, key): Evaluates if the provided answer is correct.
     """
 
     self_reflect_llm: BaseChatModel
@@ -80,7 +79,7 @@ class ReflexionCoTAgent(BaseAgent):
             strategy (str, optional): The strategy to use for reflection. Defaults to None.
         """
         # Reflect if possible.
-        if self.step_n > 0 and not self.is_correct(self.answer, key) and strategy:
+        if self.step_n > 0 and not EM(self.answer, key) and strategy:
             self.reflect(context, question, strategy)
 
         # Reset.
@@ -119,7 +118,7 @@ class ReflexionCoTAgent(BaseAgent):
         self.memory.add_memories("\nObservation:")
         if action_type == "Finish":
             self.answer = argument
-            if self.is_correct(self.answer, key):
+            if EM(self.answer, key):
                 self.memory.add_memories("Answer is CORRECT")
             else:
                 self.memory.add_memories("Answer is INCORRECT")
@@ -178,15 +177,3 @@ class ReflexionCoTAgent(BaseAgent):
             bool: True if the agent has finished, False otherwise.
         """
         return self.finished
-
-    def is_correct(self, answer: str, key: str) -> bool:
-        """Evaluates the correctness of the generated answer against the key using exact-math grading.
-
-        Args:
-            answer (str): The generated answer.
-            key (str): The key to evaluate against.
-
-        Returns:
-            bool: True if the answer is correct, False otherwise.
-        """
-        return EM(answer, key)
