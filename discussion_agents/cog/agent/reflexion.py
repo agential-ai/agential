@@ -66,7 +66,7 @@ class ReflexionCoTAgent(BaseAgent):
 
     def generate(
         self, context: str, question: str, key: str, strategy: str = None
-    ) -> None:
+    ) -> str:
         """Generates a response based on the provided context, question, and key.
 
         The `generate` method internally calls reflect (if possible), resets the memory,
@@ -77,19 +77,22 @@ class ReflexionCoTAgent(BaseAgent):
             question (str): The question to answer.
             key (str): The key to evaluate the correctness of the answer.
             strategy (str, optional): The strategy to use for reflection. Defaults to None.
+        
+        Returns:
+            out (str): A string output from the ReflexionCoTAgent.
         """
         # Reflect if possible.
         if self.step_n > 0 and not EM(self.answer, key) and strategy:
-            self.reflect(context, question, strategy)
+            self.reflect(strategy, context, question)
 
         # Reset.
         self.reset()
 
+        out = ""
+
         # Think.
         self.memory.add_memories("\nThought:")
-        self.memory.add_memories(
-            " "
-            + _prompt_cot_agent(
+        thought = _prompt_cot_agent(
                 llm=self.action_llm,
                 examples=COT,
                 reflections=self.reflector.reflections_str,
@@ -97,8 +100,8 @@ class ReflexionCoTAgent(BaseAgent):
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
             )
-        )
-        print(self.memory.load_memories()["scratchpad"].split("\n")[-1])
+        self.memory.add_memories(" " + thought)
+        out += self.memory.load_memories()["scratchpad"].split("\n")[-1] + "\n"
 
         # Act.
         self.memory.add_memories("\nAction:")
@@ -112,23 +115,29 @@ class ReflexionCoTAgent(BaseAgent):
         )
         action_type, argument = _parse_action(action)
         self.memory.add_memories(" " + action)
-        print(self.memory.load_memories()["scratchpad"].split("\n")[-1])
+        out += self.memory.load_memories()["scratchpad"].split("\n")[-1] + "\n"
 
         # Observe.
         self.memory.add_memories("\nObservation:")
         if action_type == "Finish":
             self.answer = argument
             if EM(self.answer, key):
-                self.memory.add_memories("Answer is CORRECT")
+                correctness_str = "Answer is CORRECT"
             else:
-                self.memory.add_memories("Answer is INCORRECT")
+                correctness_str = "Answer is INCORRECT"
+            self.memory.add_memories(correctness_str)
+            out += "\n" + correctness_str
             self.finished = True
         else:
-            print("Invalid action type, please try again.")
+            invalid_action_str = "Invalid action type, please try again."
+            self.memory.add_memories(invalid_action_str)
+            out += "\n" + invalid_action_str
 
         self.step_n += 1
 
-    def reflect(self, context: str, question: str, strategy: str) -> str:
+        return out
+
+    def reflect(self, strategy: str, context: str, question: str) -> str:
         """Reflects on the previous steps to improve the response.
 
         Given the agent can reflect (strategy is not `None`), the strategy
@@ -140,9 +149,9 @@ class ReflexionCoTAgent(BaseAgent):
 
 
         Args:
+            strategy (str): The strategy to use for reflection.
             context (str): The context or background information.
             question (str): The question to answer.
-            strategy (str): The strategy to use for reflection.
 
         Returns:
             str: Generated reflections based on the strategy.
