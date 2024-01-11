@@ -132,7 +132,6 @@ def _parse_action(string: str) -> Optional[Tuple[str, str]]:
         argument = match.group(2)
         return action_type, argument
     else:
-        print("uh oh")
         return None
 
 
