@@ -17,6 +17,8 @@ from langchain import hub
 from langchain.agents import AgentExecutor, create_react_agent
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
+from langchain_community.docstore.wikipedia import Wikipedia
+from langchain.agents.react.base import DocstoreExplorer
 from langchain_community.document_loaders.wikipedia import WikipediaLoader
 from langchain_core.tools import BaseTool, tool
 from pydantic.v1 import root_validator
@@ -216,13 +218,9 @@ class ReActAgent(BaseAgent):
 
 @tool
 def search(query: str) -> str:
-    """Searches Wikipedia with a given query and returns first document found."""
-    docs = WikipediaLoader(
-        query=query,
-        load_max_docs=1,
-    ).load()
-    return docs[0].page_content
-
+    """Searches Wikipedia given query."""
+    docstore = DocstoreExplorer(Wikipedia())
+    return docstore.search(query)
 
 class ZeroShotReActAgent(BaseAgent):
     """The Zero-Shot ReAct Agent class adapted from LangChain.
