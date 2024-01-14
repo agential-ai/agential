@@ -26,23 +26,17 @@ from discussion_agents.cog.functional.react import _is_halted, react_think, reac
 class ReActAgent(BaseAgent):
     """ReAct agent from the original paper.
 
-    This agent has 2 methods: `search` and `generate`. It does not
-    have any memory, planning, reflecting, or scoring capabilities.
-    Given a question, this agent, equipped with Wikipedia search,
-    attempts to answer the question in, a maximum of, 7 steps. Each step
-    is a thought-action-observation sequence.
-
-    Available actions are:
-        - Search[], search for relevant info on Wikipedia (5 sentences)
-        - Lookup[], lookup keywords in Wikipedia search
-        - Finish[], finish task
-
-    Note:
-        By default, HOTPOTQA_FEWSHOT_EXAMPLES are used as fewshot context examples.
-        You have the option to provide your own fewshot examples in the `generate` method.
+    Implements the ReAct algorithm as described in the original paper.
+    This agent uses a language model to iteratively process a question
+    through a sequence of think-act-observe steps, utilizing a document
+    store for information retrieval.
 
     Attributes:
-        llm (LLM): An instance of a language model used for processing and generating content.
+        llm (Any): The language model used by the agent.
+        max_steps (int): Maximum number of steps to process the question.
+        max_tokens (int): Maximum token limit for the language model.
+        docstore (DocstoreExplorer): Document store for information retrieval.
+        enc (Encoding): Encoder for calculating token lengths.
 
     See: https://github.com/ysymyth/ReAct
     """
@@ -68,6 +62,18 @@ class ReActAgent(BaseAgent):
         self.__scratchpad: str = ""  #: :meta private:
 
     def generate(self, question: str, reset: bool = True) -> str:
+        """Processes a given question through ReAct.
+
+        Iteratively applies the think-act-observe cycle to generate an answer for the question.
+        The process continues until the operation is halted based on certain conditions.
+
+        Args:
+            question (str): The question to be processed.
+            reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
+
+        Returns:
+            str: The accumulated output from the ReAct process.
+        """
         if reset:
             self.reset()
         
@@ -115,6 +121,10 @@ class ReActAgent(BaseAgent):
 
 
     def reset(self) -> None:
+        """Resets the internal state of the ReAct agent.
+
+        Sets the step number, finished flag, and scratchpad to their initial values.
+        """
         self.__step_n = 1
         self.__finished = False
         self.__scratchpad: str = ""
