@@ -10,25 +10,16 @@ LangChain ReAct: https://python.langchain.com/docs/modules/agents/agent_types/re
 """
 from typing import Any, Dict, List, Optional
 
-import requests
 import tiktoken
 from tiktoken.core import Encoding
 
-from bs4 import BeautifulSoup
 from langchain import hub
 from langchain.agents import AgentExecutor, create_react_agent
-from langchain.chains import LLMChain
-from langchain.prompts import PromptTemplate
 from langchain_community.docstore.wikipedia import Wikipedia
 from langchain.agents.react.base import DocstoreExplorer
 from langchain_core.tools import BaseTool, tool
-from pydantic.v1 import root_validator
 
 from discussion_agents.cog.agent.base import BaseAgent
-from discussion_agents.cog.prompts.react import INSTRUCTION, WEBTHINK_SIMPLE6
-from discussion_agents.utils.parse import clean_str, construct_lookup_list, get_page_obs
-
-
 from discussion_agents.utils.parse import parse_action
 from discussion_agents.cog.functional.react import _is_halted, react_think, react_act, react_observe
 
@@ -71,9 +62,10 @@ class ReActAgent(BaseAgent):
         self.docstore = docstore
         self.enc = enc
 
-    step_n: int = 1
-    finished: bool = False
-    scratchpad: str = ""
+        # Internal variables.
+        self.__step_n = 1  #: :meta private:
+        self.__finished = False  #: :meta private:
+        self.__scratchpad: str = ""  #: :meta private:
 
     def generate(self, question: str, reset: bool = True) -> str:
         if reset:
@@ -81,51 +73,51 @@ class ReActAgent(BaseAgent):
         
         out = ""
         while not _is_halted(
-            finished=self.finished,
-            step_n=self.step_n, 
+            finished=self.__finished,
+            step_n=self.__step_n, 
             max_steps=self.max_steps, 
             question=question, 
-            scratchpad=self.scratchpad, 
+            scratchpad=self.__scratchpad, 
             max_tokens=self.max_tokens, 
             enc=self.enc
         ):
             # Think.
-            self.scratchpad = react_think(
+            self.__scratchpad = react_think(
                 llm=self.llm, 
                 question=question, 
-                scratchpad=self.scratchpad
+                scratchpad=self.__scratchpad
             )
-            out += "\n" + self.scratchpad.split('\n')[-1]
+            out += "\n" + self.__scratchpad.split('\n')[-1]
             
             # Act.
-            self.scratchpad, action = react_act(
+            self.__scratchpad, action = react_act(
                 llm=self.llm, 
                 question=question, 
-                scratchpad=self.scratchpad
+                scratchpad=self.__scratchpad
             )
             action_type, query = parse_action(action)
-            out += "\n" + self.scratchpad.split('\n')[-1]
+            out += "\n" + self.__scratchpad.split('\n')[-1]
 
             # Observe.
             observation = react_observe(
                 action_type=action_type, 
                 query=query, 
-                scratchpad=self.scratchpad, 
-                step_n=self.step_n, 
+                scratchpad=self.__scratchpad, 
+                step_n=self.__step_n, 
                 docstore=self.docstore
             )
-            self.scratchpad = observation["scratchpad"]
-            self.step_n = observation["step_n"]
-            self.finished = observation["finished"]
-            out += "\n" + self.scratchpad.split('\n')[-1]
+            self.__scratchpad = observation["scratchpad"]
+            self.__step_n = observation["step_n"]
+            self.__finished = observation["finished"]
+            out += "\n" + self.__scratchpad.split('\n')[-1]
 
         return out
 
 
     def reset(self) -> None:
-        self.step_n = 1
-        self.finished = False
-        self.scratchpad: str = ""
+        self.__step_n = 1
+        self.__finished = False
+        self.__scratchpad: str = ""
 
 # class ReActAgent(BaseAgent):
 #     """ReAct agent from the original paper.

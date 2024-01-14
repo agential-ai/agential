@@ -1,8 +1,5 @@
 """Unit tests for parsing-related functions."""
 from discussion_agents.utils.parse import (
-    clean_str,
-    construct_lookup_list,
-    get_page_obs,
     normalize_answer,
     parse_list,
     parse_numbered_list,
@@ -47,66 +44,6 @@ def test_remove_name() -> None:
     out = remove_name(x, "John")
 
     assert out == gt
-
-
-def test_clean_str() -> None:
-    """Test clean_str function."""
-    s = "a string"
-    out = clean_str(s)
-    assert out == "a string"
-
-    gt = "Café â\x80\x93 Büro"
-    out = clean_str("Caf\u00e9 \xe2\x80\x93 B\u00fcro")
-    assert out == gt
-
-
-def test_get_page_obs() -> None:
-    """Test get_page_obs function."""
-    sample_page = """
-    The quick brown fox jumps over the lazy dog. This sentence contains all the letters of the alphabet. 
-    It's often used for typing practice. 
-
-    Science is fascinating. It covers many areas, like physics, biology, and chemistry. Physics deals with the fundamental particles of the universe. Biology is the study of living beings. Chemistry focuses on the composition of substances. 
-
-    Mathematics is the language of science. It is used to describe the laws of nature.
-    """
-
-    gt = "The quick brown fox jumps over the lazy dog. This sentence contains all the letters of the alphabet.. It's often used for typing practice.. Science is fascinating. It covers many areas, like physics, biology, and chemistry."
-
-    result = get_page_obs(sample_page)
-    assert result == gt
-
-
-def test_construct_lookup_list() -> None:
-    """Test construct_lookup_list function."""
-    sample_page = """
-    The quick brown fox jumps over the lazy dog. Foxes are wild animals. 
-    In many cultures, foxes are depicted as cunning creatures. 
-
-    This paragraph talks about other animals. For instance, lions are considered the king of the jungle.
-    """
-
-    keyword1 = "fox"
-    keyword2 = "Lions"
-
-    # Test with keyword "fox".
-    result1 = construct_lookup_list(keyword1, sample_page)
-    expected1 = [
-        "The quick brown fox jumps over the lazy dog.",
-        "Foxes are wild animals..",
-        "In many cultures, foxes are depicted as cunning creatures..",
-    ]
-    assert result1 == expected1
-
-    # Test with keyword "Lions".
-    result2 = construct_lookup_list(keyword2, sample_page)
-    expected2 = ["For instance, lions are considered the king of the jungle.."]
-    assert result2 == expected2, "Test with keyword 'Lions' failed."
-
-    # Test with no page provided.
-    result3 = construct_lookup_list(keyword1)
-    expected3 = []
-    assert result3 == expected3, "Test with no page provided failed."
 
 
 def test_parse_action() -> None:
