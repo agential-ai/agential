@@ -2,14 +2,13 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from pydantic.v1 import BaseModel
 
-
-class BaseScorer(BaseModel, ABC):
+class BaseScorer(ABC):
     """Base scoring class."""
-
-    llm: Any
-
+    def __init__(self, llm: Any) -> None:
+        """Initialization."""
+        self.llm = llm
+        
     @abstractmethod
     def score(
         self,

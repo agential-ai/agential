@@ -3,10 +3,7 @@
 from abc import ABC
 from typing import Optional
 
-from pydantic.v1 import BaseModel
-
-
-class BasePersona(BaseModel, ABC):
+class BasePersona(ABC):
     """Base persona class."""
 
     name: Optional[str] = None

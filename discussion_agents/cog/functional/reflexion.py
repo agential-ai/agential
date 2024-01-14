@@ -16,6 +16,7 @@ from discussion_agents.cog.prompts.reflexion import (
     LAST_TRIAL_HEADER,
     REFLECTION_HEADER,
 )
+from discussion_agents.utils.parse import remove_newline
 
 gpt3_5_turbo_enc = tiktoken.encoding_for_model(
     "gpt-3.5-turbo"
@@ -102,39 +103,6 @@ def _format_last_attempt(
     )
 
 
-def _format_step(step: str) -> str:
-    """Formats a step string by stripping leading/trailing newlines and spaces, and replacing internal newlines with empty space.
-
-    Args:
-        step (str): The step string to be formatted.
-
-    Returns:
-        str: The formatted step string.
-    """
-    # Remove leading/trailing newlines and spaces, and replace internal newlines with empty space.
-    return step.strip("\n").strip().replace("\n", "")
-
-
-def _parse_action(string: str) -> Optional[Tuple[str, str]]:
-    """Parses an action string into an action type and its argument.
-
-    Args:
-        string (str): The action string to be parsed.
-
-    Returns:
-        Optional[Tuple[str, str]]: A tuple containing the action type and argument, or None if parsing fails.
-    """
-    pattern = r"^(\w+)\[(.+)\]$"
-    match = re.match(pattern, string)
-
-    if match:
-        action_type = match.group(1)
-        argument = match.group(2)
-        return action_type, argument
-    else:
-        return None
-
-
 def _prompt_cot_agent(
     llm: BaseChatModel,
     examples: str,
@@ -180,7 +148,7 @@ def _prompt_cot_agent(
             )
         ]
     ).content
-    return _format_step(out)
+    return remove_newline(out)
 
 
 def _prompt_cot_reflection(
@@ -212,7 +180,7 @@ def _prompt_cot_reflection(
             )
         ]
     ).content
-    return _format_step(out)
+    return remove_newline(out)
 
 
 def reflect_last_attempt(scratchpad: str) -> List[str]:

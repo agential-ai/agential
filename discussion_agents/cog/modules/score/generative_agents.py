@@ -24,7 +24,9 @@ class GenerativeAgentScorer(BaseScorer):
     inputs and returns a list of importance scores for each memory content.
     """
 
-    llm: Any
+    def __init__(self, llm: Any) -> None:
+        """Initialization."""
+        super().__init__(llm)
 
     def score(
         self,

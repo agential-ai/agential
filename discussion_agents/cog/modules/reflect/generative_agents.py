@@ -24,8 +24,10 @@ class GenerativeAgentReflector(BaseReflector):
     The class offers a `reflect` method, which takes a set of observations and returns insights based on these observations.
     """
 
-    llm: Any
-    retriever: BaseRetriever
+    def __init__(self, llm: Any, retriever: BaseRetriever) -> None:
+        """Initialization."""
+        super().__init__(llm)
+        self.retriever = retriever
 
     def reflect(
         self, observations: Union[str, List[str]], now: Optional[datetime] = None

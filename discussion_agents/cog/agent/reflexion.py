@@ -13,9 +13,9 @@ from pydantic.v1 import root_validator
 from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.eval.reflexion import EM
 from discussion_agents.cog.functional.reflexion import (
-    _parse_action,
     _prompt_cot_agent,
 )
+from discussion_agents.utils.parse import parse_action
 from discussion_agents.cog.modules.memory.reflexion import ReflexionMemory
 from discussion_agents.cog.modules.reflect.reflexion import ReflexionReflector
 from discussion_agents.cog.prompts.reflexion import (
@@ -113,7 +113,7 @@ class ReflexionCoTAgent(BaseAgent):
             question=question,
             scratchpad=self.memory.load_memories()["scratchpad"],
         )
-        action_type, argument = _parse_action(action)
+        action_type, argument = parse_action(action)
         self.memory.add_memories(" " + action)
         out += self.memory.load_memories()["scratchpad"].split("\n")[-1] + "\n"
 

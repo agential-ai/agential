@@ -2,7 +2,7 @@
 import re
 import string
 
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 
 def parse_list(text: str) -> List[str]:
@@ -172,6 +172,41 @@ def construct_lookup_list(keyword: str, page: Optional[str] = None) -> list[str]
 
     # Filter sentences that contain the keyword, case-insensitive.
     return [p for p in sentences if keyword.lower() in p.lower()]
+
+
+
+def parse_action(string: str) -> Optional[Tuple[str, str]]:
+    """Parses an action string into an action type and its argument.
+
+    This method is used in ReAct and Reflexion.
+
+    Args:
+        string (str): The action string to be parsed.
+
+    Returns:
+        Optional[Tuple[str, str]]: A tuple containing the action type and argument, or None if parsing fails.
+    """
+    pattern = r"^(\w+)\[(.+)\]$"
+    match = re.match(pattern, string)
+
+    if match:
+        action_type = match.group(1)
+        argument = match.group(2)
+        return action_type, argument
+    else:
+        return None
+    
+
+def remove_newline(step: str) -> str:
+    """Formats a step string by stripping leading/trailing newlines and spaces, and replacing internal newlines with empty space.
+
+    Args:
+        step (str): The step string to be formatted.
+
+    Returns:
+        str: The formatted step string.
+    """
+    return step.strip("\n").strip().replace("\n", "")
 
 
 def remove_articles(text: str) -> str:

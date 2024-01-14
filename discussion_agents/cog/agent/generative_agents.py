@@ -17,8 +17,6 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from pydantic.v1 import root_validator
-
 from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.functional.generative_agents import (
     get_insights_on_topics,
@@ -67,54 +65,64 @@ class GenerativeAgent(BaseAgent):
     memory, and persona attributes.
     """
 
-    llm: Any
-    memory: Optional[GenerativeAgentMemory] = None
-    reflector: Optional[GenerativeAgentReflector] = None
-    scorer: Optional[GenerativeAgentScorer] = None
-    persona: Optional[BasePersona] = None
-    importance_weight: float = 0.15
-    reflection_threshold: Optional[int] = 8
-    name: str = "Klaus Mueller"
-    age: int = 20
-    traits: str = "kind, inquisitive, passionate"
-    status: str = "Klaus Mueller is writing a research paper on the effects of gentrification in low-income communities."
-    lifestyle: str = "Klaus Mueller goes to bed around 11pm, awakes up around 7am, eats dinner around 5pm."
+    def __init__(
+        self,
+        llm: Any,
+        memory: Optional[GenerativeAgentMemory] = None,
+        reflector: Optional[GenerativeAgentReflector] = None,
+        scorer: Optional[GenerativeAgentScorer] = None,
+        persona: Optional[BasePersona] = None,
+        importance_weight: float = 0.15,
+        reflection_threshold: Optional[int] = 8,
+        name: str = "Klaus Mueller",
+        age: int = 20,
+        traits: str = "kind, inquisitive, passionate",
+        status: str = "Klaus Mueller is writing a research paper on the effects of gentrification in low-income communities.",
+        lifestyle: str = "Klaus Mueller goes to bed around 11pm, awakes up around 7am, eats dinner around 5pm."
+    ) -> None:
+        """Initialize agent."""
+        self.llm = llm
 
-    @root_validator(pre=False, skip_on_failure=True)
-    def set_args(cls: Any, values: Dict[str, Any]) -> Dict[str, Any]:
-        """Set default arguments."""
-        llm = values.get("llm")
-        memory = values.get("memory")
-        reflector = values.get("reflector")
-        scorer = values.get("scorer")
-        persona = values.get("persona")
-        if not memory:
-            memory = GenerativeAgentMemory(
+        self.memory = memory
+        if not self.memory:
+            self.memory = GenerativeAgentMemory(
                 retriever=_create_default_time_weighted_retriever()
             )
-            values["memory"] = memory
-        if llm and memory and not reflector:
-            values["reflector"] = GenerativeAgentReflector(
-                llm=llm, retriever=memory.retriever
-            )
-        if llm and not scorer:
-            values["scorer"] = GenerativeAgentScorer(llm=llm)
-        if not persona:
-            values["persona"] = GenerativeAgentPersona(
-                name=values.get("name", ""),
-                age=values.get("age", 0),
-                traits=values.get("traits", ""),
-                status=values.get("status", ""),
-                lifestyle=values.get("lifestyle", ""),
-            )
-        return values
 
-    # Internal variables.
-    summary: str = ""  #: :meta private:
-    last_refreshed: datetime = datetime.now()  # : :meta private:
-    summary_refresh_seconds: int = 3600  #: :meta private:
-    is_reflecting: bool = False  #: :meta private:
-    aggregate_importance: float = 0.0  #: :meta private:
+        self.reflector = reflector
+        if self.llm and self.memory and not self.reflector:
+            self.reflector = GenerativeAgentReflector(
+                llm=self.llm, retriever=self.memory.retriever
+            )
+
+        self.scorer = scorer
+        if self.llm and not self.scorer:
+            self.scorer = GenerativeAgentScorer(llm=self.llm)
+
+        self.persona = persona
+        self.name = name
+        self.age = age
+        self.traits = traits
+        self.status = status
+        self.lifestyle = lifestyle
+        if not self.persona:
+            self.persona = GenerativeAgentPersona(
+                name=self.name,
+                age=self.age,
+                traits=self.traits,
+                status=self.status,
+                lifestyle=self.lifestyle,
+            )
+
+        self.importance_weight = importance_weight
+        self.reflection_threshold = reflection_threshold
+
+        # Internal variables.
+        self.__summary: str = ""  #: :meta private:
+        self.__last_refreshed: datetime = datetime.now()  # : :meta private:
+        self.__summary_refresh_seconds: int = 3600  #: :meta private:
+        self.__is_reflecting: bool = False  #: :meta private:
+        self.__aggregate_importance: float = 0.0  #: :meta private:
 
     def get_topics_of_reflection(self, last_k: int = 50) -> List[str]:
         """Generate high-level reflection topics based on recent observations.
@@ -248,7 +256,7 @@ class GenerativeAgent(BaseAgent):
             else:
                 raise ValueError("`scorer` was incorrectly defined.")
             importance_scores.append(importance_score[0])
-        self.aggregate_importance += max(importance_scores)
+        self.__aggregate_importance += max(importance_scores)
 
         assert len(importance_scores) == len(
             memory_contents
@@ -265,13 +273,13 @@ class GenerativeAgent(BaseAgent):
         # more synthesized memories to the agent's memory stream.
         if (
             self.reflection_threshold is not None
-            and self.aggregate_importance > self.reflection_threshold
-            and not self.is_reflecting
+            and self.__aggregate_importance > self.reflection_threshold
+            and not self.__is_reflecting
         ):
-            self.is_reflecting = True
+            self.__is_reflecting = True
             _ = self.reflect(last_k=last_k, now=now)
-            self.aggregate_importance = 0.0
-            self.is_reflecting = False
+            self.__aggregate_importance = 0.0
+            self.__is_reflecting = False
 
     def score(
         self,
@@ -398,10 +406,10 @@ class GenerativeAgent(BaseAgent):
         periodically, but it can be forced to refresh by setting `force_refresh` to True.
         """
         current_time = datetime.now() if now is None else now
-        since_refresh = (current_time - self.last_refreshed).seconds
+        since_refresh = (current_time - self.__last_refreshed).seconds
         if (
-            not self.summary
-            or since_refresh >= self.summary_refresh_seconds
+            not self.__summary
+            or since_refresh >= self.__summary_refresh_seconds
             or force_refresh
         ):
             prompt = PromptTemplate.from_template(
@@ -420,11 +428,11 @@ class GenerativeAgent(BaseAgent):
             relevant_memories = "\n".join(
                 [mem.page_content for mem in relevant_memories]
             )
-            self.summary = chain.run(
+            self.__summary = chain.run(
                 name=self.name, relevant_memories=relevant_memories
             ).strip()
 
-            self.last_refreshed = current_time
+            self.__last_refreshed = current_time
 
         summary = (
             f"Name: {self.name}\n"
@@ -432,7 +440,7 @@ class GenerativeAgent(BaseAgent):
             + f"Innate traits: {self.traits}\n"
             + f"Status: {self.status}\n"
             + f"Lifestyle: {self.lifestyle}\n"
-            + f"{self.summary}\n"
+            + f"{self.__summary}\n"
         )
 
         return summary

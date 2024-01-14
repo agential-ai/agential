@@ -2,14 +2,12 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from pydantic.v1 import BaseModel
-
-
-class BaseReflector(BaseModel, ABC):
+class BaseReflector(ABC):
     """Base reflecting class."""
-
-    llm: Any
-
+    def __init__(self, llm: Any) -> None:
+        """Initialization."""
+        self.llm = llm
+        
     @abstractmethod
     def reflect(self, *args: Any, **kwargs: Any) -> Any:
         """Reflect on memory_contents w.r.t. relevant memories and returns a list of reflections."""

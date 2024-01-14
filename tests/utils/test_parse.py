@@ -10,6 +10,8 @@ from discussion_agents.utils.parse import (
     remove_name,
     remove_punc,
     white_space_fix,
+    remove_newline,
+    parse_action
 )
 
 
@@ -105,6 +107,39 @@ def test_construct_lookup_list() -> None:
     result3 = construct_lookup_list(keyword1)
     expected3 = []
     assert result3 == expected3, "Test with no page provided failed."
+
+
+def test_parse_action() -> None:
+    """Test parse_action function."""
+    # Test with a valid action string.
+    valid_string = "ActionType[Argument]"
+    assert parse_action(valid_string) == ("ActionType", "Argument")
+
+    # Test with an invalid action string (missing brackets).
+    invalid_string = "ActionType Argument"
+    assert parse_action(invalid_string) is None
+
+    # Test with an invalid action string (no action type).
+    invalid_string = "[Argument]"
+    assert parse_action(invalid_string) is None
+
+    # Test with an invalid action string (no argument).
+    invalid_string = "ActionType[]"
+    assert parse_action(invalid_string) is None
+
+
+def test_remove_newline() -> None:
+    """Test remove_newline function."""
+    step = "\n  Step with extra spaces and newlines \n"
+    assert remove_newline(step) == "Step with extra spaces and newlines"
+
+    # Test with internal newlines.
+    step = "Step\nwith\ninternal\nnewlines"
+    assert remove_newline(step) == "Stepwithinternalnewlines"
+
+    # Test with a string that doesn't require formatting.
+    step = "Already formatted step"
+    assert remove_newline(step) == "Already formatted step"
 
 
 def test_remove_articles() -> None:

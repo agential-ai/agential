@@ -2,10 +2,8 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict
 
-from pydantic.v1 import BaseModel
 
-
-class BaseMemory(BaseModel, ABC):
+class BaseMemory(ABC):
     """Base memory class providing a general interface for memory operations."""
 
     @abstractmethod

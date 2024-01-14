@@ -6,8 +6,6 @@ from langchain_community.chat_models.fake import FakeListChatModel
 from discussion_agents.cog.functional.reflexion import (
     _format_last_attempt,
     _format_reflections,
-    _format_step,
-    _parse_action,
     _prompt_cot_agent,
     _prompt_cot_reflection,
     _truncate_scratchpad,
@@ -71,39 +69,6 @@ def test__format_last_attempt() -> None:
     expected_format = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nThe capital of France is Paris.\n(END PREVIOUS TRIAL)\n"
     result = _format_last_attempt(question, scratchpad)
     assert result == expected_format
-
-
-def test__format_step() -> None:
-    """Test _format_step function."""
-    step = "\n  Step with extra spaces and newlines \n"
-    assert _format_step(step) == "Step with extra spaces and newlines"
-
-    # Test with internal newlines.
-    step = "Step\nwith\ninternal\nnewlines"
-    assert _format_step(step) == "Stepwithinternalnewlines"
-
-    # Test with a string that doesn't require formatting.
-    step = "Already formatted step"
-    assert _format_step(step) == "Already formatted step"
-
-
-def test__parse_action() -> None:
-    """Test _parse_action function."""
-    # Test with a valid action string.
-    valid_string = "ActionType[Argument]"
-    assert _parse_action(valid_string) == ("ActionType", "Argument")
-
-    # Test with an invalid action string (missing brackets).
-    invalid_string = "ActionType Argument"
-    assert _parse_action(invalid_string) is None
-
-    # Test with an invalid action string (no action type).
-    invalid_string = "[Argument]"
-    assert _parse_action(invalid_string) is None
-
-    # Test with an invalid action string (no argument).
-    invalid_string = "ActionType[]"
-    assert _parse_action(invalid_string) is None
 
 
 def test__prompt_cot_agent() -> None:
