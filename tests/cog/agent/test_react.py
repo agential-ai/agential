@@ -16,9 +16,9 @@ def test_init() -> None:
     assert isinstance(agent.docstore, DocstoreExplorer)
     assert isinstance(agent.enc, Encoding)
 
-    assert agent.step_n == 1
-    assert agent.finished == False
-    assert agent.scratchpad == ""
+    assert agent._step_n == 1
+    assert agent._finished == False
+    assert agent._scratchpad == ""
 
 def test_generate() -> None:
     """Test generate."""

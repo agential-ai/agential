@@ -15,5 +15,5 @@ def test_generative_agent_persona() -> None:
     )
     assert (
         persona.lifestyle
-        == "Klaus Mueller goes to bed around 11pm, awakes up around 7am, eats dinner around 5pm."
+        == "Klaus Mueller goes to bed around 11pm, wakes up around 7am, eats dinner around 5pm."
     )
