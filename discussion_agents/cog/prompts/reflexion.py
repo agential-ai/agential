@@ -1,6 +1,6 @@
 """Reflexion prompts and fewshot examples."""
 
-# Fewshot CoT examples for prompting agent (think/act).
+# Fewshot CoT examples for prompting ReflexionCoT agent (think/act).
 COT = """
 Relevant Context: The Nile River is the longest river in the world, spanning approximately 6,650 kilometers (4,132 miles) in length. It flows through eleven countries in northeastern Africa, including Egypt, Sudan, and Uganda.
 Question: What is the longest river in the world?
@@ -18,7 +18,33 @@ Thought: The question is asking about the products of photosynthesis. From the c
 Action: Finish[Glucose and Oxygen]
 """
 
-# Fewshot CoT examples for agent reflection.
+# Fewshot CoT examples for prompting ReflexionCoT agent (think/act) with no context.
+COTQA_SIMPLE6 = """
+Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+Thought: Let's think step by step. The eastern sector of Colorado orogeny extends into the High Plains. High Plains rise in elevation from around 1,800 to 7,000 ft, so the answer is 1,800 to 7,000 ft.
+Action: Finish[1,800 to 7,000 ft]
+
+Question: Musician and satirist Allie Goertz wrote a song about the "The Simpsons" character Milhouse, who Matt Groening named after who?
+Thought: Let's think step by step. Milhouse was named after U.S. president Richard Nixon, so the answer is Richard Nixon.
+Action: Finish[Richard Nixon]
+
+Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
+Thought: Let's think step by step. Adam Clayton Powell (film) is a documentary about an African-American politician, not Finnish rock groups. So the documentary about Finnish rock groups must instead be The Saimaa Gesture.
+Action: Finish[The Saimaa Gesture]
+
+Question: What profession does Nicholas Ray and Elia Kazan have in common?
+Thought: Let's think step by step. Professions of Nicholas Ray are director, screenwriter, and actor. Professions of Elia Kazan are director, producer, screenwriter, and actor. So profession Nicholas Ray and Elia Kazan have in common is director, screenwriter, and actor.
+Action: Finish[director, screenwriter, actor]
+
+Question: Which magazine was started first Arthur's Magazine or First for Women?
+Thought: Let's think step by step. Arthur's Magazine was started in 1844. First for Women was started in 1989. 1844 (Arthur's Magazine) < 1989 (First for Women), so Arthur's Magazine was started first.
+Action: Finish[Arthur's Magazine]
+
+Question: Were Pavel Urysohn and Leonid Levin known for the same type of work?
+Thought: Let's think step by step. Pavel Urysohn is a mathematician. Leonid Levin is a mathematician and computer scientist. So Pavel Urysohn and Leonid Levin have the same type of work.
+Action: Finish[Yes]"""
+
+# Fewshot CoT examples for ReflexionCoT reflection.
 COT_REFLECT = """
 Relevant Context: Ernest Hemingway's novel "The Old Man and the Sea" tells the story of Santiago, an aging Cuban fisherman, who struggles to catch a giant marlin in the Gulf Stream. The book won the Pulitzer Prize for Fiction in 1953 and contributed to Hemingway's Nobel Prize for Literature in 1954.
 Question: Which literary award did "The Old Man and the Sea" contribute to Hemingway winning?
@@ -36,6 +62,21 @@ Action: Finish[Chuck Yeager]
 Reflection: Upon reflecting on the incorrect answer I provided, I realize that I may not have given the full name of the individual in question. In the context, both the given name and the nickname were mentioned, and I only used the nickname in my response. This could have been the reason my answer was deemed incorrect. Moving forward, when attempting this question again or similar questions, I will make sure to include the complete name of the person, which consists of their given name, any middle names, and their nickname (if applicable). This will help ensure that my answer is more accurate and comprehensive.
 """
 
+# Fewshot CoT examples for ReflexionCoT reflection with no context.
+COT_SIMPLE_REFLECTION = """
+Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+Thought: Let's think step by step. The eastern sector of Colorado orogeny extends into the Rocky Mountains. The Rocky Mountains rise in elevation from around 1,800 to 14,000 ft, so the answer is 1,800 to 14,000 ft.
+Action: Finish[1,800 to 14,000 ft]
+
+Reflection: My reasoning for the elevation range of the eastern sector of the Colorado orogeny failed because I incorrectly associated it with the Rocky Mountains instead of the High Plains. In the future, when attempting this question, I should focus on better understanding the geography and geological formations involved in the Colorado orogeny to avoid confusion.
+
+Question: Musician and satirist Allie Goertz wrote a song about the "The Simpsons" character Milhouse, who Matt Groening named after who?
+Thought: Let's think step by step. Milhouse was named after a prominent cartoon character, Mickey Mouse, so the answer is Mickey Mouse.
+Action: Finish[Mickey Mouse]
+
+Reflection: My reasoning for the naming of the character Milhouse in "The Simpsons" failed because I incorrectly assumed that the character was named after a prominent cartoon character, Mickey Mouse. In the future, when attempting this question, I should focus on better researching the background of "The Simpsons" and Matt Groening's influences in naming characters to avoid making incorrect assumptions. 
+"""
+
 # Prompt template for ReflexionCoT reflection.
 COT_REFLECT_INSTRUCTION = """
 You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to relevant context and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
@@ -50,7 +91,18 @@ Question: {question}{scratchpad}
 Reflection:
 """
 
-# Prompt template for ReflexionCoT agent (think/act) given reflection enabled.
+# Prompt template for ReflexionCoT reflection with no context.
+COT_SIMPLE_REFLECT_INSTRUCTION = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+{context}
+Previous trial:
+Question: {question}{scratchpad}
+
+Reflection:"""
+
+# Prompt template for ReflexionCoT agent (think/act).
 COT_AGENT_REFLECT_INSTRUCTION = """
 Solve a question answering task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task. You will be given context that you should use to help you answer the question.
 Here are some examples:
@@ -63,14 +115,14 @@ Relevant Context: {context}
 Question: {question}{scratchpad}
 """
 
-# Prompt template for ReflexionCoT agent (think/act) given reflection disabled.
-COT_INSTRUCTION = """
-Solve a question answering task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task. You will be given context that you should use to help you answer the question.
+# Prompt template for ReflexionCoT agent (think/act) with no context.
+COT_SIMPLE_INSTRUCTION = """
+Solve a question answering task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task.
 Here are some examples:
 {examples}
 (END OF EXAMPLES)
 {reflections}
-Relevant Context: {context} 
+{context}
 Question: {question}{scratchpad}
 """
 

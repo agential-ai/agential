@@ -13,6 +13,8 @@ from tiktoken.core import Encoding
 from discussion_agents.cog.prompts.reflexion import (
     COT_AGENT_REFLECT_INSTRUCTION,
     COT_REFLECT_INSTRUCTION,
+    COT_SIMPLE_REFLECT_INSTRUCTION,
+    COT_SIMPLE_INSTRUCTION,
     LAST_TRIAL_HEADER,
     REFLECTION_HEADER,
 )
@@ -132,7 +134,7 @@ def _prompt_cot_agent(
             "scratchpad",
             "context",
         ],
-        template=COT_AGENT_REFLECT_INSTRUCTION,
+        template=COT_AGENT_REFLECT_INSTRUCTION if context else COT_SIMPLE_INSTRUCTION,
     ).format(
         examples=examples,
         reflections=reflections,
@@ -168,7 +170,7 @@ def _prompt_cot_reflection(
     """
     prompt = PromptTemplate(
         input_variables=["examples", "question", "scratchpad", "context"],
-        template=COT_REFLECT_INSTRUCTION,
+        template=COT_REFLECT_INSTRUCTION if context else COT_SIMPLE_REFLECT_INSTRUCTION,
     ).format(
         examples=examples, question=question, scratchpad=scratchpad, context=context if context else ""
     )

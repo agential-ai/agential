@@ -19,6 +19,8 @@ from discussion_agents.cog.modules.reflect.reflexion import ReflexionReflector
 from discussion_agents.cog.prompts.reflexion import (
     COT,
     COT_REFLECT,
+    COTQA_SIMPLE6,
+    COT_SIMPLE_REFLECTION
 )
 from discussion_agents.utils.parse import parse_action
 
@@ -98,7 +100,7 @@ class ReflexionCoTAgent(BaseAgent):
         self.memory.add_memories("\nThought:")
         thought = _prompt_cot_agent(
             llm=self.action_llm,
-            examples=COT,
+            examples=COT if context else COTQA_SIMPLE6,
             reflections=self.reflector.reflections_str,
             question=question,
             scratchpad=self.memory.load_memories()["scratchpad"],
@@ -111,7 +113,7 @@ class ReflexionCoTAgent(BaseAgent):
         self.memory.add_memories("\nAction:")
         action = _prompt_cot_agent(
             llm=self.action_llm,
-            examples=COT,
+            examples=COT if context else COTQA_SIMPLE6,
             reflections=self.reflector.reflections_str,
             question=question,
             scratchpad=self.memory.load_memories()["scratchpad"],
@@ -162,7 +164,7 @@ class ReflexionCoTAgent(BaseAgent):
         """
         _, reflections_str = self.reflector.reflect(
             strategy=strategy,
-            examples=COT_REFLECT,
+            examples=COT_REFLECT if context else COT_SIMPLE_REFLECTION,
             question=question,
             scratchpad=self.memory.load_memories()["scratchpad"],
             context=context,
