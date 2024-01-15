@@ -108,8 +108,8 @@ def _prompt_cot_agent(
     examples: str,
     reflections: str,
     question: str,
-    context: str,
     scratchpad: str,
+    context: Optional[str] = None,
 ) -> str:
     """Generates a CoT prompt for thought and action.
 
@@ -118,8 +118,8 @@ def _prompt_cot_agent(
         examples (str): Example inputs for the prompt template.
         reflections (List[str]): Existing list of reflections.
         question (str): The question being addressed.
-        context (str): The context of the conversation or query.
         scratchpad (str): The scratchpad content related to the question.
+        context (Optional[str]): The context of the conversation or query. Defaults to None.
 
     Returns:
         str: The generated reflection prompt.
@@ -129,16 +129,16 @@ def _prompt_cot_agent(
             "examples",
             "reflections",
             "question",
-            "context",
             "scratchpad",
+            "context",
         ],
         template=COT_AGENT_REFLECT_INSTRUCTION,
     ).format(
         examples=examples,
         reflections=reflections,
         question=question,
-        context=context,
         scratchpad=scratchpad,
+        context=context if context else "",
     )
 
     out = llm(
@@ -152,25 +152,25 @@ def _prompt_cot_agent(
 
 
 def _prompt_cot_reflection(
-    llm: BaseChatModel, examples: str, context: str, question: str, scratchpad: str
+    llm: BaseChatModel, examples: str, question: str, scratchpad: str, context: Optional[str] = None
 ) -> str:
     """Generates a reflection prompt.
 
     Args:
         llm (BaseChatModel): The language model to be used for generating the reflection.
         examples (str): Example inputs for the prompt template.
-        context (str): The context of the conversation or query.
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
+        context (Optional[str]): The context of the conversation or query. Defaults to None.
 
     Returns:
         str: The generated reflection prompt.
     """
     prompt = PromptTemplate(
-        input_variables=["examples", "context", "question", "scratchpad"],
+        input_variables=["examples", "question", "scratchpad", "context"],
         template=COT_REFLECT_INSTRUCTION,
     ).format(
-        examples=examples, context=context, question=question, scratchpad=scratchpad
+        examples=examples, question=question, scratchpad=scratchpad, context=context if context else ""
     )
 
     out = llm(
@@ -200,9 +200,9 @@ def reflect_reflexion(
     llm: BaseChatModel,
     reflections: List[str],
     examples: str,
-    context: str,
     question: str,
     scratchpad: str,
+    context: Optional[str] = None,
 ) -> List[str]:
     """Perform reflexion-based reflecting.
 
@@ -213,9 +213,9 @@ def reflect_reflexion(
         llm (BaseChatModel): The language model used for generating the reflection.
         reflections (List[str]): Existing list of reflections.
         examples (str): Example inputs for the prompt template.
-        context (str): The context of the conversation or query.
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
+        context (Optional[str]): The context of the conversation or query. Defaults to None.
 
     Returns:
         List[str]: An updated list of reflections.
@@ -223,9 +223,9 @@ def reflect_reflexion(
     new_reflection = _prompt_cot_reflection(
         llm=llm,
         examples=examples,
-        context=context,
         question=question,
         scratchpad=scratchpad,
+        context=context,
     )
     reflections += [new_reflection]
     return reflections
@@ -234,18 +234,18 @@ def reflect_reflexion(
 def reflect_last_attempt_and_reflexion(
     llm: BaseChatModel,
     examples: str,
-    context: str,
     question: str,
     scratchpad: str,
+    context: Optional[str] = None,
 ) -> List[str]:
     """Performs reflection with the reflection of the last attempt and reflexion.
 
     Args:
         llm (BaseChatModel): The language model used for generating the new reflection.
         examples (str): Example inputs for the prompt template.
-        context (str): The context of the conversation or query.
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
+        context (Optional[str]): The context of the conversation or query. Defaults to None.
 
     Returns:
         List[str]: A list with the new reflections.
@@ -254,9 +254,9 @@ def reflect_last_attempt_and_reflexion(
         _prompt_cot_reflection(
             llm=llm,
             examples=examples,
-            context=context,
             question=question,
             scratchpad=scratchpad,
+            context=context,
         )
     ]
     return reflections
@@ -267,9 +267,9 @@ def reflect(
     llm: BaseChatModel,
     reflections: List[str],
     examples: str,
-    context: str,
     question: str,
     scratchpad: str,
+    context: Optional[str] = None,
 ) -> List[str]:
     """Performs reflection based on a specified strategy using provided context, question, and scratchpad.
 
@@ -282,9 +282,9 @@ def reflect(
         llm (BaseChatModel): The language model used for generating new reflections.
         reflections (List[str]): A list of existing reflections.
         examples (str): Example inputs for the prompt template.
-        context (str): The context of the conversation or query.
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
+        context (Optional[str]): The context of the conversation or query. Defaults to None.
 
     Returns:
         List[str]: A tuple containing the updated list of reflections.
@@ -305,17 +305,17 @@ def reflect(
             llm=llm,
             reflections=reflections,
             examples=examples,
-            context=context,
             question=question,
             scratchpad=scratchpad,
+            context=context,
         )
     elif strategy == "last_attempt_and_reflexion":
         reflections = reflect_last_attempt_and_reflexion(
             llm=llm,
             examples=examples,
-            context=context,
             question=question,
             scratchpad=scratchpad,
+            context=context,
         )
     else:
         raise NotImplementedError(f"Unknown reflection strategy: {strategy}.")

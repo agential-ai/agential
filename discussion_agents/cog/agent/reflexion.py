@@ -69,7 +69,7 @@ class ReflexionCoTAgent(BaseAgent):
         self._finished = False
 
     def generate(
-        self, question: str, key: str, context: Optional[str], strategy: str = None
+        self, question: str, key: str, context: Optional[str] = None, strategy: str = None
     ) -> str:
         """Generates a response based on the provided context, question, and key.
 
@@ -79,7 +79,7 @@ class ReflexionCoTAgent(BaseAgent):
         Args:
             question (str): The question to answer.
             key (str): The key to evaluate the correctness of the answer.
-            context (Optional[str]): The context or background information. Can be None to indicate no context.
+            context (Optional[str]): The context or background information. Defaults to None.
             strategy (str, optional): The strategy to use for reflection. Defaults to None.
 
         Returns:
@@ -101,8 +101,8 @@ class ReflexionCoTAgent(BaseAgent):
             examples=COT,
             reflections=self.reflector.reflections_str,
             question=question,
-            context=context,
             scratchpad=self.memory.load_memories()["scratchpad"],
+            context=context,
         )
         self.memory.add_memories(" " + thought)
         out += self.memory.load_memories()["scratchpad"].split("\n")[-1] + "\n"
@@ -114,8 +114,8 @@ class ReflexionCoTAgent(BaseAgent):
             examples=COT,
             reflections=self.reflector.reflections_str,
             question=question,
-            context=context,
             scratchpad=self.memory.load_memories()["scratchpad"],
+            context=context,
         )
         action_type, argument = parse_action(action)
         self.memory.add_memories(" " + action)
@@ -141,7 +141,7 @@ class ReflexionCoTAgent(BaseAgent):
 
         return out
 
-    def reflect(self, strategy: str, question: str, context: str) -> str:
+    def reflect(self, strategy: str, question: str, context: Optional[str] = None) -> str:
         """Reflects on the previous steps to improve the response.
 
         Given the agent can reflect (strategy is not `None`), the strategy
@@ -155,7 +155,7 @@ class ReflexionCoTAgent(BaseAgent):
         Args:
             strategy (str): The strategy to use for reflection.
             question (str): The question to answer.
-            context (str): The context or background information.
+            context (Optional[str]): The context or background information. Defaults to None.
 
         Returns:
             str: Generated reflections based on the strategy.
@@ -164,8 +164,8 @@ class ReflexionCoTAgent(BaseAgent):
             strategy=strategy,
             examples=COT_REFLECT,
             question=question,
-            context=context,
             scratchpad=self.memory.load_memories()["scratchpad"],
+            context=context,
         )
 
         return reflections_str
