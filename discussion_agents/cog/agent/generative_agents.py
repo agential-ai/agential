@@ -119,11 +119,11 @@ class GenerativeAgent(BaseAgent):
         self.reflection_threshold = reflection_threshold
 
         # Internal variables.
-        self.__summary: str = ""  #: :meta private:
-        self.__last_refreshed: datetime = datetime.now()  # : :meta private:
-        self.__summary_refresh_seconds: int = 3600  #: :meta private:
-        self.__is_reflecting: bool = False  #: :meta private:
-        self.__aggregate_importance: float = 0.0  #: :meta private:
+        self._summary: str = ""  #: :meta private:
+        self._last_refreshed: datetime = datetime.now()  # : :meta private:
+        self._summary_refresh_seconds: int = 3600  #: :meta private:
+        self._is_reflecting: bool = False  #: :meta private:
+        self._aggregate_importance: float = 0.0  #: :meta private:
 
     def get_topics_of_reflection(self, last_k: int = 50) -> List[str]:
         """Generate high-level reflection topics based on recent observations.
@@ -257,7 +257,7 @@ class GenerativeAgent(BaseAgent):
             else:
                 raise ValueError("`scorer` was incorrectly defined.")
             importance_scores.append(importance_score[0])
-        self.__aggregate_importance += max(importance_scores)
+        self._aggregate_importance += max(importance_scores)
 
         assert len(importance_scores) == len(
             memory_contents
@@ -274,13 +274,13 @@ class GenerativeAgent(BaseAgent):
         # more synthesized memories to the agent's memory stream.
         if (
             self.reflection_threshold is not None
-            and self.__aggregate_importance > self.reflection_threshold
-            and not self.__is_reflecting
+            and self._aggregate_importance > self.reflection_threshold
+            and not self._is_reflecting
         ):
-            self.__is_reflecting = True
+            self._is_reflecting = True
             _ = self.reflect(last_k=last_k, now=now)
-            self.__aggregate_importance = 0.0
-            self.__is_reflecting = False
+            self._aggregate_importance = 0.0
+            self._is_reflecting = False
 
     def score(
         self,
@@ -407,10 +407,10 @@ class GenerativeAgent(BaseAgent):
         periodically, but it can be forced to refresh by setting `force_refresh` to True.
         """
         current_time = datetime.now() if now is None else now
-        since_refresh = (current_time - self.__last_refreshed).seconds
+        since_refresh = (current_time - self._last_refreshed).seconds
         if (
-            not self.__summary
-            or since_refresh >= self.__summary_refresh_seconds
+            not self._summary
+            or since_refresh >= self._summary_refresh_seconds
             or force_refresh
         ):
             prompt = PromptTemplate.from_template(
@@ -429,11 +429,11 @@ class GenerativeAgent(BaseAgent):
             relevant_memories = "\n".join(
                 [mem.page_content for mem in relevant_memories]
             )
-            self.__summary = chain.run(
+            self._summary = chain.run(
                 name=self.name, relevant_memories=relevant_memories
             ).strip()
 
-            self.__last_refreshed = current_time
+            self._last_refreshed = current_time
 
         summary = (
             f"Name: {self.name}\n"
@@ -441,7 +441,7 @@ class GenerativeAgent(BaseAgent):
             + f"Innate traits: {self.traits}\n"
             + f"Status: {self.status}\n"
             + f"Lifestyle: {self.lifestyle}\n"
-            + f"{self.__summary}\n"
+            + f"{self._summary}\n"
         )
 
         return summary
