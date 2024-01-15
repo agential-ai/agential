@@ -66,9 +66,9 @@ def test_reflexion_cot_generate() -> None:
         action_llm=action_llm
     )
     out = reflexion_cot_agent.generate(
-        context=context,
         question=question,
         key=key,
+        context=context,
         strategy=None
     )
     gt_out_str = 'Thought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with Limited Liability]\n\nAnswer is INCORRECT'
@@ -87,9 +87,9 @@ def test_reflexion_cot_generate() -> None:
         action_llm=action_llm
     )
     out = reflexion_cot_agent.generate(
-        context=context,
         question=question,
         key=key,
+        context=context,
         strategy=None
     )
     gt_out_str = 'Thought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Gesellschaft mit beschränkter Haftung]\n\nAnswer is CORRECT'
@@ -108,9 +108,9 @@ def test_reflexion_cot_generate() -> None:
         action_llm=action_llm
     )
     out = reflexion_cot_agent.generate(
-        context=context,
         question=question,
         key=key,
+        context=context,
         strategy=None
     )
     gt_out_str = 'Thought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: INVALID[Gesellschaft mit beschränkter Haftung]\n\nInvalid action type, please try again.'
@@ -129,9 +129,9 @@ def test_reflexion_cot_generate() -> None:
         action_llm=action_llm
     )
     out = reflexion_cot_agent.generate(
-        context=context,
         question=question,
         key=key,
+        context=context,
         strategy="last_attempt"
     )
     gt_out_str = 'Thought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with Limited Liability]\n\nAnswer is INCORRECT'

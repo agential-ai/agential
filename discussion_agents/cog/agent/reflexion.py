@@ -68,7 +68,7 @@ class ReflexionCoTAgent(BaseAgent):
         self._finished = False
 
     def generate(
-        self, context: str, question: str, key: str, strategy: str = None
+        self, question: str, key: str, context: Optional[str], strategy: str = None
     ) -> str:
         """Generates a response based on the provided context, question, and key.
 
@@ -76,9 +76,9 @@ class ReflexionCoTAgent(BaseAgent):
         and generates a thought, action, and the observation (Finish).
 
         Args:
-            context (str): The context or background information.
             question (str): The question to answer.
             key (str): The key to evaluate the correctness of the answer.
+            context (Optional[str]): The context or background information. Can be None to indicate no context.
             strategy (str, optional): The strategy to use for reflection. Defaults to None.
         
         Returns:
