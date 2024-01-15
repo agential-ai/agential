@@ -96,7 +96,7 @@ def react_think(llm: Any, question: str, scratchpad: str) -> str:
     thought = _prompt_agent(
         llm=llm, 
         question=question, 
-        scratchpad=scratchpad
+        scratchpad=scratchpad,
     ).split("Action")[0]
     scratchpad += " " + thought
     return scratchpad
@@ -120,7 +120,7 @@ def react_act(llm: Any, question: str, scratchpad: str) -> Tuple[str, str]:
     action = _prompt_agent(
         llm=llm, 
         question=question, 
-        scratchpad=scratchpad
+        scratchpad=scratchpad,
     ).split("Observation")[0]
     scratchpad += " " + action
     return scratchpad, action

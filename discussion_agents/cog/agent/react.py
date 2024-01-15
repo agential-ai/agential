@@ -57,9 +57,9 @@ class ReActAgent(BaseAgent):
         self.enc = enc
 
         # Internal variables.
-        self.__step_n = 1  #: :meta private:
-        self.__finished = False  #: :meta private:
-        self.__scratchpad: str = ""  #: :meta private:
+        self._step_n = 1  #: :meta private:
+        self._finished = False  #: :meta private:
+        self._scratchpad: str = ""  #: :meta private:
 
     def generate(self, question: str, reset: bool = True) -> str:
         """Processes a given question through ReAct.
@@ -79,43 +79,43 @@ class ReActAgent(BaseAgent):
         
         out = ""
         while not _is_halted(
-            finished=self.__finished,
-            step_n=self.__step_n, 
+            finished=self._finished,
+            step_n=self._step_n, 
             max_steps=self.max_steps, 
             question=question, 
-            scratchpad=self.__scratchpad, 
+            scratchpad=self._scratchpad, 
             max_tokens=self.max_tokens, 
             enc=self.enc
         ):
             # Think.
-            self.__scratchpad = react_think(
+            self._scratchpad = react_think(
                 llm=self.llm, 
                 question=question, 
-                scratchpad=self.__scratchpad
+                scratchpad=self._scratchpad
             )
-            out += "\n" + self.__scratchpad.split('\n')[-1]
+            out += "\n" + self._scratchpad.split('\n')[-1]
             
             # Act.
-            self.__scratchpad, action = react_act(
+            self._scratchpad, action = react_act(
                 llm=self.llm, 
                 question=question, 
-                scratchpad=self.__scratchpad
+                scratchpad=self._scratchpad
             )
             action_type, query = parse_action(action)
-            out += "\n" + self.__scratchpad.split('\n')[-1]
+            out += "\n" + self._scratchpad.split('\n')[-1]
 
             # Observe.
             observation = react_observe(
                 action_type=action_type, 
                 query=query, 
-                scratchpad=self.__scratchpad, 
-                step_n=self.__step_n, 
+                scratchpad=self._scratchpad, 
+                step_n=self._step_n, 
                 docstore=self.docstore
             )
-            self.__scratchpad = observation["scratchpad"]
-            self.__step_n = observation["step_n"]
-            self.__finished = observation["finished"]
-            out += "\n" + self.__scratchpad.split('\n')[-1]
+            self._scratchpad = observation["scratchpad"]
+            self._step_n = observation["step_n"]
+            self._finished = observation["finished"]
+            out += "\n" + self._scratchpad.split('\n')[-1]
 
         return out
 
@@ -125,9 +125,9 @@ class ReActAgent(BaseAgent):
 
         Sets the step number, finished flag, and scratchpad to their initial values.
         """
-        self.__step_n = 1
-        self.__finished = False
-        self.__scratchpad: str = ""
+        self._step_n = 1
+        self._finished = False
+        self._scratchpad: str = ""
 
 
 @tool
