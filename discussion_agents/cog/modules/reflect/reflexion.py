@@ -31,7 +31,12 @@ class ReflexionReflector(BaseReflector):
     reflections_str: Optional[str] = ""
 
     def reflect(
-        self, strategy: str, examples: str, question: str, scratchpad: str, context: Optional[str] = None
+        self,
+        strategy: str,
+        examples: str,
+        question: str,
+        scratchpad: str,
+        context: Optional[str] = None,
     ) -> Tuple[List[str], str]:
         """Wrapper around Reflexion's `reflect` method in functional.
 

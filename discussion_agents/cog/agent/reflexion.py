@@ -19,8 +19,8 @@ from discussion_agents.cog.modules.reflect.reflexion import ReflexionReflector
 from discussion_agents.cog.prompts.reflexion import (
     COT,
     COT_REFLECT,
+    COT_SIMPLE_REFLECTION,
     COTQA_SIMPLE6,
-    COT_SIMPLE_REFLECTION
 )
 from discussion_agents.utils.parse import parse_action
 
@@ -71,7 +71,11 @@ class ReflexionCoTAgent(BaseAgent):
         self._finished = False
 
     def generate(
-        self, question: str, key: str, context: Optional[str] = None, strategy: str = None
+        self,
+        question: str,
+        key: str,
+        context: Optional[str] = None,
+        strategy: str = None,
     ) -> str:
         """Generates a response based on the provided context, question, and key.
 
@@ -143,7 +147,9 @@ class ReflexionCoTAgent(BaseAgent):
 
         return out
 
-    def reflect(self, strategy: str, question: str, context: Optional[str] = None) -> str:
+    def reflect(
+        self, strategy: str, question: str, context: Optional[str] = None
+    ) -> str:
         """Reflects on the previous steps to improve the response.
 
         Given the agent can reflect (strategy is not `None`), the strategy
