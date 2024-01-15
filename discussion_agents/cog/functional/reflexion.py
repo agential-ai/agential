@@ -11,10 +11,10 @@ from langchain_core.messages.human import HumanMessage
 from tiktoken.core import Encoding
 
 from discussion_agents.cog.prompts.reflexion import (
-    COT_AGENT_REFLECT_INSTRUCTION,
-    COT_REFLECT_INSTRUCTION,
-    COT_SIMPLE_INSTRUCTION,
-    COT_SIMPLE_REFLECT_INSTRUCTION,
+    REFLEXION_COT_INSTRUCTION,
+    REFLEXION_COT_REFLECT_INSTRUCTION,
+    REFLEXION_COT_INSTRUCTION_NO_CONTEXT,
+    REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT,
     LAST_TRIAL_HEADER,
     REFLECTION_HEADER,
 )
@@ -134,7 +134,7 @@ def _prompt_cot_agent(
             "scratchpad",
             "context",
         ],
-        template=COT_AGENT_REFLECT_INSTRUCTION if context else COT_SIMPLE_INSTRUCTION,
+        template=REFLEXION_COT_INSTRUCTION if context else REFLEXION_COT_INSTRUCTION_NO_CONTEXT,
     ).format(
         examples=examples,
         reflections=reflections,
@@ -174,7 +174,7 @@ def _prompt_cot_reflection(
     """
     prompt = PromptTemplate(
         input_variables=["examples", "question", "scratchpad", "context"],
-        template=COT_REFLECT_INSTRUCTION if context else COT_SIMPLE_REFLECT_INSTRUCTION,
+        template=REFLEXION_COT_REFLECT_INSTRUCTION if context else REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT,
     ).format(
         examples=examples,
         question=question,

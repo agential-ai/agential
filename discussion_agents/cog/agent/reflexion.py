@@ -17,10 +17,10 @@ from discussion_agents.cog.functional.reflexion import (
 from discussion_agents.cog.modules.memory.reflexion import ReflexionMemory
 from discussion_agents.cog.modules.reflect.reflexion import ReflexionReflector
 from discussion_agents.cog.prompts.reflexion import (
-    COT,
-    COT_REFLECT,
-    COT_SIMPLE_REFLECTION,
-    COTQA_SIMPLE6,
+    REFLEXION_COT_FEWSHOT_EXAMPLES,
+    REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES,
+    REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT,
+    REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
 )
 from discussion_agents.utils.parse import parse_action
 
@@ -104,7 +104,7 @@ class ReflexionCoTAgent(BaseAgent):
         self.memory.add_memories("\nThought:")
         thought = _prompt_cot_agent(
             llm=self.action_llm,
-            examples=COT if context else COTQA_SIMPLE6,
+            examples=REFLEXION_COT_FEWSHOT_EXAMPLES if context else REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
             reflections=self.reflector.reflections_str,
             question=question,
             scratchpad=self.memory.load_memories()["scratchpad"],
@@ -117,7 +117,7 @@ class ReflexionCoTAgent(BaseAgent):
         self.memory.add_memories("\nAction:")
         action = _prompt_cot_agent(
             llm=self.action_llm,
-            examples=COT if context else COTQA_SIMPLE6,
+            examples=REFLEXION_COT_FEWSHOT_EXAMPLES if context else REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
             reflections=self.reflector.reflections_str,
             question=question,
             scratchpad=self.memory.load_memories()["scratchpad"],
@@ -170,7 +170,7 @@ class ReflexionCoTAgent(BaseAgent):
         """
         _, reflections_str = self.reflector.reflect(
             strategy=strategy,
-            examples=COT_REFLECT if context else COT_SIMPLE_REFLECTION,
+            examples=REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES if context else REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT,
             question=question,
             scratchpad=self.memory.load_memories()["scratchpad"],
             context=context,

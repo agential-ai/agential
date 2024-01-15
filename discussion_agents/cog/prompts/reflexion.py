@@ -1,7 +1,7 @@
 """Reflexion prompts and fewshot examples."""
 
 # Fewshot CoT examples for prompting ReflexionCoT agent (think/act).
-COT = """
+REFLEXION_COT_FEWSHOT_EXAMPLES = """
 Relevant Context: The Nile River is the longest river in the world, spanning approximately 6,650 kilometers (4,132 miles) in length. It flows through eleven countries in northeastern Africa, including Egypt, Sudan, and Uganda.
 Question: What is the longest river in the world?
 Thought: The question asks for the longest river in the world, which I know is the Nile River based on the context provided.
@@ -19,7 +19,7 @@ Action: Finish[Glucose and Oxygen]
 """
 
 # Fewshot CoT examples for prompting ReflexionCoT agent (think/act) with no context.
-COTQA_SIMPLE6 = """
+REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT = """
 Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
 Thought: Let's think step by step. The eastern sector of Colorado orogeny extends into the High Plains. High Plains rise in elevation from around 1,800 to 7,000 ft, so the answer is 1,800 to 7,000 ft.
 Action: Finish[1,800 to 7,000 ft]
@@ -45,7 +45,7 @@ Thought: Let's think step by step. Pavel Urysohn is a mathematician. Leonid Levi
 Action: Finish[Yes]"""
 
 # Fewshot CoT examples for ReflexionCoT reflection.
-COT_REFLECT = """
+REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES = """
 Relevant Context: Ernest Hemingway's novel "The Old Man and the Sea" tells the story of Santiago, an aging Cuban fisherman, who struggles to catch a giant marlin in the Gulf Stream. The book won the Pulitzer Prize for Fiction in 1953 and contributed to Hemingway's Nobel Prize for Literature in 1954.
 Question: Which literary award did "The Old Man and the Sea" contribute to Hemingway winning?
 Thought: The question is asking which award "The Old Man and the Sea" contributed to Hemingway winning. Based on the context, I know the novel won the Pulitzer Prize for Fiction and contributed to his Nobel Prize for Literature.
@@ -63,7 +63,7 @@ Reflection: Upon reflecting on the incorrect answer I provided, I realize that I
 """
 
 # Fewshot CoT examples for ReflexionCoT reflection with no context.
-COT_SIMPLE_REFLECTION = """
+REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT = """
 Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
 Thought: Let's think step by step. The eastern sector of Colorado orogeny extends into the Rocky Mountains. The Rocky Mountains rise in elevation from around 1,800 to 14,000 ft, so the answer is 1,800 to 14,000 ft.
 Action: Finish[1,800 to 14,000 ft]
@@ -78,7 +78,7 @@ Reflection: My reasoning for the naming of the character Milhouse in "The Simpso
 """
 
 # Prompt template for ReflexionCoT reflection.
-COT_REFLECT_INSTRUCTION = """
+REFLEXION_COT_REFLECT_INSTRUCTION = """
 You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to relevant context and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
 Here are some examples:
 {examples}
@@ -92,7 +92,7 @@ Reflection:
 """
 
 # Prompt template for ReflexionCoT reflection with no context.
-COT_SIMPLE_REFLECT_INSTRUCTION = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
+REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
 Here are some examples:
 {examples}
 (END OF EXAMPLES)
@@ -103,7 +103,7 @@ Question: {question}{scratchpad}
 Reflection:"""
 
 # Prompt template for ReflexionCoT agent (think/act).
-COT_AGENT_REFLECT_INSTRUCTION = """
+REFLEXION_COT_INSTRUCTION = """
 Solve a question answering task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task. You will be given context that you should use to help you answer the question.
 Here are some examples:
 {examples}
@@ -116,7 +116,7 @@ Question: {question}{scratchpad}
 """
 
 # Prompt template for ReflexionCoT agent (think/act) with no context.
-COT_SIMPLE_INSTRUCTION = """
+REFLEXION_COT_INSTRUCTION_NO_CONTEXT = """
 Solve a question answering task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task.
 Here are some examples:
 {examples}
