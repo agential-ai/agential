@@ -8,7 +8,6 @@ Paper Repositories:
 from typing import Any, Dict, Optional
 
 from langchain_core.language_models.chat_models import BaseChatModel
-from pydantic.v1 import root_validator
 
 from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.eval.reflexion import EM
@@ -41,28 +40,32 @@ class ReflexionCoTAgent(BaseAgent):
         reset(): Resets the agent's state for a new problem-solving session.
         is_finished(): Checks if the problem-solving process has concluded.
     """
+    def __init__(
+        self, 
+        self_reflect_llm: BaseChatModel, 
+        action_llm: BaseChatModel, 
+        memory: Optional[ReflexionMemory] = None, 
+        reflector: Optional[ReflexionReflector] = None
+    ) -> None:
+        """Initialization with default or provided values."""
+        super().__init__()
 
-    self_reflect_llm: BaseChatModel
-    action_llm: BaseChatModel
-    memory: Optional[ReflexionMemory] = None
-    reflector: Optional[ReflexionReflector] = None
-
-    @root_validator(pre=False, skip_on_failure=True)
-    def set_args(cls: Any, values: Dict[str, Any]) -> Dict[str, Any]:
-        """Set default arguments."""
-        self_reflect_llm = values.get("self_reflect_llm")
-        memory = values.get("memory")
-        reflector = values.get("reflector")
+        self.self_reflect_llm = self_reflect_llm
+        self.action_llm = action_llm
 
         if not memory:
-            values["memory"] = ReflexionMemory()
-        if self_reflect_llm and not reflector:
-            values["reflector"] = ReflexionReflector(llm=self_reflect_llm)
-        return values
+            self.memory = ReflexionMemory()
+        else:
+            self.memory = memory
 
-    step_n: int = 0  #: :meta private:
-    answer: str = ""  #: :meta private:
-    finished: bool = False  #: :meta private:
+        if not reflector and self_reflect_llm:
+            self.reflector = ReflexionReflector(llm=self_reflect_llm)
+        else:
+            self.reflector = reflector
+
+        self._step_n = 0
+        self._answer = ""
+        self._finished = False
 
     def generate(
         self, context: str, question: str, key: str, strategy: str = None
@@ -82,7 +85,7 @@ class ReflexionCoTAgent(BaseAgent):
             out (str): A string output from the ReflexionCoTAgent.
         """
         # Reflect if possible.
-        if self.step_n > 0 and not EM(self.answer, key) and strategy:
+        if self._step_n > 0 and not EM(self._answer, key) and strategy:
             self.reflect(strategy, context, question)
 
         # Reset.
@@ -120,20 +123,20 @@ class ReflexionCoTAgent(BaseAgent):
         # Observe.
         self.memory.add_memories("\nObservation:")
         if action_type == "Finish":
-            self.answer = argument
-            if EM(self.answer, key):
+            self._answer = argument
+            if EM(self._answer, key):
                 correctness_str = "Answer is CORRECT"
             else:
                 correctness_str = "Answer is INCORRECT"
             self.memory.add_memories(correctness_str)
             out += "\n" + correctness_str
-            self.finished = True
+            self._finished = True
         else:
             invalid_action_str = "Invalid action type, please try again."
             self.memory.add_memories(invalid_action_str)
             out += "\n" + invalid_action_str
 
-        self.step_n += 1
+        self._step_n += 1
 
         return out
 
@@ -177,7 +180,7 @@ class ReflexionCoTAgent(BaseAgent):
     def reset(self) -> None:
         """Resets the agent's memory and state."""
         self.memory.clear()
-        self.finished = False
+        self._finished = False
 
     def is_finished(self) -> bool:
         """Checks if the agent has finished generating.
@@ -185,4 +188,4 @@ class ReflexionCoTAgent(BaseAgent):
         Returns:
             bool: True if the agent has finished, False otherwise.
         """
-        return self.finished
+        return self._finished

@@ -19,7 +19,7 @@ def test_reflexion_cot_init() -> None:
 def test_reflexion_cot_is_finished(reflexion_cot_agent: ReflexionCoTAgent) -> None:
     """Test is_finished method."""
     assert not reflexion_cot_agent.is_finished()
-    reflexion_cot_agent.finished = True
+    reflexion_cot_agent._finished = True
     assert reflexion_cot_agent.is_finished()
 
 
