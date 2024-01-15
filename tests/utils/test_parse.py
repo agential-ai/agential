@@ -1,14 +1,14 @@
 """Unit tests for parsing-related functions."""
 from discussion_agents.utils.parse import (
     normalize_answer,
+    parse_action,
     parse_list,
     parse_numbered_list,
     remove_articles,
     remove_name,
+    remove_newline,
     remove_punc,
     white_space_fix,
-    remove_newline,
-    parse_action
 )
 
 

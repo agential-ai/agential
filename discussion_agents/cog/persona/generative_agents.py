@@ -19,12 +19,14 @@ class GenerativeAgentPersona(BasePersona):
     """
 
     def __init__(
-        self, 
-        name: str = "Klaus Mueller", 
-        age: int = 20, 
-        traits: str = "kind, inquisitive, passionate", 
-        status: str = "Klaus Mueller is writing a research paper on the effects of gentrification in low-income communities.", 
-        lifestyle: str = "Klaus Mueller goes to bed around 11pm, wakes up around 7am, eats dinner around 5pm."
+        self,
+        name: str = "Klaus Mueller",
+        age: int = 20,
+        traits: str = "kind, inquisitive, passionate",
+        status: str = "Klaus Mueller is writing a research paper on the effects of gentrification in low-income communities.",
+        lifestyle: str = "Klaus Mueller goes to bed around 11pm, wakes up around 7am, eats dinner around 5pm.",
     ) -> None:
         """Initialization."""
-        super().__init__(name=name, age=age, traits=traits, status=status, lifestyle=lifestyle)
+        super().__init__(
+            name=name, age=age, traits=traits, status=status, lifestyle=lifestyle
+        )

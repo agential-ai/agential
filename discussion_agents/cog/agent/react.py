@@ -11,17 +11,23 @@ LangChain ReAct: https://python.langchain.com/docs/modules/agents/agent_types/re
 from typing import Any, Dict, List, Optional
 
 import tiktoken
-from tiktoken.core import Encoding
 
 from langchain import hub
 from langchain.agents import AgentExecutor, create_react_agent
-from langchain_community.docstore.wikipedia import Wikipedia
 from langchain.agents.react.base import DocstoreExplorer
+from langchain_community.docstore.wikipedia import Wikipedia
 from langchain_core.tools import BaseTool, tool
+from tiktoken.core import Encoding
 
 from discussion_agents.cog.agent.base import BaseAgent
+from discussion_agents.cog.functional.react import (
+    _is_halted,
+    react_act,
+    react_observe,
+    react_think,
+)
 from discussion_agents.utils.parse import parse_action
-from discussion_agents.cog.functional.react import _is_halted, react_think, react_act, react_observe
+
 
 class ReActAgent(BaseAgent):
     """ReAct agent from the original paper.
@@ -40,13 +46,14 @@ class ReActAgent(BaseAgent):
 
     See: https://github.com/ysymyth/ReAct
     """
+
     def __init__(
-        self, 
-        llm: Any, 
-        max_steps: int = 6, 
+        self,
+        llm: Any,
+        max_steps: int = 6,
         max_tokens: int = 3896,
         docstore: Optional[DocstoreExplorer] = DocstoreExplorer(Wikipedia()),
-        enc: Optional[Encoding] = tiktoken.encoding_for_model("gpt-3.5-turbo")
+        enc: Optional[Encoding] = tiktoken.encoding_for_model("gpt-3.5-turbo"),
     ) -> None:
         """Initialization."""
         super().__init__()
@@ -76,49 +83,44 @@ class ReActAgent(BaseAgent):
         """
         if reset:
             self.reset()
-        
+
         out = ""
         while not _is_halted(
             finished=self._finished,
-            step_n=self._step_n, 
-            max_steps=self.max_steps, 
-            question=question, 
-            scratchpad=self._scratchpad, 
-            max_tokens=self.max_tokens, 
-            enc=self.enc
+            step_n=self._step_n,
+            max_steps=self.max_steps,
+            question=question,
+            scratchpad=self._scratchpad,
+            max_tokens=self.max_tokens,
+            enc=self.enc,
         ):
             # Think.
             self._scratchpad = react_think(
-                llm=self.llm, 
-                question=question, 
-                scratchpad=self._scratchpad
+                llm=self.llm, question=question, scratchpad=self._scratchpad
             )
-            out += "\n" + self._scratchpad.split('\n')[-1]
-            
+            out += "\n" + self._scratchpad.split("\n")[-1]
+
             # Act.
             self._scratchpad, action = react_act(
-                llm=self.llm, 
-                question=question, 
-                scratchpad=self._scratchpad
+                llm=self.llm, question=question, scratchpad=self._scratchpad
             )
             action_type, query = parse_action(action)
-            out += "\n" + self._scratchpad.split('\n')[-1]
+            out += "\n" + self._scratchpad.split("\n")[-1]
 
             # Observe.
             observation = react_observe(
-                action_type=action_type, 
-                query=query, 
-                scratchpad=self._scratchpad, 
-                step_n=self._step_n, 
-                docstore=self.docstore
+                action_type=action_type,
+                query=query,
+                scratchpad=self._scratchpad,
+                step_n=self._step_n,
+                docstore=self.docstore,
             )
             self._scratchpad = observation["scratchpad"]
             self._step_n = observation["step_n"]
             self._finished = observation["finished"]
-            out += "\n" + self._scratchpad.split('\n')[-1]
+            out += "\n" + self._scratchpad.split("\n")[-1]
 
         return out
-
 
     def reset(self) -> None:
         """Resets the internal state of the ReAct agent.
@@ -136,6 +138,7 @@ def search(query: str) -> str:
     docstore = DocstoreExplorer(Wikipedia())
     return docstore.search(query)
 
+
 class ZeroShotReActAgent(BaseAgent):
     """The Zero-Shot ReAct Agent class adapted from LangChain.
 
@@ -146,7 +149,13 @@ class ZeroShotReActAgent(BaseAgent):
 
     See: https://github.com/langchain-ai/langchain/tree/master/libs/langchain/langchain/agents/react
     """
-    def __init__(self, llm: Any, tools: Optional[List[BaseTool]] = [], prompt: Optional[str] = None) -> None:
+
+    def __init__(
+        self,
+        llm: Any,
+        tools: Optional[List[BaseTool]] = [],
+        prompt: Optional[str] = None,
+    ) -> None:
         """Initialization."""
         super().__init__()
         self.llm = llm  # TODO: Why is `LLM` not usable here?

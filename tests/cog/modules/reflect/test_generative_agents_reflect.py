@@ -17,9 +17,7 @@ def test_generative_agent_reflector(
     """Test GenerativeAgentReflector."""
     observations = "Chairs have 4 legs."
     llm = FakeListLLM(responses=["That's an interesting observation!"])
-    reflector = GenerativeAgentReflector(
-        llm=llm, retriever=time_weighted_retriever
-    )
+    reflector = GenerativeAgentReflector(llm=llm, retriever=time_weighted_retriever)
     insights = reflector.reflect(observations=observations, now=test_date)
     assert type(insights) is list
     assert insights == [["That's an interesting observation!"]]

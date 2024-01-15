@@ -3,6 +3,7 @@
 from abc import ABC
 from typing import Optional
 
+
 class BasePersona(ABC):
     """Base persona class.
 
@@ -15,12 +16,12 @@ class BasePersona(ABC):
     """
 
     def __init__(
-        self, 
-        name: Optional[str] = None, 
-        age: Optional[int] = None, 
-        traits: Optional[str] = None, 
-        status: Optional[str] = None, 
-        lifestyle: Optional[str] = None
+        self,
+        name: Optional[str] = None,
+        age: Optional[int] = None,
+        traits: Optional[str] = None,
+        status: Optional[str] = None,
+        lifestyle: Optional[str] = None,
     ) -> None:
         """Initialization."""
         super().__init__()
@@ -29,4 +30,3 @@ class BasePersona(ABC):
         self.traits = traits
         self.status = status
         self.lifestyle = lifestyle
-

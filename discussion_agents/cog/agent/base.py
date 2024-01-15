@@ -3,6 +3,7 @@
 from abc import ABC
 from typing import Any
 
+
 class BaseAgent(ABC):
     """Base agent class providing a general interface for agent operations."""
 

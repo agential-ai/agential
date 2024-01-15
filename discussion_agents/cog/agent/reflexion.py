@@ -14,13 +14,13 @@ from discussion_agents.cog.eval.reflexion import EM
 from discussion_agents.cog.functional.reflexion import (
     _prompt_cot_agent,
 )
-from discussion_agents.utils.parse import parse_action
 from discussion_agents.cog.modules.memory.reflexion import ReflexionMemory
 from discussion_agents.cog.modules.reflect.reflexion import ReflexionReflector
 from discussion_agents.cog.prompts.reflexion import (
     COT,
     COT_REFLECT,
 )
+from discussion_agents.utils.parse import parse_action
 
 
 class ReflexionCoTAgent(BaseAgent):
@@ -40,12 +40,13 @@ class ReflexionCoTAgent(BaseAgent):
         reset(): Resets the agent's state for a new problem-solving session.
         is_finished(): Checks if the problem-solving process has concluded.
     """
+
     def __init__(
-        self, 
-        self_reflect_llm: BaseChatModel, 
-        action_llm: BaseChatModel, 
-        memory: Optional[ReflexionMemory] = None, 
-        reflector: Optional[ReflexionReflector] = None
+        self,
+        self_reflect_llm: BaseChatModel,
+        action_llm: BaseChatModel,
+        memory: Optional[ReflexionMemory] = None,
+        reflector: Optional[ReflexionReflector] = None,
     ) -> None:
         """Initialization with default or provided values."""
         super().__init__()
@@ -80,7 +81,7 @@ class ReflexionCoTAgent(BaseAgent):
             key (str): The key to evaluate the correctness of the answer.
             context (Optional[str]): The context or background information. Can be None to indicate no context.
             strategy (str, optional): The strategy to use for reflection. Defaults to None.
-        
+
         Returns:
             out (str): A string output from the ReflexionCoTAgent.
         """
@@ -96,13 +97,13 @@ class ReflexionCoTAgent(BaseAgent):
         # Think.
         self.memory.add_memories("\nThought:")
         thought = _prompt_cot_agent(
-                llm=self.action_llm,
-                examples=COT,
-                reflections=self.reflector.reflections_str,
-                question=question,
-                context=context,
-                scratchpad=self.memory.load_memories()["scratchpad"],
-            )
+            llm=self.action_llm,
+            examples=COT,
+            reflections=self.reflector.reflections_str,
+            question=question,
+            context=context,
+            scratchpad=self.memory.load_memories()["scratchpad"],
+        )
         self.memory.add_memories(" " + thought)
         out += self.memory.load_memories()["scratchpad"].split("\n")[-1] + "\n"
 

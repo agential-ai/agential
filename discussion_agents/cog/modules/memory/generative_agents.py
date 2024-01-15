@@ -31,6 +31,7 @@ class GenerativeAgentMemory(BaseMemory):
     Attributes:
         retriever (TimeWeightedVectorStoreRetriever): A retriever for handling memory storage and retrieval operations.
     """
+
     def __init__(self, retriever: TimeWeightedVectorStoreRetriever) -> None:
         """Initialization."""
         super().__init__()

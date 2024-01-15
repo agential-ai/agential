@@ -17,11 +17,12 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
+
 from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.functional.generative_agents import (
+    _create_default_time_weighted_retriever,
     get_insights_on_topics,
     get_topics_of_reflection,
-    _create_default_time_weighted_retriever
 )
 from discussion_agents.cog.modules.memory.generative_agents import GenerativeAgentMemory
 from discussion_agents.cog.modules.reflect.generative_agents import (
@@ -78,7 +79,7 @@ class GenerativeAgent(BaseAgent):
         age: int = 20,
         traits: str = "kind, inquisitive, passionate",
         status: str = "Klaus Mueller is writing a research paper on the effects of gentrification in low-income communities.",
-        lifestyle: str = "Klaus Mueller goes to bed around 11pm, awakes up around 7am, eats dinner around 5pm."
+        lifestyle: str = "Klaus Mueller goes to bed around 11pm, awakes up around 7am, eats dinner around 5pm.",
     ) -> None:
         """Initialize agent."""
         self.llm = llm

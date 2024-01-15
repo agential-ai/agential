@@ -16,17 +16,19 @@ def generative_agent() -> GenerativeAgent:
     agent = GenerativeAgent(llm=FakeListLLM(responses=["1"]))
     return agent
 
+
 @pytest.fixture
 def react_agent() -> ReActAgent:
     """Creates a ReActAgent."""
     agent = ReActAgent(llm=FakeListLLM(responses=["1"]))
     return agent
 
+
 @pytest.fixture
 def reflexion_cot_agent() -> ReflexionCoTAgent:
     """Creates a ReflexionCoTAgent."""
     agent = ReflexionCoTAgent(
         self_reflect_llm=FakeListChatModel(responses=["1"]),
-        action_llm=FakeListChatModel(responses=["1"])
+        action_llm=FakeListChatModel(responses=["1"]),
     )
     return agent

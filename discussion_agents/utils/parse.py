@@ -98,7 +98,7 @@ def parse_action(string: str) -> Optional[Tuple[str, str]]:
         return action_type, argument
     else:
         return None
-    
+
 
 def remove_newline(step: str) -> str:
     """Formats a step string by stripping leading/trailing newlines and spaces, and replacing internal newlines with empty space.

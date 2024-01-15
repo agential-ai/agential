@@ -5,10 +5,11 @@ from typing import Any
 
 class BaseScorer(ABC):
     """Base scoring class."""
+
     def __init__(self, llm: Any) -> None:
         """Initialization."""
         self.llm = llm
-        
+
     @abstractmethod
     def score(
         self,

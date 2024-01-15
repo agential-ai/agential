@@ -2,29 +2,30 @@
 
 import re
 
-import faiss
 from datetime import datetime
-from typing import Any, List, Optional, Tuple, Union, Dict
+from typing import Any, Dict, List, Optional, Tuple, Union
+
+import faiss
 
 from langchain.chains import LLMChain
-from langchain.prompts import PromptTemplate
-from langchain_core.retrievers import BaseRetriever
-from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.docstore import InMemoryDocstore
 from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.prompts import PromptTemplate
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.vectorstores import FAISS
+from langchain_core.retrievers import BaseRetriever
 
 from discussion_agents.utils.fetch import fetch_memories
 from discussion_agents.utils.format import format_memories_detail
 from discussion_agents.utils.parse import parse_list
 
+
 def _create_default_time_weighted_retriever(
-    model_name: str = "sentence-transformers/all-mpnet-base-v2", 
+    model_name: str = "sentence-transformers/all-mpnet-base-v2",
     embedding_size: int = 768,
     model_kwargs: Dict[str, Any] = {"device": "cpu"},
     encode_kwargs: Dict[str, Any] = {"normalize_embeddings": False},
-    k=5
+    k=5,
 ) -> TimeWeightedVectorStoreRetriever:
     """Returns a TimeWeightedVectorStoreRetriever with customizable parameters.
 
@@ -51,6 +52,7 @@ def _create_default_time_weighted_retriever(
         vectorstore=vectorstore, otherScoreKeys=["importance"], k=k
     )
     return retriever
+
 
 def score_memories_importance(
     memory_contents: Union[str, List[str]],
