@@ -31,7 +31,7 @@ class ReflexionReflector(BaseReflector):
     reflections_str: Optional[str] = ""
 
     def reflect(
-        self, strategy: str, examples: str, context: str, question: str, scratchpad: str
+        self, strategy: str, examples: str, question: str, context: str, scratchpad: str
     ) -> Tuple[List[str], str]:
         """Wrapper around Reflexion's `reflect` method in functional.
 
@@ -42,8 +42,8 @@ class ReflexionReflector(BaseReflector):
         Args:
             strategy (str): The reflection strategy to be used ('last_attempt', 'reflexion', or 'last_attempt_and_reflexion').
             examples (str): Example inputs for the prompt template.
-            context (str): The context of the conversation or query.
             question (str): The question being addressed.
+            context (str): The context of the conversation or query.
             scratchpad (str): The scratchpad content related to the question.
 
         Returns:
@@ -58,8 +58,8 @@ class ReflexionReflector(BaseReflector):
             llm=self.llm,
             reflections=self.reflections,
             examples=examples,
-            context=context,
             question=question,
+            context=context,
             scratchpad=scratchpad,
         )
 

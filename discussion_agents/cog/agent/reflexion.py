@@ -86,7 +86,7 @@ class ReflexionCoTAgent(BaseAgent):
         """
         # Reflect if possible.
         if self._step_n > 0 and not EM(self._answer, key) and strategy:
-            self.reflect(strategy, context, question)
+            self.reflect(strategy, question, context)
 
         # Reset.
         self.reset()
@@ -99,8 +99,8 @@ class ReflexionCoTAgent(BaseAgent):
                 llm=self.action_llm,
                 examples=COT,
                 reflections=self.reflector.reflections_str,
-                context=context,
                 question=question,
+                context=context,
                 scratchpad=self.memory.load_memories()["scratchpad"],
             )
         self.memory.add_memories(" " + thought)
@@ -112,8 +112,8 @@ class ReflexionCoTAgent(BaseAgent):
             llm=self.action_llm,
             examples=COT,
             reflections=self.reflector.reflections_str,
-            context=context,
             question=question,
+            context=context,
             scratchpad=self.memory.load_memories()["scratchpad"],
         )
         action_type, argument = parse_action(action)
@@ -140,7 +140,7 @@ class ReflexionCoTAgent(BaseAgent):
 
         return out
 
-    def reflect(self, strategy: str, context: str, question: str) -> str:
+    def reflect(self, strategy: str, question: str, context: str) -> str:
         """Reflects on the previous steps to improve the response.
 
         Given the agent can reflect (strategy is not `None`), the strategy
@@ -153,8 +153,8 @@ class ReflexionCoTAgent(BaseAgent):
 
         Args:
             strategy (str): The strategy to use for reflection.
-            context (str): The context or background information.
             question (str): The question to answer.
+            context (str): The context or background information.
 
         Returns:
             str: Generated reflections based on the strategy.
@@ -162,8 +162,8 @@ class ReflexionCoTAgent(BaseAgent):
         _, reflections_str = self.reflector.reflect(
             strategy=strategy,
             examples=COT_REFLECT,
-            context=context,
             question=question,
+            context=context,
             scratchpad=self.memory.load_memories()["scratchpad"],
         )
 

@@ -107,8 +107,8 @@ def _prompt_cot_agent(
     llm: BaseChatModel,
     examples: str,
     reflections: str,
-    context: str,
     question: str,
+    context: str,
     scratchpad: str,
 ) -> str:
     """Generates a CoT prompt for thought and action.
@@ -117,8 +117,8 @@ def _prompt_cot_agent(
         llm (BaseChatModel): The language model to be used for generating the reflection.
         examples (str): Example inputs for the prompt template.
         reflections (List[str]): Existing list of reflections.
-        context (str): The context of the conversation or query.
         question (str): The question being addressed.
+        context (str): The context of the conversation or query.
         scratchpad (str): The scratchpad content related to the question.
 
     Returns:
@@ -128,16 +128,16 @@ def _prompt_cot_agent(
         input_variables=[
             "examples",
             "reflections",
-            "context",
             "question",
+            "context",
             "scratchpad",
         ],
         template=COT_AGENT_REFLECT_INSTRUCTION,
     ).format(
         examples=examples,
         reflections=reflections,
-        context=context,
         question=question,
+        context=context,
         scratchpad=scratchpad,
     )
 

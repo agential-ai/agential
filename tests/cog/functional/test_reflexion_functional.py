@@ -77,8 +77,8 @@ def test__prompt_cot_agent() -> None:
         llm=FakeListChatModel(responses=["1"]),
         examples="",
         reflections="",
-        context="",
         question="",
+        context="",
         scratchpad="",
     )
     assert isinstance(out, str)
