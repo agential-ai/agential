@@ -17,14 +17,14 @@ def test_reflexion_reflector() -> None:
         out = reflector.reflect(
             strategy="invalid input",
             examples="",
-            context="",
             question="",
             scratchpad="",
+            context="",
         )
 
     # Test with last attempt.
     out = reflector.reflect(
-        strategy="last_attempt", examples="", context="", question="", scratchpad=""
+        strategy="last_attempt", examples="", question="", scratchpad="", context=""
     )
     assert isinstance(out, tuple)
     assert len(out) == 2
@@ -41,7 +41,7 @@ def test_reflexion_reflector() -> None:
         llm=FakeListChatModel(responses=["1"]),
     )
     out = reflector.reflect(
-        strategy="reflexion", examples="", context="", question="", scratchpad=""
+        strategy="reflexion", examples="", question="", scratchpad="", context=""
     )
 
     assert isinstance(out, tuple)
@@ -61,9 +61,9 @@ def test_reflexion_reflector() -> None:
     out = reflector.reflect(
         strategy="last_attempt_and_reflexion",
         examples="",
-        context="",
         question="",
         scratchpad="",
+        context="",
     )
     assert isinstance(out, tuple)
     assert len(out) == 2

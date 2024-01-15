@@ -45,8 +45,17 @@ def test_reflexion_cot_reflect(reflexion_cot_agent: ReflexionCoTAgent) -> None:
     gt_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: \n\n(END PREVIOUS TRIAL)\n"
     reflections_str = reflexion_cot_agent.reflect(
         strategy="last_attempt",
-        context="",
         question="",
+        context="",
+    )
+    assert reflections_str == gt_reflections_str
+
+    # Test with no context.
+    gt_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: \n\n(END PREVIOUS TRIAL)\n"
+    reflections_str = reflexion_cot_agent.reflect(
+        strategy="last_attempt",
+        question="",
+        context=None,
     )
     assert reflections_str == gt_reflections_str
 

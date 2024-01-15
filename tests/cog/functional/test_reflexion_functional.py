@@ -78,8 +78,8 @@ def test__prompt_cot_agent() -> None:
         examples="",
         reflections="",
         question="",
-        context="",
         scratchpad="",
+        context="",
     )
     assert isinstance(out, str)
     assert out == "1"
@@ -90,9 +90,9 @@ def test__prompt_cot_reflection() -> None:
     out = _prompt_cot_reflection(
         llm=FakeListChatModel(responses=["1"]),
         examples="",
-        context="",
         question="",
         scratchpad="",
+        context="",
     )
     assert isinstance(out, str)
     assert out == "1"
@@ -111,9 +111,9 @@ def test_reflect_reflexion() -> None:
         llm=FakeListChatModel(responses=["1"]),
         reflections=[""],
         examples="",
-        context="",
         question="",
         scratchpad="",
+        context="",
     )
     assert isinstance(out, list)
     assert out == ["", "1"]
@@ -124,9 +124,9 @@ def test_reflect_last_attempt_and_reflexion() -> None:
     out = reflect_last_attempt_and_reflexion(
         llm=FakeListChatModel(responses=["1"]),
         examples="",
-        context="",
         question="",
         scratchpad="",
+        context="",
     )
     assert isinstance(out, list)
     assert out == ["1"]
@@ -141,9 +141,9 @@ def test_reflect() -> None:
             llm=FakeListChatModel(responses=["1"]),
             reflections=[""],
             examples="",
-            context="",
             question="",
             scratchpad="",
+            context="",
         )
 
     # Last attempt.
@@ -152,9 +152,9 @@ def test_reflect() -> None:
         llm=FakeListChatModel(responses=["1"]),
         reflections=[""],
         examples="",
-        context="",
         question="",
         scratchpad="",
+        context="",
     )
     assert out == [""]
 
@@ -164,9 +164,9 @@ def test_reflect() -> None:
         llm=FakeListChatModel(responses=["1"]),
         reflections=[""],
         examples="",
-        context="",
         question="",
         scratchpad="",
+        context="",
     )
     assert isinstance(out, list)
     assert out == ["", "1"]
@@ -177,9 +177,9 @@ def test_reflect() -> None:
         llm=FakeListChatModel(responses=["1"]),
         reflections=[""],
         examples="",
-        context="",
         question="",
         scratchpad="",
+        context="",
     )
     assert isinstance(out, list)
     assert out == ["1"]
