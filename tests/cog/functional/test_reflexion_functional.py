@@ -13,6 +13,9 @@ from discussion_agents.cog.functional.reflexion import (
     reflect_last_attempt,
     reflect_last_attempt_and_reflexion,
     reflect_reflexion,
+    reflexion_act,
+    reflexion_observe,
+    reflexion_think,
 )
 
 
@@ -206,3 +209,91 @@ def test_reflect() -> None:
     )
     assert isinstance(out, list)
     assert out == ["1"]
+
+
+def test_reflexion_think() -> None:
+    """Test reflexion_think."""
+    out = reflexion_think(
+        llm=FakeListChatModel(responses=["1"]),
+        reflections="",
+        question="",
+        scratchpad="",
+        context="",
+    )
+    assert out == "\nThought: 1"
+
+    # With no context.
+    out = reflexion_think(
+        llm=FakeListChatModel(responses=["1"]),
+        reflections="",
+        question="",
+        scratchpad="",
+        context=None,
+    )
+    assert out == "\nThought: 1"
+
+
+def test_reflexion_act() -> None:
+    """Test reflexion_act."""
+    out = reflexion_act(
+        llm=FakeListChatModel(responses=["1"]),
+        reflections="",
+        question="",
+        scratchpad="",
+        context="",
+    )
+    assert out == ("\nAction: 1", "1")
+
+    out = reflexion_act(
+        llm=FakeListChatModel(responses=["1"]),
+        reflections="",
+        question="",
+        scratchpad="",
+        context=None,
+    )
+    assert out == ("\nAction: 1", "1")
+
+
+def test_reflexion_observe() -> None:
+    """Test reflexion_observe."""
+    out = reflexion_observe(
+        action_type="finish",
+        answer="correct_answer",
+        key="correct_answer",
+        scratchpad="",
+        step_n=1,
+    )
+    gt_out = {
+        "scratchpad": "\nObservation 1: \nAnswer is CORRECT",
+        "answer": "correct_answer",
+        "finished": True,
+        "step_n": 2,
+    }
+    assert out == gt_out
+
+    out = reflexion_observe(
+        action_type="finish",
+        answer="wrong_answer",
+        key="correct_answer",
+        scratchpad="",
+        step_n=1,
+    )
+    gt_out = {
+        "scratchpad": "\nObservation 1: \nAnswer is INCORRECT",
+        "answer": "wrong_answer",
+        "finished": True,
+        "step_n": 2,
+    }
+
+    assert out == gt_out
+
+    out = reflexion_observe(
+        action_type="invalid", answer="answer", key="key", scratchpad="", step_n=1
+    )
+    gt_out = {
+        "scratchpad": "\nObservation 1: \nInvalid action type, please try again.",
+        "answer": None,
+        "finished": False,
+        "step_n": 2,
+    }
+    assert out == gt_out

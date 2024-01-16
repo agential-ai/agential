@@ -1,5 +1,5 @@
 """Functional module for Reflexion."""
-from typing import List, Optional, Tuple, Any, Dict
+from typing import Any, Dict, List, Optional, Tuple
 
 import tiktoken
 
@@ -8,18 +8,18 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
 from tiktoken.core import Encoding
 
+from discussion_agents.cog.eval.reflexion import EM
 from discussion_agents.cog.prompts.reflexion import (
     LAST_TRIAL_HEADER,
     REFLECTION_HEADER,
+    REFLEXION_COT_FEWSHOT_EXAMPLES,
+    REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
     REFLEXION_COT_INSTRUCTION,
     REFLEXION_COT_INSTRUCTION_NO_CONTEXT,
     REFLEXION_COT_REFLECT_INSTRUCTION,
     REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT,
-    REFLEXION_COT_FEWSHOT_EXAMPLES,
-    REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT
 )
 from discussion_agents.utils.parse import remove_newline
-from discussion_agents.cog.eval.reflexion import EM
 
 gpt3_5_turbo_enc = tiktoken.encoding_for_model(
     "gpt-3.5-turbo"
@@ -337,11 +337,11 @@ def reflect(
 
 
 def reflexion_think(
-    llm: Any, 
-    reflections: str, 
-    question: str, 
-    scratchpad: str, 
-    context: Optional[str] = None
+    llm: BaseChatModel,
+    reflections: str,
+    question: str,
+    scratchpad: str,
+    context: Optional[str] = None,
 ) -> str:
     """Generates a 'thought' based on the current question and scratchpad content.
 
@@ -350,7 +350,7 @@ def reflexion_think(
     the response before the 'Action' segment.
 
     Args:
-        llm (Any): The language model to be prompted.
+        llm (BaseChatModel): The language model to be prompted.
         reflections (str): Reflection strings.
         question (str): The current question being considered.
         scratchpad (str): The existing scratchpad content.
@@ -373,12 +373,13 @@ def reflexion_think(
     scratchpad += " " + thought
     return scratchpad
 
+
 def reflexion_act(
-    llm: Any, 
+    llm: BaseChatModel,
     reflections: str,
-    question: str, 
-    scratchpad: str, 
-    context: Optional[str] = None
+    question: str,
+    scratchpad: str,
+    context: Optional[str] = None,
 ) -> Tuple[str, str]:
     """Determines an action based on the current question and scratchpad content.
 
@@ -387,7 +388,7 @@ def reflexion_act(
     the response before the 'Observation' segment.
 
     Args:
-        llm (Any): The language model to be prompted.
+        llm (BaseChatModel): The language model to be prompted.
         reflections (str): Reflection strings.
         question (str): The current question being considered.
         scratchpad (str): The existing scratchpad content.
@@ -410,6 +411,7 @@ def reflexion_act(
     scratchpad += " " + action
     return scratchpad, action
 
+
 def reflexion_observe(
     action_type: str,
     answer: str,
@@ -417,11 +419,10 @@ def reflexion_observe(
     scratchpad: str,
     step_n: int,
 ) -> Dict[str, Any]:
-    """
-    Observes the results of the action taken by the agent and updates the scratchpad accordingly.
+    """Observes the results of the action taken by the agent and updates the scratchpad accordingly.
 
-    This function is primarily responsible for validating the answer if the action type is "finish". It updates 
-    the scratchpad with observations about the answer's correctness and increments the step number. If the action 
+    This function is primarily responsible for validating the answer if the action type is "finish". It updates
+    the scratchpad with observations about the answer's correctness and increments the step number. If the action
     type is not "finish", it logs an invalid action message.
 
     Args:
@@ -432,7 +433,7 @@ def reflexion_observe(
         step_n (int): The current step number in the process, used for tracking the sequence of actions.
 
     Returns:
-        Dict[str, Any]: A dictionary containing the updated scratchpad, answer (if action is 'finish'), 
+        Dict[str, Any]: A dictionary containing the updated scratchpad, answer (if action is 'finish'),
                         a boolean flag indicating whether the process has finished, and the updated step number.
     """
     out = {
@@ -456,6 +457,6 @@ def reflexion_observe(
         invalid_action_str = "Invalid action type, please try again."
         out["scratchpad"] += "\n" + invalid_action_str
 
-    out["step-n"] += 1
+    out["step_n"] += 1
 
     return out
