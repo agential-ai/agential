@@ -20,6 +20,7 @@ from langchain_core.tools import BaseTool, tool
 from tiktoken.core import Encoding
 
 from discussion_agents.cog.agent.base import BaseAgent
+from discussion_agents.cog.modules.memory.react import ReActMemory
 from discussion_agents.cog.functional.react import (
     _is_halted,
     react_act,
@@ -50,6 +51,7 @@ class ReActAgent(BaseAgent):
     def __init__(
         self,
         llm: Any,
+        memory: Optional[ReActMemory] = None,
         max_steps: int = 6,
         max_tokens: int = 3896,
         docstore: Optional[DocstoreExplorer] = DocstoreExplorer(Wikipedia()),
@@ -58,6 +60,12 @@ class ReActAgent(BaseAgent):
         """Initialization."""
         super().__init__()
         self.llm = llm
+
+        if not memory:
+            self.memory = ReActMemory()
+        else:
+            self.memory = memory
+
         self.max_steps = max_steps
         self.max_tokens = max_tokens
         self.docstore = docstore
@@ -66,7 +74,6 @@ class ReActAgent(BaseAgent):
         # Internal variables.
         self._step_n = 1  #: :meta private:
         self._finished = False  #: :meta private:
-        self._scratchpad: str = ""  #: :meta private:
 
     def generate(self, question: str, reset: bool = True) -> str:
         """Processes a given question through ReAct.
@@ -90,37 +97,45 @@ class ReActAgent(BaseAgent):
             step_n=self._step_n,
             max_steps=self.max_steps,
             question=question,
-            scratchpad=self._scratchpad,
+            scratchpad=self.memory.load_memories()["scratchpad"],
             max_tokens=self.max_tokens,
             enc=self.enc,
         ):
             # Think.
-            self._scratchpad = react_think(
-                llm=self.llm, question=question, scratchpad=self._scratchpad
+            self.memory.scratchpad = react_think(
+                llm=self.llm, question=question, scratchpad=self.memory.load_memories()["scratchpad"]
             )
-            out += "\n" + self._scratchpad.split("\n")[-1]
+            out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
             # Act.
-            self._scratchpad, action = react_act(
-                llm=self.llm, question=question, scratchpad=self._scratchpad
+            self.memory.scratchpad, action = react_act(
+                llm=self.llm, question=question, scratchpad=self.memory.load_memories()["scratchpad"]
             )
             action_type, query = parse_action(action)
-            out += "\n" + self._scratchpad.split("\n")[-1]
+            out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
             # Observe.
             observation = react_observe(
                 action_type=action_type,
                 query=query,
-                scratchpad=self._scratchpad,
+                scratchpad=self.memory.load_memories()["scratchpad"],
                 step_n=self._step_n,
                 docstore=self.docstore,
             )
-            self._scratchpad = observation["scratchpad"]
+            self.memory.scratchpad = observation["scratchpad"]
             self._step_n = observation["step_n"]
             self._finished = observation["finished"]
-            out += "\n" + self._scratchpad.split("\n")[-1]
+            out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
         return out
+
+    def retrieve(self) -> Dict[str, Any]:
+        """Retrieves the current state of the agent's memory.
+
+        Returns:
+            Dict[str, Any]: The current state of the agent's memory.
+        """
+        return self.memory.load_memories()
 
     def reset(self) -> None:
         """Resets the internal state of the ReAct agent.
@@ -129,7 +144,7 @@ class ReActAgent(BaseAgent):
         """
         self._step_n = 1
         self._finished = False
-        self._scratchpad: str = ""
+        self.memory.clear()
 
 
 @tool

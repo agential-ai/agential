@@ -18,7 +18,7 @@ def test_init() -> None:
 
     assert agent._step_n == 1
     assert agent._finished == False
-    assert agent._scratchpad == ""
+    assert agent.memory.scratchpad == ""
 
 
 def test_generate() -> None:
