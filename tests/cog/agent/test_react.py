@@ -38,6 +38,28 @@ def test_generate() -> None:
     assert not agent._finished
 
 
+def test_reset(react_agent: ReActAgent) -> None:
+    """Test reset."""
+    assert react_agent.memory.scratchpad == ""
+    react_agent.memory.scratchpad = "abc"
+    assert not react_agent._finished
+    react_agent._finished = True
+    assert react_agent._step_n == 1
+    react_agent._step_n = 10
+    react_agent.reset()
+    assert react_agent.memory.scratchpad == ""
+    assert not react_agent._finished
+    assert react_agent._step_n == 1
+
+
+def test_retrieve(react_agent: ReActAgent) -> None:
+    """Test retrieve."""
+    out = react_agent.retrieve()
+    assert isinstance(out, dict)
+    assert "scratchpad" in out
+    assert not out["scratchpad"]
+
+
 def test_zeroshot_react_init() -> None:
     """Tests ZeroShotReActAgent's initialization."""
     agent = ZeroShotReActAgent(llm=FakeListLLM(responses=["1"]))

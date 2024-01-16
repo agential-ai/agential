@@ -20,13 +20,13 @@ from langchain_core.tools import BaseTool, tool
 from tiktoken.core import Encoding
 
 from discussion_agents.cog.agent.base import BaseAgent
-from discussion_agents.cog.modules.memory.react import ReActMemory
 from discussion_agents.cog.functional.react import (
     _is_halted,
     react_act,
     react_observe,
     react_think,
 )
+from discussion_agents.cog.modules.memory.react import ReActMemory
 from discussion_agents.utils.parse import parse_action
 
 
@@ -103,13 +103,17 @@ class ReActAgent(BaseAgent):
         ):
             # Think.
             self.memory.scratchpad = react_think(
-                llm=self.llm, question=question, scratchpad=self.memory.load_memories()["scratchpad"]
+                llm=self.llm,
+                question=question,
+                scratchpad=self.memory.load_memories()["scratchpad"],
             )
             out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
             # Act.
             self.memory.scratchpad, action = react_act(
-                llm=self.llm, question=question, scratchpad=self.memory.load_memories()["scratchpad"]
+                llm=self.llm,
+                question=question,
+                scratchpad=self.memory.load_memories()["scratchpad"],
             )
             action_type, query = parse_action(action)
             out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
