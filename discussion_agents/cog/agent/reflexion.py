@@ -133,7 +133,7 @@ class ReflexionCoTAgent(BaseAgent):
 
         # Observe.
         self.memory.add_memories("\nObservation: ")
-        if action_type == "Finish":
+        if action_type.lower() == "finish":
             self._answer = argument
             if EM(self._answer, key):
                 correctness_str = "Answer is CORRECT"

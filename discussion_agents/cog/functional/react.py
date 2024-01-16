@@ -102,7 +102,7 @@ def react_think(llm: Any, question: str, scratchpad: str) -> str:
     Returns:
         str: The updated scratchpad including the generated thought.
     """
-    scratchpad += f"\nThought:"
+    scratchpad += "\nThought:"
     thought = _prompt_agent(
         llm=llm,
         question=question,
@@ -129,7 +129,7 @@ def react_act(llm: Any, question: str, scratchpad: str) -> Tuple[str, str]:
     Returns:
         Tuple[str, str]: A tuple containing the updated scratchpad and the determined action.
     """
-    scratchpad += f"\nAction:"
+    scratchpad += "\nAction:"
     action = _prompt_agent(
         llm=llm,
         question=question,

@@ -20,10 +20,7 @@ from langchain_core.tools import BaseTool, tool
 from tiktoken.core import Encoding
 
 from discussion_agents.cog.agent.base import BaseAgent
-from discussion_agents.cog.functional.react import (
-    _is_halted,
-    _prompt_agent
-)
+from discussion_agents.cog.functional.react import _is_halted, _prompt_agent
 from discussion_agents.cog.modules.memory.react import ReActMemory
 from discussion_agents.utils.parse import parse_action, remove_newline
 
@@ -72,7 +69,6 @@ class ReActAgent(BaseAgent):
         # Internal variables.
         self._step_n = 1  #: :meta private:
         self._finished = False  #: :meta private:
-        self._scratchpad = ""
 
     def generate(self, question: str, reset: bool = True) -> str:
         """Processes a given question through ReAct.
@@ -106,9 +102,7 @@ class ReActAgent(BaseAgent):
                 llm=self.llm,
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
-            ).split(
-                "Action"
-            )[0]
+            ).split("Action")[0]
             self.memory.add_memories(" " + thought)
             out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
@@ -118,9 +112,7 @@ class ReActAgent(BaseAgent):
                 llm=self.llm,
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
-            ).split(
-                "Observation"
-            )[0]
+            ).split("Observation")[0]
             self.memory.add_memories(" " + action)
             action_type, query = parse_action(action)
             out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
@@ -133,17 +125,27 @@ class ReActAgent(BaseAgent):
                 self.memory.add_memories(query)
             elif action_type.lower() == "search":
                 try:
-                    self.memory.add_memories(remove_newline(self.docstore.search(query)))
+                    self.memory.add_memories(
+                        remove_newline(self.docstore.search(query))
+                    )
                 except Exception:
-                    self.memory.add_memories("Could not find that page, please try again.")
+                    self.memory.add_memories(
+                        "Could not find that page, please try again."
+                    )
 
             elif action_type.lower() == "lookup":
                 try:
-                    self.memory.add_memories(remove_newline(self.docstore.lookup(query)))
+                    self.memory.add_memories(
+                        remove_newline(self.docstore.lookup(query))
+                    )
                 except ValueError:
-                    self.memory.add_memories("The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given.")
+                    self.memory.add_memories(
+                        "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
+                    )
             else:
-                self.memory.add_memories("Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>].")
+                self.memory.add_memories(
+                    "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
+                )
 
             self._step_n += 1
             out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
