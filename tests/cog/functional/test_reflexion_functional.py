@@ -84,6 +84,18 @@ def test__prompt_cot_agent() -> None:
     assert isinstance(out, str)
     assert out == "1"
 
+    # Test with no context.
+    out = _prompt_cot_agent(
+        llm=FakeListChatModel(responses=["1"]),
+        examples="",
+        reflections="",
+        question="",
+        scratchpad="",
+        context=None,
+    )
+    assert isinstance(out, str)
+    assert out == "1"
+
 
 def test__prompt_cot_reflection() -> None:
     """Test _prompt_cot_reflection function."""
@@ -93,6 +105,17 @@ def test__prompt_cot_reflection() -> None:
         question="",
         scratchpad="",
         context="",
+    )
+    assert isinstance(out, str)
+    assert out == "1"
+
+    # Test with no context.
+    out = _prompt_cot_reflection(
+        llm=FakeListChatModel(responses=["1"]),
+        examples="",
+        question="",
+        scratchpad="",
+        context=None,
     )
     assert isinstance(out, str)
     assert out == "1"
