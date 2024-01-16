@@ -22,12 +22,10 @@ from tiktoken.core import Encoding
 from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.functional.react import (
     _is_halted,
-    react_act,
-    react_observe,
-    react_think,
+    _prompt_agent
 )
 from discussion_agents.cog.modules.memory.react import ReActMemory
-from discussion_agents.utils.parse import parse_action
+from discussion_agents.utils.parse import parse_action, remove_newline
 
 
 class ReActAgent(BaseAgent):
@@ -74,6 +72,7 @@ class ReActAgent(BaseAgent):
         # Internal variables.
         self._step_n = 1  #: :meta private:
         self._finished = False  #: :meta private:
+        self._scratchpad = ""
 
     def generate(self, question: str, reset: bool = True) -> str:
         """Processes a given question through ReAct.
@@ -102,33 +101,51 @@ class ReActAgent(BaseAgent):
             enc=self.enc,
         ):
             # Think.
-            self.memory.scratchpad = react_think(
+            self.memory.add_memories("\nThought:")
+            thought = _prompt_agent(
                 llm=self.llm,
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
-            )
+            ).split(
+                "Action"
+            )[0]
+            self.memory.add_memories(" " + thought)
             out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
             # Act.
-            self.memory.scratchpad, action = react_act(
+            self.memory.add_memories("\nAction:")
+            action = _prompt_agent(
                 llm=self.llm,
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
-            )
+            ).split(
+                "Observation"
+            )[0]
+            self.memory.add_memories(" " + action)
             action_type, query = parse_action(action)
             out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
             # Observe.
-            observation = react_observe(
-                action_type=action_type,
-                query=query,
-                scratchpad=self.memory.load_memories()["scratchpad"],
-                step_n=self._step_n,
-                docstore=self.docstore,
-            )
-            self.memory.scratchpad = observation["scratchpad"]
-            self._step_n = observation["step_n"]
-            self._finished = observation["finished"]
+            self.memory.add_memories(f"\nObservation {self._step_n}: ")
+            if action_type.lower() == "finish":
+                self._answer = query
+                self._finished = True
+                self.memory.add_memories(query)
+            elif action_type.lower() == "search":
+                try:
+                    self.memory.add_memories(remove_newline(self.docstore.search(query)))
+                except Exception:
+                    self.memory.add_memories("Could not find that page, please try again.")
+
+            elif action_type.lower() == "lookup":
+                try:
+                    self.memory.add_memories(remove_newline(self.docstore.lookup(query)))
+                except ValueError:
+                    self.memory.add_memories("The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given.")
+            else:
+                self.memory.add_memories("Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>].")
+
+            self._step_n += 1
             out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
         return out

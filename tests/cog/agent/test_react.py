@@ -11,6 +11,7 @@ def test_init() -> None:
     llm = FakeListLLM(responses=["1"])
     agent = ReActAgent(llm=llm)
     assert agent.llm
+    assert agent.memory
     assert agent.max_steps == 6
     assert agent.max_tokens == 3896
     assert isinstance(agent.docstore, DocstoreExplorer)
