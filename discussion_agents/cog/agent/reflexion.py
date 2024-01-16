@@ -127,7 +127,7 @@ class ReflexionCoTAgent(BaseAgent):
             scratchpad=self.memory.load_memories()["scratchpad"],
             context=context,
         )
-        action_type, argument = parse_action(action)
+        action_type, argument = parse_action(action.strip())
         self.memory.add_memories(" " + action)
         out += self.memory.load_memories()["scratchpad"].split("\n")[-1] + "\n"
 

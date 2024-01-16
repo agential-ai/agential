@@ -133,3 +133,20 @@ def test_reflexion_cot_generate() -> None:
     gt_out_str = 'Thought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with Limited Liability]\n\nAnswer is INCORRECT'
     assert isinstance(out, str)
     assert out == gt_out_str
+
+    # With no reflection strategy and no context.
+    action_llm = FakeListChatModel(
+        responses=[
+            "Let's think step by step. VIVA Media AG changed its name in 2004. The new acronym must stand for the new name of the company. Unfortunately, without further information, it is not possible to determine what the new acronym stands for.",
+            "Finish[Unknown]"
+        ]
+    )
+    reflexion_cot_agent = ReflexionCoTAgent(
+        self_reflect_llm=FakeListChatModel(responses=["1"]), action_llm=action_llm
+    )
+    out = reflexion_cot_agent.generate(
+        question=question, key=key, context=None, strategy=None
+    )
+    gt_out_str = "Thought: Let's think step by step. VIVA Media AG changed its name in 2004. The new acronym must stand for the new name of the company. Unfortunately, without further information, it is not possible to determine what the new acronym stands for.\nAction: Finish[Unknown]\n\nAnswer is INCORRECT"
+    assert isinstance(out, str)
+    assert out == gt_out_str
