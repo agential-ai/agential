@@ -138,7 +138,7 @@ def test_reflexion_cot_generate() -> None:
     action_llm = FakeListChatModel(
         responses=[
             "Let's think step by step. VIVA Media AG changed its name in 2004. The new acronym must stand for the new name of the company. Unfortunately, without further information, it is not possible to determine what the new acronym stands for.",
-            "Finish[Unknown]"
+            "Finish[Unknown]",
         ]
     )
     reflexion_cot_agent = ReflexionCoTAgent(
