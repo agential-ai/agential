@@ -144,11 +144,6 @@ def _prompt_cot_agent(
         scratchpad=scratchpad,
         context=context if context else "",
     )
-    print(
-        "PROMPT:===========================================================\n",
-        prompt,
-        "\n===========================================================\n",
-    )
 
     out = llm(
         [
@@ -157,11 +152,6 @@ def _prompt_cot_agent(
             )
         ]
     ).content
-    print(
-        "OUT:===========================================================\n",
-        out,
-        "\n===========================================================\n",
-    )
     return remove_newline(out)
 
 
@@ -195,11 +185,6 @@ def _prompt_cot_reflection(
         scratchpad=scratchpad,
         context=context if context else "",
     )
-    print(
-        "REFLECTION INPUT:===========================================================\n",
-        prompt,
-        "\n===========================================================\n",
-    )
     out = llm(
         [
             HumanMessage(
@@ -207,11 +192,6 @@ def _prompt_cot_reflection(
             )
         ]
     ).content
-    print(
-        "REFLECTION OUT:===========================================================\n",
-        out,
-        "\n===========================================================\n",
-    )
     return remove_newline(out)
 
 
