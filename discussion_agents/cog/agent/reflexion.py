@@ -132,7 +132,7 @@ class ReflexionCoTAgent(BaseAgent):
         out += self.memory.load_memories()["scratchpad"].split("\n")[-1] + "\n"
 
         # Observe.
-        self.memory.add_memories("\nObservation:")
+        self.memory.add_memories("\nObservation: ")
         if action_type == "Finish":
             self._answer = argument
             if EM(self._answer, key):
