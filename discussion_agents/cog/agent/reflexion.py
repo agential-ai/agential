@@ -18,9 +18,9 @@ from discussion_agents.cog.modules.memory.reflexion import ReflexionMemory
 from discussion_agents.cog.modules.reflect.reflexion import ReflexionReflector
 from discussion_agents.cog.prompts.reflexion import (
     REFLEXION_COT_FEWSHOT_EXAMPLES,
+    REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
     REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES,
     REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT,
-    REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
 )
 from discussion_agents.utils.parse import parse_action
 
@@ -104,7 +104,9 @@ class ReflexionCoTAgent(BaseAgent):
         self.memory.add_memories("\nThought:")
         thought = _prompt_cot_agent(
             llm=self.action_llm,
-            examples=REFLEXION_COT_FEWSHOT_EXAMPLES if context else REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
+            examples=REFLEXION_COT_FEWSHOT_EXAMPLES
+            if context
+            else REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
             reflections=self.reflector.reflections_str,
             question=question,
             scratchpad=self.memory.load_memories()["scratchpad"],
@@ -117,7 +119,9 @@ class ReflexionCoTAgent(BaseAgent):
         self.memory.add_memories("\nAction:")
         action = _prompt_cot_agent(
             llm=self.action_llm,
-            examples=REFLEXION_COT_FEWSHOT_EXAMPLES if context else REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
+            examples=REFLEXION_COT_FEWSHOT_EXAMPLES
+            if context
+            else REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
             reflections=self.reflector.reflections_str,
             question=question,
             scratchpad=self.memory.load_memories()["scratchpad"],
@@ -170,7 +174,9 @@ class ReflexionCoTAgent(BaseAgent):
         """
         _, reflections_str = self.reflector.reflect(
             strategy=strategy,
-            examples=REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES if context else REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT,
+            examples=REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES
+            if context
+            else REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT,
             question=question,
             scratchpad=self.memory.load_memories()["scratchpad"],
             context=context,

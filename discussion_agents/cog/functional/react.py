@@ -5,7 +5,10 @@ from langchain.agents.react.base import DocstoreExplorer
 from langchain.prompts import PromptTemplate
 from tiktoken import Encoding
 
-from discussion_agents.cog.prompts.react import REACT_INSTRUCTION, REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
+from discussion_agents.cog.prompts.react import (
+    REACT_INSTRUCTION,
+    REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+)
 from discussion_agents.utils.parse import remove_newline
 
 
@@ -23,7 +26,9 @@ def _build_agent_prompt(question: str, scratchpad: str) -> PromptTemplate:
         PromptTemplate: A formatted prompt template ready for use.
     """
     prompt = PromptTemplate.from_template(REACT_INSTRUCTION).format(
-        examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES, question=question, scratchpad=scratchpad
+        examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        question=question,
+        scratchpad=scratchpad,
     )
     return prompt
 
