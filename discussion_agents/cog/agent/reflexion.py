@@ -6,14 +6,19 @@ Paper Repositories:
     - https://github.com/noahshinn/reflexion
 """
 from typing import Any, Dict, Optional
+import tiktoken
+from tiktoken import Encoding
 
 from langchain_core.language_models.chat_models import BaseChatModel
+from langchain.agents.react.base import DocstoreExplorer
+from langchain_community.docstore.wikipedia import Wikipedia
 
 from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.eval.reflexion import EM
 from discussion_agents.cog.functional.reflexion import (
     _prompt_cot_agent,
 )
+from discussion_agents.cog.modules.memory.react import ReActMemory
 from discussion_agents.cog.modules.memory.reflexion import ReflexionMemory
 from discussion_agents.cog.modules.reflect.reflexion import ReflexionReflector
 from discussion_agents.cog.prompts.reflexion import (
@@ -163,7 +168,6 @@ class ReflexionCoTAgent(BaseAgent):
         - "last_attempt_and_reflexion": This strategy combines the 'last_attempt' and 'reflexion' strategies.
           It first formats the last attempt using 'question' and 'scratchpad', then adds a new reflexion using all the parameters.
 
-
         Args:
             strategy (str): The strategy to use for reflection.
             question (str): The question to answer.
@@ -204,3 +208,20 @@ class ReflexionCoTAgent(BaseAgent):
             bool: True if the agent has finished, False otherwise.
         """
         return self._finished
+
+
+class ReflexionReActAgent(BaseAgent):
+
+    def __init__(
+        self,
+        self_reflect_llm: BaseChatModel,
+        action_llm: BaseChatModel,
+        memory: Optional[ReActMemory] = None,
+        reflector: Optional[ReflexionReflector] = None,
+        max_steps: int = 6,
+        max_tokens: int = 3896,
+        docstore: Optional[DocstoreExplorer] = DocstoreExplorer(Wikipedia()),
+        enc: Optional[Encoding] = tiktoken.encoding_for_model("gpt-3.5-turbo"),
+    ) -> None:
+        """Initialization."""
+        super().__init__()
