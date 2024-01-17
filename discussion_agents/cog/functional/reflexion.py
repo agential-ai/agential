@@ -426,3 +426,79 @@ def _prompt_react_reflection(
     ).content
     return remove_newline(out)
 
+
+def react_reflect_last_attempt(scratchpad: str) -> List[str]:
+    """Performs a reflection based on the last attempt (scratchpad).
+
+    Used with ReflexionReAct.
+
+    Args:
+        question (str): The question associated with the last attempt.
+        scratchpad (str): The scratchpad content from the last attempt.
+
+    Returns:
+        List[str]: A list with the scratchpad content.
+    """
+    return [scratchpad]
+
+
+def react_reflect_reflexion(
+    llm: BaseChatModel,
+    reflections: List[str],
+    examples: str,
+    question: str,
+    scratchpad: str,
+) -> List[str]:
+    """Perform reflexion-based reflecting.
+
+    Used with ReflexionReAct. This function uses a language model to generate a new reflection based on the provided context, question,
+    and scratchpad. The new reflection is added to the existing list of reflections.
+
+    Args:
+        llm (BaseChatModel): The language model used for generating the reflection.
+        reflections (List[str]): Existing list of reflections.
+        examples (str): Example inputs for the prompt template.
+        question (str): The question being addressed.
+        scratchpad (str): The scratchpad content related to the question.
+
+    Returns:
+        List[str]: An updated list of reflections.
+    """
+    new_reflection = _prompt_react_reflection(
+        llm=llm,
+        examples=examples,
+        question=question,
+        scratchpad=scratchpad,
+    )
+    reflections += [new_reflection]
+    return reflections
+
+
+def cot_reflect_last_attempt_and_reflexion(
+    llm: BaseChatModel,
+    examples: str,
+    question: str,
+    scratchpad: str,
+) -> List[str]:
+    """Performs reflection with the reflection of the last attempt and reflexion.
+
+    Used with ReflexionReAct.
+
+    Args:
+        llm (BaseChatModel): The language model used for generating the new reflection.
+        examples (str): Example inputs for the prompt template.
+        question (str): The question being addressed.
+        scratchpad (str): The scratchpad content related to the question.
+
+    Returns:
+        List[str]: A list with the new reflections.
+    """
+    reflections = [
+        _prompt_react_reflection(
+            llm=llm,
+            examples=examples,
+            question=question,
+            scratchpad=scratchpad,
+        )
+    ]
+    return reflections
