@@ -6,7 +6,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from discussion_agents.cog.functional.reflexion import (
     _format_last_attempt,
     _format_reflections,
-    reflect,
+    cot_reflect,
 )
 from discussion_agents.cog.modules.reflect.base import BaseReflector
 from discussion_agents.cog.prompts.reflexion import (
@@ -14,8 +14,8 @@ from discussion_agents.cog.prompts.reflexion import (
 )
 
 
-class ReflexionReflector(BaseReflector):
-    """Reflexion module for reflecting.
+class ReflexionCoTReflector(BaseReflector):
+    """ReflexionCoT module for reflecting.
 
     This class encapsulates the logic for reflecting on a given context, question, and scratchpad content using various
     strategies. It leverages a language model to generate reflections and maintains a list of these reflections.
@@ -38,7 +38,7 @@ class ReflexionReflector(BaseReflector):
         scratchpad: str,
         context: Optional[str] = None,
     ) -> Tuple[List[str], str]:
-        """Wrapper around Reflexion's `reflect` method in functional.
+        """Wrapper around ReflexionCoT's `cot_reflect` method in functional.
 
         This method calls the appropriate reflection function based on the provided strategy, passing in the necessary
         parameters including the language model, context, question, and scratchpad. It then updates the internal
@@ -58,7 +58,7 @@ class ReflexionReflector(BaseReflector):
         Raises:
             NotImplementedError: If an unknown reflection strategy is specified.
         """
-        reflections = reflect(
+        reflections = cot_reflect(
             strategy=strategy,
             llm=self.llm,
             reflections=self.reflections,

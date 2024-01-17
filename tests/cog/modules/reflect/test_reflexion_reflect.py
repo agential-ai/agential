@@ -3,12 +3,12 @@ import pytest
 
 from langchain_community.chat_models.fake import FakeListChatModel
 
-from discussion_agents.cog.modules.reflect.reflexion import ReflexionReflector
+from discussion_agents.cog.modules.reflect.reflexion import ReflexionCoTReflector
 
 
-def test_reflexion_reflector() -> None:
-    """Unit tests for Reflexion Reflector."""
-    reflector = ReflexionReflector(
+def test_reflexion_cot_reflector() -> None:
+    """Unit tests for ReflexionCoT Reflector."""
+    reflector = ReflexionCoTReflector(
         llm=FakeListChatModel(responses=["1"]),
     )
 
@@ -37,7 +37,7 @@ def test_reflexion_reflector() -> None:
     )
 
     # Test with Reflexion.
-    reflector = ReflexionReflector(
+    reflector = ReflexionCoTReflector(
         llm=FakeListChatModel(responses=["1"]),
     )
     out = reflector.reflect(
@@ -55,7 +55,7 @@ def test_reflexion_reflector() -> None:
     )
 
     # Test with last attempt and Reflexion.
-    reflector = ReflexionReflector(
+    reflector = ReflexionCoTReflector(
         llm=FakeListChatModel(responses=["1"]),
     )
     out = reflector.reflect(
