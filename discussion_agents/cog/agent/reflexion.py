@@ -6,19 +6,14 @@ Paper Repositories:
     - https://github.com/noahshinn/reflexion
 """
 from typing import Any, Dict, Optional
-import tiktoken
-from tiktoken import Encoding
 
 from langchain_core.language_models.chat_models import BaseChatModel
-from langchain.agents.react.base import DocstoreExplorer
-from langchain_community.docstore.wikipedia import Wikipedia
-
 from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.eval.reflexion import EM
 from discussion_agents.cog.functional.reflexion import (
     _prompt_cot_agent,
 )
-from discussion_agents.cog.modules.memory.react import ReActMemory
+from discussion_agents.cog.agent.react import ReActAgent
 from discussion_agents.cog.modules.memory.reflexion import ReflexionMemory
 from discussion_agents.cog.modules.reflect.reflexion import ReflexionReflector
 from discussion_agents.cog.prompts.reflexion import (
@@ -40,12 +35,10 @@ class ReflexionCoTAgent(BaseAgent):
         reflector (Optional[ReflexionReflector]): An optional reflector module for guided self-reflection.
 
     Methods:
-        set_args(cls, values): A class method for setting default arguments.
         generate(context, question, key, strategy): Generates a response based on the given context, question, and strategy.
         reflect(context, question, strategy): Reflects on the previous response and modifies the strategy accordingly.
         retrieve(): Retrieves the current memory state of the agent.
         reset(): Resets the agent's state for a new problem-solving session.
-        is_finished(): Checks if the problem-solving process has concluded.
     """
 
     def __init__(
@@ -201,27 +194,39 @@ class ReflexionCoTAgent(BaseAgent):
         self.memory.clear()
         self._finished = False
 
-    def is_finished(self) -> bool:
-        """Checks if the agent has finished generating.
-
-        Returns:
-            bool: True if the agent has finished, False otherwise.
-        """
-        return self._finished
-
 
 class ReflexionReActAgent(BaseAgent):
 
     def __init__(
         self,
         self_reflect_llm: BaseChatModel,
-        action_llm: BaseChatModel,
-        memory: Optional[ReActMemory] = None,
-        reflector: Optional[ReflexionReflector] = None,
+        react_agent: ReActAgent,
         max_steps: int = 6,
-        max_tokens: int = 3896,
-        docstore: Optional[DocstoreExplorer] = DocstoreExplorer(Wikipedia()),
-        enc: Optional[Encoding] = tiktoken.encoding_for_model("gpt-3.5-turbo"),
+        reflector: Optional[ReflexionReflector] = None,
     ) -> None:
         """Initialization."""
         super().__init__()
+        self.self_reflect_llm = self_reflect_llm
+        self.react_agent = react_agent
+        self.max_steps = max_steps
+        if not reflector:
+            self.reflector = ReflexionReflector(llm=self_reflect_llm)
+        else:
+            self.reflector = reflector
+
+        # Private variables.
+        self._step_n = 0
+        self._answer = ""
+        self._finished = False
+
+    def generate(
+        self,
+        question: str,
+        key: str,
+        strategy: str = None,
+        reset: bool = True
+    ) -> str:
+        if (self._finished or self.is_halted()) and not self.is_correct():
+            self.reflect(reflect_strategy)
+
+        out = self.react_agent.generate(question=question, reset=reset)

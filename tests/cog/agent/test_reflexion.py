@@ -17,16 +17,9 @@ def test_reflexion_cot_init() -> None:
     assert agent.reflector
 
 
-def test_reflexion_cot_is_finished(reflexion_cot_agent: ReflexionCoTAgent) -> None:
-    """Test is_finished method."""
-    assert not reflexion_cot_agent.is_finished()
-    reflexion_cot_agent._finished = True
-    assert reflexion_cot_agent.is_finished()
-
-
 def test_reflexion_cot_reset(reflexion_cot_agent: ReflexionCoTAgent) -> None:
     """Test reset method."""
-    reflexion_cot_agent.finished = True
+    reflexion_cot_agent._finished = True
     reflexion_cot_agent.reset()
     assert not reflexion_cot_agent.is_finished()
     assert reflexion_cot_agent.memory.scratchpad == ""

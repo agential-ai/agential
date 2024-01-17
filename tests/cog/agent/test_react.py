@@ -61,6 +61,12 @@ def test_retrieve(react_agent: ReActAgent) -> None:
     assert not out["scratchpad"]
 
 
+def test_is_halted(react_agent: ReActAgent) -> None:
+    """Test is_halted."""
+    out = react_agent.is_halted(question="")
+    assert not out
+
+
 def test_zeroshot_react_init() -> None:
     """Tests ZeroShotReActAgent's initialization."""
     agent = ZeroShotReActAgent(llm=FakeListLLM(responses=["1"]))
