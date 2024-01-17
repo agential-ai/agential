@@ -10,9 +10,9 @@ from discussion_agents.cog.functional.reflexion import (
     _prompt_cot_reflection,
     _truncate_scratchpad,
     cot_reflect,
-    reflect_last_attempt,
-    reflect_last_attempt_and_reflexion,
-    reflect_reflexion,
+    cot_reflect_last_attempt,
+    cot_reflect_last_attempt_and_reflexion,
+    cot_reflect_reflexion,
 )
 
 
@@ -121,16 +121,16 @@ def test__prompt_cot_reflection() -> None:
     assert out == "1"
 
 
-def test_reflect_last_attempt() -> None:
-    """Test reflect_last_attempt function."""
+def test_cot_reflect_last_attempt() -> None:
+    """Test cot_reflect_last_attempt function."""
     scratchpad = ""
-    out = reflect_last_attempt(scratchpad)
+    out = cot_reflect_last_attempt(scratchpad)
     assert out == [""]
 
 
-def test_reflect_reflexion() -> None:
-    """Test reflect_reflexion function."""
-    out = reflect_reflexion(
+def test_cot_reflect_reflexion() -> None:
+    """Test cot_reflect_reflexion function."""
+    out = cot_reflect_reflexion(
         llm=FakeListChatModel(responses=["1"]),
         reflections=[""],
         examples="",
@@ -142,9 +142,9 @@ def test_reflect_reflexion() -> None:
     assert out == ["", "1"]
 
 
-def test_reflect_last_attempt_and_reflexion() -> None:
-    """Test reflect_last_attempt_and_reflexion function."""
-    out = reflect_last_attempt_and_reflexion(
+def test_cot_reflect_last_attempt_and_reflexion() -> None:
+    """Test cot_reflect_last_attempt_and_reflexion function."""
+    out = cot_reflect_last_attempt_and_reflexion(
         llm=FakeListChatModel(responses=["1"]),
         examples="",
         question="",

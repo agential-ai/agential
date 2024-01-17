@@ -1,5 +1,5 @@
 """Functional module for Reflexion."""
-from typing import Any, Dict, List, Optional, Tuple
+from typing import List, Optional
 
 import tiktoken
 
@@ -8,12 +8,9 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
 from tiktoken.core import Encoding
 
-from discussion_agents.cog.eval.reflexion import EM
 from discussion_agents.cog.prompts.reflexion import (
     LAST_TRIAL_HEADER,
     REFLECTION_HEADER,
-    REFLEXION_COT_FEWSHOT_EXAMPLES,
-    REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
     REFLEXION_COT_INSTRUCTION,
     REFLEXION_COT_INSTRUCTION_NO_CONTEXT,
     REFLEXION_COT_REFLECT_INSTRUCTION,
@@ -196,8 +193,10 @@ def _prompt_cot_reflection(
     return remove_newline(out)
 
 
-def reflect_last_attempt(scratchpad: str) -> List[str]:
+def cot_reflect_last_attempt(scratchpad: str) -> List[str]:
     """Performs a reflection based on the last attempt (scratchpad).
+
+    Used with ReflexionCoT.
 
     Args:
         question (str): The question associated with the last attempt.
@@ -209,7 +208,7 @@ def reflect_last_attempt(scratchpad: str) -> List[str]:
     return [scratchpad]
 
 
-def reflect_reflexion(
+def cot_reflect_reflexion(
     llm: BaseChatModel,
     reflections: List[str],
     examples: str,
@@ -219,7 +218,7 @@ def reflect_reflexion(
 ) -> List[str]:
     """Perform reflexion-based reflecting.
 
-    This function uses a language model to generate a new reflection based on the provided context, question,
+    Used with ReflexionCoT. This function uses a language model to generate a new reflection based on the provided context, question,
     and scratchpad. The new reflection is added to the existing list of reflections.
 
     Args:
@@ -244,7 +243,7 @@ def reflect_reflexion(
     return reflections
 
 
-def reflect_last_attempt_and_reflexion(
+def cot_reflect_last_attempt_and_reflexion(
     llm: BaseChatModel,
     examples: str,
     question: str,
@@ -252,6 +251,8 @@ def reflect_last_attempt_and_reflexion(
     context: Optional[str] = None,
 ) -> List[str]:
     """Performs reflection with the reflection of the last attempt and reflexion.
+
+    Used with ReflexionCoT.
 
     Args:
         llm (BaseChatModel): The language model used for generating the new reflection.
@@ -312,9 +313,9 @@ def cot_reflect(
           It first formats the last attempt using 'question' and 'scratchpad', then adds a new reflexion using all the parameters.
     """
     if strategy == "last_attempt":
-        reflections = reflect_last_attempt(scratchpad)
+        reflections = cot_reflect_last_attempt(scratchpad)
     elif strategy == "reflexion":
-        reflections = reflect_reflexion(
+        reflections = cot_reflect_reflexion(
             llm=llm,
             reflections=reflections,
             examples=examples,
@@ -323,7 +324,7 @@ def cot_reflect(
             context=context,
         )
     elif strategy == "last_attempt_and_reflexion":
-        reflections = reflect_last_attempt_and_reflexion(
+        reflections = cot_reflect_last_attempt_and_reflexion(
             llm=llm,
             examples=examples,
             question=question,

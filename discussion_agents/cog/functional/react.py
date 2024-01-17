@@ -1,7 +1,6 @@
 """Functional module for ReAct."""
-from typing import Any, Dict, Tuple
+from typing import Any
 
-from langchain.agents.react.base import DocstoreExplorer
 from langchain.prompts import PromptTemplate
 from tiktoken import Encoding
 
