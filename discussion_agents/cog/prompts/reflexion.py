@@ -136,7 +136,7 @@ REFLECTION_HEADER = "You have attempted to answer following question before and 
 LAST_TRIAL_HEADER = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\n"
 
 # Prompt template for ReflexionReAct agent (think/act).
-REACT_REFLECT_INSTRUCTION = """
+REFLEXION_REACT_INSTRUCTION = """
 Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: 
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
@@ -152,7 +152,7 @@ Question: {question}{scratchpad}
 """
 
 # Prompt template for ReflexionReAct agent reflect.
-REFLECT_INSTRUCTION = """
+REFLEXION_REACT_REFLECT_INSTRUCTION = """
 You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
 Here are some examples:
 {examples}

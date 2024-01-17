@@ -15,6 +15,8 @@ from discussion_agents.cog.prompts.reflexion import (
     REFLEXION_COT_INSTRUCTION_NO_CONTEXT,
     REFLEXION_COT_REFLECT_INSTRUCTION,
     REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT,
+    REFLEXION_REACT_INSTRUCTION,   
+    REFLEXION_REACT_REFLECT_INSTRUCTION
 )
 from discussion_agents.utils.parse import remove_newline
 
@@ -113,6 +115,8 @@ def _prompt_cot_agent(
 ) -> str:
     """Generates a CoT prompt for thought and action.
 
+    Used with ReflexionCoT.
+
     Args:
         llm (BaseChatModel): The language model to be used for generating the reflection.
         examples (str): Example inputs for the prompt template.
@@ -161,6 +165,8 @@ def _prompt_cot_reflection(
     context: Optional[str] = None,
 ) -> str:
     """Generates a reflection prompt.
+
+    Used with ReflexionCoT.
 
     Args:
         llm (BaseChatModel): The language model to be used for generating the reflection.
@@ -335,3 +341,88 @@ def cot_reflect(
         raise NotImplementedError(f"Unknown reflection strategy: {strategy}.")
 
     return reflections
+
+
+def _prompt_react_agent(
+    llm: BaseChatModel,
+    examples: str,
+    reflections: str,
+    question: str,
+    scratchpad: str,
+) -> str:
+    """Generates a ReAct prompt for thought and action.
+
+    Used with ReflexionReAct.
+
+    Args:
+        llm (BaseChatModel): The language model to be used for generating the reflection.
+        examples (str): Example inputs for the prompt template.
+        reflections (List[str]): Existing list of reflections.
+        question (str): The question being addressed.
+        scratchpad (str): The scratchpad content related to the question.
+
+    Returns:
+        str: The generated reflection prompt.
+    """
+    prompt = PromptTemplate(
+        input_variables=[
+            "examples", 
+            "reflections", 
+            "question", 
+            "scratchpad"
+        ],
+        template=REFLEXION_REACT_INSTRUCTION,
+    ).format(
+        examples=examples,
+        reflections=reflections,
+        question=question,
+        scratchpad=scratchpad,
+    )
+
+    out = llm(
+        [
+            HumanMessage(
+                content=prompt,
+            )
+        ]
+    ).content
+
+    return remove_newline(out)
+
+
+def _prompt_react_reflection(
+    llm: BaseChatModel,
+    examples: str,
+    question: str,
+    scratchpad: str,
+) -> str:
+    """Generates a reflection prompt.
+
+    Used with ReflexionReAct.
+
+    Args:
+        llm (BaseChatModel): The language model to be used for generating the reflection.
+        examples (str): Example inputs for the prompt template.
+        question (str): The question being addressed.
+        scratchpad (str): The scratchpad content related to the question.
+
+    Returns:
+        str: The generated reflection prompt.
+    """
+    prompt = PromptTemplate(
+        input_variables=["examples", "question", "scratchpad"],
+        template=REFLEXION_REACT_REFLECT_INSTRUCTION,
+    ).format(
+        examples=examples,
+        question=question,
+        scratchpad=scratchpad,
+    )
+    out = llm(
+        [
+            HumanMessage(
+                content=prompt,
+            )
+        ]
+    ).content
+    return remove_newline(out)
+
