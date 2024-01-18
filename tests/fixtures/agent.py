@@ -33,6 +33,7 @@ def reflexion_cot_agent() -> ReflexionCoTAgent:
     )
     return agent
 
+
 @pytest.fixture
 def reflexion_react_agent() -> ReflexionReActAgent:
     """Creates a ReflexionReActAgent."""

@@ -1,13 +1,12 @@
 """Unit tests for Reflexion."""
+from langchain.agents.react.base import DocstoreExplorer
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
-from langchain.agents.react.base import DocstoreExplorer
-
 from tiktoken.core import Encoding
 
+from discussion_agents.cog.agent.reflexion import ReflexionCoTAgent, ReflexionReActAgent
 from discussion_agents.cog.modules.memory.reflexion import ReflexionMemory
 from discussion_agents.cog.modules.reflect.reflexion import ReflexionReActReflector
-from discussion_agents.cog.agent.reflexion import ReflexionCoTAgent, ReflexionReActAgent
 
 
 def test_reflexion_cot_init() -> None:
@@ -210,18 +209,13 @@ def test_reflexion_react_generate() -> None:
         "The lookup for the name change of VIVA Media AG in 2004 did not yield any results either. I should try searching for any news articles or press releases about the company's name change in 2004.",
         "Search[VIVA Media AG name change 2004 news articles]",
         "The search for information about VIVA Media AG's name change in 2004 did not yield any results. It seems that there is limited information available on this topic. Without further information, I am unable to determine what their new acronym stands for.",
-        "Finish[unable to determine]"
+        "Finish[unable to determine]",
     ]
     action_llm = FakeListChatModel(responses=responses)
     agent = ReflexionReActAgent(
-        self_reflect_llm=FakeListChatModel(responses=["1"]),
-        action_llm=action_llm
+        self_reflect_llm=FakeListChatModel(responses=["1"]), action_llm=action_llm
     )
-    out = agent.generate(
-        question=question, 
-        key=key, 
-        strategy=None
-    )
+    out = agent.generate(question=question, key=key, strategy=None)
     assert isinstance(out, str)
 
     # Test generate with reflection (last_attempt_and_reflexion).
@@ -236,7 +230,7 @@ def test_reflexion_react_generate() -> None:
         "Finish[unable to find answer]",
         "I need to search for VIVA Media AG and find out what their new acronym stands for.",
         "Search[VIVA Media AG name change]",
-        "The search for \"VIVA Media AG name change\" did not yield any results. I should try searching for the company's name change in 2004 using different search terms or variations of the company name.",
+        'The search for "VIVA Media AG name change" did not yield any results. I should try searching for the company\'s name change in 2004 using different search terms or variations of the company name.',
         "Search[VIVA Media AG rebranding 2004]",
         "The search for \"VIVA Media AG rebranding 2004\" also did not yield any results. I should try searching for news articles or press releases about the company's name change in 2004. Additionally, I can try searching for information about the company's history or any announcements they made around that time. It's possible that the new acronym may be mentioned in those sources.",
         "Search[VIVA Media AG news articles 2004]",
@@ -253,19 +247,12 @@ def test_reflexion_react_generate() -> None:
     action_llm = FakeListChatModel(responses=action_responses)
     self_reflect_llm = FakeListChatModel(responses=self_reflect_responses)
     agent = ReflexionReActAgent(
-        self_reflect_llm=self_reflect_llm,
-        action_llm=action_llm
+        self_reflect_llm=self_reflect_llm, action_llm=action_llm
     )
-    out = agent.generate(
-        question=question, 
-        key=key, 
-        strategy=None
-    )
+    out = agent.generate(question=question, key=key, strategy=None)
     assert isinstance(out, str)
 
     out = agent.generate(
-        question=question,
-        key=key,
-        strategy="last_attempt_and_reflexion"
+        question=question, key=key, strategy="last_attempt_and_reflexion"
     )
     assert isinstance(out, str)
