@@ -18,6 +18,7 @@ class ReActMemory(BaseMemory):
     Attributes:
         scratchpad (str): A string attribute that stores all the memories.
     """
+
     def __init__(self, scratchpad: Optional[str] = None) -> None:
         super().__init__()
         self.scratchpad = scratchpad if scratchpad else ""

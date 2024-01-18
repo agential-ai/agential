@@ -169,6 +169,7 @@ class ReActAgent(BaseAgent):
         self._finished = False
         self.memory.clear()
 
+
 @tool
 def search(query: str) -> str:
     """Searches Wikipedia given query."""

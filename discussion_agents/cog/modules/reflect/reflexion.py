@@ -7,7 +7,7 @@ from discussion_agents.cog.functional.reflexion import (
     _format_last_attempt,
     _format_reflections,
     cot_reflect,
-    react_reflect
+    react_reflect,
 )
 from discussion_agents.cog.modules.reflect.base import BaseReflector
 from discussion_agents.cog.prompts.reflexion import (
@@ -28,10 +28,10 @@ class ReflexionCoTReflector(BaseReflector):
     """
 
     def __init__(
-        self, 
-        llm: BaseChatModel, 
-        reflections: Optional[List[str]] = None, 
-        reflections_str: Optional[str] = None
+        self,
+        llm: BaseChatModel,
+        reflections: Optional[List[str]] = None,
+        reflections_str: Optional[str] = None,
     ) -> None:
         super().__init__(llm=llm)
         self.llm = llm
@@ -92,7 +92,6 @@ class ReflexionCoTReflector(BaseReflector):
         return reflections, reflections_str
 
 
-
 class ReflexionReActReflector(BaseReflector):
     """ReflexionReAct module for reflecting.
 
@@ -106,10 +105,10 @@ class ReflexionReActReflector(BaseReflector):
     """
 
     def __init__(
-        self, 
-        llm: BaseChatModel, 
-        reflections: Optional[List[str]] = None, 
-        reflections_str: Optional[str] = None
+        self,
+        llm: BaseChatModel,
+        reflections: Optional[List[str]] = None,
+        reflections_str: Optional[str] = None,
     ) -> None:
         """Initialization."""
         super().__init__(llm=llm)

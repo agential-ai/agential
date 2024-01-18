@@ -3,7 +3,10 @@ import pytest
 
 from langchain_community.chat_models.fake import FakeListChatModel
 
-from discussion_agents.cog.modules.reflect.reflexion import ReflexionCoTReflector, ReflexionReActReflector
+from discussion_agents.cog.modules.reflect.reflexion import (
+    ReflexionCoTReflector,
+    ReflexionReActReflector,
+)
 
 
 def test_reflexion_cot_reflector() -> None:

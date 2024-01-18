@@ -6,30 +6,34 @@ Paper Repositories:
     - https://github.com/noahshinn/reflexion
 """
 from typing import Any, Dict, Optional
+
 import tiktoken
-from tiktoken import Encoding
 
-from langchain_core.language_models.chat_models import BaseChatModel
-
-from discussion_agents.cog.agent.base import BaseAgent
 from langchain.agents.react.base import DocstoreExplorer
 from langchain_community.docstore.wikipedia import Wikipedia
+from langchain_core.language_models.chat_models import BaseChatModel
+from tiktoken import Encoding
+
+from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.eval.reflexion import EM
+from discussion_agents.cog.functional.react import _is_halted
 from discussion_agents.cog.functional.reflexion import (
     _prompt_cot_agent,
     _prompt_react_agent,
     _truncate_scratchpad,
 )
-from discussion_agents.cog.functional.react import _is_halted
 from discussion_agents.cog.modules.memory.reflexion import ReflexionMemory
-from discussion_agents.cog.modules.reflect.reflexion import ReflexionCoTReflector, ReflexionReActReflector
+from discussion_agents.cog.modules.reflect.reflexion import (
+    ReflexionCoTReflector,
+    ReflexionReActReflector,
+)
 from discussion_agents.cog.prompts.react import REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
 from discussion_agents.cog.prompts.reflexion import (
     REFLEXION_COT_FEWSHOT_EXAMPLES,
     REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
     REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES,
     REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT,
-    REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES
+    REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
 )
 from discussion_agents.utils.parse import parse_action, remove_newline
 
@@ -205,7 +209,6 @@ class ReflexionCoTAgent(BaseAgent):
 
 
 class ReflexionReActAgent(BaseAgent):
-
     def __init__(
         self,
         self_reflect_llm: BaseChatModel,
@@ -243,11 +246,7 @@ class ReflexionReActAgent(BaseAgent):
         self._answer = ""
 
     def generate(
-        self,
-        question: str,
-        key: str,
-        strategy: str = None,
-        reset: bool = True
+        self, question: str, key: str, strategy: str = None, reset: bool = True
     ) -> str:
         """Processes a given question through ReAct and reflects using Reflexion strategies when possible.
 
@@ -268,8 +267,8 @@ class ReflexionReActAgent(BaseAgent):
             question=question,
             scratchpad=self.memory.load_memories()["scratchpad"],
             max_tokens=self.max_tokens,
-            enc=self.enc
-            ) and not EM(self._answer, key):
+            enc=self.enc,
+        ) and not EM(self._answer, key):
             self.reflect(strategy, question)
 
         if reset:
@@ -283,7 +282,7 @@ class ReflexionReActAgent(BaseAgent):
             question=question,
             scratchpad=self.memory.load_memories()["scratchpad"],
             max_tokens=self.max_tokens,
-            enc=self.enc
+            enc=self.enc,
         ):
             # Think.
             self.memory.add_memories("\nThought:")
@@ -345,9 +344,7 @@ class ReflexionReActAgent(BaseAgent):
 
         return out
 
-    def reflect(
-        self, strategy: str, question: str
-    ) -> str:
+    def reflect(self, strategy: str, question: str) -> str:
         """Reflects on the previous steps to improve the response.
 
         Given the agent can reflect (strategy is not `None`), the strategy
@@ -369,9 +366,8 @@ class ReflexionReActAgent(BaseAgent):
             examples=REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
             question=question,
             scratchpad=_truncate_scratchpad(
-                scratchpad=self.memory.load_memories()["scratchpad"], 
-                tokenizer=self.enc
-            )
+                scratchpad=self.memory.load_memories()["scratchpad"], tokenizer=self.enc
+            ),
         )
 
         return reflections_str
