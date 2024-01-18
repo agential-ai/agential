@@ -1,5 +1,5 @@
 """Reflecting module for Reflexion."""
-from typing import Any, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -111,6 +111,7 @@ class ReflexionReActReflector(BaseReflector):
         reflections: Optional[List[str]] = None, 
         reflections_str: Optional[str] = None
     ) -> None:
+        """Initialization."""
         super().__init__(llm=llm)
         self.llm = llm
         self.reflections = reflections if reflections else []

@@ -249,6 +249,18 @@ class ReflexionReActAgent(BaseAgent):
         strategy: str = None,
         reset: bool = True
     ) -> str:
+        """Processes a given question through ReAct and reflects using Reflexion strategies when possible.
+
+        Iteratively applies the think-act-observe cycle to generate an answer for the question.
+        The process continues until the operation is halted based on certain conditions.
+
+        Args:
+            question (str): The question to be processed.
+            reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
+
+        Returns:
+            str: The accumulated output from the ReAct process.
+        """
         if _is_halted(
             finished=self._finished,
             step_n=self._step_n,
