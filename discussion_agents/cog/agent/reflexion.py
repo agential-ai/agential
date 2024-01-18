@@ -212,7 +212,7 @@ class ReflexionReActAgent(BaseAgent):
     def __init__(
         self,
         self_reflect_llm: BaseChatModel,
-        action_llm: Any,
+        action_llm: BaseChatModel,
         memory: Optional[ReflexionMemory] = None,
         reflector: Optional[ReflexionReActReflector] = None,
         max_steps: int = 6,

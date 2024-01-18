@@ -1,5 +1,6 @@
 """Functional module for ReAct."""
-from typing import Any
+from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_core.messages.human import HumanMessage
 
 from langchain.prompts import PromptTemplate
 from tiktoken import Encoding
@@ -32,14 +33,14 @@ def _build_agent_prompt(question: str, scratchpad: str) -> PromptTemplate:
     return prompt
 
 
-def _prompt_agent(llm: Any, question: str, scratchpad: str) -> str:
+def _prompt_agent(llm: BaseChatModel, question: str, scratchpad: str) -> str:
     """Generates a response from the LLM based on a given question and scratchpad.
 
     This function creates a prompt using `_build_agent_prompt` and then gets the LLM's
     output. The newline characters in the output are removed before returning.
 
     Args:
-        llm (Any): The language model to be prompted.
+        llm (BaseChatModel): The language model to be prompted.
         question (str): The question to ask the language model.
         scratchpad (str): Additional context or information for the language model.
 
@@ -47,7 +48,13 @@ def _prompt_agent(llm: Any, question: str, scratchpad: str) -> str:
         str: The processed response from the language model.
     """
     prompt = _build_agent_prompt(question=question, scratchpad=scratchpad)
-    out = llm(prompt)
+    out = llm(
+        [
+            HumanMessage(
+                content=prompt,
+            )
+        ]
+    ).content
     return remove_newline(out)
 
 

@@ -16,6 +16,7 @@ from langchain import hub
 from langchain.agents import AgentExecutor, create_react_agent
 from langchain.agents.react.base import DocstoreExplorer
 from langchain_community.docstore.wikipedia import Wikipedia
+from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.tools import BaseTool, tool
 from tiktoken.core import Encoding
 
@@ -34,7 +35,7 @@ class ReActAgent(BaseAgent):
     store for information retrieval.
 
     Attributes:
-        llm (Any): The language model used by the agent.
+        llm (BaseChatModel): The language model used by the agent.
         max_steps (int): Maximum number of steps to process the question.
         max_tokens (int): Maximum token limit for the language model.
         docstore (DocstoreExplorer): Document store for information retrieval.
@@ -45,7 +46,7 @@ class ReActAgent(BaseAgent):
 
     def __init__(
         self,
-        llm: Any,
+        llm: BaseChatModel,
         memory: Optional[ReActMemory] = None,
         max_steps: int = 6,
         max_tokens: int = 3896,
