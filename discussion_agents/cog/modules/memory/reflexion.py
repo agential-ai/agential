@@ -5,7 +5,7 @@ Paper Repositories:
     - https://github.com/noahshinn/reflexion-draft
     - https://github.com/noahshinn/reflexion
 """
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from discussion_agents.cog.modules.memory.base import BaseMemory
 
@@ -18,8 +18,10 @@ class ReflexionMemory(BaseMemory):
     Attributes:
         scratchpad (str): A string attribute that stores all the memories.
     """
+    def __init__(self, scratchpad: Optional[str] = None) -> None:
+        super().__init__()
+        self.scratchpad = scratchpad if scratchpad else ""
 
-    scratchpad: str = ""
 
     def clear(
         self,

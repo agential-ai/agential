@@ -5,7 +5,7 @@ Paper Repository: https://github.com/ysymyth/ReAct
 LangChain: https://github.com/langchain-ai/langchain
 LangChain ReAct: https://python.langchain.com/docs/modules/agents/agent_types/react
 """
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from discussion_agents.cog.modules.memory.base import BaseMemory
 
@@ -18,8 +18,9 @@ class ReActMemory(BaseMemory):
     Attributes:
         scratchpad (str): A string attribute that stores all the memories.
     """
-
-    scratchpad: str = ""
+    def __init__(self, scratchpad: Optional[str] = None) -> None:
+        super().__init__()
+        self.scratchpad = scratchpad if scratchpad else ""
 
     def clear(
         self,

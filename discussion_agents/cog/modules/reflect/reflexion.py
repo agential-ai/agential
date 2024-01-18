@@ -1,5 +1,5 @@
 """Reflecting module for Reflexion."""
-from typing import List, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -26,9 +26,16 @@ class ReflexionCoTReflector(BaseReflector):
         reflections_str (Optional[str]): The reflections formatted into a string.
     """
 
-    llm: BaseChatModel
-    reflections: Optional[List[str]] = []
-    reflections_str: Optional[str] = ""
+    def __init__(
+        self, 
+        llm: BaseChatModel, 
+        reflections: Optional[List[str]] = None, 
+        reflections_str: Optional[str] = None
+    ) -> None:
+        super().__init__(llm=llm)
+        self.llm = llm
+        self.reflections = reflections if reflections else []
+        self.reflections_str = reflections_str if reflections_str else ""
 
     def reflect(
         self,
@@ -82,3 +89,5 @@ class ReflexionCoTReflector(BaseReflector):
         self.reflections_str = reflections_str
 
         return reflections, reflections_str
+
+
