@@ -1,8 +1,7 @@
 """Functional module for ReAct."""
+from langchain.prompts import PromptTemplate
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
-
-from langchain.prompts import PromptTemplate
 from tiktoken import Encoding
 
 from discussion_agents.cog.prompts.react import (

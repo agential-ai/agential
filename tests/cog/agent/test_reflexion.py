@@ -1,7 +1,13 @@
 """Unit tests for Reflexion."""
 from langchain_community.chat_models.fake import FakeListChatModel
+from langchain_core.language_models.chat_models import BaseChatModel
+from langchain.agents.react.base import DocstoreExplorer
 
-from discussion_agents.cog.agent.reflexion import ReflexionCoTAgent
+from tiktoken.core import Encoding
+
+from discussion_agents.cog.modules.memory.reflexion import ReflexionMemory
+from discussion_agents.cog.modules.reflect.reflexion import ReflexionReActReflector
+from discussion_agents.cog.agent.reflexion import ReflexionCoTAgent, ReflexionReActAgent
 
 
 def test_reflexion_cot_init() -> None:
@@ -143,3 +149,47 @@ def test_reflexion_cot_generate() -> None:
     gt_out_str = "Thought: Let's think step by step. VIVA Media AG changed its name in 2004. The new acronym must stand for the new name of the company. Unfortunately, without further information, it is not possible to determine what the new acronym stands for.\nAction: Finish[Unknown]\n\nAnswer is INCORRECT"
     assert isinstance(out, str)
     assert out == gt_out_str
+
+
+def test_reflexion_react_init() -> None:
+    """Test ReflexionReActAgent initialization."""
+    llm = FakeListChatModel(responses=["1"])
+    agent = ReflexionReActAgent(
+        self_reflect_llm=llm,
+        action_llm=llm,
+    )
+    assert isinstance(agent.self_reflect_llm, BaseChatModel)
+    assert isinstance(agent.action_llm, BaseChatModel)
+    assert isinstance(agent.memory, ReflexionMemory)
+    assert isinstance(agent.reflector, ReflexionReActReflector)
+    assert agent.max_steps == 6
+    assert agent.max_tokens == 3896
+    assert isinstance(agent.enc, Encoding)
+    assert isinstance(agent.docstore, DocstoreExplorer)
+
+
+def test_reflexion_react_reset(reflexion_react_agent: ReflexionReActAgent) -> None:
+    """Test reset method."""
+    reflexion_react_agent._finished = True
+    reflexion_react_agent.reset()
+    assert not reflexion_react_agent._finished
+    assert reflexion_react_agent.memory.scratchpad == ""
+
+
+def test_reflexion_react_retrieve(reflexion_react_agent: ReflexionReActAgent) -> None:
+    """Test retrieve method."""
+    out = reflexion_react_agent.retrieve()
+    assert isinstance(out, dict)
+    assert "scratchpad" in out
+    assert out["scratchpad"] == ""
+
+
+
+def test_reflexion_react_reflect(reflexion_react_agent: ReflexionReActAgent) -> None:
+    """Test reflect method."""
+    gt_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: \n\n(END PREVIOUS TRIAL)\n"
+    reflections_str = reflexion_react_agent.reflect(
+        strategy="last_attempt",
+        question="",
+    )
+    assert reflections_str == gt_reflections_str

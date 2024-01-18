@@ -2,7 +2,6 @@
 from langchain.agents.react.base import DocstoreExplorer
 from langchain.llms.fake import FakeListLLM
 from langchain_community.chat_models.fake import FakeListChatModel
-
 from tiktoken import Encoding
 
 from discussion_agents.cog.agent.react import ReActAgent, ZeroShotReActAgent

@@ -18,7 +18,9 @@ def test__build_agent_prompt() -> None:
 
 def test__prompt_agent() -> None:
     """Test _prompt_agent function."""
-    out = _prompt_agent(llm=FakeListChatModel(responses=["1"]), question="", scratchpad="")
+    out = _prompt_agent(
+        llm=FakeListChatModel(responses=["1"]), question="", scratchpad=""
+    )
     assert isinstance(out, str)
     assert out == "1"
 

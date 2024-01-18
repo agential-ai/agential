@@ -7,7 +7,7 @@ from langchain_community.chat_models.fake import FakeListChatModel
 
 from discussion_agents.cog.agent.generative_agents import GenerativeAgent
 from discussion_agents.cog.agent.react import ReActAgent
-from discussion_agents.cog.agent.reflexion import ReflexionCoTAgent
+from discussion_agents.cog.agent.reflexion import ReflexionCoTAgent, ReflexionReActAgent
 
 
 @pytest.fixture
@@ -28,6 +28,15 @@ def react_agent() -> ReActAgent:
 def reflexion_cot_agent() -> ReflexionCoTAgent:
     """Creates a ReflexionCoTAgent."""
     agent = ReflexionCoTAgent(
+        self_reflect_llm=FakeListChatModel(responses=["1"]),
+        action_llm=FakeListChatModel(responses=["1"]),
+    )
+    return agent
+
+@pytest.fixture
+def reflexion_react_agent() -> ReflexionReActAgent:
+    """Creates a ReflexionReActAgent."""
+    agent = ReflexionReActAgent(
         self_reflect_llm=FakeListChatModel(responses=["1"]),
         action_llm=FakeListChatModel(responses=["1"]),
     )
