@@ -269,3 +269,52 @@ def test_react_reflect_last_attempt_and_reflexion() -> None:
     )
     assert isinstance(out, list)
     assert out == ["1"]
+
+
+def test_react_reflect() -> None:
+    """Test react_reflect function."""
+    # Invalid strategy.
+    with pytest.raises(NotImplementedError):
+        out = react_reflect(
+            strategy="invalid input",
+            llm=FakeListChatModel(responses=["1"]),
+            reflections=[""],
+            examples="",
+            question="",
+            scratchpad="",
+        )
+
+    # Last attempt.
+    out = react_reflect(
+        strategy="last_attempt",
+        llm=FakeListChatModel(responses=["1"]),
+        reflections=[""],
+        examples="",
+        question="",
+        scratchpad="",
+    )
+    assert out == [""]
+
+    # Reflexion.
+    out = react_reflect(
+        strategy="reflexion",
+        llm=FakeListChatModel(responses=["1"]),
+        reflections=[""],
+        examples="",
+        question="",
+        scratchpad="",
+    )
+    assert isinstance(out, list)
+    assert out == ["", "1"]
+
+    # Last attempt and Reflexion.
+    out = react_reflect(
+        strategy="last_attempt_and_reflexion",
+        llm=FakeListChatModel(responses=["1"]),
+        reflections=[""],
+        examples="",
+        question="",
+        scratchpad="",
+    )
+    assert isinstance(out, list)
+    assert out == ["1"]
