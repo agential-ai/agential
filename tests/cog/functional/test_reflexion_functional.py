@@ -8,17 +8,17 @@ from discussion_agents.cog.functional.reflexion import (
     _format_reflections,
     _prompt_cot_agent,
     _prompt_cot_reflection,
+    _prompt_react_agent,
+    _prompt_react_reflection,
     _truncate_scratchpad,
     cot_reflect,
     cot_reflect_last_attempt,
     cot_reflect_last_attempt_and_reflexion,
     cot_reflect_reflexion,
-    _prompt_react_agent,
-    _prompt_react_reflection,
     react_reflect,
     react_reflect_last_attempt,
     react_reflect_last_attempt_and_reflexion,
-    react_reflect_reflexion
+    react_reflect_reflexion,
 )
 
 

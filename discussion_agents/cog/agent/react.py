@@ -163,7 +163,7 @@ class ReActAgent(BaseAgent):
 
     def is_halted(self, question: str) -> bool:
         """Checks if generation is halted.
-        
+
         Args:
             question (str): The question string.
 
@@ -179,6 +179,7 @@ class ReActAgent(BaseAgent):
             max_tokens=self.max_tokens,
             enc=self.enc,
         )
+
 
 @tool
 def search(query: str) -> str:

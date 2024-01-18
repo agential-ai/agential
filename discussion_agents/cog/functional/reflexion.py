@@ -15,8 +15,8 @@ from discussion_agents.cog.prompts.reflexion import (
     REFLEXION_COT_INSTRUCTION_NO_CONTEXT,
     REFLEXION_COT_REFLECT_INSTRUCTION,
     REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT,
-    REFLEXION_REACT_INSTRUCTION,   
-    REFLEXION_REACT_REFLECT_INSTRUCTION
+    REFLEXION_REACT_INSTRUCTION,
+    REFLEXION_REACT_REFLECT_INSTRUCTION,
 )
 from discussion_agents.utils.parse import remove_newline
 
@@ -365,12 +365,7 @@ def _prompt_react_agent(
         str: The generated reflection prompt.
     """
     prompt = PromptTemplate(
-        input_variables=[
-            "examples", 
-            "reflections", 
-            "question", 
-            "scratchpad"
-        ],
+        input_variables=["examples", "reflections", "question", "scratchpad"],
         template=REFLEXION_REACT_INSTRUCTION,
     ).format(
         examples=examples,
@@ -502,6 +497,7 @@ def react_reflect_last_attempt_and_reflexion(
         )
     ]
     return reflections
+
 
 def react_reflect(
     strategy: str,

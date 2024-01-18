@@ -8,12 +8,13 @@ Paper Repositories:
 from typing import Any, Dict, Optional
 
 from langchain_core.language_models.chat_models import BaseChatModel
+
 from discussion_agents.cog.agent.base import BaseAgent
+from discussion_agents.cog.agent.react import ReActAgent
 from discussion_agents.cog.eval.reflexion import EM
 from discussion_agents.cog.functional.reflexion import (
     _prompt_cot_agent,
 )
-from discussion_agents.cog.agent.react import ReActAgent
 from discussion_agents.cog.modules.memory.reflexion import ReflexionMemory
 from discussion_agents.cog.modules.reflect.reflexion import ReflexionCoTReflector
 from discussion_agents.cog.prompts.reflexion import (
@@ -208,7 +209,7 @@ class ReflexionCoTAgent(BaseAgent):
 #         super().__init__()
 #         self.self_reflect_llm = self_reflect_llm
 #         self.react_agent = react_agent
-        
+
 #         if not memory:
 #             self.memory = ReflexionMemory()
 #         else:
@@ -236,7 +237,7 @@ class ReflexionCoTAgent(BaseAgent):
 
 #         out = self.react_agent.generate(question=question, reset=reset)
 #         return out
-    
+
 #     def reflect(
 #         self, strategy: str, question: str
 #     ) -> str:
