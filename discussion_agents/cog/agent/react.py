@@ -87,7 +87,15 @@ class ReActAgent(BaseAgent):
             self.reset()
 
         out = ""
-        while not self.is_halted(question=question):
+        while not _is_halted(
+            finished=self._finished,
+            step_n=self._step_n,
+            max_steps=self.max_steps,
+            question=question,
+            scratchpad=self.memory.load_memories()["scratchpad"],
+            max_tokens=self.max_tokens,
+            enc=self.enc,
+        ):
             # Think.
             self.memory.add_memories("\nThought:")
             thought = _prompt_agent(
@@ -160,26 +168,6 @@ class ReActAgent(BaseAgent):
         self._step_n = 1
         self._finished = False
         self.memory.clear()
-
-    def is_halted(self, question: str) -> bool:
-        """Checks if generation is halted.
-
-        Args:
-            question (str): The question string.
-
-        Returns:
-            bool: True if halted else False.
-        """
-        return _is_halted(
-            finished=self._finished,
-            step_n=self._step_n,
-            max_steps=self.max_steps,
-            question=question,
-            scratchpad=self.memory.load_memories()["scratchpad"],
-            max_tokens=self.max_tokens,
-            enc=self.enc,
-        )
-
 
 @tool
 def search(query: str) -> str:

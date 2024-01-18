@@ -6,24 +6,32 @@ Paper Repositories:
     - https://github.com/noahshinn/reflexion
 """
 from typing import Any, Dict, Optional
+import tiktoken
+from tiktoken import Encoding
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from discussion_agents.cog.agent.base import BaseAgent
-from discussion_agents.cog.agent.react import ReActAgent
+from langchain.agents.react.base import DocstoreExplorer
+from langchain_community.docstore.wikipedia import Wikipedia
 from discussion_agents.cog.eval.reflexion import EM
 from discussion_agents.cog.functional.reflexion import (
     _prompt_cot_agent,
+    _prompt_react_agent,
+    _truncate_scratchpad,
 )
+from discussion_agents.cog.functional.react import _is_halted
 from discussion_agents.cog.modules.memory.reflexion import ReflexionMemory
-from discussion_agents.cog.modules.reflect.reflexion import ReflexionCoTReflector
+from discussion_agents.cog.modules.reflect.reflexion import ReflexionCoTReflector, ReflexionReActReflector
+from discussion_agents.cog.prompts.react import REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
 from discussion_agents.cog.prompts.reflexion import (
     REFLEXION_COT_FEWSHOT_EXAMPLES,
     REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
     REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES,
     REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT,
+    REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES
 )
-from discussion_agents.utils.parse import parse_action
+from discussion_agents.utils.parse import parse_action, remove_newline
 
 
 class ReflexionCoTAgent(BaseAgent):
@@ -66,8 +74,8 @@ class ReflexionCoTAgent(BaseAgent):
             self.reflector = reflector
 
         self._step_n = 0
-        self._answer = ""
         self._finished = False
+        self._answer = ""
 
     def generate(
         self,
@@ -196,75 +204,179 @@ class ReflexionCoTAgent(BaseAgent):
         self._finished = False
 
 
-# class ReflexionReActAgent(BaseAgent):
+class ReflexionReActAgent(BaseAgent):
 
-#     def __init__(
-#         self,
-#         self_reflect_llm: BaseChatModel,
-#         react_agent: ReActAgent,
-#         memory: Optional[ReflexionMemory] = None,
-#         reflector: Optional[ReflexionReflector] = None,
-#     ) -> None:
-#         """Initialization."""
-#         super().__init__()
-#         self.self_reflect_llm = self_reflect_llm
-#         self.react_agent = react_agent
+    def __init__(
+        self,
+        self_reflect_llm: BaseChatModel,
+        action_llm: Any,
+        memory: Optional[ReflexionMemory] = None,
+        reflector: Optional[ReflexionReActReflector] = None,
+        max_steps: int = 6,
+        max_tokens: int = 3896,
+        docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
+        enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
+    ) -> None:
+        """Initialization."""
+        super().__init__()
+        self.self_reflect_llm = self_reflect_llm
+        self.action_llm = action_llm
 
-#         if not memory:
-#             self.memory = ReflexionMemory()
-#         else:
-#             self.memory = memory
+        if not memory:
+            self.memory = ReflexionMemory()
+        else:
+            self.memory = memory
 
-#         if not reflector:
-#             self.reflector = ReflexionReflector(llm=self_reflect_llm)
-#         else:
-#             self.reflector = reflector
+        if not reflector:
+            self.reflector = ReflexionReActReflector(llm=self_reflect_llm)
+        else:
+            self.reflector = reflector
 
-#         # Private variables.
-#         self._step_n = 0
-#         self._answer = ""
-#         self._finished = False
+        self.max_steps = max_steps
+        self.max_tokens = max_tokens
+        self.docstore = docstore
+        self.enc = enc
 
-#     def generate(
-#         self,
-#         question: str,
-#         key: str,
-#         strategy: str = None,
-#         reset: bool = True
-#     ) -> str:
-#         if (self.react_agent.is_halted()) and not EM(self._answer, key):
-#             self.reflect(strategy, question)
+        # Private variables.
+        self._step_n = 1
+        self._finished = False
+        self._answer = ""
 
-#         out = self.react_agent.generate(question=question, reset=reset)
-#         return out
+    def generate(
+        self,
+        question: str,
+        key: str,
+        strategy: str = None,
+        reset: bool = True
+    ) -> str:
+        if _is_halted(
+            finished=self._finished,
+            step_n=self._step_n,
+            max_steps=self.max_steps,
+            question=question,
+            scratchpad=self.memory.load_memories()["scratchpad"],
+            max_tokens=self.max_tokens,
+            enc=self.enc
+            ) and not EM(self._answer, key):
+            self.reflect(strategy, question)
 
-#     def reflect(
-#         self, strategy: str, question: str
-#     ) -> str:
-#         """Reflects on the previous steps to improve the response.
+        if reset:
+            self.reset()
 
-#         Given the agent can reflect (strategy is not `None`), the strategy
-#         can be of 3 types:
-#         - "last_attempt": This strategy uses only 'question' and 'scratchpad'. The 'reflections' list is updated with the current scratchpad.
-#         - "reflexion": This strategy uses all the parameters. It adds a new reflexion generated by the language model to the 'reflections' list.
-#         - "last_attempt_and_reflexion": This strategy combines the 'last_attempt' and 'reflexion' strategies.
-#           It first formats the last attempt using 'question' and 'scratchpad', then adds a new reflexion using all the parameters.
+        out = ""
+        while not _is_halted(
+            finished=self._finished,
+            step_n=self._step_n,
+            max_steps=self.max_steps,
+            question=question,
+            scratchpad=self.memory.load_memories()["scratchpad"],
+            max_tokens=self.max_tokens,
+            enc=self.enc
+        ):
+            # Think.
+            self.memory.add_memories("\nThought:")
+            thought = _prompt_react_agent(
+                llm=self.action_llm,
+                examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+                reflections=self.reflector.reflections_str,
+                question=question,
+                scratchpad=self.memory.load_memories()["scratchpad"],
+            ).split("Action")[0]
+            self.memory.add_memories(" " + thought)
+            out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
-#         Args:
-#             strategy (str): The strategy to use for reflection.
-#             question (str): The question to answer.
+            # Act.
+            self.memory.add_memories("\nAction:")
+            action = _prompt_react_agent(
+                llm=self.action_llm,
+                examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+                reflections=self.reflector.reflections_str,
+                question=question,
+                scratchpad=self.memory.load_memories()["scratchpad"],
+            ).split("Observation")[0]
+            self.memory.add_memories(" " + action)
+            action_type, query = parse_action(action)
+            out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
-#         Returns:
-#             str: Generated reflections based on the strategy.
-#         """
-#         _, reflections_str = self.reflector.reflect(
-#             strategy=strategy,
-#             examples=REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES
-#             if context
-#             else REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT,
-#             question=question,
-#             scratchpad=self.memory.load_memories()["scratchpad"],
-#             context=context,
-#         )
+            # Observe.
+            self.memory.add_memories(f"\nObservation {self._step_n}: ")
+            if action_type.lower() == "finish":
+                self._answer = query
+                self._finished = True
+                self.memory.add_memories(query)
+            elif action_type.lower() == "search":
+                try:
+                    self.memory.add_memories(
+                        remove_newline(self.docstore.search(query))
+                    )
+                except Exception:
+                    self.memory.add_memories(
+                        "Could not find that page, please try again."
+                    )
 
-#         return reflections_str
+            elif action_type.lower() == "lookup":
+                try:
+                    self.memory.add_memories(
+                        remove_newline(self.docstore.lookup(query))
+                    )
+                except ValueError:
+                    self.memory.add_memories(
+                        "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
+                    )
+            else:
+                self.memory.add_memories(
+                    "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
+                )
+
+            self._step_n += 1
+            out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
+
+        return out
+
+    def reflect(
+        self, strategy: str, question: str
+    ) -> str:
+        """Reflects on the previous steps to improve the response.
+
+        Given the agent can reflect (strategy is not `None`), the strategy
+        can be of 3 types:
+        - "last_attempt": This strategy uses only 'question' and 'scratchpad'. The 'reflections' list is updated with the current scratchpad.
+        - "reflexion": This strategy uses all the parameters. It adds a new reflexion generated by the language model to the 'reflections' list.
+        - "last_attempt_and_reflexion": This strategy combines the 'last_attempt' and 'reflexion' strategies.
+          It first formats the last attempt using 'question' and 'scratchpad', then adds a new reflexion using all the parameters.
+
+        Args:
+            strategy (str): The strategy to use for reflection.
+            question (str): The question to answer.
+
+        Returns:
+            str: Generated reflections based on the strategy.
+        """
+        _, reflections_str = self.reflector.reflect(
+            strategy=strategy,
+            examples=REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
+            question=question,
+            scratchpad=_truncate_scratchpad(
+                scratchpad=self.memory.load_memories()["scratchpad"], 
+                tokenizer=self.enc
+            )
+        )
+
+        return reflections_str
+
+    def retrieve(self) -> Dict[str, Any]:
+        """Retrieves the current state of the agent's memory.
+
+        Returns:
+            Dict[str, Any]: The current state of the agent's memory.
+        """
+        return self.memory.load_memories()
+
+    def reset(self) -> None:
+        """Resets the internal state of the ReflexionReAct agent.
+
+        Sets the step number, finished flag, and scratchpad to their initial values.
+        """
+        self._step_n = 1
+        self._finished = False
+        self.memory.clear()
