@@ -21,7 +21,7 @@ def test_reflexion_cot_reset(reflexion_cot_agent: ReflexionCoTAgent) -> None:
     """Test reset method."""
     reflexion_cot_agent._finished = True
     reflexion_cot_agent.reset()
-    assert not reflexion_cot_agent.is_finished()
+    assert not reflexion_cot_agent._finished
     assert reflexion_cot_agent.memory.scratchpad == ""
 
 
