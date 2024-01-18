@@ -199,6 +199,7 @@ def test_reflexion_react_generate() -> None:
     question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
     key = "Gesellschaft mit beschränkter Haftung"
 
+    # General generate.
     responses = [
         "I need to search for VIVA Media AG and find out what their new acronym stands for.",
         "Search[VIVA Media AG]",
@@ -220,5 +221,51 @@ def test_reflexion_react_generate() -> None:
         question=question, 
         key=key, 
         strategy=None
+    )
+    assert isinstance(out, str)
+
+    # Test generate with reflection (last_attempt_and_reflexion).
+    action_responses = [
+        "I need to search for VIVA Media AG and find out what their new acronym stands for.",
+        "Search[VIVA Media AG]",
+        "The search for VIVA Media AG did not yield any results. I should try searching for their new acronym instead.",
+        "Search[new acronym for VIVA Media AG]",
+        "The search for the new acronym for VIVA Media AG also did not yield any results. I should try searching for any information about the name change in 2004.",
+        "Search[VIVA Media AG name change 2004]",
+        "The search for information about the name change in 2004 also did not yield any results. It seems that I am unable to find the answer using the available search options. I should consider other sources or methods to find the acronym for VIVA Media AG after their name change.",
+        "Finish[unable to find answer]",
+        "I need to search for VIVA Media AG and find out what their new acronym stands for.",
+        "Search[VIVA Media AG name change]",
+        "The search for \"VIVA Media AG name change\" did not yield any results. I should try searching for the company's name change in 2004 using different search terms or variations of the company name.",
+        "Search[VIVA Media AG rebranding 2004]",
+        "The search for \"VIVA Media AG rebranding 2004\" also did not yield any results. I should try searching for news articles or press releases about the company's name change in 2004. Additionally, I can try searching for information about the company's history or any announcements they made around that time. It's possible that the new acronym may be mentioned in those sources.",
+        "Search[VIVA Media AG news articles 2004]",
+        "The search for news articles about VIVA Media AG's name change in 2004 also did not yield any results. It seems that there is limited information available about this specific topic. To further investigate, I can try searching for general information about the company's history or any announcements they made during that time period. Additionally, reaching out to industry experts or contacting the company directly may provide more accurate and specific information about their new acronym.",
+        "Search[VIVA Media AG history]",
+        "The search for general information about VIVA Media AG's history also did not yield any results. It seems that there is limited information available about this company. To further investigate, I can try searching for any announcements or press releases made by the company during the time of their name change in 2004. Additionally, reaching out to industry experts or contacting the company directly may provide more accurate and specific information about their new acronym.",
+        "Search[VIVA Media AG press release 2004]",
+        "The search for a press release from VIVA Media AG in 2004 also did not yield any results. It seems that there is limited information available about their name change and the new acronym. To further investigate, I can try searching for any interviews or articles featuring the company's executives or employees during that time period. Additionally, reaching out to industry experts or contacting the company directly may provide more accurate and specific information about their new acronym.",
+        "Search[VIVA Media AG interview 2004]",
+    ]
+    self_reflect_responses = [
+        "The failure in this reasoning trial was due to the inability to find the necessary information through the available search options. To mitigate this failure, a new plan could involve expanding the search to different sources such as news articles, company websites, or industry publications. Additionally, utilizing different search terms or variations of the company name could help in finding the desired information.",
+    ]
+    action_llm = FakeListChatModel(responses=action_responses)
+    self_reflect_llm = FakeListChatModel(responses=self_reflect_responses)
+    agent = ReflexionReActAgent(
+        self_reflect_llm=self_reflect_llm,
+        action_llm=action_llm
+    )
+    out = agent.generate(
+        question=question, 
+        key=key, 
+        strategy=None
+    )
+    assert isinstance(out, str)
+
+    out = agent.generate(
+        question=question,
+        key=key,
+        strategy="last_attempt_and_reflexion"
     )
     assert isinstance(out, str)

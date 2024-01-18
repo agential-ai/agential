@@ -421,6 +421,9 @@ def _prompt_react_reflection(
         question=question,
         scratchpad=scratchpad,
     )
+    print("REFLECT PROMPT START", "================================================================================================")
+    print(prompt)
+    print("REFLECT PROMPT END", "================================================================================================")
     out = llm(
         [
             HumanMessage(
@@ -428,6 +431,9 @@ def _prompt_react_reflection(
             )
         ]
     ).content
+    print("REFLECT OUT START", "================================================================================================")
+    print(out)
+    print("REFLECT OUT END", "================================================================================================")
     return remove_newline(out)
 
 
