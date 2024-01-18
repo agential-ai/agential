@@ -349,6 +349,7 @@ def _prompt_react_agent(
     reflections: str,
     question: str,
     scratchpad: str,
+    is_thought: bool = False
 ) -> str:
     """Generates a ReAct prompt for thought and action.
 
@@ -373,6 +374,10 @@ def _prompt_react_agent(
         question=question,
         scratchpad=scratchpad,
     )
+    print("THOUGHT" if is_thought else "ACTION")
+    print("PROMPT START", "================================================================================================")
+    print(prompt)
+    print("PROMPT END", "================================================================================================")
 
     out = llm(
         [
@@ -381,6 +386,10 @@ def _prompt_react_agent(
             )
         ]
     ).content
+
+    print("OUT START", "================================================================================================")
+    print(out)
+    print("OUT END", "================================================================================================")
 
     return remove_newline(out)
 

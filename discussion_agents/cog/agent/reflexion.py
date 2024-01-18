@@ -292,6 +292,7 @@ class ReflexionReActAgent(BaseAgent):
                 reflections=self.reflector.reflections_str,
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
+                is_thought=True,
             ).split("Action")[0]
             self.memory.add_memories(" " + thought)
             out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
@@ -304,6 +305,7 @@ class ReflexionReActAgent(BaseAgent):
                 reflections=self.reflector.reflections_str,
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
+                is_thought=False,
             ).split("Observation")[0]
             self.memory.add_memories(" " + action)
             action_type, query = parse_action(action)
