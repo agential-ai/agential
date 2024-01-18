@@ -13,6 +13,12 @@ from discussion_agents.cog.functional.reflexion import (
     cot_reflect_last_attempt,
     cot_reflect_last_attempt_and_reflexion,
     cot_reflect_reflexion,
+    _prompt_react_agent,
+    _prompt_react_reflection,
+    react_reflect,
+    react_reflect_last_attempt,
+    react_reflect_last_attempt_and_reflexion,
+    react_reflect_reflexion
 )
 
 
@@ -121,7 +127,7 @@ def test__prompt_cot_reflection() -> None:
     assert out == "1"
 
 
-def test_cot_reflect_last_attempt() -> None:
+def test_react_reflect_last_attempt() -> None:
     """Test cot_reflect_last_attempt function."""
     scratchpad = ""
     out = cot_reflect_last_attempt(scratchpad)
@@ -203,6 +209,63 @@ def test_cot_reflect() -> None:
         question="",
         scratchpad="",
         context="",
+    )
+    assert isinstance(out, list)
+    assert out == ["1"]
+
+
+def test__prompt_react_agent() -> None:
+    """Test _prompt_react_agent function."""
+    out = _prompt_react_agent(
+        llm=FakeListChatModel(responses=["1"]),
+        examples="",
+        reflections="",
+        question="",
+        scratchpad="",
+    )
+    assert isinstance(out, str)
+    assert out == "1"
+
+
+def test__prompt_react_reflection() -> None:
+    """Test _prompt_react_reflection function."""
+    out = _prompt_react_reflection(
+        llm=FakeListChatModel(responses=["1"]),
+        examples="",
+        question="",
+        scratchpad="",
+    )
+    assert isinstance(out, str)
+    assert out == "1"
+
+
+def test_react_reflect_last_attempt() -> None:
+    """Test react_reflect_last_attempt function."""
+    scratchpad = ""
+    out = react_reflect_last_attempt(scratchpad)
+    assert out == [""]
+
+
+def test_react_reflect_reflexion() -> None:
+    """Test react_reflect_reflexion function."""
+    out = react_reflect_reflexion(
+        llm=FakeListChatModel(responses=["1"]),
+        reflections=[""],
+        examples="",
+        question="",
+        scratchpad="",
+    )
+    assert isinstance(out, list)
+    assert out == ["", "1"]
+
+
+def test_react_reflect_last_attempt_and_reflexion() -> None:
+    """Test react_reflect_last_attempt_and_reflexion function."""
+    out = react_reflect_last_attempt_and_reflexion(
+        llm=FakeListChatModel(responses=["1"]),
+        examples="",
+        question="",
+        scratchpad="",
     )
     assert isinstance(out, list)
     assert out == ["1"]
