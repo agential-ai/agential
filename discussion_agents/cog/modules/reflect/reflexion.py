@@ -25,6 +25,7 @@ class ReflexionCoTReflector(BaseReflector):
         llm (BaseChatModel): A language model used for generating reflections.
         reflections (Optional[List[str]]): A list to store the generated reflections.
         reflections_str (Optional[str]): The reflections formatted into a string.
+        max_reflections: (int): An int specifying the max number of reflections to use in a subsequent run. Defaults to 3.
     """
 
     def __init__(
@@ -32,11 +33,13 @@ class ReflexionCoTReflector(BaseReflector):
         llm: BaseChatModel,
         reflections: Optional[List[str]] = None,
         reflections_str: Optional[str] = None,
+        max_reflections: int = 3
     ) -> None:
         super().__init__(llm=llm)
         self.llm = llm
         self.reflections = reflections if reflections else []
         self.reflections_str = reflections_str if reflections_str else ""
+        self.max_reflections = max_reflections
 
     def reflect(
         self,
@@ -76,6 +79,8 @@ class ReflexionCoTReflector(BaseReflector):
             context=context,
         )
 
+        self.reflections = reflections[-self.max_reflections:]            
+
         if strategy == "last_attempt":
             reflections_str = _format_last_attempt(question, scratchpad)
         elif strategy == "reflexion":
@@ -86,7 +91,6 @@ class ReflexionCoTReflector(BaseReflector):
                 reflections, REFLECTION_AFTER_LAST_TRIAL_HEADER
             )
 
-        self.reflections = reflections
         self.reflections_str = reflections_str
 
         return reflections, reflections_str

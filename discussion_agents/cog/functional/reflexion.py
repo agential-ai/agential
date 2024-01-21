@@ -307,7 +307,7 @@ def cot_reflect(
         context (Optional[str]): The context of the conversation or query. Defaults to None.
 
     Returns:
-        List[str]: A tuple containing the updated list of reflections.
+        List[str]: A list of reflections.
 
     Raises:
         NotImplementedError: If an unknown reflection strategy is specified.
@@ -349,7 +349,6 @@ def _prompt_react_agent(
     reflections: str,
     question: str,
     scratchpad: str,
-    is_thought: bool = False,
 ) -> str:
     """Generates a ReAct prompt for thought and action.
 
@@ -374,16 +373,6 @@ def _prompt_react_agent(
         question=question,
         scratchpad=scratchpad,
     )
-    print("THOUGHT" if is_thought else "ACTION")
-    print(
-        "PROMPT START",
-        "================================================================================================",
-    )
-    print(prompt)
-    print(
-        "PROMPT END",
-        "================================================================================================",
-    )
 
     out = llm(
         [
@@ -392,16 +381,6 @@ def _prompt_react_agent(
             )
         ]
     ).content
-
-    print(
-        "OUT START",
-        "================================================================================================",
-    )
-    print(out)
-    print(
-        "OUT END",
-        "================================================================================================",
-    )
 
     return remove_newline(out)
 
@@ -433,15 +412,6 @@ def _prompt_react_reflection(
         question=question,
         scratchpad=scratchpad,
     )
-    print(
-        "REFLECT PROMPT START",
-        "================================================================================================",
-    )
-    print(prompt)
-    print(
-        "REFLECT PROMPT END",
-        "================================================================================================",
-    )
     out = llm(
         [
             HumanMessage(
@@ -449,15 +419,6 @@ def _prompt_react_reflection(
             )
         ]
     ).content
-    print(
-        "REFLECT OUT START",
-        "================================================================================================",
-    )
-    print(out)
-    print(
-        "REFLECT OUT END",
-        "================================================================================================",
-    )
     return remove_newline(out)
 
 
