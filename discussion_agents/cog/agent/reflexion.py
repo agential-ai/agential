@@ -47,7 +47,7 @@ class ReflexionCoTAgent(BaseAgent):
         memory (Optional[ReflexionMemory]): An optional memory module to store the agent's internal state.
         reflector (Optional[ReflexionReflector]): An optional reflector module for guided self-reflection.
         max_reflections: (int): An int specifying the max number of reflections to use in a subsequent run. Defaults to 3.
-        
+
     Methods:
         generate(context, question, key, strategy): Generates a response based on the given context, question, and strategy.
         reflect(context, question, strategy): Reflects on the previous response and modifies the strategy accordingly.
@@ -61,7 +61,7 @@ class ReflexionCoTAgent(BaseAgent):
         action_llm: BaseChatModel,
         memory: Optional[ReflexionMemory] = None,
         reflector: Optional[ReflexionCoTReflector] = None,
-        max_reflections: int = 3
+        max_reflections: int = 3,
     ) -> None:
         """Initialization with default or provided values."""
         super().__init__()
@@ -82,7 +82,6 @@ class ReflexionCoTAgent(BaseAgent):
         else:
             self.reflector = reflector
 
-
         self._step_n = 0
         self._finished = False
         self._answer = ""
@@ -93,7 +92,7 @@ class ReflexionCoTAgent(BaseAgent):
         key: str,
         context: Optional[str] = None,
         strategy: str = None,
-        reset: bool = True
+        reset: bool = True,
     ) -> str:
         """Generates a response based on the provided context, question, and key.
 
@@ -237,6 +236,7 @@ class ReflexionReActAgent(BaseAgent):
         retrieve(): Retrieves the current memory state of the agent.
         reset(): Resets the agent's state for a new problem-solving session.
     """
+
     def __init__(
         self,
         self_reflect_llm: BaseChatModel,
@@ -262,8 +262,7 @@ class ReflexionReActAgent(BaseAgent):
         self.max_reflections = max_reflections
         if not reflector:
             self.reflector = ReflexionReActReflector(
-                llm=self_reflect_llm,
-                max_reflections=max_reflections
+                llm=self_reflect_llm, max_reflections=max_reflections
             )
         else:
             self.reflector = reflector

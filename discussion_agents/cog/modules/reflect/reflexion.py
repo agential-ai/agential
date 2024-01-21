@@ -33,7 +33,7 @@ class ReflexionCoTReflector(BaseReflector):
         llm: BaseChatModel,
         reflections: Optional[List[str]] = None,
         reflections_str: Optional[str] = None,
-        max_reflections: int = 3
+        max_reflections: int = 3,
     ) -> None:
         super().__init__(llm=llm)
         self.llm = llm
@@ -79,7 +79,7 @@ class ReflexionCoTReflector(BaseReflector):
             context=context,
         )
 
-        self.reflections = reflections[-self.max_reflections:]            
+        self.reflections = reflections[-self.max_reflections :]
 
         if strategy == "last_attempt":
             reflections_str = _format_last_attempt(question, scratchpad)
@@ -94,7 +94,7 @@ class ReflexionCoTReflector(BaseReflector):
         self.reflections_str = reflections_str
 
         return reflections, reflections_str
-    
+
     def clear(self) -> None:
         """Clears the reflections and reflections_str."""
         self.reflections = []
@@ -119,7 +119,7 @@ class ReflexionReActReflector(BaseReflector):
         llm: BaseChatModel,
         reflections: Optional[List[str]] = None,
         reflections_str: Optional[str] = None,
-        max_reflections: int = 3
+        max_reflections: int = 3,
     ) -> None:
         """Initialization."""
         super().__init__(llm=llm)
@@ -163,7 +163,7 @@ class ReflexionReActReflector(BaseReflector):
             scratchpad=scratchpad,
         )
 
-        self.reflections = reflections[-self.max_reflections:]            
+        self.reflections = reflections[-self.max_reflections :]
 
         if strategy == "last_attempt":
             reflections_str = _format_last_attempt(question, scratchpad)
@@ -178,7 +178,7 @@ class ReflexionReActReflector(BaseReflector):
         self.reflections_str = reflections_str
 
         return reflections, reflections_str
-    
+
     def clear(self) -> None:
         """Clears the reflections and reflections_str."""
         self.reflections = []
