@@ -18,3 +18,8 @@ class BaseScorer(ABC):
     ) -> Any:
         """Score memory_contents with respect to relevant memories and returns a list of scores."""
         pass
+
+    @abstractmethod
+    def clear(self, *args: Any, **kwargs: Any) -> None:
+        """Clears any internal state."""
+        pass

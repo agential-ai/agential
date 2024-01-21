@@ -60,3 +60,7 @@ class GenerativeAgentScorer(BaseScorer):
             llm=self.llm,
             importance_weight=importance_weight,
         )
+
+    def clear(self) -> None:
+        """Clears any internal state."""
+        pass
