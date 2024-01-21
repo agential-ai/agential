@@ -221,7 +221,8 @@ def test_reflexion_react_generate() -> None:
         self_reflect_llm=FakeListChatModel(responses=["1"]), action_llm=action_llm
     )
     out = agent.generate(question=question, key=key, strategy=None)
-    assert isinstance(out, str)
+    assert isinstance(out, list)
+    assert len(out) == 1
 
     # Test generate with reflection (last_attempt_and_reflexion).
     action_responses = [
@@ -255,9 +256,11 @@ def test_reflexion_react_generate() -> None:
         self_reflect_llm=self_reflect_llm, action_llm=action_llm
     )
     out = agent.generate(question=question, key=key, strategy=None)
-    assert isinstance(out, str)
+    assert isinstance(out, list)
+    assert len(out) == 1
 
     out = agent.generate(
         question=question, key=key, strategy="last_attempt_and_reflexion"
     )
-    assert isinstance(out, str)
+    assert isinstance(out, list)
+    assert len(out) == 1
