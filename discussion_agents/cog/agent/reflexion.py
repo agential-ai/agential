@@ -93,6 +93,7 @@ class ReflexionCoTAgent(BaseAgent):
         key: str,
         context: Optional[str] = None,
         strategy: str = None,
+        reset: bool = True
     ) -> str:
         """Generates a response based on the provided context, question, and key.
 
@@ -104,6 +105,7 @@ class ReflexionCoTAgent(BaseAgent):
             key (str): The key to evaluate the correctness of the answer.
             context (Optional[str]): The context or background information. Defaults to None.
             strategy (str, optional): The strategy to use for reflection. Defaults to None.
+            reset (bool): Resets the agent's memory. Defaults to True.
 
         Returns:
             out (str): A string output from the ReflexionCoTAgent.
@@ -113,7 +115,8 @@ class ReflexionCoTAgent(BaseAgent):
             self.reflect(strategy, question, context)
 
         # Reset.
-        self.reset()
+        if reset:
+            self.reset()
 
         out = ""
 
@@ -418,3 +421,4 @@ class ReflexionReActAgent(BaseAgent):
         self._step_n = 1
         self._finished = False
         self.memory.clear()
+        self.reflector.clear()

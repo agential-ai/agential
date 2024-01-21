@@ -94,6 +94,11 @@ class ReflexionCoTReflector(BaseReflector):
         self.reflections_str = reflections_str
 
         return reflections, reflections_str
+    
+    def clear(self) -> None:
+        """Clears the reflections and reflections_str."""
+        self.reflections = []
+        self.reflections_str = ""
 
 
 class ReflexionReActReflector(BaseReflector):
@@ -173,3 +178,8 @@ class ReflexionReActReflector(BaseReflector):
         self.reflections_str = reflections_str
 
         return reflections, reflections_str
+    
+    def clear(self) -> None:
+        """Clears the reflections and reflections_str."""
+        self.reflections = []
+        self.reflections_str = ""

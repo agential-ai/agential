@@ -79,6 +79,18 @@ def test_reflexion_cot_reflector() -> None:
     )
 
 
+def test_reflexion_cot_clear() -> None:
+    """Unit tests for ReflexionCoT Reflector clear method."""
+    reflector = ReflexionCoTReflector(
+        llm=FakeListChatModel(responses=["1"]),
+    )
+    reflector.reflections = ["c", "a", "t"]
+    reflector.reflections_str = "cat"
+    reflector.clear()
+    assert reflector.reflections == []
+    assert reflector.reflections_str == ""
+
+
 def test_reflexion_react_reflector() -> None:
     """Unit tests for ReflexionReAct Reflector."""
     reflector = ReflexionReActReflector(
@@ -145,3 +157,15 @@ def test_reflexion_react_reflector() -> None:
         out[1]
         == "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: \n\n(END PREVIOUS TRIAL)\n\nThe following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
     )
+
+
+def test_reflexion_react_clear() -> None:
+    """Unit tests for ReflexionReAct Reflector clear method."""
+    reflector = ReflexionReActReflector(
+        llm=FakeListChatModel(responses=["1"]),
+    )
+    reflector.reflections = ["c", "a", "t"]
+    reflector.reflections_str = "cat"
+    reflector.clear()
+    assert reflector.reflections == []
+    assert reflector.reflections_str == ""
