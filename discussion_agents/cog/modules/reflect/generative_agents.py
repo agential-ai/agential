@@ -49,3 +49,7 @@ class GenerativeAgentReflector(BaseReflector):
             observations=observations, llm=self.llm, retriever=self.retriever, now=now
         )
         return insights
+
+    def clear(self, retriever: BaseRetriever) -> None:
+        """Clears the retriever and sets to specified retriever."""
+        self.retriever = retriever

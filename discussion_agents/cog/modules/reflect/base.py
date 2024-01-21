@@ -14,3 +14,8 @@ class BaseReflector(ABC):
     def reflect(self, *args: Any, **kwargs: Any) -> Any:
         """Reflect on memory_contents w.r.t. relevant memories and returns a list of reflections."""
         pass
+
+    @abstractmethod
+    def clear(self, *args: Any, **kwargs: Any) -> Any:
+        """Clears any internal state."""
+        pass

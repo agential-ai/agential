@@ -21,3 +21,11 @@ def test_generative_agent_reflector(
     insights = reflector.reflect(observations=observations, now=test_date)
     assert type(insights) is list
     assert insights == [["That's an interesting observation!"]]
+
+
+def test_clear(time_weighted_retriever: TimeWeightedVectorStoreRetriever) -> None:
+    """Test GenerativeAgentReflector clear method."""
+    llm = FakeListLLM(responses=["That's an interesting observation!"])
+    reflector = GenerativeAgentReflector(llm=llm, retriever=time_weighted_retriever)
+    reflector.clear(time_weighted_retriever)
+    assert reflector.retriever
