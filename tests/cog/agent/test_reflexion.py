@@ -78,8 +78,9 @@ def test_reflexion_cot_generate() -> None:
         question=question, key=key, context=context, strategy=None
     )
     gt_out_str = 'Thought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with Limited Liability]\n\nAnswer is INCORRECT'
-    assert isinstance(out, str)
-    assert out == gt_out_str
+    assert isinstance(out, list)
+    assert len(out) == 1
+    assert out[0] == gt_out_str
 
     # Correct.
     action_llm = FakeListChatModel(
@@ -95,8 +96,9 @@ def test_reflexion_cot_generate() -> None:
         question=question, key=key, context=context, strategy=None
     )
     gt_out_str = 'Thought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Gesellschaft mit beschränkter Haftung]\n\nAnswer is CORRECT'
-    assert isinstance(out, str)
-    assert out == gt_out_str
+    assert isinstance(out, list)
+    assert len(out) == 1
+    assert out[0] == gt_out_str
 
     # Invalid.
     action_llm = FakeListChatModel(
@@ -112,8 +114,9 @@ def test_reflexion_cot_generate() -> None:
         question=question, key=key, context=context, strategy=None
     )
     gt_out_str = 'Thought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: INVALID[Gesellschaft mit beschränkter Haftung]\n\nInvalid action type, please try again.'
-    assert isinstance(out, str)
-    assert out == gt_out_str
+    assert isinstance(out, list)
+    assert len(out) == 1
+    assert out[0] == gt_out_str
 
     # With reflection strategy on (last attempt).
     action_llm = FakeListChatModel(
@@ -129,8 +132,9 @@ def test_reflexion_cot_generate() -> None:
         question=question, key=key, context=context, strategy="last_attempt"
     )
     gt_out_str = 'Thought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with Limited Liability]\n\nAnswer is INCORRECT'
-    assert isinstance(out, str)
-    assert out == gt_out_str
+    assert isinstance(out, list)
+    assert len(out) == 1
+    assert out[0] == gt_out_str
 
     # With no reflection strategy and no context.
     action_llm = FakeListChatModel(
@@ -146,8 +150,9 @@ def test_reflexion_cot_generate() -> None:
         question=question, key=key, context=None, strategy=None
     )
     gt_out_str = "Thought: Let's think step by step. VIVA Media AG changed its name in 2004. The new acronym must stand for the new name of the company. Unfortunately, without further information, it is not possible to determine what the new acronym stands for.\nAction: Finish[Unknown]\n\nAnswer is INCORRECT"
-    assert isinstance(out, str)
-    assert out == gt_out_str
+    assert isinstance(out, list)
+    assert len(out) == 1
+    assert out[0] == gt_out_str
 
 
 def test_reflexion_react_init() -> None:

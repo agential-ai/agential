@@ -46,8 +46,9 @@ class ReflexionCoTAgent(BaseAgent):
         action_llm (BaseChatModel): The language model used for generating thoughts/actions.
         memory (Optional[ReflexionMemory]): An optional memory module to store the agent's internal state.
         reflector (Optional[ReflexionReflector]): An optional reflector module for guided self-reflection.
-        max_reflections: (int): An int specifying the max number of reflections to use in a subsequent run. Defaults to 3.
-
+        max_reflections (int): An int specifying the max number of reflections to use in a subsequent run. Defaults to 3.
+        max_retries (int): Max number of attempts to retry answering the question before stopping generation. Defaults to 0. 
+        
     Methods:
         generate(context, question, key, strategy): Generates a response based on the given context, question, and strategy.
         reflect(context, question, strategy): Reflects on the previous response and modifies the strategy accordingly.
@@ -62,6 +63,7 @@ class ReflexionCoTAgent(BaseAgent):
         memory: Optional[ReflexionMemory] = None,
         reflector: Optional[ReflexionCoTReflector] = None,
         max_reflections: int = 3,
+        max_retries: int = 0
     ) -> None:
         """Initialization with default or provided values."""
         super().__init__()
@@ -81,6 +83,8 @@ class ReflexionCoTAgent(BaseAgent):
             )
         else:
             self.reflector = reflector
+        
+        self.max_retries = max_retries
 
         self._step_n = 0
         self._finished = False
@@ -107,68 +111,72 @@ class ReflexionCoTAgent(BaseAgent):
             reset (bool): Resets the agent's memory. Defaults to True.
 
         Returns:
-            out (str): A string output from the ReflexionCoTAgent.
+            result (str): A list of string outputs from the ReflexionCoTAgent.
         """
-        # Reflect if possible.
-        if self._step_n > 0 and not EM(self._answer, key) and strategy:
-            self.reflect(strategy, question, context)
-
         # Reset.
         if reset:
             self.reset()
 
-        out = ""
+        result = []
+        while not EM(self._answer, key) and self._step_n <= self.max_retries:
+            # Reflect if possible.
+            if self._step_n > 0 and not EM(self._answer, key) and strategy:
+                self.reflect(strategy, question, context)
 
-        # Think.
-        self.memory.add_memories("\nThought:")
-        thought = _prompt_cot_agent(
-            llm=self.action_llm,
-            examples=REFLEXION_COT_FEWSHOT_EXAMPLES
-            if context
-            else REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
-            reflections=self.reflector.reflections_str,
-            question=question,
-            scratchpad=self.memory.load_memories()["scratchpad"],
-            context=context,
-        )
-        self.memory.add_memories(" " + thought)
-        out += self.memory.load_memories()["scratchpad"].split("\n")[-1] + "\n"
+            out = ""
 
-        # Act.
-        self.memory.add_memories("\nAction:")
-        action = _prompt_cot_agent(
-            llm=self.action_llm,
-            examples=REFLEXION_COT_FEWSHOT_EXAMPLES
-            if context
-            else REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
-            reflections=self.reflector.reflections_str,
-            question=question,
-            scratchpad=self.memory.load_memories()["scratchpad"],
-            context=context,
-        )
-        action_type, argument = parse_action(action.strip())
-        self.memory.add_memories(" " + action)
-        out += self.memory.load_memories()["scratchpad"].split("\n")[-1] + "\n"
+            # Think.
+            self.memory.add_memories("\nThought:")
+            thought = _prompt_cot_agent(
+                llm=self.action_llm,
+                examples=REFLEXION_COT_FEWSHOT_EXAMPLES
+                if context
+                else REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
+                reflections=self.reflector.reflections_str,
+                question=question,
+                scratchpad=self.memory.load_memories()["scratchpad"],
+                context=context,
+            )
+            self.memory.add_memories(" " + thought)
+            out += self.memory.load_memories()["scratchpad"].split("\n")[-1] + "\n"
 
-        # Observe.
-        self.memory.add_memories("\nObservation: ")
-        if action_type.lower() == "finish":
-            self._answer = argument
-            if EM(self._answer, key):
-                correctness_str = "Answer is CORRECT"
+            # Act.
+            self.memory.add_memories("\nAction:")
+            action = _prompt_cot_agent(
+                llm=self.action_llm,
+                examples=REFLEXION_COT_FEWSHOT_EXAMPLES
+                if context
+                else REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
+                reflections=self.reflector.reflections_str,
+                question=question,
+                scratchpad=self.memory.load_memories()["scratchpad"],
+                context=context,
+            )
+            action_type, argument = parse_action(action.strip())
+            self.memory.add_memories(" " + action)
+            out += self.memory.load_memories()["scratchpad"].split("\n")[-1] + "\n"
+
+            # Observe.
+            self.memory.add_memories("\nObservation: ")
+            if action_type.lower() == "finish":
+                self._answer = argument
+                if EM(self._answer, key):
+                    correctness_str = "Answer is CORRECT"
+                else:
+                    correctness_str = "Answer is INCORRECT"
+                self.memory.add_memories(correctness_str)
+                out += "\n" + correctness_str
+                self._finished = True
             else:
-                correctness_str = "Answer is INCORRECT"
-            self.memory.add_memories(correctness_str)
-            out += "\n" + correctness_str
-            self._finished = True
-        else:
-            invalid_action_str = "Invalid action type, please try again."
-            self.memory.add_memories(invalid_action_str)
-            out += "\n" + invalid_action_str
+                invalid_action_str = "Invalid action type, please try again."
+                self.memory.add_memories(invalid_action_str)
+                out += "\n" + invalid_action_str
 
-        self._step_n += 1
+            self._step_n += 1
 
-        return out
+            result.append(out)
+
+        return result
 
     def reflect(
         self, strategy: str, question: str, context: Optional[str] = None
