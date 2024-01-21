@@ -48,8 +48,8 @@ class ReflexionCoTAgent(BaseAgent):
         reflector (Optional[ReflexionReflector]): An optional reflector module for guided self-reflection.
         max_reflections (int): An int specifying the max number of reflections to use in a subsequent run. Defaults to 3.
         max_tries (int): Max number of answering attempts before stopping generation. Defaults to 1.
-        patience (int): The number of incorrect retries before stopping. Must be >= 0 and <= max_tries. Defaults to max_tries. 
-        
+        patience (int): The number of incorrect retries before stopping. Must be >= 1 and <= max_tries. Defaults to max_tries.
+
     Methods:
         generate(context, question, key, strategy): Generates a response based on the given context, question, and strategy.
         reflect(context, question, strategy): Reflects on the previous response and modifies the strategy accordingly.
@@ -65,7 +65,7 @@ class ReflexionCoTAgent(BaseAgent):
         reflector: Optional[ReflexionCoTReflector] = None,
         max_reflections: int = 3,
         max_tries: int = 1,
-        patience: Optional[int] = None
+        patience: Optional[int] = None,
     ) -> None:
         """Initialization with default or provided values."""
         super().__init__()
@@ -87,7 +87,7 @@ class ReflexionCoTAgent(BaseAgent):
             self.reflector = reflector
 
         self.max_tries = max_tries
-        if not patience: 
+        if not patience:
             self.patience = max_tries
         else:
             self.patience = patience
@@ -251,7 +251,7 @@ class ReflexionReActAgent(BaseAgent):
         max_steps (int): Max number of steps for ReAct actor to take. Defaults to 6.
         max_tokens (int): Max tokens before the agent's memory is truncated. Defaults to 3896.
         max_tries (int): Max number of answering attempts before stopping generation. Defaults to 1.
-        patience (int): The number of incorrect retries before stopping. Must be >= 0 and <= max_tries. Defaults to max_tries. 
+        patience (int): The number of incorrect retries before stopping. Must be >= 1 and <= max_tries. Defaults to max_tries.
         docstore (DocstoreExplorer): The Wikipedia docstore explorer.
         enc (Encoding): tiktoken Encoding for tracking token count of prompts.
 
@@ -298,7 +298,7 @@ class ReflexionReActAgent(BaseAgent):
         self.max_tokens = max_tokens
         self.max_tries = max_tries
 
-        if not patience: 
+        if not patience:
             self.patience = max_tries
         else:
             self.patience = patience
