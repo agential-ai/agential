@@ -215,12 +215,32 @@ class ReflexionCoTAgent(BaseAgent):
 
 
 class ReflexionReActAgent(BaseAgent):
+    """Reflexion with ReAct actor.
+
+    Attributes:
+        self_reflect_llm (BaseChatModel): The language model used for self-reflection.
+        action_llm (BaseChatModel): The language model used for generating thoughts/actions.
+        memory (Optional[ReflexionMemory]): An optional memory module to store the agent's internal state.
+        reflector (Optional[ReflexionReflector]): An optional reflector module for guided self-reflection.
+        max_reflections: (int): An int specifying the max number of reflections to use in a subsequent run. Defaults to 3.
+        max_steps (int): Max number of steps for ReAct actor to take. Defaults to 6.
+        max_tokens (int): Max tokens before the agent's memory is truncated. Defaults to 3896.
+        docstore (DocstoreExplorer): The Wikipedia docstore explorer.
+        enc (Encoding): tiktoken Encoding for tracking token count of prompts.
+
+    Methods:
+        generate(context, question, key, strategy): Generates a response based on the given context, question, and strategy.
+        reflect(context, question, strategy): Reflects on the previous response and modifies the strategy accordingly.
+        retrieve(): Retrieves the current memory state of the agent.
+        reset(): Resets the agent's state for a new problem-solving session.
+    """
     def __init__(
         self,
         self_reflect_llm: BaseChatModel,
         action_llm: BaseChatModel,
         memory: Optional[ReflexionMemory] = None,
         reflector: Optional[ReflexionReActReflector] = None,
+        max_reflections: int = 3,
         max_steps: int = 6,
         max_tokens: int = 3896,
         docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
@@ -236,8 +256,12 @@ class ReflexionReActAgent(BaseAgent):
         else:
             self.memory = memory
 
+        self.max_reflections = max_reflections
         if not reflector:
-            self.reflector = ReflexionReActReflector(llm=self_reflect_llm)
+            self.reflector = ReflexionReActReflector(
+                llm=self_reflect_llm,
+                max_reflections=max_reflections
+            )
         else:
             self.reflector = reflector
 
