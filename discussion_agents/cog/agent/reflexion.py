@@ -5,7 +5,7 @@ Paper Repositories:
     - https://github.com/noahshinn/reflexion-draft
     - https://github.com/noahshinn/reflexion
 """
-from typing import Any, Dict, Optional, List
+from typing import Any, Dict, List, Optional
 
 import tiktoken
 
@@ -47,8 +47,8 @@ class ReflexionCoTAgent(BaseAgent):
         memory (Optional[ReflexionMemory]): An optional memory module to store the agent's internal state.
         reflector (Optional[ReflexionReflector]): An optional reflector module for guided self-reflection.
         max_reflections (int): An int specifying the max number of reflections to use in a subsequent run. Defaults to 3.
-        max_retries (int): Max number of attempts to retry answering the question before stopping generation. Defaults to 0. 
-        
+        max_retries (int): Max number of attempts to retry answering the question before stopping generation. Defaults to 0.
+
     Methods:
         generate(context, question, key, strategy): Generates a response based on the given context, question, and strategy.
         reflect(context, question, strategy): Reflects on the previous response and modifies the strategy accordingly.
@@ -63,7 +63,7 @@ class ReflexionCoTAgent(BaseAgent):
         memory: Optional[ReflexionMemory] = None,
         reflector: Optional[ReflexionCoTReflector] = None,
         max_reflections: int = 3,
-        max_retries: int = 0
+        max_retries: int = 0,
     ) -> None:
         """Initialization with default or provided values."""
         super().__init__()
@@ -83,7 +83,7 @@ class ReflexionCoTAgent(BaseAgent):
             )
         else:
             self.reflector = reflector
-        
+
         self.max_retries = max_retries
 
         self._step_n = 0
@@ -236,7 +236,7 @@ class ReflexionReActAgent(BaseAgent):
         max_reflections: (int): An int specifying the max number of reflections to use in a subsequent run. Defaults to 3.
         max_steps (int): Max number of steps for ReAct actor to take. Defaults to 6.
         max_tokens (int): Max tokens before the agent's memory is truncated. Defaults to 3896.
-        max_retries (int): Max number of attempts to retry answering the question before stopping generation. Defaults to 0. 
+        max_retries (int): Max number of attempts to retry answering the question before stopping generation. Defaults to 0.
         docstore (DocstoreExplorer): The Wikipedia docstore explorer.
         enc (Encoding): tiktoken Encoding for tracking token count of prompts.
 
@@ -246,6 +246,7 @@ class ReflexionReActAgent(BaseAgent):
         retrieve(): Retrieves the current memory state of the agent.
         reset(): Resets the agent's state for a new problem-solving session.
     """
+
     def __init__(
         self,
         self_reflect_llm: BaseChatModel,
@@ -325,7 +326,6 @@ class ReflexionReActAgent(BaseAgent):
                 enc=self.enc,
             ) and not EM(self._answer, key):
                 self.reflect(strategy, question)
-
 
             out = ""
             while not _is_halted(
