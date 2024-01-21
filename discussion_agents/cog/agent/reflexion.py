@@ -213,6 +213,7 @@ class ReflexionCoTAgent(BaseAgent):
     def reset(self) -> None:
         """Resets the agent's memory and state."""
         self.memory.clear()
+        self.reflector.clear()
         self._finished = False
 
 
