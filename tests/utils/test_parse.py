@@ -54,15 +54,15 @@ def test_parse_action() -> None:
 
     # Test with an invalid action string (missing brackets).
     invalid_string = "ActionType Argument"
-    assert parse_action(invalid_string) is None
+    assert parse_action(invalid_string) == ("", "")
 
     # Test with an invalid action string (no action type).
     invalid_string = "[Argument]"
-    assert parse_action(invalid_string) is None
+    assert parse_action(invalid_string) == ("", "")
 
     # Test with an invalid action string (no argument).
     invalid_string = "ActionType[]"
-    assert parse_action(invalid_string) is None
+    assert parse_action(invalid_string) == ("", "")
 
 
 def test_remove_newline() -> None:
