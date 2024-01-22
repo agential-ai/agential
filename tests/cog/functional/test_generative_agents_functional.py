@@ -5,6 +5,7 @@ from langchain.llms.fake import FakeListLLM
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
 
 from discussion_agents.cog.functional.generative_agents import (
+    _create_default_time_weighted_retriever,
     get_insights_on_topics,
     get_topics_of_reflection,
     reflect,
@@ -12,6 +13,12 @@ from discussion_agents.cog.functional.generative_agents import (
 )
 
 test_date = datetime(year=2022, month=11, day=14, hour=3, minute=14)
+
+
+def test__create_default_time_weighted_retriever() -> None:
+    """Test _create_default_time_weighted_retriever."""
+    retriever = _create_default_time_weighted_retriever()
+    assert isinstance(retriever, TimeWeightedVectorStoreRetriever)
 
 
 def test_score_memories_importance() -> None:

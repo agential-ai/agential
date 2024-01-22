@@ -1,7 +1,8 @@
 """Utility functions for parsing outputs."""
 import re
+import string
 
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 
 def parse_list(text: str) -> List[str]:
@@ -77,97 +78,85 @@ def remove_name(text: str, name: str) -> str:
     return lines
 
 
-def clean_str(s: str) -> str:
-    """Converts a string with mixed encoding to proper UTF-8 format.
+def parse_action(string: str) -> Tuple[str, str]:
+    """Parses an action string into an action type and its argument.
 
-    This function takes a string `s` that may contain Unicode escape sequences and/or Latin-1 encoded characters.
-    It processes the string to interpret Unicode escape sequences and correct any Latin-1 encoded parts, returning the string in UTF-8 format.
-
-    Args:
-        s (str): The input string potentially containing Unicode escape sequences and Latin-1 encoded characters.
-
-    Returns:
-        str: The UTF-8 encoded string with properly interpreted characters.
-
-    Note:
-        This function is used in the ReACt implementation.
-        This function assumes that the input string is a mix of UTF-8 encoded characters and Unicode escape sequences.
-        It may not work as intended if the input string has a different encoding or if it contains characters outside the Latin-1 range.
-
-    See: https://github.com/ysymyth/ReAct/blob/master/wikienv.py.
-    """
-    return s.encode().decode("unicode-escape").encode("latin1").decode("utf-8")
-
-
-def get_page_obs(page: str, k: Optional[int] = 5) -> str:
-    """Extracts and returns the first five sentences from a given text page.
-
-    This function splits a text `page` into paragraphs, then further into sentences.
-    It returns the first five sentences of the text, concatenating them into a single string.
-    Each sentence is cleaned of leading and trailing spaces.
+    This method is used in ReAct and Reflexion.
 
     Args:
-        page (str): The input text page as a string.
-        k (int): The number of sentences to return from the page.
+        string (str): The action string to be parsed.
 
     Returns:
-        str: A string containing the first five sentences from the input text.
-
-    Note:
-        This function is used in the ReACt implementation.
-        The function assumes sentences end with a period followed by a space.
-        It may not correctly identify sentences in texts with different punctuation styles.
-
-    See: https://github.com/ysymyth/ReAct/blob/master/wikienv.py.
+        Tuple[str, str]: A tuple containing the action type and argument.
     """
-    # Split the page into paragraphs and remove leading/trailing spaces.
-    paragraphs = page.split("\n")
-    paragraphs = [p.strip() for p in paragraphs if p.strip()]
+    pattern = r"^(\w+)\[(.+)\]$"
+    match = re.match(pattern, string)
 
-    # Split paragraphs into sentences and clean each sentence.
-    sentences = []
-    for p in paragraphs:
-        sentences += p.split(". ")
-    sentences = [s.strip() + "." for s in sentences if s.strip()]
-
-    # Return the first five sentences joined as a single string.
-    return " ".join(sentences[:k])
+    if match:
+        action_type = match.group(1)
+        argument = match.group(2)
+    else:  # TODO: Handle parsing/data validation.
+        action_type = ""
+        argument = ""
+    return action_type, argument
 
 
-def construct_lookup_list(keyword: str, page: Optional[str] = None) -> list[str]:
-    """Creates a list of sentences from a text page that contain a specified keyword.
-
-    This function takes a keyword and an optional text `page`.
-    It finds all sentences in the text that contain the keyword, irrespective of the case.
-    If no page is provided, it returns an empty list. The function is case-insensitive.
+def remove_newline(step: str) -> str:
+    """Formats a step string by stripping leading/trailing newlines and spaces, and replacing internal newlines with empty space.
 
     Args:
-        keyword (str): The keyword to search for in the text.
-        page (str, optional): The text page as a string. Defaults to None.
+        step (str): The step string to be formatted.
 
     Returns:
-        list[str]: A list of sentences containing the keyword.
-
-    Note:
-        This function is used in the ReACt implementation.
-        The function assumes sentences are separated by a period followed by a space.
-        It may not work correctly for texts with different sentence delimiters.
-
-    See: https://github.com/ysymyth/ReAct/blob/master/wikienv.py.
+        str: The formatted step string.
     """
-    # Return an empty list if no page is provided.
-    if page is None:
-        return []
+    return step.strip("\n").strip().replace("\n", "")
 
-    # Split the page into paragraphs and remove leading/trailing spaces.
-    paragraphs = page.split("\n")
-    paragraphs = [p.strip() for p in paragraphs if p.strip()]
 
-    # Split paragraphs into sentences and clean each sentence.
-    sentences = []
-    for p in paragraphs:
-        sentences += p.split(". ")
-    sentences = [s.strip() + "." for s in sentences if s.strip()]
+def remove_articles(text: str) -> str:
+    """Remove articles ('a', 'an', 'the') from the text.
 
-    # Filter sentences that contain the keyword, case-insensitive.
-    return [p for p in sentences if keyword.lower() in p.lower()]
+    Args:
+        text (str): The input string from which articles need to be removed.
+
+    Returns:
+        str: The modified string with articles removed.
+    """
+    return re.sub(r"\b(a|an|the)\b", " ", text)
+
+
+def white_space_fix(text: str) -> str:
+    """Fix any irregular white spaces in the text.
+
+    Args:
+        text (str): The input string with potential irregular white spaces.
+
+    Returns:
+        str: The modified string with normalized white spaces.
+    """
+    return " ".join(text.split())
+
+
+def remove_punc(text: str) -> str:
+    """Remove punctuation from the text.
+
+    Args:
+        text (str): The input string from which punctuation needs to be removed.
+
+    Returns:
+        str: The modified string with punctuation removed.
+    """
+    exclude = set(string.punctuation)
+    return "".join(ch for ch in text if ch not in exclude)
+
+
+def normalize_answer(s: str) -> str:
+    """Normalize an answer by removing articles, fixing white spaces, and removing punctuation.
+
+    Args:
+        s (str): The input string to be normalized.
+
+    Returns:
+        str: The normalized string.
+    """
+    return white_space_fix(remove_articles(remove_punc(s.lower())))

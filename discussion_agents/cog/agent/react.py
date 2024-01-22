@@ -1,8 +1,7 @@
-"""ReAct Agent implementation adapted from LangChain's zero-shot ReAct.
+"""ReAct Agent implementation and LangChain's zero-shot ReAct.
 
-LangChain-adapted Zero-shot ReAct, except the default tool is the wikipedia searcher.
-This implementation uses parts of the zero-shot ReAct prompt from langchain-hub, but it's
-structured to match the original paper's implementation. It is open to other tools.
+This includes the original ReAct agent implementation and the LangChain-adapted
+Zero-shot ReAct, with a wikipedia searcher default tool.
 
 Original Paper: https://arxiv.org/abs/2210.03629
 Paper Repository: https://github.com/ysymyth/ReAct
@@ -11,218 +10,172 @@ LangChain ReAct: https://python.langchain.com/docs/modules/agents/agent_types/re
 """
 from typing import Any, Dict, List, Optional
 
-import requests
+import tiktoken
 
-from bs4 import BeautifulSoup
 from langchain import hub
 from langchain.agents import AgentExecutor, create_react_agent
-from langchain.chains import LLMChain
-from langchain.prompts import PromptTemplate
-from langchain_community.document_loaders.wikipedia import WikipediaLoader
+from langchain.agents.react.base import DocstoreExplorer
+from langchain_community.docstore.wikipedia import Wikipedia
+from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.tools import BaseTool, tool
-from pydantic.v1 import root_validator
+from tiktoken.core import Encoding
 
 from discussion_agents.cog.agent.base import BaseAgent
-from discussion_agents.cog.prompts.react import HOTPOTQA_FEWSHOT_EXAMPLES, INSTRUCTION
-from discussion_agents.utils.parse import clean_str, construct_lookup_list, get_page_obs
+from discussion_agents.cog.functional.react import _is_halted, _prompt_agent
+from discussion_agents.cog.modules.memory.react import ReActMemory
+from discussion_agents.utils.parse import parse_action, remove_newline
 
 
 class ReActAgent(BaseAgent):
     """ReAct agent from the original paper.
 
-    This agent has 2 methods: `search` and `generate`. It does not
-    have any memory, planning, reflecting, or scoring capabilities.
-    Given a question, this agent, equipped with Wikipedia search,
-    attempts to answer the question in, a maximum of, 7 steps. Each step
-    is a thought-action-observation sequence.
-
-    Available actions are:
-        - Search[], search for relevant info on Wikipedia (5 sentences)
-        - Lookup[], lookup keywords in Wikipedia search
-        - Finish[], finish task
-
-    Note:
-        By default, HOTPOTQA_FEWSHOT_EXAMPLES are used as fewshot context examples.
-        You have the option to provide your own fewshot examples in the `generate` method.
+    Implements the ReAct algorithm as described in the original paper.
+    This agent uses a language model to iteratively process a question
+    through a sequence of think-act-observe steps, utilizing a document
+    store for information retrieval.
 
     Attributes:
-        llm (LLM): An instance of a language model used for processing and generating content.
+        llm (BaseChatModel): The language model used by the agent.
+        max_steps (int): Maximum number of steps to process the question.
+        max_tokens (int): Maximum token limit for the language model.
+        docstore (DocstoreExplorer): Document store for information retrieval.
+        enc (Encoding): Encoder for calculating token lengths.
 
     See: https://github.com/ysymyth/ReAct
     """
 
-    llm: Any  # TODO: Why is `LLM` not usable here?
-
-    page: str = ""  #: :meta private:
-    result_titles: list = []  #: :meta private:
-    lookup_keyword: str = ""  #: :meta private:
-    lookup_list: list = []  #: :meta private:
-    lookup_cnt: int = 0  #: :meta private:
-
-    def search(self, entity: str, k: Optional[int] = 5) -> str:
-        """Performs a search operation for a given entity on Wikipedia.
-
-        It parses the search results and either returns a list of similar topics
-        (if the exact entity is not found) or the content of the Wikipedia page related to the entity.
-
-        Args:
-            entity (str): The entity to be searched for.
-            k (Optional[int]): An optional argument to specify the number of sentences to be returned
-                from the Wikipedia page content.
-
-        Returns:
-            str: A string containing either the Wikipedia page content (trimmed to 'k' sentences) or
-                 a list of similar topics if the exact match is not found.
-        """
-        entity_ = entity.replace(" ", "+")
-        search_url = f"https://en.wikipedia.org/w/index.php?search={entity_}"
-        response_text = requests.get(search_url).text
-        soup = BeautifulSoup(response_text, features="html.parser")
-        result_divs = soup.find_all("div", {"class": "mw-search-result-heading"})
-        if result_divs:  # Mismatch.
-            self.result_titles = [
-                clean_str(div.get_text().strip()) for div in result_divs
-            ]
-            obs = f"Could not find {entity}. Similar: {self.result_titles[:5]}."
-        else:
-            page = [
-                p.get_text().strip() for p in soup.find_all("p") + soup.find_all("ul")
-            ]
-            if any("may refer to:" in p for p in page):
-                obs = self.search("[" + entity + "]")
-            else:
-                self.page = ""
-                for p in page:
-                    if len(p.split(" ")) > 2:
-                        self.page += clean_str(p)
-                        if not p.endswith("\n"):
-                            self.page += "\n"
-                obs = get_page_obs(self.page, k=k)
-
-                # Reset lookup attributes.
-                self.lookup_keyword = ""
-                self.lookup_list = []
-                self.lookup_cnt = 0
-
-        return obs
-
-    def generate(
+    def __init__(
         self,
-        observation: str,
-        fewshot_examples: Optional[str] = HOTPOTQA_FEWSHOT_EXAMPLES,
-    ) -> str:
-        """It takes an observation/question as input and generates a multi-step reasoning process.
+        llm: BaseChatModel,
+        memory: Optional[ReActMemory] = None,
+        max_steps: int = 6,
+        max_tokens: int = 3896,
+        docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
+        enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
+    ) -> None:
+        """Initialization."""
+        super().__init__()
+        self.llm = llm
 
-        The method involves generating thoughts and corresponding actions based on the observation,
-        and executing those actions which may include web searches, lookups, or concluding the reasoning process.
+        if not memory:
+            self.memory = ReActMemory()
+        else:
+            self.memory = memory
+
+        self.max_steps = max_steps
+        self.max_tokens = max_tokens
+        self.docstore = docstore
+        self.enc = enc
+
+        # Internal variables.
+        self._step_n = 1  #: :meta private:
+        self._finished = False  #: :meta private:
+
+    def generate(self, question: str, reset: bool = True) -> str:
+        """Processes a given question through ReAct.
+
+        Iteratively applies the think-act-observe cycle to generate an answer for the question.
+        The process continues until the operation is halted based on certain conditions.
 
         Args:
-            observation (str): The observation based on which the reasoning process is to be performed.
-            fewshot_examples (Optional[str]): A string containing few-shot examples to guide the language model.
-                                    Defaults to HOTPOTQA_FEWSHOT_EXAMPLES.
+            question (str): The question to be processed.
+            reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
 
         Returns:
-            str: A string representing the entire reasoning process, including thoughts, actions, and observations
-                 at each step, culminating in a final answer or conclusion.
+            str: The accumulated output from the ReAct process.
         """
-        prompt_template = [
-            INSTRUCTION,
-            fewshot_examples,
-            "\n",
-            "Question: ",
-            "{observation}",
-            "\n",
-            "Thought {i}: ",
-        ]
+        if reset:
+            self.reset()
 
-        # TODO: Find a way to enforce llm outputs.
-        done = False
         out = ""
-        for i in range(1, 8):
-            # Create and run prompt.
-            prompt = PromptTemplate.from_template(
-                "".join(prompt_template)  # type: ignore
-                if not out
-                else "".join(prompt_template[:-1]) + out  # type: ignore
-            )
-            chain = LLMChain(llm=self.llm, prompt=prompt)
-            thought_action = chain.run(observation=observation, i=i).split(
-                f"\nObservation {i}:"
-            )[0]
+        while not _is_halted(
+            finished=self._finished,
+            step_n=self._step_n,
+            max_steps=self.max_steps,
+            question=question,
+            scratchpad=self.memory.load_memories()["scratchpad"],
+            max_tokens=self.max_tokens,
+            enc=self.enc,
+        ):
+            # Think.
+            self.memory.add_memories("\nThought:")
+            thought = _prompt_agent(
+                llm=self.llm,
+                question=question,
+                scratchpad=self.memory.load_memories()["scratchpad"],
+            ).split("Action")[0]
+            self.memory.add_memories(" " + thought)
+            out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
-            # Get thought and action.
-            try:
-                thought, action = thought_action.strip().split(f"\nAction {i}: ")
-                thought = thought.split(f"Thought {i}: ")[-1]
-            except:
-                thought = thought_action.strip().split("\n")[0]
-                revised_prompt_template = (
-                    (
-                        "".join(prompt_template)  # type: ignore
-                        if not out
-                        else "".join(prompt_template[:-1]) + out  # type: ignore
+            # Act.
+            self.memory.add_memories("\nAction:")
+            action = _prompt_agent(
+                llm=self.llm,
+                question=question,
+                scratchpad=self.memory.load_memories()["scratchpad"],
+            ).split("Observation")[0]
+            self.memory.add_memories(" " + action)
+            action_type, query = parse_action(action)
+            out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
+
+            # Observe.
+            self.memory.add_memories(f"\nObservation {self._step_n}: ")
+            if action_type.lower() == "finish":
+                self._answer = query
+                self._finished = True
+                self.memory.add_memories(query)
+            elif action_type.lower() == "search":
+                try:
+                    self.memory.add_memories(
+                        remove_newline(self.docstore.search(query))
                     )
-                    + f"{thought}\n"
-                    + "Action {i}: "
-                )
-                revised_prompt = PromptTemplate.from_template(revised_prompt_template)
-                chain = LLMChain(llm=self.llm, prompt=revised_prompt)
-                action = chain.run(observation=observation, i=i).strip().split("\n")[0]
-
-            # Execute action and get observation.
-            if action.lower().startswith("search[") and action.endswith("]"):
-                query = action[len("search[") : -1].lower()
-                obs = self.search(query)
-                if not obs.endswith("\n"):
-                    obs = obs + "\n"
-            elif action.lower().startswith("lookup[") and action.endswith("]"):
-                keyword = action[len("lookup[") : -1].lower()
-
-                # Reset lookup.
-                if self.lookup_keyword != keyword:
-                    self.lookup_keyword = keyword
-                    self.lookup_list = construct_lookup_list(keyword, page=self.page)
-                    self.lookup_cnt = 0
-
-                # All lookups used.
-                if self.lookup_cnt >= len(self.lookup_list):
-                    obs = "No more results.\n"
-                else:
-                    obs = (
-                        f"(Result {self.lookup_cnt + 1} / {len(self.lookup_list)}) "
-                        + self.lookup_list[self.lookup_cnt]
+                except Exception:
+                    self.memory.add_memories(
+                        "Could not find that page, please try again."
                     )
-                    self.lookup_cnt += 1
-            elif action.lower().startswith("finish[") and action.endswith("]"):
-                answer = action[len("finish[") : -1].lower()
-                done = True
-                obs = f"Episode finished. Answer: {answer}\n"
+
+            elif action_type.lower() == "lookup":
+                try:
+                    self.memory.add_memories(
+                        remove_newline(self.docstore.lookup(query))
+                    )
+                except ValueError:
+                    self.memory.add_memories(
+                        "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
+                    )
             else:
-                obs = "Invalid action: {}".format(action)
+                self.memory.add_memories(
+                    "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
+                )
 
-            # Update out.
-            obs = obs.replace("\\n", "")
-            out += (
-                f"Thought {i}: {thought}\n"
-                + f"Action {i}: {action}\n"
-                + f"Observation {i}: {obs}\n"
-            )
-
-            # Break, if done.
-            if done:
-                break
+            self._step_n += 1
+            out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
         return out
+
+    def retrieve(self) -> Dict[str, Any]:
+        """Retrieves the current state of the agent's memory.
+
+        Returns:
+            Dict[str, Any]: The current state of the agent's memory.
+        """
+        return self.memory.load_memories()
+
+    def reset(self) -> None:
+        """Resets the internal state of the ReAct agent.
+
+        Sets the step number, finished flag, and scratchpad to their initial values.
+        """
+        self._step_n = 1
+        self._finished = False
+        self.memory.clear()
 
 
 @tool
 def search(query: str) -> str:
-    """Searches Wikipedia with a given query and returns first document found."""
-    docs = WikipediaLoader(
-        query=query,
-        load_max_docs=1,
-    ).load()
-    return docs[0].page_content
+    """Searches Wikipedia given query."""
+    docstore = DocstoreExplorer(Wikipedia())
+    return docstore.search(query)
 
 
 class ZeroShotReActAgent(BaseAgent):
@@ -236,23 +189,23 @@ class ZeroShotReActAgent(BaseAgent):
     See: https://github.com/langchain-ai/langchain/tree/master/libs/langchain/langchain/agents/react
     """
 
-    llm: Any  # TODO: Why is `LLM` not usable here?
-    tools: Optional[List[BaseTool]] = []
-    prompt: Optional[str] = None
-
-    @root_validator(pre=False)
-    def set_args(cls: Any, values: Dict[str, Any]) -> Dict[str, Any]:
-        """Set default arguments."""
-        llm = values["llm"]
-        tools = values["tools"]
-        tools.append(search)
-        prompt = values["prompt"]
+    def __init__(
+        self,
+        llm: Any,
+        tools: List[BaseTool] = [],
+        prompt: Optional[str] = None,
+    ) -> None:
+        """Initialization."""
+        super().__init__()
+        self.llm = llm  # TODO: Why is `LLM` not usable here?
+        self.tools = tools
+        self.tools.append(search)  # type: ignore
         prompt = hub.pull("hwchase17/react") if not prompt else prompt
-        if llm and tools and prompt:
-            agent = create_react_agent(llm, tools, prompt)
+        self.prompt = prompt
+        if self.llm and self.tools and self.prompt:
+            agent = create_react_agent(llm, tools, prompt)  # type: ignore
             agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)  # type: ignore
-            values["agent"] = agent_executor
-        return values
+            self.agent = agent_executor
 
     def generate(self, observation_dict: Dict[str, str]) -> str:
         """Generates a response based on the provided observation dictionary.

@@ -1,21 +1,25 @@
 """Base scoring module."""
 from abc import ABC, abstractmethod
-from typing import Any, List, Union
-
-from pydantic.v1 import BaseModel
+from typing import Any
 
 
-class BaseScorer(BaseModel, ABC):
+class BaseScorer(ABC):
     """Base scoring class."""
 
-    llm: Any
+    def __init__(self, llm: Any) -> None:
+        """Initialization."""
+        self.llm = llm
 
     @abstractmethod
     def score(
         self,
-        memory_contents: Union[str, List[str]],
-        relevant_memories: Union[str, List[str]],
+        *args: Any,
         **kwargs: Any,
-    ) -> List[float]:
+    ) -> Any:
         """Score memory_contents with respect to relevant memories and returns a list of scores."""
+        pass
+
+    @abstractmethod
+    def clear(self, *args: Any, **kwargs: Any) -> None:
+        """Clears any internal state."""
         pass

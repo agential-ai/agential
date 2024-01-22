@@ -33,11 +33,6 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    # - name: Install dependencies
-    #   run: |
-    #     python -m pip install --upgrade pip
-    #     pip install -r requirements.txt
-
     - name: Install Poetry ${{ env.POETRY_VERSION }}
       run: |
         python -m pip install pipx
@@ -58,10 +53,8 @@ jobs:
       run: |
         poetry install --with dev
 
-    - name: Run Test (No Cost)
+    - name: Run Tests
       run: |
-        export OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}"
-        export HUGGINGFACEHUB_API_TOKEN="${{ secrets.HUGGINGFACEHUB_API_TOKEN }}"
         make test
 
     - name: Upload coverage reports to Codecov

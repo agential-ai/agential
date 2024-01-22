@@ -1,4 +1,4 @@
-"""Unit tests for Generative Agents reflecting module."""
+"""Unit tests for Generative Agents reflect module."""
 from datetime import datetime
 
 from langchain.llms.fake import FakeListLLM
@@ -17,9 +17,17 @@ def test_generative_agent_reflector(
     """Test GenerativeAgentReflector."""
     observations = "Chairs have 4 legs."
     llm = FakeListLLM(responses=["That's an interesting observation!"])
-    reflector = GenerativeAgentReflector(
-        llm=llm, retriever=time_weighted_retriever, importance_weight=0.15
-    )
+    reflector = GenerativeAgentReflector(llm=llm, retriever=time_weighted_retriever)
     insights = reflector.reflect(observations=observations, now=test_date)
     assert type(insights) is list
     assert insights == [["That's an interesting observation!"]]
+
+
+def test_generative_agent_reflector_clear(
+    time_weighted_retriever: TimeWeightedVectorStoreRetriever,
+) -> None:
+    """Test GenerativeAgentReflector clear method."""
+    llm = FakeListLLM(responses=["That's an interesting observation!"])
+    reflector = GenerativeAgentReflector(llm=llm, retriever=time_weighted_retriever)
+    reflector.clear(time_weighted_retriever)
+    assert reflector.retriever

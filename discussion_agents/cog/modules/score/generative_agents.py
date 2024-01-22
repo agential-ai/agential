@@ -1,6 +1,6 @@
 """Scoring module for Generative Agents."""
 
-from typing import Any, List, Union
+from typing import Any, List, Optional, Union
 
 from discussion_agents.cog.functional.generative_agents import (
     score_memories_importance,
@@ -24,13 +24,15 @@ class GenerativeAgentScorer(BaseScorer):
     inputs and returns a list of importance scores for each memory content.
     """
 
-    llm: Any
+    def __init__(self, llm: Any) -> None:
+        """Initialization."""
+        super().__init__(llm)
 
     def score(
         self,
         memory_contents: Union[str, List[str]],
         relevant_memories: Union[str, List[str]],
-        **kwargs: Any,
+        importance_weight: float = 0.15,
     ) -> List[float]:
         """Scores the importance of memory contents based on their relevance to a set of given memories.
 
@@ -43,9 +45,7 @@ class GenerativeAgentScorer(BaseScorer):
             relevant_memories (Union[str, List[str]]): A single relevant memory or a list of relevant memories that the memory contents
                 are being compared to. Each relevant memory is a string.
             importance_weight (float): A weight factor (default: 0.15) used in the scoring calculation
-                to adjust the influence of certain criteria in the final score. Overrides self.importance_weight attribute if this
-                parameter is supplied.
-            **kwargs (Any): other keyword arguments for score. This implementation has `importance_weight`.
+                to adjust the influence of certain criteria in the final score.
 
         Returns:
             List[float]: A list of float scores corresponding to the importance of each memory content in relation to the relevant memories.
@@ -54,10 +54,13 @@ class GenerativeAgentScorer(BaseScorer):
         The method delegates the scoring to the `score_memories_importance` function,
         passing the language model, importance weight, and the provided memory contents and relevant memories as arguments.
         """
-        importance_weight = kwargs.get("importance_weight", 0.15)
         return score_memories_importance(
             memory_contents=memory_contents,
             relevant_memories=relevant_memories,
             llm=self.llm,
             importance_weight=importance_weight,
         )
+
+    def clear(self) -> None:
+        """Clears any internal state."""
+        pass

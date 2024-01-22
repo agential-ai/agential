@@ -55,13 +55,6 @@ test: ## Run all pytest tests.
 		--cov-report term-missing:skip-covered \
 		tests/
 
-test_fast: ## Run pytest tests with no 'slow' marker.
-	poetry run pytest --cov=discussion_agents \
-		--cov-report xml \
-		--cov-report term-missing:skip-covered \
-		-m "not slow" \
-		tests/
-
 create_environment: ## Set up conda environment.
 ifeq (True,$(HAS_CONDA))
 		@echo ">>> Detected conda, creating conda environment."

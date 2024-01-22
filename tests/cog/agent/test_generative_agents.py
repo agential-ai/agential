@@ -1,4 +1,4 @@
-"""Unit tests for GenerativeAgent."""
+"""Unit tests for Generative Agents."""
 from datetime import datetime
 
 from langchain.llms.fake import FakeListLLM
@@ -14,6 +14,14 @@ def test_init(time_weighted_retriever: TimeWeightedVectorStoreRetriever) -> None
     """Test GenerativeAgent initialization."""
     memory = GenerativeAgentMemory(retriever=time_weighted_retriever)
     agent = GenerativeAgent(llm=FakeListLLM(responses=["1"]), memory=memory)
+    assert agent
+    assert agent.llm
+    assert agent.memory
+    assert agent.reflector
+    assert agent.importance_weight == 0.15
+    assert agent.reflection_threshold == 8
+
+    agent = GenerativeAgent(llm=FakeListLLM(responses=["1"]))
     assert agent
     assert agent.llm
     assert agent.memory

@@ -1,14 +1,17 @@
-"""ReAct prompt constants."""
+"""ReAct prompts and fewshot examples."""
 
 
-INSTRUCTION = """Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: 
+REACT_INSTRUCTION = """Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: 
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
-(2) Lookup[keyword], which returns the next sentence containing keyword in the current passage.
+(2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
 (3) Finish[answer], which returns the answer and finishes the task.
-Here are some examples.
-"""
+You may take as many steps as necessary.
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+Question: {question}{scratchpad}"""
 
-HOTPOTQA_FEWSHOT_EXAMPLES = """
+REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES = """
 Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
 Thought 1: I need to search Colorado orogeny, find the area that the eastern sector of the Colorado orogeny extends into, then find the elevation range of the area.
 Action 1: Search[Colorado orogeny]

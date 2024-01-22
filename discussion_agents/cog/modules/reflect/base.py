@@ -1,18 +1,21 @@
 """Base reflecting module."""
 from abc import ABC, abstractmethod
-from typing import Any, List, Union
-
-from pydantic.v1 import BaseModel
+from typing import Any
 
 
-class BaseReflector(BaseModel, ABC):
+class BaseReflector(ABC):
     """Base reflecting class."""
 
-    llm: Any
+    def __init__(self, llm: Any) -> None:
+        """Initialization."""
+        self.llm = llm
 
     @abstractmethod
-    def reflect(
-        self, observations: Union[str, List[str]], **kwargs: Any
-    ) -> List[List[str]]:
+    def reflect(self, *args: Any, **kwargs: Any) -> Any:
         """Reflect on memory_contents w.r.t. relevant memories and returns a list of reflections."""
+        pass
+
+    @abstractmethod
+    def clear(self, *args: Any, **kwargs: Any) -> Any:
+        """Clears any internal state."""
         pass

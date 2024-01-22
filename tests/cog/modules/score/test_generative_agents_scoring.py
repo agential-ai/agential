@@ -17,3 +17,11 @@ def test_generative_agent_scorer() -> None:
     assert len(scores) == 1
     assert type(scores[0]) == float
     assert scores[0] == 0.015
+
+
+def test_generative_agent_scorer_clear() -> None:
+    """Test GenerativeAgentScorer clear method."""
+    llm = FakeListLLM(responses=["1"])
+    scorer = GenerativeAgentScorer(llm=llm)
+    scorer.clear()
+    assert scorer.llm

@@ -3,10 +3,8 @@
 from abc import ABC
 from typing import Any
 
-from pydantic.v1 import BaseModel
 
-
-class BaseAgent(BaseModel, ABC):
+class BaseAgent(ABC):
     """Base agent class providing a general interface for agent operations."""
 
     def plan(self, *args: Any, **kwargs: Any) -> Any:
