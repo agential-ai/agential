@@ -192,18 +192,18 @@ class ZeroShotReActAgent(BaseAgent):
     def __init__(
         self,
         llm: Any,
-        tools: Optional[List[BaseTool]] = [],
+        tools: List[BaseTool] = [],
         prompt: Optional[str] = None,
     ) -> None:
         """Initialization."""
         super().__init__()
         self.llm = llm  # TODO: Why is `LLM` not usable here?
         self.tools = tools
-        self.tools.append(search)
+        self.tools.append(search)  # type: ignore
         prompt = hub.pull("hwchase17/react") if not prompt else prompt
         self.prompt = prompt
         if self.llm and self.tools and self.prompt:
-            agent = create_react_agent(llm, tools, prompt)
+            agent = create_react_agent(llm, tools, prompt)  # type: ignore
             agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)  # type: ignore
             self.agent = agent_executor
 

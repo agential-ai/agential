@@ -11,7 +11,7 @@ from discussion_agents.cog.prompts.react import (
 from discussion_agents.utils.parse import remove_newline
 
 
-def _build_agent_prompt(question: str, scratchpad: str) -> PromptTemplate:
+def _build_agent_prompt(question: str, scratchpad: str) -> str:
     """Constructs a prompt template for the agent.
 
     This function formats a predefined prompt template (REACT_INSTRUCTION) with examples,
@@ -22,7 +22,7 @@ def _build_agent_prompt(question: str, scratchpad: str) -> PromptTemplate:
         scratchpad (str): Additional scratchpad information to be included.
 
     Returns:
-        PromptTemplate: A formatted prompt template ready for use.
+        str: A formatted prompt template ready for use.
     """
     prompt = PromptTemplate.from_template(REACT_INSTRUCTION).format(
         examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
@@ -54,6 +54,7 @@ def _prompt_agent(llm: BaseChatModel, question: str, scratchpad: str) -> str:
             )
         ]
     ).content
+    assert isinstance(out, str)
     return remove_newline(out)
 
 

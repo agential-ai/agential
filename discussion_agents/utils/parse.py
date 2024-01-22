@@ -78,7 +78,7 @@ def remove_name(text: str, name: str) -> str:
     return lines
 
 
-def parse_action(string: str) -> Optional[Tuple[str, str]]:
+def parse_action(string: str) -> Tuple[str, str]:
     """Parses an action string into an action type and its argument.
 
     This method is used in ReAct and Reflexion.
@@ -87,7 +87,7 @@ def parse_action(string: str) -> Optional[Tuple[str, str]]:
         string (str): The action string to be parsed.
 
     Returns:
-        Optional[Tuple[str, str]]: A tuple containing the action type and argument, or None if parsing fails.
+        Tuple[str, str]: A tuple containing the action type and argument.
     """
     pattern = r"^(\w+)\[(.+)\]$"
     match = re.match(pattern, string)
@@ -95,9 +95,10 @@ def parse_action(string: str) -> Optional[Tuple[str, str]]:
     if match:
         action_type = match.group(1)
         argument = match.group(2)
-        return action_type, argument
-    else:
-        return None
+    else:  # TODO: Handle parsing/data validation.
+        action_type = ""
+        argument = ""
+    return action_type, argument
 
 
 def remove_newline(step: str) -> str:

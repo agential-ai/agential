@@ -25,7 +25,7 @@ def _create_default_time_weighted_retriever(
     embedding_size: int = 768,
     model_kwargs: Dict[str, Any] = {"device": "cpu"},
     encode_kwargs: Dict[str, Any] = {"normalize_embeddings": False},
-    k=5,
+    k: int = 5,
 ) -> TimeWeightedVectorStoreRetriever:
     """Returns a TimeWeightedVectorStoreRetriever with customizable parameters.
 
@@ -49,7 +49,7 @@ def _create_default_time_weighted_retriever(
     index = faiss.IndexFlatL2(embedding_size)
     vectorstore = FAISS(embeddings_model.embed_query, index, InMemoryDocstore({}), {})
     retriever = TimeWeightedVectorStoreRetriever(
-        vectorstore=vectorstore, otherScoreKeys=["importance"], k=k
+        vectorstore=vectorstore, other_score_keys=["importance"], k=k
     )
     return retriever
 

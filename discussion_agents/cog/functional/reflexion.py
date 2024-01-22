@@ -154,6 +154,7 @@ def _prompt_cot_agent(
             )
         ]
     ).content
+    assert isinstance(out, str)
     return remove_newline(out)
 
 
@@ -196,6 +197,7 @@ def _prompt_cot_reflection(
             )
         ]
     ).content
+    assert isinstance(out, str)
     return remove_newline(out)
 
 
@@ -381,7 +383,7 @@ def _prompt_react_agent(
             )
         ]
     ).content
-
+    assert isinstance(out, str)
     return remove_newline(out)
 
 
@@ -419,6 +421,7 @@ def _prompt_react_reflection(
             )
         ]
     ).content
+    assert isinstance(out, str)
     return remove_newline(out)
 
 

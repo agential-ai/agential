@@ -84,21 +84,21 @@ class GenerativeAgent(BaseAgent):
         """Initialize agent."""
         self.llm = llm
 
-        self.memory = memory
-        if not self.memory:
-            self.memory = GenerativeAgentMemory(
+        if not memory:
+            memory = GenerativeAgentMemory(
                 retriever=_create_default_time_weighted_retriever()
             )
+        self.memory = memory
 
-        self.reflector = reflector
-        if self.llm and self.memory and not self.reflector:
-            self.reflector = GenerativeAgentReflector(
+        if self.llm and self.memory and not reflector:
+            reflector = GenerativeAgentReflector(
                 llm=self.llm, retriever=self.memory.retriever
             )
+        self.reflector = reflector
 
+        if self.llm and not scorer:
+            scorer = GenerativeAgentScorer(llm=self.llm)
         self.scorer = scorer
-        if self.llm and not self.scorer:
-            self.scorer = GenerativeAgentScorer(llm=self.llm)
 
         self.persona = persona
         self.name = name

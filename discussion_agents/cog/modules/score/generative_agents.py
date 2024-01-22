@@ -32,7 +32,7 @@ class GenerativeAgentScorer(BaseScorer):
         self,
         memory_contents: Union[str, List[str]],
         relevant_memories: Union[str, List[str]],
-        importance_weight: Optional[float] = 0.15,
+        importance_weight: float = 0.15,
     ) -> List[float]:
         """Scores the importance of memory contents based on their relevance to a set of given memories.
 
