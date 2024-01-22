@@ -1,7 +1,7 @@
 """Reflexion's memory implementation.
 
 Original Paper: https://arxiv.org/abs/2303.11366
-Paper Repositories: 
+Paper Repositories:
     - https://github.com/noahshinn/reflexion-draft
     - https://github.com/noahshinn/reflexion
 """
@@ -20,6 +20,7 @@ class ReflexionMemory(BaseMemory):
     """
 
     def __init__(self, scratchpad: Optional[str] = None) -> None:
+        """Initialization."""
         super().__init__()
         self.scratchpad = scratchpad if scratchpad else ""
 

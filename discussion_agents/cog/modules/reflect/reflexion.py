@@ -35,6 +35,7 @@ class ReflexionCoTReflector(BaseReflector):
         reflections_str: Optional[str] = None,
         max_reflections: int = 3,
     ) -> None:
+        """Initialization."""
         super().__init__(llm=llm)
         self.llm = llm
         self.reflections = reflections if reflections else []
