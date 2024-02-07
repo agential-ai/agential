@@ -2,6 +2,12 @@
 
 Discussion agents.
 
+#Installation
+conda create -n my_env python=3.10.13
+pip install pipx
+pipx install poetry (make sure to add poetry to path)
+poetry install
+
 Project Organization
 ------------
 
