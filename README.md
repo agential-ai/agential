@@ -2,12 +2,15 @@
 
 Discussion agents.
 
-#Installation
-conda create -n my_env python=3.10.13
-pip install pipx
-pipx install poetry (make sure to add poetry to path)
-poetry install
-
+# Windows installation 
+```
+1.First install anaconda https://docs.anaconda.com/free/anaconda/install/windows/ and add to path, or launch anaconda console
+2.conda create -n my_env python=3.10.13
+3.conda activate my_env
+4.pip install pipx
+5.pipx install poetry (make sure to add poetry to path by adding C:\Users\<username\.local\bin to path in advanced system settings)
+6.In the discussion agents directory - poetry install
+```
 Project Organization
 ------------
 
