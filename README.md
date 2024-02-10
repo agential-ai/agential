@@ -19,7 +19,7 @@ Next, we will install [Poetry](https://python-poetry.org/docs/) using [pipx](htt
 pip install pipx
 pipx install poetry
 ```
-Make sure to add poetry to path by adding C:\Users\<username>\.local\bin to path in advanced system settings. For other operating systems, the path will be different. Ensure poetry is in the environment variable paths.
+Make sure to add poetry to path by adding `C:\Users\<username>\.local\bin` to path in advanced system settings. For other operating systems, the path will be different. Ensure poetry is in the environment variable paths.
 
 Then clone the repository and enter the discussion-agents directory.
 ``` 
