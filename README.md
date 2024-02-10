@@ -14,7 +14,7 @@ Now activate the environent.
 ```
 conda activate discussion-agents
 ```
-Next, we will install [Poetry](https://python-poetry.org/docs/) using [pipx](https://pipx.pypa.io/stable/docs/)
+Next, we will install [Poetry](https://python-poetry.org/docs/) using [pipx](https://pipx.pypa.io/stable/docs/).
 ```
 pip install pipx
 pipx install poetry
