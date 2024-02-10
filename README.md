@@ -1,15 +1,34 @@
 # discussion-agents
 
-Discussion agents.
+Discussion agents. 
 
-# Windows installation 
+# Developer Setup: Windows
+
+1. First install [anaconda](https://docs.anaconda.com/free/anaconda/install/windows/) and add to path by going to advanced system settings. Then launch cmd.
+
+Use the following command to create a conda environment named my_env with python version 3.10.13.
 ```
-1.First install anaconda https://docs.anaconda.com/free/anaconda/install/windows/ and add to path, or launch anaconda console
-2.conda create -n my_env python=3.10.13
-3.conda activate my_env
-4.pip install pipx
-5.pipx install poetry (make sure to add poetry to path by adding C:\Users\<username\.local\bin to path in advanced system settings)
-6.In the discussion agents directory - poetry install
+2. conda create -n my_env python=3.10.13
+```
+Now activate the environent.
+```
+3. conda activate my_env
+```
+Next install [pipx](https://pipx.pypa.io/stable/docs/) to install [poetry](https://python-poetry.org/docs/).
+```
+4. pip install pipx
+5. pipx install poetry
+```
+Make sure to add poetry to path by adding C:\Users\<username>\.local\bin to path in advanced system settings.
+
+Then clone the repository and enter the discussion-agents directory.
+``` 
+6. git clone https://github.com/alckasoc/discussion-agents/
+
+```
+Finally install all of the packages.
+```
+7. poetry install
 ```
 Project Organization
 ------------
