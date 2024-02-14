@@ -78,9 +78,9 @@ class ReflexionCoTReflector(BaseReflector):
             question=question,
             scratchpad=scratchpad,
             context=context,
-        )
+        )[-self.max_reflections :]
 
-        self.reflections = reflections[-self.max_reflections :]
+        self.reflections = reflections
 
         if strategy == "last_attempt":
             reflections_str = _format_last_attempt(question, scratchpad)
@@ -162,9 +162,9 @@ class ReflexionReActReflector(BaseReflector):
             examples=examples,
             question=question,
             scratchpad=scratchpad,
-        )
+        )[-self.max_reflections :]
 
-        self.reflections = reflections[-self.max_reflections :]
+        self.reflections = reflections
 
         if strategy == "last_attempt":
             reflections_str = _format_last_attempt(question, scratchpad)
