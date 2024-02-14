@@ -74,6 +74,10 @@ def test_reflexion_cot_generate() -> None:
     reflexion_cot_agent = ReflexionCoTAgent(
         self_reflect_llm=FakeListChatModel(responses=["1"]), action_llm=action_llm
     )
+    assert reflexion_cot_agent.patience >= 1
+    assert reflexion_cot_agent.max_tries >= 1
+    assert reflexion_cot_agent.patience <= reflexion_cot_agent.max_tries
+    
     out = reflexion_cot_agent.generate(
         question=question, key=key, context=context, strategy=None
     )
@@ -92,6 +96,9 @@ def test_reflexion_cot_generate() -> None:
     reflexion_cot_agent = ReflexionCoTAgent(
         self_reflect_llm=FakeListChatModel(responses=["1"]), action_llm=action_llm
     )
+    assert reflexion_cot_agent.patience >= 1
+    assert reflexion_cot_agent.max_tries >= 1
+    assert reflexion_cot_agent.patience <= reflexion_cot_agent.max_tries
     out = reflexion_cot_agent.generate(
         question=question, key=key, context=context, strategy=None
     )
