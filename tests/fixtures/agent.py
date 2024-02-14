@@ -40,5 +40,7 @@ def reflexion_react_agent() -> ReflexionReActAgent:
     agent = ReflexionReActAgent(
         self_reflect_llm=FakeListChatModel(responses=["1"]),
         action_llm=FakeListChatModel(responses=["1"]),
+        max_tries=1,
+        max_reflections=3
     )
     return agent

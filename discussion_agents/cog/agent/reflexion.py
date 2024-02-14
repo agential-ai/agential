@@ -46,8 +46,8 @@ class ReflexionCoTAgent(BaseAgent):
         action_llm (BaseChatModel): The language model used for generating thoughts/actions.
         memory (Optional[ReflexionMemory]): An optional memory module to store the agent's internal state.
         reflector (Optional[ReflexionReflector]): An optional reflector module for guided self-reflection.
-        max_reflections (int): An int specifying the max number of reflections to use in a subsequent run. Defaults to 3.
-        max_tries (int): Max number of answering attempts before stopping generation. Defaults to 1.
+        max_tries (int): Max number of answering attempts before stopping generation. Defaults to 3.
+        max_reflections (int): An int specifying the max number of reflections to use in a subsequent run. Defaults to max_tries.
         patience (int): The number of incorrect retries before stopping. Must be >= 1 and <= max_tries. Defaults to max_tries.
 
     Methods:
@@ -63,8 +63,8 @@ class ReflexionCoTAgent(BaseAgent):
         action_llm: BaseChatModel,
         memory: Optional[ReflexionMemory] = None,
         reflector: Optional[ReflexionCoTReflector] = None,
-        max_reflections: int = 3,
-        max_tries: int = 1,
+        max_tries: int = 3,
+        max_reflections: Optional[int] = None,
         patience: Optional[int] = None,
     ) -> None:
         """Initialization with default or provided values."""
@@ -77,14 +77,18 @@ class ReflexionCoTAgent(BaseAgent):
             memory = ReflexionMemory()
         self.memory = memory
 
+        self.max_tries = max_tries
+
+        if not max_reflections:
+            max_reflections = max_tries
         self.max_reflections = max_reflections
+
         if not reflector:
             reflector = ReflexionCoTReflector(
                 llm=self_reflect_llm, max_reflections=max_reflections
             )
         self.reflector = reflector
 
-        self.max_tries = max_tries
         if not patience:
             patience = max_tries
         self.patience = patience
@@ -244,10 +248,10 @@ class ReflexionReActAgent(BaseAgent):
         action_llm (BaseChatModel): The language model used for generating thoughts/actions.
         memory (Optional[ReflexionMemory]): An optional memory module to store the agent's internal state.
         reflector (Optional[ReflexionReflector]): An optional reflector module for guided self-reflection.
-        max_reflections: (int): An int specifying the max number of reflections to use in a subsequent run. Defaults to 3.
         max_steps (int): Max number of steps for ReAct actor to take. Defaults to 6.
         max_tokens (int): Max tokens before the agent's memory is truncated. Defaults to 3896.
-        max_tries (int): Max number of answering attempts before stopping generation. Defaults to 1.
+        max_tries (int): Max number of answering attempts before stopping generation. Defaults to 3.
+        max_reflections: (int): An int specifying the max number of reflections to use in a subsequent run. Defaults to max_tries.
         patience (int): The number of incorrect retries before stopping. Must be >= 1 and <= max_tries. Defaults to max_tries.
         docstore (DocstoreExplorer): The Wikipedia docstore explorer.
         enc (Encoding): tiktoken Encoding for tracking token count of prompts.
@@ -265,10 +269,10 @@ class ReflexionReActAgent(BaseAgent):
         action_llm: BaseChatModel,
         memory: Optional[ReflexionMemory] = None,
         reflector: Optional[ReflexionReActReflector] = None,
-        max_reflections: int = 3,
         max_steps: int = 6,
         max_tokens: int = 3896,
-        max_tries: int = 1,
+        max_tries: int = 3,
+        max_reflections: Optional[int] = None,
         patience: Optional[int] = None,
         docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
@@ -283,17 +287,21 @@ class ReflexionReActAgent(BaseAgent):
         else:
             self.memory = memory
 
+
+        self.max_steps = max_steps
+        self.max_tokens = max_tokens
+        self.max_tries = max_tries
+
+        if not max_reflections:
+            max_reflections = max_tries
         self.max_reflections = max_reflections
+        
         if not reflector:
             self.reflector = ReflexionReActReflector(
                 llm=self_reflect_llm, max_reflections=max_reflections
             )
         else:
             self.reflector = reflector
-
-        self.max_steps = max_steps
-        self.max_tokens = max_tokens
-        self.max_tries = max_tries
 
         if not patience:
             self.patience = max_tries
