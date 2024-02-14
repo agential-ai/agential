@@ -347,6 +347,7 @@ class ReflexionReActAgent(BaseAgent):
 
         patience_cnt = 0
         result = []
+        ii = 0
         while not EM(self._answer, key) and self._step_n < self.max_tries + 1:
             # Reflect if possible.
             if (
@@ -363,6 +364,8 @@ class ReflexionReActAgent(BaseAgent):
                 and strategy
             ):
                 self.reflect(strategy, question)
+
+            print(f"TRIAL {ii}")
 
             out = ""
             while not _is_halted(
@@ -439,6 +442,8 @@ class ReflexionReActAgent(BaseAgent):
                 patience_cnt += 1
             if patience_cnt == self.patience:
                 break
+
+            ii += 1
 
         return result
 
