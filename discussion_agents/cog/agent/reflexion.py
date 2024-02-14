@@ -46,9 +46,9 @@ class ReflexionCoTAgent(BaseAgent):
         action_llm (BaseChatModel): The language model used for generating thoughts/actions.
         memory (Optional[ReflexionMemory]): An optional memory module to store the agent's internal state.
         reflector (Optional[ReflexionReflector]): An optional reflector module for guided self-reflection.
-        max_tries (int): Max number of answering attempts before stopping generation. Defaults to 3.
-        max_reflections (int): An int specifying the max number of reflections to use in a subsequent run. Defaults to max_tries.
-        patience (int): The number of incorrect retries before stopping. Must be >= 1 and <= max_tries. Defaults to max_tries.
+        max_reflections (int): An int specifying the max number of reflections to use in a subsequent run. Defaults to 3.
+        max_trials (int): Max number of answering attempts before stopping generation. Must be greater than 1 for reflection to occur. Defaults to 1.
+        patience (int): The number of incorrect retries before stopping. Must be >= 1 and <= max_trials. Defaults to max_trials.
 
     Methods:
         generate(context, question, key, strategy): Generates a response based on the given context, question, and strategy.
@@ -63,8 +63,8 @@ class ReflexionCoTAgent(BaseAgent):
         action_llm: BaseChatModel,
         memory: Optional[ReflexionMemory] = None,
         reflector: Optional[ReflexionCoTReflector] = None,
-        max_tries: int = 3,
-        max_reflections: Optional[int] = None,
+        max_reflections: int = 3,
+        max_trials: int = 1,
         patience: Optional[int] = None,
     ) -> None:
         """Initialization with default or provided values."""
@@ -89,10 +89,12 @@ class ReflexionCoTAgent(BaseAgent):
             )
         self.reflector = reflector
 
+        self.max_trials = max_trials
+
         if not patience:
-            patience = max_tries
+            patience = max_trials
         self.patience = patience
-        assert self.patience >= 1 and self.patience <= max_tries
+        assert self.patience >= 1 and self.patience <= max_trials
 
         self._step_n = 0
         self._finished = False
@@ -127,7 +129,7 @@ class ReflexionCoTAgent(BaseAgent):
 
         patience_cnt = 0
         result = []
-        while not EM(self._answer, key) and self._step_n < self.max_tries:
+        while not EM(self._answer, key) and self._step_n < self.max_trials:
             # Reflect if possible.
             if self._step_n > 0 and not EM(self._answer, key) and strategy:
                 self.reflect(strategy, question, context)
@@ -250,9 +252,8 @@ class ReflexionReActAgent(BaseAgent):
         reflector (Optional[ReflexionReflector]): An optional reflector module for guided self-reflection.
         max_steps (int): Max number of steps for ReAct actor to take. Defaults to 6.
         max_tokens (int): Max tokens before the agent's memory is truncated. Defaults to 3896.
-        max_tries (int): Max number of answering attempts before stopping generation. Defaults to 3.
-        max_reflections: (int): An int specifying the max number of reflections to use in a subsequent run. Defaults to max_tries.
-        patience (int): The number of incorrect retries before stopping. Must be >= 1 and <= max_tries. Defaults to max_tries.
+        max_trials (int): Max number of answering attempts before stopping generation. Must be greater than 1 for reflection to occur. Defaults to 1.
+        patience (int): The number of incorrect retries before stopping. Must be >= 1 and <= max_trials. Defaults to max_trials.
         docstore (DocstoreExplorer): The Wikipedia docstore explorer.
         enc (Encoding): tiktoken Encoding for tracking token count of prompts.
 
@@ -271,8 +272,7 @@ class ReflexionReActAgent(BaseAgent):
         reflector: Optional[ReflexionReActReflector] = None,
         max_steps: int = 6,
         max_tokens: int = 3896,
-        max_tries: int = 3,
-        max_reflections: Optional[int] = None,
+        max_trials: int = 1,
         patience: Optional[int] = None,
         docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
@@ -303,16 +303,21 @@ class ReflexionReActAgent(BaseAgent):
         else:
             self.reflector = reflector
 
+        self.max_steps = max_steps
+        self.max_tokens = max_tokens
+        self.max_trials = max_trials
+
         if not patience:
-            self.patience = max_tries
+            self.patience = max_trials
         else:
             self.patience = patience
-        assert self.patience >= 0 and self.patience <= max_tries
+        assert self.patience >= 0 and self.patience <= max_trials
 
         self.docstore = docstore
         self.enc = enc
 
         # Private variables.
+        self._trial_n = 1
         self._step_n = 1
         self._finished = False
         self._answer = ""
@@ -347,8 +352,8 @@ class ReflexionReActAgent(BaseAgent):
 
         patience_cnt = 0
         result = []
-        ii = 0
-        while not EM(self._answer, key) and self._step_n < self.max_tries + 1:
+        
+        while not EM(self._answer, key) and self._trial_n < self.max_trials + 1:
             # Reflect if possible.
             if (
                 _is_halted(
@@ -368,6 +373,8 @@ class ReflexionReActAgent(BaseAgent):
             print(f"TRIAL {ii}")
 
             out = ""
+            self._step_n = 1
+            self._finished = False
             while not _is_halted(
                 finished=self._finished,
                 step_n=self._step_n,
@@ -443,7 +450,7 @@ class ReflexionReActAgent(BaseAgent):
             if patience_cnt == self.patience:
                 break
 
-            ii += 1
+            self._trial_n += 1
 
         return result
 
