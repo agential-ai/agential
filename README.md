@@ -1,6 +1,29 @@
 # discussion-agents
+Discussing agents provides a framework for building intelligent conversational agents, facilitating natural language understanding, generation, and interaction
+ 
+# Project Desiption
 
-Discussion agents. 
+This library enables developers to create agents capable of engaging in meaningful discussions, exploring various topics, and assisting users in information retrieval and task execution.The library follows a modular structure, with distinct components for handling different aspects of conversational AI. 
+These components include modules for memory management, agent modeling, core functionalities, planning, reflection, scoring, and utility methods. Each module is designed to encapsulate specific functionalities, promoting code organization and reusability.
+It does not aim to provide pre-trained models or out-of-the-box solutions for specific use cases. Instead, it offers a flexible platform for developers to implement custom agent behaviors and tailor solutions to their specific requirements.
+
+## Features
+* Natural Language Understanding: Discussion Agents utilize advanced natural language processing (NLP) techniques to comprehend user inputs, including text-based messages and spoken language.
+* Contextual Reasoning: The agents employ contextual reasoning mechanisms to interpret and respond to user queries in a manner that reflects understanding of the ongoing conversation.
+* Topic Exploration: Users can engage with the agents to explore a wide range of topics, from current events and scientific concepts to personal interests and philosophical ideas.
+* Multi-Agent Interaction: The project supports interactions between multiple agents, allowing users to participate in group discussions, debates, and collaborative problem-solving activities.
+* Customization and Extension: Discussion Agents are designed to be modular and extensible, enabling developers to customize agent behavior, add new features, and integrate with external systems and services.
+
+### Sample input
+```python
+user_input = "What is the weather forecast for tomorrow?"
+# Running the agent
+response = react_agent.respond(user_input)
+# Displaying the agent's response
+print("Agent's response:", response)
+```
+
+This README serves as a guide to help you get started with the library, including setup instructions and usage guidelines.
 
 # Developer Setup: Windows
 
