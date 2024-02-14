@@ -72,8 +72,9 @@ def test_reflexion_cot_generate() -> None:
         ]
     )
     reflexion_cot_agent = ReflexionCoTAgent(
-        self_reflect_llm=FakeListChatModel(responses=["1"]), action_llm=action_llm,
-        max_tries=1
+        self_reflect_llm=FakeListChatModel(responses=["1"]),
+        action_llm=action_llm,
+        max_tries=1,
     )
     out = reflexion_cot_agent.generate(
         question=question, key=key, context=context, strategy=None
@@ -109,8 +110,9 @@ def test_reflexion_cot_generate() -> None:
         ]
     )
     reflexion_cot_agent = ReflexionCoTAgent(
-        self_reflect_llm=FakeListChatModel(responses=["1"]), action_llm=action_llm,
-        max_tries=1
+        self_reflect_llm=FakeListChatModel(responses=["1"]),
+        action_llm=action_llm,
+        max_tries=1,
     )
     out = reflexion_cot_agent.generate(
         question=question, key=key, context=context, strategy=None
@@ -128,8 +130,9 @@ def test_reflexion_cot_generate() -> None:
         ]
     )
     reflexion_cot_agent = ReflexionCoTAgent(
-        self_reflect_llm=FakeListChatModel(responses=["1"]), action_llm=action_llm,
-        max_tries=1
+        self_reflect_llm=FakeListChatModel(responses=["1"]),
+        action_llm=action_llm,
+        max_tries=1,
     )
     out = reflexion_cot_agent.generate(
         question=question, key=key, context=context, strategy="last_attempt"
@@ -147,8 +150,9 @@ def test_reflexion_cot_generate() -> None:
         ]
     )
     reflexion_cot_agent = ReflexionCoTAgent(
-        self_reflect_llm=FakeListChatModel(responses=["1"]), action_llm=action_llm,
-        max_tries=1
+        self_reflect_llm=FakeListChatModel(responses=["1"]),
+        action_llm=action_llm,
+        max_tries=1,
     )
     out = reflexion_cot_agent.generate(
         question=question, key=key, context=None, strategy=None
@@ -222,8 +226,9 @@ def test_reflexion_react_generate() -> None:
     ]
     action_llm = FakeListChatModel(responses=responses)
     agent = ReflexionReActAgent(
-        self_reflect_llm=FakeListChatModel(responses=["1"]), action_llm=action_llm,
-        max_tries=1
+        self_reflect_llm=FakeListChatModel(responses=["1"]),
+        action_llm=action_llm,
+        max_tries=1,
     )
     out = agent.generate(question=question, key=key, strategy=None)
     assert isinstance(out, list)

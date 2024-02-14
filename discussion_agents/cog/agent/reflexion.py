@@ -287,7 +287,6 @@ class ReflexionReActAgent(BaseAgent):
         else:
             self.memory = memory
 
-
         self.max_steps = max_steps
         self.max_tokens = max_tokens
         self.max_tries = max_tries
@@ -295,7 +294,7 @@ class ReflexionReActAgent(BaseAgent):
         if not max_reflections:
             max_reflections = max_tries
         self.max_reflections = max_reflections
-        
+
         if not reflector:
             self.reflector = ReflexionReActReflector(
                 llm=self_reflect_llm, max_reflections=max_reflections
@@ -352,7 +351,7 @@ class ReflexionReActAgent(BaseAgent):
 
         patience_cnt = 0
         result = []
-        
+
         while not EM(self._answer, key) and self._trial_n < self.max_trials + 1:
             # Reflect if possible.
             if (

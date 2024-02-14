@@ -1,5 +1,3 @@
-
-
 from discussion_agents.cog.agent.base import BaseAgent
 
 
