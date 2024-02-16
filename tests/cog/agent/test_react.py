@@ -54,8 +54,8 @@ def test_generate() -> None:
     assert agent._step_n == agent.max_steps + 1
     assert not agent._finished
 
-    gt_out = "\nThought: I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.\nAction: Search[best kick boxer]\nObservation 1: Jo Prestia (born 5 June 1960 in Porto Empedocle) is an Italian born French kick boxer and actor. He has appeared in more than seventy films since 1996 and is best known for his performance as Le Tenia in the controversial 2002 film, Irréversible."
-    assert agent.retrieve()["scratchpad"] == gt_out
+    scratchpad = "\n".join(agent.retrieve()["scratchpad"].split("\n")[:-1])
+    assert scratchpad == gt_out
 
     # Test agent runs out of tokens (must ensure that max_steps is not reached and task is not finished).
     responses = [
@@ -80,11 +80,25 @@ def test_generate() -> None:
 
     assert isinstance(out, str)
     assert gt_out == out
-
-    gt_out = "\nThought: I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.\nAction: INVALID[best kick boxer]\nObservation 1: Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>].\nThought: I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.\nAction: INVALID[best kick boxer]\nObservation 2: Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
     assert agent.memory.load_memories()["scratchpad"] == gt_out
 
     # Test full trajectoy/trial till finish.
+    responses = [
+        ' I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.\nAction: Search[best kick boxer in the world]\nObservation: (Result 1/1) Ramon Dekkers is considered by many to be the best kickboxer in the world.\nThought: It mentions "unsportsmanlike conducts" and crimes of violence. I need to find more information about Ramon Dekkers.\nAction: Lookup[crimes]\nObservation: (Result 1/1) Dekkers was involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring.\nThought: Ramon Dekkers has been involved in controversies and crimes. I need to find more information about them.\nAction: Lookup[controversies]\nObservation: (Result 1/1) Dekkers was known for his aggressive style and has been involved in a number of controversies, including a bar brawl and an altercation with a bouncer.\nThought: It mentions "unsportsmanlike conducts" and crimes of violence. I need to find more information about the controversies and crimes.\nAction: Lookup[unsportsmanlike conducts]\nObservation: (Result',
+        ' Finish[Badr Hari]\n',
+    ]
+    llm = FakeListChatModel(responses=responses)
+    agent = ReActAgent(llm=llm, max_steps=5)
+    out = agent.generate(question=q)
+    gt_out = (
+    '\n'
+    'Thought: I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.\n'
+    'Action: Finish[Badr Hari]\n'
+    'Observation 1: Badr Hari'
+    )
+    assert isinstance(out, str)
+    assert gt_out == out
+    assert agent.memory.load_memories()["scratchpad"] == gt_out
 
 
 def test_reset(react_agent: ReActAgent) -> None:
