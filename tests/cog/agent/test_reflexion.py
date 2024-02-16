@@ -74,13 +74,16 @@ def test_reflexion_cot_generate() -> None:
     reflexion_cot_agent = ReflexionCoTAgent(
         self_reflect_llm=FakeListChatModel(responses=["1"]), action_llm=action_llm
     )
+
     assert reflexion_cot_agent.patience >= 1
     assert reflexion_cot_agent.max_tries >= 1
     assert reflexion_cot_agent.patience <= reflexion_cot_agent.max_tries
-    
+    assert reflexion_cot_agent._step_n == 0
+
     out = reflexion_cot_agent.generate(
         question=question, key=key, context=context, strategy=None
     )
+
     gt_out_str = 'Thought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with Limited Liability]\n\nAnswer is INCORRECT'
     assert isinstance(out, list)
     assert len(out) == 1
@@ -96,9 +99,12 @@ def test_reflexion_cot_generate() -> None:
     reflexion_cot_agent = ReflexionCoTAgent(
         self_reflect_llm=FakeListChatModel(responses=["1"]), action_llm=action_llm
     )
+
     assert reflexion_cot_agent.patience >= 1
     assert reflexion_cot_agent.max_tries >= 1
     assert reflexion_cot_agent.patience <= reflexion_cot_agent.max_tries
+    assert reflexion_cot_agent._step_n == 0
+
     out = reflexion_cot_agent.generate(
         question=question, key=key, context=context, strategy=None
     )
@@ -117,6 +123,11 @@ def test_reflexion_cot_generate() -> None:
     reflexion_cot_agent = ReflexionCoTAgent(
         self_reflect_llm=FakeListChatModel(responses=["1"]), action_llm=action_llm
     )
+
+    assert reflexion_cot_agent.patience >= 1
+    assert reflexion_cot_agent.max_tries >= 1
+    assert reflexion_cot_agent.patience <= reflexion_cot_agent.max_tries
+    assert reflexion_cot_agent._step_n == 0
     out = reflexion_cot_agent.generate(
         question=question, key=key, context=context, strategy=None
     )
@@ -135,6 +146,10 @@ def test_reflexion_cot_generate() -> None:
     reflexion_cot_agent = ReflexionCoTAgent(
         self_reflect_llm=FakeListChatModel(responses=["1"]), action_llm=action_llm
     )
+    assert reflexion_cot_agent.patience >= 1
+    assert reflexion_cot_agent.max_tries >= 1
+    assert reflexion_cot_agent.patience <= reflexion_cot_agent.max_tries
+    assert reflexion_cot_agent._step_n == 0
     out = reflexion_cot_agent.generate(
         question=question, key=key, context=context, strategy="last_attempt"
     )
@@ -153,6 +168,10 @@ def test_reflexion_cot_generate() -> None:
     reflexion_cot_agent = ReflexionCoTAgent(
         self_reflect_llm=FakeListChatModel(responses=["1"]), action_llm=action_llm
     )
+    assert reflexion_cot_agent.patience >= 1
+    assert reflexion_cot_agent.max_tries >= 1
+    assert reflexion_cot_agent.patience <= reflexion_cot_agent.max_tries
+    assert reflexion_cot_agent._step_n == 0
     out = reflexion_cot_agent.generate(
         question=question, key=key, context=None, strategy=None
     )
@@ -227,6 +246,10 @@ def test_reflexion_react_generate() -> None:
     agent = ReflexionReActAgent(
         self_reflect_llm=FakeListChatModel(responses=["1"]), action_llm=action_llm
     )
+    assert agent.patience >= 1
+    assert agent.max_tries >= 1
+    assert agent.patience <= agent.max_tries
+    assert agent._step_n == 1
     out = agent.generate(question=question, key=key, strategy=None)
     assert isinstance(out, list)
     assert len(out) == 1
@@ -262,7 +285,12 @@ def test_reflexion_react_generate() -> None:
     agent = ReflexionReActAgent(
         self_reflect_llm=self_reflect_llm, action_llm=action_llm
     )
+    assert agent.patience >= 1
+    assert agent.max_tries >= 1
+    assert agent.patience <= agent.max_tries
+    assert agent._step_n == 1
     out = agent.generate(question=question, key=key, strategy=None)
+    
     assert isinstance(out, list)
     assert len(out) == 1
 
@@ -271,3 +299,5 @@ def test_reflexion_react_generate() -> None:
     )
     assert isinstance(out, list)
     assert len(out) == 1
+
+
