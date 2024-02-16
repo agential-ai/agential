@@ -3,10 +3,10 @@ from langchain.agents.react.base import DocstoreExplorer
 from langchain.llms.fake import FakeListLLM
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
-from discussion_agents.cog.modules.memory.react import ReActMemory
 from tiktoken import Encoding
 
 from discussion_agents.cog.agent.react import ReActAgent, ZeroShotReActAgent
+from discussion_agents.cog.modules.memory.react import ReActMemory
 
 
 def test_init() -> None:
@@ -85,16 +85,16 @@ def test_generate() -> None:
     # Test full trajectoy/trial till finish.
     responses = [
         ' I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.\nAction: Search[best kick boxer in the world]\nObservation: (Result 1/1) Ramon Dekkers is considered by many to be the best kickboxer in the world.\nThought: It mentions "unsportsmanlike conducts" and crimes of violence. I need to find more information about Ramon Dekkers.\nAction: Lookup[crimes]\nObservation: (Result 1/1) Dekkers was involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring.\nThought: Ramon Dekkers has been involved in controversies and crimes. I need to find more information about them.\nAction: Lookup[controversies]\nObservation: (Result 1/1) Dekkers was known for his aggressive style and has been involved in a number of controversies, including a bar brawl and an altercation with a bouncer.\nThought: It mentions "unsportsmanlike conducts" and crimes of violence. I need to find more information about the controversies and crimes.\nAction: Lookup[unsportsmanlike conducts]\nObservation: (Result',
-        ' Finish[Badr Hari]\n',
+        " Finish[Badr Hari]\n",
     ]
     llm = FakeListChatModel(responses=responses)
     agent = ReActAgent(llm=llm, max_steps=5)
     out = agent.generate(question=q)
     gt_out = (
-    '\n'
-    'Thought: I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.\n'
-    'Action: Finish[Badr Hari]\n'
-    'Observation 1: Badr Hari'
+        "\n"
+        "Thought: I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.\n"
+        "Action: Finish[Badr Hari]\n"
+        "Observation 1: Badr Hari"
     )
     assert isinstance(out, str)
     assert gt_out == out

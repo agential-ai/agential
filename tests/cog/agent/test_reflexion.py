@@ -76,8 +76,8 @@ def test_reflexion_cot_generate() -> None:
     )
 
     assert reflexion_cot_agent.patience >= 1
-    assert reflexion_cot_agent.max_tries >= 1
-    assert reflexion_cot_agent.patience <= reflexion_cot_agent.max_tries
+    assert reflexion_cot_agent.max_trials >= 1
+    assert reflexion_cot_agent.patience <= reflexion_cot_agent.max_trials
     assert reflexion_cot_agent._step_n == 0
 
     out = reflexion_cot_agent.generate(
@@ -101,8 +101,8 @@ def test_reflexion_cot_generate() -> None:
     )
 
     assert reflexion_cot_agent.patience >= 1
-    assert reflexion_cot_agent.max_tries >= 1
-    assert reflexion_cot_agent.patience <= reflexion_cot_agent.max_tries
+    assert reflexion_cot_agent.max_trials >= 1
+    assert reflexion_cot_agent.patience <= reflexion_cot_agent.max_trials
     assert reflexion_cot_agent._step_n == 0
 
     out = reflexion_cot_agent.generate(
@@ -125,8 +125,8 @@ def test_reflexion_cot_generate() -> None:
     )
 
     assert reflexion_cot_agent.patience >= 1
-    assert reflexion_cot_agent.max_tries >= 1
-    assert reflexion_cot_agent.patience <= reflexion_cot_agent.max_tries
+    assert reflexion_cot_agent.max_trials >= 1
+    assert reflexion_cot_agent.patience <= reflexion_cot_agent.max_trials
     assert reflexion_cot_agent._step_n == 0
     out = reflexion_cot_agent.generate(
         question=question, key=key, context=context, strategy=None
@@ -147,8 +147,8 @@ def test_reflexion_cot_generate() -> None:
         self_reflect_llm=FakeListChatModel(responses=["1"]), action_llm=action_llm
     )
     assert reflexion_cot_agent.patience >= 1
-    assert reflexion_cot_agent.max_tries >= 1
-    assert reflexion_cot_agent.patience <= reflexion_cot_agent.max_tries
+    assert reflexion_cot_agent.max_trials >= 1
+    assert reflexion_cot_agent.patience <= reflexion_cot_agent.max_trials
     assert reflexion_cot_agent._step_n == 0
     out = reflexion_cot_agent.generate(
         question=question, key=key, context=context, strategy="last_attempt"
@@ -169,8 +169,8 @@ def test_reflexion_cot_generate() -> None:
         self_reflect_llm=FakeListChatModel(responses=["1"]), action_llm=action_llm
     )
     assert reflexion_cot_agent.patience >= 1
-    assert reflexion_cot_agent.max_tries >= 1
-    assert reflexion_cot_agent.patience <= reflexion_cot_agent.max_tries
+    assert reflexion_cot_agent.max_trials >= 1
+    assert reflexion_cot_agent.patience <= reflexion_cot_agent.max_trials
     assert reflexion_cot_agent._step_n == 0
     out = reflexion_cot_agent.generate(
         question=question, key=key, context=None, strategy=None
@@ -247,8 +247,8 @@ def test_reflexion_react_generate() -> None:
         self_reflect_llm=FakeListChatModel(responses=["1"]), action_llm=action_llm
     )
     assert agent.patience >= 1
-    assert agent.max_tries >= 1
-    assert agent.patience <= agent.max_tries
+    assert agent.max_trials >= 1
+    assert agent.patience <= agent.max_trials
     assert agent._step_n == 1
     out = agent.generate(question=question, key=key, strategy=None)
     assert isinstance(out, list)
@@ -286,8 +286,8 @@ def test_reflexion_react_generate() -> None:
         self_reflect_llm=self_reflect_llm, action_llm=action_llm
     )
     assert agent.patience >= 1
-    assert agent.max_tries >= 1
-    assert agent.patience <= agent.max_tries
+    assert agent.max_trials >= 1
+    assert agent.patience <= agent.max_trials
     assert agent._step_n == 1
     out = agent.generate(question=question, key=key, strategy=None)
 
