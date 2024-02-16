@@ -2,6 +2,8 @@
 from langchain.agents.react.base import DocstoreExplorer
 from langchain.llms.fake import FakeListLLM
 from langchain_community.chat_models.fake import FakeListChatModel
+from langchain_core.language_models.chat_models import BaseChatModel
+from discussion_agents.cog.modules.memory.react import ReActMemory
 from tiktoken import Encoding
 
 from discussion_agents.cog.agent.react import ReActAgent, ZeroShotReActAgent
@@ -11,8 +13,8 @@ def test_init() -> None:
     """Test initialization."""
     llm = FakeListChatModel(responses=["1"])
     agent = ReActAgent(llm=llm)
-    assert agent.llm
-    assert agent.memory
+    assert isinstance(agent.llm, BaseChatModel)
+    assert isinstance(agent.memory, ReActMemory)
     assert agent.max_steps == 6
     assert agent.max_tokens == 3896
     assert isinstance(agent.docstore, DocstoreExplorer)
