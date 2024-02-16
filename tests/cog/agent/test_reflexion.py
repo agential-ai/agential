@@ -290,7 +290,7 @@ def test_reflexion_react_generate() -> None:
     assert agent.patience <= agent.max_tries
     assert agent._step_n == 1
     out = agent.generate(question=question, key=key, strategy=None)
-    
+
     assert isinstance(out, list)
     assert len(out) == 1
 
@@ -299,5 +299,3 @@ def test_reflexion_react_generate() -> None:
     )
     assert isinstance(out, list)
     assert len(out) == 1
-
-
