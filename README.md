@@ -2,7 +2,6 @@
 # Discussion Agents
 
 
-## Table of Contents
 
 
 ## Features
