@@ -1,10 +1,5 @@
 
-
-
-
-# Discusion Agents
-
-
+# Discussion Agents
 
 
 ## Features
@@ -66,34 +61,9 @@ I need to search for the best kick boxer in the world, and then find any controv
 
 **Thought**: Ramon Dekkers has been involved in controversies and crimes. I need to find more information about them.
 
-**Action**: Lookup[controversies]
-
-**Observation**: (Result 1/1) Dekkers was known for his aggressive style and has been involved in a number of controversies, including a bar brawl and an altercation with a bouncer.
-
-**Thought**: It mentions "unsportsmanlike conducts" and crimes of violence. I need to find more information about the controversies and crimes.
-
-**Action**: Lookup[unsportsmanlike conducts]
-
 ...
 
----
-
-The iterative process of thought, action, and observation offers an intuitive and transparent approach to problem-solving.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Developer Setup: Windows
+## Developer Setup
 
 First install [anaconda](https://docs.anaconda.com/free/anaconda/install/windows/) and add to path by going to advanced system settings. Then launch cmd.
 
