@@ -22,8 +22,6 @@
 
 ```python
 question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring?'
-
-
 llm = ChatOpenAI(openai_api_key="YOUR_API_KEY")
 agent = ReActAgent(llm=llm)
 out = agent.generate(question=question)
