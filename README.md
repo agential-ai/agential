@@ -115,7 +115,7 @@ Project Organization
     │   │   │
     │   │   └── prompts             
     │   │
-    │   └── utils           <- Utility methods.
+    │   └── utils             <- Utility methods.
     │
     ├── docs                 <- A default Sphinx project; see sphinx-doc.org for details.
     │
