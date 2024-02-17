@@ -18,11 +18,10 @@
 - Modularized Implementations: Includes modularized implementations of popular LLM-based agents and agent-related methods, allowing users to leverage cutting-edge innovations from the literature.
 
 
-#### Getting started example
+#### Getting started 
 
 ```python
 question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring?'
-
 
 llm = ChatOpenAI(openai_api_key="YOUR_API_KEY")
 agent = ReActAgent(llm=llm)
@@ -33,8 +32,6 @@ out = agent.generate(question=question)
 
 Output
 ----
-
-**Question** : Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring ? 
 
 **Thought** : I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.
 
