@@ -3,9 +3,8 @@ Discussing agents provides a framework for building intelligent conversational a
  
 # Project Desiption
 
-This library enables developers to create agents capable of engaging in meaningful discussions, exploring various topics, and assisting users in information retrieval and task execution.The library follows a modular structure, with distinct components for handling different aspects of conversational AI. 
-These components include modules for memory management, agent modeling, core functionalities, planning, reflection, scoring, and utility methods. Each module is designed to encapsulate specific functionalities, promoting code organization and reusability.
-It does not aim to provide pre-trained models or out-of-the-box solutions for specific use cases. Instead, it offers a flexible platform for developers to implement custom agent behaviors and tailor solutions to their specific requirements.
+- Clean implementations of popular LLM-based agents in various domains
+- Flexible, modular components include modules for memory management, agent modeling, core functionalities, planning, reflection, scoring, and utility methods
 
 ## Features
 * Natural Language Understanding: Discussion Agents utilize advanced natural language processing (NLP) techniques to comprehend user inputs, including text-based messages and spoken language.
