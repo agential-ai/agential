@@ -43,7 +43,7 @@ Thought: Ramon Dekkers has been involved in controversies and crimes. I need to 
 
 ## Developer Setup
 
-First install [anaconda](https://docs.anaconda.com/free/anaconda/install/windows/) and add to path by going to advanced system settings. Then launch cmd.
+First install [anaconda](https://docs.anaconda.com/free/anaconda/install/windows/) and add to path by going to advanced system settings. Then, launch cmd.
 
 Use the following command to create a conda environment `discussion-agents` with Python version 3.10.13. Any Python version above 3.9 is viable.
 ```
