@@ -107,9 +107,9 @@ Project Organization
     │   │   │
     │   │   ├── modules           
     │   │   │   ├── memory      <- Memory-related modules.
-    │   │   │   ├── plan        <- Planning-related modules.
-    │   │   │   ├── reflect      <- Reflecting-related modules.
-    │   │   │   └── score        <- Scoring-related modules.
+    │   │   │   ├── plan            <- Planning-related modules.
+    │   │   │   ├── reflect         <- Reflecting-related modules.
+    │   │   │   └── score          <- Scoring-related modules.
     │   │   │
     │   │   ├── persona             
     │   │   │
