@@ -28,7 +28,7 @@ out = agent.generate(question=question)
 ```
 
 
-----
+Here's what the output would look like!```
 ```
 Thought : I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.
 Action : Search[best kick boxer in the world]
