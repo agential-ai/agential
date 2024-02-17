@@ -21,7 +21,6 @@ response = react_agent.respond(user_input)
 print("Agent's response:", response)
 ```
 
-This README serves as a guide to help you get started with the library, including setup instructions and usage guidelines.
 
 # Developer Setup: Windows
 
