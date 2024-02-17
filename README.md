@@ -1,7 +1,7 @@
 # discussion-agents
 Discussing agents provides a framework for building intelligent conversational agents, facilitating natural language understanding, generation, and interaction
  
-# Project Desiption
+## Features
 
 - Clean implementations of popular LLM-based agents in various domains
 - Flexible, modular components include modules for memory management, agent modeling, core functionalities, planning, reflection, scoring, and utility methods
