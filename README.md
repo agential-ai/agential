@@ -34,8 +34,9 @@ out = agent.generate(question=question)
 Output
 ----
 
-**Question** : I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.
+**Question** : Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring ? 
 
+**Thought** : I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.
 
 **Action**: Search[best kick boxer in the world]
 
@@ -82,56 +83,52 @@ poetry install
 
 
 
-
-
-
-
 Project Organization
 ------------
 
  
 
     ├── data
-    │   ├── external                        <- Data from third party sources.
-    │   ├── interim                         <- Intermediate data that has been transformed.
-    │   ├── processed                       <- The final, canonical data sets for modeling.
-    │   └── raw                             <- The original, immutable data dump.
+    │   ├── external                   <- Data from third party sources.
+    │   ├── interim                    <- Intermediate data that has been transformed.
+    │   ├── processed                  <- The final, canonical data sets for modeling.
+    │   └── raw                        <- The original, immutable data dump.
     │
-    ├── discussion_agents                   <- Source code for this project.
+    ├── discussion_agents              <- Source code for this project.
     │   ├── cog   
-    │   │   ├── agent                       <- Model/agent-related modules.
+    │   │   ├── agent                  <- Model/agent-related modules.
     │   │   │   
-    │   │   ├── eval                        <- Agent core modules.
+    │   │   ├── eval                   <- Agent core modules.
     │   │   │   
     │   │   ├── functional                  
     │   │   │
     │   │   ├── modules           
-    │   │   │   ├── memory      <- Memory-related modules.
-    │   │   │   ├── plan        <- Planning-related modules.
-    │   │   │   ├── reflect      <- Reflecting-related modules.
-    │   │   │   └── score        <- Scoring-related modules.
+    │   │   │   ├── memory             <- Memory-related modules.
+    │   │   │   ├── plan               <- Planning-related modules.
+    │   │   │   ├── reflect            <- Reflecting-related modules.
+    │   │   │   └── score              <- Scoring-related modules.
     │   │   │
     │   │   ├── persona             
     │   │   │
     │   │   └── prompts             
     │   │
-    │   └── utils           <- Utility methods.
-    │
-    ├── docs                 <- A default Sphinx project; see sphinx-doc.org for details.
-    │
-    ├── models               <- Trained and serialized models, model predictions, or model summaries.
+    │   └── utils                      <- Utility methods.
     │       
-    ├── notebooks            <- Jupyter notebooks. Naming convention is a number (for ordering),
-    │                           the creator's initials, and a short `-` delimited description, e.g.
-    │                           `1.0-jqp-initial-data-exploration`.
+    ├── docs                           <- A default Sphinx project; see sphinx-doc.org for details.
+    │
+    ├── models                         <- Trained and serialized models, model predictions,
+    │                                          or model summaries.
+    │       
+    ├── notebooks                      <- Jupyter notebooks. Naming convention is a number 
+    │                                    (for ordering), the creator's initials, and a short `-` delimited │                                     description, e.g. `1.0-jqp-initial-data-exploration`.
     │  
     │
-    ├── references           <- Data dictionaries, manuals, and all other explanatory materials.
+    ├── references                     <- Data dictionaries, manuals, and all other explanatory materials.
     │
-    ├── reports              <- Generated analysis as HTML, PDF, LaTeX, etc.
-    │   └── figures          <- Generated graphics and figures to be used in reporting.
+    ├── reports                        <- Generated analysis as HTML, PDF, LaTeX, etc.
+    │   └── figures                    <- Generated graphics and figures to be used in reporting.
     │
-    ├── tests                <- Tests.
+    └── tests                          <- Tests.
 
 ---------
 
