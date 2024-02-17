@@ -13,7 +13,6 @@
 
 - Clean Functions: Offers clean and well-structured functions, promoting readability and maintainability of code.
 
-- Scalability: Designed for scalability, enabling processing of large datasets and complex models with ease.
 
 - Modularized Implementations: Includes modularized implementations of popular LLM-based agents and agent-related methods, allowing users to leverage cutting-edge innovations from the literature.
 
