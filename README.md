@@ -30,7 +30,6 @@ out = agent.generate(question=question)
 ```
 
 
-Output
 ----
 
 **Thought** : I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.
