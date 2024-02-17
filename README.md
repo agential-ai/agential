@@ -2,10 +2,7 @@
 # Discussion Agents
 
 
-<badges>
-
 ## Table of Contents
-
 
 
 ## Features
@@ -26,7 +23,7 @@ Welcome to our machine learning library leveraging the power of LLM (Large Langu
 
 - Modularized Implementations: Includes modularized implementations of popular LLM-based agents and agent-related methods, allowing users to leverage cutting-edge innovations from the literature.
 
-# The library offers:
+## The library offers:
 
 
 - Modularized implementations of popular LLM-based agents and agent-related methods.
