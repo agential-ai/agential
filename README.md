@@ -1,5 +1,8 @@
 
-# Discussion Agents
+
+
+
+# Discusion Agents
 
 
 
@@ -36,7 +39,7 @@ Welcome to our machine learning library leveraging the power of LLM (Large Langu
 question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
 
 
-llm = ChatOpenAI(openai_api_key="YOUR_API_KEY")
+llm = OpenAI(openai_api_key="YOUR_API_KEY")
 agent = ReActAgent(llm=llm)
 out = agent.generate(question=question)
 
@@ -65,15 +68,32 @@ I need to search for the best kick boxer in the world, and then find any controv
 
 **Action**: Lookup[controversies]
 
+**Observation**: (Result 1/1) Dekkers was known for his aggressive style and has been involved in a number of controversies, including a bar brawl and an altercation with a bouncer.
+
+**Thought**: It mentions "unsportsmanlike conducts" and crimes of violence. I need to find more information about the controversies and crimes.
+
+**Action**: Lookup[unsportsmanlike conducts]
+
 ...
 
+---
+
+The iterative process of thought, action, and observation offers an intuitive and transparent approach to problem-solving.
 
 
 
 
 
 
-## Developer Setup
+
+
+
+
+
+
+
+
+## Developer Setup: Windows
 
 First install [anaconda](https://docs.anaconda.com/free/anaconda/install/windows/) and add to path by going to advanced system settings. Then launch cmd.
 
