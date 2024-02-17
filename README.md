@@ -38,7 +38,6 @@ Action : Lookup[crimes]
 Observation: (Result 1/1) Dekkers was involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring.
 Thought: Ramon Dekkers has been involved in controversies and crimes. I need to find more information about them.
 ...
-
 ```
 
 ## Developer Setup
