@@ -1,56 +1,103 @@
-# Discussion-agents
-
-# introduction 
-
-- Clean implementations of popular LLM-based agents in various domains
-
-- Flexible, modular components include modules for memory management, agent modeling, core functionalities, planning, reflection, scoring, and utility methods
 
 
 
 
-# Features
+# Discusion Agents
 
-Natural Language Understanding:
 
-Contextual Reasoning:
+<badges>
 
-Topic Exploration
-
-Multi-Agent Interaction
-
-Customization and Extension: 
+## Table of Contents
 
 
 
-# Functions
+## Features
 
 
-## ReAct 
+Welcome to our machine learning library leveraging the power of LLM (Large Language Model). Our primary goal is to provide easy-to-use and clean functions for natural language processing tasks, enabling developers to build robust and efficient applications with ease.
 
 
-Concept
+
+
+- LLM Integration: Leverages the advanced language processing capabilities of LLM for enhanced accuracy and efficiency.
+
+- Easy-to-Use Interface: Provides intuitive and user-friendly functions for rapid prototyping and development.
+
+- Clean Functions: Offers clean and well-structured functions, promoting readability and maintainability of code.
+
+- Scalability: Designed for scalability, enabling processing of large datasets and complex models with ease.
+
+- Modularized Implementations: Includes modularized implementations of popular LLM-based agents and agent-related methods, allowing users to leverage cutting-edge innovations from the literature.
+
+# The library offers:
+
+
+- Modularized implementations of popular LLM-based agents and agent-related methods.
+- A flexible framework to build your own agents using innovations from the literature.
+
+
+
+#### Getting started example
+
+```python
+question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
+
+
+llm = OpenAI(openai_api_key="YOUR_API_KEY")
+agent = ReActAgent(llm=llm)
+out = agent.generate(question=question)
+
+```
+
+
+Output
 ----
 
-When a question is posed, the agent engages in a thought-action-observation cycle, mirroring the human cognitive process. It begins with formulating a thought, followed by taking action based on that thought. Finally, it observes the outcome of that action. Through these stages, the agent can generate answers by interacting with the Wikipedia API.
+**Question** :
+
+I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.
+
+
+**Action:**: Search[best kick boxer in the world]
+
+**Observation**: (Result 1/1) Ramon Dekkers is considered by many to be the best kickboxer in the world.
+
+**Thought**: It mentions "unsportsmanlike conducts" and crimes of violence. I need to find more information about Ramon Dekkers.
+
+**Action**: Lookup[crimes]
+
+**Observation**: (Result 1/1) Dekkers was involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring.
+
+**Thought**: Ramon Dekkers has been involved in controversies and crimes. I need to find more information about them.
+
+**Action**: Lookup[controversies]
+
+**Observation**: (Result 1/1) Dekkers was known for his aggressive style and has been involved in a number of controversies, including a bar brawl and an altercation with a bouncer.
+
+**Thought**: It mentions "unsportsmanlike conducts" and crimes of violence. I need to find more information about the controversies and crimes.
+
+**Action**: Lookup[unsportsmanlike conducts]
+
+...
+
+---
+
+The iterative process of thought, action, and observation offers an intuitive and transparent approach to problem-solving.
 
 
 
-SYNERGIZING REASONING AND ACTING IN LANGUAGE MODELS (https://arxiv.org/pdf/2210.03629.pdf)
 
 
-## Reflexion 
 
 
-Concept
-----
 
 
-The Reflexion module utilizes verbal reinforcement to enhance output. It employs the Actor, Evaluator, and Self-Reflection models to generate constructive feedback, merging it with observational data. This combined input is then processed by the Self-Reflection Model to produce insightful reflections, stored in the agent's experience database. Ultimately, the goal is to provide valuable insights and guidance to improve the Actor's outputs.
 
-Reflexion: Language Agents with Verbal Reinforcement Learning (https://arxiv.org/pdf/2303.11366.pdf)
 
-# Developer Setup: Windows
+
+
+
+## Developer Setup: Windows
 
 First install [anaconda](https://docs.anaconda.com/free/anaconda/install/windows/) and add to path by going to advanced system settings. Then launch cmd.
 
@@ -79,27 +126,6 @@ Finally install all of the packages.
 poetry install
 ```
 
-# Getting started example
-
-```python
- """Test generate."""
-    q = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
-
-
-    llm = OpenAI(openai_api_key="YOUR_API_KEY")
-    agent = ReActAgent(llm=llm)
-    out = agent.generate(question=q)
-
-```
-
-```python
-out = 
-    ' I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.\nAction: Search[best kick boxer in the world]\nObservation: (Result 1/1) Ramon Dekkers is considered by many to be the best kickboxer in the world.\nThought: It mentions "unsportsmanlike conducts" and crimes of violence. I need to find more information about Ramon Dekkers.\nAction: Lookup[crimes]\nObservation: (Result 1/1) Dekkers was involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring.\nThought: Ramon Dekkers has been involved in controversies and crimes. I need to find more information about them.\nAction: Lookup[controversies]\nObservation: (Result 1/1) Dekkers was known for his aggressive style and has been involved in a number of controversies, including a bar brawl and an altercation with a bouncer.\nThought: It mentions "unsportsmanlike conducts" and crimes of violence. I need to find more information about the controversies and crimes.\nAction: Lookup[unsportsmanlike conducts]\nObservation: (Result',
-    ' Search[best kick boxer]\nObservation: The best kick boxer in the world is often a highly debated topic, but some notable names include Semmy Schilt, Peter Aerts, Ernesto Hoost, and Ramon Dekkers.\nThought: Since the question mentions controversies and crimes, I should focus on more recent kick boxers. I will look up the controversies and crimes of Semmy Schilt.\nAction: Lookup[controversies and crimes]\nObservation: (Result 1/1) Semmy Schilt has been involved in several controversies, including accusations of using performance-enhancing drugs and unsportsmanlike conducts such as eye-gouging and low blows.\nThought: The question mentions "unsportsmanlike conducts" specifically, so I will look up more information on those incidents.\nAction: Lookup[unsportsmanlike conducts]\nObservation: (Result 1/1) Semmy Schilt has been known for his aggressive and sometimes controversial fighting style, with incidents such as eye-gouging and low blows being reported by his opponents.\nThought: The question also mentions crimes outside of the ring, so I will search for any criminal record or charges against Semmy Schilt.\nAction: Search[Semmy Schilt criminal record]\nObservation',
-
-
-
-```
 
 
 
