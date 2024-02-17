@@ -6,7 +6,6 @@ Discussing agents provides a framework for building intelligent conversational a
 - Clean implementations of popular LLM-based agents in various domains
 - Flexible, modular components include modules for memory management, agent modeling, core functionalities, planning, reflection, scoring, and utility methods
 
-## Features
 * Natural Language Understanding: Discussion Agents utilize advanced natural language processing (NLP) techniques to comprehend user inputs, including text-based messages and spoken language.
 * Contextual Reasoning: The agents employ contextual reasoning mechanisms to interpret and respond to user queries in a manner that reflects understanding of the ongoing conversation.
 * Topic Exploration: Users can engage with the agents to explore a wide range of topics, from current events and scientific concepts to personal interests and philosophical ideas.
