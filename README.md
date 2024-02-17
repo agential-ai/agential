@@ -5,12 +5,9 @@
 ## Features
 
 
-Welcome to our machine learning library leveraging the power of LLM (Large Language Model). Our primary goal is to provide easy-to-use and clean functions for natural language processing tasks, enabling developers to build robust and efficient applications with ease.
+ Our primary goal is to provide easy-to-use and clean functions for natural language processing tasks, enabling developers to build robust and efficient applications with ease.
 
 
-
-
-- LLM Integration: Leverages the advanced language processing capabilities of LLM for enhanced accuracy and efficiency.
 
 - Easy-to-Use Interface: Provides intuitive and user-friendly functions for rapid prototyping and development.
 
@@ -20,18 +17,11 @@ Welcome to our machine learning library leveraging the power of LLM (Large Langu
 
 - Modularized Implementations: Includes modularized implementations of popular LLM-based agents and agent-related methods, allowing users to leverage cutting-edge innovations from the literature.
 
-## The library offers:
-
-
-- Modularized implementations of popular LLM-based agents and agent-related methods.
-- A flexible framework to build your own agents using innovations from the literature.
-
-
 
 #### Getting started example
 
 ```python
-question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
+question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring?'
 
 
 llm = ChatOpenAI(openai_api_key="YOUR_API_KEY")
@@ -44,12 +34,10 @@ out = agent.generate(question=question)
 Output
 ----
 
-**Question** :
-
-I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.
+**Question** : I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.
 
 
-**Action:**: Search[best kick boxer in the world]
+**Action**: Search[best kick boxer in the world]
 
 **Observation**: (Result 1/1) Ramon Dekkers is considered by many to be the best kickboxer in the world.
 
@@ -112,37 +100,23 @@ Project Organization
     ├── discussion_agents                   <- Source code for this project.
     │   ├── cog   
     │   │   ├── agent                       <- Model/agent-related modules.
-    │   │   │   ├── base.py                 <-
-    │   │   │   ├── generative_agents.py
-    │   │   │   ├── react.py                <- ReActagent and Zeroshotagent modules
-    │   │   │   └── reflexion.py            <->
     │   │   │   
     │   │   ├── eval                        <- Agent core modules.
-    │   │   │   └── reflexion.py
     │   │   │   
     │   │   ├── functional                  
-    │   │   │   ├── generative_agents.py
-    │   │   │   ├── react.py
-    │   │   │   └── reflexion.py
     │   │   │
     │   │   ├── modules           
-    │   │   │   ├── memory
-    │   │   │   ├── plan
-    │   │   │   ├── reflect
-    │   │   │   └── score
+    │   │   │   ├── memory      <- Memory-related modules.
+    │   │   │   ├── plan        <- Planning-related modules.
+    │   │   │   ├── reflect      <- Reflecting-related modules.
+    │   │   │   └── score        <- Scoring-related modules.
+    │   │   │
     │   │   ├── persona             
-    │   │   │    ├── base.py
-    │   │   │    └── generative_agent.py
     │   │   │
     │   │   └── prompts             
-    │   │       ├── react.py
-    │   │       └── reflexion.py
     │   │
-    │   │
-    │   └── utils   
-    │       ├── fetch.py
-    │       ├── format.py
-    │       └── parse.py 
+    │   └── utils           <- Utility methods.
+    │
     ├── docs                 <- A default Sphinx project; see sphinx-doc.org for details.
     │
     ├── models               <- Trained and serialized models, model predictions, or model summaries.
@@ -150,13 +124,7 @@ Project Organization
     ├── notebooks            <- Jupyter notebooks. Naming convention is a number (for ordering),
     │                           the creator's initials, and a short `-` delimited description, e.g.
     │                           `1.0-jqp-initial-data-exploration`.
-    │   ├── 1.0-vt-yt-extract.ipynb                     <- Extract audio from video
-    │   ├── 2.0-vt-langchain-playground.ipynb
-    │   ├── 3.0-vt-test-langchain-agents.ipynb
-    │   ├── 4.0-vt-langchain-gen-agent-classes.ipynb
-    │   ├── 5.0-vt-test-planning.ipynb
-    │   ├── 6.0-vt-planning-gen-agents.ipynb
-    │   ├── 7.0-vt-test-imports.ipynb
+    │  
     │
     ├── references           <- Data dictionaries, manuals, and all other explanatory materials.
     │
