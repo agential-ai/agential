@@ -292,6 +292,14 @@ def test__prompt_cot_reflection() -> None:
             'a more precise match with the expected answer key.'
         )
     ]
+    gt_out = (
+        'The reason for the failure in answering the question could be that the provided answer '
+        '"Company with Limited Liability" does not exactly match the full German translation '
+        '"Gesellschaft mit beschränkter Haftung" which stands for "company with limited liability" '
+        'in English. To mitigate this issue in the future, a more concise and accurate response could '
+        'be simply "Limited Liability Company" to align closely with the German term. This will '
+        'ensure a more precise match with the expected answer key.'
+    )
     out = _prompt_cot_reflection(
         llm=FakeListChatModel(responses=responses),
         examples=REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES,
@@ -299,8 +307,38 @@ def test__prompt_cot_reflection() -> None:
         scratchpad=scratchpad,
         context=context,
     )
+    assert out == gt_out
 
     # Test simple case with no context.
+    scratchpad = (
+        "\nThought: Let's think step by step. VIVA Media AG changed its name to VHM Medien in 2004. "
+        "VHM Medien stands for Video Home Media.Action: Finish[Video Home Media]\n"
+        "Action: Finish[Video Home Media]\nObservation: Answer is INCORRECT"
+    )
+    responses = [
+        (
+            'My reasoning for the acronym for VHM Medien being Video Home Media failed because I did '
+            'not fully understand the context of the question. In the future, when attempting this '
+            'question, I should focus on researching the specific name change of VIVA Media AG in '
+            '2004 to avoid confusion. To mitigate this failure, I will double-check the exact name '
+            'change and acronym before providing an answer.'
+        )
+    ]
+    gt_out = (
+        'My reasoning for the acronym for VHM Medien being Video Home Media failed because I did not '
+        'fully understand the context of the question. In the future, when attempting this question, '
+        'I should focus on researching the specific name change of VIVA Media AG in 2004 to avoid '
+        'confusion. To mitigate this failure, I will double-check the exact name change and acronym '
+        'before providing an answer.'
+    )
+    out = _prompt_cot_reflection(
+        llm=FakeListChatModel(responses=responses),
+        examples=REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT,
+        question=q,
+        scratchpad=scratchpad,
+        context=None,
+    )
+    assert out == gt_out
 
 
 def test_react_reflect_last_attempt() -> None:
