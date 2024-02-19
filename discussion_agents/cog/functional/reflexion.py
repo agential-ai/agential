@@ -179,9 +179,6 @@ def _prompt_cot_reflection(
     Returns:
         str: The generated reflection prompt.
     """
-
-    print("SCRATCHPAD:\n\n", repr(scratchpad))
-
     prompt = PromptTemplate(
         input_variables=["examples", "question", "scratchpad", "context"],
         template=REFLEXION_COT_REFLECT_INSTRUCTION
@@ -200,9 +197,6 @@ def _prompt_cot_reflection(
             )
         ]
     ).content
-
-    print("OUT:\n\n", repr(out))
-
     assert isinstance(out, str)
     return remove_newline(out)
 
@@ -372,6 +366,9 @@ def _prompt_react_agent(
     Returns:
         str: The generated reflection prompt.
     """
+
+    print("SCRATCHPAD:\n\n", repr(scratchpad))
+
     prompt = PromptTemplate(
         input_variables=["examples", "reflections", "question", "scratchpad"],
         template=REFLEXION_REACT_INSTRUCTION,
@@ -389,6 +386,7 @@ def _prompt_react_agent(
             )
         ]
     ).content
+    print("OUT:\n\n", repr(out))
     assert isinstance(out, str)
     return remove_newline(out)
 

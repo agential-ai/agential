@@ -6,8 +6,9 @@ from discussion_agents.cog.prompts.reflexion import (
     REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT, 
     REFLEXION_COT_FEWSHOT_EXAMPLES,
     REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES,
-    REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT
+    REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT,
 )
+from discussion_agents.cog.prompts.react import REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
 
 from discussion_agents.cog.functional.reflexion import (
     _format_last_attempt,
@@ -377,7 +378,7 @@ def test_cot_reflect_last_attempt_and_reflexion() -> None:
 
 def test_cot_reflect() -> None:
     """Test cot_reflect function."""
-    
+
     # Invalid strategy.
     with pytest.raises(NotImplementedError):
         out = cot_reflect(
@@ -431,6 +432,10 @@ def test_cot_reflect() -> None:
 
 def test__prompt_react_agent() -> None:
     """Test _prompt_react_agent function."""
+
+    q = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
+
+    # Test empty.
     out = _prompt_react_agent(
         llm=FakeListChatModel(responses=["1"]),
         examples="",
@@ -441,9 +446,31 @@ def test__prompt_react_agent() -> None:
     assert isinstance(out, str)
     assert out == "1"
 
+    # Test simple case no reflections.
+    responses = [
+        (
+            'I need to search for VIVA Media AG and find out what their new acronym stands for.\n\nAction: Search[VIVA Media AG]'
+        )
+    ]
+    gt_out = (
+        'I need to search for VIVA Media AG and find out what their new acronym stands for.Action: Search[VIVA Media AG]'
+    )
+    out = _prompt_react_agent(
+        llm=FakeListChatModel(responses=responses),
+        examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        reflections="",
+        question=q,
+        scratchpad="\nThought:",
+    )
+    assert out == gt_out
+
+    # Test simple case with reflections.
+
 
 def test__prompt_react_reflection() -> None:
     """Test _prompt_react_reflection function."""
+
+    # Test empty.
     out = _prompt_react_reflection(
         llm=FakeListChatModel(responses=["1"]),
         examples="",
