@@ -199,7 +199,7 @@ def test__prompt_cot_agent() -> None:
     )
     out = _prompt_cot_agent(
         llm=FakeListChatModel(responses=responses), 
-        examples=REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
+        examples=REFLEXION_COT_FEWSHOT_EXAMPLES,
         reflections=reflections,
         question=q,
         scratchpad=scratchpad,
