@@ -377,6 +377,7 @@ def test_cot_reflect_last_attempt_and_reflexion() -> None:
 
 def test_cot_reflect() -> None:
     """Test cot_reflect function."""
+    
     # Invalid strategy.
     with pytest.raises(NotImplementedError):
         out = cot_reflect(

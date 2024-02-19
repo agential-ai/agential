@@ -485,5 +485,7 @@ class ReflexionReActAgent(BaseAgent):
         """
         self._step_n = 1
         self._finished = False
+        self._trial_n = 1
+        self._answer = ""
         self.memory.clear()
         self.reflector.clear()
