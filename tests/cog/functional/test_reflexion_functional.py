@@ -168,7 +168,43 @@ def test__prompt_cot_agent() -> None:
     assert out == gt_out
 
     # Test simple case (reflection) with context.
-
+    reflections = (
+        "You have attempted to answer the following question before and failed. "
+        "Below is the last trial you attempted to answer the question.\n"
+        "Question: VIVA Media AG changed it's name in 2004. What does their new acronym stand for?\n"
+        "Thought: The context provided mentions that VIVA Media AG changed its name in 2004 and has been "
+        "owned by Viacom since then. Based on this information, the new acronym for VIVA Media AG is "
+        "likely related to Viacom, the parent company of MTV.Action: Finish[Viacom]\n"
+        "Action: Finish[Viacom]\nObservation: Answer is INCORRECT\n(END PREVIOUS TRIAL)\n"
+    )
+    scratchpad = (
+         "\nThought: The context provided mentions that VIVA Media AG changed its name in 2004 and has "
+         "been owned by Viacom since then. Based on this information, the new acronym for VIVA Media AG is "
+         "likely related to Viacom, the parent company of MTV.Action: Finish[Viacom]\n"
+         "Action: Finish[Viacom]\nObservation: Answer is INCORRECT\nThought:"
+    )
+    responses = [
+        (
+            "The context provided states that VIVA Media AG changed its name to VIVA Media GmbH in 2004. "
+            "Since \"GmbH\" stands for \"Gesellschaft mit beschränkter Haftung\" in German, the new acronym "
+            "for VIVA Media AG is likely VIVA Media GmbH, with \"GmbH\" representing the legal form of the "
+            "company.\nAction: Finish[VIVA Media GmbH]"
+        )
+    ]
+    gt_out = (
+        "The context provided states that VIVA Media AG changed its name to VIVA Media GmbH in 2004. "
+        "Since \"GmbH\" stands for \"Gesellschaft mit beschränkter Haftung\" in German, the new acronym for "
+        "VIVA Media AG is likely VIVA Media GmbH, with \"GmbH\" representing the legal form of the company."
+        "Action: Finish[VIVA Media GmbH]"
+    )
+    out = _prompt_cot_agent(
+        llm=FakeListChatModel(responses=responses), 
+        examples=REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
+        reflections=reflections,
+        question=q,
+        scratchpad=scratchpad,
+        context=context
+    )
 
     # Test simple case (reflection) with no context.
 
