@@ -56,20 +56,22 @@ def test__truncate_scratchpad() -> None:
 
 def test__format_reflections() -> None:
     """Test _format_reflections function."""
+
+    # Test empty.
     reflections = []
     assert _format_reflections(reflections) == ""
 
-    # Test: Non-empty reflections
+    # Test non-empty reflections.
     reflections = ["Reflection 1", "Reflection 2"]
     expected_result = "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- Reflection 1\n- Reflection 2"
     assert _format_reflections(reflections) == expected_result
 
-    # Test: Reflections with spaces
+    # Test reflections with spaces.
     reflections = ["  Reflection 1  ", "  Reflection 2"]
     expected_result = "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- Reflection 1\n- Reflection 2"
     assert _format_reflections(reflections) == expected_result
 
-    # Test: Custom header
+    # Test custom header.
     reflections = ["Reflection"]
     custom_header = "Custom Header: "
     expected_result = "Custom Header: Reflections:\n- Reflection"
