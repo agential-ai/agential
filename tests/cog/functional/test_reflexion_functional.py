@@ -80,6 +80,8 @@ def test__format_reflections() -> None:
 
 def test__format_last_attempt() -> None:
     """Test _format_last_attempt function."""
+
+    # Test simple case.
     question = "What is the capital of France?"
     scratchpad = "The capital of France is Paris."
     expected_format = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nThe capital of France is Paris.\n(END PREVIOUS TRIAL)\n"
