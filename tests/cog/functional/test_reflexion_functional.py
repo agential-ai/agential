@@ -2,6 +2,7 @@
 import pytest
 
 from langchain_community.chat_models.fake import FakeListChatModel
+from discussion_agents.cog.prompts.reflexion import REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT
 
 from discussion_agents.cog.functional.reflexion import (
     _format_last_attempt,
@@ -91,6 +92,11 @@ def test__format_last_attempt() -> None:
 
 def test__prompt_cot_agent() -> None:
     """Test _prompt_cot_agent function."""
+
+    q = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
+    context = 'VIVA Media GmbH (until 2004 "VIVA Media AG") is a music television network originating from Germany. It was founded for broadcast of VIVA Germany as VIVA Media AG in 1993 and has been owned by their original concurrent Viacom, the parent company of MTV, since 2004. Viva channels exist in some European countries; the first spin-offs were launched in Poland and Switzerland in 2000.\n\nA Gesellschaft mit beschränkter Haftung (] , abbreviated GmbH ] and also GesmbH in Austria) is a type of legal entity very common in Germany, Austria, Switzerland (where it is equivalent to a S.à r.l.) and Liechtenstein. In the United States, the equivalent type of entity is the limited liability company (LLC). The name of the GmbH form emphasizes the fact that the owners ("Gesellschafter", also known as members) of the entity are not personally liable for the company\'s debts. "GmbH"s are considered legal persons under German and Austrian law. Other variations include mbH (used when the term "Gesellschaft" is part of the company name itself), and gGmbH ("gemeinnützige" GmbH) for non-profit companies.'
+
+    # Test with context.
     out = _prompt_cot_agent(
         llm=FakeListChatModel(responses=["1"]),
         examples="",
@@ -113,6 +119,55 @@ def test__prompt_cot_agent() -> None:
     )
     assert isinstance(out, str)
     assert out == "1"
+
+    # Test simple case (no reflection) with context.
+    gt_out = (
+        'Thought: The context provided mentions that VIVA Media AG changed its name in 2004 '
+        'and has been owned by Viacom since then. Viacom is the parent company of MTV. Based on this '
+        'information, the new acronym "VIVA Media GmbH" likely stands for something related to the legal '
+        'entity type in Germany, GmbH.Action: Finish[VIVA Media GmbH]'
+    )
+    responses = [
+        (
+            "Thought: The context provided mentions that VIVA Media AG changed its name in 2004 and has "
+            "been owned by Viacom since then. Viacom is the parent company of MTV. Based on this information, "
+            "the new acronym \"VIVA Media GmbH\" likely stands for something related to the legal entity type in Germany, GmbH.\n\nAction: Finish[VIVA Media GmbH]"
+        )
+    ]
+    out = _prompt_cot_agent(
+        llm=FakeListChatModel(responses=responses), 
+        examples=REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
+        reflections="",
+        question=q,
+        scratchpad="",
+        context=context
+    )
+    assert out == gt_out
+
+    # Test simple case (no reflection) with no context.
+    gt_out = (
+        'Thought: Let\'s think step by step. The new acronym for VIVA Media AG after changing its name in '
+        '2004 is "Vivendi Visual and Interactive." Action: Finish[Vivendi Visual and Interactive]'
+    )
+    responses = [
+        (
+            "Thought: Let's think step by step. The new acronym for VIVA Media AG after changing its name in 2004 "
+            "is \"Vivendi Visual and Interactive.\" \nAction: Finish[Vivendi Visual and Interactive]"
+        )
+    ]
+    out = _prompt_cot_agent(
+        llm=FakeListChatModel(responses=responses), 
+        examples=REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
+        reflections="",
+        question=q,
+        scratchpad="",
+        context=None
+    )
+    assert out == gt_out
+
+    # Test simple case (reflection) with context.
+
+    # Test simple case (reflection) with no context.
 
 
 def test__prompt_cot_reflection() -> None:

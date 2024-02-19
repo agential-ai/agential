@@ -128,6 +128,7 @@ def _prompt_cot_agent(
     Returns:
         str: The generated reflection prompt.
     """
+
     prompt = PromptTemplate(
         input_variables=[
             "examples",
@@ -154,6 +155,7 @@ def _prompt_cot_agent(
             )
         ]
     ).content
+    print(out)
     assert isinstance(out, str)
     return remove_newline(out)
 
