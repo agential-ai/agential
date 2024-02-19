@@ -20,6 +20,9 @@ def test_reflexion_cot_init() -> None:
     assert agent.action_llm
     assert agent.memory
     assert agent.reflector
+    assert agent.max_reflections == 3
+    assert agent.max_trials == 1
+    assert agent.patience == agent.max_trials 
 
 
 def test_reflexion_cot_reset(reflexion_cot_agent: ReflexionCoTAgent) -> None:
