@@ -465,6 +465,100 @@ def test__prompt_react_agent() -> None:
     assert out == gt_out
 
     # Test simple case with reflections.
+    responses = [
+        (
+            "Given the lack of information on VIVA Media AG and their name change in 2004, I should "
+            "try to search for VIVA Media AG acquisitions or mergers to see if their new acronym was "
+            "related to that. \nAction: Search[VIVA Media AG acquisitions]\nObservation: Could not find "
+            "[VIVA Media AG acquisitions]. Similar: ['List of mergers and acquisitions by Alphabet', "
+            "'List of mergers and acquisitions by Apple', 'List of mergers and acquisitions by Microsoft', "
+            "'List of mergers and acquisitions by Facebook', 'List of mergers and acquisitions by Amazon', "
+            "'List of mergers and acquisitions by IBM', 'List of mergers and acquisitions by Cisco Systems',"
+            " 'List of mergers and acquisitions by Oracle', 'List of mergers and acquisitions by SAP', "
+            "'List of mergers and acquisitions by Yahoo!']\nThought: Since I couldn't find information on "
+            "acquisitions, I should try searching for VIVA Media AG partnerships or collaborations to see "
+            "if their new acronym was related to that.\nAction: Search[VIVA Media AG partnerships]\n"
+            "Observation: Could not find [VIVA Media AG partnerships]. Similar: ['List of airline codes', "
+            "'List of country codes on British diplomatic vehicle registration plates', 'List of "
+            "international vehicle registration codes', 'Vehicle registration plates of the United "
+            "States for the diplomatic corps', 'Vehicle registration plates of the European Union', "
+            "'List of diplomatic missions of Japan', 'List of diplomatic missions of Australia', "
+            "'Diplomatic missions of the European Union', 'Vehicle registration plates of the United "
+            "Kingdom', 'Vehicle registration plates of the United States']\nThought: I am still "
+            "unable to find relevant information, I should try a broader search term like VIVA Media "
+            "AG history to see if I can find any details about their name change and new acronym.\n"
+            "Action: Search[VIVA Media AG history]"
+        )
+    ]
+    reflections = (
+        "You have attempted to answer the following question before and failed. Below is the last trial "
+        "you attempted to answer the question.\nQuestion: VIVA Media AG changed it's name in 2004. What "
+        "does their new acronym stand for?\nThought: I need to search for VIVA Media AG and find out their "
+        "new acronym after changing their name in 2004. \nAction: Search[VIVA Media AG]\nObservation 1: "
+        "Could not find [VIVA Media AG]. Similar: ['MTV Music (Polish TV channel)', 'Paramount International "
+        "Networks', 'VIVA Plus', 'VIVA (German TV channel)', 'Viacom (1952–2005)', 'Vauxhall Viva', "
+        "'GfK Entertainment charts', 'Lindt', 'Spellbound Entertainment', 'List of multinational "
+        "corporations']\nThought: I should try searching for VIVA Media AG in a different way. Let me "
+        "search for VIVA Media AG name change 2004. \nAction: Search[VIVA Media AG name change 2004]\n"
+        "Observation 2: Could not find [VIVA Media AG name change 2004]. Similar: ['Vauxhall Viva', "
+        "'GfK Entertainment charts', 'Opel Astra', 'About You Now', 'Puma (brand)', 'Priscilla Presley', "
+        "'Bosch (company)', 'Schneider Electric', 'Sildenafil', 'Daihatsu Mira']\nThought: Given that I "
+        "am unable to find information on VIVA Media AG and their name change in 2004, I should try to "
+        "search for VIVA Media AG rebranding or any other related keywords to see if I can find the "
+        "information. \nAction: Search[VIVA Media AG rebranding]\nObservation 3: Could not find "
+        "[VIVA Media AG rebranding]. Similar: ['Paramount International Networks', 'Virgin Interactive "
+        "Entertainment', 'Lake Las Vegas', 'Viacom (1952–2005)', 'Virgin Money UK plc', 'Voice of America',"
+        " '2016 in Philippine television', 'PolyGram', 'Universal Music Group', 'Veolia Transport']\n"
+        "(END PREVIOUS TRIAL)\n"
+    )
+    scratchpad = (
+        "\nThought: I need to search for VIVA Media AG and find out their new acronym after changing "
+        "their name in 2004. \nAction: Search[VIVA Media AG]\nObservation 1: Could not find [VIVA Media AG]. "
+        "Similar: ['MTV Music (Polish TV channel)', 'Paramount International Networks', 'VIVA Plus', "
+        "'VIVA (German TV channel)', 'Viacom (1952–2005)', 'Vauxhall Viva', 'GfK Entertainment charts', "
+        "'Lindt', 'Spellbound Entertainment', 'List of multinational corporations']\nThought: I should try "
+        "searching for VIVA Media AG in a different way. Let me search for VIVA Media AG name change 2004. "
+        "\nAction: Search[VIVA Media AG name change 2004]\nObservation 2: Could not find [VIVA Media AG name "
+        "change 2004]. Similar: ['Vauxhall Viva', 'GfK Entertainment charts', 'Opel Astra', 'About You Now', "
+        "'Puma (brand)', 'Priscilla Presley', 'Bosch (company)', 'Schneider Electric', 'Sildenafil', "
+        "'Daihatsu Mira']\nThought: Given that I am unable to find information on VIVA Media AG and "
+        "their name change in 2004, I should try to search for VIVA Media AG rebranding or any other "
+        "related keywords to see if I can find the information. \nAction: Search[VIVA Media AG rebranding]"
+        "\nObservation 3: Could not find [VIVA Media AG rebranding]. Similar: ['Paramount International "
+        "Networks', 'Virgin Interactive Entertainment', 'Lake Las Vegas', 'Viacom (1952–2005)', "
+        "'Virgin Money UK plc', 'Voice of America', '2016 in Philippine television', 'PolyGram', "
+        "'Universal Music Group', 'Veolia Transport']\nThought:"
+    )
+    gt_out = (
+        "Given the lack of information on VIVA Media AG and their name change in 2004, "
+        "I should try to search for VIVA Media AG acquisitions or mergers to see if their new acronym "
+        "was related to that. Action: Search[VIVA Media AG acquisitions]Observation: Could not find "
+        "[VIVA Media AG acquisitions]. Similar: ['List of mergers and acquisitions by Alphabet', "
+        "'List of mergers and acquisitions by Apple', 'List of mergers and acquisitions by Microsoft', "
+        "'List of mergers and acquisitions by Facebook', 'List of mergers and acquisitions by Amazon', "
+        "'List of mergers and acquisitions by IBM', 'List of mergers and acquisitions by Cisco Systems', "
+        "'List of mergers and acquisitions by Oracle', 'List of mergers and acquisitions by SAP', "
+        "'List of mergers and acquisitions by Yahoo!']Thought: Since I couldn't find information on "
+        "acquisitions, I should try searching for VIVA Media AG partnerships or collaborations to see "
+        "if their new acronym was related to that.Action: Search[VIVA Media AG partnerships]"
+        "Observation: Could not find [VIVA Media AG partnerships]. Similar: ['List of airline codes', "
+        "'List of country codes on British diplomatic vehicle registration plates', "
+        "'List of international vehicle registration codes', 'Vehicle registration plates of the "
+        "United States for the diplomatic corps', 'Vehicle registration plates of the European Union', "
+        "'List of diplomatic missions of Japan', 'List of diplomatic missions of Australia', "
+        "'Diplomatic missions of the European Union', 'Vehicle registration plates of the United Kingdom', "
+        "'Vehicle registration plates of the United States']Thought: I am still unable to find relevant "
+        "information, I should try a broader search term like VIVA Media AG history to see if I can "
+        "find any details about their name change and new acronym.Action: Search[VIVA Media AG history]"
+    )
+    out = _prompt_react_agent(
+        llm=FakeListChatModel(responses=responses),
+        examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        reflections=reflections,
+        question=q,
+        scratchpad=scratchpad,
+    )
+    assert out == gt_out
 
 
 def test__prompt_react_reflection() -> None:
