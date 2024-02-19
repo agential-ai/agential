@@ -2,11 +2,24 @@
 import pytest
 
 from langchain_community.chat_models.fake import FakeListChatModel
+from langchain_core.language_models.chat_models import BaseChatModel
+
 
 from discussion_agents.cog.modules.reflect.reflexion import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )
+
+
+def test_reflexion_cot_init() -> None:
+    """Unit test for ReflexionCoT Reflector initialization."""
+    reflector = ReflexionCoTReflector(
+        llm=FakeListChatModel(responses=["1"]),
+    )
+    assert isinstance(reflector.llm, BaseChatModel)
+    assert not reflector.reflections
+    assert not reflector.reflections_str
+    assert reflector.max_reflections == 3
 
 
 def test_reflexion_cot_reflector() -> None:
