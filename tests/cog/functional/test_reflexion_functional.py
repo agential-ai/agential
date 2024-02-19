@@ -205,9 +205,45 @@ def test__prompt_cot_agent() -> None:
         scratchpad=scratchpad,
         context=context
     )
+    assert out == gt_out
 
     # Test simple case (reflection) with no context.
-
+    reflections = (
+        'You have attempted to answer the following question before and failed. Below is the last trial '
+        'you attempted to answer the question.\nQuestion: VIVA Media AG changed it\'s name in 2004. '
+        'What does their new acronym stand for?\nThought: Let\'s think step by step. VIVA Media AG '
+        'changed its name to Constantin Film AG in 2004. The new acronym stands for "Constantin Film."'
+        'Action: Finish[Constantin Film]\nAction: Finish[Constantin Film]\n'
+        'Observation: Answer is INCORRECT\n(END PREVIOUS TRIAL)\n'
+    )
+    scratchpad = (
+        '\nThought: Let\'s think step by step. VIVA Media AG changed its name to Constantin Film AG in 2004. '
+        'The new acronym stands for "Constantin Film."Action: Finish[Constantin Film]\n'
+        'Action: Finish[Constantin Film]\nObservation: Answer is INCORRECT\nThought:'
+    )
+    responses = [
+        (
+            'I made a mistake in my previous attempts. Let\'s think more carefully this time. '
+            'The acronym "AG" stands for "Aktiengesellschaft" in German, which translates to '
+            '"stock corporation" in English. So the new acronym for VIVA Media AG after the name '
+            'change is "Constantin Film Aktiengesellschaft."\nFinish[Constantin Film Aktiengesellschaft]'
+        )
+    ]
+    gt_out = (
+        'I made a mistake in my previous attempts. Let\'s think more carefully this time. The acronym "AG" '
+        'stands for "Aktiengesellschaft" in German, which translates to "stock corporation" in English. '
+        'So the new acronym for VIVA Media AG after the name change is "Constantin Film Aktiengesellschaft."'
+        'Finish[Constantin Film Aktiengesellschaft]'
+    )
+    out = _prompt_cot_agent(
+        llm=FakeListChatModel(responses=responses), 
+        examples=REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
+        reflections=reflections,
+        question=q,
+        scratchpad=scratchpad,
+        context=None
+    )
+    assert out == gt_out
 
 def test__prompt_cot_reflection() -> None:
     """Test _prompt_cot_reflection function."""
