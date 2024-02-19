@@ -6,7 +6,7 @@ from tiktoken.core import Encoding
 
 from discussion_agents.cog.agent.reflexion import ReflexionCoTAgent, ReflexionReActAgent
 from discussion_agents.cog.modules.memory.reflexion import ReflexionMemory
-from discussion_agents.cog.modules.reflect.reflexion import ReflexionReActReflector
+from discussion_agents.cog.modules.reflect.reflexion import ReflexionCoTReflector, ReflexionReActReflector
 
 
 def test_reflexion_cot_init() -> None:
@@ -15,11 +15,11 @@ def test_reflexion_cot_init() -> None:
         self_reflect_llm=FakeListChatModel(responses=["1"]),
         action_llm=FakeListChatModel(responses=["1"]),
     )
-    assert agent
-    assert agent.self_reflect_llm
-    assert agent.action_llm
-    assert agent.memory
-    assert agent.reflector
+    assert isinstance(agent, ReflexionCoTAgent)
+    assert isinstance(agent.self_reflect_llm, BaseChatModel)
+    assert isinstance(agent.action_llm, BaseChatModel)
+    assert isinstance(agent.memory, ReflexionMemory)
+    assert isinstance(agent.reflector, ReflexionCoTReflector)
     assert agent.max_reflections == 3
     assert agent.max_trials == 1
     assert agent.patience == agent.max_trials 
@@ -52,6 +52,11 @@ def test_reflexion_cot_retrieve(reflexion_cot_agent: ReflexionCoTAgent) -> None:
 
 def test_reflexion_cot_reflect(reflexion_cot_agent: ReflexionCoTAgent) -> None:
     """Test reflect method."""
+
+    reflexion_cot_agent.reset()
+
+    # Test last attempt with context.
+    assert reflexion_cot_agent
     gt_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: \n\n(END PREVIOUS TRIAL)\n"
     reflections_str = reflexion_cot_agent.reflect(
         strategy="last_attempt",
@@ -60,7 +65,9 @@ def test_reflexion_cot_reflect(reflexion_cot_agent: ReflexionCoTAgent) -> None:
     )
     assert reflections_str == gt_reflections_str
 
-    # Test with no context.
+    reflexion_cot_agent.reset()
+
+    # Test last attempt with no context.
     gt_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: \n\n(END PREVIOUS TRIAL)\n"
     reflections_str = reflexion_cot_agent.reflect(
         strategy="last_attempt",

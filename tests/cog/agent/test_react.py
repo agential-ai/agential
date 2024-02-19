@@ -13,6 +13,7 @@ def test_init() -> None:
     """Test initialization."""
     llm = FakeListChatModel(responses=["1"])
     agent = ReActAgent(llm=llm)
+    assert isinstance(agent, ReActAgent)
     assert isinstance(agent.llm, BaseChatModel)
     assert isinstance(agent.memory, ReActMemory)
     assert agent.max_steps == 6
