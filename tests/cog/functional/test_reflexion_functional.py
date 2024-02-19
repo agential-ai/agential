@@ -2,7 +2,10 @@
 import pytest
 
 from langchain_community.chat_models.fake import FakeListChatModel
-from discussion_agents.cog.prompts.reflexion import REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT
+from discussion_agents.cog.prompts.reflexion import (
+    REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT, 
+    REFLEXION_COT_FEWSHOT_EXAMPLES
+)
 
 from discussion_agents.cog.functional.reflexion import (
     _format_last_attempt,
@@ -122,24 +125,23 @@ def test__prompt_cot_agent() -> None:
 
     # Test simple case (no reflection) with context.
     gt_out = (
-        'Thought: The context provided mentions that VIVA Media AG changed its name in 2004 '
-        'and has been owned by Viacom since then. Viacom is the parent company of MTV. Based on this '
-        'information, the new acronym "VIVA Media GmbH" likely stands for something related to the legal '
-        'entity type in Germany, GmbH.Action: Finish[VIVA Media GmbH]'
+        "Let\'s think step by step. VIVA Media AG changed its name to VIVA Media GmbH in 2004. "
+        "GmbH stands for \"Gesellschaft mit beschränkter Haftung\" which translates to \"company with "
+        "limited liability\" in English.Action: Finish[company with limited liability]"
     )
     responses = [
         (
-            "Thought: The context provided mentions that VIVA Media AG changed its name in 2004 and has "
-            "been owned by Viacom since then. Viacom is the parent company of MTV. Based on this information, "
-            "the new acronym \"VIVA Media GmbH\" likely stands for something related to the legal entity type in Germany, GmbH.\n\nAction: Finish[VIVA Media GmbH]"
+            "Let\'s think step by step. VIVA Media AG changed its name to VIVA Media GmbH in 2004. "
+            "GmbH stands for \"Gesellschaft mit beschränkter Haftung\" which translates to \"company with limited liability\" "
+            "in English.\nAction: Finish[company with limited liability]"
         )
     ]
     out = _prompt_cot_agent(
         llm=FakeListChatModel(responses=responses), 
-        examples=REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
+        examples=REFLEXION_COT_FEWSHOT_EXAMPLES,
         reflections="",
         question=q,
-        scratchpad="",
+        scratchpad='\nThought:',
         context=context
     )
     assert out == gt_out
@@ -160,12 +162,13 @@ def test__prompt_cot_agent() -> None:
         examples=REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
         reflections="",
         question=q,
-        scratchpad="",
+        scratchpad="\nThought:",
         context=None
     )
     assert out == gt_out
 
     # Test simple case (reflection) with context.
+
 
     # Test simple case (reflection) with no context.
 
