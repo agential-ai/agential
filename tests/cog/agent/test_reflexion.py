@@ -28,9 +28,18 @@ def test_reflexion_cot_init() -> None:
 def test_reflexion_cot_reset(reflexion_cot_agent: ReflexionCoTAgent) -> None:
     """Test reset method."""
     reflexion_cot_agent._finished = True
+    reflexion_cot_agent._step_n = 143
+    reflexion_cot_agent._answer = "cat"
+    reflexion_cot_agent.memory.scratchpad = "dog"
+    reflexion_cot_agent.reflector.reflections = ["puppy"]
+    reflexion_cot_agent.reflector.reflections_str = "puppy"
     reflexion_cot_agent.reset()
     assert not reflexion_cot_agent._finished
-    assert reflexion_cot_agent.memory.scratchpad == ""
+    assert not reflexion_cot_agent.memory.scratchpad
+    assert not reflexion_cot_agent.reflector.reflections
+    assert not reflexion_cot_agent.reflector.reflections_str
+    assert not reflexion_cot_agent._step_n
+    assert not reflexion_cot_agent._answer
 
 
 def test_reflexion_cot_retrieve(reflexion_cot_agent: ReflexionCoTAgent) -> None:

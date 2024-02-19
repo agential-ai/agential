@@ -234,6 +234,8 @@ class ReflexionCoTAgent(BaseAgent):
         self.memory.clear()
         self.reflector.clear()
         self._finished = False
+        self._answer = ""
+        self._step_n = 0
 
 
 class ReflexionReActAgent(BaseAgent):
