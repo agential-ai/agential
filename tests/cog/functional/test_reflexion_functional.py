@@ -4,7 +4,9 @@ import pytest
 from langchain_community.chat_models.fake import FakeListChatModel
 from discussion_agents.cog.prompts.reflexion import (
     REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT, 
-    REFLEXION_COT_FEWSHOT_EXAMPLES
+    REFLEXION_COT_FEWSHOT_EXAMPLES,
+    REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES,
+    REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT
 )
 
 from discussion_agents.cog.functional.reflexion import (
@@ -245,8 +247,14 @@ def test__prompt_cot_agent() -> None:
     )
     assert out == gt_out
 
+
 def test__prompt_cot_reflection() -> None:
     """Test _prompt_cot_reflection function."""
+
+    q = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
+    context = 'VIVA Media GmbH (until 2004 "VIVA Media AG") is a music television network originating from Germany. It was founded for broadcast of VIVA Germany as VIVA Media AG in 1993 and has been owned by their original concurrent Viacom, the parent company of MTV, since 2004. Viva channels exist in some European countries; the first spin-offs were launched in Poland and Switzerland in 2000.\n\nA Gesellschaft mit beschränkter Haftung (] , abbreviated GmbH ] and also GesmbH in Austria) is a type of legal entity very common in Germany, Austria, Switzerland (where it is equivalent to a S.à r.l.) and Liechtenstein. In the United States, the equivalent type of entity is the limited liability company (LLC). The name of the GmbH form emphasizes the fact that the owners ("Gesellschafter", also known as members) of the entity are not personally liable for the company\'s debts. "GmbH"s are considered legal persons under German and Austrian law. Other variations include mbH (used when the term "Gesellschaft" is part of the company name itself), and gGmbH ("gemeinnützige" GmbH) for non-profit companies.'
+
+    # Test with context.
     out = _prompt_cot_reflection(
         llm=FakeListChatModel(responses=["1"]),
         examples="",
@@ -267,6 +275,32 @@ def test__prompt_cot_reflection() -> None:
     )
     assert isinstance(out, str)
     assert out == "1"
+
+    # Test simple case with context.
+    scratchpad = (
+        '\nThought: The question is asking for the acronym that VIVA Media AG changed to in 2004. '
+        'Based on the context provided, I know that VIVA Media AG was renamed to VIVA Media GmbH in 2004. '
+        'Action: Finish[VIVA Media GmbH]\nAction: Finish[VIVA Media GmbH]\nObservation: Answer is INCORRECT'
+    )
+    responses = [
+        (
+            'The reason for the failure in answering the question could be that the provided answer '
+            '"Company with Limited Liability" does not exactly match the full German translation '
+            '"Gesellschaft mit beschränkter Haftung" which stands for "company with limited liability" '
+            'in English. To mitigate this issue in the future, a more concise and accurate response could '
+            'be simply "Limited Liability Company" to align closely with the German term. This will ensure '
+            'a more precise match with the expected answer key.'
+        )
+    ]
+    out = _prompt_cot_reflection(
+        llm=FakeListChatModel(responses=responses),
+        examples=REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES,
+        question=q,
+        scratchpad=scratchpad,
+        context=context,
+    )
+
+    # Test simple case with no context.
 
 
 def test_react_reflect_last_attempt() -> None:
