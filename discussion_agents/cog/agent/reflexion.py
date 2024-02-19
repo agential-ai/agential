@@ -125,8 +125,9 @@ class ReflexionCoTAgent(BaseAgent):
         result = []
         while not EM(self._answer, key) and self._step_n < self.max_trials:
             # Reflect if possible.
+            reflections_str = ""
             if self._step_n > 0 and not EM(self._answer, key) and strategy:
-                self.reflect(strategy, question, context)
+                reflections_str = self.reflect(strategy, question, context)
 
             out = ""
 
@@ -137,7 +138,7 @@ class ReflexionCoTAgent(BaseAgent):
                 examples=REFLEXION_COT_FEWSHOT_EXAMPLES
                 if context
                 else REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
-                reflections=self.reflector.reflections_str,
+                reflections=reflections_str,
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
                 context=context,
@@ -152,7 +153,7 @@ class ReflexionCoTAgent(BaseAgent):
                 examples=REFLEXION_COT_FEWSHOT_EXAMPLES
                 if context
                 else REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
-                reflections=self.reflector.reflections_str,
+                reflections=reflections_str,
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
                 context=context,

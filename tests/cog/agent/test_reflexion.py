@@ -50,13 +50,16 @@ def test_reflexion_cot_retrieve(reflexion_cot_agent: ReflexionCoTAgent) -> None:
     assert out["scratchpad"] == ""
 
 
-def test_reflexion_cot_reflect(reflexion_cot_agent: ReflexionCoTAgent) -> None:
+def test_reflexion_cot_reflect() -> None:
     """Test reflect method."""
+    reflexion_cot_agent = ReflexionCoTAgent(
+        self_reflect_llm=FakeListChatModel(responses=["1"]),
+        action_llm=FakeListChatModel(responses=["1"]),
+    )
 
     reflexion_cot_agent.reset()
 
     # Test last attempt with context.
-    assert reflexion_cot_agent
     gt_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: \n\n(END PREVIOUS TRIAL)\n"
     reflections_str = reflexion_cot_agent.reflect(
         strategy="last_attempt",
@@ -64,6 +67,8 @@ def test_reflexion_cot_reflect(reflexion_cot_agent: ReflexionCoTAgent) -> None:
         context="",
     )
     assert reflections_str == gt_reflections_str
+    assert reflexion_cot_agent.reflector.reflections == [""]
+    assert reflexion_cot_agent.reflector.reflections_str
 
     reflexion_cot_agent.reset()
 
