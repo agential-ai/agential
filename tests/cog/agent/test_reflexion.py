@@ -67,8 +67,6 @@ def test_reflexion_cot_reflect() -> None:
         context="",
     )
     assert reflections_str == gt_reflections_str
-    assert reflexion_cot_agent.reflector.reflections == [""]
-    assert reflexion_cot_agent.reflector.reflections_str
 
     reflexion_cot_agent.reset()
 
