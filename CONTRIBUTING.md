@@ -19,10 +19,10 @@ To start your journey, you'll need your very own copy of discussion-agents. Thin
 
 ### Create and Switch to a New Branch
 
-Create a new branch for your contribution using
+Create a new branch for your contribution and make sure to add your name and the purpose of the branch.
 
 ```
-git checkout -b your-branch-name
+git checkout -b <your-name>/branch-purpose
 
 ```
 ### 👍🎉 Submit a Pull Request (PR)
