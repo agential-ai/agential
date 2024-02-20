@@ -88,11 +88,11 @@ Head to the `discussion_agents` where the project source code. Within the `cog` 
 
 - `agent` : Agent implementations
 - `eval` : Evaluation module
-- `Functional` : Low-level functions for implementing agents
+- `functional` : Low-level functions for implementing agents
 - `modules` : Submodules with specific functionalities like memory, planning, reflection, and scoring.
-- `Persona` :  default persona for agents, if applicable
+- `persona` :  Default persona for agents, if applicable
 - `prompts` : Agent prompts and fewshot examples
-- `utils` : Utility functions for Fetching , formatting , parsing
+- `utils` : Utility functions for fetching, formatting, parsing, etc.
 
 
 Please take a look at the [README](https://github.com/alckasoc/discussion-agents/blob/main/README.md) for a well-structured overview of the project!
