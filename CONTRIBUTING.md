@@ -40,13 +40,13 @@ git checkout -b your-branch-name
 
 Head to the `discussion_agents` where the project source code. Within the `cog` directory, you'll find various modules and subdirectories catering to different aspects of the project's functionality.
 
-- `agent` :Agent implementations
-- `eval` :Evaluation module
-- `functional` :Low-level functions for implementing agents
-- `modules` :Submodules with specific functionalities like memory, planning, reflection, and scoring.
-- `persona` :Default persona for agents, if applicable
-- `prompts` :Agent prompts and fewshot examples
-- `utils` :Utility functions for fetching, formatting, parsing, etc.
+- `agent` : Agent implementations
+- `eval` : Evaluation module
+- `functional` : Low-level functions for implementing agents
+- `modules` : Submodules with specific functionalities like memory, planning, reflection, and scoring.
+- `persona` : Default persona for agents, if applicable
+- `prompts` : Agent prompts and fewshot examples
+- `utils` : Utility functions for fetching, formatting, parsing, etc.
 
 
 Please take a look at the [README](https://github.com/alckasoc/discussion-agents/blob/main/README.md) for a well-structured overview of the project!
