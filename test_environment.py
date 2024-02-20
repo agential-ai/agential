@@ -34,18 +34,6 @@ if __name__ == '__main__':
     from langchain_community.chat_models.openai import ChatOpenAI
     import os
 
-    q = "Brad Wilk died before being a drummer for Greta."
+    from tests.cog.agent.test_react import test_FEVER_react_generate
 
-    from discussion_agents.cog.agent.react import ReActAgent
-
-    api_key = os.environ["OPENAI_API_KEY"]
-
-    chat = ChatOpenAI( openai_api_key=api_key)
-
-    agent = ReActAgent(llm=chat,type_benchmark='FEVER')
-
-
-    out = agent.generate(question=q)
-
-    print(out)
-    
+    print(test_FEVER_react_generate)

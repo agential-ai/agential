@@ -69,3 +69,21 @@ def test_zeroshot_react_init() -> None:
     assert agent.llm is not None
     assert len(agent.tools) >= 1
     assert agent.agent is not None
+
+
+def test_FEVER_react_generate() -> None:
+
+    """Test generate."""
+    q = 'Brad Wilk died before being a drummer for Greta.'
+
+    # Test simple run.
+    responses = [
+        'Thought: I need to search for Brad Wilk and see if he died before being a drummer for Greta.\nAction: Search[Brad Wilk]\\nObservation 1: Could not find [Brad Wilk]. Similar: [\'Brad Wilk\', \'Rage Against the Machine\', \'Audioslave\', \'Prophets of Rage\', \'Wilk\', \'Tim Commerford\', \'Tom Morello\', \'Show Me How to Live (song)\', \'Greta (band)\', \'Zack de la Rocha\']\nThought: The search did not return Brad Wilk directly, but it mentioned Greta (band). I should search for Greta (band) to see if Brad Wilk was a drummer for them.\nAction: Search[Greta (band)]\nObservation 2: Greta was an American hard rock band formed in 1990 by Paul Plagens, Kyle Baer, Josh Gordon, and Brad Wilk.Wilk left the band in 1991 to join Rage Against the Machine, and was replaced on the drums by Scott Carneghi who went on to co-found the band Buffalocomotive in 2012.The band signed a two-record deal with Mercury Records in 1993 and released their debut album, No Biting, on September 21 of that year. Their second and final album, This Is Greta, was released in 1995, after which the band was dropped from the label. Greta disbanded in 1995. Vocalist Paul Plagens died in 2015\nThought: The observation clearly states that Brad Wilk left Greta in 1991 to join Rage Against the Machine, so he did not die before being a drummer for Greta.\nAction: Finish[REFUTES]\nObservation 3: REFUTES' 
+    ]
+    llm = FakeListChatModel(responses=responses)
+    agent = ReActAgent(llm=llm)
+    out = agent.generate(question=q)
+    assert isinstance(out, str)
+    assert agent._step_n == agent.max_steps + 1
+    assert not agent._finished
+    return
