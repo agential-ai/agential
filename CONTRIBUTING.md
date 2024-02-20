@@ -95,13 +95,13 @@ Head to the `discussion_agents` where the project source code. Within the `cog` 
 - `utils` : Utility functions for Fetching , formatting , parsing
 
 
-Please don't hesitate to explore further details in the [Readme](https://github.com/alckasoc/discussion-agents/blob/main/README.md) overview of the project organization.
+Please take a look at the [README](https://github.com/alckasoc/discussion-agents/blob/main/README.md) for a well-structured overview of the project!
 
-## 3. 🚀 Deciding what to work on
+## 3. 🚀 What do I work on?
 
-You can start by browsing through our list of [issues](https://github.com/alckasoc/discussion-agents/issues) or adding your own that improves on the test suite experience. 
+You can start by browsing through our list of [issues](https://github.com/alckasoc/discussion-agents/issues) or suggesting your own!
 
-Once you’ve decided on an issue, leave a comment and wait to get approved; this helps avoid multiple people working on the same issue.
+Once you’ve decided on an issue, leave a comment and wait for approval! We don't want multiple people on a single issue unless the issue stresses it! 
 
 If you’re ever in doubt about whether or not a proposed feature aligns with our library, feel free to raise an issue about it and we’ll get back to you promptly!
 
