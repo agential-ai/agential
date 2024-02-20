@@ -22,7 +22,7 @@ To start your journey, you'll need your very own copy of discussion-agents. Thin
 Create a new branch for your contribution and make sure to add your name and the purpose of the branch.
 
 ```
-git checkout -b <your-name>/branch-purpose
+git checkout -b <your-name>/<branch-purpose>
 
 ```
 ### 👍🎉 Submit a Pull Request (PR)
