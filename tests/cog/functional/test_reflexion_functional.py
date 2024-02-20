@@ -7,6 +7,7 @@ from discussion_agents.cog.prompts.reflexion import (
     REFLEXION_COT_FEWSHOT_EXAMPLES,
     REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES,
     REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT,
+    REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES
 )
 from discussion_agents.cog.prompts.react import REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
 
@@ -564,6 +565,8 @@ def test__prompt_react_agent() -> None:
 def test__prompt_react_reflection() -> None:
     """Test _prompt_react_reflection function."""
 
+    q = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
+
     # Test empty.
     out = _prompt_react_reflection(
         llm=FakeListChatModel(responses=["1"]),
@@ -573,6 +576,41 @@ def test__prompt_react_reflection() -> None:
     )
     assert isinstance(out, str)
     assert out == "1"
+
+    # Test simple case.
+    scratchpad = (
+        "\nThought: I need to search for VIVA Media AG to find out their new acronym and what it stands for.\nAction: Search[VIVA Media AG]\n"
+        "Observation 1: Could not find [VIVA Media AG]. Similar: ['MTV Music (Polish TV channel)', 'VIVA Plus', 'Paramount International Networks', "
+        "'VIVA (German TV channel)', 'Viacom (1952–2005)', 'Vauxhall Viva', 'GfK Entertainment charts', 'Lindt', 'Spellbound Entertainment', "
+        "'Ag-gag']\nThought: The search did not return exact information on VIVA Media AG. I should try searching for VIVA Media AG name change "
+        "in 2004 to get more specific results.\nAction: Search[VIVA Media AG name change 2004]\nObservation 2: Could not find [VIVA Media AG "
+        "name change 2004]. Similar: ['Vauxhall Viva', 'GfK Entertainment charts', 'Opel Astra', 'Puma (brand)', 'About You Now', 'Priscilla Presley', "
+        "'Altium', 'Sildenafil', 'Bosch (company)', 'Schneider Electric']\nThought: I should try searching for the history of VIVA Media AG to see "
+        "if I can find information on their name change in 2004 and their new acronym.\nAction: Search[history of VIVA Media AG]\n"
+        "Observation 3: Could not find [history of VIVA Media AG]. Similar: ['MTV Music (Polish TV channel)', 'VIVA Plus', 'VIVA (German TV channel)', "
+        "'Vauxhall Viva', 'Lindt', 'GfK Entertainment charts', 'Spellbound Entertainment', 'Ag-gag', 'Springer Publishing', 'Kimberly-Clark']"
+    )
+    responses = [
+        (
+            'The failure in this reasoning trial was due to not being able to find specific information on VIVA Media AG and its name change '
+            'in 2004. To mitigate this failure, the agent should consider broadening the search terms to include related keywords such as '
+            '"corporate rebranding" or "corporate name change" in addition to the specific company name. This will help in obtaining more '
+            'relevant and specific results that may provide the necessary information to answer the question accurately.'
+        )
+    ]
+    gt_out = (
+        'The failure in this reasoning trial was due to not being able to find specific information on VIVA Media AG and its name change in 2004. '
+        'To mitigate this failure, the agent should consider broadening the search terms to include related keywords such as "corporate rebranding" '
+        'or "corporate name change" in addition to the specific company name. This will help in obtaining more relevant and specific results that may '
+        'provide the necessary information to answer the question accurately.'
+    )
+    out = _prompt_react_reflection(
+        llm=FakeListChatModel(responses=responses),
+        examples=REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
+        question=q,
+        scratchpad=scratchpad,
+    )
+    assert out == gt_out
 
 
 def test_react_reflect_last_attempt() -> None:
