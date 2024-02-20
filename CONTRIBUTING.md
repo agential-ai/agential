@@ -1,4 +1,3 @@
-
 # 🚀 Contributing 
 
 👍🎉 First off, thanks for taking the time to contribute! 🎉👍
@@ -11,7 +10,7 @@ Please read through this document before submitting any issues or pull requests 
 
 ### 🍴 Fork the Repository
 
-To start your journey, you'll need your very own copy of discussion-agents. Think of it as your own innovation lab. 🧪
+To start your journey, you'll need your very own copy of discussion-agents. Think of it as your innovation lab. 🧪
 
 - Navigate to the discussion-agents repository on GitHub.
 - In the upper-right corner, click the `Fork` button.
@@ -38,15 +37,15 @@ git checkout -b <your-name>/<branch-purpose>
 
 ## 2. 🧭 How To Navigate
 
-Head to the `discussion_agents` where the project source code. Within the `cog` directory, you'll find various modules and subdirectories catering to different aspects of the project's functionality.
+Head to the `discussion_agents` where the project source code is. Within the `cog` directory, you'll find various modules and subdirectories catering to different aspects of the project's functionality.
 
-- `agent` : Agent implementations
-- `eval` : Evaluation module
-- `functional` : Low-level functions for implementing agents
-- `modules` : Submodules with specific functionalities like memory, planning, reflection, and scoring.
-- `persona` : Default persona for agents, if applicable
-- `prompts` : Agent prompts and fewshot examples
-- `utils` : Utility functions for fetching, formatting, parsing, etc.
+- `agent`: Agent implementations
+- `eval`: Evaluation module
+- `functional`: Low-level functions for implementing agents
+- `modules`: Submodules with specific functionalities like memory, planning, reflection, and scoring.
+- `persona`: Default persona for agents, if applicable
+- `prompts`: Agent prompts and a few-shot examples
+- `utils`: Utility functions for fetching, formatting, parsing, etc.
 
 
 Please take a look at the [README](https://github.com/alckasoc/discussion-agents/blob/main/README.md) for a well-structured overview of the project!
@@ -68,11 +67,11 @@ Feel free to contact [Vincent Tu](https://www.linkedin.com/in/vincent%2Dtu%2D422
 
 ### Our Pledge
 
-In the interest of fostering an open and welcoming environment, we as contributors and maintainers pledge to making participation in our project and our community a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, gender identity and expression, level of experience, nationality, personal appearance, race, religion, or sexual identity and orientation.
+In the interest of fostering an open and welcoming environment, we as contributors and maintainers pledge to make participation in our project and our community a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, gender identity and expression, level of experience, nationality, personal appearance, race, religion, or sexual identity and orientation.
 
 ### Our Standards
 
-Examples of behavior that contributes to creating a positive environment include:
+Examples of behaviour that contributes to creating a positive environment include:
 
 - Using welcoming and inclusive language
 - Being respectful of differing viewpoints and experiences
@@ -80,7 +79,7 @@ Examples of behavior that contributes to creating a positive environment include
 - Focusing on what is best for the community
 - Showing empathy towards other community members
 
-Examples of unacceptable behavior by participants include:
+Examples of unacceptable behaviour by participants include:
 
 - The use of sexualized language or imagery and unwelcome sexual attention or advances
 - Trolling, insulting/derogatory comments, and personal or political attacks
@@ -90,9 +89,9 @@ Examples of unacceptable behavior by participants include:
 
 ### Our Responsibilities
 
-Project maintainers are responsible for clarifying the standards of acceptable behavior and are expected to take appropriate and fair corrective action in response to any instances of unacceptable behavior.
+Project maintainers are responsible for clarifying the standards of acceptable behaviour and are expected to take appropriate and fair corrective action in response to any instances of unacceptable behaviour.
 
-Project maintainers have the right and responsibility to remove, edit, or reject comments, commits, code, wiki edits, issues, and other contributions that are not aligned to this Code of Conduct, or to ban temporarily or permanently any contributor for other behaviors that they deem inappropriate, threatening, offensive, or harmful.
+Project maintainers have the right and responsibility to remove, edit, or reject comments, commits, code, wiki edits, issues, and other contributions that are not aligned with this Code of Conduct, or to ban temporarily or permanently any contributor for other behaviours that they deem inappropriate, threatening, offensive, or harmful.
 
 ### Scope
 
@@ -100,13 +99,13 @@ This Code of Conduct applies both within project spaces and in public spaces whe
 
 ### Enforcement
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by contacting the project maintainer at [@Vincent Tu](https://github.com/alckasoc). All complaints will be reviewed and investigated and will result in a response that is deemed necessary and appropriate to the circumstances. The project maintainer is obligated to maintain confidentiality with regard to the reporter of an incident. Further details of specific enforcement policies may be posted separately.
+Instances of abusive, harassing, or otherwise unacceptable behaviour may be reported by contacting the project maintainer at [@Vincent Tu](https://github.com/alckasoc). All complaints will be reviewed and investigated and will result in a response that is deemed necessary and appropriate to the circumstances. The project maintainer is obligated to maintain confidentiality about the reporter of an incident. Further details of specific enforcement policies may be posted separately.
 
 Project maintainers who do not follow or enforce the Code of Conduct in good faith may face temporary or permanent repercussions as determined by other members of the project's leadership.
 
 ### Attribution
 
-This Code of Conduct is adapted from the [Contributor Covenant](https://www.contributor-covenant.org/),version 1.4,available at http://contributor-covenant.org/version/1/4.
+This Code of Conduct is adapted from the [Contributor Covenant](https://www.contributor-covenant.org/), version 1.4, available at http://contributor-covenant.org/version/1/4.
 
 
 ## Thank you for your consideration in joining us 😃🤝
