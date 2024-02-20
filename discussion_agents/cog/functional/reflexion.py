@@ -406,10 +406,6 @@ def _prompt_react_reflection(
     Returns:
         str: The generated reflection prompt.
     """
-
-    print("EXAMPLES:\n\n", repr(examples))
-    print("SCRATCHPAD:\n\n", repr(scratchpad))
-
     prompt = PromptTemplate(
         input_variables=["examples", "question", "scratchpad"],
         template=REFLEXION_REACT_REFLECT_INSTRUCTION,
@@ -425,8 +421,6 @@ def _prompt_react_reflection(
             )
         ]
     ).content
-    print("OUT:\n\n", repr(out))
-
     assert isinstance(out, str)
     return remove_newline(out)
 
