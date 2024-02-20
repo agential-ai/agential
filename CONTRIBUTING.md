@@ -7,7 +7,7 @@ Whether it's a bug report, new feature, correction, or additional documentation,
 
 Please read through this document before submitting any issues or pull requests to ensure we have all the necessary information to effectively respond to your bug report or contribution.
 
-## 1. 🚀 Getting Started
+## 1. 💪 Getting Started
 
 ### 🍴 Fork the Repository
 
@@ -16,7 +16,7 @@ To start your journey, you'll need your very own copy of discussion-agents. Thin
 - Navigate to the discussion-agents repository on GitHub.
 - In the upper-right corner, click the `Fork` button.
 
-### 👨‍💻 Clone the Repository
+### Clone the Repository
 
 Next, let's bring your newly forked repository to your local machine.
 
@@ -25,7 +25,7 @@ git clone https://github.com/alckasoc/discussion-agents.git
 
 ```
 
-### 👨‍💻 Keep your Fork in Sync
+### Keep your Fork in Sync
 
 Before you make any changes, make sure that your fork is in sync to avoid merge conflicts using
 
@@ -35,7 +35,7 @@ git pull upstream main
 
 ```
 
-### 👨‍💻 Create and Switch to a New Branch
+### Create and Switch to a New Branch
 
 Create a new branch for your contribution using
 
@@ -43,11 +43,11 @@ Create a new branch for your contribution using
 git checkout -b your-branch-name
 
 ```
-### 👨‍💻 Make Changes
+###  Make Changes
 
 - Make the required changes in your branch.
 
-### 👨‍💻 Add Changes to the Staging Area
+###  Add Changes to the Staging Area
 
 Add your changes to the staging area using
 
@@ -55,7 +55,7 @@ Add your changes to the staging area using
 git add .
 
 ```
-### 👨‍💻 Commit Your Changes:
+###  Commit Your Changes:
 
 Commit your changes with a descriptive commit message using
 
@@ -63,7 +63,7 @@ Commit your changes with a descriptive commit message using
 git commit -m "Your descriptive commit message"
 
 ```
-### 👨‍💻 Push Your Changes to the Remote Repository
+### 🫸 Push Your Changes to the Remote Repository
 
 Push your branch with changes to your fork on GitHub using
 
@@ -82,7 +82,7 @@ git push origin your-branch-name
 - Once your PR is approved, it will be merged into the main repository. 
 
 
-## 2. 🚀 How To Navigate
+## 2. 🧭 How To Navigate
 
 Head to the `discussion_agents` where the project source code. Within the `cog` directory, you'll find various modules and subdirectories catering to different aspects of the project's functionality.
 
@@ -97,7 +97,7 @@ Head to the `discussion_agents` where the project source code. Within the `cog` 
 
 Please take a look at the [README](https://github.com/alckasoc/discussion-agents/blob/main/README.md) for a well-structured overview of the project!
 
-## 3. 🚀 What do I work on?
+## 3. ⚒️ What do I work on?
 
 You can start by browsing through our list of [issues](https://github.com/alckasoc/discussion-agents/issues) or suggesting your own!
 
@@ -105,12 +105,12 @@ Once you’ve decided on an issue, leave a comment and wait for approval! We don
 
 If you’re ever in doubt about whether or not a proposed feature aligns with our library, feel free to raise an issue about it and we’ll get back to you promptly!
 
-## 4. 🚀  Questions/Collaboration
+## 4. ❓  Questions/Collaboration
 
 Feel free to contact [Vincent Tu](https://www.linkedin.com/in/vincent%2Dtu%2D422b18208/). We're very friendly and welcoming to new contributors, so don't hesitate to reach out! 🙂
 
 
-## 5. 🚀 Code of Conduct
+## 5. 👨‍💻 Code of Conduct
 
 ### Our Pledge
 
