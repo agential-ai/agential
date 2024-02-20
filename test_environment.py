@@ -22,4 +22,28 @@ def main():
 
 
 if __name__ == '__main__':
+    
     main()
+    from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    SystemMessagePromptTemplate,
+    )
+    from langchain.schema import HumanMessage, SystemMessage
+    from langchain_community.chat_models.openai import ChatOpenAI
+    import os
+
+    q = "Brad Wilk died before being a drummer for Greta."
+
+    from discussion_agents.cog.agent.react import FEVERAgent
+
+    api_key = os.environ["OPENAI_API_KEY"]
+
+    chat = ChatOpenAI( openai_api_key=api_key)
+
+    agent = FEVERAgent(llm=chat)
+
+
+    out = agent.generate(question=q)
+
+    print(out)

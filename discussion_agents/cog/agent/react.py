@@ -96,6 +96,7 @@ class ReActAgent(BaseAgent):
             scratchpad=self.memory.load_memories()["scratchpad"],
             max_tokens=self.max_tokens,
             enc=self.enc,
+            benchmark_type='HotpotQA'
         ):
             # Think.
             self.memory.add_memories("\nThought:")
@@ -103,6 +104,7 @@ class ReActAgent(BaseAgent):
                 llm=self.llm,
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
+                benchmark_type="HotpotQA"
             ).split("Action")[0]
             self.memory.add_memories(" " + thought)
             out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
@@ -113,6 +115,7 @@ class ReActAgent(BaseAgent):
                 llm=self.llm,
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
+                benchmark_type="HotpotQA"
             ).split("Observation")[0]
             self.memory.add_memories(" " + action)
             action_type, query = parse_action(action)
@@ -219,3 +222,118 @@ class ZeroShotReActAgent(BaseAgent):
             str: The generated response.
         """
         return self.agent.invoke(observation_dict)  # type: ignore
+
+
+class FEVERAgent(BaseAgent):
+
+
+    def __init__(
+        self,
+        llm: BaseChatModel,
+        memory: Optional[ReActMemory] = None,
+        max_steps: int = 6,
+        max_tokens: int = 3896,
+        docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
+        enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
+    ) -> None:
+        """Initialization."""
+        super().__init__()
+        self.llm = llm
+
+        if not memory:
+            self.memory = ReActMemory()
+        else:
+            self.memory = memory
+
+        self.max_steps = max_steps
+        self.max_tokens = max_tokens
+        self.docstore = docstore
+        self.enc = enc
+
+        # Internal variables.
+        self._step_n = 1  #: :meta private:
+        self._finished = False  #: :meta private:
+    
+    
+    def generate(self, question: str, reset: bool = True) -> str:
+        """Processes a given question through ReAct.
+
+        Iteratively applies the think-act-observe cycle to generate an answer for the question.
+        The process continues until the operation is halted based on certain conditions.
+
+        Args:
+            question (str): The question to be processed.
+            reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
+
+        Returns:
+            str: The accumulated output from the ReAct process.
+        """
+        if reset:
+            self.reset()
+
+        out = ""
+        while not _is_halted(
+            finished=self._finished,
+            step_n=self._step_n,
+            max_steps=self.max_steps,
+            question=question,
+            scratchpad=self.memory.load_memories()["scratchpad"],
+            max_tokens=self.max_tokens,
+            enc=self.enc,
+            benchmark_type='FEVER'
+        ):
+            # Think.
+            self.memory.add_memories("\nThought:")
+            thought = _prompt_agent(
+                llm=self.llm,
+                question=question,
+                scratchpad=self.memory.load_memories()["scratchpad"],
+                benchmark_type="FEVER"
+            ).split("Action")[0]
+            self.memory.add_memories(" " + thought)
+            out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
+
+            # Act.
+            self.memory.add_memories("\nAction:")
+            action = _prompt_agent(
+                llm=self.llm,
+                question=question,
+                scratchpad=self.memory.load_memories()["scratchpad"],
+                benchmark_type="FEVER"
+            ).split("Observation")[0]
+            self.memory.add_memories(" " + action)
+            action_type, query = parse_action(action)
+            out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
+
+            # Observe.
+            self.memory.add_memories(f"\nObservation {self._step_n}: ")
+            if action_type.lower() == "finish":
+                self._answer = query
+                self._finished = True
+                self.memory.add_memories(query)
+            elif action_type.lower() == "search":
+                try:
+                    self.memory.add_memories(
+                        remove_newline(self.docstore.search(query))
+                    )
+                except Exception:
+                    self.memory.add_memories(
+                        "Could not find that page, please try again."
+                    )
+            else:
+                self.memory.add_memories(
+                    "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
+                )
+
+            self._step_n += 1
+            out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
+
+        return out
+    def reset(self) -> None:
+        """Resets the internal state of the ReAct agent.
+
+        Sets the step number, finished flag, and scratchpad to their initial values.
+        """
+        self._step_n = 1
+        self._finished = False
+        self.memory.clear()

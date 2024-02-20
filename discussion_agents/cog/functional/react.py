@@ -7,11 +7,14 @@ from tiktoken import Encoding
 from discussion_agents.cog.prompts.react import (
     REACT_INSTRUCTION,
     REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+    REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES
 )
 from discussion_agents.utils.parse import remove_newline
 
 
-def _build_agent_prompt(question: str, scratchpad: str) -> str:
+
+
+def _build_agent_prompt(question: str, scratchpad: str, benchmark_type: str) -> str:
     """Constructs a prompt template for the agent.
 
     This function formats a predefined prompt template (REACT_INSTRUCTION) with examples,
@@ -20,19 +23,27 @@ def _build_agent_prompt(question: str, scratchpad: str) -> str:
     Args:
         question (str): The question to be included in the prompt.
         scratchpad (str): Additional scratchpad information to be included.
+        benchmark_type (str): FEVER / HotpotQA
 
     Returns:
         str: A formatted prompt template ready for use.
     """
+    
+    if benchmark_type == "FEVER":
+        examples = REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES
+    else:
+        examples = REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
+
+
     prompt = PromptTemplate.from_template(REACT_INSTRUCTION).format(
-        examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        examples=examples,
         question=question,
         scratchpad=scratchpad,
     )
     return prompt
 
 
-def _prompt_agent(llm: BaseChatModel, question: str, scratchpad: str) -> str:
+def _prompt_agent(llm: BaseChatModel, question: str, scratchpad: str, benchmark_type: str) -> str:
     """Generates a response from the LLM based on a given question and scratchpad.
 
     This function creates a prompt using `_build_agent_prompt` and then gets the LLM's
@@ -46,7 +57,7 @@ def _prompt_agent(llm: BaseChatModel, question: str, scratchpad: str) -> str:
     Returns:
         str: The processed response from the language model.
     """
-    prompt = _build_agent_prompt(question=question, scratchpad=scratchpad)
+    prompt = _build_agent_prompt(question=question, scratchpad=scratchpad, benchmark_type=benchmark_type)
     out = llm(
         [
             HumanMessage(
@@ -66,6 +77,7 @@ def _is_halted(
     scratchpad: str,
     max_tokens: int,
     enc: Encoding,
+    benchmark_type: str ,
 ) -> bool:
     """Determines whether the agent's operation should be halted.
 
@@ -87,7 +99,10 @@ def _is_halted(
     """
     over_max_steps = step_n > max_steps
     over_token_limit = (
-        len(enc.encode(_build_agent_prompt(question=question, scratchpad=scratchpad)))
+        len(enc.encode(_build_agent_prompt(question=question, scratchpad=scratchpad, benchmark_type=benchmark_type )))
         > max_tokens
     )
     return finished or over_max_steps or over_token_limit
+
+
+
