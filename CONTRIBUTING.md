@@ -61,7 +61,7 @@ If you’re ever in doubt about whether or not a proposed feature aligns with ou
 
 ## 4. ❓  Questions/Collaboration
 
-Feel free to contact [Vincent Tu](https://www.linkedin.com/in/vincent%2Dtu%2D422b18208/). We're very friendly and welcoming to new contributors, so don't hesitate to reach out! 🙂
+Feel free to contact [Vincent Tu](https://www.linkedin.com/in/vincent%2Dtu%2D422b18208/), our lead contributor. We're very friendly and welcoming to new contributors, so don't hesitate to reach out! 🙂
 
 
 ## 5. 👨‍💻 Code of Conduct
