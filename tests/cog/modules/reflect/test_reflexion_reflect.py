@@ -3,8 +3,9 @@ import pytest
 
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
-
-
+from discussion_agents.cog.functional.reflexion import (
+    _format_reflections,
+)
 from discussion_agents.cog.modules.reflect.reflexion import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
@@ -92,7 +93,25 @@ def test_reflexion_cot_reflector() -> None:
     )
 
     # Test len(self.reflections) > max_reflections.
-    
+    reflections = [
+        'The failure in this reasoning trial was due to not being able to find specific information on VIVA Media AG and its name change in 2004. To mitigate this failure, the agent should consider broadening the search terms to include related keywords such as "corporate rebranding" or "corporate name change" in addition to the specific company name. This will help in obtaining more relevant and specific results that may provide the necessary information to answer the question accurately.'
+    ] * 3
+    reflections_str = _format_reflections(reflections)
+    reflector = ReflexionCoTReflector(
+        llm=FakeListChatModel(responses=["1"]),
+        max_reflections=2
+    )
+    reflector.reflections = reflections
+    reflector.reflections_str = reflections_str
+    _ = reflector.reflect(
+        strategy="reflexion",  # Only applicable to reflexion strategy.
+        examples="",
+        question="",
+        scratchpad="",
+        context="",
+    )
+    assert len(reflector.reflections) == 2
+    assert reflector.reflections_str == _format_reflections(reflections[-2:])
 
 
 def test_reflexion_cot_clear() -> None:
