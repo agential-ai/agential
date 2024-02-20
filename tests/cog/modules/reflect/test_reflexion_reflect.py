@@ -91,6 +91,9 @@ def test_reflexion_cot_reflector() -> None:
         == "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: \n\n(END PREVIOUS TRIAL)\n\nThe following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
     )
 
+    # Test len(self.reflections) > max_reflections.
+    
+
 
 def test_reflexion_cot_clear() -> None:
     """Unit tests for ReflexionCoT Reflector clear method."""
