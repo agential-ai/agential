@@ -193,6 +193,26 @@ def test_reflexion_react_reflector() -> None:
         == "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: \n\n(END PREVIOUS TRIAL)\n\nThe following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
     )
 
+    # Test len(self.reflections) > max_reflections.
+    reflections = [
+        'The failure in this reasoning trial was due to not being able to find specific information on VIVA Media AG and its name change in 2004. To mitigate this failure, the agent should consider broadening the search terms to include related keywords such as "corporate rebranding" or "corporate name change" in addition to the specific company name. This will help in obtaining more relevant and specific results that may provide the necessary information to answer the question accurately.'
+    ] * 3
+    reflections_str = _format_reflections(reflections)
+    reflector = ReflexionReActReflector(
+        llm=FakeListChatModel(responses=["1"]),
+        max_reflections=2
+    )
+    reflector.reflections = reflections
+    reflector.reflections_str = reflections_str
+    _ = reflector.reflect(
+        strategy="reflexion",  # Only applicable to reflexion strategy.
+        examples="",
+        question="",
+        scratchpad="",
+    )
+    assert len(reflector.reflections) == 2
+    assert reflector.reflections_str == _format_reflections(reflections[-2:])
+
 
 def test_reflexion_react_clear() -> None:
     """Unit tests for ReflexionReAct Reflector clear method."""
