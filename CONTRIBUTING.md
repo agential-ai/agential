@@ -16,24 +16,6 @@ To start your journey, you'll need your very own copy of discussion-agents. Thin
 - Navigate to the discussion-agents repository on GitHub.
 - In the upper-right corner, click the `Fork` button.
 
-### Clone the Repository
-
-Next, let's bring your newly forked repository to your local machine.
-
-```
-git clone https://github.com/alckasoc/discussion-agents.git
-
-```
-
-### Keep your Fork in Sync
-
-Before you make any changes, make sure that your fork is in sync to avoid merge conflicts using
-
-```
-git remote add upstream https://github.com/alckasoc/discussion-agents.git
-git pull upstream main
-
-```
 
 ### Create and Switch to a New Branch
 
