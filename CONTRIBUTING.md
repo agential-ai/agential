@@ -43,34 +43,6 @@ Create a new branch for your contribution using
 git checkout -b your-branch-name
 
 ```
-###  Make Changes
-
-- Make the required changes in your branch.
-
-###  Add Changes to the Staging Area
-
-Add your changes to the staging area using
-
-```
-git add .
-
-```
-###  Commit Your Changes:
-
-Commit your changes with a descriptive commit message using
-
-```
-git commit -m "Your descriptive commit message"
-
-```
-### 🫸 Push Your Changes to the Remote Repository
-
-Push your branch with changes to your fork on GitHub using
-
-```
-git push origin your-branch-name
-
-```
 ### 👍🎉 Submit a Pull Request (PR)
 
 - Create a Pull Request from your branch to the main repository. Make sure to include a detailed description of your changes and reference any related issues.
