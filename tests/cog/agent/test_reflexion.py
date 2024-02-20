@@ -223,9 +223,20 @@ def test_reflexion_react_init() -> None:
 def test_reflexion_react_reset(reflexion_react_agent: ReflexionReActAgent) -> None:
     """Test reset method."""
     reflexion_react_agent._finished = True
+    reflexion_react_agent._step_n = 143
+    reflexion_react_agent._trial_n = 143
+    reflexion_react_agent._answer = "cat"
+    reflexion_react_agent.memory.scratchpad = "dog"
+    reflexion_react_agent.reflector.reflections = ["puppy"]
+    reflexion_react_agent.reflector.reflections_str = "puppy"
     reflexion_react_agent.reset()
     assert not reflexion_react_agent._finished
-    assert reflexion_react_agent.memory.scratchpad == ""
+    assert not reflexion_react_agent.memory.scratchpad
+    assert not reflexion_react_agent.reflector.reflections
+    assert not reflexion_react_agent.reflector.reflections_str
+    assert reflexion_react_agent._step_n == 1
+    assert reflexion_react_agent._step_n == 1
+    assert not reflexion_react_agent._answer
 
 
 def test_reflexion_react_retrieve(reflexion_react_agent: ReflexionReActAgent) -> None:
