@@ -30,3 +30,6 @@ data/*
 # code-cov
 .coverage
 coverage.xml
+
+# .DS_Store
+.DS_Store

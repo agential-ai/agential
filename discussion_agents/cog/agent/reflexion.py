@@ -235,8 +235,8 @@ class ReflexionCoTAgent(BaseAgent):
         self.memory.clear()
         self.reflector.clear()
         self._finished = False
-        self._answer = ""
         self._step_n = 0
+        self._answer = ""
 
 
 class ReflexionReActAgent(BaseAgent):
@@ -363,6 +363,7 @@ class ReflexionReActAgent(BaseAgent):
             out = ""
             self._step_n = 1
             self._finished = False
+            self._answer = ""
             while not _is_halted(
                 finished=self._finished,
                 step_n=self._step_n,
@@ -483,9 +484,9 @@ class ReflexionReActAgent(BaseAgent):
 
         Sets the step number, finished flag, and scratchpad to their initial values.
         """
+        self._trial_n = 1
         self._step_n = 1
         self._finished = False
-        self._trial_n = 1
         self._answer = ""
         self.memory.clear()
         self.reflector.clear()
