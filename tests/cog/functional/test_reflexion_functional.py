@@ -2,14 +2,6 @@
 import pytest
 
 from langchain_community.chat_models.fake import FakeListChatModel
-from discussion_agents.cog.prompts.reflexion import (
-    REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT, 
-    REFLEXION_COT_FEWSHOT_EXAMPLES,
-    REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES,
-    REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT,
-    REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES
-)
-from discussion_agents.cog.prompts.react import REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
 
 from discussion_agents.cog.functional.reflexion import (
     _format_last_attempt,
@@ -28,11 +20,18 @@ from discussion_agents.cog.functional.reflexion import (
     react_reflect_last_attempt_and_reflexion,
     react_reflect_reflexion,
 )
+from discussion_agents.cog.prompts.react import REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
+from discussion_agents.cog.prompts.reflexion import (
+    REFLEXION_COT_FEWSHOT_EXAMPLES,
+    REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
+    REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES,
+    REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT,
+    REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
+)
 
 
 def test__truncate_scratchpad() -> None:
     """Test _truncate_scratchpad function."""
-
     # Test non-truncated case.
     scratchpad = "Observation: This is a test.\nAnother line."
     truncated = _truncate_scratchpad(scratchpad, 1600)
@@ -62,9 +61,9 @@ def test__truncate_scratchpad() -> None:
     assert observation2 not in truncated, "Longer observation should be truncated"
     assert gt_out == truncated
 
+
 def test__format_reflections() -> None:
     """Test _format_reflections function."""
-
     # Test empty.
     reflections = []
     assert _format_reflections(reflections) == ""
@@ -88,7 +87,6 @@ def test__format_reflections() -> None:
 
 def test__format_last_attempt() -> None:
     """Test _format_last_attempt function."""
-
     # Test simple case.
     question = "What is the capital of France?"
     scratchpad = "The capital of France is Paris."
@@ -99,7 +97,6 @@ def test__format_last_attempt() -> None:
 
 def test__prompt_cot_agent() -> None:
     """Test _prompt_cot_agent function."""
-
     q = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
     context = 'VIVA Media GmbH (until 2004 "VIVA Media AG") is a music television network originating from Germany. It was founded for broadcast of VIVA Germany as VIVA Media AG in 1993 and has been owned by their original concurrent Viacom, the parent company of MTV, since 2004. Viva channels exist in some European countries; the first spin-offs were launched in Poland and Switzerland in 2000.\n\nA Gesellschaft mit beschränkter Haftung (] , abbreviated GmbH ] and also GesmbH in Austria) is a type of legal entity very common in Germany, Austria, Switzerland (where it is equivalent to a S.à r.l.) and Liechtenstein. In the United States, the equivalent type of entity is the limited liability company (LLC). The name of the GmbH form emphasizes the fact that the owners ("Gesellschafter", also known as members) of the entity are not personally liable for the company\'s debts. "GmbH"s are considered legal persons under German and Austrian law. Other variations include mbH (used when the term "Gesellschaft" is part of the company name itself), and gGmbH ("gemeinnützige" GmbH) for non-profit companies.'
 
@@ -129,45 +126,45 @@ def test__prompt_cot_agent() -> None:
 
     # Test simple case (no reflection) with context.
     gt_out = (
-        "Let\'s think step by step. VIVA Media AG changed its name to VIVA Media GmbH in 2004. "
-        "GmbH stands for \"Gesellschaft mit beschränkter Haftung\" which translates to \"company with "
-        "limited liability\" in English.Action: Finish[company with limited liability]"
+        "Let's think step by step. VIVA Media AG changed its name to VIVA Media GmbH in 2004. "
+        'GmbH stands for "Gesellschaft mit beschränkter Haftung" which translates to "company with '
+        'limited liability" in English.Action: Finish[company with limited liability]'
     )
     responses = [
         (
-            "Let\'s think step by step. VIVA Media AG changed its name to VIVA Media GmbH in 2004. "
-            "GmbH stands for \"Gesellschaft mit beschränkter Haftung\" which translates to \"company with limited liability\" "
+            "Let's think step by step. VIVA Media AG changed its name to VIVA Media GmbH in 2004. "
+            'GmbH stands for "Gesellschaft mit beschränkter Haftung" which translates to "company with limited liability" '
             "in English.\nAction: Finish[company with limited liability]"
         )
     ]
     out = _prompt_cot_agent(
-        llm=FakeListChatModel(responses=responses), 
+        llm=FakeListChatModel(responses=responses),
         examples=REFLEXION_COT_FEWSHOT_EXAMPLES,
         reflections="",
         question=q,
-        scratchpad='\nThought:',
-        context=context
+        scratchpad="\nThought:",
+        context=context,
     )
     assert out == gt_out
 
     # Test simple case (no reflection) with no context.
     gt_out = (
-        'Thought: Let\'s think step by step. The new acronym for VIVA Media AG after changing its name in '
+        "Thought: Let's think step by step. The new acronym for VIVA Media AG after changing its name in "
         '2004 is "Vivendi Visual and Interactive." Action: Finish[Vivendi Visual and Interactive]'
     )
     responses = [
         (
             "Thought: Let's think step by step. The new acronym for VIVA Media AG after changing its name in 2004 "
-            "is \"Vivendi Visual and Interactive.\" \nAction: Finish[Vivendi Visual and Interactive]"
+            'is "Vivendi Visual and Interactive." \nAction: Finish[Vivendi Visual and Interactive]'
         )
     ]
     out = _prompt_cot_agent(
-        llm=FakeListChatModel(responses=responses), 
+        llm=FakeListChatModel(responses=responses),
         examples=REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
         reflections="",
         question=q,
         scratchpad="\nThought:",
-        context=None
+        context=None,
     )
     assert out == gt_out
 
@@ -182,52 +179,52 @@ def test__prompt_cot_agent() -> None:
         "Action: Finish[Viacom]\nObservation: Answer is INCORRECT\n(END PREVIOUS TRIAL)\n"
     )
     scratchpad = (
-         "\nThought: The context provided mentions that VIVA Media AG changed its name in 2004 and has "
-         "been owned by Viacom since then. Based on this information, the new acronym for VIVA Media AG is "
-         "likely related to Viacom, the parent company of MTV.Action: Finish[Viacom]\n"
-         "Action: Finish[Viacom]\nObservation: Answer is INCORRECT\nThought:"
+        "\nThought: The context provided mentions that VIVA Media AG changed its name in 2004 and has "
+        "been owned by Viacom since then. Based on this information, the new acronym for VIVA Media AG is "
+        "likely related to Viacom, the parent company of MTV.Action: Finish[Viacom]\n"
+        "Action: Finish[Viacom]\nObservation: Answer is INCORRECT\nThought:"
     )
     responses = [
         (
             "The context provided states that VIVA Media AG changed its name to VIVA Media GmbH in 2004. "
-            "Since \"GmbH\" stands for \"Gesellschaft mit beschränkter Haftung\" in German, the new acronym "
-            "for VIVA Media AG is likely VIVA Media GmbH, with \"GmbH\" representing the legal form of the "
+            'Since "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, the new acronym '
+            'for VIVA Media AG is likely VIVA Media GmbH, with "GmbH" representing the legal form of the '
             "company.\nAction: Finish[VIVA Media GmbH]"
         )
     ]
     gt_out = (
         "The context provided states that VIVA Media AG changed its name to VIVA Media GmbH in 2004. "
-        "Since \"GmbH\" stands for \"Gesellschaft mit beschränkter Haftung\" in German, the new acronym for "
-        "VIVA Media AG is likely VIVA Media GmbH, with \"GmbH\" representing the legal form of the company."
+        'Since "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, the new acronym for '
+        'VIVA Media AG is likely VIVA Media GmbH, with "GmbH" representing the legal form of the company.'
         "Action: Finish[VIVA Media GmbH]"
     )
     out = _prompt_cot_agent(
-        llm=FakeListChatModel(responses=responses), 
+        llm=FakeListChatModel(responses=responses),
         examples=REFLEXION_COT_FEWSHOT_EXAMPLES,
         reflections=reflections,
         question=q,
         scratchpad=scratchpad,
-        context=context
+        context=context,
     )
     assert out == gt_out
 
     # Test simple case (reflection) with no context.
     reflections = (
-        'You have attempted to answer the following question before and failed. Below is the last trial '
-        'you attempted to answer the question.\nQuestion: VIVA Media AG changed it\'s name in 2004. '
-        'What does their new acronym stand for?\nThought: Let\'s think step by step. VIVA Media AG '
+        "You have attempted to answer the following question before and failed. Below is the last trial "
+        "you attempted to answer the question.\nQuestion: VIVA Media AG changed it's name in 2004. "
+        "What does their new acronym stand for?\nThought: Let's think step by step. VIVA Media AG "
         'changed its name to Constantin Film AG in 2004. The new acronym stands for "Constantin Film."'
-        'Action: Finish[Constantin Film]\nAction: Finish[Constantin Film]\n'
-        'Observation: Answer is INCORRECT\n(END PREVIOUS TRIAL)\n'
+        "Action: Finish[Constantin Film]\nAction: Finish[Constantin Film]\n"
+        "Observation: Answer is INCORRECT\n(END PREVIOUS TRIAL)\n"
     )
     scratchpad = (
-        '\nThought: Let\'s think step by step. VIVA Media AG changed its name to Constantin Film AG in 2004. '
+        "\nThought: Let's think step by step. VIVA Media AG changed its name to Constantin Film AG in 2004. "
         'The new acronym stands for "Constantin Film."Action: Finish[Constantin Film]\n'
-        'Action: Finish[Constantin Film]\nObservation: Answer is INCORRECT\nThought:'
+        "Action: Finish[Constantin Film]\nObservation: Answer is INCORRECT\nThought:"
     )
     responses = [
         (
-            'I made a mistake in my previous attempts. Let\'s think more carefully this time. '
+            "I made a mistake in my previous attempts. Let's think more carefully this time. "
             'The acronym "AG" stands for "Aktiengesellschaft" in German, which translates to '
             '"stock corporation" in English. So the new acronym for VIVA Media AG after the name '
             'change is "Constantin Film Aktiengesellschaft."\nFinish[Constantin Film Aktiengesellschaft]'
@@ -237,22 +234,21 @@ def test__prompt_cot_agent() -> None:
         'I made a mistake in my previous attempts. Let\'s think more carefully this time. The acronym "AG" '
         'stands for "Aktiengesellschaft" in German, which translates to "stock corporation" in English. '
         'So the new acronym for VIVA Media AG after the name change is "Constantin Film Aktiengesellschaft."'
-        'Finish[Constantin Film Aktiengesellschaft]'
+        "Finish[Constantin Film Aktiengesellschaft]"
     )
     out = _prompt_cot_agent(
-        llm=FakeListChatModel(responses=responses), 
+        llm=FakeListChatModel(responses=responses),
         examples=REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
         reflections=reflections,
         question=q,
         scratchpad=scratchpad,
-        context=None
+        context=None,
     )
     assert out == gt_out
 
 
 def test__prompt_cot_reflection() -> None:
     """Test _prompt_cot_reflection function."""
-
     q = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
     context = 'VIVA Media GmbH (until 2004 "VIVA Media AG") is a music television network originating from Germany. It was founded for broadcast of VIVA Germany as VIVA Media AG in 1993 and has been owned by their original concurrent Viacom, the parent company of MTV, since 2004. Viva channels exist in some European countries; the first spin-offs were launched in Poland and Switzerland in 2000.\n\nA Gesellschaft mit beschränkter Haftung (] , abbreviated GmbH ] and also GesmbH in Austria) is a type of legal entity very common in Germany, Austria, Switzerland (where it is equivalent to a S.à r.l.) and Liechtenstein. In the United States, the equivalent type of entity is the limited liability company (LLC). The name of the GmbH form emphasizes the fact that the owners ("Gesellschafter", also known as members) of the entity are not personally liable for the company\'s debts. "GmbH"s are considered legal persons under German and Austrian law. Other variations include mbH (used when the term "Gesellschaft" is part of the company name itself), and gGmbH ("gemeinnützige" GmbH) for non-profit companies.'
 
@@ -280,27 +276,27 @@ def test__prompt_cot_reflection() -> None:
 
     # Test simple case with context.
     scratchpad = (
-        '\nThought: The question is asking for the acronym that VIVA Media AG changed to in 2004. '
-        'Based on the context provided, I know that VIVA Media AG was renamed to VIVA Media GmbH in 2004. '
-        'Action: Finish[VIVA Media GmbH]\nAction: Finish[VIVA Media GmbH]\nObservation: Answer is INCORRECT'
+        "\nThought: The question is asking for the acronym that VIVA Media AG changed to in 2004. "
+        "Based on the context provided, I know that VIVA Media AG was renamed to VIVA Media GmbH in 2004. "
+        "Action: Finish[VIVA Media GmbH]\nAction: Finish[VIVA Media GmbH]\nObservation: Answer is INCORRECT"
     )
     responses = [
         (
-            'The reason for the failure in answering the question could be that the provided answer '
+            "The reason for the failure in answering the question could be that the provided answer "
             '"Company with Limited Liability" does not exactly match the full German translation '
             '"Gesellschaft mit beschränkter Haftung" which stands for "company with limited liability" '
-            'in English. To mitigate this issue in the future, a more concise and accurate response could '
+            "in English. To mitigate this issue in the future, a more concise and accurate response could "
             'be simply "Limited Liability Company" to align closely with the German term. This will ensure '
-            'a more precise match with the expected answer key.'
+            "a more precise match with the expected answer key."
         )
     ]
     gt_out = (
-        'The reason for the failure in answering the question could be that the provided answer '
+        "The reason for the failure in answering the question could be that the provided answer "
         '"Company with Limited Liability" does not exactly match the full German translation '
         '"Gesellschaft mit beschränkter Haftung" which stands for "company with limited liability" '
-        'in English. To mitigate this issue in the future, a more concise and accurate response could '
+        "in English. To mitigate this issue in the future, a more concise and accurate response could "
         'be simply "Limited Liability Company" to align closely with the German term. This will '
-        'ensure a more precise match with the expected answer key.'
+        "ensure a more precise match with the expected answer key."
     )
     out = _prompt_cot_reflection(
         llm=FakeListChatModel(responses=responses),
@@ -319,19 +315,19 @@ def test__prompt_cot_reflection() -> None:
     )
     responses = [
         (
-            'My reasoning for the acronym for VHM Medien being Video Home Media failed because I did '
-            'not fully understand the context of the question. In the future, when attempting this '
-            'question, I should focus on researching the specific name change of VIVA Media AG in '
-            '2004 to avoid confusion. To mitigate this failure, I will double-check the exact name '
-            'change and acronym before providing an answer.'
+            "My reasoning for the acronym for VHM Medien being Video Home Media failed because I did "
+            "not fully understand the context of the question. In the future, when attempting this "
+            "question, I should focus on researching the specific name change of VIVA Media AG in "
+            "2004 to avoid confusion. To mitigate this failure, I will double-check the exact name "
+            "change and acronym before providing an answer."
         )
     ]
     gt_out = (
-        'My reasoning for the acronym for VHM Medien being Video Home Media failed because I did not '
-        'fully understand the context of the question. In the future, when attempting this question, '
-        'I should focus on researching the specific name change of VIVA Media AG in 2004 to avoid '
-        'confusion. To mitigate this failure, I will double-check the exact name change and acronym '
-        'before providing an answer.'
+        "My reasoning for the acronym for VHM Medien being Video Home Media failed because I did not "
+        "fully understand the context of the question. In the future, when attempting this question, "
+        "I should focus on researching the specific name change of VIVA Media AG in 2004 to avoid "
+        "confusion. To mitigate this failure, I will double-check the exact name change and acronym "
+        "before providing an answer."
     )
     out = _prompt_cot_reflection(
         llm=FakeListChatModel(responses=responses),
@@ -379,7 +375,6 @@ def test_cot_reflect_last_attempt_and_reflexion() -> None:
 
 def test_cot_reflect() -> None:
     """Test cot_reflect function."""
-
     # Invalid strategy.
     with pytest.raises(NotImplementedError):
         out = cot_reflect(
@@ -433,7 +428,6 @@ def test_cot_reflect() -> None:
 
 def test__prompt_react_agent() -> None:
     """Test _prompt_react_agent function."""
-
     q = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
 
     # Test empty.
@@ -450,12 +444,10 @@ def test__prompt_react_agent() -> None:
     # Test simple case no reflections.
     responses = [
         (
-            'I need to search for VIVA Media AG and find out what their new acronym stands for.\n\nAction: Search[VIVA Media AG]'
+            "I need to search for VIVA Media AG and find out what their new acronym stands for.\n\nAction: Search[VIVA Media AG]"
         )
     ]
-    gt_out = (
-        'I need to search for VIVA Media AG and find out what their new acronym stands for.Action: Search[VIVA Media AG]'
-    )
+    gt_out = "I need to search for VIVA Media AG and find out what their new acronym stands for.Action: Search[VIVA Media AG]"
     out = _prompt_react_agent(
         llm=FakeListChatModel(responses=responses),
         examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
@@ -564,7 +556,6 @@ def test__prompt_react_agent() -> None:
 
 def test__prompt_react_reflection() -> None:
     """Test _prompt_react_reflection function."""
-
     q = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
 
     # Test empty.
@@ -592,17 +583,17 @@ def test__prompt_react_reflection() -> None:
     )
     responses = [
         (
-            'The failure in this reasoning trial was due to not being able to find specific information on VIVA Media AG and its name change '
-            'in 2004. To mitigate this failure, the agent should consider broadening the search terms to include related keywords such as '
+            "The failure in this reasoning trial was due to not being able to find specific information on VIVA Media AG and its name change "
+            "in 2004. To mitigate this failure, the agent should consider broadening the search terms to include related keywords such as "
             '"corporate rebranding" or "corporate name change" in addition to the specific company name. This will help in obtaining more '
-            'relevant and specific results that may provide the necessary information to answer the question accurately.'
+            "relevant and specific results that may provide the necessary information to answer the question accurately."
         )
     ]
     gt_out = (
-        'The failure in this reasoning trial was due to not being able to find specific information on VIVA Media AG and its name change in 2004. '
+        "The failure in this reasoning trial was due to not being able to find specific information on VIVA Media AG and its name change in 2004. "
         'To mitigate this failure, the agent should consider broadening the search terms to include related keywords such as "corporate rebranding" '
         'or "corporate name change" in addition to the specific company name. This will help in obtaining more relevant and specific results that may '
-        'provide the necessary information to answer the question accurately.'
+        "provide the necessary information to answer the question accurately."
     )
     out = _prompt_react_reflection(
         llm=FakeListChatModel(responses=responses),

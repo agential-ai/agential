@@ -6,7 +6,10 @@ from tiktoken.core import Encoding
 
 from discussion_agents.cog.agent.reflexion import ReflexionCoTAgent, ReflexionReActAgent
 from discussion_agents.cog.modules.memory.reflexion import ReflexionMemory
-from discussion_agents.cog.modules.reflect.reflexion import ReflexionCoTReflector, ReflexionReActReflector
+from discussion_agents.cog.modules.reflect.reflexion import (
+    ReflexionCoTReflector,
+    ReflexionReActReflector,
+)
 
 
 def test_reflexion_cot_init() -> None:
@@ -22,7 +25,7 @@ def test_reflexion_cot_init() -> None:
     assert isinstance(agent.reflector, ReflexionCoTReflector)
     assert agent.max_reflections == 3
     assert agent.max_trials == 1
-    assert agent.patience == agent.max_trials 
+    assert agent.patience == agent.max_trials
 
 
 def test_reflexion_cot_reset(reflexion_cot_agent: ReflexionCoTAgent) -> None:
