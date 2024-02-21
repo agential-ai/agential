@@ -383,7 +383,6 @@ def _prompt_react_agent(
             )
         ]
     ).content
-    print("OUT:\n\n", repr(out))
     assert isinstance(out, str)
     return remove_newline(out)
 
@@ -422,7 +421,6 @@ def _prompt_react_reflection(
             )
         ]
     ).content
-    print("REFLECTION:\n\n", repr(out))
     assert isinstance(out, str)
     return remove_newline(out)
 
