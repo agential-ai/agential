@@ -152,6 +152,68 @@ def test_reflexion_cot_reflect_strat() -> None:
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
 
+    # Test last attempt followed by last attempt and reflexion.
+    gt_out_reflections = ['Initial scratchpad content']
+    gt_out_reflections_str = 'You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nInitial scratchpad content\n(END PREVIOUS TRIAL)\n'
+    reflector = ReflexionCoTReflector(
+        llm=FakeListChatModel(responses=["1"]),
+    )
+    reflections, reflections_str = reflector.reflect(strategy="last_attempt", examples=examples, question=question, scratchpad=scratchpad, context=context)
+    assert reflections == gt_out_reflections
+    assert reflections_str == gt_out_reflections_str
+    gt_out_reflections = ['1']
+    gt_out_reflections_str = 'You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nInitial scratchpad content\n(END PREVIOUS TRIAL)\n\nThe following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1'
+    reflections, reflections_str = reflector.reflect(strategy="last_attempt_and_reflexion", examples=examples, question=question, scratchpad=scratchpad, context=context)
+    assert reflections == gt_out_reflections
+    assert reflections_str == gt_out_reflections_str
+
+    # Test last attempt and reflexion followed by last attempt.
+    gt_out_reflections = ['1']
+    gt_out_reflections_str = 'You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nInitial scratchpad content\n(END PREVIOUS TRIAL)\n\nThe following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1'
+    reflector = ReflexionCoTReflector(
+        llm=FakeListChatModel(responses=["1"]),
+    )
+    reflections, reflections_str = reflector.reflect(strategy="last_attempt_and_reflexion", examples=examples, question=question, scratchpad=scratchpad, context=context)
+    assert reflections == gt_out_reflections
+    assert reflections_str == gt_out_reflections_str
+    gt_out_reflections = ['Initial scratchpad content']
+    gt_out_reflections_str = 'You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nInitial scratchpad content\n(END PREVIOUS TRIAL)\n'
+    reflections, reflections_str = reflector.reflect(strategy="last_attempt", examples=examples, question=question, scratchpad=scratchpad, context=context)
+    assert reflections == gt_out_reflections
+    assert reflections_str == gt_out_reflections_str
+
+    # Test reflexion followed by last attempt and reflexion.
+    gt_out_reflections = ['1']
+    gt_out_reflections_str = 'You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1'
+    reflector = ReflexionCoTReflector(
+        llm=FakeListChatModel(responses=["1"]),
+    )
+    reflections, reflections_str = reflector.reflect(strategy="reflexion", examples=examples, question=question, scratchpad=scratchpad, context=context)
+    assert reflections == gt_out_reflections
+    assert reflections_str == gt_out_reflections_str
+    gt_out_reflections = ['1']
+    gt_out_reflections_str = 'You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nInitial scratchpad content\n(END PREVIOUS TRIAL)\n\nThe following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1'
+    reflections, reflections_str = reflector.reflect(strategy="last_attempt_and_reflexion", examples=examples, question=question, scratchpad=scratchpad, context=context)
+    assert reflections == gt_out_reflections
+    assert reflections_str == gt_out_reflections_str
+
+
+    # Test last attempt and reflexion followed by reflexion.
+    gt_out_reflections = ['1']
+    gt_out_reflections_str = 'You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nInitial scratchpad content\n(END PREVIOUS TRIAL)\n\nThe following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1'
+    reflector = ReflexionCoTReflector(
+        llm=FakeListChatModel(responses=["1"]),
+    )
+    reflections, reflections_str = reflector.reflect(strategy="last_attempt_and_reflexion", examples=examples, question=question, scratchpad=scratchpad, context=context)
+    assert reflections == gt_out_reflections
+    assert reflections_str == gt_out_reflections_str
+    gt_out_reflections = ['1', '1']
+    gt_out_reflections_str = 'You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1\n- 1'
+    reflections, reflections_str = reflector.reflect(strategy="reflexion", examples=examples, question=question, scratchpad=scratchpad, context=context)
+    assert reflections == gt_out_reflections
+    assert reflections_str == gt_out_reflections_str
+
+
 def test_reflexion_cot_clear() -> None:
     """Unit tests for ReflexionCoT Reflector clear method."""
     reflector = ReflexionCoTReflector(
