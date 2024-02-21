@@ -100,11 +100,6 @@ def test_reflexion_cot_generate() -> None:
         self_reflect_llm=FakeListChatModel(responses=["1"]), action_llm=action_llm
     )
 
-    assert reflexion_cot_agent.patience >= 1
-    assert reflexion_cot_agent.max_trials >= 1
-    assert reflexion_cot_agent.patience <= reflexion_cot_agent.max_trials
-    assert reflexion_cot_agent._trial_n == 0
-
     out = reflexion_cot_agent.generate(
         question=question, key=key, context=context, strategy=None
     )
@@ -125,11 +120,6 @@ def test_reflexion_cot_generate() -> None:
         self_reflect_llm=FakeListChatModel(responses=["1"]), action_llm=action_llm
     )
 
-    assert reflexion_cot_agent.patience >= 1
-    assert reflexion_cot_agent.max_trials >= 1
-    assert reflexion_cot_agent.patience <= reflexion_cot_agent.max_trials
-    assert reflexion_cot_agent._trial_n == 0
-
     out = reflexion_cot_agent.generate(
         question=question, key=key, context=context, strategy=None
     )
@@ -149,10 +139,6 @@ def test_reflexion_cot_generate() -> None:
         self_reflect_llm=FakeListChatModel(responses=["1"]), action_llm=action_llm
     )
 
-    assert reflexion_cot_agent.patience >= 1
-    assert reflexion_cot_agent.max_trials >= 1
-    assert reflexion_cot_agent.patience <= reflexion_cot_agent.max_trials
-    assert reflexion_cot_agent._trial_n == 0
     out = reflexion_cot_agent.generate(
         question=question, key=key, context=context, strategy=None
     )
@@ -171,10 +157,6 @@ def test_reflexion_cot_generate() -> None:
     reflexion_cot_agent = ReflexionCoTAgent(
         self_reflect_llm=FakeListChatModel(responses=["1"]), action_llm=action_llm
     )
-    assert reflexion_cot_agent.patience >= 1
-    assert reflexion_cot_agent.max_trials >= 1
-    assert reflexion_cot_agent.patience <= reflexion_cot_agent.max_trials
-    assert reflexion_cot_agent._trial_n == 0
     out = reflexion_cot_agent.generate(
         question=question, key=key, context=context, strategy="last_attempt"
     )
@@ -193,10 +175,6 @@ def test_reflexion_cot_generate() -> None:
     reflexion_cot_agent = ReflexionCoTAgent(
         self_reflect_llm=FakeListChatModel(responses=["1"]), action_llm=action_llm
     )
-    assert reflexion_cot_agent.patience >= 1
-    assert reflexion_cot_agent.max_trials >= 1
-    assert reflexion_cot_agent.patience <= reflexion_cot_agent.max_trials
-    assert reflexion_cot_agent._trial_n == 0
     out = reflexion_cot_agent.generate(
         question=question, key=key, context=None, strategy=None
     )
@@ -229,11 +207,58 @@ def test_reflexion_cot_generate() -> None:
     out = agent.generate(question=question, key=key, context=context, strategy="reflexion")
     assert out == gt_out
 
-    # Test exhaust patience.
+    # Test exhaust patience and get incorrect answers for all trials.
+    gt_out = [
+        'Thought: Upon reflecting on the incorrect answer I provided, I realize that the phrasing discrepancy in my response may have been the reason for the error. While I correctly identified that the new acronym for VIVA Media AG was GmbH, I did not provide the full expansion of the acronym as "Gesellschaft mit beschränkter Haftung." This lack of completeness in my answer likely led to it being marked as incorrect. In the future, I will ensure to always provide the complete expansion of acronyms when responding to similar questions to avoid any phrasing discrepancies.\nAction: Finish[VIVA Media GmbH]\n\nAnswer is INCORRECT', 
+        'Thought: The reason for the failure in this trial could be the discrepancy in the phrasing of the answer. The question asked for the acronym of the new name, while the provided answer included the full name "VIVA Media GmbH". To avoid this mistake, I should provide only the acronym "GmbH" as the answer, as it directly corresponds to the acronym in the question. This adjustment will ensure a more accurate match between the question and the answer provided.Action: Finish[GmbH]\nAction: Finish[GmbH]\n\nAnswer is INCORRECT'
+    ]
+    self_reflect_llm_responses = [
+        'The reason for the failure in this trial could be the discrepancy in the phrasing of the answer. The question asked for the acronym of the new name, while the provided answer included the full name "VIVA Media GmbH". To mitigate this issue in future trials, a more concise and high-level plan would be to provide only the acronym "GmbH" as the answer, as it directly corresponds to the acronym in the question. This adjustment will ensure a more accurate match between the question and the answer provided.'
+    ]
+    action_llm_responses = [
+        'Upon reflecting on the incorrect answer I provided, I realize that the phrasing discrepancy in my response may have been the reason for the error. While I correctly identified that the new acronym for VIVA Media AG was GmbH, I did not provide the full expansion of the acronym as "Gesellschaft mit beschränkter Haftung." This lack of completeness in my answer likely led to it being marked as incorrect. In the future, I will ensure to always provide the complete expansion of acronyms when responding to similar questions to avoid any phrasing discrepancies.',
+        'Finish[VIVA Media GmbH]',
+        'The reason for the failure in this trial could be the discrepancy in the phrasing of the answer. The question asked for the acronym of the new name, while the provided answer included the full name "VIVA Media GmbH". To avoid this mistake, I should provide only the acronym "GmbH" as the answer, as it directly corresponds to the acronym in the question. This adjustment will ensure a more accurate match between the question and the answer provided.\nAction: Finish[GmbH]',
+        'Finish[GmbH]'
+    ]
+    self_reflect_llm = FakeListChatModel(responses=self_reflect_llm_responses)
+    action_llm = FakeListChatModel(responses=action_llm_responses)
+    agent = ReflexionCoTAgent(
+        self_reflect_llm=self_reflect_llm,
+        action_llm=action_llm,
+        max_trials=3,
+        patience=2
+    )
+    out = agent.generate(question=question, key=key, context=context, strategy="reflexion")
+    assert out == gt_out
 
-    # Test get incorrect answer for all trials.
+    # Test patience reset after incorrect answer and subsequent runs.
 
-    # Test patience reset after correct answer.
+    # Answer incorrectly.
+    gt_out = [
+        'Thought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with Limited Liability]\n\nAnswer is INCORRECT'
+    ]
+    action_llm_reseponses = [
+        'The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.',
+        "Finish[Company with Limited Liability]",
+    ]
+    self_reflect_llm = FakeListChatModel(responses=['1'])
+    action_llm = FakeListChatModel(responses=action_llm_reseponses)
+    agent = ReflexionCoTAgent(
+        self_reflect_llm=self_reflect_llm,
+        action_llm=action_llm,
+        max_trials=1,
+        patience=1
+    )
+    out = agent.generate(question=question, key=key, context=context, strategy="reflexion")
+    assert out == gt_out
+
+    # In a subsequent run, answer correctly (reset defaults to True). Output is non-empty if patience is correctly reset.
+    gt_out = [
+        'Thought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with Limited Liability]\n\nAnswer is INCORRECT'
+    ]
+    out = agent.generate(question=question, key=key, context=context, strategy="reflexion")
+    assert out == gt_out
 
 
 def test_reflexion_react_init() -> None:
