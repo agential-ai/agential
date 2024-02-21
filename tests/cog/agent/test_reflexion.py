@@ -31,7 +31,7 @@ def test_reflexion_cot_init() -> None:
 def test_reflexion_cot_reset(reflexion_cot_agent: ReflexionCoTAgent) -> None:
     """Test reset method."""
     reflexion_cot_agent._finished = True
-    reflexion_cot_agent._step_n = 143
+    reflexion_cot_agent._trial_n = 143
     reflexion_cot_agent._answer = "cat"
     reflexion_cot_agent.memory.scratchpad = "dog"
     reflexion_cot_agent.reflector.reflections = ["puppy"]
@@ -41,7 +41,7 @@ def test_reflexion_cot_reset(reflexion_cot_agent: ReflexionCoTAgent) -> None:
     assert not reflexion_cot_agent.memory.scratchpad
     assert not reflexion_cot_agent.reflector.reflections
     assert not reflexion_cot_agent.reflector.reflections_str
-    assert not reflexion_cot_agent._step_n
+    assert not reflexion_cot_agent._trial_n
     assert not reflexion_cot_agent._answer
 
 
@@ -103,7 +103,7 @@ def test_reflexion_cot_generate() -> None:
     assert reflexion_cot_agent.patience >= 1
     assert reflexion_cot_agent.max_trials >= 1
     assert reflexion_cot_agent.patience <= reflexion_cot_agent.max_trials
-    assert reflexion_cot_agent._step_n == 0
+    assert reflexion_cot_agent._trial_n == 0
 
     out = reflexion_cot_agent.generate(
         question=question, key=key, context=context, strategy=None
@@ -128,7 +128,7 @@ def test_reflexion_cot_generate() -> None:
     assert reflexion_cot_agent.patience >= 1
     assert reflexion_cot_agent.max_trials >= 1
     assert reflexion_cot_agent.patience <= reflexion_cot_agent.max_trials
-    assert reflexion_cot_agent._step_n == 0
+    assert reflexion_cot_agent._trial_n == 0
 
     out = reflexion_cot_agent.generate(
         question=question, key=key, context=context, strategy=None
@@ -152,7 +152,7 @@ def test_reflexion_cot_generate() -> None:
     assert reflexion_cot_agent.patience >= 1
     assert reflexion_cot_agent.max_trials >= 1
     assert reflexion_cot_agent.patience <= reflexion_cot_agent.max_trials
-    assert reflexion_cot_agent._step_n == 0
+    assert reflexion_cot_agent._trial_n == 0
     out = reflexion_cot_agent.generate(
         question=question, key=key, context=context, strategy=None
     )
@@ -174,7 +174,7 @@ def test_reflexion_cot_generate() -> None:
     assert reflexion_cot_agent.patience >= 1
     assert reflexion_cot_agent.max_trials >= 1
     assert reflexion_cot_agent.patience <= reflexion_cot_agent.max_trials
-    assert reflexion_cot_agent._step_n == 0
+    assert reflexion_cot_agent._trial_n == 0
     out = reflexion_cot_agent.generate(
         question=question, key=key, context=context, strategy="last_attempt"
     )
@@ -196,7 +196,7 @@ def test_reflexion_cot_generate() -> None:
     assert reflexion_cot_agent.patience >= 1
     assert reflexion_cot_agent.max_trials >= 1
     assert reflexion_cot_agent.patience <= reflexion_cot_agent.max_trials
-    assert reflexion_cot_agent._step_n == 0
+    assert reflexion_cot_agent._trial_n == 0
     out = reflexion_cot_agent.generate(
         question=question, key=key, context=None, strategy=None
     )
@@ -204,6 +204,36 @@ def test_reflexion_cot_generate() -> None:
     assert isinstance(out, list)
     assert len(out) == 1
     assert out[0] == gt_out_str
+
+    # Test reach max_trials.
+    gt_out = [
+        'Thought: The context provided states that VIVA Media AG changed its name to VIVA Media GmbH in 2004. Based on the information given, the new acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.Action: Finish[Company with limited liability]\nAction: Finish[Company with limited liability]\n\nAnswer is INCORRECT',
+        'Thought: The reflection provided valuable insight into the previous mistake. To align with the question\'s request for the meaning of the new acronym in German, I should provide the answer in German, which is "Gesellschaft mit beschränkter Haftung". This will ensure accuracy and avoid repeating the previous error.Action: Finish[Gesellschaft mit beschränkter Haftung]\nAction: Finish[Gesellschaft mit beschränkter Haftung]\n\nAnswer is CORRECT'
+    ]
+    self_reflect_llm_responses = [
+        'Upon reflection, the phrasing discrepancy in my answer may have been the reason for it being marked incorrect. While I provided the correct translation of "GmbH" in English, the question specifically asked for the acronym\'s meaning in German. To mitigate this failure in the future, I should provide the answer in the same language as requested in the question, which in this case would be "Gesellschaft mit beschränkter Haftung". This will ensure alignment between the question and my response.'
+    ]
+    action_llm_responses = [
+        'The context provided states that VIVA Media AG changed its name to VIVA Media GmbH in 2004. Based on the information given, the new acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with limited liability]',
+        'Finish[Company with limited liability]',
+        'The reflection provided valuable insight into the previous mistake. To align with the question\'s request for the meaning of the new acronym in German, I should provide the answer in German, which is "Gesellschaft mit beschränkter Haftung". This will ensure accuracy and avoid repeating the previous error.\n\nAction: Finish[Gesellschaft mit beschränkter Haftung]',
+        'Finish[Gesellschaft mit beschränkter Haftung]'
+    ]
+    self_reflect_llm = FakeListChatModel(responses=self_reflect_llm_responses)
+    action_llm = FakeListChatModel(responses=action_llm_responses)
+    agent = ReflexionCoTAgent(
+        self_reflect_llm=self_reflect_llm,
+        action_llm=action_llm,
+        max_trials=2,
+    )
+    out = agent.generate(question=question, key=key, context=context, strategy="reflexion")
+    assert out == gt_out
+
+    # Test exhaust patience.
+
+    # Test get incorrect answer for all trials.
+
+    # Test patience reset after correct answer.
 
 
 def test_reflexion_react_init() -> None:

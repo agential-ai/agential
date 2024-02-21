@@ -90,7 +90,7 @@ class ReflexionCoTAgent(BaseAgent):
         self.patience = patience
         assert self.patience >= 1 and self.patience <= max_trials
 
-        self._step_n = 0
+        self._trial_n = 0
         self._finished = False
         self._answer = ""
 
@@ -123,10 +123,10 @@ class ReflexionCoTAgent(BaseAgent):
 
         patience_cnt = 0
         result = []
-        while not EM(self._answer, key) and self._step_n < self.max_trials:
+        while not EM(self._answer, key) and self._trial_n < self.max_trials:
             # Reflect if possible.
             reflections_str = ""
-            if self._step_n > 0 and not EM(self._answer, key) and strategy:
+            if self._trial_n > 0 and not EM(self._answer, key) and strategy:
                 reflections_str = self.reflect(strategy, question, context)
 
             out = ""
@@ -178,7 +178,7 @@ class ReflexionCoTAgent(BaseAgent):
                 self.memory.add_memories(invalid_action_str)
                 out += "\n" + invalid_action_str
 
-            self._step_n += 1
+            self._trial_n += 1
 
             result.append(out)
 
@@ -235,7 +235,7 @@ class ReflexionCoTAgent(BaseAgent):
         self.memory.clear()
         self.reflector.clear()
         self._finished = False
-        self._step_n = 0
+        self._trial_n = 0
         self._answer = ""
 
 
