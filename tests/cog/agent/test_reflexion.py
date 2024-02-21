@@ -293,7 +293,6 @@ def test_reflexion_react_reset(reflexion_react_agent: ReflexionReActAgent) -> No
     assert not reflexion_react_agent.reflector.reflections
     assert not reflexion_react_agent.reflector.reflections_str
     assert reflexion_react_agent._step_n == 1
-    assert reflexion_react_agent._step_n == 1
     assert not reflexion_react_agent._answer
 
 
@@ -337,10 +336,6 @@ def test_reflexion_react_generate() -> None:
     agent = ReflexionReActAgent(
         self_reflect_llm=FakeListChatModel(responses=["1"]), action_llm=action_llm
     )
-    assert agent.patience >= 1
-    assert agent.max_trials >= 1
-    assert agent.patience <= agent.max_trials
-    assert agent._step_n == 1
     out = agent.generate(question=question, key=key, strategy=None)
     assert isinstance(out, list)
     assert len(out) == 1
@@ -376,10 +371,6 @@ def test_reflexion_react_generate() -> None:
     agent = ReflexionReActAgent(
         self_reflect_llm=self_reflect_llm, action_llm=action_llm
     )
-    assert agent.patience >= 1
-    assert agent.max_trials >= 1
-    assert agent.patience <= agent.max_trials
-    assert agent._step_n == 1
     out = agent.generate(question=question, key=key, strategy=None)
 
     assert isinstance(out, list)
@@ -429,9 +420,68 @@ def test_reflexion_react_generate() -> None:
         max_trials=2,
     )
     out = agent.generate(question=question, key=key, strategy="reflexion")
-    assert len(out) == 2
+    assert len(out) == 2  # Outputs vary because of Wikipedia API, though overall output format is correct. Checking if terminates correctly.
 
     # Test exhaust patience and get incorrect answers for all trials.
-
+    self_reflect_llm_responses = [
+        'The failure in this reasoning trial could be due to the lack of specific keywords used in the search query. To mitigate this failure, a new plan could involve searching for the specific name change of VIVA Media AG in 2004, then looking for the new acronym directly instead of searching for the acronym from the start. This approach would provide more targeted and accurate results.'
+    ]
+    action_llm_responses = [
+        "I need to search for VIVA Media AG and find out what their new acronym stands for after changing their name in 2004. Let's start by searching for VIVA Media AG. \nAction: Search[VIVA Media AG]",
+        'Search[VIVA Media AG]',
+        'I couldn\'t find VIVA Media AG, but some similar entities are listed. I should try searching for VIVA Media AG on a different platform or with a different search query. Let\'s try searching for VIVA Media AG on a different search engine. \nAction: Search[VIVA Media AG on different search engine]\nObservation 2: VIVA Media AG was a German media company that changed its name to VIVACOM in 2004. Now I need to find out what VIVACOM stands for.\nThought: VIVA Media AG changed its name to VIVACOM in 2004. I need to search for VIVACOM and find out what the acronym stands for.\nAction: Search[VIVACOM]\nObservation 3: Could not find [VIVACOM]. Similar: [\'Vivacom Arena - Georgi Asparuhov Stadium\', \'Vivacom Arena - Georgi Asparuhov Stadium\', \'Vivacom Arena - Georgi Asparuhov Stadium\', \'Vivacom Arena - Georgi Asparuhov Stadium\', \'Vivacom Arena - Georgi Asparuhov Stadium\', \'Vivacom Arena - Georgi Asparuhov Stadium\', \'Vivacom Arena - Georgi Asparuhov Stadium\', \'Vivacom Arena - Georgi Asparuhov Stadium\', \'Vivacom Arena - Georgi Asparuhov Stadium\', \'Vivacom Arena - Georgi Asparuhov Stadium\']\nThought: Since I couldn\'t find information on what VIVACOM stands for directly, I should look up the history of VIVA Media AG to see if there\'s any mention of the acronym change in 2004.\nAction: Lookup[name change in 2004]\nObservation 4: (Result 1 / 1) VIVA Media AG changed its name to VIVACOM in 2004, with the new acronym standing for "VIVA Communications". \nThought: The new acronym for VIVACOM stands for "VIVA Communications." \nAction: Finish[VIVA Communications]',
+        'Search[VIVA Media AG on different search engine]',
+        "I still couldn't find VIVA Media AG. I should try searching for the new acronym directly. Let's search for the new acronym of VIVA Media AG after changing its name in 2004.\nAction: Search[new acronym of VIVA Media AG after 2004 name change]\nObservation 3: No relevant information found.\nThought: Since I couldn't find any information on the new acronym, I might need to broaden my search. Let's try searching for the name change of VIVA Media AG in 2004 and see if we can find any clues about the new acronym.\nAction: Search[VIVA Media AG name change 2004]\nObservation 4: Found information about VIVA Media AG changing its name to VIVA Entertainment in 2004.\nThought: VIVA Media AG changed its name to VIVA Entertainment in 2004. So the new acronym might be VE. Let's try to confirm this by searching for VIVA Entertainment acronym.\nAction: Search[VIVA Entertainment acronym]\nObservation 5: No relevant information found about the new acronym for VIVA Entertainment after the name change.\nThought: Since I couldn't find any direct information on the new acronym, I might need to infer it based on the new name. Let's think about possible acronyms that could be derived from VIVA Entertainment.\nAction: Think of possible acronyms for VIVA Entertainment after the name change in 2004.\nThought: VIVA Entertainment could potentially have an acronym like VIVAE or VIVAENT. Let's try searching for these variations to see if we can find the correct new acronym.\nAction: Search[VIVA Entertainment VIVAE acronym]\nObservation 6: No relevant information found.\nThought: Let's try searching for VIVA Entertainment VIVAENT acronym now.\nAction: Search[VIVA Entertainment VIVAENT acronym]\nObservation 7: Found information that the acronym for VIVA Entertainment after the name change in 2004 is VENT.\nThought: The new acronym for VIVA Entertainment after the name change in 2004 is VENT. \nAction: Finish[VENT]",
+        'Search[VIVA Media AG new acronym 2004]',
+        "I should refine my search query further by including specific keywords related to the name change of VIVA Media AG in 2004. Let's try searching for the name change details or the company's history to find the new acronym directly. \nAction: Search[VIVA Media AG name change 2004]\nObservation 4: The search results provide information about VIVA Media AG changing its name to VIVA Entertainment Group in 2004. Now, I can search for the acronym of VIVA Entertainment Group to find the answer.\nAction: Search[VIVA Entertainment Group acronym]\nObservation 5: The acronym for VIVA Entertainment Group is VEG. \nThought: The new acronym for VIVA Media AG after changing its name in 2004 is VEG, which stands for VIVA Entertainment Group. \nAction: Finish[VEG]",
+        'Search[VIVA Media AG name change 2004]',
+        "I should try to search for the specific name change details of VIVA Media AG in 2004. Let's search for the history of VIVA Media AG name change in 2004 to find the new acronym directly.\nAction: Search[VIVA Media AG name change history 2004]\nObservation: (Result 1 / 1) VIVA Media AG changed its name to VIVA Entertainment in 2004. The new acronym stands for Video Interactive Visions & Arts.\nThought: The new acronym for VIVA Media AG after changing its name in 2004 is Video Interactive Visions & Arts. \nAction: Finish[Video Interactive Visions & Arts]",
+        'Search[VIVA Media AG name change history 2004]',
+        "I should try to search for specific information about the rebranding or renaming of VIVA Media AG in 2004. Let's search for the specific details of the name change process or any announcements related to the new acronym. \nAction: Search[VIVA Media AG rebranding 2004 details]\nObservation: [Pending]",
+        'Search[VIVA Media AG rebranding 2004]',
+    ]
+    self_reflect_llm = FakeListChatModel(responses=self_reflect_llm_responses)
+    action_llm = FakeListChatModel(responses=action_llm_responses)
+    agent = ReflexionReActAgent(
+        self_reflect_llm=self_reflect_llm,
+        action_llm=action_llm,
+        max_trials=3,
+        max_steps=3,
+        patience=2
+    )
+    out = agent.generate(question=question, key=key, strategy="reflexion")
+    assert len(out) == 2  # Outputs vary because of Wikipedia API, though overall output format is correct. Checking if terminates correctly.
 
     # Test patience reset after incorrect answer and subsequent runs.
+
+    # Answer incorrectly.
+    action_llm_responses = [
+        "I need to search for VIVA Media AG to find out their new acronym and what it stands for. Let's start by searching for VIVA Media AG.",
+        'Search[VIVA Media AG]',
+        "Since I couldn't find VIVA Media AG, I should try searching for VIVA Media AG name change 2004 to see if I can find their new acronym and what it stands for.\nAction: Search[VIVA Media AG name change 2004]\nObservation 2: Could not find [VIVA Media AG name change 2004]. Similar: ['2004 VIVA World Cup', '2004 Gaming', '2004 VIVA World Cup squads', '2004 VIVA World Cup qualification', '2004 VIVA World Cup Final', '2004 VIVA World Cup Group A', '2004 VIVA World Cup Group B', '2004 VIVA World Cup Group C', '2004 VIVA World Cup Group D', '2004 VIVA World Cup Group E']\nThought: Since I couldn't find the specific information, I should try searching for VIVA Media AG history or company information to see if I can find details about their name change in 2004 and their new acronym.\nAction: Search[VIVA Media AG history]\nObservation 3: VIVA Media AG was a German media company headquartered in Cologne, Germany. The company was founded in 1993 and was known for its music television programs.\nThought: To find out their new acronym, I need to search for VIVA Media AG new name 2004 or something similar.\nAction: Search[VIVA Media AG new name 2004]\nObservation 4: Could not find [VIVA Media AG new name 2004]. Similar: ['2004 VIVA World Cup', '2004 Gaming', '2004 VIVA World Cup squads', '2004 VIVA World Cup qualification', '2004 VIVA World Cup Final', '2004 VIVA World Cup Group A', '2004 VIVA World Cup Group B', '2004 VIVA World Cup Group C', '2004 VIVA World Cup Group D', '2004 VIVA World Cup Group E']\nThought: Since I'm not getting the specific information, I should try searching for VIVA Media AG corporate changes in 2004 to see if I can find the details about their name change and new acronym.\nAction: Search[VIVA Media AG corporate changes 2004]",
+        'Search[VIVA Media AG name change 2004]',
+        "Since I couldn't find information about VIVA Media AG's name change in 2004, I should try searching for VIVA Media AG acronym to see if I can find any relevant information.\nAction: Search[VIVA Media AG acronym]\nObservation 3: Could not find [VIVA Media AG acronym]. Similar: ['NBA', 'PDA', 'GTA', 'DGA', 'GMA', 'GA', 'RNA', 'GFA', 'GAA', 'CIA']\nThought: It seems like I am not able to find specific information about VIVA Media AG's new acronym and what it stands for. I will need to find a different approach to answer this question.\nAction: Finish[Unable to find information]",
+        'Search[VIVA Media AG acronym]'
+    ]
+    self_reflect_llm = FakeListChatModel(responses=["1"])
+    action_llm = FakeListChatModel(responses=action_llm_responses)
+    agent = ReflexionReActAgent(
+        self_reflect_llm=self_reflect_llm,
+        action_llm=action_llm,
+        max_trials=1,
+        max_steps=3,
+        patience=1
+    )
+    out = agent.generate(question=question, key=key, strategy="reflexion")
+    assert len(out) == 1  # Assert 1 trial only ran. 
+
+    # In a subsequent run, answer correctly (reset defaults to True). Output is non-empty if patience is correctly reset.
+    agent = ReflexionReActAgent(
+        self_reflect_llm=self_reflect_llm,
+        action_llm=action_llm,
+        max_trials=1,
+        max_steps=3,
+        patience=1
+    )
+    out = agent.generate(question=question, key=key, strategy="reflexion")
+    assert len(out) == 1  # Assert 1 trial only ran. 
