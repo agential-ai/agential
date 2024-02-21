@@ -90,7 +90,7 @@ class ReflexionCoTAgent(BaseAgent):
         self.patience = patience
         assert self.patience >= 1 and self.patience <= max_trials
 
-        self._step_n = 0
+        self._trial_n = 0
         self._finished = False
         self._answer = ""
 
@@ -123,10 +123,11 @@ class ReflexionCoTAgent(BaseAgent):
 
         patience_cnt = 0
         result = []
-        while not EM(self._answer, key) and self._step_n < self.max_trials:
+        while not EM(self._answer, key) and self._trial_n < self.max_trials:
             # Reflect if possible.
-            if self._step_n > 0 and not EM(self._answer, key) and strategy:
-                self.reflect(strategy, question, context)
+            reflections_str = ""
+            if self._trial_n > 0 and not EM(self._answer, key) and strategy:
+                reflections_str = self.reflect(strategy, question, context)
 
             out = ""
 
@@ -137,7 +138,7 @@ class ReflexionCoTAgent(BaseAgent):
                 examples=REFLEXION_COT_FEWSHOT_EXAMPLES
                 if context
                 else REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
-                reflections=self.reflector.reflections_str,
+                reflections=reflections_str,
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
                 context=context,
@@ -152,7 +153,7 @@ class ReflexionCoTAgent(BaseAgent):
                 examples=REFLEXION_COT_FEWSHOT_EXAMPLES
                 if context
                 else REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
-                reflections=self.reflector.reflections_str,
+                reflections=reflections_str,
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
                 context=context,
@@ -177,7 +178,7 @@ class ReflexionCoTAgent(BaseAgent):
                 self.memory.add_memories(invalid_action_str)
                 out += "\n" + invalid_action_str
 
-            self._step_n += 1
+            self._trial_n += 1
 
             result.append(out)
 
@@ -234,7 +235,7 @@ class ReflexionCoTAgent(BaseAgent):
         self.memory.clear()
         self.reflector.clear()
         self._finished = False
-        self._step_n = 0
+        self._trial_n = 0
         self._answer = ""
 
 

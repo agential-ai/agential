@@ -54,6 +54,7 @@ def _prompt_agent(llm: BaseChatModel, question: str, scratchpad: str) -> str:
             )
         ]
     ).content
+
     assert isinstance(out, str)
     return remove_newline(out)
 
