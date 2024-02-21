@@ -410,6 +410,12 @@ def test_reflexion_react_generate() -> None:
     out = agent.generate(question=question, key=key, strategy=None)
     assert isinstance(out, list)
     assert len(out) == 1
+    assert agent._step_n == 6
+    assert agent._trial_n == 1
+    assert agent._answer == "unable to determine"
+    assert agent._finished
+    assert agent.reflector.reflections == []
+    assert agent.reflector.reflections_str == ""
 
     # Test generate with reflection (last_attempt_and_reflexion).
     action_responses = [
@@ -446,14 +452,30 @@ def test_reflexion_react_generate() -> None:
 
     assert isinstance(out, list)
     assert len(out) == 1
+    assert agent._step_n == 5
+    assert agent._trial_n == 1
+    assert agent._answer == "unable to find answer"
+    assert agent._finished
+    assert agent.reflector.reflections == []
+    assert agent.reflector.reflections_str == ""
 
     out = agent.generate(
         question=question, key=key, strategy="last_attempt_and_reflexion"
     )
     assert isinstance(out, list)
     assert len(out) == 1
+    assert agent._step_n == 7
+    assert agent._trial_n == 1
+    assert agent._answer == ""
+    assert not agent._finished
+    assert agent.reflector.reflections == []
+    assert agent.reflector.reflections_str == ""
 
     # Test reach max_trials.
+    gt_out_reflections = [
+        'The failure in this reasoning trial was due to the inability to find information on VIVA Media AG\'s new acronym after changing its name in 2004. The search queries used were too broad and did not yield relevant results. To mitigate this failure in the future, the agent should try more specific search queries such as "VIVA Media AG name change 2004 new acronym" or "VIVA Media AG rebranding 2004 acronym" to directly target the information needed. Additionally, focusing on searching for official announcements, press releases, or news articles related to the name change may provide more accurate results.'
+    ]
+    gt_out_reflections_str = 'You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- The failure in this reasoning trial was due to the inability to find information on VIVA Media AG\'s new acronym after changing its name in 2004. The search queries used were too broad and did not yield relevant results. To mitigate this failure in the future, the agent should try more specific search queries such as "VIVA Media AG name change 2004 new acronym" or "VIVA Media AG rebranding 2004 acronym" to directly target the information needed. Additionally, focusing on searching for official announcements, press releases, or news articles related to the name change may provide more accurate results.'
     self_reflect_llm_responses = [
         'The failure in this reasoning trial was due to the inability to find information on VIVA Media AG\'s new acronym after changing its name in 2004. The search queries used were too broad and did not yield relevant results. To mitigate this failure in the future, the agent should try more specific search queries such as "VIVA Media AG name change 2004 new acronym" or "VIVA Media AG rebranding 2004 acronym" to directly target the information needed. Additionally, focusing on searching for official announcements, press releases, or news articles related to the name change may provide more accurate results.'
     ]
@@ -492,8 +514,18 @@ def test_reflexion_react_generate() -> None:
     )
     out = agent.generate(question=question, key=key, strategy="reflexion")
     assert len(out) == 2  # Outputs vary because of Wikipedia API, though overall output format is correct. Checking if terminates correctly.
+    assert agent._step_n == 7
+    assert agent._trial_n == 2
+    assert agent._answer == ""
+    assert not agent._finished
+    assert agent.reflector.reflections == gt_out_reflections
+    assert agent.reflector.reflections_str == gt_out_reflections_str
 
     # Test exhaust patience and get incorrect answers for all trials.
+    gt_out_reflections = [
+        'The failure in this reasoning trial could be due to the lack of specific keywords used in the search query. To mitigate this failure, a new plan could involve searching for the specific name change of VIVA Media AG in 2004, then looking for the new acronym directly instead of searching for the acronym from the start. This approach would provide more targeted and accurate results.'
+    ]
+    gt_out_reflections_str = 'You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- The failure in this reasoning trial could be due to the lack of specific keywords used in the search query. To mitigate this failure, a new plan could involve searching for the specific name change of VIVA Media AG in 2004, then looking for the new acronym directly instead of searching for the acronym from the start. This approach would provide more targeted and accurate results.'
     self_reflect_llm_responses = [
         'The failure in this reasoning trial could be due to the lack of specific keywords used in the search query. To mitigate this failure, a new plan could involve searching for the specific name change of VIVA Media AG in 2004, then looking for the new acronym directly instead of searching for the acronym from the start. This approach would provide more targeted and accurate results.'
     ]
@@ -522,6 +554,12 @@ def test_reflexion_react_generate() -> None:
     )
     out = agent.generate(question=question, key=key, strategy="reflexion")
     assert len(out) == 2  # Outputs vary because of Wikipedia API, though overall output format is correct. Checking if terminates correctly.
+    assert agent._step_n == 4
+    assert agent._trial_n == 2
+    assert agent._answer == ""
+    assert not agent._finished
+    assert agent.reflector.reflections == gt_out_reflections
+    assert agent.reflector.reflections_str == gt_out_reflections_str
 
     # Test patience reset after incorrect answer and subsequent runs.
 
@@ -545,6 +583,12 @@ def test_reflexion_react_generate() -> None:
     )
     out = agent.generate(question=question, key=key, strategy="reflexion")
     assert len(out) == 1  # Assert 1 trial only ran. 
+    assert agent._step_n == 4
+    assert agent._trial_n == 1
+    assert agent._answer == ""
+    assert not agent._finished
+    assert agent.reflector.reflections == []
+    assert agent.reflector.reflections_str == ""
 
     # In a subsequent run, answer correctly (reset defaults to True). Output is non-empty if patience is correctly reset.
     agent = ReflexionReActAgent(
@@ -556,3 +600,9 @@ def test_reflexion_react_generate() -> None:
     )
     out = agent.generate(question=question, key=key, strategy="reflexion")
     assert len(out) == 1  # Assert 1 trial only ran. 
+    assert agent._step_n == 4
+    assert agent._trial_n == 1
+    assert agent._answer == ""
+    assert not agent._finished
+    assert agent.reflector.reflections == []
+    assert agent.reflector.reflections_str == ""
