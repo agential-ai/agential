@@ -44,6 +44,7 @@ def _prompt_agent(llm: BaseChatModel, question: str, scratchpad: str, examples: 
         llm (BaseChatModel): The language model to be prompted.
         question (str): The question to ask the language model.
         scratchpad (str): Additional context or information for the language model.
+        example (str): the example used for specific benchmark
 
     Returns:
         str: The processed response from the language model.

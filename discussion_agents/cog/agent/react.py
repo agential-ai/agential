@@ -44,7 +44,7 @@ class ReActAgent(BaseAgent):
         max_tokens (int): Maximum token limit for the language model.
         docstore (DocstoreExplorer): Document store for information retrieval.
         enc (Encoding): Encoder for calculating token lengths.
-        type_benchmark (str): Specifies the benchmark type used for selecting the appropriate examples. Acceptable values are limited to 'HotpotQA' or 'FEVER'.
+        benchmark_type (str): Specifies the benchmark type used for selecting the appropriate examples. Acceptable values are limited to 'HotpotQA' or 'FEVER'.
 
     See: https://github.com/ysymyth/ReAct
     """
@@ -57,7 +57,7 @@ class ReActAgent(BaseAgent):
         max_tokens: int = 3896,
         docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
-        type_benchmark: str = 'HotpotQA',
+        benchmark_type: str = 'HotpotQA',
     ) -> None:
         """Initialization."""
         super().__init__()
@@ -73,16 +73,16 @@ class ReActAgent(BaseAgent):
         self.docstore = docstore
         self.enc = enc
 
-        if type_benchmark == 'HotpotQA' or type_benchmark == 'FEVER':
-            self.type_benchmark = type_benchmark
+        if benchmark_type == 'HotpotQA' or benchmark_type == 'FEVER':
+            self.type_benchmark = benchmark_type
         else:
-            return ValueError("Invalid type_benchmark. It should be either 'HotpotQA' or 'FEVER'.")
+            return ValueError("Invalid type_benchmark. Available benchmarks are: 'HotpotQA' , 'FEVER'.")
 
         # Internal variables.
         self._step_n = 1  #: :meta private:
         self._finished = False  #: :meta private:
 
-    def generate(self, question: str, reset: bool = True ) -> str:
+    def generate(self, question: str, reset: bool = True, examples: str = None) -> str:
         """Processes a given question through ReAct.
 
         Iteratively applies the think-act-observe cycle to generate an answer for the question.
@@ -95,11 +95,11 @@ class ReActAgent(BaseAgent):
         Returns:
             str: The accumulated output from the ReAct process.
         """
-
-        if self.type_benchmark == 'FEVER':
-            examples = REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES
-        else :
-            examples = REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
+        if examples == None:
+            if self.type_benchmark == 'FEVER':
+                examples = REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES
+            else :
+                examples = REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
 
 
 

@@ -34,6 +34,6 @@ if __name__ == '__main__':
     from langchain_community.chat_models.openai import ChatOpenAI
     import os
 
-    from tests.cog.agent.test_react import test_FEVER_react_generate
+    from tests.cog.agent.test_react import test_generate
 
-    print(test_FEVER_react_generate)
+    print(test_generate)
