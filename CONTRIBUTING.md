@@ -65,7 +65,9 @@ Finally install all of the packages.
 ```
 poetry install
 ```
+### What is Pre-commit 
 
+Pre-commit checks your Git repo automatically before each commit to make sure specific tests pass.
 
 ### How 
 
