@@ -69,7 +69,10 @@ poetry install
 
 Pre-commit checks your Git repo automatically before each commit to make sure specific tests pass.
 
-### How 
+
+### How do pre-commit hooks work?
+
+
 
 ## 2. 🧭 How To Navigate
 
