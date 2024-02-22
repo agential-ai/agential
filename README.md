@@ -48,6 +48,11 @@ Make sure to install 'make' if it's not installed in your environment. Please fo
 
 If you want to verify whether 'make' was installed successfully or not, run 'make' in your terminal. Here is what you should get
 
+```
+make: *** No targets specified and no makefile found.  Stop.
+
+```
+
 Use the following command to create a conda environment `discussion-agents` with Python version 3.10.13. Any Python version above 3.9 is viable.
 ```
 conda create -n discussion-agents python=3.10.13
