@@ -95,6 +95,15 @@ Finally install all of the packages.
 poetry install
 ```
 
+Before you push to the GitHub repository, let me give you a brief idea:
+
+'''
+pre-commit
+
+'''
+help us to ensure that everyone follow the same coding standards etc... Check out [here](https://verdantfox.com/blog/how-to-use-git-pre-commit-hooks-the-hard-way-and-the-easy-way) for more deatils
+
+Once you have passed all the checkpoints, feel free to submit the PR request.
 
 
 Project Organization
