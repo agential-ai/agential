@@ -40,8 +40,6 @@ Thought: Ramon Dekkers has been involved in controversies and crimes. I need to 
 ...
 ```
 
-
-
 Project Organization
 ------------
 
