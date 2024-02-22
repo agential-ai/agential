@@ -53,6 +53,23 @@ make: *** No targets specified and no makefile found.  Stop.
 
 ```
 
+Head to your terminal and run: 
+
+```
+make lint 
+
+``
+then wait for a while
+
+- Some Notes
+
+'''
+auto_lint :Automatic code quality 
+lint :Code Style Checker
+test :Automated code validation.
+
+'''
+
 Use the following command to create a conda environment `discussion-agents` with Python version 3.10.13. Any Python version above 3.9 is viable.
 ```
 conda create -n discussion-agents python=3.10.13
