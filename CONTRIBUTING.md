@@ -34,6 +34,40 @@ git checkout -b <your-name>/<branch-purpose>
 - Make necessary updates as suggested.
 - Once your PR is approved, it will be merged into the main repository. 
 
+## Developer Setup
+
+First install [anaconda](https://docs.anaconda.com/free/anaconda/install/windows/) and add to path by going to advanced system settings. Then, launch cmd.
+
+Make sure to install 'make' if it's not installed on your computer. Please follow this [article](https://earthly.dev/blog/makefiles-on-windows/),if `make` is not installed .
+
+
+Use the following command to create a conda environment `discussion-agents` with Python version 3.10.13. Any Python version above 3.9 is viable.
+```
+conda create -n discussion-agents python=3.10.13
+```
+Now activate the environent.
+```
+conda activate discussion-agents
+```
+Next, we will install [Poetry](https://python-poetry.org/docs/) using [pipx](https://pipx.pypa.io/stable/docs/).
+```
+pip install pipx
+pipx install poetry
+```
+Make sure to add poetry to path by adding `C:\Users\<username>\.local\bin` to path in advanced system settings. For other operating systems, the path will be different. Ensure poetry is in the environment variable paths.
+
+Then clone the repository and enter the discussion-agents directory.
+``` 
+git clone https://github.com/alckasoc/discussion-agents/
+
+```
+Finally install all of the packages.
+```
+poetry install
+```
+
+
+### How 
 
 ## 2. 🧭 How To Navigate
 
