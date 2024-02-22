@@ -72,6 +72,12 @@ Pre-commit checks your Git repo automatically before each commit to make sure sp
 
 ### How do pre-commit hooks work?
 
+This tool relies on a file that contains a list of hooks that execute scripts or commands to check the code. If the code fails the checks, the commit is rejected, and the developer is asked to fix the issues.
+
+### why we need to use pre-commit 
+
+pre-commit hooks are valuable tools for maintaining code quality, enforcing best practices, preventing common errors, and streamlining the development process in collaborative software projects.
+
 
 
 ## 2. 🧭 How To Navigate
