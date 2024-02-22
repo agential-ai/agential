@@ -44,14 +44,9 @@ Thought: Ramon Dekkers has been involved in controversies and crimes. I need to 
 
 First install [anaconda](https://docs.anaconda.com/free/anaconda/install/windows/) and add to path by going to advanced system settings. Then, launch cmd.
 
-Make sure to install 'make' if it's not installed in your environment. Please follow this [article](https://earthly.dev/blog/makefiles-on-windows/), which shows you how to install 'make' successfully.
+Make sure to install 'make' if it's not installed on your computer. Please follow this [article](https://earthly.dev/blog/makefiles-on-windows/),if `make` is not installed .
 
-If you want to verify whether 'make' was installed successfully or not, run 'make' in your terminal. Here is what you should get
 
-```
-make: *** No targets specified and no makefile found.  Stop.
-
-```
 
 Head to your terminal and run: 
 
