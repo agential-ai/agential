@@ -79,7 +79,8 @@ This tool relies on a file that contains a list of hooks that execute scripts or
 pre-commit hooks are valuable tools for maintaining code quality, enforcing best practices, preventing common errors, and streamlining the development process in collaborative software projects.
 
 ### When we use Pre-commit
-Pre-commit run immediately before you try to commit changes to the repository. so we can ensure that all changes are subjected to the defined checks and policies before they become part of the project's history
+
+Pre-commit run immediately before you try to commit changes to the repository. so we can ensure that all changes are subjected to the defined checks and policies before they become part of the project's history.
 
 
 ## 2. 🧭 How To Navigate
