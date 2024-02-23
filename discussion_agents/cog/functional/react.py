@@ -7,12 +7,10 @@ from tiktoken import Encoding
 
 from discussion_agents.utils.parse import remove_newline
 
-from discussion_agents.cog.prompts.react import REACT_INSTRUCTION
 
 
 
-
-def _build_agent_prompt(question: str, scratchpad: str, examples: str) -> str:
+def _build_agent_prompt(question: str, scratchpad: str, examples: str , instruction: str) -> str:
     """Constructs a prompt template for the agent.
 
     This function formats a predefined prompt template (REACT_INSTRUCTION) with examples,
@@ -26,7 +24,7 @@ def _build_agent_prompt(question: str, scratchpad: str, examples: str) -> str:
         str: A formatted prompt template ready for use.
     """
 
-    prompt = PromptTemplate.from_template(REACT_INSTRUCTION).format(
+    prompt = PromptTemplate.from_template(instruction).format(
         examples=examples,
         question=question,
         scratchpad=scratchpad,
@@ -34,7 +32,7 @@ def _build_agent_prompt(question: str, scratchpad: str, examples: str) -> str:
     return prompt
 
 
-def _prompt_agent(llm: BaseChatModel, question: str, scratchpad: str, examples: str) -> str:
+def _prompt_agent(llm: BaseChatModel, question: str, scratchpad: str, examples: str, instruction: str, bench_type: str) -> str:
     """Generates a response from the LLM based on a given question and scratchpad.
 
     This function creates a prompt using `_build_agent_prompt` and then gets the LLM's
@@ -49,7 +47,7 @@ def _prompt_agent(llm: BaseChatModel, question: str, scratchpad: str, examples: 
     Returns:
         str: The processed response from the language model.
     """
-    prompt = _build_agent_prompt(question=question, scratchpad=scratchpad, examples=examples)
+    prompt = _build_agent_prompt(question=question, scratchpad=scratchpad, examples=examples, instruction=instruction)
     out = llm(
         [
             HumanMessage(
@@ -58,7 +56,7 @@ def _prompt_agent(llm: BaseChatModel, question: str, scratchpad: str, examples: 
         ]
     ).content
     assert isinstance(out, str)
-    return remove_newline(out)
+    return out if bench_type == 'Alfworld' else remove_newline(out)
 
 
 def _is_halted(
@@ -70,6 +68,7 @@ def _is_halted(
     max_tokens: int,
     enc: Encoding,
     examples: str ,
+    instruction: str
 ) -> bool:
     """Determines whether the agent's operation should be halted.
 
@@ -91,10 +90,9 @@ def _is_halted(
     """
     over_max_steps = step_n > max_steps
     over_token_limit = (
-        len(enc.encode(_build_agent_prompt(question=question, scratchpad=scratchpad, examples=examples )))
+        len(enc.encode(_build_agent_prompt(question=question, scratchpad=scratchpad, examples=examples, instruction=instruction)))
         > max_tokens
     )
     return finished or over_max_steps or over_token_limit
-
 
 

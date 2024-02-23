@@ -26,9 +26,25 @@ from discussion_agents.cog.modules.memory.react import ReActMemory
 from discussion_agents.utils.parse import parse_action, remove_newline
 
 from discussion_agents.cog.prompts.react import (
+    REACT_INSTRUCTION,
     REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
-    REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES
+    REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES,
+    REACT_ALFWORLD_PROMPTS_EXAMPLE,
+    REACT_ALFWORLD_INSTRUCTION
 )
+
+import yaml
+import alfworld
+import alfworld.agents.environment
+
+
+
+
+ALFWORLD = 'Alfworld'
+HOTPOTQA = 'HotpotQA'
+FEVER = 'FEVER'
+
+
 
 class ReActAgent(BaseAgent):
     """ReAct agent from the original paper.
@@ -44,7 +60,7 @@ class ReActAgent(BaseAgent):
         max_tokens (int): Maximum token limit for the language model.
         docstore (DocstoreExplorer): Document store for information retrieval.
         enc (Encoding): Encoder for calculating token lengths.
-        benchmark_type (str): Specifies the benchmark type used for selecting the appropriate examples. Acceptable values are limited to 'HotpotQA' or 'FEVER'.
+        benchmark_type (str): Specifies the benchmark type used for selecting the appropriate examples. Acceptable values are limited to 'HotpotQA' or 'FEVER' or 'Alfworld'.
 
     See: https://github.com/ysymyth/ReAct
     """
@@ -73,10 +89,21 @@ class ReActAgent(BaseAgent):
         self.docstore = docstore
         self.enc = enc
 
-        if benchmark_type == 'HotpotQA' or benchmark_type == 'FEVER':
-            self.type_benchmark = benchmark_type
+        if benchmark_type == HOTPOTQA or benchmark_type == FEVER or benchmark_type == ALFWORLD:
+            self.benchmark_type = benchmark_type
         else:
-            return ValueError("Invalid type_benchmark. Available benchmarks are: 'HotpotQA' , 'FEVER'.")
+            return ValueError("Invalid benchmark_type. Available benchmarks are: 'HotpotQA' , 'FEVER' , 'Alfworld' ")
+
+        if benchmark_type == ALFWORLD:
+            self.prefixes = {
+                'pick_and_place': 'put',
+                'pick_clean_then_place': 'clean',
+                'pick_heat_then_place': 'heat',
+                'pick_cool_then_place': 'cool',
+                'look_at_obj': 'examine',
+                'pick_two_obj': 'puttwo'
+            }
+            self.d = REACT_ALFWORLD_PROMPTS_EXAMPLE
 
         # Internal variables.
         self._step_n = 1  #: :meta private:
@@ -96,12 +123,24 @@ class ReActAgent(BaseAgent):
             str: The accumulated output from the ReAct process.
         """
         if examples == None:
-            if self.type_benchmark == 'FEVER':
+            if self.benchmark_type == 'FEVER':
                 examples = REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES
             else :
                 examples = REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
 
-
+        if self.benchmark_type == ALFWORLD:
+            for i, (k, v) in enumerate(self.prefixes.items()):
+                if examples.startswith(k):
+                    prompt = 'Interact with a household to solve a task. Here are two examples.\n' + self.d[f'react_{v}_1'] + '\n' + self.d[f'react_{v}_0'] + '\n' + '\nHere is the task.\n'
+                    action = _prompt_agent(
+                        llm=self.llm,
+                        question=question,
+                        scratchpad=self.memory.load_memories()["scratchpad"],
+                        instruction=REACT_ALFWORLD_INSTRUCTION,
+                        examples=prompt,
+                        bench_type=self.benchmark_type
+                    )
+                    return action
 
         if reset:
             self.reset()
@@ -115,7 +154,8 @@ class ReActAgent(BaseAgent):
             scratchpad=self.memory.load_memories()["scratchpad"],
             max_tokens=self.max_tokens,
             enc=self.enc,
-            examples=examples
+            examples=examples,
+            instruction=REACT_INSTRUCTION
         ):
             # Think.
             self.memory.add_memories("\nThought:")
@@ -123,7 +163,9 @@ class ReActAgent(BaseAgent):
                 llm=self.llm,
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
-                examples=examples
+                examples=examples,
+                instruction=REACT_INSTRUCTION,
+                bench_type=self.benchmark_type
             ).split("Action")[0]
             self.memory.add_memories(" " + thought)
             out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
@@ -134,7 +176,9 @@ class ReActAgent(BaseAgent):
                 llm=self.llm,
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
-                examples=examples
+                examples=examples,
+                instruction=REACT_INSTRUCTION,
+                bench_type=self.benchmark_type
             ).split("Observation")[0]
             self.memory.add_memories(" " + action)
             action_type, query = parse_action(action)
@@ -242,3 +286,9 @@ class ZeroShotReActAgent(BaseAgent):
         """
         return self.agent.invoke(observation_dict)  # type: ignore
 
+
+
+
+
+
+    
