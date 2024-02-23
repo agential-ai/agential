@@ -19,7 +19,8 @@ def _build_agent_prompt(question: str, scratchpad: str, examples: str , instruct
     Args:
         question (str): The question to be included in the prompt.
         scratchpad (str): Additional scratchpad information to be included.
-
+        examples (str): The example as a guide of how the test should be prompted.
+        instruction (str) : The template of the prompt.
     Returns:
         str: A formatted prompt template ready for use.
     """
@@ -42,8 +43,8 @@ def _prompt_agent(llm: BaseChatModel, question: str, scratchpad: str, examples: 
         llm (BaseChatModel): The language model to be prompted.
         question (str): The question to ask the language model.
         scratchpad (str): Additional context or information for the language model.
-        example (str): the example used for specific benchmark
-
+        examples (str): The example used for specific benchmark.
+        bench_type (str): Type of benchmark used for specific cases.
     Returns:
         str: The processed response from the language model.
     """
@@ -84,7 +85,8 @@ def _is_halted(
         scratchpad (str): The scratchpad content.
         max_tokens (int): Maximum allowed token count.
         enc (Encoding): The encoder to calculate token length.
-
+        examples (str): The example of the output prompt.
+        instruction (str): The template of the prompt .
     Returns:
         bool: True if the operation should be halted, False otherwise.
     """

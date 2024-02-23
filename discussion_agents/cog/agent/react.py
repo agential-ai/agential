@@ -40,9 +40,9 @@ import alfworld.agents.environment
 
 
 
-ALFWORLD = 'Alfworld'
-HOTPOTQA = 'HotpotQA'
-FEVER = 'FEVER'
+ALFWORLD = 'alfworld'
+HOTPOTQA = 'hotpotqa'
+FEVER = 'fever'
 
 
 
@@ -73,7 +73,7 @@ class ReActAgent(BaseAgent):
         max_tokens: int = 3896,
         docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
-        benchmark_type: str = 'HotpotQA',
+        benchmark_type: str = 'hotpotqa',
     ) -> None:
         """Initialization."""
         super().__init__()
@@ -92,7 +92,7 @@ class ReActAgent(BaseAgent):
         if benchmark_type == HOTPOTQA or benchmark_type == FEVER or benchmark_type == ALFWORLD:
             self.benchmark_type = benchmark_type
         else:
-            return ValueError("Invalid benchmark_type. Available benchmarks are: 'HotpotQA' , 'FEVER' , 'Alfworld' ")
+            return ValueError("Invalid benchmark_type. Available benchmarks are: 'hotpotqa' , 'fever' , 'alfworld' ")
 
         if benchmark_type == ALFWORLD:
             self.prefixes = {
