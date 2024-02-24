@@ -37,22 +37,10 @@ Finally install all of the packages.
 ```
 poetry install
 ```
-### What is Pre-commit 
+### Pre-commit install and Pre-commit uninstall
 
-Pre-commit checks your Git repo automatically before each commit to make sure specific tests pass.
+Pre-commit automatically runs specified checks before each commit to ensure code quality, adherence to best practices, and error prevention. If the checks fail, the commit is rejected until the issues are resolved. To set it up, execute pre-commit install. To remove it, use pre-commit uninstall.
 
-
-### How do pre-commit hooks work?
-
-This tool relies on a file that contains a list of hooks that execute scripts or commands to check the code. If the code fails the checks, the commit is rejected, and the developer is asked to fix the issues.
-
-### why we need to use pre-commit 
-
-pre-commit hooks are valuable tools for maintaining code quality, enforcing best practices, preventing common errors, and streamlining the development process in collaborative software projects.
-
-### When we use Pre-commit
-
-Pre-commit run immediately before you try to commit changes to the repository. so we can ensure that all changes are subjected to the defined checks and policies before they become part of the project's history.
 
 ## 2. 💪 Getting Started
 
