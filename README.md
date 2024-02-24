@@ -24,7 +24,6 @@ question = 'Who was once considered the best kick boxer in the world, however he
 llm = ChatOpenAI(openai_api_key="YOUR_API_KEY")
 agent = ReActAgent(llm=llm)
 out = agent.generate(question=question)
-
 ```
 
 
@@ -94,5 +93,3 @@ Project Organization
 ## Contribution
 
 If you want to contribute, please check the [contributing.md](https://github.com/alckasoc/discussion-agents/blob/main/CONTRIBUTING.md) for guidelines!
-
-<p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>

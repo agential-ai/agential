@@ -6,7 +6,38 @@ Whether it's a bug report, new feature, correction, or additional documentation,
 
 Please read through this document before submitting any issues or pull requests to ensure we have all the necessary information to effectively respond to your bug report or contribution.
 
-## 1. 🔨 Developer Setup
+## 1. 💪 Getting Started
+
+### 🍴 Fork the Repository
+
+To start your journey, you'll need your very own copy of discussion-agents. Think of it as your innovation lab. 🧪
+
+- Navigate to the discussion-agents repository on GitHub.
+- In the upper-right corner, click the `Fork` button.
+
+
+### Create and Switch to a New Branch
+
+Create a new branch for your contribution and make sure to add your name and the purpose of the branch.
+
+```
+git checkout -b <your-name>/<branch-purpose>
+```
+
+Check the "Developer Setup" below for the developer workflow.
+
+### 👍🎉 Submit a Pull Request (PR)
+
+- Create a Pull Request from your branch to the main repository. Make sure to include a detailed description of your changes and reference any related issues.
+
+### 🤝 Collaborate
+
+- Be responsive to comments and feedback on your PR.
+- Make necessary updates as suggested.
+- Once your PR is approved, it will be merged into the main repository. 
+
+
+## 2. 🔨 Developer Setup
 
 First install [anaconda](https://docs.anaconda.com/free/anaconda/install/windows/) and add to path by going to advanced system settings. Then, launch cmd.
 
@@ -31,45 +62,24 @@ Make sure to add poetry to path by adding `C:\Users\<username>\.local\bin` to pa
 Then clone the repository and enter the discussion-agents directory.
 ``` 
 git clone https://github.com/alckasoc/discussion-agents/
-
 ```
 Finally install all of the packages.
 ```
 poetry install
 ```
-### Pre-commit install and Pre-commit uninstall
+### Pre-commit Install/Uninstall
 
-Pre-commit automatically runs specified checks before each commit to ensure code quality, adherence to best practices, and error prevention. If the checks fail, the commit is rejected until the issues are resolved. To set it up, execute pre-commit install. To remove it, use pre-commit uninstall.
+Pre-commit automatically runs specified checks before each commit to ensure code quality, adherence to best practices, and error prevention. If the checks fail, the commit is rejected until the issues are resolved. 
 
+We have `pre-commit` as a developer-sided code quality checker, but often times you may find it slowing down your development! To uninstall `pre-commit`, run:
+```
+pre-commit uninstall
 ```
 
-## 2. 💪 Getting Started
-
-### 🍴 Fork the Repository
-
-To start your journey, you'll need your very own copy of discussion-agents. Think of it as your innovation lab. 🧪
-
-- Navigate to the discussion-agents repository on GitHub.
-- In the upper-right corner, click the `Fork` button.
-
-
-### Create and Switch to a New Branch
-
-Create a new branch for your contribution and make sure to add your name and the purpose of the branch.
-
+Then, later, should you choose to use it, run:
 ```
-git checkout -b <your-name>/<branch-purpose>
-
+pre-commit install
 ```
-### 👍🎉 Submit a Pull Request (PR)
-
-- Create a Pull Request from your branch to the main repository. Make sure to include a detailed description of your changes and reference any related issues.
-
-### 🤝 Collaborate
-
-- Be responsive to comments and feedback on your PR.
-- Make necessary updates as suggested.
-- Once your PR is approved, it will be merged into the main repository. 
 
 
 ## 3. 🧭 How To Navigate
