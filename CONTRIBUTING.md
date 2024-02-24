@@ -6,7 +6,7 @@ Whether it's a bug report, new feature, correction, or additional documentation,
 
 Please read through this document before submitting any issues or pull requests to ensure we have all the necessary information to effectively respond to your bug report or contribution.
 
-## 1. Developer Setup
+## 1. 🔨 Developer Setup
 
 First install [anaconda](https://docs.anaconda.com/free/anaconda/install/windows/) and add to path by going to advanced system settings. Then, launch cmd.
 
