@@ -6,7 +6,44 @@ Whether it's a bug report, new feature, correction, or additional documentation,
 
 Please read through this document before submitting any issues or pull requests to ensure we have all the necessary information to effectively respond to your bug report or contribution.
 
-## 1. 💪 Getting Started
+## 1. 🔨 Developer Setup
+
+First install [anaconda](https://docs.anaconda.com/free/anaconda/install/windows/) and add to path by going to advanced system settings. Then, launch cmd.
+
+Ensure you have `make`. if it's not installed on your computer, Please follow this [article](https://earthly.dev/blog/makefiles-on-windows/).
+
+
+Use the following command to create a conda environment `discussion-agents` with Python version 3.10.13. Any Python version above 3.9 is viable.
+```
+conda create -n discussion-agents python=3.10.13
+```
+Now activate the environment.
+```
+conda activate discussion-agents
+```
+Next, we will install [Poetry](https://python-poetry.org/docs/) using [pipx](https://pipx.pypa.io/stable/docs/).
+```
+pip install pipx
+pipx install poetry
+```
+Make sure to add poetry to path by adding `C:\Users\<username>\.local\bin` to path in advanced system settings. For other operating systems, the path will be different. Ensure poetry is in the environment variable paths.
+
+Then clone the repository and enter the discussion-agents directory.
+``` 
+git clone https://github.com/alckasoc/discussion-agents/
+
+```
+Finally install all of the packages.
+```
+poetry install
+```
+### Pre-commit install and Pre-commit uninstall
+
+Pre-commit automatically runs specified checks before each commit to ensure code quality, adherence to best practices, and error prevention. If the checks fail, the commit is rejected until the issues are resolved. To set it up, execute pre-commit install. To remove it, use pre-commit uninstall.
+
+```
+
+## 2. 💪 Getting Started
 
 ### 🍴 Fork the Repository
 
@@ -35,7 +72,7 @@ git checkout -b <your-name>/<branch-purpose>
 - Once your PR is approved, it will be merged into the main repository. 
 
 
-## 2. 🧭 How To Navigate
+## 3. 🧭 How To Navigate
 
 Head to the `discussion_agents` where the project source code is. Within the `cog` directory, you'll find various modules and subdirectories catering to different aspects of the project's functionality.
 
@@ -50,7 +87,7 @@ Head to the `discussion_agents` where the project source code is. Within the `co
 
 Please take a look at the [README](https://github.com/alckasoc/discussion-agents/blob/main/README.md) for a well-structured overview of the project!
 
-## 3. ⚒️ What do I work on?
+## 4. ⚒️ What do I work on?
 
 You can start by browsing through our list of [issues](https://github.com/alckasoc/discussion-agents/issues) or suggesting your own!
 
@@ -58,12 +95,12 @@ Once you’ve decided on an issue, leave a comment and wait for approval! We don
 
 If you’re ever in doubt about whether or not a proposed feature aligns with our library, feel free to raise an issue about it and we’ll get back to you promptly!
 
-## 4. ❓  Questions/Collaboration
+## 5. ❓  Questions/Collaboration
 
 Feel free to contact [Vincent Tu](https://www.linkedin.com/in/vincent%2Dtu%2D422b18208/), our lead contributor. We're very friendly and welcoming to new contributors, so don't hesitate to reach out! 🙂
 
 
-## 5. 👨‍💻 Code of Conduct
+## 6. 👨‍💻 Code of Conduct
 
 ### Our Pledge
 
