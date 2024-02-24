@@ -39,7 +39,9 @@ poetry install
 ```
 ### Pre-commit install and Pre-commit uninstall
 
-Pre-commit automatically runs specified checks before each commit to ensure code quality, adherence to best practices, and error prevention. If the checks fail, the commit is rejected until the issues are resolved. To set it up, execute pre-commit install. To remove it, use pre-commit uninstall.
+Pre-commit automatically runs specified checks before each commit to ensure code quality, adherence to best practices, and error prevention. If the checks fail, the commit is rejected until the issues are resolved. We use `pre-commit` to ensure code formatting on the developer's end, but often this may slow down development!
+
+To uninstall `pre-commit,` run:
 
 
 ## 2. 💪 Getting Started
