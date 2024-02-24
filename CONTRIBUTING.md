@@ -17,7 +17,7 @@ Use the following command to create a conda environment `discussion-agents` with
 ```
 conda create -n discussion-agents python=3.10.13
 ```
-Now activate the environent.
+Now activate the environment.
 ```
 conda activate discussion-agents
 ```
