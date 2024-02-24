@@ -75,7 +75,7 @@ git checkout -b <your-name>/<branch-purpose>
 - Once your PR is approved, it will be merged into the main repository. 
 
 
-## 2. 🧭 How To Navigate
+## 3. 🧭 How To Navigate
 
 Head to the `discussion_agents` where the project source code is. Within the `cog` directory, you'll find various modules and subdirectories catering to different aspects of the project's functionality.
 
@@ -90,7 +90,7 @@ Head to the `discussion_agents` where the project source code is. Within the `co
 
 Please take a look at the [README](https://github.com/alckasoc/discussion-agents/blob/main/README.md) for a well-structured overview of the project!
 
-## 3. ⚒️ What do I work on?
+## 4. ⚒️ What do I work on?
 
 You can start by browsing through our list of [issues](https://github.com/alckasoc/discussion-agents/issues) or suggesting your own!
 
@@ -98,12 +98,12 @@ Once you’ve decided on an issue, leave a comment and wait for approval! We don
 
 If you’re ever in doubt about whether or not a proposed feature aligns with our library, feel free to raise an issue about it and we’ll get back to you promptly!
 
-## 4. ❓  Questions/Collaboration
+## 5. ❓  Questions/Collaboration
 
 Feel free to contact [Vincent Tu](https://www.linkedin.com/in/vincent%2Dtu%2D422b18208/), our lead contributor. We're very friendly and welcoming to new contributors, so don't hesitate to reach out! 🙂
 
 
-## 5. 👨‍💻 Code of Conduct
+## 6. 👨‍💻 Code of Conduct
 
 ### Our Pledge
 
