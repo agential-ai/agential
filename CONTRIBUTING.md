@@ -6,35 +6,7 @@ Whether it's a bug report, new feature, correction, or additional documentation,
 
 Please read through this document before submitting any issues or pull requests to ensure we have all the necessary information to effectively respond to your bug report or contribution.
 
-## 1. 💪 Getting Started
-
-### 🍴 Fork the Repository
-
-To start your journey, you'll need your very own copy of discussion-agents. Think of it as your innovation lab. 🧪
-
-- Navigate to the discussion-agents repository on GitHub.
-- In the upper-right corner, click the `Fork` button.
-
-
-### Create and Switch to a New Branch
-
-Create a new branch for your contribution and make sure to add your name and the purpose of the branch.
-
-```
-git checkout -b <your-name>/<branch-purpose>
-
-```
-### 👍🎉 Submit a Pull Request (PR)
-
-- Create a Pull Request from your branch to the main repository. Make sure to include a detailed description of your changes and reference any related issues.
-
-### 🤝 Collaborate
-
-- Be responsive to comments and feedback on your PR.
-- Make necessary updates as suggested.
-- Once your PR is approved, it will be merged into the main repository. 
-
-## Developer Setup
+## 1. Developer Setup
 
 First install [anaconda](https://docs.anaconda.com/free/anaconda/install/windows/) and add to path by going to advanced system settings. Then, launch cmd.
 
@@ -81,6 +53,34 @@ pre-commit hooks are valuable tools for maintaining code quality, enforcing best
 ### When we use Pre-commit
 
 Pre-commit run immediately before you try to commit changes to the repository. so we can ensure that all changes are subjected to the defined checks and policies before they become part of the project's history.
+
+## 2. 💪 Getting Started
+
+### 🍴 Fork the Repository
+
+To start your journey, you'll need your very own copy of discussion-agents. Think of it as your innovation lab. 🧪
+
+- Navigate to the discussion-agents repository on GitHub.
+- In the upper-right corner, click the `Fork` button.
+
+
+### Create and Switch to a New Branch
+
+Create a new branch for your contribution and make sure to add your name and the purpose of the branch.
+
+```
+git checkout -b <your-name>/<branch-purpose>
+
+```
+### 👍🎉 Submit a Pull Request (PR)
+
+- Create a Pull Request from your branch to the main repository. Make sure to include a detailed description of your changes and reference any related issues.
+
+### 🤝 Collaborate
+
+- Be responsive to comments and feedback on your PR.
+- Make necessary updates as suggested.
+- Once your PR is approved, it will be merged into the main repository. 
 
 
 ## 2. 🧭 How To Navigate
