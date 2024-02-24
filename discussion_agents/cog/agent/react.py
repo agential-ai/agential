@@ -103,6 +103,7 @@ class ReActAgent(BaseAgent):
                 llm=self.llm,
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
+                max_steps = self.max_steps
             ).split("Action")[0]
             self.memory.add_memories(" " + thought)
             out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
@@ -113,6 +114,7 @@ class ReActAgent(BaseAgent):
                 llm=self.llm,
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
+                max_steps = self.max_steps
             ).split("Observation")[0]
             self.memory.add_memories(" " + action)
             action_type, query = parse_action(action)
