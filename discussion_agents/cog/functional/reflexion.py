@@ -107,6 +107,7 @@ def _format_last_attempt(
 
 def _prompt_cot_agent(
     llm: BaseChatModel,
+    max_steps: int,
     examples: str,
     reflections: str,
     question: str,
@@ -119,6 +120,7 @@ def _prompt_cot_agent(
 
     Args:
         llm (BaseChatModel): The language model to be used for generating the reflection.
+        max_steps (int): Maximum number of reflexions to be used in a trial.
         examples (str): Example inputs for the prompt template.
         reflections (List[str]): Existing list of reflections.
         question (str): The question being addressed.
@@ -130,6 +132,7 @@ def _prompt_cot_agent(
     """
     prompt = PromptTemplate(
         input_variables=[
+            "max_steps"
             "examples",
             "reflections",
             "question",
@@ -140,13 +143,15 @@ def _prompt_cot_agent(
         if context
         else REFLEXION_COT_INSTRUCTION_NO_CONTEXT,
     ).format(
+        n = max_steps,
         examples=examples,
         reflections=reflections,
         question=question,
         scratchpad=scratchpad,
         context=context if context else "",
     )
-
+    print("inside")
+    print(prompt)
     out = llm(
         [
             HumanMessage(
@@ -347,6 +352,7 @@ def cot_reflect(
 
 def _prompt_react_agent(
     llm: BaseChatModel,
+    max_steps: int,
     examples: str,
     reflections: str,
     question: str,
@@ -358,6 +364,7 @@ def _prompt_react_agent(
 
     Args:
         llm (BaseChatModel): The language model to be used for generating the reflection.
+        max_steps (int): Maximum number of reflexions to be used in a trial.
         examples (str): Example inputs for the prompt template.
         reflections (List[str]): Existing list of reflections.
         question (str): The question being addressed.
@@ -370,12 +377,14 @@ def _prompt_react_agent(
         input_variables=["examples", "reflections", "question", "scratchpad"],
         template=REFLEXION_REACT_INSTRUCTION,
     ).format(
+        max_steps=max_steps,
         examples=examples,
         reflections=reflections,
         question=question,
         scratchpad=scratchpad,
     )
-
+    print("inside")
+    print(prompt)
     out = llm(
         [
             HumanMessage(
@@ -383,11 +392,13 @@ def _prompt_react_agent(
             )
         ]
     ).content
+    print(out)
     assert isinstance(out, str)
     return remove_newline(out)
 
 
 def _prompt_react_reflection(
+        
     llm: BaseChatModel,
     examples: str,
     question: str,
