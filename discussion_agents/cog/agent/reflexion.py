@@ -135,6 +135,7 @@ class ReflexionCoTAgent(BaseAgent):
             self.memory.add_memories("\nThought:")
             thought = _prompt_cot_agent(
                 llm=self.action_llm,
+                max_steps = self.max_reflections,
                 examples=REFLEXION_COT_FEWSHOT_EXAMPLES
                 if context
                 else REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
@@ -150,6 +151,7 @@ class ReflexionCoTAgent(BaseAgent):
             self.memory.add_memories("\nAction:")
             action = _prompt_cot_agent(
                 llm=self.action_llm,
+                max_steps = self.max_reflections,
                 examples=REFLEXION_COT_FEWSHOT_EXAMPLES
                 if context
                 else REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
@@ -377,6 +379,7 @@ class ReflexionReActAgent(BaseAgent):
                 self.memory.add_memories("\nThought:")
                 thought = _prompt_react_agent(
                     llm=self.action_llm,
+                    max_steps = self.max_reflections,
                     examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
                     reflections=self.reflector.reflections_str,
                     question=question,
@@ -389,6 +392,7 @@ class ReflexionReActAgent(BaseAgent):
                 self.memory.add_memories("\nAction:")
                 action = _prompt_react_agent(
                     llm=self.action_llm,
+                    max_steps=self.max_reflections,
                     examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
                     reflections=self.reflector.reflections_str,
                     question=question,
