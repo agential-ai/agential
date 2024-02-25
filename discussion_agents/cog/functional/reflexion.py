@@ -150,8 +150,7 @@ def _prompt_cot_agent(
         scratchpad=scratchpad,
         context=context if context else "",
     )
-    print("inside")
-    print(prompt)
+    #print(prompt)
     out = llm(
         [
             HumanMessage(
