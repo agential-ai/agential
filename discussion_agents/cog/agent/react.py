@@ -96,19 +96,20 @@ class ReActAgent(BaseAgent):
         self._finished = False  #: :meta private:
 
 
-    
-    def check_type(examples: str = None) -> str:
-        checkword = examples.strip()[0]
+    @classmethod
+    def check_type(self,examples: str = None) -> str:
+        checkword = examples.split()[0]
         if checkword == 'Question:':
             return HOTPOTQA
         else:
-            lines = examples.strip('\n')
-            line = lines[0]
-            if 'Your task is to:' in line :
-                return ALFWORLD
-            checkword = lines[1].strip()[0]
+            lines = examples.split('\n')
+            checkword = lines[3].split()[0]
             if checkword == 'Claim:':
                 return FEVER
+            line = lines[2]
+            print(line)
+            if 'Your task is to:' in line :
+                return ALFWORLD
         return ValueError('Wrong Examples')
 
 
@@ -129,6 +130,7 @@ class ReActAgent(BaseAgent):
 
         benchmark_type = self.check_type(examples)    
 
+        print(benchmark_type)
         if benchmark_type == HOTPOTQA or benchmark_type == FEVER:
             breakword = ['Action', 'Observation']
             promptword = ['\nThought:','\nAction:']
@@ -139,7 +141,7 @@ class ReActAgent(BaseAgent):
         elif benchmark_type == ALFWORLD:
             instruction = REACT_ALFWORLD_INSTRUCTION
             promptword = ['\nAct:', '\nObs:']
-            breakword = ['','']
+            breakword = ['?','?']
 
         if reset:
             self.reset()
