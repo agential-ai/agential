@@ -26,7 +26,8 @@ from discussion_agents.cog.modules.memory.react import ReActMemory
 from discussion_agents.utils.parse import parse_action, remove_newline
 
 from discussion_agents.cog.prompts.react import (
-    REACT_INSTRUCTION,
+    REACT_INSTRUCTION_HOTPOTQA,
+    REACT_INSTRUCTION_FEVER,
     REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
     REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES,
     REACT_ALFWORLD_PROMPTS_EXAMPLE,
@@ -73,7 +74,6 @@ class ReActAgent(BaseAgent):
         max_tokens: int = 3896,
         docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
-        benchmark_type: str = 'hotpotqa',
     ) -> None:
         """Initialization."""
         super().__init__()
@@ -89,25 +89,29 @@ class ReActAgent(BaseAgent):
         self.docstore = docstore
         self.enc = enc
 
-        if benchmark_type == HOTPOTQA or benchmark_type == FEVER or benchmark_type == ALFWORLD:
-            self.benchmark_type = benchmark_type
-        else:
-            return ValueError("Invalid benchmark_type. Available benchmarks are: 'hotpotqa' , 'fever' , 'alfworld' ")
 
-        if benchmark_type == ALFWORLD:
-            self.prefixes = {
-                'pick_and_place': 'put',
-                'pick_clean_then_place': 'clean',
-                'pick_heat_then_place': 'heat',
-                'pick_cool_then_place': 'cool',
-                'look_at_obj': 'examine',
-                'pick_two_obj': 'puttwo'
-            }
-            self.d = REACT_ALFWORLD_PROMPTS_EXAMPLE
 
         # Internal variables.
         self._step_n = 1  #: :meta private:
         self._finished = False  #: :meta private:
+
+
+    
+    def check_type(examples: str = None) -> str:
+        checkword = examples.strip()[0]
+        if checkword == 'Question:':
+            return HOTPOTQA
+        else:
+            lines = examples.strip('\n')
+            line = lines[0]
+            if 'Your task is to:' in line :
+                return ALFWORLD
+            checkword = lines[1].strip()[0]
+            if checkword == 'Claim:':
+                return FEVER
+        return ValueError('Wrong Examples')
+
+
 
     def generate(self, question: str, reset: bool = True, examples: str = None) -> str:
         """Processes a given question through ReAct.
@@ -122,25 +126,20 @@ class ReActAgent(BaseAgent):
         Returns:
             str: The accumulated output from the ReAct process.
         """
-        if examples == None:
-            if self.benchmark_type == 'FEVER':
-                examples = REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES
-            else :
-                examples = REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
 
-        if self.benchmark_type == ALFWORLD:
-            for i, (k, v) in enumerate(self.prefixes.items()):
-                if examples.startswith(k):
-                    prompt = 'Interact with a household to solve a task. Here are two examples.\n' + self.d[f'react_{v}_1'] + '\n' + self.d[f'react_{v}_0'] + '\n' + '\nHere is the task.\n'
-                    action = _prompt_agent(
-                        llm=self.llm,
-                        question=question,
-                        scratchpad=self.memory.load_memories()["scratchpad"],
-                        instruction=REACT_ALFWORLD_INSTRUCTION,
-                        examples=prompt,
-                        bench_type=self.benchmark_type
-                    )
-                    return action
+        benchmark_type = self.check_type(examples)    
+
+        if benchmark_type == HOTPOTQA or benchmark_type == FEVER:
+            breakword = ['Action', 'Observation']
+            promptword = ['\nThought:','\nAction:']
+            if benchmark_type == HOTPOTQA:
+                instruction = REACT_INSTRUCTION_HOTPOTQA
+            else:
+                instruction = REACT_INSTRUCTION_FEVER
+        elif benchmark_type == ALFWORLD:
+            instruction = REACT_ALFWORLD_INSTRUCTION
+            promptword = ['\nAct:', '\nObs:']
+            breakword = ['','']
 
         if reset:
             self.reset()
@@ -155,37 +154,39 @@ class ReActAgent(BaseAgent):
             max_tokens=self.max_tokens,
             enc=self.enc,
             examples=examples,
-            instruction=REACT_INSTRUCTION
+            instruction=instruction
         ):
+            
             # Think.
-            self.memory.add_memories("\nThought:")
+            self.memory.add_memories(promptword[0])
             thought = _prompt_agent(
                 llm=self.llm,
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
                 examples=examples,
-                instruction=REACT_INSTRUCTION,
-                bench_type=self.benchmark_type
-            ).split("Action")[0]
+                instruction=instruction
+            ).split(breakword[0])[0]
             self.memory.add_memories(" " + thought)
             out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
             # Act.
-            self.memory.add_memories("\nAction:")
+            self.memory.add_memories(promptword[1])
             action = _prompt_agent(
                 llm=self.llm,
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
                 examples=examples,
-                instruction=REACT_INSTRUCTION,
-                bench_type=self.benchmark_type
-            ).split("Observation")[0]
+                instruction=instruction
+            ).split(breakword[1])[0]
             self.memory.add_memories(" " + action)
             action_type, query = parse_action(action)
             out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
             # Observe.
             self.memory.add_memories(f"\nObservation {self._step_n}: ")
+            if benchmark_type == ALFWORLD:
+
+                continue
             if action_type.lower() == "finish":
                 self._answer = query
                 self._finished = True
@@ -200,7 +201,7 @@ class ReActAgent(BaseAgent):
                         "Could not find that page, please try again."
                     )
 
-            elif action_type.lower() == "lookup" & self.type_benchmark == "HotpotQA":
+            elif action_type.lower() == "lookup":
                 try:
                     self.memory.add_memories(
                         remove_newline(self.docstore.lookup(query))

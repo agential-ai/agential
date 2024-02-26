@@ -33,7 +33,7 @@ def _build_agent_prompt(question: str, scratchpad: str, examples: str , instruct
     return prompt
 
 
-def _prompt_agent(llm: BaseChatModel, question: str, scratchpad: str, examples: str, instruction: str, bench_type: str) -> str:
+def _prompt_agent(llm: BaseChatModel, question: str, scratchpad: str, examples: str, instruction: str) -> str:
     """Generates a response from the LLM based on a given question and scratchpad.
 
     This function creates a prompt using `_build_agent_prompt` and then gets the LLM's
@@ -54,10 +54,11 @@ def _prompt_agent(llm: BaseChatModel, question: str, scratchpad: str, examples: 
             HumanMessage(
                 content=prompt,
             )
-        ]
+        ],
+        stop = '\n'
     ).content
     assert isinstance(out, str)
-    return out if bench_type == 'Alfworld' else remove_newline(out)
+    return out 
 
 
 def _is_halted(
@@ -86,7 +87,7 @@ def _is_halted(
         max_tokens (int): Maximum allowed token count.
         enc (Encoding): The encoder to calculate token length.
         examples (str): The example of the output prompt.
-        instruction (str): The template of the prompt .
+        instruction (str): The template of the prompt.
     Returns:
         bool: True if the operation should be halted, False otherwise.
     """
