@@ -96,25 +96,8 @@ class ReActAgent(BaseAgent):
         self._finished = False  #: :meta private:
 
 
-    @classmethod
-    def check_type(self,examples: str = None) -> str:
-        checkword = examples.split()[0]
-        if checkword == 'Question:':
-            return HOTPOTQA
-        else:
-            lines = examples.split('\n')
-            checkword = lines[3].split()[0]
-            if checkword == 'Claim:':
-                return FEVER
-            line = lines[2]
-            print(line)
-            if 'Your task is to:' in line :
-                return ALFWORLD
-        return ValueError('Wrong Examples')
 
-
-
-    def generate(self, question: str, reset: bool = True, examples: str = None) -> str:
+    def generate(self, question: str, reset: bool = True, examples: str = None , env: Any = None) -> str:
         """Processes a given question through ReAct.
 
         Iteratively applies the think-act-observe cycle to generate an answer for the question.
@@ -127,21 +110,15 @@ class ReActAgent(BaseAgent):
         Returns:
             str: The accumulated output from the ReAct process.
         """
+        benchmark_type = check_type(examples)    
 
-        benchmark_type = self.check_type(examples)    
 
-        print(benchmark_type)
-        if benchmark_type == HOTPOTQA or benchmark_type == FEVER:
-            breakword = ['Action', 'Observation']
-            promptword = ['\nThought:','\nAction:']
-            if benchmark_type == HOTPOTQA:
-                instruction = REACT_INSTRUCTION_HOTPOTQA
-            else:
-                instruction = REACT_INSTRUCTION_FEVER
+        if benchmark_type == HOTPOTQA:
+            instruction = REACT_INSTRUCTION_HOTPOTQA
+        elif benchmark_type == FEVER:
+            instruction = REACT_INSTRUCTION_FEVER
         elif benchmark_type == ALFWORLD:
             instruction = REACT_ALFWORLD_INSTRUCTION
-            promptword = ['\nAct:', '\nObs:']
-            breakword = ['?','?']
 
         if reset:
             self.reset()
@@ -160,35 +137,46 @@ class ReActAgent(BaseAgent):
         ):
             
             # Think.
-            self.memory.add_memories(promptword[0])
-            thought = _prompt_agent(
-                llm=self.llm,
-                question=question,
-                scratchpad=self.memory.load_memories()["scratchpad"],
-                examples=examples,
-                instruction=instruction
-            ).split(breakword[0])[0]
-            self.memory.add_memories(" " + thought)
-            out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
+            if benchmark_type == HOTPOTQA or benchmark_type == FEVER:
+                self.memory.add_memories("\nThought:")
+                thought = _prompt_agent(
+                    llm=self.llm,
+                    question=question,
+                    scratchpad=self.memory.load_memories()["scratchpad"],
+                    examples=examples,
+                    instruction=instruction
+                )
+                self.memory.add_memories(" " + thought)
+                out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
             # Act.
-            self.memory.add_memories(promptword[1])
+            self.memory.add_memories("\nAction:")
+            print(self.memory.load_memories()["scratchpad"])
+            
             action = _prompt_agent(
                 llm=self.llm,
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
                 examples=examples,
                 instruction=instruction
-            ).split(breakword[1])[0]
-            self.memory.add_memories(" " + action)
-            action_type, query = parse_action(action)
-            out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
+            )
 
+            self.memory.add_memories(" " + action)
+            out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
             # Observe.
             self.memory.add_memories(f"\nObservation {self._step_n}: ")
             if benchmark_type == ALFWORLD:
-
+                observation, _, done, _ = env.step([action])
+                observation, done = process_ob(observation[0]), done[0]
+                if action.startswith('think:'):
+                    observation = 'OK.'
+                if done :
+                    self._finished = True
+                self.memory.add_memories(" "+observation)
+                out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
                 continue
+
+            action_type, query = parse_action(action)
             if action_type.lower() == "finish":
                 self._answer = query
                 self._finished = True
@@ -216,10 +204,10 @@ class ReActAgent(BaseAgent):
                 self.memory.add_memories(
                     "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
                 )
-
+            
             self._step_n += 1
             out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
-
+            print(out)
         return out
 
     def retrieve(self) -> Dict[str, Any]:
@@ -238,6 +226,7 @@ class ReActAgent(BaseAgent):
         self._step_n = 1
         self._finished = False
         self.memory.clear()
+        return
 
 
 @tool
@@ -246,6 +235,27 @@ def search(query: str) -> str:
     docstore = DocstoreExplorer(Wikipedia())
     return docstore.search(query)
 
+@staticmethod
+def check_type(examples: str = None) -> str:
+    lines = examples.split('\n')
+    checkword = lines[0].split()[0]
+    if checkword == 'Question:':
+        return HOTPOTQA
+    else:
+        checkword = lines[3].split()[0]
+        if checkword == 'Claim:':
+            return FEVER
+        line = lines[2]
+        print(line)
+        if 'Your task is to:' in line :
+            return ALFWORLD
+    return ValueError('Wrong Examples')
+
+@staticmethod
+def process_ob(ob):
+    if ob.startswith('You arrive at loc '):
+        ob = ob[ob.find('. ')+2:]    
+    return ob
 
 class ZeroShotReActAgent(BaseAgent):
     """The Zero-Shot ReAct Agent class adapted from LangChain.

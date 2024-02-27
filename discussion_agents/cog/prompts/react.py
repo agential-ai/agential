@@ -120,7 +120,6 @@ Action 4: Finish[NOT ENOUGH INFO]
 
 
 REACT_ALFWORLD_INSTRUCTION = """
-Here are some examples:
 {examples}
 (END OF EXAMPLES)
 {question}{scratchpad}
