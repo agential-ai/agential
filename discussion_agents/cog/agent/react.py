@@ -20,6 +20,11 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.tools import BaseTool, tool
 from tiktoken.core import Encoding
 
+import yaml
+import alfworld
+import alfworld.agents.environment
+
+
 from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.functional.react import _is_halted, _prompt_agent
 from discussion_agents.cog.modules.memory.react import ReActMemory
@@ -70,7 +75,7 @@ class ReActAgent(BaseAgent):
         self,
         llm: BaseChatModel,
         memory: Optional[ReActMemory] = None,
-        max_steps: int = 6,
+        max_steps: int = 20,
         max_tokens: int = 3896,
         docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
@@ -110,7 +115,9 @@ class ReActAgent(BaseAgent):
         Returns:
             str: The accumulated output from the ReAct process.
         """
-        benchmark_type = check_type(examples)    
+
+        input_check = examples
+        benchmark_type = check_type(examples=input_check)
 
 
         if benchmark_type == HOTPOTQA:
@@ -145,13 +152,13 @@ class ReActAgent(BaseAgent):
                     scratchpad=self.memory.load_memories()["scratchpad"],
                     examples=examples,
                     instruction=instruction
+                    
                 )
                 self.memory.add_memories(" " + thought)
                 out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
             # Act.
-            self.memory.add_memories("\nAction:")
-            print(self.memory.load_memories()["scratchpad"])
+            self.memory.add_memories(f"\nAction {self._step_n}:")
             
             action = _prompt_agent(
                 llm=self.llm,
@@ -159,55 +166,53 @@ class ReActAgent(BaseAgent):
                 scratchpad=self.memory.load_memories()["scratchpad"],
                 examples=examples,
                 instruction=instruction
-            )
-
+            ).strip()
             self.memory.add_memories(" " + action)
             out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
             # Observe.
             self.memory.add_memories(f"\nObservation {self._step_n}: ")
             if benchmark_type == ALFWORLD:
+
                 observation, _, done, _ = env.step([action])
-                observation, done = process_ob(observation[0]), done[0]
-                if action.startswith('think:'):
+                done = done[0]
+                observation = observation[0]
+
+                if 'think:' in action:
                     observation = 'OK.'
+                self.memory.add_memories(" " + observation)
                 if done :
                     self._finished = True
-                self.memory.add_memories(" "+observation)
-                out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
-                continue
 
-            action_type, query = parse_action(action)
-            if action_type.lower() == "finish":
-                self._answer = query
-                self._finished = True
-                self.memory.add_memories(query)
-            elif action_type.lower() == "search":
-                try:
-                    self.memory.add_memories(
-                        remove_newline(self.docstore.search(query))
-                    )
-                except Exception:
-                    self.memory.add_memories(
-                        "Could not find that page, please try again."
-                    )
-
-            elif action_type.lower() == "lookup":
-                try:
-                    self.memory.add_memories(
-                        remove_newline(self.docstore.lookup(query))
-                    )
-                except ValueError:
-                    self.memory.add_memories(
-                        "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
-                    )
             else:
-                self.memory.add_memories(
-                    "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
-                )
-            
+                action_type, query = parse_action(action)
+                if action_type.lower() == "finish":
+                    self._answer = query
+                    self._finished = True
+                    self.memory.add_memories(query)
+                elif action_type.lower() == "search":
+                    try:
+                        self.memory.add_memories(
+                            remove_newline(self.docstore.search(query))
+                        )
+                    except Exception:
+                        self.memory.add_memories(
+                            "Could not find that page, please try again."
+                        )       
+                elif action_type.lower() == "lookup":
+                    try:
+                        self.memory.add_memories(
+                            remove_newline(self.docstore.lookup(query))
+                        )
+                    except ValueError:
+                        self.memory.add_memories(
+                            "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
+                        )
+                else:
+                    self.memory.add_memories(
+                        "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
+                    )
             self._step_n += 1
             out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
-            print(out)
         return out
 
     def retrieve(self) -> Dict[str, Any]:
@@ -235,8 +240,9 @@ def search(query: str) -> str:
     docstore = DocstoreExplorer(Wikipedia())
     return docstore.search(query)
 
-@staticmethod
+
 def check_type(examples: str = None) -> str:
+
     lines = examples.split('\n')
     checkword = lines[0].split()[0]
     if checkword == 'Question:':
@@ -246,12 +252,11 @@ def check_type(examples: str = None) -> str:
         if checkword == 'Claim:':
             return FEVER
         line = lines[2]
-        print(line)
         if 'Your task is to:' in line :
             return ALFWORLD
     return ValueError('Wrong Examples')
 
-@staticmethod
+
 def process_ob(ob):
     if ob.startswith('You arrive at loc '):
         ob = ob[ob.find('. ')+2:]    
