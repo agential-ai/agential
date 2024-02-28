@@ -437,6 +437,7 @@ def test__prompt_react_agent() -> None:
         reflections="",
         question="",
         scratchpad="",
+        max_steps=1
     )
     assert isinstance(out, str)
     assert out == "1"
@@ -454,6 +455,7 @@ def test__prompt_react_agent() -> None:
         reflections="",
         question=q,
         scratchpad="\nThought:",
+        max_steps=1
     )
     assert out == gt_out
 
@@ -550,6 +552,7 @@ def test__prompt_react_agent() -> None:
         reflections=reflections,
         question=q,
         scratchpad=scratchpad,
+        max_steps=6
     )
     assert out == gt_out
 

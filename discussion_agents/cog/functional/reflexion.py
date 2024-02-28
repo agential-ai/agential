@@ -351,6 +351,7 @@ def _prompt_react_agent(
     reflections: str,
     question: str,
     scratchpad: str,
+    max_steps: int
 ) -> str:
     """Generates a ReAct prompt for thought and action.
 
@@ -362,6 +363,7 @@ def _prompt_react_agent(
         reflections (List[str]): Existing list of reflections.
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
+        max_steps (int): Maximum number of steps.
 
     Returns:
         str: The generated reflection prompt.
@@ -374,6 +376,7 @@ def _prompt_react_agent(
         reflections=reflections,
         question=question,
         scratchpad=scratchpad,
+        max_steps=max_steps
     )
 
     out = llm(
