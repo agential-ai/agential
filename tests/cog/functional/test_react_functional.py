@@ -12,14 +12,14 @@ from discussion_agents.cog.functional.react import (
 
 def test__build_agent_prompt() -> None:
     """Test _build_agent_prompt function."""
-    prompt = _build_agent_prompt(question="", scratchpad="")
+    prompt = _build_agent_prompt(question="", scratchpad="", max_steps=1)
 
     gt_out = (
         "Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: \n"
         "(1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.\n"
         "(2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.\n"
         "(3) Finish[answer], which returns the answer and finishes the task.\n"
-        "You may take as many steps as necessary.\n"
+        "You have a maximum of 1 steps.\n\n"
         "Here are some examples:\n"
         "\n"
         "Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?\n"
@@ -95,7 +95,7 @@ def test__build_agent_prompt() -> None:
 def test__prompt_agent() -> None:
     """Test _prompt_agent function."""
     out = _prompt_agent(
-        llm=FakeListChatModel(responses=["1"]), question="", scratchpad=""
+        llm=FakeListChatModel(responses=["1"]), question="", scratchpad="", max_steps=1
     )
     assert isinstance(out, str)
     assert out == "1"

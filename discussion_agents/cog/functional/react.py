@@ -11,7 +11,7 @@ from discussion_agents.cog.prompts.react import (
 from discussion_agents.utils.parse import remove_newline
 
 
-def _build_agent_prompt(question: str, scratchpad: str) -> str:
+def _build_agent_prompt(question: str, scratchpad: str, max_steps: int) -> str:
     """Constructs a prompt template for the agent.
 
     This function formats a predefined prompt template (REACT_INSTRUCTION) with examples,
@@ -20,6 +20,7 @@ def _build_agent_prompt(question: str, scratchpad: str) -> str:
     Args:
         question (str): The question to be included in the prompt.
         scratchpad (str): Additional scratchpad information to be included.
+        max_steps (int): Max number of steps.
 
     Returns:
         str: A formatted prompt template ready for use.
@@ -28,11 +29,14 @@ def _build_agent_prompt(question: str, scratchpad: str) -> str:
         examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
         question=question,
         scratchpad=scratchpad,
+        max_steps=max_steps,
     )
     return prompt
 
 
-def _prompt_agent(llm: BaseChatModel, question: str, scratchpad: str) -> str:
+def _prompt_agent(
+    llm: BaseChatModel, question: str, scratchpad: str, max_steps: int
+) -> str:
     """Generates a response from the LLM based on a given question and scratchpad.
 
     This function creates a prompt using `_build_agent_prompt` and then gets the LLM's
@@ -42,11 +46,14 @@ def _prompt_agent(llm: BaseChatModel, question: str, scratchpad: str) -> str:
         llm (BaseChatModel): The language model to be prompted.
         question (str): The question to ask the language model.
         scratchpad (str): Additional context or information for the language model.
+        max_steps (int): Maximum number of steps.
 
     Returns:
         str: The processed response from the language model.
     """
-    prompt = _build_agent_prompt(question=question, scratchpad=scratchpad)
+    prompt = _build_agent_prompt(
+        question=question, scratchpad=scratchpad, max_steps=max_steps
+    )
     out = llm(
         [
             HumanMessage(
@@ -88,7 +95,13 @@ def _is_halted(
     """
     over_max_steps = step_n > max_steps
     over_token_limit = (
-        len(enc.encode(_build_agent_prompt(question=question, scratchpad=scratchpad)))
+        len(
+            enc.encode(
+                _build_agent_prompt(
+                    question=question, scratchpad=scratchpad, max_steps=max_steps
+                )
+            )
+        )
         > max_tokens
     )
     return finished or over_max_steps or over_token_limit
