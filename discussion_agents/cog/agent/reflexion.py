@@ -320,7 +320,7 @@ class ReflexionReActAgent(BaseAgent):
         key: str,
         strategy: Optional[str] = None,
         reset: bool = True,
-    ) -> List[str]:
+    ) -> List[Tuple[bool, str, str]]:
         """Processes a given question through ReAct and reflects using Reflexion strategies when possible.
 
         Iteratively applies the think-act-observe cycle to generate an answer for the question.
@@ -336,7 +336,8 @@ class ReflexionReActAgent(BaseAgent):
             reset (bool): Whether to reset the internal state before processing. Defaults to True.
 
         Returns:
-            result (List[str]): List of outputs from the ReflexionReActAgent.
+            result (List[Tuple[bool, str, str]]): List of outputs in the format (is_correct, answer, output)
+                the ReflexionReActAgent.
         """
         # Reset.
         if reset:
@@ -434,10 +435,11 @@ class ReflexionReActAgent(BaseAgent):
                 self._step_n += 1
                 out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
-            result.append(out)
+            is_correct = EM(self._answer, key)
+            result.append((is_correct, self._answer, out))
 
             # Increment patience counter.
-            if not EM(self._answer, key):
+            if not is_correct:
                 patience_cnt += 1
             if patience_cnt == self.patience:
                 break
