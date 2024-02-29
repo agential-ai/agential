@@ -9,6 +9,8 @@ from discussion_agents.cog.agent.reflexion import ReflexionReActAgent
 # Q2: Should this Experience Gathering section be a function or a class?
 # Q3: Should the Experience Gathering section be in the train module or functional?
 
+# ============================================== Experience Gathering ==============================================
+
 def gather_experience(
     reflexion_react_agent: ReflexionReActAgent,
     questions: List[str],
@@ -114,6 +116,11 @@ def get_folds(categories: Dict[str, List], n_instances: int, n_folds: int = 2) -
             folds[count % n_folds].append(idx)
 
     # Each fold is a validation set. Take the difference to get the training set of each fold.
-    folds = {fold: set(list(range(n_instances))).difference(values) for fold, values in folds.items()}
+    folds = {fold: list(set(list(range(n_instances))).difference(values)) for fold, values in folds.items()}
 
     return folds
+
+# ============================================== Insight Extraction ==============================================
+
+def create_rules(experiences: Dict[str, List]):
+    pass
