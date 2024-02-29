@@ -33,9 +33,6 @@ from discussion_agents.utils.parse import parse_action, remove_newline
 from discussion_agents.cog.prompts.react import (
     REACT_INSTRUCTION_HOTPOTQA,
     REACT_INSTRUCTION_FEVER,
-    REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
-    REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES,
-    REACT_ALFWORLD_PROMPTS_EXAMPLE,
     REACT_ALFWORLD_INSTRUCTION
 )
 
@@ -44,12 +41,9 @@ import alfworld
 import alfworld.agents.environment
 
 
-
-
 ALFWORLD = 'alfworld'
 HOTPOTQA = 'hotpotqa'
 FEVER = 'fever'
-
 
 
 class ReActAgent(BaseAgent):
@@ -101,7 +95,6 @@ class ReActAgent(BaseAgent):
         self._finished = False  #: :meta private:
 
 
-
     def generate(self, question: str, reset: bool = True, examples: str = None , env: Any = None) -> str:
         """Processes a given question through ReAct.
 
@@ -111,15 +104,13 @@ class ReActAgent(BaseAgent):
         Args:
             question (str): The question to be processed.
             reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
-
+            examples (str): The example of text generated.
+            env (Alfworld_environment): The variable to interact with Alfworld.
         Returns:
             str: The accumulated output from the ReAct process.
         """
 
-        input_check = examples
-        benchmark_type = check_type(examples=input_check)
-
-
+        benchmark_type = check_type(examples=examples)
         if benchmark_type == HOTPOTQA:
             instruction = REACT_INSTRUCTION_HOTPOTQA
         elif benchmark_type == FEVER:
@@ -152,8 +143,7 @@ class ReActAgent(BaseAgent):
                     scratchpad=self.memory.load_memories()["scratchpad"],
                     examples=examples,
                     instruction=instruction
-                    
-                )
+                ).strip()
                 self.memory.add_memories(" " + thought)
                 out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
@@ -168,28 +158,26 @@ class ReActAgent(BaseAgent):
                 examples=examples,
                 instruction=instruction
             ).strip()
-            action = action.replace('>','').strip()
+            if benchmark_type == ALFWORLD:
+                action = action.replace('>','').strip()
+                if 'think' not in action :
+                    action = action.replace(' in ',' in/on ')
             self.memory.add_memories(" " + action)
             out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
+
             # Observe.
             self.memory.add_memories(f"\nObservation {self._step_n}: ")
             if benchmark_type == ALFWORLD:
-                action = action.replace(' in ',' in\on ')
-                observation, reward, done, info = env.step([action])
-                observation, reward, done = process_ob(observation[0]), info['won'][0], done[0]
-
+                observation, _, done, info = env.step([action])
+                observation, done = process_ob(observation[0]), done[0]
                 if done :
-                    print(1)
                     self._finished = True
-
-
                 if 'think:' in action:
                     observation = 'OK.'
                 self.memory.add_memories(" " + observation)
-                
-
             else:
                 action_type, query = parse_action(action)
+                
                 if action_type.lower() == "finish":
                     self._answer = query
                     self._finished = True
@@ -247,13 +235,14 @@ def search(query: str) -> str:
 
 
 def check_type(examples: str = None) -> str:
-
+    """String check of examples to classify benchmark."""
     lines = examples.split('\n')
+    lines = [line for line in lines if line.strip()] 
     checkword = lines[0].split()[0]
     if checkword == 'Question:':
         return HOTPOTQA
     else:
-        checkword = lines[3].split()[0]
+        checkword = lines[0].split()[0]
         if checkword == 'Claim:':
             return FEVER
         line = lines[2]
@@ -263,6 +252,7 @@ def check_type(examples: str = None) -> str:
 
 
 def process_ob(ob):
+    """Observation processing for Alfworld."""
     if ob.startswith('You arrive at loc '):
         ob = ob[ob.find('. ')+2:]    
     return ob
@@ -308,10 +298,3 @@ class ZeroShotReActAgent(BaseAgent):
             str: The generated response.
         """
         return self.agent.invoke(observation_dict)  # type: ignore
-
-
-
-
-
-
-    
