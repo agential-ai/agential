@@ -5,7 +5,7 @@ Paper Repositories:
     - https://github.com/noahshinn/reflexion-draft
     - https://github.com/noahshinn/reflexion
 """
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import tiktoken
 
@@ -101,7 +101,7 @@ class ReflexionCoTAgent(BaseAgent):
         context: Optional[str] = None,
         strategy: Optional[str] = None,
         reset: bool = True,
-    ) -> List[str]:
+    ) -> List[Tuple[bool, str, str]]:
         """Generates a response based on the provided context, question, and key.
 
         The `generate` method internally calls reflect (if possible), resets the memory,
@@ -115,7 +115,8 @@ class ReflexionCoTAgent(BaseAgent):
             reset (bool): Resets the agent's memory. Defaults to True.
 
         Returns:
-            result (List[str]): A list of string outputs from the ReflexionCoTAgent.
+            result (List[bool, str, str]): A list of tuples containing (is_correct, answer, output)
+                 from the ReflexionCoTAgent.
         """
         # Reset.
         if reset:
@@ -179,11 +180,11 @@ class ReflexionCoTAgent(BaseAgent):
                 out += "\n" + invalid_action_str
 
             self._trial_n += 1
-
-            result.append(out)
+            is_correct = EM(self._answer, key)
+            result.append((is_correct, self._answer, out))
 
             # Increment patience counter.
-            if not EM(self._answer, key):
+            if not is_correct:
                 patience_cnt += 1
             if patience_cnt == self.patience:
                 break
