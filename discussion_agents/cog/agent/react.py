@@ -167,21 +167,26 @@ class ReActAgent(BaseAgent):
                 examples=examples,
                 instruction=instruction
             ).strip()
+            action = action.replace('>','').strip()
             self.memory.add_memories(" " + action)
             out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
             # Observe.
             self.memory.add_memories(f"\nObservation {self._step_n}: ")
             if benchmark_type == ALFWORLD:
 
-                observation, _, done, _ = env.step([action])
-                done = done[0]
-                observation = observation[0]
+                observation, reward, done, info = env.step([action])
+                observation, reward, done = process_ob(observation[0]), info['won'][0], done[0]
+                print(reward)
+                print(done)
+                if done :
+                    print(1)
+                    self._finished = True
+
 
                 if 'think:' in action:
                     observation = 'OK.'
                 self.memory.add_memories(" " + observation)
-                if done :
-                    self._finished = True
+                
 
             else:
                 action_type, query = parse_action(action)
