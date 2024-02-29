@@ -7,11 +7,12 @@ from tiktoken import Encoding
 from discussion_agents.cog.agent.react import ReActAgent, ZeroShotReActAgent
 
 
-from discussion_agents.cog.prompts.react import REACT_ALFWORLD_INSTRUCTION, REACT_ALFWORLD_PROMPTS_EXAMPLE, REACT_INSTRUCTION, REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES , REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
+from discussion_agents.cog.prompts.react import REACT_ALFWORLD_INSTRUCTION, REACT_ALFWORLD_PROMPTS_EXAMPLE, REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES , REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
 import yaml
 import alfworld
 import alfworld.agents.environment
 
+from tests.fixtures.agent import alfworld_config
 
 
 def test_init() -> None:
@@ -97,8 +98,7 @@ def test_FEVER_react_generate() -> None:
 
 def test_Alfworld_react_generate() -> None:
     """Testing for Alfworld."""
-    with open('tests/assets/base_config.yaml') as reader:
-            config = yaml.safe_load(reader)
+    config = alfworld_config()
     split = "eval_out_of_distribution"
     env = getattr(alfworld.agents.environment, config["env"]["type"])(config, train_eval=split)
     env = env.init_env(batch_size=1)

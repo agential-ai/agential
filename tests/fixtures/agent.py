@@ -47,6 +47,7 @@ def reflexion_react_agent() -> ReflexionReActAgent:
 
 @pytest.fixture
 def alfworld_config():
+    """Prepare for env init for Alfworld"""
     with open('tests/assets/base_config.yaml') as reader:
         config = yaml.safe_load(reader) 
     return config
