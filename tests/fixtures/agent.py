@@ -1,6 +1,7 @@
 """Fixtures for creating agents."""
 
 import pytest
+import yaml
 
 from langchain.llms.fake import FakeListLLM
 from langchain_community.chat_models.fake import FakeListChatModel
@@ -42,3 +43,10 @@ def reflexion_react_agent() -> ReflexionReActAgent:
         action_llm=FakeListChatModel(responses=["1"]),
     )
     return agent
+
+
+@pytest.fixture
+def alfworld_config():
+    with open('tests/assets/base_config.yaml') as reader:
+        config = yaml.safe_load(reader) 
+    return config

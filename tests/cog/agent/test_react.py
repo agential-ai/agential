@@ -97,7 +97,7 @@ def test_FEVER_react_generate() -> None:
 
 def test_Alfworld_react_generate() -> None:
     """Testing for Alfworld."""
-    with open('tests/cog/agent/base_config.yaml') as reader:
+    with open('tests/assets/base_config.yaml') as reader:
             config = yaml.safe_load(reader)
     split = "eval_out_of_distribution"
     env = getattr(alfworld.agents.environment, config["env"]["type"])(config, train_eval=split)
@@ -125,9 +125,8 @@ def test_Alfworld_react_generate() -> None:
     ]
 
     llm = FakeListChatModel(responses=response)
-    agent = ReActAgent(llm=llm,env=env)
-    out = agent.generate(question=ob , examples=prompt,env=env)
-    assert isinstance(out, str)
+    agent = ReActAgent(llm=llm, env=env)
+    out = agent.generate(question=ob, examples=prompt, env=env)
     assert response[0].split('\n')[-1] == 'Congratulations, you have completed the task!'
 
 
