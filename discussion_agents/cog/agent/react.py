@@ -158,6 +158,7 @@ class ReActAgent(BaseAgent):
                 out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
             # Act.
+        
             self.memory.add_memories(f"\nAction {self._step_n}:")
             
             action = _prompt_agent(
@@ -167,7 +168,7 @@ class ReActAgent(BaseAgent):
                 examples=examples,
                 instruction=instruction
             ).strip()
-            action = action.replace('>','').strip()
+            action = action.replace('>','').strip().replace(' in ',' in\on ')
             self.memory.add_memories(" " + action)
             out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
             # Observe.
@@ -176,8 +177,7 @@ class ReActAgent(BaseAgent):
 
                 observation, reward, done, info = env.step([action])
                 observation, reward, done = process_ob(observation[0]), info['won'][0], done[0]
-                print(reward)
-                print(done)
+
                 if done :
                     print(1)
                     self._finished = True
