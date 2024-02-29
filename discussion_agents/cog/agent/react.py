@@ -168,13 +168,13 @@ class ReActAgent(BaseAgent):
                 examples=examples,
                 instruction=instruction
             ).strip()
-            action = action.replace('>','').strip().replace(' in ',' in\on ')
+            action = action.replace('>','').strip()
             self.memory.add_memories(" " + action)
             out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
             # Observe.
             self.memory.add_memories(f"\nObservation {self._step_n}: ")
             if benchmark_type == ALFWORLD:
-
+                action = action.replace(' in ',' in\on ')
                 observation, reward, done, info = env.step([action])
                 observation, reward, done = process_ob(observation[0]), info['won'][0], done[0]
 
