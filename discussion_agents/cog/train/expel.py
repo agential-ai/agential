@@ -3,6 +3,18 @@
 import random
 from typing import List, Dict, Optional
 from discussion_agents.cog.agent.reflexion import ReflexionReActAgent
+from langchain_core.prompts.chat import HumanMessagePromptTemplate
+from langchain_core.messages.human import HumanMessage
+
+from discussion_agents.cog.prompts.expel import (
+    SYSTEM_TEMPLATE, 
+    SYSTEM_CRITIQUE_EXISTING_RULES_INSTRUCTION,
+    EXISTING_RULES_AI_NAME,
+    NON_EXISTENT_RULES_AT_NAME,
+    HUMAN_CRITIQUE_EXISTING_RULES_TEMPLATE,
+    CRITIQUE_SUMMARY_SUFFIX_FULL,
+    CRITIQUE_SUMMARY_SUFFIX_NOT_FULL
+)
 
 
 # Q1: Should this experience be a part of the ExpeLAgent class?
@@ -122,5 +134,42 @@ def get_folds(categories: Dict[str, List], n_instances: int, n_folds: int = 2) -
 
 # ============================================== Insight Extraction ==============================================
 
-def create_rules(experiences: Dict[str, List]):
-    pass
+
+def _build_compare_prompt(
+    rule_items: List[str], 
+    question: str,
+    failed_traj: str, 
+    success_traj: str, 
+    is_full: bool,
+) -> List[HumanMessage]:
+    # is_full = self.max_num_rules <= len(self.rule_items_with_count)
+
+    critique_history = []
+
+    if rule_items == []:
+        rule_items = ['']
+
+    # System prompt.
+    prefix = (
+        HumanMessagePromptTemplate.from_template(SYSTEM_TEMPLATE)
+        .format_messages(
+            ai_name=NON_EXISTENT_RULES_AT_NAME if not rule_items else EXISTING_RULES_AI_NAME,
+            instruction=SYSTEM_CRITIQUE_EXISTING_RULES_INSTRUCTION
+        )
+    )
+    critique_history.extend(prefix)
+
+    # Task prompt.
+    human_format_dict = {
+        'question': question,
+        'failed_traj': failed_traj,
+        'success_traj': success_traj,
+        'existing_rules': '\n'.join([f'{i}. {r}' for i, r in enumerate(rule_items, 1)])
+    }
+
+    human_critique_summary_message = HumanMessagePromptTemplate.from_template(HUMAN_CRITIQUE_EXISTING_RULES_TEMPLATE).format_messages(**human_format_dict)[0]
+    critique_summary_suffix = CRITIQUE_SUMMARY_SUFFIX_FULL if is_full else CRITIQUE_SUMMARY_SUFFIX_NOT_FULL
+    human_critique_summary_message.content = human_critique_summary_message.content + critique_summary_suffix
+    critique_history.append(human_critique_summary_message)
+
+    return critique_history
