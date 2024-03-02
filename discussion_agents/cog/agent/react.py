@@ -21,8 +21,8 @@ from langchain_core.tools import BaseTool, tool
 from tiktoken.core import Encoding
 
 import yaml
-import alfworld
-import alfworld.agents.environment
+# import alfworld
+# import alfworld.agents.environment
 
 
 from discussion_agents.cog.agent.base import BaseAgent
@@ -37,8 +37,8 @@ from discussion_agents.cog.prompts.react import (
 )
 
 import yaml
-import alfworld
-import alfworld.agents.environment
+# import alfworld
+# import alfworld.agents.environment
 
 
 ALFWORLD = 'alfworld'
