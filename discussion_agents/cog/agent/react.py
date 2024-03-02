@@ -26,7 +26,7 @@ import alfworld.agents.environment
 
 
 from discussion_agents.cog.agent.base import BaseAgent
-from discussion_agents.cog.functional.react import _is_halted, _prompt_agent
+from discussion_agents.cog.functional.react import _is_halted, _prompt_agent , check_type , process_ob
 from discussion_agents.cog.modules.memory.react import ReActMemory
 from discussion_agents.utils.parse import parse_action, remove_newline
 
@@ -87,7 +87,6 @@ class ReActAgent(BaseAgent):
         self.max_tokens = max_tokens
         self.docstore = docstore
         self.enc = enc
-
 
 
         # Internal variables.
@@ -224,7 +223,7 @@ class ReActAgent(BaseAgent):
         self._step_n = 1
         self._finished = False
         self.memory.clear()
-        return
+
 
 
 @tool
@@ -234,28 +233,6 @@ def search(query: str) -> str:
     return docstore.search(query)
 
 
-def check_type(examples: str = None) -> str:
-    """String check of examples to classify benchmark."""
-    lines = examples.split('\n')
-    lines = [line for line in lines if line.strip()] 
-    checkword = lines[0].split()[0]
-    if checkword == 'Question:':
-        return HOTPOTQA
-    else:
-        checkword = lines[0].split()[0]
-        if checkword == 'Claim:':
-            return FEVER
-        line = lines[2]
-        if 'Your task is to:' in line :
-            return ALFWORLD
-    return ValueError('Wrong Examples')
-
-
-def process_ob(ob):
-    """Observation processing for Alfworld."""
-    if ob.startswith('You arrive at loc '):
-        ob = ob[ob.find('. ')+2:]    
-    return ob
 
 class ZeroShotReActAgent(BaseAgent):
     """The Zero-Shot ReAct Agent class adapted from LangChain.

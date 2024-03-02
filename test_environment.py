@@ -37,8 +37,11 @@ if __name__ == '__main__':
     from tests.cog.agent.test_react import test_generate
 
 
-    from tests.cog.agent.test_react import test_Alfworld_react_generate
+    from tests.cog.agent.test_react import test_Alfworld_react_generate, test_FEVER_react_generate
 
+
+
+    test_Alfworld_react_generate()
 
 
 

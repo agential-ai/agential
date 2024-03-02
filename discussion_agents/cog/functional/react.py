@@ -7,7 +7,9 @@ from tiktoken import Encoding
 
 from discussion_agents.utils.parse import remove_newline
 
-
+ALFWORLD = 'alfworld'
+HOTPOTQA = 'hotpotqa'
+FEVER = 'fever'
 
 
 def _build_agent_prompt(question: str, scratchpad: str, examples: str , instruction: str) -> str:
@@ -99,3 +101,26 @@ def _is_halted(
     return finished or over_max_steps or over_token_limit
 
 
+
+def check_type(examples: str = None) -> str:
+    """String check of examples to classify benchmark."""
+    lines = examples.split('\n')
+    lines = [line for line in lines if line.strip()] 
+    checkword = lines[0].split()[0]
+    if checkword == 'Question:':
+        return HOTPOTQA
+    else:
+        checkword = lines[0].split()[0]
+        if checkword == 'Claim:':
+            return FEVER
+        line = lines[2]
+        if 'Your task is to:' in line :
+            return ALFWORLD
+    return ValueError('Wrong Examples')
+
+
+def process_ob(ob):
+    """Observation processing for Alfworld."""
+    if ob.startswith('You arrive at loc '):
+        ob = ob[ob.find('. ')+2:]    
+    return ob
