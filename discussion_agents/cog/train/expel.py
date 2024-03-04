@@ -2,7 +2,7 @@
 
 import re
 import random
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Tuple
 from discussion_agents.cog.agent.reflexion import ReflexionReActAgent
 from langchain_core.prompts.chat import HumanMessagePromptTemplate
 from langchain_core.messages.human import HumanMessage
@@ -226,3 +226,73 @@ def parse_rules(llm_text):
             else:
                 res.append((operation.strip(), text))
     return(res)
+
+
+def retrieve_rule_index(rules: List[Tuple[str, int]], operation_rule_text: str) -> int:
+    for i in range(len(rules)):
+        if rules[i][0] in operation_rule_text:
+            return i
+    return -1
+
+def is_existing_rule(rules: List[Tuple[str, int]], operation_rule_text: str) -> bool:
+    for i in range(len(rules)):
+        if rules[i][0] in operation_rule_text:
+            return True
+    return False
+
+def remove_err_operations(rules: List[Tuple[str, int]], operations: List[Tuple[str, str]]) -> List[Tuple[str, str]]:
+    cleaned_operations = operations.copy()
+    
+    delete_indices = []
+    for i in range(len(cleaned_operations)):
+        # Split the operation into action type and optional rule number.
+        operation, operation_rule_text = cleaned_operations[i]
+        operation_type = operation.split(' ')[0]
+        rule_num = int(operation.split(' ')[1]) if ' ' in operation else None
+
+        if operation_type == 'ADD':
+            if is_existing_rule(rules, operation_rule_text): # If new rule_text is an existing rule ('in').
+                delete_indices.append(i)
+        else:
+            if operation_type == 'EDIT':
+                if is_existing_rule(rules, operation_rule_text): # If rule is matching ('in') existing rule, change it to AGREE.
+                    rule_num = retrieve_rule_index(rules, operation_rule_text)
+                    cleaned_operations[i] = (f'AGREE {rule_num+1}', rules[rule_num][0])
+                elif (rule_num is None) or (rule_num > len(rules)):   # If rule doesn't exist, remove.
+                    delete_indices.append(i)
+                    
+            elif operation_type == 'REMOVE' or operation_type == 'AGREE':
+                if not is_existing_rule(rules, operation_rule_text): # If new operation_rule_text is not an existing rule.
+                    delete_indices.append(i)
+
+    # Remove problematic operations.
+    cleaned_operations = [cleaned_operations[i] for i in range(len(cleaned_operations)) if i not in delete_indices]
+    
+    return cleaned_operations
+
+def update_rules(rules: List[Tuple[str, int]], operations: List[Tuple[str, str]], is_full: bool = False) -> List[Tuple[str, int]]:
+    updated_rules = rules.copy()
+    
+    for op in ['REMOVE', 'AGREE', 'EDIT', 'ADD']: # Order is important
+        for i in range(len(operations)):
+            operation, operation_rule_text = operations[i]
+            operation_type = operation.split(' ')[0]
+            if operation_type != op:
+                continue
+
+            if operation_type == 'REMOVE': # remove rule: -1
+                rule_index = retrieve_rule_index(updated_rules, operation_rule_text) # if rule_num doesn't match but text does
+                remove_strength = 3 if is_full else 1
+                updated_rules[rule_index] = (updated_rules[rule_index][0], updated_rules[rule_index][1]-remove_strength) # -1 (-3 if list full) to the counter
+            elif operation_type == 'AGREE': # agree with rule: +1
+                rule_index = retrieve_rule_index(updated_rules, operation_rule_text) # if rule_num doesn't match but text does
+                updated_rules[rule_index] = (updated_rules[rule_index][0], updated_rules[rule_index][1]+1) # +1 to the counter
+            elif operation_type == 'EDIT': # edit the rule: +1 // NEED TO BE AFTER REMOVE AND AGREE
+                rule_index = int(operation.split(' ')[1])-1
+                updated_rules[rule_index] = (operation_rule_text, updated_rules[rule_index][1]+1) # +1 to the counter
+            elif operation_type == 'ADD': # add new rule: +2
+                updated_rules.append((operation_rule_text, 2))
+    updated_rules = [updated_rules[i] for i in range(len(updated_rules)) if updated_rules[i][1] > 0] # remove rules when counter reach 0
+    updated_rules.sort(key=lambda x: x[1], reverse=True)
+
+    return updated_rules
