@@ -1,10 +1,13 @@
 """ExpeL training components."""
 
+import re
 import random
 from typing import List, Dict, Optional
 from discussion_agents.cog.agent.reflexion import ReflexionReActAgent
 from langchain_core.prompts.chat import HumanMessagePromptTemplate
 from langchain_core.messages.human import HumanMessage
+from langchain_core.messages.chat import ChatMessage
+from langchain_core.language_models.chat_models import BaseChatModel
 
 from discussion_agents.cog.prompts.expel import (
     SYSTEM_TEMPLATE, 
@@ -173,3 +176,53 @@ def _build_compare_prompt(
     critique_history.append(human_critique_summary_message)
 
     return critique_history
+
+
+def collapse_prompts(prompt_history: List[ChatMessage]) -> List[ChatMessage]:
+    """Courtesy of GPT4"""
+    if not prompt_history:
+        return []
+
+    new_prompt_history = []
+    scratch_pad = prompt_history[0].content
+    last_message_type = type(prompt_history[0])
+
+    for message in prompt_history[1:]:
+        current_message_type = type(message)
+        if current_message_type == last_message_type:
+            scratch_pad += '\n' + message.content
+        else:
+            new_prompt_history.append(last_message_type(content=scratch_pad))
+            scratch_pad = message.content
+            last_message_type = current_message_type
+
+    # Handle the last accumulated message.
+    new_prompt_history.append(last_message_type(content=scratch_pad))
+
+    return new_prompt_history
+
+
+def _prompt_compare_critique(compare_prompt_msgs: List[HumanMessage], llm: BaseChatModel, replace_newline: bool = False):
+    out = llm(compare_prompt_msgs).content.strip('\n').strip()
+    if replace_newline:
+        out = out.replace('\n', '')
+    return out
+
+
+def parse_rules(llm_text):
+    pattern = r'((?:REMOVE|EDIT|ADD|AGREE)(?: \d+|)): (?:[a-zA-Z\s\d]+: |)(.*)'
+    matches = re.findall(pattern, llm_text)
+
+    res = []
+    banned_words = ['ADD', 'AGREE', 'EDIT']
+    for operation, text in matches:
+        text = text.strip()
+        if text != '' and not any([w in text for w in banned_words]) and text.endswith('.'):
+        # if text is not empty
+        # if text doesn't contain banned words (avoid weird formatting cases from llm)
+        # if text ends with a period (avoid cut off sentences from llm)
+            if 'ADD' in operation:
+                res.append(('ADD', text))
+            else:
+                res.append((operation.strip(), text))
+    return(res)
