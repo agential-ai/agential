@@ -139,24 +139,24 @@ def get_folds(categories: Dict[str, List], n_instances: int, n_folds: int = 2) -
 
 
 def _build_compare_prompt(
-    rule_items: List[str], 
+    rules: List[str], 
     question: str,
-    failed_traj: str, 
-    success_traj: str, 
+    success_trial: str, 
+    failed_trial: str, 
     is_full: bool,
 ) -> List[HumanMessage]:
-    # is_full = self.max_num_rules <= len(self.rule_items_with_count)
+    # is_full = self.max_num_rules <= len(self.rules_with_count)   ->    20 <= len(self.rules_with_count)
 
     critique_history = []
 
-    if rule_items == []:
-        rule_items = ['']
+    if rules == []:
+        rules = ['']
 
     # System prompt.
     prefix = (
         HumanMessagePromptTemplate.from_template(SYSTEM_TEMPLATE)
         .format_messages(
-            ai_name=NON_EXISTENT_RULES_AT_NAME if not rule_items else EXISTING_RULES_AI_NAME,
+            ai_name=NON_EXISTENT_RULES_AT_NAME if not rules else EXISTING_RULES_AI_NAME,
             instruction=SYSTEM_CRITIQUE_EXISTING_RULES_INSTRUCTION
         )
     )
@@ -165,9 +165,9 @@ def _build_compare_prompt(
     # Task prompt.
     human_format_dict = {
         'question': question,
-        'failed_traj': failed_traj,
-        'success_traj': success_traj,
-        'existing_rules': '\n'.join([f'{i}. {r}' for i, r in enumerate(rule_items, 1)])
+        'failed_traj': failed_trial,
+        'success_traj': success_trial,
+        'existing_rules': '\n'.join([f'{i}. {r}' for i, r in enumerate(rules, 1)])
     }
 
     human_critique_summary_message = HumanMessagePromptTemplate.from_template(HUMAN_CRITIQUE_EXISTING_RULES_TEMPLATE).format_messages(**human_format_dict)[0]
@@ -202,14 +202,18 @@ def collapse_prompts(prompt_history: List[ChatMessage]) -> List[ChatMessage]:
     return new_prompt_history
 
 
-def _prompt_compare_critique(compare_prompt_msgs: List[HumanMessage], llm: BaseChatModel, replace_newline: bool = False):
+def _prompt_compare_critique(
+    compare_prompt_msgs: List[HumanMessage], 
+    llm: BaseChatModel, 
+    replace_newline: bool = False
+) -> str:
     out = llm(compare_prompt_msgs).content.strip('\n').strip()
     if replace_newline:
         out = out.replace('\n', '')
     return out
 
 
-def parse_rules(llm_text):
+def parse_rules(llm_text: str) -> str:
     pattern = r'((?:REMOVE|EDIT|ADD|AGREE)(?: \d+|)): (?:[a-zA-Z\s\d]+: |)(.*)'
     matches = re.findall(pattern, llm_text)
 
@@ -225,7 +229,7 @@ def parse_rules(llm_text):
                 res.append(('ADD', text))
             else:
                 res.append((operation.strip(), text))
-    return(res)
+    return res
 
 
 def retrieve_rule_index(rules: List[Tuple[str, int]], operation_rule_text: str) -> int:
