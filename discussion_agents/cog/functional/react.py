@@ -3,13 +3,9 @@ from langchain.prompts import PromptTemplate
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
 from tiktoken import Encoding
-
+from typing import Optional
 
 from discussion_agents.utils.parse import remove_newline
-
-ALFWORLD = 'alfworld'
-HOTPOTQA = 'hotpotqa'
-FEVER = 'fever'
 
 
 def _build_agent_prompt(question: str, scratchpad: str, examples: str , instruction: str) -> str:
@@ -100,27 +96,26 @@ def _is_halted(
     )
     return finished or over_max_steps or over_token_limit
 
-
-
-def check_type(examples: str = None) -> str:
-    """String check of examples to classify benchmark."""
-    lines = examples.split('\n')
-    lines = [line for line in lines if line.strip()] 
-    checkword = lines[0].split()[0]
-    if checkword == 'Question:':
-        return HOTPOTQA
-    else:
-        checkword = lines[0].split()[0]
-        if checkword == 'Claim:':
-            return FEVER
-        line = lines[2]
-        if 'Your task is to:' in line :
-            return ALFWORLD
-    return ValueError('Wrong Examples')
-
-
-def process_ob(ob):
+def _process_ob(ob):
     """Observation processing for Alfworld."""
     if ob.startswith('You arrive at loc '):
         ob = ob[ob.find('. ')+2:]    
     return ob
+
+
+
+
+def _check_keyword(example: str = None):
+    keyword = ['Thought' , 'Action' , 'Observation' , 'Your task is to']
+    example = example.split('\n')
+    example = [line.strip() for line in example if line]
+    occurrence = [0 , 0 ,0  , 0]
+    i = 0
+    while all(num < 2 for num in occurrence):
+        test_case = example[i].split(':')[0]
+        test_case = ''.join(char for char in test_case if not char.isdigit()).strip()
+        if any(part.strip() in keyword for part in test_case) or test_case in keyword: 
+            index = keyword.index(test_case)
+            occurrence[index] += 1
+        i += 1
+    return occurrence

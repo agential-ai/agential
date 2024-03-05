@@ -26,7 +26,7 @@ import alfworld.agents.environment
 
 
 from discussion_agents.cog.agent.base import BaseAgent
-from discussion_agents.cog.functional.react import _is_halted, _prompt_agent , check_type , process_ob
+from discussion_agents.cog.functional.react import _is_halted, _prompt_agent , _check_keyword , _process_ob
 from discussion_agents.cog.modules.memory.react import ReActMemory
 from discussion_agents.utils.parse import parse_action, remove_newline
 
@@ -41,9 +41,6 @@ import alfworld
 import alfworld.agents.environment
 
 
-ALFWORLD = 'alfworld'
-HOTPOTQA = 'hotpotqa'
-FEVER = 'fever'
 
 
 class ReActAgent(BaseAgent):
@@ -69,7 +66,7 @@ class ReActAgent(BaseAgent):
         self,
         llm: BaseChatModel,
         memory: Optional[ReActMemory] = None,
-        max_steps: int = 20,
+        max_steps: int = 6,
         max_tokens: int = 3896,
         docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
@@ -94,7 +91,7 @@ class ReActAgent(BaseAgent):
         self._finished = False  #: :meta private:
 
 
-    def generate(self, question: str, reset: bool = True, examples: str = None , env: Any = None) -> str:
+    def generate(self, question: str, reset: bool = True, examples: str = None , env: Any = None , instruction: str = None) -> str:
         """Processes a given question through ReAct.
 
         Iteratively applies the think-act-observe cycle to generate an answer for the question.
@@ -109,18 +106,15 @@ class ReActAgent(BaseAgent):
             str: The accumulated output from the ReAct process.
         """
 
-        benchmark_type = check_type(examples=examples)
-        if benchmark_type == HOTPOTQA:
-            instruction = REACT_INSTRUCTION_HOTPOTQA
-        elif benchmark_type == FEVER:
-            instruction = REACT_INSTRUCTION_FEVER
-        elif benchmark_type == ALFWORLD:
-            instruction = REACT_ALFWORLD_INSTRUCTION
+        keyword_occurence = _check_keyword(example=examples)
+
+
 
         if reset:
             self.reset()
 
         out = ""
+
         while not _is_halted(
             finished=self._finished,
             step_n=self._step_n,
@@ -134,7 +128,7 @@ class ReActAgent(BaseAgent):
         ):
             
             # Think.
-            if benchmark_type == HOTPOTQA or benchmark_type == FEVER:
+            if keyword_occurence[0]:
                 self.memory.add_memories("\nThought:")
                 thought = _prompt_agent(
                     llm=self.llm,
@@ -147,17 +141,19 @@ class ReActAgent(BaseAgent):
                 out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
             # Act.
-        
-            self.memory.add_memories(f"\nAction {self._step_n}:")
-            
-            action = _prompt_agent(
-                llm=self.llm,
-                question=question,
-                scratchpad=self.memory.load_memories()["scratchpad"],
-                examples=examples,
-                instruction=instruction
-            ).strip()
-            if benchmark_type == ALFWORLD:
+            if keyword_occurence[1]:
+                self.memory.add_memories(f"\nAction {self._step_n}:")
+                
+                action = _prompt_agent(
+                    llm=self.llm,
+                    question=question,
+                    scratchpad=self.memory.load_memories()["scratchpad"],
+                    examples=examples,
+                    instruction=instruction
+                ).strip()
+
+
+            if keyword_occurence[3]:
                 action = action.replace('>','').strip()
                 if 'think' not in action :
                     action = action.replace(' in ',' in/on ')
@@ -165,44 +161,45 @@ class ReActAgent(BaseAgent):
             out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
             # Observe.
-            self.memory.add_memories(f"\nObservation {self._step_n}: ")
-            if benchmark_type == ALFWORLD:
-                observation, _, done, info = env.step([action])
-                observation, done = process_ob(observation[0]), done[0]
-                if done :
-                    self._finished = True
-                if 'think:' in action:
-                    observation = 'OK.'
-                self.memory.add_memories(" " + observation)
-            else:
-                action_type, query = parse_action(action)
-                
-                if action_type.lower() == "finish":
-                    self._answer = query
-                    self._finished = True
-                    self.memory.add_memories(query)
-                elif action_type.lower() == "search":
-                    try:
-                        self.memory.add_memories(
-                            remove_newline(self.docstore.search(query))
-                        )
-                    except Exception:
-                        self.memory.add_memories(
-                            "Could not find that page, please try again."
-                        )       
-                elif action_type.lower() == "lookup":
-                    try:
-                        self.memory.add_memories(
-                            remove_newline(self.docstore.lookup(query))
-                        )
-                    except ValueError:
-                        self.memory.add_memories(
-                            "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
-                        )
+            if keyword_occurence[2]:
+                self.memory.add_memories(f"\nObservation {self._step_n}: ")
+                if keyword_occurence[3]:
+                    observation, _, done, info = env.step([action])
+                    observation, done = _process_ob(observation[0]), done[0]
+                    if done :
+                        self._finished = True
+                    if 'think:' in action:
+                        observation = 'OK.'
+                    self.memory.add_memories(" " + observation)
                 else:
-                    self.memory.add_memories(
-                        "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
-                    )
+                    action_type, query = parse_action(action)
+                    
+                    if action_type.lower() == "finish":
+                        self._answer = query
+                        self._finished = True
+                        self.memory.add_memories(query)
+                    elif action_type.lower() == "search":
+                        try:
+                            self.memory.add_memories(
+                                remove_newline(self.docstore.search(query))
+                            )
+                        except Exception:
+                            self.memory.add_memories(
+                                "Could not find that page, please try again."
+                            )       
+                    elif action_type.lower() == "lookup":
+                        try:
+                            self.memory.add_memories(
+                                remove_newline(self.docstore.lookup(query))
+                            )
+                        except ValueError:
+                            self.memory.add_memories(
+                                "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
+                            )
+                    else:
+                        self.memory.add_memories(
+                            "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
+                        )
             self._step_n += 1
             out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
         return out

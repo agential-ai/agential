@@ -9,7 +9,7 @@ from langchain_community.chat_models.fake import FakeListChatModel
 from discussion_agents.cog.agent.generative_agents import GenerativeAgent
 from discussion_agents.cog.agent.react import ReActAgent
 from discussion_agents.cog.agent.reflexion import ReflexionCoTAgent, ReflexionReActAgent
-
+from pathlib import Path
 
 @pytest.fixture
 def generative_agent() -> GenerativeAgent:
@@ -46,12 +46,20 @@ def reflexion_react_agent() -> ReflexionReActAgent:
 
 
 @pytest.fixture
-def alfworld_env():
+def alfworld_env(alfworld_file):
     """Prepare for env init for Alfworld."""
-    with open(alfworld_config()) as reader:
+    with open(alfworld_file) as reader:
         config = yaml.safe_load(reader) 
     return config
 
+
 @pytest.fixture
-def alfworld_config():
-    return 'tests/assets/base_config.yaml'
+def data_dir(pytestconfig):
+    """Dir path to sleap data."""
+    return Path(pytestconfig.rootdir) / "tests/assets"
+
+
+@pytest.fixture
+def alfworld_file(data_dir):
+    """Sleap single fly .slp and video file paths."""
+    return Path(data_dir) / "base_config.yaml"

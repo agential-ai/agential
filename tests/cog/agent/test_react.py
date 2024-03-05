@@ -42,7 +42,7 @@ def test_generate() -> None:
     ]
     llm = FakeListChatModel(responses=responses)
     agent = ReActAgent(llm=llm)
-    out = agent.generate(question=q,examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES)
+    out = agent.generate(question=q, examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES, benchmark_type='hotpotqa')
     assert isinstance(out, str)
     assert agent._step_n == agent.max_steps + 1
     assert not agent._finished
@@ -90,7 +90,7 @@ def test_FEVER_react_generate() -> None:
     ]
     llm = FakeListChatModel(responses=responses)
     agent = ReActAgent(llm=llm)
-    out = agent.generate(question=q,examples=REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES)
+    out = agent.generate(question=q, examples=REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES, benchmark_type='fever')
     assert isinstance(out, str)
     assert agent._step_n <= agent.max_steps + 1
     assert not agent._finished
@@ -126,7 +126,7 @@ def test_Alfworld_react_generate(alfworld_env) -> None:
 
     llm = FakeListChatModel(responses=response)
     agent = ReActAgent(llm=llm, env=env)
-    out = agent.generate(question=ob, examples=prompt, env=env)
+    out = agent.generate(question=ob, examples=prompt, env=env, benchmark_type='alfworld')
     assert response[0].split('\n')[-1] == 'Congratulations, you have completed the task!'
 
 
