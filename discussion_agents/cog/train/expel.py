@@ -69,6 +69,10 @@ def gather_experience(
         
     return experiences
 
+
+# ============================================== Insight Extraction ==============================================
+
+
 def categorize_experiences(experiences: Dict[str, List]) -> Dict[str, List]:
     """Categorizes experiences based on the success of trials in the trajectories.
 
@@ -136,8 +140,6 @@ def get_folds(categories: Dict[str, List], n_instances: int, n_folds: int = 2) -
     folds = {fold: list(set(list(range(n_instances))).difference(values)) for fold, values in folds.items()}
 
     return folds
-
-# ============================================== Insight Extraction ==============================================
 
 
 def _build_compare_prompt(
