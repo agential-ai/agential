@@ -16,10 +16,11 @@ def random_divide_list(lst: List[Any], k: int) -> List[List[Any]]:
 
     Ref: https://github.com/LeapLabTHU/ExpeL.
     """
-    random.shuffle(lst)
+    lst = random.sample(lst, len(lst))
+    
     if len(lst) <= k:
         return [lst]
-    else:
-        num_chunks = math.ceil(len(lst) / k)
-        chunk_size = math.ceil(len(lst) / num_chunks)
-        return [lst[i*chunk_size:(i+1)*chunk_size] for i in range(num_chunks)]
+    
+    num_chunks = math.ceil(len(lst) / k)
+    chunk_size = math.ceil(len(lst) / num_chunks)
+    return [lst[i*chunk_size:(i+1)*chunk_size] for i in range(num_chunks)]
