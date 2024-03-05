@@ -16,7 +16,9 @@ from discussion_agents.cog.prompts.expel import (
     NON_EXISTENT_RULES_AT_NAME,
     HUMAN_CRITIQUE_EXISTING_RULES_TEMPLATE,
     CRITIQUE_SUMMARY_SUFFIX_FULL,
-    CRITIQUE_SUMMARY_SUFFIX_NOT_FULL
+    CRITIQUE_SUMMARY_SUFFIX_NOT_FULL,
+    SYSTEM_CRITIQUE_ALL_SUCCESS_EXISTING_RULES_INSTRUCTION,
+    HUMAN_CRITIQUE_EXISTING_RULES_ALL_SUCCESS_TEMPLATE
 )
 
 
@@ -178,6 +180,42 @@ def _build_compare_prompt(
     return critique_history
 
 
+def _build_all_success_prompt(
+    rules: List[str], 
+    success_trajs_str: str,
+    is_full: bool,
+) -> List[HumanMessage]:
+    # is_full = self.max_num_rules <= len(self.rules_with_count)   ->    20 <= len(self.rules_with_count)
+
+    critique_history = []
+
+    if rules == []:
+        rules = ['']
+
+    # System prompt.
+    prefix = (
+        HumanMessagePromptTemplate.from_template(SYSTEM_TEMPLATE)
+        .format_messages(
+            ai_name=NON_EXISTENT_RULES_AT_NAME if not rules else EXISTING_RULES_AI_NAME,
+            instruction=SYSTEM_CRITIQUE_ALL_SUCCESS_EXISTING_RULES_INSTRUCTION
+        )
+    )
+    critique_history.extend(prefix)
+
+    # Task prompt.
+    human_format_dict = {
+        "success_trajs": success_trajs_str,
+        "existing_rules": '\n'.join([f'{i}. {r}' for i, r in enumerate(rules, 1)])
+    }
+
+    human_critique_summary_message = HumanMessagePromptTemplate.from_template(HUMAN_CRITIQUE_EXISTING_RULES_ALL_SUCCESS_TEMPLATE).format_messages(**human_format_dict)[0]
+    critique_summary_suffix = CRITIQUE_SUMMARY_SUFFIX_FULL if is_full else CRITIQUE_SUMMARY_SUFFIX_NOT_FULL
+    human_critique_summary_message.content = human_critique_summary_message.content + critique_summary_suffix
+    critique_history.append(human_critique_summary_message)
+
+    return critique_history
+
+
 def collapse_prompts(prompt_history: List[ChatMessage]) -> List[ChatMessage]:
     """Courtesy of GPT4"""
     if not prompt_history:
@@ -216,6 +254,25 @@ def _prompt_compare_critique(
         question=question,
         success_trial=success_trial,
         failed_trial=failed_trial,
+        is_full=is_full
+    )
+    compare_prompt_msgs = collapse_prompts(compare_prompt_msgs)
+    out = llm(compare_prompt_msgs).content.strip('\n').strip()
+    if replace_newline:
+        out = out.replace('\n', '')
+    return out
+
+
+def _prompt_all_success_critique(
+    rules: List[str], 
+    success_trajs_str: str, 
+    is_full: bool,
+    llm: BaseChatModel, 
+    replace_newline: bool = False
+) -> str:
+    compare_prompt_msgs = _build_all_success_prompt(
+        rules=rules,
+        success_trajs_str=success_trajs_str,
         is_full=is_full
     )
     compare_prompt_msgs = collapse_prompts(compare_prompt_msgs)
