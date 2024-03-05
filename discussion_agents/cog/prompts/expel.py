@@ -40,6 +40,18 @@ By examining and contrasting to the successful trial, and the list of existing r
 
 """ + FORMAT_RULES_OPERATION_TEMPLATE
 
+# Insight Extraction: All success prompt.
+HUMAN_CRITIQUE_EXISTING_RULES_ALL_SUCCESS_TEMPLATE = """{instruction}
+Here are the trials:
+{success_history}
+
+Here are the EXISTING RULES:
+{existing_rules}
+
+By examining the successful trials, and the list of existing rules, you can perform the following operations: add, edit, remove, or agree so that the new list of rules are general and high level insights of the successful trials or proposed way of Thought so they can be used as helpful tips to different tasks in the future. Have an emphasis on tips that help the agent perform better Thought and Action. Follow the below format:
+
+""" + FORMAT_RULES_OPERATION_TEMPLATE
+
 # Insight Extraction: Suffix prompt depending on insight count limit (full/not full).
 CRITIQUE_SUMMARY_SUFFIX_FULL = """Focus on REMOVE rules first, and stop ADD rule unless the new rule is VERY insightful and different from EXISTING RULES. Below are the operations you do to the above list of EXISTING RULES:"""
 CRITIQUE_SUMMARY_SUFFIX_NOT_FULL = """Below are the operations you do to the above list of EXISTING RULES:"""
