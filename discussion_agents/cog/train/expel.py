@@ -93,7 +93,7 @@ def categorize_experiences(experiences: Dict[str, List]) -> Dict[str, List]:
 
     for idx in experiences["idxs"]:  # Index for a particular task.
         trajectory = experiences["trajectories"][idx]
-        trials_are_correct = [trial[0] for trial in trajectory]  # (is_correct, answer, output)[0]
+        trials_are_correct = [trial[0] for trial in trajectory]  # (is_correct, answer, output)[0].
 
         # Success.
         if all(trials_are_correct) and len(trials_are_correct) == 1:  # If success @ first trial, then stop generation.
@@ -126,7 +126,7 @@ def get_folds(categories: Dict[str, List], n_instances: int, n_folds: int = 2) -
 
     # Assign labels for 'compare', 'success', and  'fail'.
     for _, indices in categories.items():
-        random.shuffle(indices)
+        indices = random.sample(indices, len(indices))
         for count, idx in enumerate(indices):
             folds[count % n_folds].append(idx)
 
@@ -203,10 +203,22 @@ def collapse_prompts(prompt_history: List[ChatMessage]) -> List[ChatMessage]:
 
 
 def _prompt_compare_critique(
-    compare_prompt_msgs: List[HumanMessage], 
+    rules: List[str], 
+    question: str,
+    success_trial: str, 
+    failed_trial: str, 
+    is_full: bool,
     llm: BaseChatModel, 
     replace_newline: bool = False
 ) -> str:
+    compare_prompt_msgs = _build_compare_prompt(
+        rules=rules,
+        question=question,
+        success_trial=success_trial,
+        failed_trial=failed_trial,
+        is_full=is_full
+    )
+    compare_prompt_msgs = collapse_prompts(compare_prompt_msgs)
     out = llm(compare_prompt_msgs).content.strip('\n').strip()
     if replace_newline:
         out = out.replace('\n', '')
