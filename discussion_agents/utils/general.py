@@ -4,8 +4,8 @@ from typing import List, Any
 import math
 import random
 
-def random_divide_list(lst: List[Any], k: int) -> List[List[Any]]:
-    """Divides the list into chunks, each with maximum length k.
+def shuffle_chunk_list(lst: List[Any], k: int) -> List[List[Any]]:
+    """Shuffles and divides the list into chunks, each with maximum length k.
 
     Args:
         lst: The list to be divided.

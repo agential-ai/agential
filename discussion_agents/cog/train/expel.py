@@ -20,7 +20,7 @@ from discussion_agents.cog.prompts.expel import (
     SYSTEM_CRITIQUE_ALL_SUCCESS_EXISTING_RULES_INSTRUCTION,
     HUMAN_CRITIQUE_EXISTING_RULES_ALL_SUCCESS_TEMPLATE
 )
-
+from discussion_agents.utils.general import shuffle_chunk_list
 
 # Q1: Should this experience be a part of the ExpeLAgent class?
 # Q2: Should this Experience Gathering section be a function or a class?
@@ -369,3 +369,78 @@ def update_rules(rules: List[Tuple[str, int]], operations: List[Tuple[str, str]]
     updated_rules.sort(key=lambda x: x[1], reverse=True)
 
     return updated_rules
+
+
+def create_rules(
+    llm: BaseChatModel,
+    experiences: Dict[str, List], 
+    categories: Dict[str, int], 
+    train_idxs: List[int], 
+    rules: List[str], 
+    rules_with_count: List[Tuple[str, int]],
+    max_num_rules: int,
+    success_critique_num: int = 8
+) -> Tuple[List[str], List[Tuple[str, int]]]:
+    # Intersect between train_idxs and each category (compare, success, fail).
+    train_category_idxs = {
+        category: list(set(train_idxs).intersection(set(category_idxs))) \
+            for category, category_idxs in categories.items()
+    }
+
+    # Compare.
+    for train_idx in train_category_idxs["compare"]:
+        question = experiences["questions"][train_idx]
+        trajectory = experiences["trajectories"][train_idx]
+
+        # Compare the successful trial with all previous failed trials.
+        success_trial = trajectory[-1][-1]
+        for failed_trial in trajectory[:-1]:
+            # Prompt.
+            out = _prompt_compare_critique(
+                rules, 
+                question, 
+                success_trial, 
+                failed_trial, 
+                max_num_rules < len(rules_with_count),
+                llm
+            )
+
+            # Parse.
+            operations = parse_rules(out)
+            
+            # Remove no-ops.
+            operations = remove_err_operations(rules_with_count, operations)
+
+            # Update rules_with_count and rules with comparison insights.
+            rules_with_count = update_rules(rules_with_count, operations, is_full=max_num_rules+5 <= len(rules_with_count))
+            rules = [rule[0] for rule in rules_with_count]
+
+    # Success.
+    batched_success_trajs_idxs = shuffle_chunk_list(train_category_idxs['success'], success_critique_num)
+    for success_idxs in batched_success_trajs_idxs:
+        # Concatenate batched successful trajectories.
+        concat_success_trajs = [
+            f"{experiences['questions'][idx]}\n{experiences['trajectories'][idx][0][-1]}"  # Get this successful trajectory's zero-th trial output.
+            for idx in success_idxs
+        ]
+        success_trajs_str = "\n\n".join(concat_success_trajs)
+
+        # Prompt.
+        out = _prompt_all_success_critique(
+            rules, 
+            success_trajs_str, 
+            max_num_rules < len(rules_with_count), 
+            llm
+        )
+
+        # Parse.
+        operations = parse_rules(out)
+
+        # Remove no-ops.
+        operations = remove_err_operations(rules_with_count, operations)
+
+        # Update rules_with_count and rules with success insights.
+        rules_with_count = update_rules(rules_with_count, operations, is_full=max_num_rules+5 <= len(rules_with_count))
+        rules = [rule[0] for rule in rules_with_count]
+
+    return rules, rules_with_count
