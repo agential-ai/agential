@@ -41,9 +41,9 @@ By examining and contrasting to the successful trial, and the list of existing r
 """ + FORMAT_RULES_OPERATION_TEMPLATE
 
 # Insight Extraction: All success prompt.
-HUMAN_CRITIQUE_EXISTING_RULES_ALL_SUCCESS_TEMPLATE = """{instruction}
+HUMAN_CRITIQUE_EXISTING_RULES_ALL_SUCCESS_TEMPLATE = """
 Here are the trials:
-{success_history}
+{success_trajs}
 
 Here are the EXISTING RULES:
 {existing_rules}
