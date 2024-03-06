@@ -22,7 +22,6 @@ def main():
 
 
 if __name__ == '__main__':
-    
     main()
     
     from langchain.prompts.chat import (
@@ -41,9 +40,4 @@ if __name__ == '__main__':
 
 
 
-    test_Alfworld_react_generate()
-
-
-
-
-    
+    test_Alfworld_react_generate()    

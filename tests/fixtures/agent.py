@@ -46,20 +46,18 @@ def reflexion_react_agent() -> ReflexionReActAgent:
 
 
 @pytest.fixture
+def data_dir(pytestconfig):
+    """Dir path to asset."""
+    return Path(pytestconfig.rootdir) / "tests/assets"
+
+@pytest.fixture
+def alfworld_file(data_dir):
+    """Dir path to Alfworld environement file."""
+    return Path(data_dir) / "base_config.yaml"
+
+@pytest.fixture
 def alfworld_env(alfworld_file):
     """Prepare for env init for Alfworld."""
     with open(alfworld_file) as reader:
         config = yaml.safe_load(reader) 
     return config
-
-
-@pytest.fixture
-def data_dir(pytestconfig):
-    """Dir path to sleap data."""
-    return Path(pytestconfig.rootdir) / "tests/assets"
-
-
-@pytest.fixture
-def alfworld_file(data_dir):
-    """Sleap single fly .slp and video file paths."""
-    return Path(data_dir) / "base_config.yaml"

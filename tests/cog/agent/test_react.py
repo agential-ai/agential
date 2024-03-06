@@ -1,16 +1,20 @@
 """Unit tests for ReAct."""
+import yaml
+import alfworld
+import alfworld.agents.environment
 from langchain.agents.react.base import DocstoreExplorer
 from langchain.llms.fake import FakeListLLM
 from langchain_community.chat_models.fake import FakeListChatModel
 from tiktoken import Encoding
 
 from discussion_agents.cog.agent.react import ReActAgent, ZeroShotReActAgent
-
-
-from discussion_agents.cog.prompts.react import REACT_ALFWORLD_INSTRUCTION, REACT_ALFWORLD_PROMPTS_EXAMPLE, REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES , REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
-import yaml
-import alfworld
-import alfworld.agents.environment
+from discussion_agents.cog.prompts.react import (
+  REACT_ALFWORLD_INSTRUCTION, 
+  REACT_ALFWORLD_PROMPTS_EXAMPLE, 
+  REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES, 
+  REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
+)
+from discussion_agents.cog.functional.react import _check_keyword,_process_ob
 
 from tests.fixtures.agent import alfworld_env
 
@@ -42,7 +46,7 @@ def test_generate() -> None:
     ]
     llm = FakeListChatModel(responses=responses)
     agent = ReActAgent(llm=llm)
-    out = agent.generate(question=q, examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES, benchmark_type='hotpotqa')
+    out = agent.generate(question=q, examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES, instruction=REACT_INSTRUCTION_HOTPOTQA)
     assert isinstance(out, str)
     assert agent._step_n == agent.max_steps + 1
     assert not agent._finished
@@ -90,7 +94,7 @@ def test_FEVER_react_generate() -> None:
     ]
     llm = FakeListChatModel(responses=responses)
     agent = ReActAgent(llm=llm)
-    out = agent.generate(question=q, examples=REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES, benchmark_type='fever')
+    out = agent.generate(question=q, examples=REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES, instruction=REACT_INSTRUCTION_FEVER)
     assert isinstance(out, str)
     assert agent._step_n <= agent.max_steps + 1
     assert not agent._finished
@@ -125,9 +129,22 @@ def test_Alfworld_react_generate(alfworld_env) -> None:
     ]
 
     llm = FakeListChatModel(responses=response)
-    agent = ReActAgent(llm=llm, env=env)
-    out = agent.generate(question=ob, examples=prompt, env=env, benchmark_type='alfworld')
+    agent = ReActAgent(llm=llm)
+    out = agent.generate(question=ob, examples=prompt, env=env, instruction=REACT_ALFWORLD_INSTRUCTION)
     assert response[0].split('\n')[-1] == 'Congratulations, you have completed the task!'
 
 
 
+def test_check_keyword():
+    alfworld_example = REACT_ALFWORLD_PROMPTS_EXAMPLE['react_put_0']
+    step_utilised = _check_keyword(alfworld_example)
+    bool_list = [bool(item) for item in step_utilised]
+    assert bool_list == [False , True , True]
+    fever_example = REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES
+    step_utilised = _check_keyword(fever_example)
+    bool_list = [bool(item) for item in step_utilised]
+    assert bool_list == [True , True , True]
+    hotpotqa_example = REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
+    step_utilised = _check_keyword(hotpotqa_example)
+    bool_list = [bool(item) for item in step_utilised]
+    assert bool_list == [True , True , True]

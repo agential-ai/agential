@@ -20,13 +20,10 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.tools import BaseTool, tool
 from tiktoken.core import Encoding
 
-import yaml
-import alfworld
-import alfworld.agents.environment
 
 
 from discussion_agents.cog.agent.base import BaseAgent
-from discussion_agents.cog.functional.react import _is_halted, _prompt_agent , _check_keyword , _process_ob
+from discussion_agents.cog.functional.react import _is_halted, _prompt_agent, _check_keyword, _process_ob
 from discussion_agents.cog.modules.memory.react import ReActMemory
 from discussion_agents.utils.parse import parse_action, remove_newline
 
@@ -35,10 +32,6 @@ from discussion_agents.cog.prompts.react import (
     REACT_INSTRUCTION_FEVER,
     REACT_ALFWORLD_INSTRUCTION
 )
-
-import yaml
-import alfworld
-import alfworld.agents.environment
 
 
 
@@ -91,7 +84,7 @@ class ReActAgent(BaseAgent):
         self._finished = False  #: :meta private:
 
 
-    def generate(self, question: str, reset: bool = True, examples: str = None , env: Any = None , instruction: str = None) -> str:
+    def generate(self, question: str, reset: bool = True, examples: str = None, env: Any = None, prompt_template: str = None) -> str:
         """Processes a given question through ReAct.
 
         Iteratively applies the think-act-observe cycle to generate an answer for the question.
@@ -100,13 +93,14 @@ class ReActAgent(BaseAgent):
         Args:
             question (str): The question to be processed.
             reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
+            prompt_template (str): The template for benchmark
             examples (str): The example of text generated.
             env (Alfworld_environment): The variable to interact with Alfworld.
         Returns:
             str: The accumulated output from the ReAct process.
         """
 
-        keyword_occurence = _check_keyword(example=examples)
+        step_boolean = _check_keyword(example=examples)
 
 
 
@@ -124,24 +118,24 @@ class ReActAgent(BaseAgent):
             max_tokens=self.max_tokens,
             enc=self.enc,
             examples=examples,
-            instruction=instruction
+            prompt_template=prompt_template
         ):
             
             # Think.
-            if keyword_occurence[0]:
+            if step_boolean[0]:
                 self.memory.add_memories("\nThought:")
                 thought = _prompt_agent(
                     llm=self.llm,
                     question=question,
                     scratchpad=self.memory.load_memories()["scratchpad"],
                     examples=examples,
-                    instruction=instruction
+                    prompt_template=prompt_template
                 ).strip()
                 self.memory.add_memories(" " + thought)
                 out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
             # Act.
-            if keyword_occurence[1]:
+            if step_boolean[1]:
                 self.memory.add_memories(f"\nAction {self._step_n}:")
                 
                 action = _prompt_agent(
@@ -149,11 +143,11 @@ class ReActAgent(BaseAgent):
                     question=question,
                     scratchpad=self.memory.load_memories()["scratchpad"],
                     examples=examples,
-                    instruction=instruction
+                    prompt_template=prompt_template
                 ).strip()
 
 
-            if keyword_occurence[3]:
+            if step_boolean[3]:
                 action = action.replace('>','').strip()
                 if 'think' not in action :
                     action = action.replace(' in ',' in/on ')
@@ -161,9 +155,9 @@ class ReActAgent(BaseAgent):
             out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
             # Observe.
-            if keyword_occurence[2]:
+            if step_boolean[2]:
                 self.memory.add_memories(f"\nObservation {self._step_n}: ")
-                if keyword_occurence[3]:
+                if step_boolean[3]:
                     observation, _, done, info = env.step([action])
                     observation, done = _process_ob(observation[0]), done[0]
                     if done :

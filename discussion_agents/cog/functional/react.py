@@ -8,7 +8,7 @@ from typing import Optional
 from discussion_agents.utils.parse import remove_newline
 
 
-def _build_agent_prompt(question: str, scratchpad: str, examples: str , instruction: str) -> str:
+def _build_agent_prompt(question: str, scratchpad: str, examples: str , prompt_template: str) -> str:
     """Constructs a prompt template for the agent.
 
     This function formats a predefined prompt template (REACT_INSTRUCTION) with examples,
@@ -18,12 +18,12 @@ def _build_agent_prompt(question: str, scratchpad: str, examples: str , instruct
         question (str): The question to be included in the prompt.
         scratchpad (str): Additional scratchpad information to be included.
         examples (str): The example as a guide of how the test should be prompted.
-        instruction (str) : The template of the prompt.
+        prompt_template (str): The template of the prompt that is inputted into scratchpad.
     Returns:
         str: A formatted prompt template ready for use.
     """
 
-    prompt = PromptTemplate.from_template(instruction).format(
+    prompt = PromptTemplate.from_template(prompt_template).format(
         examples=examples,
         question=question,
         scratchpad=scratchpad,
@@ -31,7 +31,7 @@ def _build_agent_prompt(question: str, scratchpad: str, examples: str , instruct
     return prompt
 
 
-def _prompt_agent(llm: BaseChatModel, question: str, scratchpad: str, examples: str, instruction: str) -> str:
+def _prompt_agent(llm: BaseChatModel, question: str, scratchpad: str, examples: str, prompt_template: str) -> str:
     """Generates a response from the LLM based on a given question and scratchpad.
 
     This function creates a prompt using `_build_agent_prompt` and then gets the LLM's
@@ -41,12 +41,12 @@ def _prompt_agent(llm: BaseChatModel, question: str, scratchpad: str, examples: 
         llm (BaseChatModel): The language model to be prompted.
         question (str): The question to ask the language model.
         scratchpad (str): Additional context or information for the language model.
-        examples (str): The example used for specific benchmark.
-        bench_type (str): Type of benchmark used for specific cases.
+        examples (str): The example used for specific benchmark for ai model to generate prompt accordingly.
+        prompt_template (str): The template of the prompt that is inputted into scratchpad.
     Returns:
         str: The processed response from the language model.
     """
-    prompt = _build_agent_prompt(question=question, scratchpad=scratchpad, examples=examples, instruction=instruction)
+    prompt = _build_agent_prompt(question=question, scratchpad=scratchpad, examples=examples, prompt_template=prompt_template)
     out = llm(
         [
             HumanMessage(
@@ -68,7 +68,7 @@ def _is_halted(
     max_tokens: int,
     enc: Encoding,
     examples: str ,
-    instruction: str
+    prompt_template: str
 ) -> bool:
     """Determines whether the agent's operation should be halted.
 
@@ -85,7 +85,7 @@ def _is_halted(
         max_tokens (int): Maximum allowed token count.
         enc (Encoding): The encoder to calculate token length.
         examples (str): The example of the output prompt.
-        instruction (str): The template of the prompt.
+        prompt_template (str): The template of the prompt.
     Returns:
         bool: True if the operation should be halted, False otherwise.
     """
@@ -97,7 +97,12 @@ def _is_halted(
     return finished or over_max_steps or over_token_limit
 
 def _process_ob(ob):
-    """Observation processing for Alfworld."""
+    """Processing string for better output prompt.
+    Args:
+        ob (str): The observation after the action.
+    Returns:
+        ob (str): The string goes into output
+    """
     if ob.startswith('You arrive at loc '):
         ob = ob[ob.find('. ')+2:]    
     return ob
@@ -106,16 +111,22 @@ def _process_ob(ob):
 
 
 def _check_keyword(example: str = None):
-    keyword = ['Thought' , 'Action' , 'Observation' , 'Your task is to']
+    """checking the step utilized in example.
+    Args:
+        example (str): The example input of the generation function.
+    Returns:
+        step_occurence (list[int]): a list of number that indicate which step is utilised in the example
+    """
+    keyword = ['Thought', 'Action', 'Observation', 'Your task is to']
     example = example.split('\n')
     example = [line.strip() for line in example if line]
-    occurrence = [0 , 0 ,0  , 0]
+    step_occurrence = [0 , 0, 0, 0]
     i = 0
-    while all(num < 2 for num in occurrence):
+    while all(num < 2 for num in step_occurrence):
         test_case = example[i].split(':')[0]
         test_case = ''.join(char for char in test_case if not char.isdigit()).strip()
         if any(part.strip() in keyword for part in test_case) or test_case in keyword: 
             index = keyword.index(test_case)
-            occurrence[index] += 1
+            step_occurrence[index] += 1
         i += 1
-    return occurrence
+    return step_occurrence
