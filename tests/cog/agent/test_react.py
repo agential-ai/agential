@@ -148,3 +148,13 @@ def test_check_keyword():
     step_utilised = _check_keyword(hotpotqa_example)
     bool_list = [bool(item) for item in step_utilised]
     assert bool_list == [True , True , True]
+
+def test_process_ob():
+    example_input = "You arrive at loc 22. On the countertop 2, you see a butterknife 1, a cellphone 1, a creditcard 1, a knife 1, a lettuce 1, a saltshaker 2, a saltshaker 1, a statue 1, and a tomato 1.\nYou pick up the tomato 1 from the countertop 2."
+    example_output = _process_ob(example_input)
+    expected_output = "On the countertop 2, you see a butterknife 1, a cellphone 1, a creditcard 1, a knife 1, a lettuce 1, a saltshaker 2, a saltshaker 1, a statue 1, and a tomato 1.\nYou pick up the tomato 1 from the countertop 2."
+    assert example_output == expected_output
+    example_input = "You arrive at loc 30. The fridge 1 is closed."
+    example_output = _process_ob(example_input)
+    expected_output = "The fridge 1 is closed."
+    assert example_output == expected_output
