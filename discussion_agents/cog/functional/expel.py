@@ -3,10 +3,9 @@ import re
 import random
 from typing import List, Dict, Optional, Tuple
 from discussion_agents.cog.agent.reflexion import ReflexionReActAgent
-from langchain_core.prompts.chat import HumanMessagePromptTemplate
 from langchain_core.messages.human import HumanMessage
-from langchain_core.messages.chat import ChatMessage
 from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_core.prompts.prompt import PromptTemplate
 
 from discussion_agents.cog.prompts.expel import (
     SYSTEM_TEMPLATE,
@@ -152,18 +151,16 @@ def _build_compare_prompt(
     success_trial: str,
     failed_trial: str,
     is_full: bool,
-) -> List[HumanMessage]:
-    critique_history = []
+) -> str:
 
     if rules == []:
         rules = [""]
 
     # System prompt.
-    prefix = HumanMessagePromptTemplate.from_template(SYSTEM_TEMPLATE).format_messages(
+    prefix = PromptTemplate.from_template(SYSTEM_TEMPLATE).format(
         ai_name=NON_EXISTENT_RULES_AT_NAME if not rules else EXISTING_RULES_AI_NAME,
         instruction=SYSTEM_CRITIQUE_EXISTING_RULES_INSTRUCTION,
     )
-    critique_history.extend(prefix)
 
     # Task prompt.
     human_format_dict = {
@@ -173,116 +170,98 @@ def _build_compare_prompt(
         "existing_rules": "\n".join([f"{i}. {r}" for i, r in enumerate(rules, 1)]),
     }
 
-    human_critique_summary_message = HumanMessagePromptTemplate.from_template(
+    human_critique_summary_message = PromptTemplate.from_template(
         HUMAN_CRITIQUE_EXISTING_RULES_TEMPLATE
-    ).format_messages(**human_format_dict)[0]
+    ).format(**human_format_dict)
     critique_summary_suffix = (
         CRITIQUE_SUMMARY_SUFFIX_FULL if is_full else CRITIQUE_SUMMARY_SUFFIX_NOT_FULL
     )
-    human_critique_summary_message.content = (
-        human_critique_summary_message.content + critique_summary_suffix
-    )
-    critique_history.append(human_critique_summary_message)
 
-    return critique_history
+    prompt = prefix + "\n" + human_critique_summary_message + critique_summary_suffix
+
+    return prompt
 
 
 def _build_all_success_prompt(
     rules: List[str],
     success_trajs_str: str,
     is_full: bool,
-) -> List[HumanMessage]:
-    critique_history = []
+) -> str:
 
     if rules == []:
         rules = [""]
 
     # System prompt.
-    prefix = HumanMessagePromptTemplate.from_template(SYSTEM_TEMPLATE).format_messages(
+    prefix = PromptTemplate.from_template(SYSTEM_TEMPLATE).format(
         ai_name=NON_EXISTENT_RULES_AT_NAME if not rules else EXISTING_RULES_AI_NAME,
         instruction=SYSTEM_CRITIQUE_ALL_SUCCESS_EXISTING_RULES_INSTRUCTION,
     )
-    critique_history.extend(prefix)
 
     # Task prompt.
     human_format_dict = {
         "success_trajs": success_trajs_str,
-        "existing_rules": "\n".join([f"{i}. {r}" for i, r in enumerate(rules, 1)]),
+        "existing_rules": "\n".join([f"{i}. {rule}" for i, rule in enumerate(rules, 1)]),
     }
 
-    human_critique_summary_message = HumanMessagePromptTemplate.from_template(
+    human_critique_summary_message = PromptTemplate.from_template(
         HUMAN_CRITIQUE_EXISTING_RULES_ALL_SUCCESS_TEMPLATE
-    ).format_messages(**human_format_dict)[0]
+    ).format(**human_format_dict)
     critique_summary_suffix = (
         CRITIQUE_SUMMARY_SUFFIX_FULL if is_full else CRITIQUE_SUMMARY_SUFFIX_NOT_FULL
     )
-    human_critique_summary_message.content = (
-        human_critique_summary_message.content + critique_summary_suffix
-    )
-    critique_history.append(human_critique_summary_message)
 
-    return critique_history
+    prompt = prefix + "\n" + human_critique_summary_message + critique_summary_suffix
 
-
-def collapse_prompts(prompt_history: List[ChatMessage]) -> List[ChatMessage]:
-    """Courtesy of GPT4"""
-    if not prompt_history:
-        return []
-
-    new_prompt_history = []
-    scratch_pad = prompt_history[0].content
-    last_message_type = type(prompt_history[0])
-
-    for message in prompt_history[1:]:
-        current_message_type = type(message)
-        if current_message_type == last_message_type:
-            scratch_pad += "\n" + message.content
-        else:
-            new_prompt_history.append(last_message_type(content=scratch_pad))
-            scratch_pad = message.content
-            last_message_type = current_message_type
-
-    # Handle the last accumulated message.
-    new_prompt_history.append(last_message_type(content=scratch_pad))
-
-    return new_prompt_history
+    return prompt
 
 
 def _prompt_compare_critique(
+    llm: BaseChatModel,
     rules: List[str],
     question: str,
     success_trial: str,
     failed_trial: str,
     is_full: bool,
-    llm: BaseChatModel,
     replace_newline: bool = False,
 ) -> str:
-    compare_prompt_msgs = _build_compare_prompt(
+    prompt = _build_compare_prompt(
         rules=rules,
         question=question,
         success_trial=success_trial,
         failed_trial=failed_trial,
         is_full=is_full,
     )
-    compare_prompt_msgs = collapse_prompts(compare_prompt_msgs)
-    out = llm(compare_prompt_msgs).content.strip("\n").strip()
+    out = llm(
+        [
+            HumanMessage(
+                content=prompt,
+            )
+        ]
+    ).content.strip("\n").strip()
+
     if replace_newline:
         out = out.replace("\n", "")
     return out
 
 
 def _prompt_all_success_critique(
+    llm: BaseChatModel,
     rules: List[str],
     success_trajs_str: str,
     is_full: bool,
-    llm: BaseChatModel,
     replace_newline: bool = False,
 ) -> str:
-    compare_prompt_msgs = _build_all_success_prompt(
+    prompt = _build_all_success_prompt(
         rules=rules, success_trajs_str=success_trajs_str, is_full=is_full
     )
-    compare_prompt_msgs = collapse_prompts(compare_prompt_msgs)
-    out = llm(compare_prompt_msgs).content.strip("\n").strip()
+    out = llm(
+        [
+            HumanMessage(
+                content=prompt,
+            )
+        ]
+    ).content.strip("\n").strip()
+    
     if replace_newline:
         out = out.replace("\n", "")
     return out
@@ -445,12 +424,12 @@ def create_rules(
         for failed_trial in trajectory[:-1]:
             # Prompt.
             out = _prompt_compare_critique(
+                llm,
                 rules,
                 question,
                 success_trial,
                 failed_trial,
                 max_num_rules < len(rules_with_count),
-                llm,
             )
 
             # Parse.
@@ -481,7 +460,7 @@ def create_rules(
 
         # Prompt.
         out = _prompt_all_success_critique(
-            rules, success_trajs_str, max_num_rules < len(rules_with_count), llm
+            llm, rules, success_trajs_str, max_num_rules < len(rules_with_count)
         )
 
         # Parse.
