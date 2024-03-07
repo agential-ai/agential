@@ -13,7 +13,8 @@ from discussion_agents.cog.functional.expel import (
     parse_rules,
     retrieve_rule_index,
     is_existing_rule,
-    remove_err_operations
+    remove_err_operations,
+    update_rules
 )
 
 def test_gather_experience(reflexion_react_agent: ReflexionReActAgent) -> None:
@@ -244,3 +245,25 @@ def test_remove_err_operations() -> None:
     out = remove_err_operations(rules, operations)
     assert out == expected_operations
     assert False
+
+
+def test_update_rules() -> None:
+    """Test update_rules."""
+    initial_rules = [("Rule1", 1), ("Rule2", 2), ("Rule3", 3)]
+    operations = [
+        ("REMOVE", "Rule1"),
+        ("AGREE", "Rule2"),
+        ("EDIT 3", "Rule3"),
+        ("ADD", "NewRule4"),
+    ]
+
+    # Expected outcomes
+    expected_rules_full = [("Rule3", 4), ("Rule2", 3), ("NewRule4", 2)]
+    expected_rules_not_full = [("NewRule3", 4), ("Rule2", 3), ("Rule1", 0), ("NewRule4", 2)]
+
+    # Test with is_full=True
+    updated_rules_full = update_rules(initial_rules, operations, is_full=True)
+    assert updated_rules_full == expected_rules_full
+
+    updated_rules_not_full = update_rules(initial_rules, operations, is_full=False)
+    assert updated_rules_full == expected_rules_full
