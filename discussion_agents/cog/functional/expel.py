@@ -21,8 +21,6 @@ from discussion_agents.cog.prompts.expel import (
 )
 from discussion_agents.utils.general import shuffle_chunk_list
 
-# Q1: Should this experience be a part of the ExpeLAgent class?
-
 # ============================================== Experience Gathering ==============================================
 
 def gather_experience(
