@@ -10,6 +10,7 @@ from discussion_agents.cog.functional.expel import (
     get_folds,
     _build_compare_prompt,
     _build_all_success_prompt,
+    parse_rules
 )
 
 def test_gather_experience(reflexion_react_agent: ReflexionReActAgent) -> None:
@@ -173,4 +174,16 @@ def test__build_all_success_prompt() -> None:
     assert prompt == "\n".join([p.content for p in gt_prompt_msgs])
 
 
+def test_parse_rules() -> None:
+    """Test parse_rules."""
+    
+    gt_rules = [('REMOVE 1', 'Rule to remove.'), ('EDIT 2', 'Rule to edit.'), ('ADD', 'Rule to add.')]
+    llm_output = "REMOVE 1: Rule to remove.\nEDIT 2: Rule to edit.\nADD 3: Rule to add."
+    rules = parse_rules(llm_output)
+    assert rules == gt_rules
 
+    gt_rules = [('AGREE 1', 'This is a valid rule.')]
+    llm_output = "AGREE 1: This is a valid rule."
+    rules = parse_rules(llm_output)
+    print(rules)
+    assert rules == gt_rules
