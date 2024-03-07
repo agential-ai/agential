@@ -114,7 +114,7 @@ def categorize_experiences(experiences: Dict[str, List]) -> Dict[str, List]:
 
 
 def get_folds(
-    categories: Dict[str, List], n_instances: int, n_folds: int = 2
+    categories: Dict[str, List], n_instances: int, n_folds: int = 2, seed: int = 42
 ) -> Dict[str, List]:
     """Distributes indices into a specified number of stratified folds for cross-validation.
 
@@ -128,6 +128,8 @@ def get_folds(
     Returns:
         Dict[str, List]: A dictionary where keys are fold indices and values are the lists of indices representing the training set for that fold.
     """
+    random.seed(seed)
+
     folds = {fold: [] for fold in range(n_folds)}
 
     # Assign labels for 'compare', 'success', and  'fail'.

@@ -7,6 +7,7 @@ from discussion_agents.cog.agent.reflexion import ReflexionReActAgent
 from discussion_agents.cog.functional.expel import (
     gather_experience,
     categorize_experiences,
+    get_folds,
     _build_compare_prompt,
     _build_all_success_prompt,
 )
@@ -40,6 +41,19 @@ def test_categorize_experiences(expel_15_compare_fake_path: str) -> None:
         'fail': [0, 2, 4, 5, 9]
     }
     assert categories == gt_categories
+
+
+def test_get_folds() -> None:
+    """Test get_folds."""
+    gt_folds = {0: [1, 4, 5, 8, 11, 14], 1: [0, 2, 3, 6, 7, 9, 10, 12, 13]}  
+    
+    categories = {
+        'compare': [10, 11, 12, 13, 14], 
+        'success': [1, 3, 6, 7, 8], 
+        'fail': [0, 2, 4, 5, 9]
+    }
+    folds = get_folds(categories, n_instances=15)
+    assert folds == gt_folds
 
 
 def test__build_compare_prompt() -> None:
