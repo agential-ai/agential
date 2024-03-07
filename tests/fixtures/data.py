@@ -3,10 +3,12 @@
 import pytest
 import os
 
+
 @pytest.fixture
 def data_dir(pytestconfig) -> str:
     """Dir path to asset."""
     return os.path.join(pytestconfig.rootdir, "tests/assets")
+
 
 @pytest.fixture
 def expel_15_compare_fake_path(data_dir) -> str:

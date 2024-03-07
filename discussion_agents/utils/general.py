@@ -4,6 +4,7 @@ from typing import List, Any
 import math
 import random
 
+
 def shuffle_chunk_list(lst: List[Any], k: int, seed: int = 42) -> List[List[Any]]:
     """Shuffles and divides the list into chunks, each with maximum length k.
 
@@ -20,10 +21,10 @@ def shuffle_chunk_list(lst: List[Any], k: int, seed: int = 42) -> List[List[Any]
     random.seed(seed)
 
     lst = random.sample(lst, len(lst))
-    
+
     if len(lst) <= k:
         return [lst]
-    
+
     num_chunks = math.ceil(len(lst) / k)
     chunk_size = math.ceil(len(lst) / num_chunks)
-    return [lst[i*chunk_size:(i+1)*chunk_size] for i in range(num_chunks)]
+    return [lst[i * chunk_size : (i + 1) * chunk_size] for i in range(num_chunks)]
