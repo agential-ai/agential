@@ -149,8 +149,6 @@ def _build_compare_prompt(
     failed_trial: str, 
     is_full: bool,
 ) -> List[HumanMessage]:
-    # is_full = self.max_num_rules <= len(self.rules_with_count)   ->    20 <= len(self.rules_with_count)
-
     critique_history = []
 
     if rules == []:
@@ -187,8 +185,6 @@ def _build_all_success_prompt(
     success_trajs_str: str,
     is_full: bool,
 ) -> List[HumanMessage]:
-    # is_full = self.max_num_rules <= len(self.rules_with_count)   ->    20 <= len(self.rules_with_count)
-
     critique_history = []
 
     if rules == []:
@@ -446,3 +442,8 @@ def create_rules(
         rules = [rule[0] for rule in rules_with_count]
 
     return rules, rules_with_count
+
+
+# ============================================== Inference ==============================================
+
+
