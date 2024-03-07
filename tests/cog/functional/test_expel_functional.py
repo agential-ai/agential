@@ -92,7 +92,7 @@ def test__build_compare_prompt() -> None:
         ),
     ]
     prompt = _build_compare_prompt(
-        rules=["a", "b"], question="", success_trial="", failed_trial="", is_full=True
+        rules=[("a", 0), ("b", 0)], question="", success_trial="", failed_trial="", is_full=True
     )
     assert prompt == "\n".join([p.content for p in gt_prompt_msgs])
 
@@ -120,7 +120,7 @@ def test__build_compare_prompt() -> None:
         ),
     ]
     prompt = _build_compare_prompt(
-        rules=["a", "b"], question="", success_trial="", failed_trial="", is_full=False
+        rules=[("a", 0), ("b", 0)], question="", success_trial="", failed_trial="", is_full=False
     )
     assert prompt == "\n".join([p.content for p in gt_prompt_msgs])
 
@@ -150,7 +150,7 @@ def test__build_all_success_prompt() -> None:
         ),
     ]
     prompt = _build_all_success_prompt(
-        rules=["a", "b"], success_trajs_str="", is_full=True
+        rules=[("a", 0), ("b", 0)], success_trajs_str="", is_full=True
     )
     assert prompt == "\n".join([p.content for p in gt_prompt_msgs])
 
@@ -176,7 +176,7 @@ def test__build_all_success_prompt() -> None:
         ),
     ]
     prompt = _build_all_success_prompt(
-        rules=["a", "b"], success_trajs_str="", is_full=False
+        rules=[("a", 0), ("b", 0)], success_trajs_str="", is_full=False
     )
     assert prompt == "\n".join([p.content for p in gt_prompt_msgs])
 
@@ -232,14 +232,14 @@ def test_remove_err_operations() -> None:
     rules = [("Rule1", 1), ("Rule2", 2)]
 
     operations = [
-        ("ADD 1", "Rule1"),  # Should be removed
-        ("ADD 2", "Rule3"),  # Should remain
-        ("EDIT 1", "Rule1"),  # Should change to AGREE
-        ("EDIT 3", "Rule3"),  # Should be removed
-        ("REMOVE", "Rule1"),  # Should remain
-        ("REMOVE", "Rule3"),  # Should be removed
-        ("AGREE", "Rule1"),  # Should remain
-        ("AGREE", "Rule3"),  # Should be removed
+        ("ADD 1", "Rule1"),
+        ("ADD 2", "Rule3"),
+        ("EDIT 1", "Rule1"),
+        ("EDIT 3", "Rule3"), 
+        ("REMOVE", "Rule1"),
+        ("REMOVE", "Rule3"),
+        ("AGREE", "Rule1"),
+        ("AGREE", "Rule3"),
     ]
 
     expected_operations = [
@@ -251,7 +251,6 @@ def test_remove_err_operations() -> None:
 
     out = remove_err_operations(rules, operations)
     assert out == expected_operations
-    assert False
 
 
 def test_update_rules() -> None:
@@ -281,13 +280,6 @@ def test_create_rules(expel_15_compare_fake_path: str) -> None:
     """Test create_rules."""
 
     gt_rules = [
-        "Prioritize specific keywords in the question to guide search queries.",
-        "Consider alternative search terms if the initial search query does not yield relevant results.",
-        "Break down complex search queries into smaller, more specific parts to guide the search process effectively.",
-        "Prioritize refining the search query based on the specific elements of the question to avoid ambiguity and ensure relevance in search results.",
-        "Prioritize verifying the accuracy of information obtained from search results before providing an answer.",
-    ]
-    gt_rules_with_count = [
         ("Prioritize specific keywords in the question to guide search queries.", 2),
         (
             "Consider alternative search terms if the initial search query does not yield relevant results.",
@@ -321,9 +313,8 @@ def test_create_rules(expel_15_compare_fake_path: str) -> None:
     llm = FakeListChatModel(responses=responses)
 
     train_idxs = folds[0]
-    rules, rules_with_count = [], []
-    rules, rules_with_count = create_rules(
-        llm, experiences, categories, train_idxs, rules, rules_with_count, max_num_rules
+    rules = []
+    rules = create_rules(
+        llm, experiences, categories, train_idxs, rules, max_num_rules
     )
     assert rules == gt_rules
-    assert rules_with_count == gt_rules_with_count

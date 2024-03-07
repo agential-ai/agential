@@ -148,7 +148,7 @@ def get_folds(
 
 
 def _build_compare_prompt(
-    rules: List[str],
+    rules: List[Tuple[str, int]],
     question: str,
     success_trial: str,
     failed_trial: str,
@@ -159,7 +159,7 @@ def _build_compare_prompt(
     This function formats a prompt intended for AI to critique existing rules based on a given task. The task is described by a question and includes examples of both successful and failed trials.
 
     Parameters:
-        rules (List[str]): A list of strings where each string represents an existing rule. If the list is empty, it is treated as if there are no existing rules.
+        rules (List[Tuple[str, int]]): A list of strings where each string represents an existing rule with a score. If the list is empty, it is treated as if there are no existing rules.
         question (str): The question that defines the task.
         success_trial (str): A description or example of a successful trial for the task.
         failed_trial (str): A description or example of a failed trial for the task.
@@ -170,7 +170,7 @@ def _build_compare_prompt(
             and a suffix based on whether the prompt is in its full form.
     """
     if rules == []:
-        rules = [""]
+        rules = [("", 0)]
 
     # System prompt.
     prefix = PromptTemplate.from_template(SYSTEM_TEMPLATE).format(
@@ -183,7 +183,7 @@ def _build_compare_prompt(
         "question": question,
         "failed_traj": failed_trial,
         "success_traj": success_trial,
-        "existing_rules": "\n".join([f"{i}. {r}" for i, r in enumerate(rules, 1)]),
+        "existing_rules": "\n".join([f"{i}. {rule[0]}" for i, rule in enumerate(rules, 1)]),
     }
 
     human_critique_summary_message = PromptTemplate.from_template(
@@ -199,7 +199,7 @@ def _build_compare_prompt(
 
 
 def _build_all_success_prompt(
-    rules: List[str],
+    rules: List[Tuple[str, int]],
     success_trajs_str: str,
     is_full: bool,
 ) -> str:
@@ -208,7 +208,7 @@ def _build_all_success_prompt(
     This function generates a prompt for AI interaction that incorporates a series of successful trials and existing rules.
 
     Parameters:
-        rules (List[str]): A list of existing rules provided as strings. If this list is empty, it is treated as if there are no prior rules.
+        rules (List[Tuple[str, int]]): A list of strings where each string represents an existing rule with a score. If the list is empty, it is treated as if there are no existing rules.
         success_trajs_str (str): A string containing descriptions of successful trials related to the task. These descriptions are meant to provide context for the AI's critique of the existing rules.
         is_full (bool): A boolean flag that determines the verbosity of the critique summary's suffix. If `True`, a more comprehensive suffix is used.
 
@@ -216,7 +216,7 @@ def _build_all_success_prompt(
         str: A string that combines the system's instruction, the task context with successful trials, and the existing rules into a coherent prompt.
     """
     if rules == []:
-        rules = [""]
+        rules = [("", 0)]
 
     # System prompt.
     prefix = PromptTemplate.from_template(SYSTEM_TEMPLATE).format(
@@ -228,7 +228,7 @@ def _build_all_success_prompt(
     human_format_dict = {
         "success_trajs": success_trajs_str,
         "existing_rules": "\n".join(
-            [f"{i}. {rule}" for i, rule in enumerate(rules, 1)]
+            [f"{i}. {rule[0]}" for i, rule in enumerate(rules, 1)]
         ),
     }
 
@@ -246,7 +246,7 @@ def _build_all_success_prompt(
 
 def _prompt_compare_critique(
     llm: BaseChatModel,
-    rules: List[str],
+    rules: List[Tuple[str, int]],
     question: str,
     success_trial: str,
     failed_trial: str,
@@ -259,7 +259,7 @@ def _prompt_compare_critique(
 
     Parameters:
         llm (BaseChatModel): The Large Language Model instance used to generate the critique.
-        rules (List[str]): A list of existing rules provided as strings.
+        rules (List[Tuple[str, int]]): A list of strings where each string represents an existing rule with a score. If the list is empty, it is treated as if there are no existing rules.
         question (str): The task question related to the trials.
         success_trial (str): A description of a successful trial for the task.
         failed_trial (str): A description of a failed trial for the task.
@@ -293,7 +293,7 @@ def _prompt_compare_critique(
 
 def _prompt_all_success_critique(
     llm: BaseChatModel,
-    rules: List[str],
+    rules: List[Tuple[str, int]],
     success_trajs_str: str,
     is_full: bool,
     replace_newline: bool = False,
@@ -304,7 +304,7 @@ def _prompt_all_success_critique(
 
     Parameters:
         llm (BaseChatModel): The Large Language Model instance used for generating the critique.
-        rules (List[str]): A list of current rules described as strings.
+        rules (List[Tuple[str, int]]): A list of strings where each string represents an existing rule with a score. If the list is empty, it is treated as if there are no existing rules.
         success_trajs_str (str): A string concatenating descriptions of successful trials related to the task.
         is_full (bool): Indicates whether the full critique summary is to be used in the prompt.
         replace_newline (bool, optional): If set to `True`, newline characters in the LLM output will be replaced with empty strings. The default is `False`.
@@ -406,6 +406,17 @@ def is_existing_rule(rules: List[Tuple[str, int]], operation_rule_text: str) -> 
 def remove_err_operations(
     rules: List[Tuple[str, int]], operations: List[Tuple[str, str]]
 ) -> List[Tuple[str, str]]:
+    """Cleans a list of rule operations by removing or modifying erroneous entries.
+
+    This function iterates through a list of operations intended to modify a set of rules. It removes operations that are incorrect or not applicable (e.g., attempting to add a rule that already exists) and modifies certain operations based on their context (e.g., changing an EDIT to AGREE if the edited rule matches an existing rule). The goal is to ensure that the resulting list of operations is coherent and can be applied to update the rules without causing inconsistencies.
+
+    Parameters:
+        rules (List[Tuple[str, int]]): A list of tuples representing the existing rules. Each tuple contains the rule text and an associated numeric value, which could represent the rule's strength or priority.
+        operations (List[Tuple[str, str]]): A list of tuples representing the operations to be performed on the rules. Each tuple contains an operation type (ADD, REMOVE, EDIT, AGREE) and the associated rule text or modification.
+
+    Returns:
+        List[Tuple[str, str]]: A cleaned list of operations where erroneous or inapplicable operations have been removed or modified to ensure consistency and correctness when applied to the set of existing rules.
+    """
     cleaned_operations = operations.copy()
 
     delete_indices = []
@@ -453,6 +464,19 @@ def update_rules(
     operations: List[Tuple[str, str]],
     is_full: bool = False,
 ) -> List[Tuple[str, int]]:
+    """Updates a set of rules based on provided operations, adjusting their strengths and possibly adding or editing them.
+
+    Operations are processed in a specific order: 'REMOVE', 'AGREE', 'EDIT', and 'ADD'. This ensures that removals and agreements are handled first, followed by edits and additions. 
+    The function supports dynamically adjusting the impact of a 'REMOVE' operation based on the `is_full` flag, which represents whether the set of rules is considered comprehensive.
+
+    Parameters:
+        rules (List[Tuple[str, int]]): The current set of rules, where each rule is represented by a tuple containing the rule text and its associated numeric value (e.g., strength, priority).
+        operations (List[Tuple[str, str]]): Operations to be applied to the rules, with each operation being a tuple of the operation type and the rule text.
+        is_full (bool, optional): A flag indicating if the rules set is considered comprehensive, affecting the strength adjustment of 'REMOVE' operations.
+
+    Returns:
+        List[Tuple[str, int]]: The updated set of rules after applying the operations, sorted by their numeric values in descending order. Rules with a numeric value of 0 or less are removed from the set.
+    """
     updated_rules = rules.copy()
 
     for op in ["REMOVE", "AGREE", "EDIT", "ADD"]:  # Order is important
@@ -502,8 +526,7 @@ def create_rules(
     experiences: Dict[str, List],
     categories: Dict[str, int],
     train_idxs: List[int],
-    rules: List[str],
-    rules_with_count: List[Tuple[str, int]],
+    rules: List[Tuple[str, int]],
     max_num_rules: int,
     success_critique_num: int = 8,
 ) -> Tuple[List[str], List[Tuple[str, int]]]:
@@ -528,22 +551,21 @@ def create_rules(
                 question,
                 success_trial,
                 failed_trial,
-                max_num_rules < len(rules_with_count),
+                max_num_rules < len(rules),
             )
 
             # Parse.
             operations = parse_rules(out)
 
             # Remove no-ops.
-            operations = remove_err_operations(rules_with_count, operations)
+            operations = remove_err_operations(rules, operations)
 
-            # Update rules_with_count and rules with comparison insights.
-            rules_with_count = update_rules(
-                rules_with_count,
+            # Update rules with comparison insights.
+            rules = update_rules(
+                rules,
                 operations,
-                is_full=max_num_rules + 5 <= len(rules_with_count),
+                is_full=max_num_rules + 5 <= len(rules),
             )
-            rules = [rule[0] for rule in rules_with_count]
 
     # Success.
     batched_success_trajs_idxs = shuffle_chunk_list(
@@ -559,24 +581,23 @@ def create_rules(
 
         # Prompt.
         out = _prompt_all_success_critique(
-            llm, rules, success_trajs_str, max_num_rules < len(rules_with_count)
+            llm, rules, success_trajs_str, max_num_rules < len(rules)
         )
 
         # Parse.
         operations = parse_rules(out)
 
         # Remove no-ops.
-        operations = remove_err_operations(rules_with_count, operations)
+        operations = remove_err_operations(rules, operations)
 
-        # Update rules_with_count and rules with success insights.
-        rules_with_count = update_rules(
-            rules_with_count,
+        # Update rules with success insights.
+        rules = update_rules(
+            rules,
             operations,
-            is_full=max_num_rules + 5 <= len(rules_with_count),
+            is_full=max_num_rules + 5 <= len(rules),
         )
-        rules = [rule[0] for rule in rules_with_count]
 
-    return rules, rules_with_count
+    return rules
 
 
 # ============================================== Inference ==============================================
