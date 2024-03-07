@@ -11,7 +11,8 @@ from discussion_agents.cog.functional.expel import (
     _build_compare_prompt,
     _build_all_success_prompt,
     parse_rules,
-    retrieve_rule_index
+    retrieve_rule_index,
+    is_existing_rule
 )
 
 def test_gather_experience(reflexion_react_agent: ReflexionReActAgent) -> None:
@@ -205,3 +206,13 @@ def test_retrieve_rule_index() -> None:
 
     idx = retrieve_rule_index(rules, "No such rule")
     assert idx == -1
+
+
+def test_is_existing_rule() -> None:
+    """Tests is_existing_rule."""
+    rules = [("Rule1", 1), ("Rule2", 2), ("Rule3", 3)]
+    
+    assert is_existing_rule(rules, "Operation on Rule1")
+    assert is_existing_rule(rules, "Changes to Rule2")
+    assert is_existing_rule(rules, "Modification of Rule3")
+    assert not is_existing_rule(rules, "No such rule")
