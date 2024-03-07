@@ -2,7 +2,7 @@
 
 import pytest
 
-from langchain.llms.fake import FakeListLLM
+from langchain_community.llms.fake import FakeListLLM
 from langchain_community.chat_models.fake import FakeListChatModel
 
 from discussion_agents.cog.agent.generative_agents import GenerativeAgent
