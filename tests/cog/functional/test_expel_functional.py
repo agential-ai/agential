@@ -10,7 +10,8 @@ from discussion_agents.cog.functional.expel import (
     get_folds,
     _build_compare_prompt,
     _build_all_success_prompt,
-    parse_rules
+    parse_rules,
+    retrieve_rule_index
 )
 
 def test_gather_experience(reflexion_react_agent: ReflexionReActAgent) -> None:
@@ -176,7 +177,7 @@ def test__build_all_success_prompt() -> None:
 
 def test_parse_rules() -> None:
     """Test parse_rules."""
-    
+
     gt_rules = [('REMOVE 1', 'Rule to remove.'), ('EDIT 2', 'Rule to edit.'), ('ADD', 'Rule to add.')]
     llm_output = "REMOVE 1: Rule to remove.\nEDIT 2: Rule to edit.\nADD 3: Rule to add."
     rules = parse_rules(llm_output)
@@ -187,3 +188,20 @@ def test_parse_rules() -> None:
     rules = parse_rules(llm_output)
     print(rules)
     assert rules == gt_rules
+
+
+def test_retrieve_rule_index() -> None:
+    """Tests retrieve_rule_index."""
+    rules = [("Rule1", 1), ("Rule2", 2), ("Rule3", 3)]
+
+    idx = retrieve_rule_index(rules, "Operation on Rule1")
+    assert idx == 0
+
+    idx = retrieve_rule_index(rules, "Changes to Rule2")
+    assert idx == 1
+    
+    idx = retrieve_rule_index(rules, "Modification of Rule3")
+    assert idx == 2
+
+    idx = retrieve_rule_index(rules, "No such rule")
+    assert idx == -1
