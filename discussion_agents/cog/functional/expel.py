@@ -166,7 +166,7 @@ def _build_compare_prompt(
         is_full (bool): A flag indicating whether the prompt should be in its full form or not. This affects the suffix of the critique summary.
 
     Returns:
-        str: A fully constructed prompt ready to be presented to the AI. The prompt includes a prefixed system instruction, task details formatted according to human critique template, 
+        str: A fully constructed prompt ready to be presented to the AI. The prompt includes a prefixed system instruction, task details formatted according to human critique template,
             and a suffix based on whether the prompt is in its full form.
     """
     if rules == []:
@@ -205,7 +205,7 @@ def _build_all_success_prompt(
 ) -> str:
     """Constructs a prompt focused on critiquing and enhancing existing rules based on successful task trials.
 
-    This function generates a prompt for AI interaction that incorporates a series of successful trials and existing rules. 
+    This function generates a prompt for AI interaction that incorporates a series of successful trials and existing rules.
 
     Parameters:
         rules (List[str]): A list of existing rules provided as strings. If this list is empty, it is treated as if there are no prior rules.
@@ -213,7 +213,7 @@ def _build_all_success_prompt(
         is_full (bool): A boolean flag that determines the verbosity of the critique summary's suffix. If `True`, a more comprehensive suffix is used.
 
     Returns:
-        str: A string that combines the system's instruction, the task context with successful trials, and the existing rules into a coherent prompt. 
+        str: A string that combines the system's instruction, the task context with successful trials, and the existing rules into a coherent prompt.
     """
     if rules == []:
         rules = [""]
@@ -227,7 +227,9 @@ def _build_all_success_prompt(
     # Task prompt.
     human_format_dict = {
         "success_trajs": success_trajs_str,
-        "existing_rules": "\n".join([f"{i}. {rule}" for i, rule in enumerate(rules, 1)]),
+        "existing_rules": "\n".join(
+            [f"{i}. {rule}" for i, rule in enumerate(rules, 1)]
+        ),
     }
 
     human_critique_summary_message = PromptTemplate.from_template(
@@ -280,7 +282,9 @@ def _prompt_compare_critique(
                 content=prompt,
             )
         ]
-    ).content.strip("\n").strip()
+    ).content
+    print("OUT FOR COMPARE:", "\n\n", repr(out))
+    out = out.strip("\n").strip()
 
     if replace_newline:
         out = out.replace("\n", "")
@@ -317,8 +321,10 @@ def _prompt_all_success_critique(
                 content=prompt,
             )
         ]
-    ).content.strip("\n").strip()
-    
+    ).content
+    print("OUT FOR ALL SUCCESS:", "\n\n", repr(out))
+    out = out.strip("\n").strip()
+
     if replace_newline:
         out = out.replace("\n", "")
     return out
@@ -327,16 +333,16 @@ def _prompt_all_success_critique(
 def parse_rules(llm_text: str) -> str:
     """Parses and extracts rule operations and their descriptions from a given text.
 
-    This function searches through the provided text for occurrences of rule operations (ADD, REMOVE, EDIT, AGREE) followed by their descriptions. 
-    It applies specific criteria to ensure the extracted rules are valid: the rule description must not be empty, must not 
-    contain certain banned words (to avoid inclusion of formatting instructions or similar), and must end with a period. 
+    This function searches through the provided text for occurrences of rule operations (ADD, REMOVE, EDIT, AGREE) followed by their descriptions.
+    It applies specific criteria to ensure the extracted rules are valid: the rule description must not be empty, must not
+    contain certain banned words (to avoid inclusion of formatting instructions or similar), and must end with a period.
 
     Parameters:
-        llm_text (str): The text from which to extract rule operations and descriptions. 
+        llm_text (str): The text from which to extract rule operations and descriptions.
             This text is expected to contain one or more statements formatted according to predefined rule operation patterns.
 
     Returns:
-        List[Tuple[str, str]]: A list of tuples where each tuple contains two elements: the operation (ADD, REMOVE, EDIT, AGREE) and the clean, validated rule description. 
+        List[Tuple[str, str]]: A list of tuples where each tuple contains two elements: the operation (ADD, REMOVE, EDIT, AGREE) and the clean, validated rule description.
             The rules that do not meet the validation criteria are omitted.
     """
     pattern = r"((?:REMOVE|EDIT|ADD|AGREE)(?: \d+|)): (?:[a-zA-Z\s\d]+: |)(.*)"
@@ -362,6 +368,17 @@ def parse_rules(llm_text: str) -> str:
 
 
 def retrieve_rule_index(rules: List[Tuple[str, int]], operation_rule_text: str) -> int:
+    """Retrieves the index of a rule based on its text.
+
+    Searches through a list of rules to find the index of the rule that matches part of the given operation rule text. This function is useful for identifying which rule is being referred to in operations like EDIT, REMOVE, or AGREE, where the rule text is included in the operation.
+
+    Parameters:
+        rules (List[Tuple[str, int]]): A list of tuples, where each tuple contains the rule text and its associated strength or any other numeric value.
+        operation_rule_text (str): The text of the operation which may contain or exactly match the text of a rule.
+
+    Returns:
+        int: The index of the rule within the list if found; otherwise, -1.
+    """
     for i in range(len(rules)):
         if rules[i][0] in operation_rule_text:
             return i
@@ -369,6 +386,17 @@ def retrieve_rule_index(rules: List[Tuple[str, int]], operation_rule_text: str) 
 
 
 def is_existing_rule(rules: List[Tuple[str, int]], operation_rule_text: str) -> bool:
+    """Checks if a rule exists based on its text.
+
+    Determines whether any rule's text in the provided list of rules matches part of the given operation rule text. This is useful for verifying if an operation like ADD is attempting to add a rule that already exists based on its text.
+
+    Parameters:
+        rules (List[Tuple[str, int]]): A list of tuples, where each tuple contains the rule text and its associated strength or any other numeric value.
+        operation_rule_text (str): The text of the operation which may contain or exactly match the text of an existing rule.
+
+    Returns:
+        bool: True if the rule exists in the list, otherwise False.
+    """
     for i in range(len(rules)):
         if rules[i][0] in operation_rule_text:
             return True
