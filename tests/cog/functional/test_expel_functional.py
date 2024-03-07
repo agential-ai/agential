@@ -12,7 +12,8 @@ from discussion_agents.cog.functional.expel import (
     _build_all_success_prompt,
     parse_rules,
     retrieve_rule_index,
-    is_existing_rule
+    is_existing_rule,
+    remove_err_operations
 )
 
 def test_gather_experience(reflexion_react_agent: ReflexionReActAgent) -> None:
@@ -216,3 +217,30 @@ def test_is_existing_rule() -> None:
     assert is_existing_rule(rules, "Changes to Rule2")
     assert is_existing_rule(rules, "Modification of Rule3")
     assert not is_existing_rule(rules, "No such rule")
+
+
+def test_remove_err_operations() -> None:
+    """Test remove_err_operations."""
+    rules = [("Rule1", 1), ("Rule2", 2)]
+
+    operations = [
+        ("ADD 1", "Rule1"),  # Should be removed
+        ("ADD 2", "Rule3"),  # Should remain
+        ("EDIT 1", "Rule1"),  # Should change to AGREE
+        ("EDIT 3", "Rule3"),  # Should be removed
+        ("REMOVE", "Rule1"),  # Should remain
+        ("REMOVE", "Rule3"),  # Should be removed
+        ("AGREE", "Rule1"),  # Should remain
+        ("AGREE", "Rule3"),  # Should be removed
+    ]
+
+    expected_operations = [
+        ("ADD 2", "Rule3"),
+        ("AGREE 1", "Rule1"),
+        ("REMOVE", "Rule1"),
+        ("AGREE", "Rule1"),
+    ]
+
+    out = remove_err_operations(rules, operations)
+    assert out == expected_operations
+    assert False
