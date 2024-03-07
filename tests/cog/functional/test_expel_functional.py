@@ -257,13 +257,14 @@ def test_update_rules() -> None:
         ("ADD", "NewRule4"),
     ]
 
-    # Expected outcomes
+    # Expected outcomes.
     expected_rules_full = [("Rule3", 4), ("Rule2", 3), ("NewRule4", 2)]
-    expected_rules_not_full = [("NewRule3", 4), ("Rule2", 3), ("Rule1", 0), ("NewRule4", 2)]
+    expected_rules_not_full = [('Rule3', 4), ('Rule2', 3), ('NewRule4', 2)]
 
-    # Test with is_full=True
+    # Test with is_full=True.
     updated_rules_full = update_rules(initial_rules, operations, is_full=True)
     assert updated_rules_full == expected_rules_full
 
+    # Test with is_full=False.
     updated_rules_not_full = update_rules(initial_rules, operations, is_full=False)
-    assert updated_rules_full == expected_rules_full
+    assert updated_rules_not_full == expected_rules_not_full
