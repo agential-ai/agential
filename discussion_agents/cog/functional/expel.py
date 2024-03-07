@@ -1,5 +1,4 @@
-"""ExpeL training components."""
-
+"""Functional module for ExpeL."""
 import re
 import random
 from typing import List, Dict, Optional, Tuple
@@ -23,8 +22,6 @@ from discussion_agents.cog.prompts.expel import (
 from discussion_agents.utils.general import shuffle_chunk_list
 
 # Q1: Should this experience be a part of the ExpeLAgent class?
-# Q2: Should this Experience Gathering section be a function or a class?
-# Q3: Should the Experience Gathering section be in the train module or functional?
 
 # ============================================== Experience Gathering ==============================================
 
