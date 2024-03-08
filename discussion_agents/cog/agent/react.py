@@ -251,33 +251,48 @@ class ReActAgent(BaseAgent):
 
             return output
         
-        def execute_step(self, question, examples, prompt_template, env):
-            step_boolean = _check_keyword(example=examples)
-            scratchpad = self.memory.load_memories()["scratchpad"]
-            if step_boolean[0]:
-                thought = self.think_step(question, examples, prompt_template, scratchpad)
-                out = f"\n{thought}"
-            else:
-                 return ""
-            
-            if step_boolean[1]:
-               action = self.act_step(question, examples, prompt_template, scratchpad)
-               out += f"\n{action}"
-               action = prepare_action(action)
-            else:
-              return out
-            if step_boolean[2]:
-                if step_boolean[3]:
-                    self.observe_step_env(action, env)
-                else:
-                    self.observe_step_action(action)
-
-                    out += f"\n{self.memory.load_memories()['scratchpad'].split('\n')[-1]}"
-                    self._step_n += 1
-            else:
-                return out
-
+    def execute_step(self, question, examples, prompt_template, env):
+        step_boolean = _check_keyword(example=examples)
+        scratchpad = self.memory.load_memories()["scratchpad"]
+        if step_boolean[0]:
+            thought = self.think_step(question, examples, prompt_template, scratchpad)
+            out = f"\n{thought}"
+        else:
+                return ""
+        
+        if step_boolean[1]:
+            action = self.act_step(question, examples, prompt_template, scratchpad)
+            out += f"\n{action}"
+            action = prepare_action(action)
+        else:
             return out
+        if step_boolean[2]:
+            if step_boolean[3]:
+                self.observe_step_env(action, env)
+            else:
+                self.observe_step_action(action)
+
+                out += f"\n{self.memory.load_memories()['scratchpad'].split('\n')[-1]}"
+                self._step_n += 1
+        else:
+            return out
+
+        return out
+    
+
+    def think_step(self, question, examples, prompt_template, scratchpad):
+        self.memory.add_memories("\nThought:")
+        thought = _prompt_agent(
+            llm=self.llm,
+            question=question,
+            scratchpad=scratchpad,
+            examples=examples,
+            prompt_template=prompt_template
+        ).strip()
+        self.memory.add_memories(" " + thought)
+        return thought
+    
+    
 
     def retrieve(self) -> Dict[str, Any]:
         """Retrieves the current state of the agent's memory.
