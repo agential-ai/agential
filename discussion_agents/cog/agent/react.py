@@ -8,10 +8,10 @@ Paper Repository: https://github.com/ysymyth/ReAct
 LangChain: https://github.com/langchain-ai/langchain
 LangChain ReAct: https://python.langchain.com/docs/modules/agents/agent_types/react
 """
+# Standard library imports
 from typing import Any, Dict, List, Optional
 
-import tiktoken
-
+# Third-party library imports
 from langchain import hub
 from langchain.agents import AgentExecutor, create_react_agent
 from langchain.agents.react.base import DocstoreExplorer
@@ -19,22 +19,22 @@ from langchain_community.docstore.wikipedia import Wikipedia
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.tools import BaseTool, tool
 from tiktoken.core import Encoding
+import tiktoken
 
-
+# Local imports
 from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.functional.react import (
-    _is_halted,
-    _prompt_agent,
     _check_keyword,
+    _is_halted,
     _process_ob,
+    _prompt_agent,
 )
 from discussion_agents.cog.modules.memory.react import ReActMemory
 from discussion_agents.utils.parse import parse_action, remove_newline
-
 from discussion_agents.cog.prompts.react import (
-    REACT_INSTRUCTION_HOTPOTQA,
-    REACT_INSTRUCTION_FEVER,
     REACT_ALFWORLD_INSTRUCTION,
+    REACT_INSTRUCTION_FEVER,
+    REACT_INSTRUCTION_HOTPOTQA,
 )
 
 
@@ -66,7 +66,16 @@ class ReActAgent(BaseAgent):
         docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
     ) -> None:
-        """Initialization."""
+        """Initialize the ReActAgent.
+
+        Args:
+            llm (BaseChatModel): The language model used by the agent.
+            memory (Optional[ReActMemory], optional): The memory module. Defaults to None.
+            max_steps (int, optional): Maximum number of steps to process the question. Defaults to 6.
+            max_tokens (int, optional): Maximum token limit for the language model. Defaults to 3896.
+            docstore (DocstoreExplorer, optional): Document store for information retrieval. Defaults to DocstoreExplorer(Wikipedia()).
+            enc (Encoding, optional): Encoder for calculating token lengths. Defaults to tiktoken.encoding_for_model("gpt-3.5-turbo").
+        """
         super().__init__()
         self.llm = llm
 
@@ -100,7 +109,7 @@ class ReActAgent(BaseAgent):
         Args:
             question (str): The question to be processed.
             reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
-            prompt_template (str): The template for benchmark
+            prompt_template (str): The template for benchmark.
             examples (str): The example of text generated.
             env (Alfworld_environment): The variable to interact with Alfworld.
 
@@ -133,6 +142,17 @@ class ReActAgent(BaseAgent):
     def execute_step(
         self, question: str, examples: str, prompt_template: str, env: Any
     ) -> str:
+        """Execute a single step of the ReAct process.
+
+        Args:
+            question (str): The question to be processed.
+            examples (str): The example of text generated.
+            prompt_template (str): The template for benchmark.
+            env (Any): The variable to interact with Alfworld.
+
+        Returns:
+            str: The output from the current step.
+        """
         step_boolean = _check_keyword(example=examples)
         scratchpad = self.memory.load_memories()["scratchpad"]
         if step_boolean[0]:
@@ -149,14 +169,13 @@ class ReActAgent(BaseAgent):
                 action = action.replace(" in ", " in/on ")
         else:
             return out
+
         if step_boolean[2]:
             if step_boolean[3]:
                 self.observe_step_env(action, env)
             else:
                 self.observe_step_action(action)
-
                 out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
-
                 self._step_n += 1
         else:
             return out
@@ -166,6 +185,17 @@ class ReActAgent(BaseAgent):
     def think_step(
         self, question: str, examples: str, prompt_template: str, scratchpad: Any
     ) -> str:
+        """Perform the "think" step of the ReAct process.
+
+        Args:
+            question (str): The question to be processed.
+            examples (str): The example of text generated.
+            prompt_template (str): The template for benchmark.
+            scratchpad (Any): The current state of the agent's memory.
+
+        Returns:
+            str: The output from the "think" step.
+        """
         self.memory.add_memories("\nThought:")
         thought = _prompt_agent(
             llm=self.llm,
@@ -180,6 +210,17 @@ class ReActAgent(BaseAgent):
     def act_step(
         self, question: str, examples: str, prompt_template: str, scratchpad: Any
     ) -> str:
+        """Perform the "act" step of the ReAct process.
+
+        Args:
+            question (str): The question to be processed.
+            examples (str): The example of text generated.
+            prompt_template (str): The template for benchmark.
+            scratchpad (Any): The current state of the agent's memory.
+
+        Returns:
+            str: The output from the "act" step.
+        """
         self.memory.add_memories(f"\nAction {self._step_n}:")
         action = _prompt_agent(
             llm=self.llm,
@@ -196,6 +237,12 @@ class ReActAgent(BaseAgent):
         return action
 
     def observe_step_env(self, action: Any, env: Any) -> None:
+        """Perform the "observe" step for an environment interaction.
+
+        Args:
+            action (Any): The action to be performed in the environment.
+            env (Any): The environment to interact with.
+        """
         self.memory.add_memories(f"\nObservation {self._step_n}: ")
         observation, _, done, info = env.step([action])
         observation, done = _process_ob(observation[0]), done[0]
@@ -206,6 +253,11 @@ class ReActAgent(BaseAgent):
         self.memory.add_memories(" " + observation)
 
     def observe_step_action(self, action: Any) -> None:
+        """Perform the "observe" step for a non-environment action.
+
+        Args:
+            action (Any): The action to be performed.
+        """
         self.memory.add_memories(f"\nObservation {self._step_n}: ")
         action_type, query = parse_action(action)
 
@@ -222,17 +274,32 @@ class ReActAgent(BaseAgent):
                 )
 
     def handle_finish_action(self, query: str) -> None:
+        """Handle the "finish" action.
+
+        Args:
+            query (str): The answer to the question.
+        """
         self._answer = query
         self._finished = True
         self.memory.add_memories(query)
 
     def handle_search_action(self, query: str) -> None:
+        """Handle the "search" action.
+
+        Args:
+            query (str): The search query.
+        """
         try:
             self.memory.add_memories(remove_newline(self.docstore.search(query)))
         except Exception:
             self.memory.add_memories("Could not find that page, please try again.")
 
     def handle_lookup_action(self, query: str) -> None:
+        """Handle the "lookup" action.
+
+        Args:
+            query (str): The query for looking up information.
+        """
         try:
             self.memory.add_memories(remove_newline(self.docstore.lookup(query)))
         except ValueError:
@@ -241,7 +308,7 @@ class ReActAgent(BaseAgent):
             )
 
     def retrieve(self) -> Dict[str, Any]:
-        """Retrieves the current state of the agent's memory.
+        """Retrieve the current state of the agent's memory.
 
         Returns:
             Dict[str, Any]: The current state of the agent's memory.
@@ -249,7 +316,7 @@ class ReActAgent(BaseAgent):
         return self.memory.load_memories()
 
     def reset(self) -> None:
-        """Resets the internal state of the ReAct agent.
+        """Reset the internal state of the ReAct agent.
 
         Sets the step number, finished flag, and scratchpad to their initial values.
         """
@@ -260,7 +327,14 @@ class ReActAgent(BaseAgent):
 
 @tool
 def search(query: str) -> str:
-    """Searches Wikipedia given query."""
+    """Search Wikipedia given a query.
+
+    Args:
+        query (str): The search query.
+
+    Returns:
+        str: The search results from Wikipedia.
+    """
     docstore = DocstoreExplorer(Wikipedia())
     return docstore.search(query)
 
