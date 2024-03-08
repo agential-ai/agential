@@ -82,7 +82,7 @@ class ReActAgent(BaseAgent):
             reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
 
         Returns:
-            List[Tuple[str, str, str]]: The list of accumulated output from the ReAct process, 
+            List[Tuple[str, str, str]]: The list of accumulated output from the ReAct process,
                 each tuple consists of a thought-action-observation triplet.
         """
         if reset:
@@ -138,12 +138,14 @@ class ReActAgent(BaseAgent):
             else:
                 obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
             self.memory.add_memories(obs)
-            
-            out.append((
-                f"Thought: {thought}", 
-                f"Action: {action}",
-                f"Observation {self._step_n}: {obs}"
-            ))
+
+            out.append(
+                (
+                    f"Thought: {thought}",
+                    f"Action: {action}",
+                    f"Observation {self._step_n}: {obs}",
+                )
+            )
 
             self._step_n += 1
 

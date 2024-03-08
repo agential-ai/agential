@@ -44,7 +44,8 @@ def test_generate() -> None:
         "Action: Search[best kick boxer]"
     )
     assert isinstance(out, list)
-    for triplet in out: assert isinstance(triplet, tuple)
+    for triplet in out:
+        assert isinstance(triplet, tuple)
     assert "\n".join(out[0][:2]) == gt_out
     assert agent._step_n == agent.max_steps + 1
     assert not agent._finished
@@ -53,7 +54,8 @@ def test_generate() -> None:
     out = agent.generate(question=q, reset=False)
     assert not out
     assert isinstance(out, list)
-    for triplet in out: assert isinstance(triplet, tuple)
+    for triplet in out:
+        assert isinstance(triplet, tuple)
     assert agent._step_n == agent.max_steps + 1
     assert not agent._finished
 
@@ -81,7 +83,8 @@ def test_generate() -> None:
     )
 
     assert isinstance(out, list)
-    for triplet in out: assert isinstance(triplet, tuple)
+    for triplet in out:
+        assert isinstance(triplet, tuple)
     assert "\n".join(["\n".join(triplet) for triplet in out]) == gt_out
     assert agent.memory.load_memories()["scratchpad"].strip() == gt_out
 
@@ -100,7 +103,8 @@ def test_generate() -> None:
         "Observation 1: Badr Hari"
     )
     assert isinstance(out, list)
-    for triplet in out: assert isinstance(triplet, tuple)
+    for triplet in out:
+        assert isinstance(triplet, tuple)
     assert gt_out == gt_out
     assert agent.memory.load_memories()["scratchpad"] == gt_out
 
