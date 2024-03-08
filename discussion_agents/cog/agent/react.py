@@ -138,6 +138,7 @@ class ReActAgent(BaseAgent):
             else:
                 obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
             self.memory.add_memories(obs)
+            
             out.append((
                 f"Thought: {thought}", 
                 f"Action: {action}",

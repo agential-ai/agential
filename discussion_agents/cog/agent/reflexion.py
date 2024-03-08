@@ -130,8 +130,6 @@ class ReflexionCoTAgent(BaseAgent):
             if self._trial_n > 0 and not EM(self._answer, key) and strategy:
                 reflections_str = self.reflect(strategy, question, context)
 
-            out = ""
-
             # Think.
             self.memory.add_memories("\nThought:")
             thought = _prompt_cot_agent(
@@ -145,7 +143,6 @@ class ReflexionCoTAgent(BaseAgent):
                 context=context,
             )
             self.memory.add_memories(" " + thought)
-            out += self.memory.load_memories()["scratchpad"].split("\n")[-1] + "\n"
 
             # Act.
             self.memory.add_memories("\nAction:")
@@ -161,26 +158,29 @@ class ReflexionCoTAgent(BaseAgent):
             )
             action_type, argument = parse_action(action.strip())
             self.memory.add_memories(" " + action)
-            out += self.memory.load_memories()["scratchpad"].split("\n")[-1] + "\n"
 
             # Observe.
             self.memory.add_memories("\nObservation: ")
             if action_type.lower() == "finish":
+                self._finished = True
                 self._answer = argument
                 if EM(self._answer, key):
-                    correctness_str = "Answer is CORRECT"
+                    obs = "Answer is CORRECT"
                 else:
-                    correctness_str = "Answer is INCORRECT"
-                self.memory.add_memories(correctness_str)
-                out += "\n" + correctness_str
-                self._finished = True
+                    obs = "Answer is INCORRECT"
             else:
-                invalid_action_str = "Invalid action type, please try again."
-                self.memory.add_memories(invalid_action_str)
-                out += "\n" + invalid_action_str
+                obs = "Invalid action type, please try again."
+            self.memory.add_memories(obs)
 
             self._trial_n += 1
             is_correct = EM(self._answer, key)
+
+            out = (
+                f"Thought: {thought}", 
+                f"Action: {action}",
+                f"Observation: {obs}"
+            )
+
             result.append((is_correct, self._answer, out))
 
             # Increment patience counter.
