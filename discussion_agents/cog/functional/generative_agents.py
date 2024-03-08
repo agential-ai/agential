@@ -5,14 +5,15 @@ import re
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-from langchain.vectorstores import FAISS
+import faiss
+
 
 from langchain.chains import LLMChain
 from langchain.docstore import InMemoryDocstore
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.prompts import PromptTemplate
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
-from langchain.vectorstores import FAISS
+# from langchain.vectorstores import FAISS
 from langchain_core.retrievers import BaseRetriever
 
 from discussion_agents.utils.fetch import fetch_memories
@@ -46,8 +47,8 @@ def _create_default_time_weighted_retriever(
     embeddings_model = HuggingFaceEmbeddings(
         model_name=model_name, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs
     )
-    index = FAISS.IndexFlatL2(embedding_size)
-    vectorstore = FAISS(embeddings_model.embed_query, index, InMemoryDocstore({}), {})
+    index = faiss.IndexFlatL2(embedding_size)
+    vectorstore = faiss(embeddings_model.embed_query, index, InMemoryDocstore({}), {})
     retriever = TimeWeightedVectorStoreRetriever(
         vectorstore=vectorstore, other_score_keys=["importance"], k=k
     )
