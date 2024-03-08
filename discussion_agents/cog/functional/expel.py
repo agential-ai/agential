@@ -530,6 +530,30 @@ def create_rules(
     max_num_rules: int,
     success_critique_num: int = 8,
 ) -> Tuple[List[str], List[Tuple[str, int]]]:
+    """Generates and updates rules based on experiences categorized as compare and success.
+
+    This function iteratively refines a set of rules by evaluating experiences through the lens of compare and success categories. 
+    For compare experiences, it juxtaposes successful trials against failed ones to draw insights. 
+    For success experiences, it aggregates successful trials to distill overarching successful strategies. 
+    The insights drawn from these analyses are used to add, edit, remove, or agree with existing rules, thereby refining the rule set.
+
+    Parameters:
+        llm (BaseChatModel): An instance of a Large Language Model used to generate critiques and insights.
+        experiences (Dict[str, List]): A dictionary containing lists of questions, keys, and trajectories categorized by task indices.
+        categories (Dict[str, int]): A dictionary categorizing experiences into compare, success, and fail based on indices.
+        train_idxs (List[int]): Indices of training data to be used for rule generation.
+        rules (List[Tuple[str, int]]): The current set of rules and their associated strength scores.
+        max_num_rules (int): The maximum number of rules to retain.
+        success_critique_num (int, optional): The number of successes to batch together for critique. Defaults to 8.
+
+    Returns:
+        Tuple[List[str], List[Tuple[str, int]]]: A tuple containing the list of updated rules as strings and their associated strength scores.
+
+    Note:
+        - The function internally utilizes helper functions to prompt the LLM, parse its output for operations on rules, and update the rule set accordingly.
+        - The operation of adding, editing, removing, or agreeing with rules is based on the critique provided by the LLM in response to the prompts generated from experiences.
+        - The function ensures that the rule set does not exceed the specified maximum number of rules, prioritizing rules by their strength scores.
+    """
     # Intersection between train_idxs and each category (compare, success, fail).
     train_category_idxs = {
         category: list(set(train_idxs).intersection(set(category_idxs)))
