@@ -101,6 +101,7 @@ class ReflexionCoTAgent(BaseAgent):
         context: Optional[str] = None,
         strategy: Optional[str] = None,
         reset: bool = True,
+
     ) -> List[str]:
         """Generates a response based on the provided context, question, and key.
 
@@ -318,6 +319,8 @@ class ReflexionReActAgent(BaseAgent):
         key: str,
         strategy: Optional[str] = None,
         reset: bool = True,
+        examples: str = "",
+        prompt_template: str = "",
     ) -> List[str]:
         """Processes a given question through ReAct and reflects using Reflexion strategies when possible.
 
@@ -352,6 +355,8 @@ class ReflexionReActAgent(BaseAgent):
                     question=question,
                     scratchpad=self.memory.load_memories()["scratchpad"],
                     max_tokens=self.max_tokens,
+                    examples=examples,  # Add examples here
+                    prompt_template=prompt_template,  # Add prompt_template here
                     enc=self.enc,
                 )
                 and not EM(self._answer, key)
@@ -367,6 +372,8 @@ class ReflexionReActAgent(BaseAgent):
                 finished=self._finished,
                 step_n=self._step_n,
                 max_steps=self.max_steps,
+                examples=examples,  # Add examples here
+                prompt_template=prompt_template,
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
                 max_tokens=self.max_tokens,

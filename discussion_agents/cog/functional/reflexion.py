@@ -18,6 +18,7 @@ from discussion_agents.cog.prompts.reflexion import (
     REFLEXION_REACT_INSTRUCTION,
     REFLEXION_REACT_REFLECT_INSTRUCTION,
 )
+
 from discussion_agents.utils.parse import remove_newline
 
 gpt3_5_turbo_enc = tiktoken.encoding_for_model(
@@ -557,4 +558,3 @@ def react_reflect(
         raise NotImplementedError(f"Unknown reflection strategy: {strategy}.")
 
     return reflections
-

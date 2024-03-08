@@ -46,7 +46,7 @@ def _create_default_time_weighted_retriever(
     embeddings_model = HuggingFaceEmbeddings(
         model_name=model_name, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs
     )
-    index = faiss.IndexFlatL2(embedding_size)
+    index = FAISS.IndexFlatL2(embedding_size)
     vectorstore = FAISS(embeddings_model.embed_query, index, InMemoryDocstore({}), {})
     retriever = TimeWeightedVectorStoreRetriever(
         vectorstore=vectorstore, other_score_keys=["importance"], k=k
