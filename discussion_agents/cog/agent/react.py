@@ -206,12 +206,12 @@ class ReActAgent(BaseAgent):
     #     return out
         
     def generate(
-    self,
-    question: str,
-    reset: bool = True,
-    examples: str = None,
-    env: Any = None,
-    prompt_template: str = None
+        self,
+        question: str,
+        reset: bool = True,
+        examples: str = None,
+        env: Any = None,
+        prompt_template: str = None
     ) -> str:
             """Processes a given question through ReAct.
 
@@ -291,6 +291,19 @@ class ReActAgent(BaseAgent):
         ).strip()
         self.memory.add_memories(" " + thought)
         return thought
+    
+    def act_step(self, question, examples, prompt_template, scratchpad):
+        self.memory.add_memories(f"\nAction {self._step_n}:")
+        action = _prompt_agent(
+            llm=self.llm,
+            question=question,
+            scratchpad=scratchpad,
+            examples=examples,
+            prompt_template=prompt_template
+        ).strip()
+        action = prepare_action(action)
+        self.memory.add_memories(" " + action)
+        return action
     
     
 
