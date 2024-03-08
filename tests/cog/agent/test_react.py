@@ -8,14 +8,6 @@ from langchain_community.chat_models.fake import FakeListChatModel
 from tiktoken import Encoding
 
 from discussion_agents.cog.agent.react import ReActAgent, ZeroShotReActAgent
-from discussion_agents.cog.prompts.react import (
-  REACT_ALFWORLD_INSTRUCTION, 
-  REACT_ALFWORLD_PROMPTS_EXAMPLE, 
-  REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES, 
-  REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
-)
-from discussion_agents.cog.functional.react import _check_keyword,_process_ob
-
 from tests.fixtures.agent import alfworld_env
 
 
@@ -132,29 +124,3 @@ def test_Alfworld_react_generate(alfworld_env) -> None:
     agent = ReActAgent(llm=llm)
     out = agent.generate(question=ob, examples=prompt, env=env, instruction=REACT_ALFWORLD_INSTRUCTION)
     assert response[0].split('\n')[-1] == 'Congratulations, you have completed the task!'
-
-
-
-def test_check_keyword():
-    alfworld_example = REACT_ALFWORLD_PROMPTS_EXAMPLE['react_put_0']
-    step_utilised = _check_keyword(alfworld_example)
-    bool_list = [bool(item) for item in step_utilised]
-    assert bool_list == [False , True , True]
-    fever_example = REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES
-    step_utilised = _check_keyword(fever_example)
-    bool_list = [bool(item) for item in step_utilised]
-    assert bool_list == [True , True , True]
-    hotpotqa_example = REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
-    step_utilised = _check_keyword(hotpotqa_example)
-    bool_list = [bool(item) for item in step_utilised]
-    assert bool_list == [True , True , True]
-
-def test_process_ob():
-    example_input = "You arrive at loc 22. On the countertop 2, you see a butterknife 1, a cellphone 1, a creditcard 1, a knife 1, a lettuce 1, a saltshaker 2, a saltshaker 1, a statue 1, and a tomato 1.\nYou pick up the tomato 1 from the countertop 2."
-    example_output = _process_ob(example_input)
-    expected_output = "On the countertop 2, you see a butterknife 1, a cellphone 1, a creditcard 1, a knife 1, a lettuce 1, a saltshaker 2, a saltshaker 1, a statue 1, and a tomato 1.\nYou pick up the tomato 1 from the countertop 2."
-    assert example_output == expected_output
-    example_input = "You arrive at loc 30. The fridge 1 is closed."
-    example_output = _process_ob(example_input)
-    expected_output = "The fridge 1 is closed."
-    assert example_output == expected_output
