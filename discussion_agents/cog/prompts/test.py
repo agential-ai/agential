@@ -1,5 +1,5 @@
-REACT_ALFWORLD_PROMPTS_EXAMPLE  = {"react_put_0": 
-                                   """
+REACT_ALFWORLD_PROMPTS_EXAMPLE = {
+    "react_put_0": """
                                 You are in the middle of a room. Looking quickly around you, you see a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a countertop 1, a garbagecan 1, a handtowelholder 2, a handtowelholder 1, a sinkbasin 2, a sinkbasin 1, a toilet 1, a toiletpaperhanger 1, and a towelholder 1.
                                 Your task is to: put some spraybottle on toilet.
                                 Action 1: think: To solve the task, I need to find and take a sparybottle, then put it on toilet.
@@ -20,8 +20,8 @@ REACT_ALFWORLD_PROMPTS_EXAMPLE  = {"react_put_0":
                                 Observation 8: On the toilet 1, you see a soapbottle 2.
                                 Action 9: put spraybottle 2 in/on toilet 1
                                 Observation 0: You put the spraybottle 2 in/on the toilet 1.
-                                """
-                                , "react_put_1": """You are in the middle of a room. Looking quickly around you, you see a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a coffeemachine 1, a countertop 1, a diningtable 3, a diningtable 2, a diningtable 1, a drawer 1, a fridge 1, a garbagecan 1, a microwave 1, a sidetable 1, a sinkbasin 1, a stoveburner 4, a stoveburner 3, a stoveburner 2, a stoveburner 1, and a toaster 1.
+                                """,
+    "react_put_1": """You are in the middle of a room. Looking quickly around you, you see a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a coffeemachine 1, a countertop 1, a diningtable 3, a diningtable 2, a diningtable 1, a drawer 1, a fridge 1, a garbagecan 1, a microwave 1, a sidetable 1, a sinkbasin 1, a stoveburner 4, a stoveburner 3, a stoveburner 2, a stoveburner 1, and a toaster 1.
                                 Your task is to: find some apple and put it in sidetable.
                                 Action 1: think: To solve the task, I need to find and take an apple, then put it in sidetable.
                                 Observation 1: OK.
@@ -53,7 +53,8 @@ REACT_ALFWORLD_PROMPTS_EXAMPLE  = {"react_put_0":
                                 Observation 14: On the sidetable 1, you see a cup 1, a lettuce 1, a peppershaker 3, a potato 1, and a saltshaker 1.
                                 Action 15: put apple 3 in/on sidetable 1
                                 Observation 15: You put the apple 3 in/on the sidetable 1.
-                                """, "react_put_2": """You are in the middle of a room. Looking quickly around you, you see a bathtubbasin 1, a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a countertop 1, a drawer 4, a drawer 3, a drawer 2, a drawer 1, a dresser 1, a garbagecan 1, a handtowelholder 1, a sinkbasin 2, a sinkbasin 1, a toilet 1, a toiletpaperhanger 1, and a towelholder 1.
+                                """,
+    "react_put_2": """You are in the middle of a room. Looking quickly around you, you see a bathtubbasin 1, a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a countertop 1, a drawer 4, a drawer 3, a drawer 2, a drawer 1, a dresser 1, a garbagecan 1, a handtowelholder 1, a sinkbasin 2, a sinkbasin 1, a toilet 1, a toiletpaperhanger 1, and a towelholder 1.
                                 Your task is to: put a soapbottle in garbagecan.
                                 Action 1: think: To solve the task, I need to find and take a soapbottle, and put it in garbagecan.
                                 Observation 1: OK.
@@ -95,7 +96,8 @@ REACT_ALFWORLD_PROMPTS_EXAMPLE  = {"react_put_0":
                                 Observation 19: On the garbagecan 1, you see nothing.
                                 Action 20: put soapbottle 2 in/on garbagecan 1
                                 Observation 20: You put the soapbottle 2 in/on the garbagecan 1.
-                                """, "react_clean_0": """You are in the middle of a room. Looking quickly around you, you see a cabinet 13, a cabinet 12, a cabinet 11, a cabinet 10, a cabinet 9, a cabinet 8, a cabinet 7, a cabinet 6, a cabinet 5, a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a coffeemachine 1, a countertop 1, a diningtable 1, a drawer 1, a fridge 1, a garbagecan 1, a microwave 1, a shelf 3, a shelf 2, a shelf 1, a sinkbasin 1, a stoveburner 4, a stoveburner 3, a stoveburner 2, a stoveburner 1, and a toaster 1.
+                                """,
+    "react_clean_0": """You are in the middle of a room. Looking quickly around you, you see a cabinet 13, a cabinet 12, a cabinet 11, a cabinet 10, a cabinet 9, a cabinet 8, a cabinet 7, a cabinet 6, a cabinet 5, a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a coffeemachine 1, a countertop 1, a diningtable 1, a drawer 1, a fridge 1, a garbagecan 1, a microwave 1, a shelf 3, a shelf 2, a shelf 1, a sinkbasin 1, a stoveburner 4, a stoveburner 3, a stoveburner 2, a stoveburner 1, and a toaster 1.
                                 Your task is to: put a clean lettuce in diningtable.
                                 Action 1: think: To solve the task, I need to find and take a lettuce, then clean it with sinkbasin, then put it in diningtable. 
                                 Observation 1: OK.
@@ -123,7 +125,8 @@ REACT_ALFWORLD_PROMPTS_EXAMPLE  = {"react_put_0":
                                 Observation 12: On the diningtable 1, you see a apple 1, a bread 1, a butterknife 2, a cup 2, a fork 2, a knife 2, a knife 1, a ladle 1, a mug 2, a mug 1, a pan 2, a peppershaker 1, a spatula 3, a tomato 2, and a tomato 1.
                                 Action 13: put lettuce 1 in/on diningtable 1
                                 Observation 13: You put the lettuce 1 in/on the diningtable 1.
-                                """, "react_clean_1": """You are in the middle of a room. Looking quickly around you, you see a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a coffeemachine 1, a countertop 1, a diningtable 3, a diningtable 2, a diningtable 1, a drawer 1, a fridge 1, a garbagecan 1, a microwave 1, a sidetable 1, a sinkbasin 1, a stoveburner 4, a stoveburner 3, a stoveburner 2, a stoveburner 1, and a toaster 1.
+                                """,
+    "react_clean_1": """You are in the middle of a room. Looking quickly around you, you see a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a coffeemachine 1, a countertop 1, a diningtable 3, a diningtable 2, a diningtable 1, a drawer 1, a fridge 1, a garbagecan 1, a microwave 1, a sidetable 1, a sinkbasin 1, a stoveburner 4, a stoveburner 3, a stoveburner 2, a stoveburner 1, and a toaster 1.
                                 Your task is to: clean some apple and put it in sidetable.
                                 Action 1: think: To solve the task, I need to find and take an apple, then clean it with sinkbasin, then put it in sidetable.
                                 Observation 1: OK.
@@ -163,7 +166,8 @@ REACT_ALFWORLD_PROMPTS_EXAMPLE  = {"react_put_0":
                                 Observation 18: On the sidetable 1, you see a cup 1, a lettuce 1, a peppershaker 3, a potato 1, and a saltshaker 1.
                                 Action 19: put apple 3 in/on sidetable 1
                                 Observation 19: You put the apple 3 in/on the sidetable 1.
-                                """, "react_heat_0": """You are in the middle of a room. Looking quickly around you, you see a cabinet 10, a cabinet 9, a cabinet 8, a cabinet 7, a cabinet 6, a cabinet 5, a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a coffeemachine 1, a countertop 3, a countertop 2, a countertop 1, a diningtable 1, a drawer 6, a drawer 5, a drawer 4, a drawer 3, a drawer 2, a drawer 1, a fridge 1, a garbagecan 1, a microwave 1, a sinkbasin 1, a stoveburner 4, a stoveburner 3, a stoveburner 2, a stoveburner 1, and a toaster 1.
+                                """,
+    "react_heat_0": """You are in the middle of a room. Looking quickly around you, you see a cabinet 10, a cabinet 9, a cabinet 8, a cabinet 7, a cabinet 6, a cabinet 5, a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a coffeemachine 1, a countertop 3, a countertop 2, a countertop 1, a diningtable 1, a drawer 6, a drawer 5, a drawer 4, a drawer 3, a drawer 2, a drawer 1, a fridge 1, a garbagecan 1, a microwave 1, a sinkbasin 1, a stoveburner 4, a stoveburner 3, a stoveburner 2, a stoveburner 1, and a toaster 1.
                                 Your task is to: heat some egg and put it in diningtable.
                                 Action 1: think: To solve the task, I need to find and take an egg, then heat it with microwave, then put it in diningtable.
                                 Observation 1: OK.
@@ -193,7 +197,8 @@ REACT_ALFWORLD_PROMPTS_EXAMPLE  = {"react_put_0":
                                 Observation 13: On the diningtable 1, you see a apple 2, a bread 3, a egg 1, a kettle 1, a knife 1, a mug 1, a papertowelroll 1, a peppershaker 2, a potato 1, a soapbottle 1, and a spatula 1.
                                 Action 14: put egg 2 in/on diningtable 1
                                 Observation 14: You put the egg 2 in/on the diningtable 1.
-                                """, "react_heat_1": """You are in the middle of a room. Looking quickly around you, you see a cabinet 13, a cabinet 12, a cabinet 11, a cabinet 10, a cabinet 9, a cabinet 8, a cabinet 7, a cabinet 6, a cabinet 5, a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a coffeemachine 1, a countertop 1, a diningtable 1, a drawer 1, a fridge 1, a garbagecan 1, a microwave 1, a shelf 3, a shelf 2, a shelf 1, a sinkbasin 1, a stoveburner 4, a stoveburner 3, a stoveburner 2, a stoveburner 1, and a toaster 1.
+                                """,
+    "react_heat_1": """You are in the middle of a room. Looking quickly around you, you see a cabinet 13, a cabinet 12, a cabinet 11, a cabinet 10, a cabinet 9, a cabinet 8, a cabinet 7, a cabinet 6, a cabinet 5, a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a coffeemachine 1, a countertop 1, a diningtable 1, a drawer 1, a fridge 1, a garbagecan 1, a microwave 1, a shelf 3, a shelf 2, a shelf 1, a sinkbasin 1, a stoveburner 4, a stoveburner 3, a stoveburner 2, a stoveburner 1, and a toaster 1.
                                 Your task is to: put a hot apple in fridge.
                                 Action 1: think: To solve the task, I need to find and take an apple, then heat it with microwave, then put it in fridge.
                                 Observation 1: OK.
@@ -221,7 +226,8 @@ REACT_ALFWORLD_PROMPTS_EXAMPLE  = {"react_put_0":
                                 Observation 12: The fridge 1 is open. In it, you see a cup 1, and a egg 1.
                                 Action 13: put apple 1 in/on fridge 1
                                 Observation 13:You put the apple 1 in/on the fridge 1.
-                                """, "react_cool_0": """You are in the middle of a room. Looking quickly around you, you see a cabinet 16, a cabinet 15, a cabinet 14, a cabinet 13, a cabinet 12, a cabinet 11, a cabinet 10, a cabinet 9, a cabinet 8, a cabinet 7, a cabinet 6, a cabinet 5, a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a coffeemachine 1, a countertop 2, a countertop 1, a diningtable 1, a drawer 5, a drawer 4, a drawer 3, a drawer 2, a drawer 1, a fridge 1, a garbagecan 1, a microwave 1, a safe 1, a sinkbasin 1, a stoveburner 4, a stoveburner 3, a stoveburner 2, a stoveburner 1, and a toaster 1.
+                                """,
+    "react_cool_0": """You are in the middle of a room. Looking quickly around you, you see a cabinet 16, a cabinet 15, a cabinet 14, a cabinet 13, a cabinet 12, a cabinet 11, a cabinet 10, a cabinet 9, a cabinet 8, a cabinet 7, a cabinet 6, a cabinet 5, a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a coffeemachine 1, a countertop 2, a countertop 1, a diningtable 1, a drawer 5, a drawer 4, a drawer 3, a drawer 2, a drawer 1, a fridge 1, a garbagecan 1, a microwave 1, a safe 1, a sinkbasin 1, a stoveburner 4, a stoveburner 3, a stoveburner 2, a stoveburner 1, and a toaster 1.
                                 Your task is to: cool some pan and put it in stoveburner.
                                 Action 1: think: To solve the task, I need to find and take a pan, then cool it with fridge, then put it in stoveburner.
                                 Observation 1: OK.
@@ -247,7 +253,8 @@ REACT_ALFWORLD_PROMPTS_EXAMPLE  = {"react_put_0":
                                 Observation 11: On the stoveburner 1, you see nothing.
                                 Action 12: put pan 1 in/on stoveburner 1
                                 Observation 12: You put the pan 1 in/on the stoveburner 1.
-                                """, "react_cool_1": """You are in the middle of a room. Looking quickly around you, you see a cabinet 9, a cabinet 8, a cabinet 7, a cabinet 6, a cabinet 5, a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a coffeemachine 1, a countertop 3, a countertop 2, a countertop 1, a drawer 9, a drawer 8, a drawer 7, a drawer 6, a drawer 5, a drawer 4, a drawer 3, a drawer 2, a drawer 1, a fridge 1, a garbagecan 1, a microwave 1, a shelf 3, a shelf 2, a shelf 1, a sinkbasin 1, a stoveburner 4, a stoveburner 3, a stoveburner 2, a stoveburner 1, and a toaster 1.
+                                """,
+    "react_cool_1": """You are in the middle of a room. Looking quickly around you, you see a cabinet 9, a cabinet 8, a cabinet 7, a cabinet 6, a cabinet 5, a cabinet 4, a cabinet 3, a cabinet 2, a cabinet 1, a coffeemachine 1, a countertop 3, a countertop 2, a countertop 1, a drawer 9, a drawer 8, a drawer 7, a drawer 6, a drawer 5, a drawer 4, a drawer 3, a drawer 2, a drawer 1, a fridge 1, a garbagecan 1, a microwave 1, a shelf 3, a shelf 2, a shelf 1, a sinkbasin 1, a stoveburner 4, a stoveburner 3, a stoveburner 2, a stoveburner 1, and a toaster 1.
                                 Your task is to: put a cool mug in shelf.
                                 Action 1: think: To solve the task, I need to find and take a mug, then cool it with fridge, then put it in shelf.
                                 Observation 1: OK.
@@ -299,7 +306,8 @@ REACT_ALFWORLD_PROMPTS_EXAMPLE  = {"react_put_0":
                                 Observation 24: On the shelf 1, you see a cup 2, a cup 1, a peppershaker 1, and a saltshaker 1.
                                 Action 25: put mug 3 in/on shelf 1
                                 Observation 25: You put the mug 3 in/on the shelf 1.
-                                """,  "react_puttwo_0": """You are in the middle of a room. Looking quickly around you, you see a armchair 2, a armchair 1, a bed 1, a countertop 1, a diningtable 1, a drawer 2, a drawer 1, a dresser 1, a garbagecan 1, a laundryhamper 1, and a sidetable 1.
+                                """,
+    "react_puttwo_0": """You are in the middle of a room. Looking quickly around you, you see a armchair 2, a armchair 1, a bed 1, a countertop 1, a diningtable 1, a drawer 2, a drawer 1, a dresser 1, a garbagecan 1, a laundryhamper 1, and a sidetable 1.
                                 Your task is to: put two creditcard in dresser.
                                 Action 1: think: To solve the task, I need to find and take the first creditcard, then put it in dresser, then find and take the second creditcard, then put it in dresser.
                                 Observation 1: OK.
@@ -339,7 +347,8 @@ REACT_ALFWORLD_PROMPTS_EXAMPLE  = {"react_put_0":
                                 Observation 18: On the dresser 1, you see a creditcard 2, a mug 1, and a television 1.
                                 Action 19: put creditcard 3 in/on dresser 1
                                 Observation 19: You put the creditcard 3 in/on the dresser 1.
-                                """, "react_puttwo_1": """You are in the middle of a room. Looking quickly around you, you see a coffeetable 1, a diningtable 1, a drawer 4, a drawer 3, a drawer 2, a drawer 1, a dresser 1, a garbagecan 1, a sidetable 2, a sidetable 1, and a sofa 1.
+                                """,
+    "react_puttwo_1": """You are in the middle of a room. Looking quickly around you, you see a coffeetable 1, a diningtable 1, a drawer 4, a drawer 3, a drawer 2, a drawer 1, a dresser 1, a garbagecan 1, a sidetable 2, a sidetable 1, and a sofa 1.
                                 Your task is to: put two cellphone in sofa.
                                 Action 1: think: To solve the task, I need to find and take the first cellphone, then put it in sofa, then find and take the second cellphone, then put it in sofa.
                                 Observation 1: OK.
@@ -369,7 +378,8 @@ REACT_ALFWORLD_PROMPTS_EXAMPLE  = {"react_put_0":
                                 Observation 13: On the sofa 1, you see a cellphone 3, a newspaper 2, a pillow 1, a remotecontrol 2, and a remotecontrol 1.
                                 Action 14: put cellphone 2 in/on sofa 1
                                 Observation 14: You put the cellphone 2 in/on the sofa 1.
-                                """,  "react_examine_0": """You are in the middle of a room. Looking quickly around you, you see a bed 1, a desk 1, a drawer 3, a drawer 2, a drawer 1, a garbagecan 1, a safe 1, a shelf 5, a shelf 4, a shelf 3, a shelf 2, a shelf 1, a sidetable 2, and a sidetable 1.
+                                """,
+    "react_examine_0": """You are in the middle of a room. Looking quickly around you, you see a bed 1, a desk 1, a drawer 3, a drawer 2, a drawer 1, a garbagecan 1, a safe 1, a shelf 5, a shelf 4, a shelf 3, a shelf 2, a shelf 1, a sidetable 2, and a sidetable 1.
                                 Your task is to: look at bowl under the desklamp.
                                 Action 1: think: To solve the task, I need to find and take a bowl, then find and use a desklamp. 
                                 Observation 1: OK. 
@@ -409,7 +419,8 @@ REACT_ALFWORLD_PROMPTS_EXAMPLE  = {"react_put_0":
                                 Observation 18: OK.
                                 Action 19: use desklamp 1
                                 Observation 19: You turn on the desklamp 1.
-                                """, "react_examine_1": """You are in the middle of a room. Looking quickly around you, you see a bed 1, a drawer 10, a drawer 9, a drawer 8, a drawer 7, a drawer 6, a drawer 5, a drawer 4, a drawer 3, a drawer 2, a drawer 1, a dresser 1, a garbagecan 1, a shelf 9, a shelf 8, a shelf 7, a shelf 6, a shelf 5, a shelf 4, a shelf 3, a shelf 2, and a shelf 1.
+                                """,
+    "react_examine_1": """You are in the middle of a room. Looking quickly around you, you see a bed 1, a drawer 10, a drawer 9, a drawer 8, a drawer 7, a drawer 6, a drawer 5, a drawer 4, a drawer 3, a drawer 2, a drawer 1, a dresser 1, a garbagecan 1, a shelf 9, a shelf 8, a shelf 7, a shelf 6, a shelf 5, a shelf 4, a shelf 3, a shelf 2, and a shelf 1.
                                 Your task is to: examine the pen with the desklamp.
                                 Action 1: think: To solve the task, I need to find and take a pen, then find and use a desklamp. First I need to find a pen. A pen is more likely to appear in drawer (1-10), shelf (1-9), bed (1), garbagecan (1). I can check one by one, starting with drawer 1.
                                 Observation 1: OK.
@@ -441,4 +452,5 @@ REACT_ALFWORLD_PROMPTS_EXAMPLE  = {"react_put_0":
                                 Observation 14: OK.
                                 Action 15: use desklamp 1
                                 Observation 15: You turn on the desklamp 1.
-                                """}
+                                """,
+}

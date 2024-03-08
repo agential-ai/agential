@@ -101,7 +101,6 @@ class ReflexionCoTAgent(BaseAgent):
         context: Optional[str] = None,
         strategy: Optional[str] = None,
         reset: bool = True,
-
     ) -> List[str]:
         """Generates a response based on the provided context, question, and key.
 

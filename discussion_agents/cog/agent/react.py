@@ -21,19 +21,21 @@ from langchain_core.tools import BaseTool, tool
 from tiktoken.core import Encoding
 
 
-
 from discussion_agents.cog.agent.base import BaseAgent
-from discussion_agents.cog.functional.react import _is_halted, _prompt_agent, _check_keyword, _process_ob 
+from discussion_agents.cog.functional.react import (
+    _is_halted,
+    _prompt_agent,
+    _check_keyword,
+    _process_ob,
+)
 from discussion_agents.cog.modules.memory.react import ReActMemory
 from discussion_agents.utils.parse import parse_action, remove_newline
 
 from discussion_agents.cog.prompts.react import (
     REACT_INSTRUCTION_HOTPOTQA,
     REACT_INSTRUCTION_FEVER,
-    REACT_ALFWORLD_INSTRUCTION
+    REACT_ALFWORLD_INSTRUCTION,
 )
-
-
 
 
 class ReActAgent(BaseAgent):
@@ -78,74 +80,73 @@ class ReActAgent(BaseAgent):
         self.docstore = docstore
         self.enc = enc
 
-
         # Internal variables.
         self._step_n = 1  #: :meta private:
         self._finished = False  #: :meta private:
 
-        
     def generate(
         self,
         question: str,
         reset: bool = True,
         examples: str = "",
         env: Any = None,
-        prompt_template: str = ""
-        ) -> str:
+        prompt_template: str = "",
+    ) -> str:
+        """Processes a given question through ReAct.
 
-            """Processes a given question through ReAct.
+        Iteratively applies the think-act-observe cycle to generate an answer for the question.
+        The process continues until the operation is halted based on certain conditions.
 
-            Iteratively applies the think-act-observe cycle to generate an answer for the question.
-            The process continues until the operation is halted based on certain conditions.
+        Args:
+            question (str): The question to be processed.
+            reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
+            prompt_template (str): The template for benchmark
+            examples (str): The example of text generated.
+            env (Alfworld_environment): The variable to interact with Alfworld.
 
-            Args:
-                question (str): The question to be processed.
-                reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
-                prompt_template (str): The template for benchmark
-                examples (str): The example of text generated.
-                env (Alfworld_environment): The variable to interact with Alfworld.
+        Returns:
+            str: The accumulated output from the ReAct process.
+        """
 
-            Returns:
-                str: The accumulated output from the ReAct process.
-            """
+        if reset:
+            self.reset()
 
-            if reset:
-                self.reset()
+        output = ""
+        scratchpad = self.memory.load_memories()["scratchpad"]
 
-            output = ""
+        while not _is_halted(
+            finished=self._finished,
+            step_n=self._step_n,
+            max_steps=self.max_steps,
+            question=question,
+            scratchpad=scratchpad,
+            max_tokens=self.max_tokens,
+            enc=self.enc,
+            examples=examples,
+            prompt_template=prompt_template,
+        ):
+            output += self.execute_step(question, examples, prompt_template, env)
             scratchpad = self.memory.load_memories()["scratchpad"]
 
-            while not _is_halted(
-                finished=self._finished,
-                step_n=self._step_n,
-                max_steps=self.max_steps,
-                question=question,
-                scratchpad=scratchpad,
-                max_tokens=self.max_tokens,
-                enc=self.enc,
-                examples=examples,
-                prompt_template=prompt_template
-            ):
-                output += self.execute_step(question, examples, prompt_template, env)
-                scratchpad = self.memory.load_memories()["scratchpad"]
+        return output
 
-            return output
-        
-    def execute_step(self, question: str, examples: str, prompt_template: str, env: Any) -> str:
+    def execute_step(
+        self, question: str, examples: str, prompt_template: str, env: Any
+    ) -> str:
         step_boolean = _check_keyword(example=examples)
         scratchpad = self.memory.load_memories()["scratchpad"]
         if step_boolean[0]:
             thought = self.think_step(question, examples, prompt_template, scratchpad)
             out = f"\n{thought}"
         else:
-                return ""
-        
+            return ""
+
         if step_boolean[1]:
             action = self.act_step(question, examples, prompt_template, scratchpad)
             out += f"\n{action}"
-            action = action.replace('>', '').strip()
-            if 'think' not in action:
-                action = action.replace(' in ', ' in/on ')
+            action = action.replace(">", "").strip()
+            if "think" not in action:
+                action = action.replace(" in ", " in/on ")
         else:
             return out
         if step_boolean[2]:
@@ -161,48 +162,49 @@ class ReActAgent(BaseAgent):
             return out
 
         return out
-    
 
-    def think_step(self, question: str, examples: str, prompt_template: str, scratchpad: Any) -> str:
+    def think_step(
+        self, question: str, examples: str, prompt_template: str, scratchpad: Any
+    ) -> str:
         self.memory.add_memories("\nThought:")
         thought = _prompt_agent(
             llm=self.llm,
             question=question,
             scratchpad=scratchpad,
             examples=examples,
-            prompt_template=prompt_template
+            prompt_template=prompt_template,
         ).strip()
         self.memory.add_memories(" " + thought)
         return thought
-    
-        
-    
-    def act_step(self, question: str, examples: str, prompt_template: str, scratchpad: Any) -> str:
+
+    def act_step(
+        self, question: str, examples: str, prompt_template: str, scratchpad: Any
+    ) -> str:
         self.memory.add_memories(f"\nAction {self._step_n}:")
         action = _prompt_agent(
             llm=self.llm,
             question=question,
             scratchpad=scratchpad,
             examples=examples,
-            prompt_template=prompt_template
+            prompt_template=prompt_template,
         ).strip()
         # Prepare the action
-        action = action.replace('>', '').strip()
-        if 'think' not in action:
-            action = action.replace(' in ', ' in/on ')
+        action = action.replace(">", "").strip()
+        if "think" not in action:
+            action = action.replace(" in ", " in/on ")
         self.memory.add_memories(" " + action)
         return action
-    
+
     def observe_step_env(self, action: Any, env: Any) -> None:
         self.memory.add_memories(f"\nObservation {self._step_n}: ")
         observation, _, done, info = env.step([action])
         observation, done = _process_ob(observation[0]), done[0]
         if done:
             self._finished = True
-        if 'think:' in action:
-            observation = 'OK.'
+        if "think:" in action:
+            observation = "OK."
         self.memory.add_memories(" " + observation)
-    
+
     def observe_step_action(self, action: Any) -> None:
         self.memory.add_memories(f"\nObservation {self._step_n}: ")
         action_type, query = parse_action(action)
@@ -215,8 +217,10 @@ class ReActAgent(BaseAgent):
             case "lookup":
                 self.handle_lookup_action(query)
             case _:
-                self.memory.add_memories("Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>].")
-        
+                self.memory.add_memories(
+                    "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
+                )
+
     def handle_finish_action(self, query: str) -> None:
         self._answer = query
         self._finished = True
@@ -232,8 +236,9 @@ class ReActAgent(BaseAgent):
         try:
             self.memory.add_memories(remove_newline(self.docstore.lookup(query)))
         except ValueError:
-            self.memory.add_memories("The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given.")
-        
+            self.memory.add_memories(
+                "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
+            )
 
     def retrieve(self) -> Dict[str, Any]:
         """Retrieves the current state of the agent's memory.
@@ -253,13 +258,11 @@ class ReActAgent(BaseAgent):
         self.memory.clear()
 
 
-
 @tool
 def search(query: str) -> str:
     """Searches Wikipedia given query."""
     docstore = DocstoreExplorer(Wikipedia())
     return docstore.search(query)
-
 
 
 class ZeroShotReActAgent(BaseAgent):
@@ -277,13 +280,13 @@ class ZeroShotReActAgent(BaseAgent):
         self,
         llm: Any,
         tools: List[BaseTool] = [],
-        #tools: Optional[List[BaseTool]] = None,
+        # tools: Optional[List[BaseTool]] = None,
         prompt: Optional[str] = None,
     ) -> None:
         """Initialization."""
         super().__init__()
         # if tools is None:
-            # tools = []
+        # tools = []
         self.llm = llm  # TODO: Why is `LLM` not usable here?
         self.tools = tools
         self.tools.append(search)  # type: ignore

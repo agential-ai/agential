@@ -8,7 +8,9 @@ from typing import List
 from discussion_agents.utils.parse import remove_newline
 
 
-def _build_agent_prompt(question: str, scratchpad: str, examples: str , prompt_template: str) -> str:
+def _build_agent_prompt(
+    question: str, scratchpad: str, examples: str, prompt_template: str
+) -> str:
     """Constructs a prompt template for the agent.
 
     This function formats a predefined prompt template (REACT_INSTRUCTION) with examples,
@@ -31,7 +33,13 @@ def _build_agent_prompt(question: str, scratchpad: str, examples: str , prompt_t
     return prompt
 
 
-def _prompt_agent(llm: BaseChatModel, question: str, scratchpad: str, examples: str, prompt_template: str) -> str:
+def _prompt_agent(
+    llm: BaseChatModel,
+    question: str,
+    scratchpad: str,
+    examples: str,
+    prompt_template: str,
+) -> str:
     """Generates a response from the LLM based on a given question and scratchpad.
 
     This function creates a prompt using `_build_agent_prompt` and then gets the LLM's
@@ -46,17 +54,22 @@ def _prompt_agent(llm: BaseChatModel, question: str, scratchpad: str, examples: 
     Returns:
         str: The processed response from the language model.
     """
-    prompt = _build_agent_prompt(question=question, scratchpad=scratchpad, examples=examples, prompt_template=prompt_template)
+    prompt = _build_agent_prompt(
+        question=question,
+        scratchpad=scratchpad,
+        examples=examples,
+        prompt_template=prompt_template,
+    )
     out = llm(
         [
             HumanMessage(
                 content=prompt,
             )
         ],
-        stop = ['\n']
+        stop=["\n"],
     ).content
     assert isinstance(out, str)
-    return out 
+    return out
 
 
 def _is_halted(
@@ -67,8 +80,8 @@ def _is_halted(
     scratchpad: str,
     max_tokens: int,
     enc: Encoding,
-    examples: str ,
-    prompt_template: str
+    examples: str,
+    prompt_template: str,
 ) -> bool:
     """Determines whether the agent's operation should be halted.
 
@@ -91,47 +104,55 @@ def _is_halted(
     """
     over_max_steps = step_n > max_steps
     over_token_limit = (
-        len(enc.encode(_build_agent_prompt(question=question, scratchpad=scratchpad, examples=examples, prompt_template=prompt_template)))
+        len(
+            enc.encode(
+                _build_agent_prompt(
+                    question=question,
+                    scratchpad=scratchpad,
+                    examples=examples,
+                    prompt_template=prompt_template,
+                )
+            )
+        )
         > max_tokens
     )
     return finished or over_max_steps or over_token_limit
 
-def _process_ob(ob:str) -> str:
+
+def _process_ob(ob: str) -> str:
     """Processing string for better output prompt.
     Args:
         ob (str): The observation after the action.
     Returns:
         ob (str): The string goes into output
     """
-    if ob.startswith('You arrive at loc '):
-        ob = ob[ob.find('. ')+2:]    
+    if ob.startswith("You arrive at loc "):
+        ob = ob[ob.find(". ") + 2 :]
     return ob
 
 
-def _check_keyword(example: str = '') -> List[int]:
+def _check_keyword(example: str = "") -> List[int]:
     """Checking the step utilized in the example.
-    
+
     Args:
         example (str, optional): The example input of the generation function. Defaults to ''.
-    
+
     Returns:
         step_occurrence (List[int]): A list of numbers that indicate which step is utilized in the example.
     """
     if not example:  # Handle the case where example is empty or None
         return [0, 0, 0, 0]
 
-    keyword = ['Thought', 'Action', 'Observation', 'Your task is to']
-    example_lines = example.split('\n')
+    keyword = ["Thought", "Action", "Observation", "Your task is to"]
+    example_lines = example.split("\n")
     example_lines = [line.strip() for line in example_lines if line]
     step_occurrence = [0, 0, 0, 0]
 
     for line in example_lines:
-        test_case = line.split(':')[0]
-        test_case = ''.join(char for char in test_case if not char.isdigit()).strip()
+        test_case = line.split(":")[0]
+        test_case = "".join(char for char in test_case if not char.isdigit()).strip()
         if any(part.strip() in keyword for part in test_case) or test_case in keyword:
             index = keyword.index(test_case)
             step_occurrence[index] += 1
 
     return step_occurrence
-
-

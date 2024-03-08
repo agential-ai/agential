@@ -38,7 +38,11 @@ def test_generate() -> None:
     ]
     llm = FakeListChatModel(responses=responses)
     agent = ReActAgent(llm=llm)
-    out = agent.generate(question=q, examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES, instruction=REACT_INSTRUCTION_HOTPOTQA)
+    out = agent.generate(
+        question=q,
+        examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        instruction=REACT_INSTRUCTION_HOTPOTQA,
+    )
     assert isinstance(out, str)
     assert agent._step_n == agent.max_steps + 1
     assert not agent._finished
@@ -76,17 +80,20 @@ def test_zeroshot_react_init() -> None:
 
 
 def test_FEVER_react_generate() -> None:
-
     """Test generate."""
-    q = 'Brad Wilk died before being a drummer for Greta.'
+    q = "Brad Wilk died before being a drummer for Greta."
 
     # Test simple run.
     responses = [
-        'Thought: I need to search for Brad Wilk and see if he died before being a drummer for Greta.\nAction: Search[Brad Wilk]\\nObservation 1: Could not find [Brad Wilk]. Similar: [\'Brad Wilk\', \'Rage Against the Machine\', \'Audioslave\', \'Prophets of Rage\', \'Wilk\', \'Tim Commerford\', \'Tom Morello\', \'Show Me How to Live (song)\', \'Greta (band)\', \'Zack de la Rocha\']\nThought: The search did not return Brad Wilk directly, but it mentioned Greta (band). I should search for Greta (band) to see if Brad Wilk was a drummer for them.\nAction: Search[Greta (band)]\nObservation 2: Greta was an American hard rock band formed in 1990 by Paul Plagens, Kyle Baer, Josh Gordon, and Brad Wilk.Wilk left the band in 1991 to join Rage Against the Machine, and was replaced on the drums by Scott Carneghi who went on to co-found the band Buffalocomotive in 2012.The band signed a two-record deal with Mercury Records in 1993 and released their debut album, No Biting, on September 21 of that year. Their second and final album, This Is Greta, was released in 1995, after which the band was dropped from the label. Greta disbanded in 1995. Vocalist Paul Plagens died in 2015\nThought: The observation clearly states that Brad Wilk left Greta in 1991 to join Rage Against the Machine, so he did not die before being a drummer for Greta.\nAction: Finish[REFUTES]\nObservation 3: REFUTES' 
+        "Thought: I need to search for Brad Wilk and see if he died before being a drummer for Greta.\nAction: Search[Brad Wilk]\\nObservation 1: Could not find [Brad Wilk]. Similar: ['Brad Wilk', 'Rage Against the Machine', 'Audioslave', 'Prophets of Rage', 'Wilk', 'Tim Commerford', 'Tom Morello', 'Show Me How to Live (song)', 'Greta (band)', 'Zack de la Rocha']\nThought: The search did not return Brad Wilk directly, but it mentioned Greta (band). I should search for Greta (band) to see if Brad Wilk was a drummer for them.\nAction: Search[Greta (band)]\nObservation 2: Greta was an American hard rock band formed in 1990 by Paul Plagens, Kyle Baer, Josh Gordon, and Brad Wilk.Wilk left the band in 1991 to join Rage Against the Machine, and was replaced on the drums by Scott Carneghi who went on to co-found the band Buffalocomotive in 2012.The band signed a two-record deal with Mercury Records in 1993 and released their debut album, No Biting, on September 21 of that year. Their second and final album, This Is Greta, was released in 1995, after which the band was dropped from the label. Greta disbanded in 1995. Vocalist Paul Plagens died in 2015\nThought: The observation clearly states that Brad Wilk left Greta in 1991 to join Rage Against the Machine, so he did not die before being a drummer for Greta.\nAction: Finish[REFUTES]\nObservation 3: REFUTES"
     ]
     llm = FakeListChatModel(responses=responses)
     agent = ReActAgent(llm=llm)
-    out = agent.generate(question=q, examples=REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES, instruction=REACT_INSTRUCTION_FEVER)
+    out = agent.generate(
+        question=q,
+        examples=REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES,
+        instruction=REACT_INSTRUCTION_FEVER,
+    )
     assert isinstance(out, str)
     assert agent._step_n <= agent.max_steps + 1
     assert not agent._finished
@@ -96,31 +103,42 @@ def test_Alfworld_react_generate(alfworld_env) -> None:
     """Testing for Alfworld."""
     config = alfworld_env
     split = "eval_out_of_distribution"
-    env = getattr(alfworld.agents.environment, config["env"]["type"])(config, train_eval=split)
+    env = getattr(alfworld.agents.environment, config["env"]["type"])(
+        config, train_eval=split
+    )
     env = env.init_env(batch_size=1)
     ob, info = env.reset()
-    ob = '\n'.join(ob[0].split('\n\n')[1:])
-    name = '/'.join(info['extra.gamefile'][0].split('/')[-3:-1])
+    ob = "\n".join(ob[0].split("\n\n")[1:])
+    name = "/".join(info["extra.gamefile"][0].split("/")[-3:-1])
     d = REACT_ALFWORLD_PROMPTS_EXAMPLE
     prefixes = {
-        'pick_and_place': 'put',
-        'pick_clean_then_place': 'clean',
-        'pick_heat_then_place': 'heat',
-        'pick_cool_then_place': 'cool',
-        'look_at_obj': 'examine',
-        'pick_two_obj': 'puttwo'
+        "pick_and_place": "put",
+        "pick_clean_then_place": "clean",
+        "pick_heat_then_place": "heat",
+        "pick_cool_then_place": "cool",
+        "look_at_obj": "examine",
+        "pick_two_obj": "puttwo",
     }
     for i, (k, v) in enumerate(prefixes.items()):
         if name.startswith(k):
-            prompt = 'Interact with a household to solve a task. Here are two examples.\n' + d[f'react_{v}_1'] + d[f'react_{v}_0'] + '\nHere is the task.\n'
+            prompt = (
+                "Interact with a household to solve a task. Here are two examples.\n"
+                + d[f"react_{v}_1"]
+                + d[f"react_{v}_0"]
+                + "\nHere is the task.\n"
+            )
 
     response = [
-        '''
+        """
         Action 1: think: To solve the task, I need to find a tomato, then cool it with the fridge, and finally put it in the microwave.\nObservation 1:  OK.\nAction 2: think: First, I need to find a tomato. A tomato is more likely to be found in countertop (1-3), fridge (1), cabinet (1-6), shelf (1-3), and drawer (1-3). I can start by checking countertop 1.\nObservation 2:  OK.\nAction 3: go to countertop 1\nObservation 3:  On the countertop 1, you see a dishsponge 1, and a mug 2.\nAction 4: go to countertop 2\nObservation 4:  On the countertop 2, you see a butterknife 1, a cellphone 1, a creditcard 1, a knife 1, a lettuce 1, a saltshaker 2, a saltshaker 1, a statue 1, and a tomato 1.\nAction 5: take tomato 1 from countertop 2\nObservation 5:  You pick up the tomato 1 from the countertop 2.\nAction 6: think: Now that I have the tomato, I need to cool it with the fridge.\nObservation 6:  OK.\nAction 7: go to fridge 1\nObservation 7:  The fridge 1 is closed.\nAction 8: cool tomato 1 with fridge 1\nObservation 8:  You cool the tomato 1 using the fridge 1.\nAction 9: think: Now the tomato is cool. Next, I need to put it in the microwave.\nObservation 9:  OK.\nAction 10: go to microwave 1\nObservation 10:  The microwave 1 is closed.\nAction 11: put tomato 1 in/on microwave 1\nObservation 11:  Nothing happens.\nAction 12: open microwave 1\nObservation 12:  You open the microwave 1. The microwave 1 is open. In it, you see a egg 1.\nAction 13: put tomato 1 in/on microwave 1\nObservation 13:  You put the tomato 1 in/on the microwave 1.
-        '''    
+        """
     ]
 
     llm = FakeListChatModel(responses=response)
     agent = ReActAgent(llm=llm)
-    out = agent.generate(question=ob, examples=prompt, env=env, instruction=REACT_ALFWORLD_INSTRUCTION)
-    assert response[0].split('\n')[-1] == 'Congratulations, you have completed the task!'
+    out = agent.generate(
+        question=ob, examples=prompt, env=env, instruction=REACT_ALFWORLD_INSTRUCTION
+    )
+    assert (
+        response[0].split("\n")[-1] == "Congratulations, you have completed the task!"
+    )
