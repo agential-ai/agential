@@ -23,7 +23,7 @@ from tiktoken.core import Encoding
 
 
 from discussion_agents.cog.agent.base import BaseAgent
-from discussion_agents.cog.functional.react import _is_halted, _prompt_agent, _check_keyword, _process_ob , prepare_action
+from discussion_agents.cog.functional.react import _is_halted, _prompt_agent, _check_keyword, _process_ob 
 from discussion_agents.cog.modules.memory.react import ReActMemory
 from discussion_agents.utils.parse import parse_action, remove_newline
 
@@ -83,136 +83,16 @@ class ReActAgent(BaseAgent):
         self._step_n = 1  #: :meta private:
         self._finished = False  #: :meta private:
 
-
-    # def generate(
-    #         self, 
-    #         question: str,
-    #         reset: bool = True,
-    #         examples: str = None,
-    #         env: Any = None,
-    #         prompt_template: str = None
-    #         ) -> str:
-    #     """Processes a given question through ReAct.
-
-    #     Iteratively applies the think-act-observe cycle to generate an answer for the question.
-    #     The process continues until the operation is halted based on certain conditions.
-
-    #     Args:
-    #         question (str): The question to be processed.
-    #         reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
-    #         prompt_template (str): The template for benchmark
-    #         examples (str): The example of text generated.
-    #         env (Alfworld_environment): The variable to interact with Alfworld.
-    #     Returns:
-    #         str: The accumulated output from the ReAct process.
-    #     """
-
-    #     step_boolean = _check_keyword(example=examples)
-
-
-
-    #     if reset:
-    #         self.reset()
-
-    #     out = ""
-
-    #     while not _is_halted(
-    #         finished=self._finished,
-    #         step_n=self._step_n,
-    #         max_steps=self.max_steps,
-    #         question=question,
-    #         scratchpad=self.memory.load_memories()["scratchpad"],
-    #         max_tokens=self.max_tokens,
-    #         enc=self.enc,
-    #         examples=examples,
-    #         prompt_template=prompt_template
-    #     ):
-            
-    #         # Think.
-    #         if step_boolean[0]:
-    #             self.memory.add_memories("\nThought:")
-    #             thought = _prompt_agent(
-    #                 llm=self.llm,
-    #                 question=question,
-    #                 scratchpad=self.memory.load_memories()["scratchpad"],
-    #                 examples=examples,
-    #                 prompt_template=prompt_template
-    #             ).strip()
-    #             self.memory.add_memories(" " + thought)
-    #             out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
-
-    #         # Act.
-    #         if step_boolean[1]:
-    #             self.memory.add_memories(f"\nAction {self._step_n}:")
-                
-    #             action = _prompt_agent(
-    #                 llm=self.llm,
-    #                 question=question,
-    #                 scratchpad=self.memory.load_memories()["scratchpad"],
-    #                 examples=examples,
-    #                 prompt_template=prompt_template
-    #             ).strip()
-
-
-    #         if step_boolean[3]:
-    #             action = action.replace('>','').strip()
-    #             if 'think' not in action :
-    #                 action = action.replace(' in ',' in/on ')
-    #         self.memory.add_memories(" " + action)
-    #         out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
-
-    #         # Observe.
-    #         if step_boolean[2]:
-    #             self.memory.add_memories(f"\nObservation {self._step_n}: ")
-    #             if step_boolean[3]:
-    #                 observation, _, done, info = env.step([action])
-    #                 observation, done = _process_ob(observation[0]), done[0]
-    #                 if done :
-    #                     self._finished = True
-    #                 if 'think:' in action:
-    #                     observation = 'OK.'
-    #                 self.memory.add_memories(" " + observation)
-    #             else:
-    #                 action_type, query = parse_action(action)
-                    
-    #                 if action_type.lower() == "finish":
-    #                     self._answer = query
-    #                     self._finished = True
-    #                     self.memory.add_memories(query)
-    #                 elif action_type.lower() == "search":
-    #                     try:
-    #                         self.memory.add_memories(
-    #                             remove_newline(self.docstore.search(query))
-    #                         )
-    #                     except Exception:
-    #                         self.memory.add_memories(
-    #                             "Could not find that page, please try again."
-    #                         )       
-    #                 elif action_type.lower() == "lookup":
-    #                     try:
-    #                         self.memory.add_memories(
-    #                             remove_newline(self.docstore.lookup(query))
-    #                         )
-    #                     except ValueError:
-    #                         self.memory.add_memories(
-    #                             "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
-    #                         )
-    #                 else:
-    #                     self.memory.add_memories(
-    #                         "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
-    #                     )
-    #         self._step_n += 1
-    #         out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
-    #     return out
         
     def generate(
         self,
         question: str,
         reset: bool = True,
-        examples: str = None,
+        examples: str = "",
         env: Any = None,
-        prompt_template: str = None
-    ) -> str:
+        prompt_template: str = ""
+        ) -> str:
+
             """Processes a given question through ReAct.
 
             Iteratively applies the think-act-observe cycle to generate an answer for the question.
@@ -251,7 +131,7 @@ class ReActAgent(BaseAgent):
 
             return output
         
-    def execute_step(self, question, examples, prompt_template, env):
+    def execute_step(self, question: str, examples: str, prompt_template: str, env: Any) -> str:
         step_boolean = _check_keyword(example=examples)
         scratchpad = self.memory.load_memories()["scratchpad"]
         if step_boolean[0]:
@@ -263,7 +143,9 @@ class ReActAgent(BaseAgent):
         if step_boolean[1]:
             action = self.act_step(question, examples, prompt_template, scratchpad)
             out += f"\n{action}"
-            action = prepare_action(action)
+            action = action.replace('>', '').strip()
+            if 'think' not in action:
+                action = action.replace(' in ', ' in/on ')
         else:
             return out
         if step_boolean[2]:
@@ -272,7 +154,8 @@ class ReActAgent(BaseAgent):
             else:
                 self.observe_step_action(action)
 
-                out += f"\n{self.memory.load_memories()['scratchpad'].split('\n')[-1]}"
+                out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
+
                 self._step_n += 1
         else:
             return out
@@ -280,7 +163,7 @@ class ReActAgent(BaseAgent):
         return out
     
 
-    def think_step(self, question, examples, prompt_template, scratchpad):
+    def think_step(self, question: str, examples: str, prompt_template: str, scratchpad: Any) -> str:
         self.memory.add_memories("\nThought:")
         thought = _prompt_agent(
             llm=self.llm,
@@ -294,7 +177,7 @@ class ReActAgent(BaseAgent):
     
         
     
-    def act_step(self, question, examples, prompt_template, scratchpad):
+    def act_step(self, question: str, examples: str, prompt_template: str, scratchpad: Any) -> str:
         self.memory.add_memories(f"\nAction {self._step_n}:")
         action = _prompt_agent(
             llm=self.llm,
@@ -303,11 +186,14 @@ class ReActAgent(BaseAgent):
             examples=examples,
             prompt_template=prompt_template
         ).strip()
-        action = prepare_action(action)
+        # Prepare the action
+        action = action.replace('>', '').strip()
+        if 'think' not in action:
+            action = action.replace(' in ', ' in/on ')
         self.memory.add_memories(" " + action)
         return action
     
-    def observe_step_env(self, action, env):
+    def observe_step_env(self, action: Any, env: Any) -> None:
         self.memory.add_memories(f"\nObservation {self._step_n}: ")
         observation, _, done, info = env.step([action])
         observation, done = _process_ob(observation[0]), done[0]
@@ -317,8 +203,37 @@ class ReActAgent(BaseAgent):
             observation = 'OK.'
         self.memory.add_memories(" " + observation)
     
-    
-    
+    def observe_step_action(self, action: Any) -> None:
+        self.memory.add_memories(f"\nObservation {self._step_n}: ")
+        action_type, query = parse_action(action)
+
+        match action_type.lower():
+            case "finish":
+                self.handle_finish_action(query)
+            case "search":
+                self.handle_search_action(query)
+            case "lookup":
+                self.handle_lookup_action(query)
+            case _:
+                self.memory.add_memories("Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>].")
+        
+    def handle_finish_action(self, query: str) -> None:
+        self._answer = query
+        self._finished = True
+        self.memory.add_memories(query)
+
+    def handle_search_action(self, query: str) -> None:
+        try:
+            self.memory.add_memories(remove_newline(self.docstore.search(query)))
+        except Exception:
+            self.memory.add_memories("Could not find that page, please try again.")
+
+    def handle_lookup_action(self, query: str) -> None:
+        try:
+            self.memory.add_memories(remove_newline(self.docstore.lookup(query)))
+        except ValueError:
+            self.memory.add_memories("The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given.")
+        
 
     def retrieve(self) -> Dict[str, Any]:
         """Retrieves the current state of the agent's memory.
