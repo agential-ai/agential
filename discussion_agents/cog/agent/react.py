@@ -261,17 +261,14 @@ class ReActAgent(BaseAgent):
         self.memory.add_memories(f"\nObservation {self._step_n}: ")
         action_type, query = parse_action(action)
 
-        match action_type.lower():
-            case "finish":
-                self.handle_finish_action(query)
-            case "search":
-                self.handle_search_action(query)
-            case "lookup":
-                self.handle_lookup_action(query)
-            case _:
-                self.memory.add_memories(
-                    "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
-                )
+        if action_type.lower() == "finish":
+            self.handle_finish_action(query)
+        elif action_type.lower() == "search":
+            self.handle_search_action(query)
+        elif action_type.lower() == "lookup":
+            self.handle_lookup_action(query)
+        else:
+            self.memory.add_memories("Your default action here")
 
     def handle_finish_action(self, query: str) -> None:
         """Handle the "finish" action.
