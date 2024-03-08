@@ -130,3 +130,9 @@ def _check_keyword(example: str = None):
             step_occurrence[index] += 1
         i += 1
     return step_occurrence
+
+def prepare_action(action):
+    action = action.replace('>', '').strip()
+    if 'think' not in action:
+        action = action.replace(' in ', ' in/on ')
+    return action

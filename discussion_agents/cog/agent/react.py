@@ -23,7 +23,7 @@ from tiktoken.core import Encoding
 
 
 from discussion_agents.cog.agent.base import BaseAgent
-from discussion_agents.cog.functional.react import _is_halted, _prompt_agent, _check_keyword, _process_ob
+from discussion_agents.cog.functional.react import _is_halted, _prompt_agent, _check_keyword, _process_ob , prepare_action
 from discussion_agents.cog.modules.memory.react import ReActMemory
 from discussion_agents.utils.parse import parse_action, remove_newline
 
@@ -292,6 +292,8 @@ class ReActAgent(BaseAgent):
         self.memory.add_memories(" " + thought)
         return thought
     
+        
+    
     def act_step(self, question, examples, prompt_template, scratchpad):
         self.memory.add_memories(f"\nAction {self._step_n}:")
         action = _prompt_agent(
@@ -304,6 +306,17 @@ class ReActAgent(BaseAgent):
         action = prepare_action(action)
         self.memory.add_memories(" " + action)
         return action
+    
+    def observe_step_env(self, action, env):
+        self.memory.add_memories(f"\nObservation {self._step_n}: ")
+        observation, _, done, info = env.step([action])
+        observation, done = _process_ob(observation[0]), done[0]
+        if done:
+            self._finished = True
+        if 'think:' in action:
+            observation = 'OK.'
+        self.memory.add_memories(" " + observation)
+    
     
     
 
