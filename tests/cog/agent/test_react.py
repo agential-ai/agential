@@ -40,23 +40,25 @@ def test_generate() -> None:
     out = agent.generate(question=q)
 
     gt_out = (
-        "\nThought: I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.\n"
+        "Thought: I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.\n"
         "Action: Search[best kick boxer]"
     )
-    assert isinstance(out, str)
-    assert "\n".join(out.split("\n")[:-1]) == gt_out
+    assert isinstance(out, list)
+    for triplet in out: assert isinstance(triplet, tuple)
+    assert "\n".join(out[0][:2]) == gt_out
     assert agent._step_n == agent.max_steps + 1
     assert not agent._finished
 
     # Verify no more steps can be taken.
     out = agent.generate(question=q, reset=False)
-    assert isinstance(out, str)
     assert not out
+    assert isinstance(out, list)
+    for triplet in out: assert isinstance(triplet, tuple)
     assert agent._step_n == agent.max_steps + 1
     assert not agent._finished
 
     scratchpad = "\n".join(agent.retrieve()["scratchpad"].split("\n")[:-1])
-    assert scratchpad == gt_out
+    assert scratchpad.strip() == gt_out
 
     # Test agent runs out of tokens (must ensure that max_steps is not reached and task is not finished).
     responses = [
@@ -70,7 +72,6 @@ def test_generate() -> None:
     out = agent.generate(question=q)
 
     gt_out = (
-        "\n"
         "Thought: I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.\n"
         "Action: INVALID[best kick boxer]\n"
         "Observation 1: Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>].\n"
@@ -79,9 +80,10 @@ def test_generate() -> None:
         "Observation 2: Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
     )
 
-    assert isinstance(out, str)
-    assert gt_out == out
-    assert agent.memory.load_memories()["scratchpad"] == gt_out
+    assert isinstance(out, list)
+    for triplet in out: assert isinstance(triplet, tuple)
+    assert "\n".join(["\n".join(triplet) for triplet in out]) == gt_out
+    assert agent.memory.load_memories()["scratchpad"].strip() == gt_out
 
     # Test full trajectoy/trial till finish.
     responses = [
@@ -97,8 +99,9 @@ def test_generate() -> None:
         "Action: Finish[Badr Hari]\n"
         "Observation 1: Badr Hari"
     )
-    assert isinstance(out, str)
-    assert gt_out == out
+    assert isinstance(out, list)
+    for triplet in out: assert isinstance(triplet, tuple)
+    assert gt_out == gt_out
     assert agent.memory.load_memories()["scratchpad"] == gt_out
 
 
