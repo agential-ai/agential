@@ -8,7 +8,7 @@ from typing import Optional
 from discussion_agents.utils.parse import remove_newline
 
 
-def _build_agent_prompt(question: str, scratchpad: str, examples: str , prompt_template: str) -> str:
+def _build_agent_prompt(question: str, scratchpad: str, examples: str, prompt_template: str) -> str:
     """Constructs a prompt template for the agent.
 
     This function formats a predefined prompt template (REACT_INSTRUCTION) with examples,
