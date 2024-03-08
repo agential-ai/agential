@@ -1,7 +1,8 @@
 """Fixtures for loading test data."""
 
-import pytest
 import os
+
+import pytest
 
 
 @pytest.fixture

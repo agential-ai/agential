@@ -4,19 +4,20 @@ import joblib
 
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.messages.human import HumanMessage
+
 from discussion_agents.cog.agent.reflexion import ReflexionReActAgent
 from discussion_agents.cog.functional.expel import (
-    gather_experience,
-    categorize_experiences,
-    get_folds,
-    _build_compare_prompt,
     _build_all_success_prompt,
-    parse_rules,
-    retrieve_rule_index,
-    is_existing_rule,
-    remove_err_operations,
-    update_rules,
+    _build_compare_prompt,
+    categorize_experiences,
     create_rules,
+    gather_experience,
+    get_folds,
+    is_existing_rule,
+    parse_rules,
+    remove_err_operations,
+    retrieve_rule_index,
+    update_rules,
 )
 
 
@@ -67,7 +68,6 @@ def test_get_folds() -> None:
 
 def test__build_compare_prompt() -> None:
     """Test _build_compare_prompt."""
-
     # Test is_full=True, empty rules.
     gt_prompt_msgs = [
         HumanMessage(
@@ -92,7 +92,11 @@ def test__build_compare_prompt() -> None:
         ),
     ]
     prompt = _build_compare_prompt(
-        rules=[("a", 0), ("b", 0)], question="", success_trial="", failed_trial="", is_full=True
+        rules=[("a", 0), ("b", 0)],
+        question="",
+        success_trial="",
+        failed_trial="",
+        is_full=True,
     )
     assert prompt == "\n".join([p.content for p in gt_prompt_msgs])
 
@@ -120,14 +124,17 @@ def test__build_compare_prompt() -> None:
         ),
     ]
     prompt = _build_compare_prompt(
-        rules=[("a", 0), ("b", 0)], question="", success_trial="", failed_trial="", is_full=False
+        rules=[("a", 0), ("b", 0)],
+        question="",
+        success_trial="",
+        failed_trial="",
+        is_full=False,
     )
     assert prompt == "\n".join([p.content for p in gt_prompt_msgs])
 
 
 def test__build_all_success_prompt() -> None:
     """Test _build_all_success_prompt."""
-
     # Test is_full=True, empty rules.
     gt_prompt_msgs = [
         HumanMessage(
@@ -183,7 +190,6 @@ def test__build_all_success_prompt() -> None:
 
 def test_parse_rules() -> None:
     """Test parse_rules."""
-
     gt_rules = [
         ("REMOVE 1", "Rule to remove."),
         ("EDIT 2", "Rule to edit."),
@@ -235,7 +241,7 @@ def test_remove_err_operations() -> None:
         ("ADD 1", "Rule1"),
         ("ADD 2", "Rule3"),
         ("EDIT 1", "Rule1"),
-        ("EDIT 3", "Rule3"), 
+        ("EDIT 3", "Rule3"),
         ("REMOVE", "Rule1"),
         ("REMOVE", "Rule3"),
         ("AGREE", "Rule1"),
@@ -278,7 +284,6 @@ def test_update_rules() -> None:
 
 def test_create_rules(expel_15_compare_fake_path: str) -> None:
     """Test create_rules."""
-
     gt_rules = [
         ("Prioritize specific keywords in the question to guide search queries.", 2),
         (
@@ -314,7 +319,5 @@ def test_create_rules(expel_15_compare_fake_path: str) -> None:
 
     train_idxs = folds[0]
     rules = []
-    rules = create_rules(
-        llm, experiences, categories, train_idxs, rules, max_num_rules
-    )
+    rules = create_rules(llm, experiences, categories, train_idxs, rules, max_num_rules)
     assert rules == gt_rules

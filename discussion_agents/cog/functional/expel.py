@@ -1,22 +1,25 @@
 """Functional module for ExpeL."""
-import re
+
 import random
-from typing import List, Dict, Optional, Tuple
-from discussion_agents.cog.agent.reflexion import ReflexionReActAgent
-from langchain_core.messages.human import HumanMessage
+import re
+
+from typing import Dict, List, Optional, Tuple
+
 from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_core.messages.human import HumanMessage
 from langchain_core.prompts.prompt import PromptTemplate
 
+from discussion_agents.cog.agent.reflexion import ReflexionReActAgent
 from discussion_agents.cog.prompts.expel import (
-    SYSTEM_TEMPLATE,
-    SYSTEM_CRITIQUE_EXISTING_RULES_INSTRUCTION,
-    EXISTING_RULES_AI_NAME,
-    NON_EXISTENT_RULES_AT_NAME,
-    HUMAN_CRITIQUE_EXISTING_RULES_TEMPLATE,
     CRITIQUE_SUMMARY_SUFFIX_FULL,
     CRITIQUE_SUMMARY_SUFFIX_NOT_FULL,
-    SYSTEM_CRITIQUE_ALL_SUCCESS_EXISTING_RULES_INSTRUCTION,
+    EXISTING_RULES_AI_NAME,
     HUMAN_CRITIQUE_EXISTING_RULES_ALL_SUCCESS_TEMPLATE,
+    HUMAN_CRITIQUE_EXISTING_RULES_TEMPLATE,
+    NON_EXISTENT_RULES_AT_NAME,
+    SYSTEM_CRITIQUE_ALL_SUCCESS_EXISTING_RULES_INSTRUCTION,
+    SYSTEM_CRITIQUE_EXISTING_RULES_INSTRUCTION,
+    SYSTEM_TEMPLATE,
 )
 from discussion_agents.utils.general import shuffle_chunk_list
 
@@ -44,7 +47,7 @@ def gather_experience(
 
     Each index in 'idxs' corresponds to the respective question, key, trajectory, and reflections at the same position in their lists.
     """
-    experiences = {
+    experiences: Dict[str, List] = {
         "idxs": [],
         "questions": [],
         "keys": [],
@@ -86,10 +89,10 @@ def categorize_experiences(experiences: Dict[str, List]) -> Dict[str, List]:
     Raises:
     - ValueError: If a trajectory does not fit into any category, indicating an unhandled scenario.
     """
-    count_dict = {"compare": [], "success": [], "fail": []}
+    count_dict: Dict[str, List] = {"compare": [], "success": [], "fail": []}
 
     for idx in experiences["idxs"]:  # Index for a particular task.
-        trajectory = experiences["trajectories"][idx]
+        trajectory = experiences["trajectories"][idx]  # type: ignore
         trials_are_correct = [
             trial[0] for trial in trajectory
         ]  # (is_correct, answer, output)[0].
@@ -115,7 +118,7 @@ def categorize_experiences(experiences: Dict[str, List]) -> Dict[str, List]:
 
 def get_folds(
     categories: Dict[str, List], n_instances: int, n_folds: int = 2, seed: int = 42
-) -> Dict[str, List]:
+) -> Dict[int, List]:
     """Distributes indices into a specified number of stratified folds for cross-validation.
 
     Indices from each category ('compare', 'success', 'fail') are shuffled and then distributed across the folds. Each fold will serve as a validation set once during cross-validation, with the remaining data used for training.
@@ -126,11 +129,11 @@ def get_folds(
         n_folds (int, optional): The number of folds to create for cross-validation. Default is 2.
 
     Returns:
-        Dict[str, List]: A dictionary where keys are fold indices and values are the lists of indices representing the training set for that fold.
+        Dict[int, List]: A dictionary where keys are fold indices and values are the lists of indices representing the training set for that fold.
     """
     random.seed(seed)
 
-    folds = {fold: [] for fold in range(n_folds)}
+    folds: Dict[int, List] = {fold: [] for fold in range(n_folds)}
 
     # Assign labels for 'compare', 'success', and  'fail'.
     for _, indices in categories.items():
@@ -183,7 +186,9 @@ def _build_compare_prompt(
         "question": question,
         "failed_traj": failed_trial,
         "success_traj": success_trial,
-        "existing_rules": "\n".join([f"{i}. {rule[0]}" for i, rule in enumerate(rules, 1)]),
+        "existing_rules": "\n".join(
+            [f"{i}. {rule[0]}" for i, rule in enumerate(rules, 1)]
+        ),
     }
 
     human_critique_summary_message = PromptTemplate.from_template(
@@ -283,8 +288,7 @@ def _prompt_compare_critique(
             )
         ]
     ).content
-    print("OUT FOR COMPARE:", "\n\n", repr(out))
-    out = out.strip("\n").strip()
+    out = out.strip("\n").strip()  # type: ignore
 
     if replace_newline:
         out = out.replace("\n", "")
@@ -322,15 +326,14 @@ def _prompt_all_success_critique(
             )
         ]
     ).content
-    print("OUT FOR ALL SUCCESS:", "\n\n", repr(out))
-    out = out.strip("\n").strip()
+    out = out.strip("\n").strip()  # type: ignore
 
     if replace_newline:
         out = out.replace("\n", "")
     return out
 
 
-def parse_rules(llm_text: str) -> str:
+def parse_rules(llm_text: str) -> List[Tuple[str, str]]:
     """Parses and extracts rule operations and their descriptions from a given text.
 
     This function searches through the provided text for occurrences of rule operations (ADD, REMOVE, EDIT, AGREE) followed by their descriptions.
@@ -466,7 +469,7 @@ def update_rules(
 ) -> List[Tuple[str, int]]:
     """Updates a set of rules based on provided operations, adjusting their strengths and possibly adding or editing them.
 
-    Operations are processed in a specific order: 'REMOVE', 'AGREE', 'EDIT', and 'ADD'. This ensures that removals and agreements are handled first, followed by edits and additions. 
+    Operations are processed in a specific order: 'REMOVE', 'AGREE', 'EDIT', and 'ADD'. This ensures that removals and agreements are handled first, followed by edits and additions.
     The function supports dynamically adjusting the impact of a 'REMOVE' operation based on the `is_full` flag, which represents whether the set of rules is considered comprehensive.
 
     Parameters:
@@ -529,12 +532,12 @@ def create_rules(
     rules: List[Tuple[str, int]],
     max_num_rules: int,
     success_critique_num: int = 8,
-) -> Tuple[List[str], List[Tuple[str, int]]]:
+) -> List[Tuple[str, int]]:
     """Generates and updates rules based on experiences categorized as compare and success.
 
-    This function iteratively refines a set of rules by evaluating experiences through the lens of compare and success categories. 
-    For compare experiences, it juxtaposes successful trials against failed ones to draw insights. 
-    For success experiences, it aggregates successful trials to distill overarching successful strategies. 
+    This function iteratively refines a set of rules by evaluating experiences through the lens of compare and success categories.
+    For compare experiences, it juxtaposes successful trials against failed ones to draw insights.
+    For success experiences, it aggregates successful trials to distill overarching successful strategies.
     The insights drawn from these analyses are used to add, edit, remove, or agree with existing rules, thereby refining the rule set.
 
     Parameters:
@@ -547,7 +550,7 @@ def create_rules(
         success_critique_num (int, optional): The number of successes to batch together for critique. Defaults to 8.
 
     Returns:
-        Tuple[List[str], List[Tuple[str, int]]]: A tuple containing the list of updated rules as strings and their associated strength scores.
+        List[Tuple[str, int]]: A list of updated rules as strings and their associated strength scores.
 
     Note:
         - The function internally utilizes helper functions to prompt the LLM, parse its output for operations on rules, and update the rule set accordingly.
@@ -556,7 +559,7 @@ def create_rules(
     """
     # Intersection between train_idxs and each category (compare, success, fail).
     train_category_idxs = {
-        category: list(set(train_idxs).intersection(set(category_idxs)))
+        category: list(set(train_idxs).intersection(set(category_idxs)))  # type: ignore
         for category, category_idxs in categories.items()
     }
 

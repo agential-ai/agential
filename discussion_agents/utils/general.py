@@ -1,8 +1,9 @@
 """General utility functions."""
 
-from typing import List, Any
 import math
 import random
+
+from typing import Any, List
 
 
 def shuffle_chunk_list(lst: List[Any], k: int, seed: int = 42) -> List[List[Any]]:

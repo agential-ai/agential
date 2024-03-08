@@ -3,9 +3,9 @@
 import faiss
 import pytest
 
+from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain_community.docstore import InMemoryDocstore
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain_community.vectorstores.faiss import FAISS
 
 embedding_size = (
