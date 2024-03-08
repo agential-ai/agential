@@ -13,13 +13,46 @@ from langchain.docstore import InMemoryDocstore
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.prompts import PromptTemplate
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
-# from langchain.vectorstores import FAISS
+from langchain.vectorstores import FAISS
 from langchain_core.retrievers import BaseRetriever
 
 from discussion_agents.utils.fetch import fetch_memories
 from discussion_agents.utils.format import format_memories_detail
 from discussion_agents.utils.parse import parse_list
 
+
+# def _create_default_time_weighted_retriever(
+#     model_name: str = "sentence-transformers/all-mpnet-base-v2",
+#     embedding_size: int = 768,
+#     model_kwargs: Dict[str, Any] = {"device": "cpu"},
+#     encode_kwargs: Dict[str, Any] = {"normalize_embeddings": False},
+#     k: int = 5,
+# ) -> TimeWeightedVectorStoreRetriever:
+#     """Returns a TimeWeightedVectorStoreRetriever with customizable parameters.
+
+#     This function sets up a retriever for semantic search using sentence embeddings. It uses a HuggingFace embedding
+#     model, specified by `model_name`, to generate embeddings. The embeddings are stored in a FAISS index for efficient
+#     similarity searching in high-dimensional space, and the retrieval process is managed by an in-memory document store.
+
+#     Args:
+#         model_name (str): Name of the HuggingFace model to use for embeddings. Defaults to 'sentence-transformers/all-mpnet-base-v2'.
+#         embedding_size (int): The dimensionality of the embeddings. Defaults to 768.
+#         model_kwargs (Dict[str, Any]): Additional keyword arguments for the embedding model. Defaults to {"device": "cpu"}.
+#         encode_kwargs (Dict[str, Any]): Keyword arguments for the embedding encoding process. Defaults to {"normalize_embeddings": False}.
+#         k (int): The number of top documents to retrieve based on similarity and additional scoring. Defaults to 5.
+
+#     Returns:
+#         TimeWeightedVectorStoreRetriever: An instance of TimeWeightedVectorStoreRetriever with the specified configuration.
+#     """
+#     embeddings_model = HuggingFaceEmbeddings(
+#         model_name=model_name, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs
+#     )
+#     index = faiss.IndexFlatL2(embedding_size)
+#     vectorstore = FAISS(embeddings_model.embed_query, index, InMemoryDocstore({}), {})
+#     retriever = TimeWeightedVectorStoreRetriever(
+#         vectorstore=vectorstore, other_score_keys=["importance"], k=k
+#     )
+#     return retriever
 
 def _create_default_time_weighted_retriever(
     model_name: str = "sentence-transformers/all-mpnet-base-v2",
@@ -30,25 +63,25 @@ def _create_default_time_weighted_retriever(
 ) -> TimeWeightedVectorStoreRetriever:
     """Returns a TimeWeightedVectorStoreRetriever with customizable parameters.
 
-    This function sets up a retriever for semantic search using sentence embeddings. It uses a HuggingFace embedding
-    model, specified by `model_name`, to generate embeddings. The embeddings are stored in a FAISS index for efficient
-    similarity searching in high-dimensional space, and the retrieval process is managed by an in-memory document store.
+   This function sets up a retriever for semantic search using sentence embeddings. It uses a HuggingFace embedding
+      model, specified by `model_name`, to generate embeddings. The embeddings are stored in a FAISS index for efficient
+      similarity searching in high-dimensional space, and the retrieval process is managed by an in-memory document store.
 
-    Args:
-        model_name (str): Name of the HuggingFace model to use for embeddings. Defaults to 'sentence-transformers/all-mpnet-base-v2'.
-        embedding_size (int): The dimensionality of the embeddings. Defaults to 768.
-        model_kwargs (Dict[str, Any]): Additional keyword arguments for the embedding model. Defaults to {"device": "cpu"}.
-        encode_kwargs (Dict[str, Any]): Keyword arguments for the embedding encoding process. Defaults to {"normalize_embeddings": False}.
-        k (int): The number of top documents to retrieve based on similarity and additional scoring. Defaults to 5.
+      Args:
+          model_name (str): Name of the HuggingFace model to use for embeddings. Defaults to 'sentence-transformers/all-mpnet-base-v2'.
+         embedding_size (int): The dimensionality of the embeddings. Defaults to 768.
+           model_kwargs (Dict[str, Any]): Additional keyword arguments for the embedding model. Defaults to {"device": "cpu"}.
+         encode_kwargs (Dict[str, Any]): Keyword arguments for the embedding encoding process. Defaults to {"normalize_embeddings": False}.
+         k (int): The number of top documents to retrieve based on similarity and additional scoring. Defaults to 5.
 
-    Returns:
-        TimeWeightedVectorStoreRetriever: An instance of TimeWeightedVectorStoreRetriever with the specified configuration.
-    """
+     Returns:
+         TimeWeightedVectorStoreRetriever: An instance of TimeWeightedVectorStoreRetriever with the specified configuration.
+     """
     embeddings_model = HuggingFaceEmbeddings(
         model_name=model_name, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs
     )
     index = faiss.IndexFlatL2(embedding_size)
-    vectorstore = faiss(embeddings_model.embed_query, index, InMemoryDocstore({}), {})
+    vectorstore = FAISS(embeddings_model.embed_query, index, InMemoryDocstore({}), {})
     retriever = TimeWeightedVectorStoreRetriever(
         vectorstore=vectorstore, other_score_keys=["importance"], k=k
     )
@@ -56,6 +89,7 @@ def _create_default_time_weighted_retriever(
 
 
 def score_memories_importance(
+    
     memory_contents: Union[str, List[str]],
     relevant_memories: Union[str, List[str]],
     llm: Any,
