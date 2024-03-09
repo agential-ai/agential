@@ -111,13 +111,13 @@ def test_reflexion_cot_generate() -> None:
     assert reflexion_cot_agent.reflector.reflections == []
     assert reflexion_cot_agent.reflector.reflections_str == ""
 
-    gt_out_str = 'Thought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with Limited Liability]\n\nAnswer is INCORRECT'
+    gt_out_str = 'Thought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with Limited Liability]\nObservation: Answer is INCORRECT'
     assert isinstance(out, list)
     assert len(out) == 1
     assert isinstance(out[0], tuple)
     assert not out[0][0]
     assert out[0][1] == "Company with Limited Liability"
-    assert out[0][2] == gt_out_str
+    assert "\n".join(out[0][2]) == gt_out_str
 
     # Correct.
     gt_out_scratchpad = '\nThought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Gesellschaft mit beschränkter Haftung]\nObservation: Answer is CORRECT'
@@ -141,13 +141,13 @@ def test_reflexion_cot_generate() -> None:
     assert reflexion_cot_agent.reflector.reflections == []
     assert reflexion_cot_agent.reflector.reflections_str == ""
 
-    gt_out_str = 'Thought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Gesellschaft mit beschränkter Haftung]\n\nAnswer is CORRECT'
+    gt_out_str = 'Thought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Gesellschaft mit beschränkter Haftung]\nObservation: Answer is CORRECT'
     assert isinstance(out, list)
     assert len(out) == 1
     assert isinstance(out[0], tuple)
     assert out[0][0]
     assert out[0][1] == "Gesellschaft mit beschränkter Haftung"
-    assert out[0][2] == gt_out_str
+    assert "\n".join(out[0][2]) == gt_out_str
 
     # Invalid.
     gt_out_scratchpad = '\nThought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: INVALID[Gesellschaft mit beschränkter Haftung]\nObservation: Invalid action type, please try again.'
@@ -171,13 +171,13 @@ def test_reflexion_cot_generate() -> None:
     assert reflexion_cot_agent.reflector.reflections == []
     assert reflexion_cot_agent.reflector.reflections_str == ""
 
-    gt_out_str = 'Thought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: INVALID[Gesellschaft mit beschränkter Haftung]\n\nInvalid action type, please try again.'
+    gt_out_str = 'Thought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: INVALID[Gesellschaft mit beschränkter Haftung]\nObservation: Invalid action type, please try again.'
     assert isinstance(out, list)
     assert len(out) == 1
     assert isinstance(out[0], tuple)
     assert not out[0][0]
     assert not out[0][1]
-    assert out[0][2] == gt_out_str
+    assert "\n".join(out[0][2]) == gt_out_str
 
     # With reflection strategy on (last attempt).
     gt_out_scratchpad = '\nThought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with Limited Liability]\nObservation: Answer is INCORRECT'
@@ -200,13 +200,13 @@ def test_reflexion_cot_generate() -> None:
     assert reflexion_cot_agent.reflector.reflections == []
     assert reflexion_cot_agent.reflector.reflections_str == ""
 
-    gt_out_str = 'Thought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with Limited Liability]\n\nAnswer is INCORRECT'
+    gt_out_str = 'Thought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with Limited Liability]\nObservation: Answer is INCORRECT'
     assert isinstance(out, list)
     assert len(out) == 1
     assert isinstance(out[0], tuple)
     assert not out[0][0]
     assert out[0][1] == "Company with Limited Liability"
-    assert out[0][2] == gt_out_str
+    assert "\n".join(out[0][2]) == gt_out_str
 
     # With no reflection strategy and no context.
     gt_out_scratchpad = "\nThought: Let's think step by step. VIVA Media AG changed its name in 2004. The new acronym must stand for the new name of the company. Unfortunately, without further information, it is not possible to determine what the new acronym stands for.\nAction: Finish[Unknown]\nObservation: Answer is INCORRECT"
@@ -229,19 +229,19 @@ def test_reflexion_cot_generate() -> None:
     assert reflexion_cot_agent.reflector.reflections == []
     assert reflexion_cot_agent.reflector.reflections_str == ""
 
-    gt_out_str = "Thought: Let's think step by step. VIVA Media AG changed its name in 2004. The new acronym must stand for the new name of the company. Unfortunately, without further information, it is not possible to determine what the new acronym stands for.\nAction: Finish[Unknown]\n\nAnswer is INCORRECT"
+    gt_out_str = "Thought: Let's think step by step. VIVA Media AG changed its name in 2004. The new acronym must stand for the new name of the company. Unfortunately, without further information, it is not possible to determine what the new acronym stands for.\nAction: Finish[Unknown]\nObservation: Answer is INCORRECT"
     assert isinstance(out, list)
     assert len(out) == 1
     assert isinstance(out[0], tuple)
     assert not out[0][0]
     assert out[0][1] == "Unknown"
-    assert out[0][2] == gt_out_str
+    assert "\n".join(out[0][2]) == gt_out_str
 
     # Test reach max_trials.
     gt_out_scratchpad = '\nThought: The context provided states that VIVA Media AG changed its name to VIVA Media GmbH in 2004. Based on the information given, the new acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.Action: Finish[Company with limited liability]\nAction: Finish[Company with limited liability]\nObservation: Answer is INCORRECT\nThought: The reflection provided valuable insight into the previous mistake. To align with the question\'s request for the meaning of the new acronym in German, I should provide the answer in German, which is "Gesellschaft mit beschränkter Haftung". This will ensure accuracy and avoid repeating the previous error.Action: Finish[Gesellschaft mit beschränkter Haftung]\nAction: Finish[Gesellschaft mit beschränkter Haftung]\nObservation: Answer is CORRECT'
     gt_out = [
-        'Thought: The context provided states that VIVA Media AG changed its name to VIVA Media GmbH in 2004. Based on the information given, the new acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.Action: Finish[Company with limited liability]\nAction: Finish[Company with limited liability]\n\nAnswer is INCORRECT',
-        'Thought: The reflection provided valuable insight into the previous mistake. To align with the question\'s request for the meaning of the new acronym in German, I should provide the answer in German, which is "Gesellschaft mit beschränkter Haftung". This will ensure accuracy and avoid repeating the previous error.Action: Finish[Gesellschaft mit beschränkter Haftung]\nAction: Finish[Gesellschaft mit beschränkter Haftung]\n\nAnswer is CORRECT',
+        'Thought: The context provided states that VIVA Media AG changed its name to VIVA Media GmbH in 2004. Based on the information given, the new acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.Action: Finish[Company with limited liability]\nAction: Finish[Company with limited liability]\nObservation: Answer is INCORRECT',
+        'Thought: The reflection provided valuable insight into the previous mistake. To align with the question\'s request for the meaning of the new acronym in German, I should provide the answer in German, which is "Gesellschaft mit beschränkter Haftung". This will ensure accuracy and avoid repeating the previous error.Action: Finish[Gesellschaft mit beschränkter Haftung]\nAction: Finish[Gesellschaft mit beschränkter Haftung]\nObservation: Answer is CORRECT',
     ]
     gt_reflections = [
         'Upon reflection, the phrasing discrepancy in my answer may have been the reason for it being marked incorrect. While I provided the correct translation of "GmbH" in English, the question specifically asked for the acronym\'s meaning in German. To mitigate this failure in the future, I should provide the answer in the same language as requested in the question, which in this case would be "Gesellschaft mit beschränkter Haftung". This will ensure alignment between the question and my response.'
@@ -268,7 +268,7 @@ def test_reflexion_cot_generate() -> None:
     )
     assert isinstance(out, list)
     assert len(out) == 2
-    assert [i[2] for i in out] == gt_out
+    assert ["\n".join(i[2]) for i in out] == gt_out
     assert not out[0][0]
     assert out[1][0]
     assert out[0][1] == "Company with limited liability"
@@ -282,8 +282,8 @@ def test_reflexion_cot_generate() -> None:
 
     # Test exhaust patience and get incorrect answers for all trials.
     gt_out = [
-        'Thought: Upon reflecting on the incorrect answer I provided, I realize that the phrasing discrepancy in my response may have been the reason for the error. While I correctly identified that the new acronym for VIVA Media AG was GmbH, I did not provide the full expansion of the acronym as "Gesellschaft mit beschränkter Haftung." This lack of completeness in my answer likely led to it being marked as incorrect. In the future, I will ensure to always provide the complete expansion of acronyms when responding to similar questions to avoid any phrasing discrepancies.\nAction: Finish[VIVA Media GmbH]\n\nAnswer is INCORRECT',
-        'Thought: The reason for the failure in this trial could be the discrepancy in the phrasing of the answer. The question asked for the acronym of the new name, while the provided answer included the full name "VIVA Media GmbH". To avoid this mistake, I should provide only the acronym "GmbH" as the answer, as it directly corresponds to the acronym in the question. This adjustment will ensure a more accurate match between the question and the answer provided.Action: Finish[GmbH]\nAction: Finish[GmbH]\n\nAnswer is INCORRECT',
+        'Thought: Upon reflecting on the incorrect answer I provided, I realize that the phrasing discrepancy in my response may have been the reason for the error. While I correctly identified that the new acronym for VIVA Media AG was GmbH, I did not provide the full expansion of the acronym as "Gesellschaft mit beschränkter Haftung." This lack of completeness in my answer likely led to it being marked as incorrect. In the future, I will ensure to always provide the complete expansion of acronyms when responding to similar questions to avoid any phrasing discrepancies.\nAction: Finish[VIVA Media GmbH]\nObservation: Answer is INCORRECT',
+        'Thought: The reason for the failure in this trial could be the discrepancy in the phrasing of the answer. The question asked for the acronym of the new name, while the provided answer included the full name "VIVA Media GmbH". To avoid this mistake, I should provide only the acronym "GmbH" as the answer, as it directly corresponds to the acronym in the question. This adjustment will ensure a more accurate match between the question and the answer provided.Action: Finish[GmbH]\nAction: Finish[GmbH]\nObservation: Answer is INCORRECT',
     ]
     gt_out_scratchpad = '\nThought: Upon reflecting on the incorrect answer I provided, I realize that the phrasing discrepancy in my response may have been the reason for the error. While I correctly identified that the new acronym for VIVA Media AG was GmbH, I did not provide the full expansion of the acronym as "Gesellschaft mit beschränkter Haftung." This lack of completeness in my answer likely led to it being marked as incorrect. In the future, I will ensure to always provide the complete expansion of acronyms when responding to similar questions to avoid any phrasing discrepancies.\nAction: Finish[VIVA Media GmbH]\nObservation: Answer is INCORRECT\nThought: The reason for the failure in this trial could be the discrepancy in the phrasing of the answer. The question asked for the acronym of the new name, while the provided answer included the full name "VIVA Media GmbH". To avoid this mistake, I should provide only the acronym "GmbH" as the answer, as it directly corresponds to the acronym in the question. This adjustment will ensure a more accurate match between the question and the answer provided.Action: Finish[GmbH]\nAction: Finish[GmbH]\nObservation: Answer is INCORRECT'
     gt_reflections = [
@@ -310,7 +310,7 @@ def test_reflexion_cot_generate() -> None:
     out = reflexion_cot_agent.generate(
         question=question, key=key, context=context, strategy="reflexion"
     )
-    assert [i[2] for i in out] == gt_out
+    assert ["\n".join(i[2]) for i in out] == gt_out
     assert not out[0][0]
     assert not out[1][0]
     assert out[0][1] == "VIVA Media GmbH"
@@ -326,7 +326,7 @@ def test_reflexion_cot_generate() -> None:
 
     # Answer incorrectly.
     gt_out = [
-        'Thought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with Limited Liability]\n\nAnswer is INCORRECT'
+        'Thought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with Limited Liability]\nObservation: Answer is INCORRECT'
     ]
     gt_out_scratchpad = '\nThought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with Limited Liability]\nObservation: Answer is INCORRECT'
     action_llm_reseponses = [
@@ -348,7 +348,7 @@ def test_reflexion_cot_generate() -> None:
     assert len(out) == 1
     assert not out[0][0]
     assert out[0][1] == "Company with Limited Liability"
-    assert [out[0][2]] == gt_out
+    assert ["\n".join(out[0][2])] == gt_out
     assert reflexion_cot_agent._trial_n == 1
     assert reflexion_cot_agent._answer == "Company with Limited Liability"
     assert reflexion_cot_agent._finished
@@ -364,7 +364,7 @@ def test_reflexion_cot_generate() -> None:
     assert len(out) == 1
     assert not out[0][0]
     assert out[0][1] == "Company with Limited Liability"
-    assert [out[0][2]] == gt_out
+    assert ["\n".join(out[0][2])] == gt_out
     assert reflexion_cot_agent._trial_n == 1
     assert reflexion_cot_agent._answer == "Company with Limited Liability"
     assert reflexion_cot_agent._finished
@@ -451,9 +451,11 @@ def test_reflexion_react_generate() -> None:
     out = agent.generate(question=question, key=key, strategy=None)
     assert isinstance(out, list)
     assert len(out) == 1
+    assert isinstance(out[0], tuple)
     assert not out[0][0]
     assert out[0][1] == "unable to determine"
-    assert isinstance(out[0], tuple)
+    for triplet in out[0][-1]:
+        assert isinstance(triplet, tuple)
     assert agent._step_n == 6
     assert agent._trial_n == 1
     assert agent._answer == "unable to determine"
@@ -500,6 +502,8 @@ def test_reflexion_react_generate() -> None:
     assert out[0][1] == "unable to find answer"
     assert out[0][2]
     assert isinstance(out[0], tuple)
+    for triplet in out[0][-1]:
+        assert isinstance(triplet, tuple)
     assert agent._step_n == 5
     assert agent._trial_n == 1
     assert agent._answer == "unable to find answer"
@@ -516,6 +520,8 @@ def test_reflexion_react_generate() -> None:
     assert out[0][1] == ""
     assert out[0][2]
     assert isinstance(out[0], tuple)
+    for triplet in out[0][-1]:
+        assert isinstance(triplet, tuple)
     assert agent._step_n == 7
     assert agent._trial_n == 1
     assert agent._answer == ""
@@ -570,6 +576,10 @@ def test_reflexion_react_generate() -> None:
     )  # Outputs vary because of Wikipedia API, though overall output format is correct. Checking if terminates correctly.
     assert isinstance(out[0], tuple)
     assert isinstance(out[1], tuple)
+    for triplet in out[0][-1]:
+        assert isinstance(triplet, tuple)
+    for triplet in out[1][-1]:
+        assert isinstance(triplet, tuple)
     assert not out[0][0]
     assert not out[1][0]
     assert out[0][1] == ""
@@ -618,6 +628,10 @@ def test_reflexion_react_generate() -> None:
     assert (
         len(out) == 2
     )  # Outputs vary because of Wikipedia API, though overall output format is correct. Checking if terminates correctly.
+    for triplet in out[0][-1]:
+        assert isinstance(triplet, tuple)
+    for triplet in out[1][-1]:
+        assert isinstance(triplet, tuple)
     assert agent._step_n == 4
     assert agent._trial_n == 2
     assert agent._answer == ""
@@ -648,6 +662,8 @@ def test_reflexion_react_generate() -> None:
     out = agent.generate(question=question, key=key, strategy="reflexion")
     assert len(out) == 1  # Assert 1 trial only ran.
     assert isinstance(out[0], tuple)
+    for triplet in out[0][-1]:
+        assert isinstance(triplet, tuple)
     assert not out[0][0]
     assert out[0][1] == ""
     assert out[0][2]
@@ -669,6 +685,8 @@ def test_reflexion_react_generate() -> None:
     out = agent.generate(question=question, key=key, strategy="reflexion")
     assert len(out) == 1  # Assert 1 trial only ran.
     assert isinstance(out[0], tuple)
+    for triplet in out[0][-1]:
+        assert isinstance(triplet, tuple)
     assert not out[0][0]
     assert out[0][1] == ""
     assert out[0][2]

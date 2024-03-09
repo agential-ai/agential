@@ -8,7 +8,7 @@ Paper Repository: https://github.com/ysymyth/ReAct
 LangChain: https://github.com/langchain-ai/langchain
 LangChain ReAct: https://python.langchain.com/docs/modules/agents/agent_types/react
 """
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import tiktoken
 
@@ -71,7 +71,7 @@ class ReActAgent(BaseAgent):
         self._step_n = 1  #: :meta private:
         self._finished = False  #: :meta private:
 
-    def generate(self, question: str, reset: bool = True) -> str:
+    def generate(self, question: str, reset: bool = True) -> List[Tuple[str, str, str]]:
         """Processes a given question through ReAct.
 
         Iteratively applies the think-act-observe cycle to generate an answer for the question.
@@ -82,12 +82,13 @@ class ReActAgent(BaseAgent):
             reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
 
         Returns:
-            str: The accumulated output from the ReAct process.
+            List[Tuple[str, str, str]]: The list of accumulated output from the ReAct process,
+                each tuple consists of a thought-action-observation triplet.
         """
         if reset:
             self.reset()
 
-        out = ""
+        out = []
         while not _is_halted(
             finished=self._finished,
             step_n=self._step_n,
@@ -106,7 +107,6 @@ class ReActAgent(BaseAgent):
                 max_steps=self.max_steps,
             ).split("Action")[0]
             self.memory.add_memories(" " + thought)
-            out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
             # Act.
             self.memory.add_memories("\nAction:")
@@ -118,40 +118,36 @@ class ReActAgent(BaseAgent):
             ).split("Observation")[0]
             self.memory.add_memories(" " + action)
             action_type, query = parse_action(action)
-            out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
             # Observe.
             self.memory.add_memories(f"\nObservation {self._step_n}: ")
             if action_type.lower() == "finish":
                 self._answer = query
                 self._finished = True
-                self.memory.add_memories(query)
+                obs = query
             elif action_type.lower() == "search":
                 try:
-                    self.memory.add_memories(
-                        remove_newline(self.docstore.search(query))
-                    )
+                    obs = remove_newline(self.docstore.search(query))
                 except Exception:
-                    self.memory.add_memories(
-                        "Could not find that page, please try again."
-                    )
-
+                    obs = "Could not find that page, please try again."
             elif action_type.lower() == "lookup":
                 try:
-                    self.memory.add_memories(
-                        remove_newline(self.docstore.lookup(query))
-                    )
+                    obs = remove_newline(self.docstore.lookup(query))
                 except ValueError:
-                    self.memory.add_memories(
-                        "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
-                    )
+                    obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
             else:
-                self.memory.add_memories(
-                    "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
+                obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
+            self.memory.add_memories(obs)
+
+            out.append(
+                (
+                    f"Thought: {thought}",
+                    f"Action: {action}",
+                    f"Observation {self._step_n}: {obs}",
                 )
+            )
 
             self._step_n += 1
-            out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
         return out
 
