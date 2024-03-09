@@ -101,7 +101,7 @@ class ReflexionCoTAgent(BaseAgent):
         context: Optional[str] = None,
         strategy: Optional[str] = None,
         reset: bool = True,
-    ) -> List[Tuple[bool, str, str]]:
+    ) -> List[Tuple[bool, str, Tuple[str, str, str]]]:
         """Generates a response based on the provided context, question, and key.
 
         The `generate` method internally calls reflect (if possible), resets the memory,
@@ -115,8 +115,8 @@ class ReflexionCoTAgent(BaseAgent):
             reset (bool): Resets the agent's memory. Defaults to True.
 
         Returns:
-            result (List[bool, str, str]): A list of tuples containing (is_correct, answer, output)
-                 from the ReflexionCoTAgent.
+            result (List[Tuple[bool, str, List[str, str, str]]]): A list of tuples containing (is_correct, answer, output)
+                where output is a thought-action-observation 3-tuple.
         """
         # Reset.
         if reset:
@@ -129,8 +129,6 @@ class ReflexionCoTAgent(BaseAgent):
             reflections_str = ""
             if self._trial_n > 0 and not EM(self._answer, key) and strategy:
                 reflections_str = self.reflect(strategy, question, context)
-
-            out = ""
 
             # Think.
             self.memory.add_memories("\nThought:")
@@ -145,7 +143,6 @@ class ReflexionCoTAgent(BaseAgent):
                 context=context,
             )
             self.memory.add_memories(" " + thought)
-            out += self.memory.load_memories()["scratchpad"].split("\n")[-1] + "\n"
 
             # Act.
             self.memory.add_memories("\nAction:")
@@ -161,26 +158,25 @@ class ReflexionCoTAgent(BaseAgent):
             )
             action_type, argument = parse_action(action.strip())
             self.memory.add_memories(" " + action)
-            out += self.memory.load_memories()["scratchpad"].split("\n")[-1] + "\n"
 
             # Observe.
             self.memory.add_memories("\nObservation: ")
             if action_type.lower() == "finish":
+                self._finished = True
                 self._answer = argument
                 if EM(self._answer, key):
-                    correctness_str = "Answer is CORRECT"
+                    obs = "Answer is CORRECT"
                 else:
-                    correctness_str = "Answer is INCORRECT"
-                self.memory.add_memories(correctness_str)
-                out += "\n" + correctness_str
-                self._finished = True
+                    obs = "Answer is INCORRECT"
             else:
-                invalid_action_str = "Invalid action type, please try again."
-                self.memory.add_memories(invalid_action_str)
-                out += "\n" + invalid_action_str
+                obs = "Invalid action type, please try again."
+            self.memory.add_memories(obs)
 
             self._trial_n += 1
             is_correct = EM(self._answer, key)
+
+            out = (f"Thought: {thought}", f"Action: {action}", f"Observation: {obs}")
+
             result.append((is_correct, self._answer, out))
 
             # Increment patience counter.
@@ -320,7 +316,7 @@ class ReflexionReActAgent(BaseAgent):
         key: str,
         strategy: Optional[str] = None,
         reset: bool = True,
-    ) -> List[Tuple[bool, str, str]]:
+    ) -> List[Tuple[bool, str, List[Tuple[str, str, str]]]]:
         """Processes a given question through ReAct and reflects using Reflexion strategies when possible.
 
         Iteratively applies the think-act-observe cycle to generate an answer for the question.
@@ -336,8 +332,8 @@ class ReflexionReActAgent(BaseAgent):
             reset (bool): Whether to reset the internal state before processing. Defaults to True.
 
         Returns:
-            result (List[Tuple[bool, str, str]]): List of outputs in the format (is_correct, answer, output)
-                the ReflexionReActAgent.
+            result (List[Tuple[bool, str, List[Tuple[str, str, str]]]]): List of trials where each trial is
+                in the format (is_correct, answer, output) and output is in a thought-action-observation 3-tuple.
         """
         # Reset.
         if reset:
@@ -362,7 +358,7 @@ class ReflexionReActAgent(BaseAgent):
             ):
                 self.reflect(strategy, question)
 
-            out = ""
+            out = []
             self._step_n = 1
             self._finished = False
             self._answer = ""
@@ -386,7 +382,6 @@ class ReflexionReActAgent(BaseAgent):
                     max_steps=self.max_steps,
                 ).split("Action")[0]
                 self.memory.add_memories(" " + thought)
-                out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
                 # Act.
                 self.memory.add_memories("\nAction:")
@@ -400,40 +395,39 @@ class ReflexionReActAgent(BaseAgent):
                 ).split("Observation")[0]
                 self.memory.add_memories(" " + action)
                 action_type, query = parse_action(action)
-                out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
                 # Observe.
                 self.memory.add_memories(f"\nObservation {self._step_n}: ")
                 if action_type.lower() == "finish":
                     self._answer = query
                     self._finished = True
-                    self.memory.add_memories(query)
+                    if EM(self._answer, key):
+                        obs = "Answer is CORRECT"
+                    else:
+                        obs = "Answer is INCORRECT"
                 elif action_type.lower() == "search":
                     try:
-                        self.memory.add_memories(
-                            remove_newline(self.docstore.search(query))
-                        )
+                        obs = remove_newline(self.docstore.search(query))
                     except Exception:
-                        self.memory.add_memories(
-                            "Could not find that page, please try again."
-                        )
-
+                        obs = "Could not find that page, please try again."
                 elif action_type.lower() == "lookup":
                     try:
-                        self.memory.add_memories(
-                            remove_newline(self.docstore.lookup(query))
-                        )
+                        obs = remove_newline(self.docstore.lookup(query))
                     except ValueError:
-                        self.memory.add_memories(
-                            "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
-                        )
+                        obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
                 else:
-                    self.memory.add_memories(
-                        "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
+                    obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
+                self.memory.add_memories(obs)
+
+                out.append(
+                    (
+                        f"Thought: {thought}",
+                        f"Action: {action}",
+                        f"Observation {self._step_n}: {obs}",
                     )
+                )
 
                 self._step_n += 1
-                out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
             is_correct = EM(self._answer, key)
             result.append((is_correct, self._answer, out))
