@@ -4,9 +4,11 @@ Original Paper: https://arxiv.org/abs/2308.10144
 Paper Repository: https://github.com/LeapLabTHU/ExpeL
 """
 
-from typing import Dict, Any
-from discussion_agents.cog.modules.memory.base import BaseMemory
+from typing import Any, Dict
+
 from langchain.vectorstores import FAISS
+
+from discussion_agents.cog.modules.memory.base import BaseMemory
 
 
 class ExpeLExperienceMemory(BaseMemory):
