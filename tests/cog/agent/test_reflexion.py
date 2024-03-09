@@ -454,7 +454,8 @@ def test_reflexion_react_generate() -> None:
     assert isinstance(out[0], tuple)
     assert not out[0][0]
     assert out[0][1] == "unable to determine"
-    for triplet in out[0][-1]: assert isinstance(triplet, tuple)
+    for triplet in out[0][-1]:
+        assert isinstance(triplet, tuple)
     assert agent._step_n == 6
     assert agent._trial_n == 1
     assert agent._answer == "unable to determine"
@@ -501,7 +502,8 @@ def test_reflexion_react_generate() -> None:
     assert out[0][1] == "unable to find answer"
     assert out[0][2]
     assert isinstance(out[0], tuple)
-    for triplet in out[0][-1]: assert isinstance(triplet, tuple)
+    for triplet in out[0][-1]:
+        assert isinstance(triplet, tuple)
     assert agent._step_n == 5
     assert agent._trial_n == 1
     assert agent._answer == "unable to find answer"
@@ -518,7 +520,8 @@ def test_reflexion_react_generate() -> None:
     assert out[0][1] == ""
     assert out[0][2]
     assert isinstance(out[0], tuple)
-    for triplet in out[0][-1]: assert isinstance(triplet, tuple)
+    for triplet in out[0][-1]:
+        assert isinstance(triplet, tuple)
     assert agent._step_n == 7
     assert agent._trial_n == 1
     assert agent._answer == ""
@@ -573,8 +576,10 @@ def test_reflexion_react_generate() -> None:
     )  # Outputs vary because of Wikipedia API, though overall output format is correct. Checking if terminates correctly.
     assert isinstance(out[0], tuple)
     assert isinstance(out[1], tuple)
-    for triplet in out[0][-1]: assert isinstance(triplet, tuple)
-    for triplet in out[1][-1]: assert isinstance(triplet, tuple)
+    for triplet in out[0][-1]:
+        assert isinstance(triplet, tuple)
+    for triplet in out[1][-1]:
+        assert isinstance(triplet, tuple)
     assert not out[0][0]
     assert not out[1][0]
     assert out[0][1] == ""
@@ -623,8 +628,10 @@ def test_reflexion_react_generate() -> None:
     assert (
         len(out) == 2
     )  # Outputs vary because of Wikipedia API, though overall output format is correct. Checking if terminates correctly.
-    for triplet in out[0][-1]: assert isinstance(triplet, tuple)
-    for triplet in out[1][-1]: assert isinstance(triplet, tuple)
+    for triplet in out[0][-1]:
+        assert isinstance(triplet, tuple)
+    for triplet in out[1][-1]:
+        assert isinstance(triplet, tuple)
     assert agent._step_n == 4
     assert agent._trial_n == 2
     assert agent._answer == ""
@@ -655,7 +662,8 @@ def test_reflexion_react_generate() -> None:
     out = agent.generate(question=question, key=key, strategy="reflexion")
     assert len(out) == 1  # Assert 1 trial only ran.
     assert isinstance(out[0], tuple)
-    for triplet in out[0][-1]: assert isinstance(triplet, tuple)
+    for triplet in out[0][-1]:
+        assert isinstance(triplet, tuple)
     assert not out[0][0]
     assert out[0][1] == ""
     assert out[0][2]
@@ -677,7 +685,8 @@ def test_reflexion_react_generate() -> None:
     out = agent.generate(question=question, key=key, strategy="reflexion")
     assert len(out) == 1  # Assert 1 trial only ran.
     assert isinstance(out[0], tuple)
-    for triplet in out[0][-1]: assert isinstance(triplet, tuple)
+    for triplet in out[0][-1]:
+        assert isinstance(triplet, tuple)
     assert not out[0][0]
     assert out[0][1] == ""
     assert out[0][2]
