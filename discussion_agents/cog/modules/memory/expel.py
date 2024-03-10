@@ -12,7 +12,7 @@ from discussion_agents.cog.modules.memory.base import BaseMemory
 
 
 class ExpeLExperienceMemory(BaseMemory):
-    def __init__(self) -> None:
+    def __init__(self, ) -> None:
         """Initialization."""
         super().__init__()
 

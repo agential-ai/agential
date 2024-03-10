@@ -1,4 +1,4 @@
-"""Fixtures for loading test data."""
+"""Fixtures for loading data-related assets."""
 
 import os
 
@@ -12,6 +12,24 @@ def data_dir(pytestconfig) -> str:
 
 
 @pytest.fixture
-def expel_15_compare_fake_path(data_dir) -> str:
-    """Dir path to expel_15_compare_fake experiences."""
-    return os.path.join(data_dir, "expel_15_compare_fake.joblib")
+def hotpotqa_path(data_dir: str) -> str:
+    """Dir path to HotPotQA data sample."""
+    return os.path.join(data_dir, "hotpotqa")
+
+
+@pytest.fixture
+def hotpotqa_distractor_sample_path(hotpotqa_path: str) -> str:
+    """Dir path to hotpotqa_distractor_sample path."""
+    return os.path.join(hotpotqa_path, "hotpot-qa-distractor-sample.joblib")
+
+
+@pytest.fixture
+def expel_assets_path(data_dir: str) -> str:
+    """Dir path to ExpeL assets."""
+    return os.path.join(data_dir, "expel")
+
+
+@pytest.fixture
+def expel_experiences_10_fake_path(expel_assets_path: str) -> str:
+    """Dir path to expel_experiences_10_fake experiences."""
+    return os.path.join(expel_assets_path, "expel_experiences_10_fake.joblib")

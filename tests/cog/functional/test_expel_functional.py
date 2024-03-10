@@ -40,16 +40,11 @@ def test_gather_experience(reflexion_react_agent: ReflexionReActAgent) -> None:
     assert experiences == gt_experiences
 
 
-def test_categorize_experiences(expel_15_compare_fake_path: str) -> None:
+def test_categorize_experiences(expel_experiences_10_fake_path: str) -> None:
     """Test categorize_experiences."""
-    experiences = joblib.load(expel_15_compare_fake_path)
+    experiences = joblib.load(expel_experiences_10_fake_path)
     categories = categorize_experiences(experiences)
-    print(repr(categories))
-    gt_categories = {
-        "compare": [10, 11, 12, 13, 14],
-        "success": [1, 3, 6, 7, 8],
-        "fail": [0, 2, 4, 5, 9],
-    }
+    gt_categories = {'compare': [6, 7, 8, 9], 'success': [3, 5], 'fail': [0, 1, 2, 4]}
     assert categories == gt_categories
 
 
@@ -202,7 +197,6 @@ def test_parse_rules() -> None:
     gt_rules = [("AGREE 1", "This is a valid rule.")]
     llm_output = "AGREE 1: This is a valid rule."
     rules = parse_rules(llm_output)
-    print(rules)
     assert rules == gt_rules
 
 
@@ -282,7 +276,7 @@ def test_update_rules() -> None:
     assert updated_rules_not_full == expected_rules_not_full
 
 
-def test_create_rules(expel_15_compare_fake_path: str) -> None:
+def test_create_rules(expel_experiences_10_fake_path: str) -> None:
     """Test create_rules."""
     gt_rules = [
         ("Prioritize specific keywords in the question to guide search queries.", 2),
@@ -305,7 +299,7 @@ def test_create_rules(expel_15_compare_fake_path: str) -> None:
     ]
 
     max_num_rules = 20
-    experiences = joblib.load(expel_15_compare_fake_path)
+    experiences = joblib.load(expel_experiences_10_fake_path)
     categories = categorize_experiences(experiences)
     folds = get_folds(categories, len(experiences["idxs"]))
     responses = [
