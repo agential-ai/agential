@@ -4,7 +4,7 @@ Original Paper: https://arxiv.org/abs/2308.10144
 Paper Repository: https://github.com/LeapLabTHU/ExpeL
 """
 
-from typing import Any, Dict
+from typing import Any, Dict, List, Tuple
 
 from langchain.vectorstores import FAISS
 
@@ -12,7 +12,12 @@ from discussion_agents.cog.modules.memory.base import BaseMemory
 
 
 class ExpeLExperienceMemory(BaseMemory):
-    def __init__(self, ) -> None:
+    def __init__(
+        self,
+        question: str,
+        key: str,
+        trajectories: List[Tuple[bool, bool, List[Tuple[str, str, str]]]],
+    ) -> None:
         """Initialization."""
         super().__init__()
 

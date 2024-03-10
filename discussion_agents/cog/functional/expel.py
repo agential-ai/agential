@@ -566,7 +566,9 @@ def create_rules(
     # Compare.
     for train_idx in train_category_idxs["compare"]:
         question = experiences["questions"][train_idx]
-        trajectory = experiences["trajectories"][train_idx]  # List[Tuple[bool, str, List[Tuple[str, str, str]]]].
+        trajectory = experiences["trajectories"][
+            train_idx
+        ]  # List[Tuple[bool, str, List[Tuple[str, str, str]]]].
 
         # Compare the successful trial with all previous failed trials.
         success_trial = "\n".join(["\n".join(step) for step in trajectory[-1][-1]])
@@ -604,7 +606,9 @@ def create_rules(
         # Concatenate batched successful trajectories.
         concat_success_trajs = []
         for idx in success_idxs:
-            success_traj_str = "\n".join(["\n".join(step) for step in experiences['trajectories'][idx][0][-1]])
+            success_traj_str = "\n".join(
+                ["\n".join(step) for step in experiences["trajectories"][idx][0][-1]]
+            )
             concat_success_trajs.append(
                 f"{experiences['questions'][idx]}\n{success_traj_str}"
             )
