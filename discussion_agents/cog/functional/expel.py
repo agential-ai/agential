@@ -2,6 +2,7 @@
 
 import random
 import re
+from itertools import chain
 
 from typing import Dict, List, Optional, Tuple
 
@@ -566,11 +567,13 @@ def create_rules(
     # Compare.
     for train_idx in train_category_idxs["compare"]:
         question = experiences["questions"][train_idx]
-        trajectory = experiences["trajectories"][train_idx]
+        trajectory = experiences["trajectories"][train_idx]  # List[Tuple[bool, str, List[Tuple[str, str, str]]]].
 
         # Compare the successful trial with all previous failed trials.
-        success_trial = trajectory[-1][-1]
+        success_trial = "\n".join(chain(*trajectory[-1][-1]))
         for failed_trial in trajectory[:-1]:
+            failed_trial = "\n".join(chain(*failed_trial[-1]))
+
             # Prompt.
             out = _prompt_compare_critique(
                 llm,
@@ -600,10 +603,12 @@ def create_rules(
     )
     for success_idxs in batched_success_trajs_idxs:
         # Concatenate batched successful trajectories.
-        concat_success_trajs = [
-            f"{experiences['questions'][idx]}\n{experiences['trajectories'][idx][0][-1]}"  # Get this successful trajectory's zero-th trial output.
-            for idx in success_idxs
-        ]
+        concat_success_trajs = []
+        for idx in success_idxs:
+            success_traj_str = "\n".join(chain(*experiences['trajectories'][idx][0][-1]))
+            concat_success_trajs.append(
+                f"{experiences['questions'][idx]}\n{success_traj_str}"
+            )
         success_trajs_str = "\n\n".join(concat_success_trajs)
 
         # Prompt.
