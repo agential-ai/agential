@@ -1,1 +1,1 @@
-"""Functional module for cog."""
+# """Functional module for cog."""
