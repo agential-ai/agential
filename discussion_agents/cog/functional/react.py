@@ -91,7 +91,7 @@ def _is_halted(
     """
     over_max_steps = step_n > max_steps
     over_token_limit = (
-        len(enc.encode(_build_agent_prompt(question=question, scratchpad=scratchpad, examples=examples, instruction=instruction)))
+        len(enc.encode(_build_agent_prompt(question=question, scratchpad=scratchpad, examples=examples, prompt_template=prompt_template)))
         > max_tokens
     )
     return finished or over_max_steps or over_token_limit
@@ -107,26 +107,3 @@ def _process_ob(ob):
         ob = ob[ob.find('. ')+2:]    
     return ob
 
-
-
-
-def _check_keyword(example: str = None):
-    """checking the step utilized in example.
-    Args:
-        example (str): The example input of the generation function.
-    Returns:
-        step_occurence (list[int]): a list of number that indicate which step is utilised in the example
-    """
-    keyword = ['Thought', 'Action', 'Observation', 'Your task is to']
-    example = example.split('\n')
-    example = [line.strip() for line in example if line]
-    step_occurrence = [0 , 0, 0, 0]
-    i = 0
-    while all(num < 2 for num in step_occurrence):
-        test_case = example[i].split(':')[0]
-        test_case = ''.join(char for char in test_case if not char.isdigit()).strip()
-        if any(part.strip() in keyword for part in test_case) or test_case in keyword: 
-            index = keyword.index(test_case)
-            step_occurrence[index] += 1
-        i += 1
-    return step_occurrence
