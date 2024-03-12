@@ -3,7 +3,7 @@ from langchain.prompts import PromptTemplate
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
 from tiktoken import Encoding
-from typing import Optional
+from typing import Optional , Union , List
 
 from discussion_agents.utils.parse import remove_newline
 
@@ -31,32 +31,27 @@ def _build_agent_prompt(question: str, scratchpad: str, examples: str , prompt_t
     return prompt
 
 
-def _prompt_agent(llm: BaseChatModel, question: str, scratchpad: str, examples: str, prompt_template: str) -> str:
+def _prompt_agent(llm: BaseChatModel, question: str, scratchpad: str, examples: str, prompt_template: str, stop: Union[List[str], None] = None) -> str:
     """Generates a response from the LLM based on a given question and scratchpad.
 
-    This function creates a prompt using `_build_agent_prompt` and then gets the LLM's
-    output. The newline characters in the output are removed before returning.
+    This function creates a prompt using `_build_agent_prompt` and then gets the LLM's output.
+    The newline characters in the output are removed before returning.
 
     Args:
         llm (BaseChatModel): The language model to be prompted.
         question (str): The question to ask the language model.
         scratchpad (str): Additional context or information for the language model.
-        examples (str): The example used for specific benchmark for ai model to generate prompt accordingly.
+        examples (str): The example used for specific benchmark for AI model to generate prompt accordingly.
         prompt_template (str): The template of the prompt that is inputted into scratchpad.
+        stop (Union[List[str], None]): The stop condition for the language model. Defaults to None.
+
     Returns:
         str: The processed response from the language model.
     """
     prompt = _build_agent_prompt(question=question, scratchpad=scratchpad, examples=examples, prompt_template=prompt_template)
-    out = llm(
-        [
-            HumanMessage(
-                content=prompt,
-            )
-        ],
-        stop = '\n'
-    ).content
+    out = llm([HumanMessage(content=prompt)], stop=stop).content
     assert isinstance(out, str)
-    return out 
+    return out
 
 
 def _is_halted(
@@ -96,14 +91,19 @@ def _is_halted(
     )
     return finished or over_max_steps or over_token_limit
 
-def _process_ob(ob):
-    """Processing string for better output prompt.
+def _process_ob(ob: str) -> str:
+    """
+    Processing string for better output prompt.
+
     Args:
         ob (str): The observation after the action.
+
     Returns:
-        ob (str): The string goes into output
+        str: The processed observation string.
     """
     if ob.startswith('You arrive at loc '):
-        ob = ob[ob.find('. ')+2:]    
-    return ob
+        start_index = ob.find('. ') + 2
+        return ob[start_index:]
+    else:
+        return ob
 
