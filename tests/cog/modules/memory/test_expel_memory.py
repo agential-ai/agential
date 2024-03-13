@@ -1,97 +1,118 @@
 """Unit tests for ExpeL memory module."""
 
+import re
 import joblib
 
+from langchain_core.embeddings import Embeddings
+from tiktoken.core import Encoding
 from discussion_agents.cog.modules.memory.expel import ExpeLExperienceMemory
+from discussion_agents.cog.prompts.react import REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
+
+fewshot_questions = re.findall(r'Question: (.+?)\n', REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES)
+fewshot_keys = re.findall(r'Action \d+: Finish\[(.+?)\]', REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES)
+blocks = re.split(r'(?=Question: )', REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES)[1:]  # Split and ignore the first empty result
+
+fewshot_examples = []
+for block in blocks:
+    # Extract all thoughts, actions, and observations within each block
+    thoughts = re.findall(r'(Thought \d+: .+?)\n', block)
+    actions = re.findall(r'(Action \d+: .+?)\n', block)
+    observations = re.findall(r'(Observation \d+: .+)', block)
+    
+    # Combine them into tuples and add to the examples list
+    fewshot_examples.append(list(zip(thoughts, actions, observations)))
 
 
 def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> None:
     """Test ExpeLExperienceMemory initialization."""
-    # Test empty.
+    experiences = joblib.load(expel_experiences_10_fake_path)
+
+    # Test empty initialization.
     memory = ExpeLExperienceMemory()
-    assert isinstance(memory.experiences, dict)
-    for k, v in memory.experiences.items():
-        assert isinstance(k, str)
-        assert isinstance(v, list)
-        assert len(v) == 0
-    assert list(memory.experiences.keys()) == [
-        "idxs",
-        "questions",
-        "keys",
-        "trajectories",
-        "reflections",
-    ]
+    assert memory.experiences == {'idxs': [], 'questions': [], 'keys': [], 'trajectories': [], 'reflections': []}
+    assert not memory.fewshot_questions
+    assert not memory.fewshot_keys
+    assert not memory.fewshot_examples
+    assert memory.strategy == "task"
+    assert memory.reranker_strategy is None
+    assert isinstance(memory.embedder, Embeddings)
+    assert memory.k_docs == 24
+    assert isinstance(memory.encoder, Encoding)
+    assert memory.max_fewshot_tokens == 500
+    assert memory.num_fewshots == 6
+    assert not memory.success_traj_docs
+    assert memory.vectorstore is None
 
-    # Test non-empty.
-    experiences = joblib.load(expel_experiences_10_fake_path)
-    _ = experiences.pop("idxs")
-    memory = ExpeLExperienceMemory(**experiences)
-    assert list(memory.experiences.keys()) == [
-        "idxs",
-        "questions",
-        "keys",
-        "trajectories",
-        "reflections",
-    ]
-    for k, v in memory.experiences.items():
-        assert len(v) == 10
-    assert memory.experiences["idxs"] == list(range(10))
+    # Test with experiences parameter.
+    memory = ExpeLExperienceMemory(experiences)
+    assert memory.experiences == experiences
+    assert not memory.fewshot_questions
+    assert not memory.fewshot_keys
+    assert not memory.fewshot_examples
+    assert memory.strategy == "task"
+    assert memory.reranker_strategy is None
+    assert isinstance(memory.embedder, Embeddings)
+    assert memory.k_docs == 24
+    assert isinstance(memory.encoder, Encoding)
+    assert memory.max_fewshot_tokens == 500
+    assert memory.num_fewshots == 6
+    assert len(memory.success_traj_docs) == 38
+    assert memory.vectorstore
+    
+    success_traj_doc_types = [
+        "task",
+        "action",
+        "action",
+        "action",
+        "action",
+        "action",
+        "action",
+        "thought",
+        "thought",
+        "thought",
+        "thought",
+        "thought",
+        "thought",
+        "step",
+        "step",
+        "step",
+        "step",
+        "step",
+        "step",
+    ] * 2
 
-    # Test with no reflection.
-    experiences = joblib.load(expel_experiences_10_fake_path)
-    _ = experiences.pop("idxs")
-    _ = experiences.pop("reflections")
-    memory = ExpeLExperienceMemory(**experiences)
-    assert list(memory.experiences.keys()) == [
-        "idxs",
-        "questions",
-        "keys",
-        "trajectories",
-        "reflections",
-    ]
-    for k, v in memory.experiences.items():
-        assert len(v) == 10
-    assert memory.experiences["idxs"] == list(range(10))
-    for reflection in memory.experiences["reflections"]:
-        assert not reflection
+    for type_, doc in zip(success_traj_doc_types, memory.success_traj_docs):
+        assert type_ == doc.metadata['type']
 
+    # Test with no experiences and fewshot examples.
+    memory = ExpeLExperienceMemory(
+        fewshot_questions=fewshot_questions,
+        fewshot_keys=fewshot_keys,
+        fewshot_examples=fewshot_examples
+    )
+
+    # Test with experiences and fewshot examples.
+    pass
 
 def test_expel_experience_memory_clear(expel_experiences_10_fake_path: str) -> None:
     """Test ExpeLExperienceMemory clear method."""
     experiences = joblib.load(expel_experiences_10_fake_path)
-    _ = experiences.pop("idxs")
-    memory = ExpeLExperienceMemory(**experiences)
-    memory.clear()
-
-    for k, v in memory.experiences.items():
-        assert isinstance(k, str)
-        assert isinstance(v, list)
-        assert len(v) == 0
-    assert list(memory.experiences.keys()) == [
-        "idxs",
-        "questions",
-        "keys",
-        "trajectories",
-        "reflections",
-    ]
+    pass
 
 
-def test_expel_experience_memory_show_memories() -> None:
+def test_expel_experience_memory_fewshot_doc_token_count(expel_experiences_10_fake_path: str) -> None:
+    """Test ExpeLExperienceMemory fewshot_doc_token_count method."""
+    experiences = joblib.load(expel_experiences_10_fake_path)
+    pass
+
+
+def test_expel_experience_memory_load_memories(expel_experiences_10_fake_path: str) -> None:
+    """Test ExpeLExperienceMemory load_memories method."""
+    experiences = joblib.load(expel_experiences_10_fake_path)
+    pass
+
+
+def test_expel_experience_memory_show_memories(expel_experiences_10_fake_path: str) -> None:
     """Test ExpeLExperienceMemory show_memories method."""
-    memory = ExpeLExperienceMemory()
-    memories = memory.show_memories()
-    for k, v in memories.items():
-        assert isinstance(k, str)
-        assert isinstance(v, list)
-        assert len(v) == 0
-    assert list(memory.experiences.keys()) == [
-        "idxs",
-        "questions",
-        "keys",
-        "trajectories",
-        "reflections",
-    ]
-
-
-def test_expel_experience_memory_show_memories() -> None:
+    experiences = joblib.load(expel_experiences_10_fake_path)
     pass

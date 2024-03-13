@@ -55,7 +55,11 @@ class ExpeLExperienceMemory(BaseMemory):
         """
         super().__init__()
 
-        self.experiences = deepcopy(experiences)
+        self.experiences = deepcopy(experiences) if experiences else \
+            {'idxs': [], 'questions': [], 'keys': [], 'trajectories': [], 'reflections': []}
+        self.fewshot_questions = fewshot_questions
+        self.fewshot_keys = fewshot_keys
+        self.fewshot_examples = fewshot_examples
         self.strategy = strategy
         self.reranker_strategy = reranker_strategy
         self.embedder = embedder
@@ -66,7 +70,7 @@ class ExpeLExperienceMemory(BaseMemory):
 
         # Collect all successful trajectories.
         success_traj_idxs = []
-        if self.experiences:
+        if len(self.experiences['idxs']):
             success_traj_idxs = []
             for idx in self.experiences['idxs']:
                 is_correct, _, _ = self.experiences['trajectories'][idx][0]  # Success on zero-th trial.
@@ -123,7 +127,7 @@ class ExpeLExperienceMemory(BaseMemory):
         if fewshot_questions and fewshot_keys and fewshot_examples:
             # Update self.experiences.
             for question, key, steps in zip(fewshot_questions, fewshot_keys, fewshot_examples):
-                idx = max(self.experiences['idxs']) + 1
+                idx = max(self.experiences['idxs'], default=-1) + 1
 
                 self.experiences['idxs'].append(idx)
                 self.experiences['questions'].append(question)
@@ -180,7 +184,7 @@ class ExpeLExperienceMemory(BaseMemory):
 
         # Create vectorstore.
         self.vectorstore = None
-        if self.experiences:
+        if len(self.experiences['idxs']):
             self.vectorstore = FAISS.from_documents(
                 [doc for doc in self.success_traj_docs if doc.metadata['type'] == self.strategy], 
                 self.embedder
@@ -191,7 +195,7 @@ class ExpeLExperienceMemory(BaseMemory):
 
         Resets the memory to its initial empty state.
         """
-        self.experiences = {}
+        self.experiences = {'idxs': [], 'questions': [], 'keys': [], 'trajectories': [], 'reflections': []}
         self.success_traj_docs = []
         self.vectorstore = None
 
