@@ -23,7 +23,7 @@ from tiktoken.core import Encoding
 
 
 from discussion_agents.cog.agent.base import BaseAgent
-from discussion_agents.cog.functional.react import _is_halted, _prompt_agent, _process_ob
+from discussion_agents.cog.functional.react import _is_halted, _prompt_agent
 from discussion_agents.cog.modules.memory.react import ReActMemory
 from discussion_agents.utils.parse import parse_action, remove_newline
 
@@ -145,7 +145,8 @@ class ReActAgent(BaseAgent):
             question=question,
             scratchpad=self.memory.load_memories()["scratchpad"],
             examples=examples,
-            prompt_template=prompt_template
+            prompt_template=prompt_template,
+            stop=['\n']
         ).strip()
 
         if action.startswith('>'):
@@ -209,99 +210,149 @@ class ReActAgent(BaseAgent):
             self.reset()
 
         return out, finished
-    
-    def generate(self, question: str, reset: bool = True, examples: str = None, env: Any = None, prompt_template: str = None) -> str:
+
+    def generate(
+    self,
+    question: str,
+    reset: bool = True,
+    examples: str = None,
+    env: Any = None,
+    prompt_template: str = None
+    ) -> str:
         """Processes a given question through ReAct.
 
-        Iteratively applies the think-act-observe cycle to generate an answer for the question.
-        The process continues until the operation is halted based on certain conditions.
+         Iteratively applies the think-act-observe cycle to generate an answer for the question.
+         The process continues until the operation is halted based on certain conditions.
 
-        Args:
-            question (str): The question to be processed.
-            reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
-            prompt_template (str): The template for benchmark
-            examples (str): The example of text generated.
-            env (Alfworld_environment): The variable to interact with Alfworld.
-        Returns:
-            str: The accumulated output from the ReAct process.
-        """
-
-        if reset:
+         Args:
+             question (str): The question to be processed.
+             reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
+             prompt_template (str): The template for benchmark
+             examples (str): The example of text generated.
+             env (Alfworld_environment): The variable to interact with Alfworld.
+         Returns:
+             str: The accumulated output from the ReAct process.
+         """
+        
+        if not reset:
+            # No need to reset
+            pass
+        else:
             self.reset()
 
         out = ""
 
-        while not _is_halted(
-            finished=self._finished,
-            step_n=self._step_n,
-            max_steps=self.max_steps,
-            question=question,
-            scratchpad=self.memory.load_memories()["scratchpad"],
-            max_tokens=self.max_tokens,
-            enc=self.enc,
-            examples=examples,
-            prompt_template=prompt_template
-        ):
-            
-            # Think.
-
-            self.memory.add_memories("\nThought:")
-            thought = _prompt_agent(
-                llm=self.llm,
+        while True:
+            is_halted = _is_halted(
+                finished=self._finished,
+                step_n=self._step_n,
+                max_steps=self.max_steps,
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
+                max_tokens=self.max_tokens,
+                enc=self.enc,
                 examples=examples,
                 prompt_template=prompt_template
-            ).strip()
-            self.memory.add_memories(" " + thought)
+            )
+            if is_halted:
+                break
+
+            thought = self.think(question, self.memory.load_memories()["scratchpad"], examples, prompt_template)
+            out += "\n" + thought
+
+            action = self.act(question, self.memory.load_memories()["scratchpad"], examples, prompt_template)
+            out += "\n" + action
+
+            self.observe(action)
             out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
-            # Act.
-            self.memory.add_memories(f"\nAction {self._step_n}:")
-            
-            action = _prompt_agent(
-                llm=self.llm,
-                question=question,
-                scratchpad=self.memory.load_memories()["scratchpad"],
-                examples=examples,
-                prompt_template=prompt_template
-            ).strip()
-
-            self.memory.add_memories(" " + action)
-            out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
-
-            # Observe.
-            action_type, query = parse_action(action)
-            
-            if action_type.lower() == "finish":
-                self._answer = query
-                self._finished = True
-                self.memory.add_memories(query)
-            elif action_type.lower() == "search":
-                try:
-                    self.memory.add_memories(
-                        remove_newline(self.docstore.search(query))
-                    )
-                except Exception:
-                    self.memory.add_memories(
-                        "Could not find that page, please try again."
-                    )       
-            elif action_type.lower() == "lookup":
-                try:
-                    self.memory.add_memories(
-                        remove_newline(self.docstore.lookup(query))
-                    )
-                except ValueError:
-                    self.memory.add_memories(
-                        "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
-                    )
-            else:
-                self.memory.add_memories(
-                    "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
-                )
             self._step_n += 1
-            out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
+
         return out
+
+    def think(self, question: str, scratchpad: str, examples: str, prompt_template: str) -> str:
+        """
+        Generates a thought based on the given question, scratchpad, examples, and prompt template.
+
+        Args:
+            question (str): The question to be processed.
+            scratchpad (str): The current state of the scratchpad.
+            examples (str): The example of text generated.
+            prompt_template (str): The template for the prompt.
+
+        Returns:
+            str: The generated thought.
+        """
+        self.memory.add_memories("\nThought:")
+        thought = _prompt_agent(
+            llm=self.llm,
+            question=question,
+            scratchpad=scratchpad,
+            examples=examples,
+            prompt_template=prompt_template,
+            stop=['\n']
+        ).strip()
+        self.memory.add_memories(" " + thought)
+        return thought
+
+    def act(self, question: str, scratchpad: str, examples: str, prompt_template: str) -> str:
+        """
+        Generates an action based on the given question, scratchpad, examples, and prompt template.
+
+        Args:
+            question (str): The question to be processed.
+            scratchpad (str): The current state of the scratchpad.
+            examples (str): The example of text generated.
+            prompt_template (str): The template for the prompt.
+
+        Returns:
+            str: The generated action.
+        """
+        self.memory.add_memories(f"\nAction {self._step_n}:")
+        action = _prompt_agent(
+            llm=self.llm,
+            question=question,
+            scratchpad=scratchpad,
+            examples=examples,
+            prompt_template=prompt_template,
+            stop=['\n']
+        ).strip()
+        self.memory.add_memories(" " + action)
+        return action
+
+    def observe(self, action: str) -> None:
+        """
+        Observes the given action and performs the corresponding operation.
+
+        Args:
+            action (str): The action to be observed.
+
+        Raises:
+            None
+        """
+        action_type, query = parse_action(action)
+
+        if action_type.lower() == "finish":
+            self._answer, self._finished = query, True
+            self.memory.add_memories(query)
+        elif action_type.lower() == "search":
+            search_result = self.docstore.search(query) or "Could not find that page, please try again."
+            self.memory.add_memories(remove_newline(search_result))
+        elif action_type.lower() == "lookup":
+            lookup_result = (
+                self.docstore.lookup(query)
+                if self.docstore.last_search_result
+                else "No previous search result available to perform a lookup. Please search for a page first."
+            )
+            self.memory.add_memories(
+                remove_newline(lookup_result)
+                if isinstance(lookup_result, str)
+                else "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
+            )
+        else:
+            self.memory.add_memories("Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>].")
+
+        # Think, Act, and Observe steps...
 
     def retrieve(self) -> Dict[str, Any]:
         """Retrieves the current state of the agent's memory.
