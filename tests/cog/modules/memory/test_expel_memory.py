@@ -144,6 +144,11 @@ def test_expel_experience_memory_clear(expel_experiences_10_fake_path: str) -> N
     assert not memory.vectorstore
 
 
+def test_expel_experience_memory_add_memories(expel_experiences_10_fake_path: str) -> None:
+    """Test ExpeLExperienceMemory add_memories method."""
+    pass
+
+
 def test_expel_experience_memory__fewshot_doc_token_count(expel_experiences_10_fake_path: str) -> None:
     """Test ExpeLExperienceMemory _fewshot_doc_token_count method."""
     experiences = joblib.load(expel_experiences_10_fake_path)
@@ -169,7 +174,17 @@ def test_expel_experience_memory__fewshot_doc_token_count(expel_experiences_10_f
 def test_expel_experience_memory_load_memories(expel_experiences_10_fake_path: str) -> None:
     """Test ExpeLExperienceMemory load_memories method."""
     experiences = joblib.load(expel_experiences_10_fake_path)
-    pass
+    memory = ExpeLExperienceMemory(experiences)
+
+    # Test when memory is empty.
+
+    # Test with every query type.
+
+    # Test with every reranking strategy + error.
+
+    # Test with varying max_fewshot_tokens.
+    
+    # Test with varying num_fewshots.
 
 
 def test_expel_experience_memory_show_memories(expel_experiences_10_fake_path: str) -> None:
