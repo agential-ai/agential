@@ -144,7 +144,8 @@ class ReActAgent(BaseAgent):
             question=question,
             scratchpad=self.memory.load_memories()["scratchpad"],
             examples=examples,
-            prompt_template=prompt_template
+            prompt_template=prompt_template,
+            stop=['\n']
         ).strip()
 
         if action.startswith('Action'):
@@ -285,7 +286,8 @@ class ReActAgent(BaseAgent):
             question=question,
             scratchpad=scratchpad,
             examples=examples,
-            prompt_template=prompt_template
+            prompt_template=prompt_template,
+            stop=['\n']
         ).strip()
         self.memory.add_memories(" " + thought)
         return thought
@@ -309,7 +311,8 @@ class ReActAgent(BaseAgent):
             question=question,
             scratchpad=scratchpad,
             examples=examples,
-            prompt_template=prompt_template
+            prompt_template=prompt_template,
+            stop=['\n']
         ).strip()
         self.memory.add_memories(" " + action)
         return action
