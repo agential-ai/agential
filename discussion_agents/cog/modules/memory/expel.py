@@ -298,7 +298,7 @@ class ExpeLExperienceMemory(BaseMemory):
                 self.embedder
             )
 
-    def fewshot_doc_token_count(self, fewshot_doc: Document) -> int:
+    def _fewshot_doc_token_count(self, fewshot_doc: Document) -> int:
         """Returns the token count of a given document's successful trajectory.
         
         Args:
@@ -336,7 +336,7 @@ class ExpeLExperienceMemory(BaseMemory):
         if not self.reranker_strategy or (self.reranker_strategy == 'thought' and not queries['thought']):
             fewshot_docs = list(fewshot_docs)
         elif self.reranker_strategy == 'length':
-            fewshot_docs = list(sorted(fewshot_docs, key=self.fewshot_doc_token_count, reverse=True))
+            fewshot_docs = list(sorted(fewshot_docs, key=self._fewshot_doc_token_count, reverse=True))
         elif self.reranker_strategy == 'thought' and queries['thought']:
             fewshot_tasks = set([doc.metadata['task_idx'] for doc in fewshot_docs])
             subset_docs = list(filter(lambda doc: doc.metadata['type'] == 'thought' and doc.metadata['task_idx'] in fewshot_tasks, list(self.success_traj_docs)))

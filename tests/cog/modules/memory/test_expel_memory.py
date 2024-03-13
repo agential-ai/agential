@@ -144,10 +144,26 @@ def test_expel_experience_memory_clear(expel_experiences_10_fake_path: str) -> N
     assert not memory.vectorstore
 
 
-def test_expel_experience_memory_fewshot_doc_token_count(expel_experiences_10_fake_path: str) -> None:
-    """Test ExpeLExperienceMemory fewshot_doc_token_count method."""
+def test_expel_experience_memory__fewshot_doc_token_count(expel_experiences_10_fake_path: str) -> None:
+    """Test ExpeLExperienceMemory _fewshot_doc_token_count method."""
     experiences = joblib.load(expel_experiences_10_fake_path)
-    pass
+
+    # Testing with just experiences (1 success, a dupe).
+    memory = ExpeLExperienceMemory(experiences)
+    for doc in memory.success_traj_docs:
+        token_count = memory._fewshot_doc_token_count(doc)
+        assert token_count == 1245
+
+    # Testing with fewshots only.
+    gt_token_counts = [273] * 13 + [149] * 7 + [156] * 7 + [163] * 7 + [134] * 7 + [154] * 7
+    memory = ExpeLExperienceMemory(
+        fewshot_questions=fewshot_questions,
+        fewshot_keys=fewshot_keys,
+        fewshot_examples=fewshot_examples
+    )
+    for gt_token_count, doc in zip(gt_token_counts, memory.success_traj_docs):
+        token_count = memory._fewshot_doc_token_count(doc)
+        assert gt_token_count == token_count
 
 
 def test_expel_experience_memory_load_memories(expel_experiences_10_fake_path: str) -> None:
