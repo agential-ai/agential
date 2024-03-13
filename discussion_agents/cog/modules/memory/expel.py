@@ -223,7 +223,7 @@ class ExpeLExperienceMemory(BaseMemory):
         else:
             reflections = [[] for _ in range(len(questions))]
 
-        start_idx = max(self.experiences["idxs"]) + 1
+        start_idx = max(self.experiences["idxs"], default=-1) + 1
 
         # Update experiences.
         self.experiences["idxs"].extend(
