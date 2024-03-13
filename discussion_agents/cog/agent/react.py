@@ -101,7 +101,7 @@ class ReActAgent(BaseAgent):
         self.is_think = False
         return
     
-    def step(self, question: str, examples: str, prompt_template: str, env_output: Optional[str] = None) -> List:
+    def step(self, question: str, examples: str, prompt_template: str, env_output: Optional[str] = None) -> List[str]:
         """
         Perform a step in the conversation based on the given question and examples.
         
@@ -209,15 +209,15 @@ class ReActAgent(BaseAgent):
         if finished:
             self.reset()
 
-        return out, finished
+        return out
 
     def generate(
     self,
     question: str,
     reset: bool = True,
-    examples: str = None,
-    env: Any = None,
-    prompt_template: str = None
+    examples: Optional[str] = None,
+    env: Optional[Any] = None,
+    prompt_template: Optional[str] = None
     ) -> str:
         """Processes a given question through ReAct.
 
