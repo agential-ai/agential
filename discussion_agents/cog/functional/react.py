@@ -91,19 +91,4 @@ def _is_halted(
     )
     return finished or over_max_steps or over_token_limit
 
-def _process_ob(ob: str) -> str:
-    """
-    Processing string for better output prompt.
-
-    Args:
-        ob (str): The observation after the action.
-
-    Returns:
-        str: The processed observation string.
-    """
-    if ob.startswith('You arrive at loc '):
-        start_index = ob.find('. ') + 2
-        return ob[start_index:]
-    else:
-        return ob
 
