@@ -326,7 +326,7 @@ class ExpeLExperienceMemory(BaseMemory):
 
         # If empty.
         if not len(self.experiences['idxs']):
-            return {"fewshots": None}
+            return {"fewshots": []}
 
         # Query the vectorstore.
         fewshot_docs = self.vectorstore.similarity_search(queries[query_type], k=self.k_docs)

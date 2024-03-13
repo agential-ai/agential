@@ -306,9 +306,17 @@ def test_expel_experience_memory__fewshot_doc_token_count(expel_experiences_10_f
 def test_expel_experience_memory_load_memories(expel_experiences_10_fake_path: str) -> None:
     """Test ExpeLExperienceMemory load_memories method."""
     experiences = joblib.load(expel_experiences_10_fake_path)
-    memory = ExpeLExperienceMemory(experiences)
+
+    queries = {
+        "task": 'The creator of "Wallace and Gromit" also created what animation comedy that matched animated zoo animals with a soundtrack of people talking about their homes? ',
+        "thought": 'Thought: I should try a different approach. Let me search for press releases, industry news sources, or announcements specifically related to the name change and new acronym for VIVA Media AG in 2004. By focusing on more specialized sources, I may be able to find the accurate information needed to answer the question correctly. '
+    }
 
     # Test when memory is empty.
+    memory = ExpeLExperienceMemory()
+    memory_dict = memory.load_memories(queries=queries, query_type="task")
+    assert list(memory_dict.keys()) == ["fewshots"]
+    assert not memory_dict['fewshots']
 
     # Test with every query type.
 
