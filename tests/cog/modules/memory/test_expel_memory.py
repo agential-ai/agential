@@ -90,14 +90,58 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
         fewshot_keys=fewshot_keys,
         fewshot_examples=fewshot_examples
     )
+    assert list(memory.experiences.keys()) == ['idxs', 'questions', 'keys', 'trajectories', 'reflections']
+    for v in memory.experiences.values():
+        assert len(v) == 6
+    assert memory.fewshot_questions
+    assert memory.fewshot_keys
+    assert memory.fewshot_examples
+    assert memory.strategy == "task"
+    assert memory.reranker_strategy is None
+    assert isinstance(memory.embedder, Embeddings)
+    assert memory.k_docs == 24
+    assert isinstance(memory.encoder, Encoding)
+    assert memory.max_fewshot_tokens == 500
+    assert memory.num_fewshots == 6
+    assert len(memory.success_traj_docs) == 48
+    assert memory.vectorstore
 
     # Test with experiences and fewshot examples.
-    pass
+    memory = ExpeLExperienceMemory(
+        experiences=experiences,
+        fewshot_questions=fewshot_questions,
+        fewshot_keys=fewshot_keys,
+        fewshot_examples=fewshot_examples
+    )
+    assert list(memory.experiences.keys()) == ['idxs', 'questions', 'keys', 'trajectories', 'reflections']
+    for v in memory.experiences.values():
+        assert len(v) == 16
+    assert memory.fewshot_questions
+    assert memory.fewshot_keys
+    assert memory.fewshot_examples
+    assert memory.strategy == "task"
+    assert memory.reranker_strategy is None
+    assert isinstance(memory.embedder, Embeddings)
+    assert memory.k_docs == 24
+    assert isinstance(memory.encoder, Encoding)
+    assert memory.max_fewshot_tokens == 500
+    assert memory.num_fewshots == 6
+    assert len(memory.success_traj_docs) == 86
+    assert memory.vectorstore
+
 
 def test_expel_experience_memory_clear(expel_experiences_10_fake_path: str) -> None:
     """Test ExpeLExperienceMemory clear method."""
     experiences = joblib.load(expel_experiences_10_fake_path)
-    pass
+    memory = ExpeLExperienceMemory(experiences)
+    assert memory.experiences
+    assert memory.success_traj_docs
+    assert memory.vectorstore
+    memory.clear()
+    for v in memory.experiences.values():
+        assert not v
+    assert not memory.success_traj_docs
+    assert not memory.vectorstore
 
 
 def test_expel_experience_memory_fewshot_doc_token_count(expel_experiences_10_fake_path: str) -> None:
