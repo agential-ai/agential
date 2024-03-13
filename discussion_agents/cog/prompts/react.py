@@ -5,7 +5,8 @@ REACT_INSTRUCTION_HOTPOTQA = """Solve a question answering task with interleavin
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
 (3) Finish[answer], which returns the answer and finishes the task.
-You may take as many steps as necessary.
+You have a maximum of {max_steps} steps.
+
 Here are some examples:
 {examples}
 (END OF EXAMPLES)

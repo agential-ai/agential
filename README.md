@@ -24,7 +24,6 @@ question = 'Who was once considered the best kick boxer in the world, however he
 llm = ChatOpenAI(openai_api_key="YOUR_API_KEY")
 agent = ReActAgent(llm=llm)
 out = agent.generate(question=question)
-
 ```
 
 
@@ -39,36 +38,6 @@ Observation: (Result 1/1) Dekkers was involved in a number of controversies rela
 Thought: Ramon Dekkers has been involved in controversies and crimes. I need to find more information about them.
 ...
 ```
-
-## Developer Setup
-
-First install [anaconda](https://docs.anaconda.com/free/anaconda/install/windows/) and add to path by going to advanced system settings. Then, launch cmd.
-
-Use the following command to create a conda environment `discussion-agents` with Python version 3.10.13. Any Python version above 3.9 is viable.
-```
-conda create -n discussion-agents python=3.10.13
-```
-Now activate the environent.
-```
-conda activate discussion-agents
-```
-Next, we will install [Poetry](https://python-poetry.org/docs/) using [pipx](https://pipx.pypa.io/stable/docs/).
-```
-pip install pipx
-pipx install poetry
-```
-Make sure to add poetry to path by adding `C:\Users\<username>\.local\bin` to path in advanced system settings. For other operating systems, the path will be different. Ensure poetry is in the environment variable paths.
-
-Then clone the repository and enter the discussion-agents directory.
-``` 
-git clone https://github.com/alckasoc/discussion-agents/
-
-```
-Finally install all of the packages.
-```
-poetry install
-```
-
 
 
 Project Organization
@@ -121,5 +90,6 @@ Project Organization
 ---------
 
 
+## Contribution
 
-<p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
+If you want to contribute, please check the [contributing.md](https://github.com/alckasoc/discussion-agents/blob/main/CONTRIBUTING.md) for guidelines!

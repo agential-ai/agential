@@ -8,7 +8,7 @@ Paper Repository: https://github.com/ysymyth/ReAct
 LangChain: https://github.com/langchain-ai/langchain
 LangChain ReAct: https://python.langchain.com/docs/modules/agents/agent_types/react
 """
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import tiktoken
 
@@ -88,6 +88,7 @@ class ReActAgent(BaseAgent):
         self._finished = False  #: :meta private:
         self.is_think = True # this is for the 
 
+
     def set_Alfworld(self) -> None:
         """
         Set the 'is_think' attribute of the object to False.
@@ -109,7 +110,7 @@ class ReActAgent(BaseAgent):
         - Handling environment output if provided.
         - Generating an action based on the provided question, examples, and prompt template.
         - Parsing the action and performing the corresponding observation.
-        
+       
         Args:
             question (str): The question for the conversation step.
             examples (str): Examples relevant to the question.
@@ -125,6 +126,7 @@ class ReActAgent(BaseAgent):
         if env_output:
             self.memory.add_memories(f"\nObservation {self._step_n}: ")
             self.memory.add_memories(env_output)
+
 
         if self.is_think:
             self.memory.add_memories("\nThought:")
@@ -161,34 +163,37 @@ class ReActAgent(BaseAgent):
             return out
         else:
             self.memory.add_memories(f"\nObservation {self._step_n}: ")
+
             action_type, query = parse_action(action)
 
             if action_type.lower() == "finish":
                 self._answer = query
                 self._finished = True
-                self.memory.add_memories(query)
+                obs = query
             elif action_type.lower() == "search":
                 try:
-                    self.memory.add_memories(
-                        remove_newline(self.docstore.search(query))
-                    )
+                    obs = remove_newline(self.docstore.search(query))
                 except Exception:
                     self.memory.add_memories(
                         "Could not find that page, please try again."
                     )       
             elif action_type.lower() == "lookup":
                 try:
-                    self.memory.add_memories(
-                        remove_newline(self.docstore.lookup(query))
-                    )
+                    obs = remove_newline(self.docstore.lookup(query))
                 except ValueError:
-                    self.memory.add_memories(
-                        "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
-                    )
+                    obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
             else:
-                self.memory.add_memories(
-                    "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
+                obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
+            self.memory.add_memories(obs)
+
+            out.append(
+                (
+                    f"Thought: {thought}",
+                    f"Action: {action}",
+                    f"Observation {self._step_n}: {obs}",
                 )
+            )
+
 
             out.append(self.memory.load_memories()["scratchpad"].split("\n")[-1])
 
