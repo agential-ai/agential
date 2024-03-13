@@ -175,4 +175,19 @@ def test_expel_experience_memory_load_memories(expel_experiences_10_fake_path: s
 def test_expel_experience_memory_show_memories(expel_experiences_10_fake_path: str) -> None:
     """Test ExpeLExperienceMemory show_memories method."""
     experiences = joblib.load(expel_experiences_10_fake_path)
-    pass
+
+    # Test with empty memory.
+    memory = ExpeLExperienceMemory()
+    memory_dict = memory.show_memories()
+    assert list(memory_dict.keys()) == ["experiences", "success_traj_docs", "vectorstore"]
+    assert memory_dict['experiences'] == {'idxs': [], 'questions': [], 'keys': [], 'trajectories': [], 'reflections': []}
+    assert not memory_dict['success_traj_docs']
+    assert not memory_dict['vectorstore']
+
+    # Test with non-empty memory.
+    memory = ExpeLExperienceMemory(experiences)
+    memory_dict = memory.show_memories()
+    assert list(memory_dict.keys()) == ["experiences", "success_traj_docs", "vectorstore"]
+    assert memory.experiences == memory_dict['experiences']
+    assert len(memory_dict['success_traj_docs']) == 38
+    assert memory_dict['vectorstore']
