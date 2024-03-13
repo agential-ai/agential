@@ -253,7 +253,31 @@ def test_expel_experience_memory_add_memories(expel_experiences_10_fake_path: st
     assert memory.vectorstore    
 
     # Test with a mix of failed and successful trajectories.
-
+    memory.add_memories(
+        success_questions + fail_questions,
+        success_keys + fail_keys,
+        success_trajectories + fail_trajectories,
+        success_reflections + fail_reflections
+    )
+    assert memory.experiences['idxs'] == [0, 1, 2, 3, 4, 5, 6, 7]
+    assert memory.experiences['questions'][5] == success_questions[0]
+    assert memory.experiences['questions'][6] == fail_questions[0]
+    assert memory.experiences['questions'][7] == fail_questions[1]
+    assert memory.experiences['keys'][5] == success_keys[0]
+    assert memory.experiences['keys'][6] == fail_keys[0]
+    assert memory.experiences['keys'][7] == fail_keys[1]
+    assert memory.experiences['trajectories'][5] == success_trajectories[0]
+    assert memory.experiences['trajectories'][6]  == fail_trajectories[0]
+    assert memory.experiences['trajectories'][7] == fail_trajectories[1]
+    assert memory.experiences['reflections'][5] == success_reflections[0]
+    assert memory.experiences['reflections'][6] == fail_reflections[0]
+    assert memory.experiences['reflections'][7] == fail_reflections[1]
+    assert len(memory.success_traj_docs) == 76
+    assert memory.success_traj_docs[0].metadata['task_idx'] == 0
+    assert memory.success_traj_docs[20].metadata['task_idx'] == 1
+    assert memory.success_traj_docs[56].metadata['task_idx'] == 2
+    assert memory.success_traj_docs[57].metadata['task_idx'] == 5
+    assert memory.vectorstore  
 
 
 
