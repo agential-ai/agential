@@ -123,6 +123,7 @@ class ReActAgent(BaseAgent):
         
         out = []
         if env_output:
+            self.memory.add_memories(f"\nObservation {self._step_n}: ")
             self.memory.add_memories(env_output)
 
         if self.is_think:
@@ -147,16 +148,18 @@ class ReActAgent(BaseAgent):
             prompt_template=prompt_template
         ).strip()
 
-        if action.startswith('Action'):
-            action = action.split(':', 1)[1]
+        if action.startswith('>'):
+            action = action.replace('>','').strip()
+        if not(action.startswith('think')):
+            action = action.replace(' in ',' in/on ').strip()
 
         self.memory.add_memories(" " + action)
         out.append(action)
         
-        self.memory.add_memories(f"\nObservation {self._step_n}: ")
         if not self.is_think:
             return out
         else:
+            self.memory.add_memories(f"\nObservation {self._step_n}: ")
             action_type, query = parse_action(action)
 
             if action_type.lower() == "finish":
