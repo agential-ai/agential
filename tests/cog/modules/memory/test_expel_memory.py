@@ -146,7 +146,21 @@ def test_expel_experience_memory_clear(expel_experiences_10_fake_path: str) -> N
 
 def test_expel_experience_memory_add_memories(expel_experiences_10_fake_path: str) -> None:
     """Test ExpeLExperienceMemory add_memories method."""
+    
+    # Test with empty memory (with and without reflection).
+
+    # Test with non-empty memory (no reflection).
+
+    # Test with non-empty memory (with reflection).
+
+    # Test with adding only failed trajectories.
+
+    # Test with only successful trajectories.
+
+    # Test with a mix of failed and successful trajectories.
+
     pass
+
 
 
 def test_expel_experience_memory__fewshot_doc_token_count(expel_experiences_10_fake_path: str) -> None:
