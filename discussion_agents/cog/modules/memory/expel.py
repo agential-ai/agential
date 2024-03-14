@@ -30,12 +30,8 @@ class ExpeLExperienceMemory(BaseMemory):
         fewshot_examples (List[List[Tuple[str, str, str]]], optional): A nested list where each list 
             contains tuples of (thought, action, observation) used as fewshot examples.
         strategy (str): The strategy employed for handling and vectorizing experiences.
-        reranker_strategy (str, optional): The re-ranking strategy to be applied based on similarity measures.
         embedder (Embeddings): An embedding object used for generating vector embeddings of documents.
-        k_docs (int): The number of documents to return from a similarity search.
         encoder (Encoding): An encoder object used for token counting within documents.
-        max_fewshot_tokens (int): The maximum number of tokens allowed in a single fewshot example.
-        num_fewshots (int): The number of fewshot examples to utilize or retrieve.
     """
     def __init__(
         self,
@@ -44,12 +40,8 @@ class ExpeLExperienceMemory(BaseMemory):
         fewshot_keys: Optional[List[str]] = [],
         fewshot_examples: Optional[List[List[Tuple[str, str, str]]]] = [],
         strategy: str = "task",
-        reranker_strategy: Optional[str] = None,
         embedder: Embeddings = HuggingFaceEmbeddings(),
-        k_docs: int = 24,
         encoder: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
-        max_fewshot_tokens: int = 500,
-        num_fewshots: int = 6
     ) -> None:
         """Initializes the memory with optional experiences, fewshot examples, and strategies.
         """
@@ -61,12 +53,8 @@ class ExpeLExperienceMemory(BaseMemory):
         self.fewshot_keys = fewshot_keys
         self.fewshot_examples = fewshot_examples
         self.strategy = strategy
-        self.reranker_strategy = reranker_strategy
         self.embedder = embedder
-        self.k_docs = k_docs
         self.encoder = encoder
-        self.max_fewshot_tokens = max_fewshot_tokens
-        self.num_fewshots = num_fewshots
 
         # Collect all successful trajectories.
         success_traj_idxs = []
@@ -313,36 +301,48 @@ class ExpeLExperienceMemory(BaseMemory):
         steps_str = "\n".join(["\n".join(step) for step in steps])
         return len(self.encoder.encode(steps_str))
 
-    def load_memories(self, queries: Dict[str, str], query_type: str) -> Dict[str, Any]:
+    def load_memories(
+        self, 
+        queries: Dict[str, str], 
+        query_type: str, 
+        k_docs: int = 24, 
+        num_fewshots: int = 6, 
+        max_fewshot_tokens: int = 1500,
+        reranker_strategy: Optional[str] = None
+    ) -> Dict[str, Any]:
         """Retrieves fewshot documents based on a similarity search, with optional re-ranking strategies.
         
         Args:
             queries (Dict[str, str]): The queries to perform similarity search against.
             query_type (str): The type of query to use for the search.
-        
+            k_docs (int): The number of documents to return from a similarity search.
+            num_fewshots (int): The number of fewshot examples to utilize or retrieve.
+            max_fewshot_tokens (int): The maximum number of tokens allowed in a single fewshot example. Defaults to 1500.
+            reranker_strategy (Optional[str]): The re-ranking strategy to be applied based on similarity measures.
+
         Returns:
             Dict[str, Any]: A dictionary of retrieved fewshot documents (strings).
         """
 
         # If empty.
-        if not len(self.experiences['idxs']):
+        if not len(self.experiences['idxs']) or not num_fewshots or not k_docs:
             return {"fewshots": []}
 
         # Query the vectorstore.
-        fewshot_docs = self.vectorstore.similarity_search(queries[query_type], k=self.k_docs)
+        fewshot_docs = self.vectorstore.similarity_search(queries[query_type], k=k_docs)
 
         # Post-processing.
 
         # Re-ranking, optional.
-        if not self.reranker_strategy or (self.reranker_strategy == 'thought' and not queries['thought']):
+        if not reranker_strategy or (reranker_strategy == 'thought' and not queries['thought']):
             fewshot_docs = list(fewshot_docs)
-        elif self.reranker_strategy == 'length':
+        elif reranker_strategy == 'length':
             fewshot_docs = list(sorted(fewshot_docs, key=self._fewshot_doc_token_count, reverse=True))
-        elif self.reranker_strategy == 'thought' and queries['thought']:
+        elif reranker_strategy == 'thought' and queries['thought']:
             fewshot_tasks = set([doc.metadata['task_idx'] for doc in fewshot_docs])
             subset_docs = list(filter(lambda doc: doc.metadata['type'] == 'thought' and doc.metadata['task_idx'] in fewshot_tasks, list(self.success_traj_docs)))
             fewshot_docs = sorted(subset_docs, key=lambda doc: cosine(self.embedder.embed_query(doc.page_content), self.embedder.embed_query(queries['thought'])))
-        elif self.reranker_strategy == 'task':
+        elif reranker_strategy == 'task':
             fewshot_tasks = set([doc.metadata['task_idx'] for doc in fewshot_docs])
             subset_docs = list(filter(lambda doc: doc.metadata['type'] == 'thought' and doc.metadata['task_idx'] in fewshot_tasks, list(self.success_traj_docs)))
             fewshot_docs = sorted(subset_docs, key=lambda doc: cosine(self.embedder.embed_query(doc.page_content), self.embedder.embed_query(queries['task'])))
@@ -362,12 +362,12 @@ class ExpeLExperienceMemory(BaseMemory):
             _, _, steps = trajectory[0]  # Zero-th successful trial.
             steps = "\n".join(["\n".join(step) for step in steps])
 
-            if len(self.encoder.encode(steps)) <= self.max_fewshot_tokens and \
+            if len(self.encoder.encode(steps)) <= max_fewshot_tokens and \
                 task_idx not in current_tasks:
                 fewshots.append(f"{question}\n{steps}")
                 current_tasks.add(task_idx)
 
-            if len(fewshots) == self.num_fewshots:
+            if len(fewshots) == num_fewshots:
                 break
 
         return {"fewshots": fewshots}

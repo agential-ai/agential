@@ -2,6 +2,7 @@
 
 import re
 import joblib
+import pytest
 
 from langchain_core.embeddings import Embeddings
 from tiktoken.core import Encoding
@@ -34,12 +35,9 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
     assert not memory.fewshot_keys
     assert not memory.fewshot_examples
     assert memory.strategy == "task"
-    assert memory.reranker_strategy is None
     assert isinstance(memory.embedder, Embeddings)
-    assert memory.k_docs == 24
     assert isinstance(memory.encoder, Encoding)
-    assert memory.max_fewshot_tokens == 500
-    assert memory.num_fewshots == 6
+
     assert not memory.success_traj_docs
     assert memory.vectorstore is None
 
@@ -49,13 +47,9 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
     assert not memory.fewshot_questions
     assert not memory.fewshot_keys
     assert not memory.fewshot_examples
-    assert memory.strategy == "task"
-    assert memory.reranker_strategy is None
-    assert isinstance(memory.embedder, Embeddings)
-    assert memory.k_docs == 24
-    assert isinstance(memory.encoder, Encoding)
-    assert memory.max_fewshot_tokens == 500
-    assert memory.num_fewshots == 6
+    assert memory.strategy == "task"    
+    assert isinstance(memory.embedder, Embeddings)    
+    assert isinstance(memory.encoder, Encoding)    
     assert len(memory.success_traj_docs) == 38
     assert memory.vectorstore
     
@@ -97,12 +91,9 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
     assert memory.fewshot_keys
     assert memory.fewshot_examples
     assert memory.strategy == "task"
-    assert memory.reranker_strategy is None
     assert isinstance(memory.embedder, Embeddings)
-    assert memory.k_docs == 24
     assert isinstance(memory.encoder, Encoding)
-    assert memory.max_fewshot_tokens == 500
-    assert memory.num_fewshots == 6
+
     assert len(memory.success_traj_docs) == 48
     assert memory.vectorstore
 
@@ -120,12 +111,9 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
     assert memory.fewshot_keys
     assert memory.fewshot_examples
     assert memory.strategy == "task"
-    assert memory.reranker_strategy is None
     assert isinstance(memory.embedder, Embeddings)
-    assert memory.k_docs == 24
     assert isinstance(memory.encoder, Encoding)
-    assert memory.max_fewshot_tokens == 500
-    assert memory.num_fewshots == 6
+
     assert len(memory.success_traj_docs) == 86
     assert memory.vectorstore
 
@@ -309,8 +297,15 @@ def test_expel_experience_memory_load_memories(expel_experiences_10_fake_path: s
 
     queries = {
         "task": 'The creator of "Wallace and Gromit" also created what animation comedy that matched animated zoo animals with a soundtrack of people talking about their homes? ',
-        "thought": 'Thought: I should try a different approach. Let me search for press releases, industry news sources, or announcements specifically related to the name change and new acronym for VIVA Media AG in 2004. By focusing on more specialized sources, I may be able to find the accurate information needed to answer the question correctly. '
+        "thought": 'Thought: I should try a different approach. Let me search for press releases, industry news sources, or announcements specifically related to the name change and new acronym for VIVA Media AG in 2004. By focusing on more specialized sources, I may be able to find the accurate information needed to answer the question correctly. ',
+        "other": "Some other query."
     }
+
+    empty_thought_queries = {
+        "task": 'The creator of "Wallace and Gromit" also created what animation comedy that matched animated zoo animals with a soundtrack of people talking about their homes? ',
+        "thought": ""
+    }
+
 
     # Test when memory is empty.
     memory = ExpeLExperienceMemory()
@@ -318,13 +313,84 @@ def test_expel_experience_memory_load_memories(expel_experiences_10_fake_path: s
     assert list(memory_dict.keys()) == ["fewshots"]
     assert not memory_dict['fewshots']
 
-    # Test with every query type.
+    # Test non-empty memory with different query types like "task" and "thought".
+    # Other query types limited to keys of queries.
+    memory = ExpeLExperienceMemory(experiences)
+    memory_dict = memory.load_memories(queries=queries, query_type="task")
+    assert list(memory_dict.keys()) == ["fewshots"]
+    assert isinstance(memory_dict['fewshots'], list)
+    assert len(memory_dict['fewshots']) == 2
+
+    memory_dict = memory.load_memories(queries=queries, query_type="thought")
+    assert list(memory_dict.keys()) == ["fewshots"]
+    assert isinstance(memory_dict['fewshots'], list)
+    assert len(memory_dict['fewshots']) == 2
+
+    memory_dict = memory.load_memories(queries=queries, query_type="other")
+    assert list(memory_dict.keys()) == ["fewshots"]
+    assert isinstance(memory_dict['fewshots'], list)
+    assert len(memory_dict['fewshots']) == 2
 
     # Test with every reranking strategy + error.
+    with pytest.raises(NotImplementedError):
+        memory_dict = memory.load_memories(queries, query_type="task", reranker_strategy="invalid input")
+
+    # First case.
+    memory_dict = memory.load_memories(empty_thought_queries, query_type="task", reranker_strategy="thought")
+    assert list(memory_dict.keys()) == ["fewshots"]
+    assert isinstance(memory_dict['fewshots'], list)
+    assert len(memory_dict['fewshots']) == 2
+
+    # Length case.
+    memory_dict = memory.load_memories(queries, query_type="task", reranker_strategy="length")
+    assert list(memory_dict.keys()) == ["fewshots"]
+    assert isinstance(memory_dict['fewshots'], list)
+    assert len(memory_dict['fewshots']) == 2
+
+    # Thought case.
+    memory_dict = memory.load_memories(queries, query_type="task", reranker_strategy="thought")
+    assert list(memory_dict.keys()) == ["fewshots"]
+    assert isinstance(memory_dict['fewshots'], list)
+    assert len(memory_dict['fewshots']) == 2
+
+    # Task case.
+    memory_dict = memory.load_memories(queries, query_type="task", reranker_strategy="task")
+    assert list(memory_dict.keys()) == ["fewshots"]
+    assert isinstance(memory_dict['fewshots'], list)
+    assert len(memory_dict['fewshots']) == 2
 
     # Test with varying max_fewshot_tokens.
-    
+    memory_dict = memory.load_memories(queries, query_type="task", max_fewshot_tokens=0)
+    assert list(memory_dict.keys()) == ["fewshots"]
+    assert isinstance(memory_dict['fewshots'], list)
+    assert len(memory_dict['fewshots']) == 0
+
     # Test with varying num_fewshots.
+    memory_dict = memory.load_memories(queries, query_type="task", num_fewshots=3)
+    assert list(memory_dict.keys()) == ["fewshots"]
+    assert isinstance(memory_dict['fewshots'], list)
+    assert len(memory_dict['fewshots']) == 2
+
+    memory_dict = memory.load_memories(queries, query_type="task", num_fewshots=2)
+    assert list(memory_dict.keys()) == ["fewshots"]
+    assert isinstance(memory_dict['fewshots'], list)
+    assert len(memory_dict['fewshots']) == 2
+
+    memory_dict = memory.load_memories(queries, query_type="task", num_fewshots=1)
+    assert list(memory_dict.keys()) == ["fewshots"]
+    assert isinstance(memory_dict['fewshots'], list)
+    assert len(memory_dict['fewshots']) == 1
+
+    memory_dict = memory.load_memories(queries, query_type="task", num_fewshots=0)
+    assert list(memory_dict.keys()) == ["fewshots"]
+    assert isinstance(memory_dict['fewshots'], list)
+    assert len(memory_dict['fewshots']) == 0
+
+    # Test with varying k_docs.
+    memory_dict = memory.load_memories(queries, query_type="task", k_docs=0)
+    assert list(memory_dict.keys()) == ["fewshots"]
+    assert isinstance(memory_dict['fewshots'], list)
+    assert len(memory_dict['fewshots']) == 0
 
 
 def test_expel_experience_memory_show_memories(expel_experiences_10_fake_path: str) -> None:
