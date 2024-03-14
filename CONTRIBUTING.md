@@ -39,12 +39,15 @@ Check the "Developer Setup" below for the developer workflow.
 
 ## 2. 🔨 Developer Setup
 
-First install [anaconda](https://docs.anaconda.com/free/anaconda/install/windows/) and add to path by going to advanced system settings. Then, launch cmd.
+First install [anaconda](https://docs.anaconda.com/free/anaconda/install/windows/) and follow the recommended settings. Once installed, open up the "Anaconda Prompt" and type in the command "conda --version". If everything has worked, it should print "conda xx.xx.x".
+For example: "conda 23.11.0
+
+(P.S: You may add Anaconda to your path environment variables on your own (if you feel comfortable), however this is discouraged by Anaconda themselves as it may "interfere with other software". Instead, they recommend to use the Anaconda Prompt.)
 
 Ensure you have `make`. if it's not installed on your computer, Please follow this [article](https://earthly.dev/blog/makefiles-on-windows/).
 
 
-Use the following command to create a conda environment `discussion-agents` with Python version 3.10.13. Any Python version above 3.9 is viable.
+Open up the Anaconda Command Prompt and use the following command to create a conda environment `discussion-agents` with Python version 3.10.13. Any Python version above 3.9 is viable.
 ```
 conda create -n discussion-agents python=3.10.13
 ```
@@ -52,12 +55,24 @@ Now activate the environment.
 ```
 conda activate discussion-agents
 ```
+Please ensure you are in your virtual environment prior to beginning the next step. The Anaconda Command Prompt should have changed from `(base) C:\Users\<username>>` ---> `(discussion-agents) C:\Users\<username>>`. The change from (base) to (discussion-agents) indicates that you are now in your virtual environment.
+
 Next, we will install [Poetry](https://python-poetry.org/docs/) using [pipx](https://pipx.pypa.io/stable/docs/).
 ```
 pip install pipx
 pipx install poetry
 ```
 Make sure to add poetry to path by adding `C:\Users\<username>\.local\bin` to path in advanced system settings. For other operating systems, the path will be different. Ensure poetry is in the environment variable paths.
+
+To Ensure that pipx has been successfully installed, type in the command:
+```
+pipx -- version
+``` 
+This should output the version if it has been installed properly. Then, to check for poetry installation, type in the command:
+``` 
+poetry --version
+```
+This will output the poetry version.
 
 Then clone the repository and enter the discussion-agents directory.
 ``` 
