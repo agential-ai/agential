@@ -394,27 +394,101 @@ class ExpeLExperienceMemory(BaseMemory):
     
 
 class ExpeLInsightMemory(BaseMemory):
+    """A memory management class for ExpeL insights, handling operations like adding, deleting,
+    and updating insights within a memory storage with a maximum capacity.
+
+    Attributes:
+        insights (List[Dict[str, Any]]): A list to store insight dictionaries.
+        max_num_insights (int): Maximum number of insights that can be stored.
+        _is_full (bool): Indicates whether the memory storage has reached its capacity.
+    """
     def __init__(
         self, 
-        insights: Optional[List[Tuple[str, int]]] = []
+        insights: Optional[List[Dict[str, Any]]] = [],
+        max_num_insights: int = 20
     ) -> None:
+        """Initializes the ExpeLInsightMemory with optional insights and a maximum storage limit.
+
+        Args:
+            insights (Optional[List[Dict[str, Any]]]): Initial list of insights to store in memory.
+            max_num_insights (int): The maximum number of insights that can be stored.
+        """
         super().__init__()
+
         self.insights = insights
+        self.max_num_insights = max_num_insights
+
+        self._is_full = len(self.insights) >= self.max_num_insights
 
     def clear(self) -> None:
+        """Clears all stored insights from the memory.
+        """
         self.insights = []
 
-    def add_memories(self, *args: Any, **kwargs: Any) -> None:
-        self.insights.append()
+    def add_memories(self, insights: List[Dict[str, Any]]) -> None:
+        """Adds new insights to the memory, up to the maximum storage limit.
 
-    def delete_memories(self, *args: Any, **kwargs: Any) -> None:
-        pass
-    
-    def update_memories(self, *args: Any, **kwargs: Any) -> None:
-        pass
+        Args:
+            insights (List[Dict[str, Any]]): A list of insights to add to the memory.
+        """
+        for insight in insights:
+            if len(self.insights) >= self.max_num_insights:
+                break
+            self.insights.append(insight)
+
+        self._is_full = len(self.insights) >= self.max_num_insights        
+
+    def delete_memories(self, idx: int) -> None:
+        """Deletes an insight from memory based on its index. 
+        
+        Adjusts insight scores before deletion.
+
+        Args:
+            idx (int): The index of the insight to delete.
+        """
+        if self._is_full:
+            _ = self.insights.pop(idx)
+        else:
+            self.insights[idx]['score'] -= 1
+            if self.insights[idx]['score'] <= 0:
+                _ = self.insights.pop(idx)
+
+        self._is_full = len(self.insights) >= self.max_num_insights
+
+    def update_memories(self, idx: int, insight: str, update_type: str) -> None:
+        """Updates an insight or its score based on the specified update type.
+
+        Args:
+            idx (int): The index of the insight to update.
+            insight (str): The new insight text (if applicable).
+            update_type (str): The type of update ("EDIT", "AGREE", or other custom types).
+        """
+        if update_type == "EDIT":
+            self.insights[idx]['insight'] = insight
+            self.insights[idx]['score'] += 1
+        elif update_type == "AGREE":
+            self.insights[idx]['score'] += 1
+        else:
+            raise NotImplementedError
 
     def load_memories(self, insights_key = "insights") -> Dict[str, Any]:
+        """Loads and returns stored insights.
+
+        Args:
+            insights_key (str): The key name under which insights are returned.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing stored insights.
+        """
         return {insights_key: self.insights}
 
     def show_memories(self, insights_key = "insights") -> Dict[str, Any]:
+        """Returns a dictionary of all stored insights for display or analysis.
+
+        Args:
+            insights_key (str): The key name under which insights are returned.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing stored insights.
+        """
         return {insights_key: self.insights}
