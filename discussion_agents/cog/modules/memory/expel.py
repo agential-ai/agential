@@ -386,3 +386,30 @@ class ExpeLExperienceMemory(BaseMemory):
             "success_traj_docs": self.success_traj_docs,
             "vectorstore": self.vectorstore
         }
+    
+
+class ExpeLInsightMemory(BaseMemory):
+    def __init__(
+        self, 
+        insights: Optional[List[Tuple[str, int]]] = []
+    ) -> None:
+        super().__init__()
+        self.insights = insights
+
+    def clear(self) -> None:
+        self.insights = []
+
+    def add_memories(self, *args: Any, **kwargs: Any) -> None:
+        self.insights.append()
+
+    def delete_memories(self, *args: Any, **kwargs: Any) -> None:
+        pass
+    
+    def update_memories(self, *args: Any, **kwargs: Any) -> None:
+        pass
+
+    def load_memories(self, *args: Any, **kwargs: Any) -> Dict[str, Any]:
+        pass
+
+    def show_memories(self, *args: Any, **kwargs: Any) -> Dict[str, Any]:
+        return {"insights": self.insights}
