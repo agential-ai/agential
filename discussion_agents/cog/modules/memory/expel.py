@@ -413,8 +413,8 @@ class ExpeLInsightMemory(BaseMemory):
     def update_memories(self, *args: Any, **kwargs: Any) -> None:
         pass
 
-    def load_memories(self, *args: Any, **kwargs: Any) -> Dict[str, Any]:
-        pass
+    def load_memories(self, insights_key = "insights") -> Dict[str, Any]:
+        return {insights_key: self.insights}
 
     def show_memories(self, insights_key = "insights") -> Dict[str, Any]:
         return {insights_key: self.insights}
