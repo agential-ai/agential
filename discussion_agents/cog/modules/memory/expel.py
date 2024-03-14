@@ -375,16 +375,21 @@ class ExpeLExperienceMemory(BaseMemory):
         return {"fewshots": fewshots}
 
 
-    def show_memories(self) -> Dict[str, Any]:
+    def show_memories(
+        self, 
+        experiences_key: str = "experiences",
+        success_traj_docs_key: str = "success_traj_docs",
+        vectorstore_key: str = "vectorstore"
+    ) -> Dict[str, Any]:
         """Displays the current set of stored experiences and vectorstore information.
         
         Returns:
             Dict[str, Any]: A dictionary containing experiences, succcessful trajectory documents, and vectorstore details.
         """
         return {
-            "experiences": self.experiences,
-            "success_traj_docs": self.success_traj_docs,
-            "vectorstore": self.vectorstore
+            experiences_key: self.experiences,
+            success_traj_docs_key: self.success_traj_docs,
+            vectorstore_key: self.vectorstore
         }
     
 
@@ -411,5 +416,5 @@ class ExpeLInsightMemory(BaseMemory):
     def load_memories(self, *args: Any, **kwargs: Any) -> Dict[str, Any]:
         pass
 
-    def show_memories(self, *args: Any, **kwargs: Any) -> Dict[str, Any]:
-        return {"insights": self.insights}
+    def show_memories(self, insights_key = "insights") -> Dict[str, Any]:
+        return {insights_key: self.insights}
