@@ -29,18 +29,12 @@ def _build_agent_prompt(question: str, scratchpad: str, examples: str , prompt_t
     prompt = PromptTemplate.from_template(prompt_template).format(
         examples=examples,
         question=question,
-<<<<<<< HEAD
         scratchpad=scratchpad
-=======
-        scratchpad=scratchpad,
-        max_steps=max_steps,
->>>>>>> 3bbf3b9a2c512d588a3ec97c59310036449fcfb2
     )
     return prompt
 
 
 def _prompt_agent(
-<<<<<<< HEAD
         llm: BaseChatModel, 
         question: str, 
         scratchpad: str, 
@@ -48,11 +42,7 @@ def _prompt_agent(
         prompt_template: str, 
         stop: str='\n'
     ) -> str:
-=======
-    llm: BaseChatModel, question: str, scratchpad: str, max_steps: int
-) -> str:
 
->>>>>>> 3bbf3b9a2c512d588a3ec97c59310036449fcfb2
     """Generates a response from the LLM based on a given question and scratchpad.
 
     This function creates a prompt using `_build_agent_prompt` and then gets the LLM's output.
@@ -64,18 +54,11 @@ def _prompt_agent(
         scratchpad (str): Additional context or information for the language model.
         examples (str): The example used for specific benchmark for AI model to generate prompt accordingly.
         prompt_template (str): The template of the prompt that is inputted into scratchpad.
-<<<<<<< HEAD
         stop (str): The stop condition for the language model. Defaults to None.
-=======
-        stop (Union[List[str], None]): The stop condition for the language model. Defaults to None.
-        max_steps (int): Maximum number of steps.
-
->>>>>>> 3bbf3b9a2c512d588a3ec97c59310036449fcfb2
 
     Returns:
         str: The processed response from the language model.
     """
-<<<<<<< HEAD
     prompt = _build_agent_prompt(
         question=question, 
         scratchpad=scratchpad, 
@@ -83,10 +66,6 @@ def _prompt_agent(
         prompt_template=prompt_template
     )
 
-=======
-
-    prompt = _build_agent_prompt(question=question, scratchpad=scratchpad, examples=examples, prompt_template=prompt_template)
->>>>>>> 3bbf3b9a2c512d588a3ec97c59310036449fcfb2
     out = llm([HumanMessage(content=prompt)], stop=stop).content
 
     assert isinstance(out, str)
@@ -125,7 +104,6 @@ def _is_halted(
     """
     over_max_steps = step_n > max_steps
     over_token_limit = (
-<<<<<<< HEAD
         len(
             enc.encode(
                 _build_agent_prompt(
@@ -136,17 +114,6 @@ def _is_halted(
                 )
             )
         )
-=======
-
-        len(
-            enc.encode(
-                _build_agent_prompt(
-                    question=question, scratchpad=scratchpad, max_steps=max_steps
-                )
-            )
-        )
-
->>>>>>> 3bbf3b9a2c512d588a3ec97c59310036449fcfb2
         > max_tokens
     )
     return finished or over_max_steps or over_token_limit
