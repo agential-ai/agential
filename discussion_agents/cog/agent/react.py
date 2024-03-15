@@ -110,11 +110,6 @@ class ReActAgent(BaseAgent):
         - Handling environment output if provided.
         - Generating an action based on the provided question, examples, and prompt template.
         - Parsing the action and performing the corresponding observation.
-<<<<<<< HEAD
-
-=======
-       
->>>>>>> 3bbf3b9a2c512d588a3ec97c59310036449fcfb2
         Args:
             question (str): The question for the conversation step.
             examples (str): Examples relevant to the question.
@@ -133,11 +128,7 @@ class ReActAgent(BaseAgent):
             self.memory.add_memories(f"\nObservation {self._step_n}: ")
             self.memory.add_memories(env_output)
 
-<<<<<<< HEAD
         # Handling "Thinking" mode
-=======
-
->>>>>>> 3bbf3b9a2c512d588a3ec97c59310036449fcfb2
         if self.is_think:
             self.memory.add_memories("\nThought:")
             thought = _prompt_agent(
@@ -159,7 +150,7 @@ class ReActAgent(BaseAgent):
             scratchpad=self.memory.load_memories()["scratchpad"],
             examples=examples,
             prompt_template=prompt_template,
-            stop=['\n']
+            stop=''.join(['\\n'])
         ).strip()
 
         # Processing the action if not in "Thinking" mode
@@ -187,12 +178,8 @@ class ReActAgent(BaseAgent):
             if action_type.lower() == "finish":
                 self._answer = query
                 self._finished = True
-<<<<<<< HEAD
                 self.memory.add_memories(query)
 
-=======
-                obs = query
->>>>>>> 3bbf3b9a2c512d588a3ec97c59310036449fcfb2
             elif action_type.lower() == "search":
                 try:
                     obs = remove_newline(self.docstore.search(query))
@@ -211,12 +198,15 @@ class ReActAgent(BaseAgent):
             self.memory.add_memories(obs)
 
             out.append(
-                (
-                    f"Thought: {thought}",
-                    f"Action: {action}",
-                    f"Observation {self._step_n}: {obs}",
+                "\n".join(
+                    (
+                        f"Thought: {thought}",
+                        f"Action: {action}",
+                        f"Observation {self._step_n}: {obs}"
+                    )
                 )
-            )
+           )
+
 
 
             out.append(self.memory.load_memories()["scratchpad"].split("\n")[-1])
@@ -241,21 +231,9 @@ class ReActAgent(BaseAgent):
 
         return out
 
-<<<<<<< HEAD
-    def generate(self, question: str, reset: bool = True, examples: str = None, env: Any = None, prompt_template: str = None) -> str:
+    def generate(self, question: str, reset: bool = True, examples: str = "", env: Any = None, prompt_template: str = "") -> str:
         """
         Processes a given question through ReAct.
-=======
-    def generate(
-    self,
-    question: str,
-    reset: bool = True,
-    examples: Optional[str] = None,
-    env: Optional[Any] = None,
-    prompt_template: Optional[str] = None
-    ) -> str:
-        """Processes a given question through ReAct.
->>>>>>> 3bbf3b9a2c512d588a3ec97c59310036449fcfb2
 
         Iteratively applies the think-act-observe cycle to generate an answer for the question.
         The process continues until the operation is halted based on certain conditions.
@@ -328,7 +306,7 @@ class ReActAgent(BaseAgent):
             scratchpad=scratchpad,
             examples=examples,
             prompt_template=prompt_template,
-            stop=['\n']
+            stop=''.join(['\\n'])
         ).strip()
         self.memory.add_memories(" " + thought)
         return thought
@@ -354,7 +332,7 @@ class ReActAgent(BaseAgent):
             scratchpad=scratchpad,
             examples=examples,
             prompt_template=prompt_template,
-            stop=['\n']
+            stop=''.join(['\\n'])
         ).strip()
         self.memory.add_memories(" " + action)
         return action
