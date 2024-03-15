@@ -8,7 +8,7 @@ Paper Repository: https://github.com/ysymyth/ReAct
 LangChain: https://github.com/langchain-ai/langchain
 LangChain ReAct: https://python.langchain.com/docs/modules/agents/agent_types/react
 """
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import tiktoken
 
@@ -88,6 +88,7 @@ class ReActAgent(BaseAgent):
         self._finished = False  #: :meta private:
         self.is_think = True # this is for the 
 
+
     def set_Alfworld(self) -> None:
         """
         Set the 'is_think' attribute of the object to False.
@@ -101,7 +102,7 @@ class ReActAgent(BaseAgent):
         self.is_think = False
         return
     
-    def step(self, question: str, examples: str, prompt_template: str, env_output: Optional[str] = None) -> List:
+    def step(self, question: str, examples: str, prompt_template: str, env_output: Optional[str] = None) -> List[str]:
         """
         Perform a step in the conversation based on the given question and examples.
 
@@ -109,7 +110,11 @@ class ReActAgent(BaseAgent):
         - Handling environment output if provided.
         - Generating an action based on the provided question, examples, and prompt template.
         - Parsing the action and performing the corresponding observation.
+<<<<<<< HEAD
 
+=======
+       
+>>>>>>> 3bbf3b9a2c512d588a3ec97c59310036449fcfb2
         Args:
             question (str): The question for the conversation step.
             examples (str): Examples relevant to the question.
@@ -128,7 +133,11 @@ class ReActAgent(BaseAgent):
             self.memory.add_memories(f"\nObservation {self._step_n}: ")
             self.memory.add_memories(env_output)
 
+<<<<<<< HEAD
         # Handling "Thinking" mode
+=======
+
+>>>>>>> 3bbf3b9a2c512d588a3ec97c59310036449fcfb2
         if self.is_think:
             self.memory.add_memories("\nThought:")
             thought = _prompt_agent(
@@ -171,19 +180,22 @@ class ReActAgent(BaseAgent):
             return out
         else:
             self.memory.add_memories(f"\nObservation {self._step_n}: ")
+
             action_type, query = parse_action(action)
 
             # Handling different action types
             if action_type.lower() == "finish":
                 self._answer = query
                 self._finished = True
+<<<<<<< HEAD
                 self.memory.add_memories(query)
 
+=======
+                obs = query
+>>>>>>> 3bbf3b9a2c512d588a3ec97c59310036449fcfb2
             elif action_type.lower() == "search":
                 try:
-                    self.memory.add_memories(
-                        remove_newline(self.docstore.search(query))
-                    )
+                    obs = remove_newline(self.docstore.search(query))
                 except Exception:
                     self.memory.add_memories(
                         "Could not find that page, please try again."
@@ -191,17 +203,21 @@ class ReActAgent(BaseAgent):
 
             elif action_type.lower() == "lookup":
                 try:
-                    self.memory.add_memories(
-                        remove_newline(self.docstore.lookup(query))
-                    )
+                    obs = remove_newline(self.docstore.lookup(query))
                 except ValueError:
-                    self.memory.add_memories(
-                        "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
-                    )
+                    obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
             else:
-                self.memory.add_memories(
-                    "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
+                obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
+            self.memory.add_memories(obs)
+
+            out.append(
+                (
+                    f"Thought: {thought}",
+                    f"Action: {action}",
+                    f"Observation {self._step_n}: {obs}",
                 )
+            )
+
 
             out.append(self.memory.load_memories()["scratchpad"].split("\n")[-1])
 
@@ -223,11 +239,23 @@ class ReActAgent(BaseAgent):
         if finished:
             self.is_think = True
 
-        return out, finished
+        return out
 
+<<<<<<< HEAD
     def generate(self, question: str, reset: bool = True, examples: str = None, env: Any = None, prompt_template: str = None) -> str:
         """
         Processes a given question through ReAct.
+=======
+    def generate(
+    self,
+    question: str,
+    reset: bool = True,
+    examples: Optional[str] = None,
+    env: Optional[Any] = None,
+    prompt_template: Optional[str] = None
+    ) -> str:
+        """Processes a given question through ReAct.
+>>>>>>> 3bbf3b9a2c512d588a3ec97c59310036449fcfb2
 
         Iteratively applies the think-act-observe cycle to generate an answer for the question.
         The process continues until the operation is halted based on certain conditions.
