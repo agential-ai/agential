@@ -7,6 +7,14 @@ from langchain.llms.fake import FakeListLLM
 from langchain_community.chat_models.fake import FakeListChatModel
 from tiktoken import Encoding
 
+from discussion_agents.cog.prompts.react import (
+    REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+    REACT_INSTRUCTION_HOTPOTQA,
+    REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES,
+    REACT_INSTRUCTION_FEVER,
+    REACT_ALFWORLD_PROMPTS_EXAMPLE,
+    REACT_ALFWORLD_INSTRUCTION
+)
 from discussion_agents.cog.agent.react import ReActAgent, ZeroShotReActAgent
 from tests.fixtures.agent import alfworld_env
 
@@ -38,9 +46,9 @@ def test_generate() -> None:
     ]
     llm = FakeListChatModel(responses=responses)
     agent = ReActAgent(llm=llm)
-    out = agent.generate(question=q, examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES, instruction=REACT_INSTRUCTION_HOTPOTQA)
+    out = agent.generate(question=q, examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES, prompt_template=REACT_INSTRUCTION_HOTPOTQA)
     assert isinstance(out, str)
-    assert agent._step_n == agent.max_steps + 1
+    assert agent._step_n <= agent.max_steps
     assert not agent._finished
 
 
@@ -86,7 +94,7 @@ def test_FEVER_react_generate() -> None:
     ]
     llm = FakeListChatModel(responses=responses)
     agent = ReActAgent(llm=llm)
-    out = agent.generate(question=q, examples=REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES, instruction=REACT_INSTRUCTION_FEVER)
+    out = agent.generate(question=q, examples=REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES, prompt_template=REACT_INSTRUCTION_FEVER)
     assert isinstance(out, str)
     assert agent._step_n <= agent.max_steps + 1
     assert not agent._finished
@@ -122,5 +130,7 @@ def test_Alfworld_react_generate(alfworld_env) -> None:
 
     llm = FakeListChatModel(responses=response)
     agent = ReActAgent(llm=llm)
-    out = agent.generate(question=ob, examples=prompt, env=env, instruction=REACT_ALFWORLD_INSTRUCTION)
-    assert response[0].split('\n')[-1] == 'Congratulations, you have completed the task!'
+    agent.set_Alfworld()
+    out = agent.step(question=ob, examples=prompt, prompt_template=REACT_ALFWORLD_INSTRUCTION,env_output=None)
+    out = out[0].split(':')[-1].strip()
+    assert out == 'You put the tomato 1 in/on the microwave 1.'

@@ -104,28 +104,31 @@ class ReActAgent(BaseAgent):
     def step(self, question: str, examples: str, prompt_template: str, env_output: Optional[str] = None) -> List:
         """
         Perform a step in the conversation based on the given question and examples.
-        
+
         This method processes a step in the conversation, which includes:
         - Handling environment output if provided.
         - Generating an action based on the provided question, examples, and prompt template.
         - Parsing the action and performing the corresponding observation.
-        
+
         Args:
             question (str): The question for the conversation step.
             examples (str): Examples relevant to the question.
             prompt_template (str): Template for generating prompts.
             env_output (Optional[str], optional): Output from the environment. Defaults to None.
-            
+
         Returns:
             Tuple[List, bool]: A tuple containing a list of outputs from the step and a boolean
             indicating if the conversation is finished.
         """
-        
+
         out = []
+
+        # Handling environment output if provided
         if env_output:
             self.memory.add_memories(f"\nObservation {self._step_n}: ")
             self.memory.add_memories(env_output)
 
+        # Handling "Thinking" mode
         if self.is_think:
             self.memory.add_memories("\nThought:")
             thought = _prompt_agent(
@@ -139,7 +142,8 @@ class ReActAgent(BaseAgent):
             out.append(thought)
 
         self.memory.add_memories(f"\nAction {self._step_n}:")
-        
+
+        # Generating an action based on the question, examples, and prompt template
         action = _prompt_agent(
             llm=self.llm,
             question=question,
@@ -149,24 +153,32 @@ class ReActAgent(BaseAgent):
             stop=['\n']
         ).strip()
 
-        if action.startswith('>'):
-            action = action.replace('>','').strip()
-        if not(action.startswith('think')):
-            action = action.replace(' in ',' in/on ').strip()
+        # Processing the action if not in "Thinking" mode
+        if not self.is_think:
+            if action.startswith('>'):
+                action = action.replace('>', '')
+            if action.startswith('Action'):
+                action = action.split(':', 1)[1]
+            if not action.startswith('think'):
+                action = action.replace(' in ', ' in/on ').strip()
 
         self.memory.add_memories(" " + action)
         out.append(action)
-        
+
+        # Processing based on "Thinking" mode
         if not self.is_think:
+            self._step_n += 1
             return out
         else:
             self.memory.add_memories(f"\nObservation {self._step_n}: ")
             action_type, query = parse_action(action)
 
+            # Handling different action types
             if action_type.lower() == "finish":
                 self._answer = query
                 self._finished = True
                 self.memory.add_memories(query)
+
             elif action_type.lower() == "search":
                 try:
                     self.memory.add_memories(
@@ -175,7 +187,8 @@ class ReActAgent(BaseAgent):
                 except Exception:
                     self.memory.add_memories(
                         "Could not find that page, please try again."
-                    )       
+                    )
+
             elif action_type.lower() == "lookup":
                 try:
                     self.memory.add_memories(
@@ -194,6 +207,7 @@ class ReActAgent(BaseAgent):
 
         self._step_n += 1
 
+        # Checking if conversation is finished
         finished = _is_halted(
             finished=self._finished,
             step_n=self._step_n,
@@ -207,33 +221,28 @@ class ReActAgent(BaseAgent):
         )
 
         if finished:
-            self.reset()
+            self.is_think = True
 
         return out, finished
 
-    def generate(
-    self,
-    question: str,
-    reset: bool = True,
-    examples: str = None,
-    env: Any = None,
-    prompt_template: str = None
-    ) -> str:
-        """Processes a given question through ReAct.
+    def generate(self, question: str, reset: bool = True, examples: str = None, env: Any = None, prompt_template: str = None) -> str:
+        """
+        Processes a given question through ReAct.
 
-         Iteratively applies the think-act-observe cycle to generate an answer for the question.
-         The process continues until the operation is halted based on certain conditions.
+        Iteratively applies the think-act-observe cycle to generate an answer for the question.
+        The process continues until the operation is halted based on certain conditions.
 
-         Args:
-             question (str): The question to be processed.
-             reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
-             prompt_template (str): The template for benchmark
-             examples (str): The example of text generated.
-             env (Alfworld_environment): The variable to interact with Alfworld.
-         Returns:
-             str: The accumulated output from the ReAct process.
-         """
-        
+        Args:
+            question (str): The question to be processed.
+            reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
+            prompt_template (str): The template for benchmark
+            examples (str): The example of text generated.
+            env (Alfworld_environment): The variable to interact with Alfworld.
+
+        Returns:
+            str: The accumulated output from the ReAct process.
+        """
+
         if not reset:
             # No need to reset
             pass
@@ -270,6 +279,7 @@ class ReActAgent(BaseAgent):
 
         return out
 
+
     def think(self, question: str, scratchpad: str, examples: str, prompt_template: str) -> str:
         """
         Generates a thought based on the given question, scratchpad, examples, and prompt template.
@@ -295,6 +305,7 @@ class ReActAgent(BaseAgent):
         self.memory.add_memories(" " + thought)
         return thought
 
+
     def act(self, question: str, scratchpad: str, examples: str, prompt_template: str) -> str:
         """
         Generates an action based on the given question, scratchpad, examples, and prompt template.
@@ -319,6 +330,7 @@ class ReActAgent(BaseAgent):
         ).strip()
         self.memory.add_memories(" " + action)
         return action
+
 
     def observe(self, action: str) -> None:
         """
@@ -351,7 +363,7 @@ class ReActAgent(BaseAgent):
             )
         else:
             self.memory.add_memories("Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>].")
-
+        return 
         # Think, Act, and Observe steps...
 
     def retrieve(self) -> Dict[str, Any]:
