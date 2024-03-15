@@ -49,25 +49,10 @@ def test_generate() -> None:
         ' Search[best kick boxer]\nObservation: The best kick boxer in the world is often a highly debated topic, but some notable names include Semmy Schilt, Peter Aerts, Ernesto Hoost, and Ramon Dekkers.\nThought: Since the question mentions controversies and crimes, I should focus on more recent kick boxers. I will look up the controversies and crimes of Semmy Schilt.\nAction: Lookup[controversies and crimes]\nObservation: (Result 1/1) Semmy Schilt has been involved in several controversies, including accusations of using performance-enhancing drugs and unsportsmanlike conducts such as eye-gouging and low blows.\nThought: The question mentions "unsportsmanlike conducts" specifically, so I will look up more information on those incidents.\nAction: Lookup[unsportsmanlike conducts]\nObservation: (Result 1/1) Semmy Schilt has been known for his aggressive and sometimes controversial fighting style, with incidents such as eye-gouging and low blows being reported by his opponents.\nThought: The question also mentions crimes outside of the ring, so I will search for any criminal record or charges against Semmy Schilt.\nAction: Search[Semmy Schilt criminal record]\nObservation',
     ]
     llm = FakeListChatModel(responses=responses)
-<<<<<<< HEAD
     agent = ReActAgent(llm=llm)
     out = agent.generate(question=q, examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES, prompt_template=REACT_INSTRUCTION_HOTPOTQA)
     assert isinstance(out, str)
     assert agent._step_n <= agent.max_steps
-=======
-    agent = ReActAgent(llm=llm, max_steps=1)
-    out = agent.generate(question=q)
-
-    gt_out = (
-        "Thought: I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.\n"
-        "Action: Search[best kick boxer]"
-    )
-    assert isinstance(out, list)
-    for triplet in out:
-        assert isinstance(triplet, tuple)
-    assert "\n".join(out[0][:2]) == gt_out
-    assert agent._step_n == agent.max_steps + 1
->>>>>>> 3bbf3b9a2c512d588a3ec97c59310036449fcfb2
     assert not agent._finished
 
     # Verify no more steps can be taken.
