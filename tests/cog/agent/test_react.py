@@ -113,7 +113,6 @@ def test_generate() -> None:
     assert gt_out == gt_out
     assert agent.memory.load_memories()["scratchpad"] == gt_out
 
-
 def test_reset(react_agent: ReActAgent) -> None:
     """Test reset."""
     assert react_agent.memory.scratchpad == ""

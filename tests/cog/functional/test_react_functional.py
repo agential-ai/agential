@@ -1,6 +1,6 @@
 """Unit tests for ReAct functional module."""
 import tiktoken
-
+from typing import List
 from langchain_community.chat_models.fake import FakeListChatModel
 
 from discussion_agents.cog.functional.react import (
@@ -17,6 +17,7 @@ from discussion_agents.cog.prompts.react import (
   REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
 )
 
+gpt3_5_turbo_enc = tiktoken.encoding_for_model("gpt-3.5-turbo")
 
 def test__build_agent_prompt() -> None:
     """Test _build_agent_prompt function."""
@@ -111,7 +112,6 @@ def test__prompt_agent() -> None:
 
 def test__is_halted() -> None:
     """Test _is_halted function."""
-    gpt3_5_turbo_enc = tiktoken.encoding_for_model("gpt-3.5-turbo")
 
     # Test when finish is true.
     assert _is_halted(True, 1, 10, "question", "scratchpad", 100, gpt3_5_turbo_enc)
@@ -135,18 +135,25 @@ def test__is_halted() -> None:
     assert _is_halted(False, 1, 10, "question", "scratchpad", 20, gpt3_5_turbo_enc)
 
 def test_check_keyword():
+    """
+    Test the _check_keyword() function with examples from different Prompts Example.
+
+    This function tests the behavior of the _check_keyword() function by passing
+    examples from different Prompts (REACT_ALFWORLD_PROMPTS_EXAMPLE,
+    REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES, and
+    REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES) and asserting the expected output.
+    """
     alfworld_example = REACT_ALFWORLD_PROMPTS_EXAMPLE['react_put_0']
-    step_utilised = _check_keyword(alfworld_example)
-    bool_list = [bool(item) for item in step_utilised]
-    assert bool_list == [False , True , True]
+    step_utilised: List[bool] = _check_keyword(alfworld_example)
+    assert [bool(item) for item in step_utilised] == [False, True, True]
+
     fever_example = REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES
     step_utilised = _check_keyword(fever_example)
-    bool_list = [bool(item) for item in step_utilised]
-    assert bool_list == [True , True , True]
+    assert [bool(item) for item in step_utilised] == [True, True, True]
+
     hotpotqa_example = REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
     step_utilised = _check_keyword(hotpotqa_example)
-    bool_list = [bool(item) for item in step_utilised]
-    assert bool_list == [True , True , True]
+    assert [bool(item) for item in step_utilised] == [True, True, True]
 
 def test_process_ob():
     example_input = "You arrive at loc 22. On the countertop 2, you see a butterknife 1, a cellphone 1, a creditcard 1, a knife 1, a lettuce 1, a saltshaker 2, a saltshaker 1, a statue 1, and a tomato 1.\nYou pick up the tomato 1 from the countertop 2."
