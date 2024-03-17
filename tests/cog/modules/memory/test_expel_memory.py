@@ -6,7 +6,7 @@ import pytest
 
 from langchain_core.embeddings import Embeddings
 from tiktoken.core import Encoding
-from discussion_agents.cog.modules.memory.expel import ExpeLExperienceMemory
+from discussion_agents.cog.modules.memory.expel import ExpeLExperienceMemory, ExpeLInsightMemory
 from discussion_agents.cog.prompts.react import REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
 
 fewshot_questions = re.findall(r'Question: (.+?)\n', REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES)
@@ -412,3 +412,120 @@ def test_expel_experience_memory_show_memories(expel_experiences_10_fake_path: s
     assert memory.experiences == memory_dict['experiences']
     assert len(memory_dict['success_traj_docs']) == 38
     assert memory_dict['vectorstore']
+
+
+def test_expel_insight_memory_init() -> None:
+    """Test ExpeLInsightMemory initialization."""
+
+    # Test with empty memory.
+    memory = ExpeLInsightMemory()
+    assert not memory.insights
+    assert memory.max_num_insights == 20
+    assert not memory._is_full
+
+    # Test initialization with insights and max_num_insights.
+    insights = [{'insight': 'Insight', 'score': 1}]
+    max_num_insights = 5
+    memory = ExpeLInsightMemory(insights=insights, max_num_insights=max_num_insights)
+    assert memory.insights == insights
+    assert memory.max_num_insights == max_num_insights
+    assert not memory._is_full
+
+
+def test_expel_insight_memory_clear() -> None:
+    """Test ExpeLInsightMemory clear method."""
+    insights = [{'insight': 'Insight', 'score': 1}]
+    max_num_insights = 5
+    memory = ExpeLInsightMemory(insights=insights, max_num_insights=max_num_insights)
+    memory.clear()
+    assert memory.insights == []
+    assert not memory._is_full
+
+
+def test_expel_insight_memory_add_memories() -> None:
+    """Test ExpeLInsightMemory add_memories method."""
+    memory = ExpeLInsightMemory(max_num_insights=3)
+    insights_to_add = [{"insight": "Test 1", "score": 1}, {"insight": "Test 2", "score": 2}]
+    memory.add_memories(insights_to_add)
+    assert len(memory.insights) == 2
+    assert memory.insights == insights_to_add
+
+    # Test exceeding max_num_insights.
+    memory.add_memories([{"insight": "Test 3", "score": 3}, {"insight": "Test 4", "score": 4}])
+    assert len(memory.insights) == 3  # Should not add beyond max_num_insights
+    assert memory._is_full
+
+
+def test_expel_insight_memory_delete_memories() -> None:
+    """Test ExpeLInsightMemory delete_memories method."""
+    memory = ExpeLInsightMemory(max_num_insights=3)
+    insights_to_add = [{"insight": "Test 1", "score": 1}, {"insight": "Test 2", "score": 2}]
+    memory.add_memories(insights_to_add)
+
+    # Test deleting the first item.
+    memory.delete_memories(0)
+    assert len(memory.insights) == 1 and memory.insights[0]["insight"] == "Test 2"
+
+    # Test deleting the last item (re-add and then delete the last).
+    memory.add_memories([{"insight": "Test 3", "score": 3}])
+    memory.delete_memories(1)  # Now index 1 should be "Test 3"
+    assert len(memory.insights) == 2 and memory.insights[0]["insight"] == "Test 2"
+
+
+    # Test deleting from an empty memory (setup a new instance to ensure it's empty).
+    empty_memory = ExpeLInsightMemory(max_num_insights=3)
+    empty_memory.delete_memories(0)
+    assert len(empty_memory.insights) == 0
+
+    # Test deleting the only item in memory.
+    single_item_memory = ExpeLInsightMemory(max_num_insights=3, insights=[{"insight": "Only Item", "score": 1}])
+    single_item_memory.delete_memories(0)
+    assert len(single_item_memory.insights) == 0, "Memory should be empty after deleting the only item."
+
+    # Test attempting to delete with an invalid index does not affect memory.
+    initial_length = len(memory.insights)
+    memory.delete_memories(5)  # Index out of range.
+    assert len(memory.insights) == initial_length
+
+
+def test_expel_insight_memory_update_memories() -> None:
+    """Test ExpeLInsightMemory update_memories method."""
+    memory = ExpeLInsightMemory(max_num_insights=3)
+    insights_to_add = [{"insight": "Test 1", "score": 1}]
+    memory.add_memories(insights_to_add)
+    memory.update_memories(0, "Updated Test 1", "EDIT")
+    assert memory.insights[0]["insight"] == "Updated Test 1"
+    assert memory.insights[0]["score"] == 2
+
+    memory.update_memories(0, "", "AGREE")
+    assert memory.insights[0]["score"] == 3
+
+
+def test_expel_insight_memory_load_memories() -> None:
+    """Test ExpeLInsightMemory load_memories method."""
+
+    # Test empty.
+    memory = ExpeLInsightMemory(max_num_insights=3)
+    loaded_memories = memory.load_memories()
+    assert loaded_memories == {"insights": []}
+
+    # Test non-empty.
+    insights = [{"insight": "Test 1", "score": 1}]
+    memory = ExpeLInsightMemory(insights, max_num_insights=3)
+    loaded_memories = memory.load_memories()
+    assert loaded_memories == {"insights": insights}
+
+
+def test_expel_insight_memory_show_memories() -> None:
+    """Test ExpeLInsightMemory show_memories method."""
+
+    # Test empty.
+    memory = ExpeLInsightMemory(max_num_insights=3)
+    loaded_memories = memory.show_memories()
+    assert loaded_memories == {"insights": []}
+
+    # Test non-empty.
+    insights = [{"insight": "Test 1", "score": 1}]
+    memory = ExpeLInsightMemory(insights, max_num_insights=3)
+    loaded_memories = memory.show_memories()
+    assert loaded_memories == {"insights": insights}
