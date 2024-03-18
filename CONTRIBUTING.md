@@ -48,41 +48,86 @@ Ensure you have `make`. if it's not installed on your computer, Please follow th
 
 
 Open up the Anaconda Command Prompt and use the following command to create a conda environment `discussion-agents` with Python version 3.10.13. Any Python version above 3.9 is viable.
+
 ```
 conda create -n discussion-agents python=3.10.13
 ```
+
 Now activate the environment.
+
 ```
 conda activate discussion-agents
 ```
+
 Please ensure you are in your virtual environment prior to beginning the next step. The Anaconda Command Prompt should have changed from `(base) C:\Users\<username>>` ---> `(discussion-agents) C:\Users\<username>>`. The change from (base) to (discussion-agents) indicates that you are now in your virtual environment.
 
 Next, we will install [Poetry](https://python-poetry.org/docs/) using [pipx](https://pipx.pypa.io/stable/docs/).
+
 ```
 pip install pipx
 pipx install poetry
 ```
+
 Make sure to add poetry to path by adding `C:\Users\<username>\.local\bin` to path in advanced system settings. For other operating systems, the path will be different. Ensure poetry is in the environment variable paths.
 
 To Ensure that pipx has been successfully installed, type in the command:
+
 ```
 pipx -- version
 ``` 
+
 This should output the version if it has been installed properly. Then, to check for poetry installation, type in the command:
+
 ``` 
 poetry --version
 ```
 This will output the poetry version.
 
 Then clone the repository and enter the discussion-agents directory.
+
 ``` 
 git clone https://github.com/alckasoc/discussion-agents/
 ```
+
 Finally install all of the packages.
+
 ```
 poetry install
 ```
-### Pre-commit Install/Uninstall
+
+### Verifying Environment Installation
+
+To verify your environment is correctly installed, please run the following commands. It may take a couple of minutes to run each command:
+
+```
+make lint
+```
+This command will execute the pre-made `lint` target in the Makefile. Essentially, it will check that coding standards are adhered too within your code. Achieved by first running `mypy` to do type checking, then check for code formatting issues with `black` and lastly, performing linting with `ruff`.
+
+If this command fails to run, check if Poetry has properly installed by running (same as previous section):
+
+```
+poetry --version
+```
+
+Next, run this command:
+
+```
+make auto_lint
+```
+
+Again, this command will execute the pre-made `auto-lint` target in the Makefile. Similar to the previous target `lint`, the makefile will run `black` to format your Python code in the `discussion-agents` and `tests` directories, and then use `ruff` to lint through those directories as well.
+
+Finally, run this command:
+
+```
+make test
+```
+
+The `test` command within the Makefile calls `pytest` on the `tests` directory, measuring how much of our code aligns with the unit tests we have created for it. With any errors or successes made with code, it will produce these reports in XML and into the terminal.
+
+
+### Pre-commit Install/Uninstall (Optional)
 
 Pre-commit automatically runs specified checks before each commit to ensure code quality, adherence to best practices, and error prevention. If the checks fail, the commit is rejected until the issues are resolved. 
 
