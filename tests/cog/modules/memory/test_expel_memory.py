@@ -118,6 +118,15 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
     assert memory.vectorstore
 
 
+def test_expel_experience_memory_len(expel_experiences_10_fake_path: str) -> None:
+    """Test ExpeLExperienceMemory len method."""
+    memory = ExpeLExperienceMemory()
+    assert len(memory) == 0
+
+    experiences = joblib.load(expel_experiences_10_fake_path)
+    memory = ExpeLExperienceMemory(experiences)
+    assert len(memory) == 10
+
 def test_expel_experience_memory_clear(expel_experiences_10_fake_path: str) -> None:
     """Test ExpeLExperienceMemory clear method."""
     experiences = joblib.load(expel_experiences_10_fake_path)
@@ -430,6 +439,16 @@ def test_expel_insight_memory_init() -> None:
     assert memory.insights == insights
     assert memory.max_num_insights == max_num_insights
     assert not memory._is_full
+
+
+def test_expel_insight_memory_len() -> None:
+    """Test ExpeLInsightMemory len method."""
+    memory = ExpeLInsightMemory()
+    assert len(memory) == 0
+
+    insights = [{'insight': 'Insight', 'score': 1}]
+    memory = ExpeLInsightMemory(insights)
+    assert len(memory) == 1
 
 
 def test_expel_insight_memory_clear() -> None:

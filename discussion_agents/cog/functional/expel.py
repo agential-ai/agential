@@ -13,12 +13,12 @@ from discussion_agents.cog.agent.reflexion import ReflexionReActAgent
 from discussion_agents.cog.prompts.expel import (
     CRITIQUE_SUMMARY_SUFFIX_FULL,
     CRITIQUE_SUMMARY_SUFFIX_NOT_FULL,
-    EXISTING_RULES_AI_NAME,
-    HUMAN_CRITIQUE_EXISTING_RULES_ALL_SUCCESS_TEMPLATE,
-    HUMAN_CRITIQUE_EXISTING_RULES_TEMPLATE,
-    NON_EXISTENT_RULES_AT_NAME,
-    SYSTEM_CRITIQUE_ALL_SUCCESS_EXISTING_RULES_INSTRUCTION,
-    SYSTEM_CRITIQUE_EXISTING_RULES_INSTRUCTION,
+    EXISTING_INSIGHTS_AI_NAME,
+    HUMAN_CRITIQUE_EXISTING_INSIGHTS_ALL_SUCCESS_TEMPLATE,
+    HUMAN_CRITIQUE_EXISTING_INSIGHTS_TEMPLATE,
+    NON_EXISTENT_INSIGHTS_AT_NAME,
+    SYSTEM_CRITIQUE_ALL_SUCCESS_EXISTING_INSIGHTS_INSTRUCTION,
+    SYSTEM_CRITIQUE_EXISTING_INSIGHTS_INSTRUCTION,
     SYSTEM_TEMPLATE,
 )
 from discussion_agents.utils.general import shuffle_chunk_list
@@ -151,18 +151,18 @@ def get_folds(
 
 
 def _build_compare_prompt(
-    rules: List[Tuple[str, int]],
+    insights: List[Tuple[str, int]],
     question: str,
     success_trial: str,
     failed_trial: str,
     is_full: bool,
 ) -> str:
-    """Constructs a comparison prompt for an AI by combining system instructions, task details, and a list of existing rules.
+    """Constructs a comparison prompt for an AI by combining system instructions, task details, and a list of existing insights.
 
-    This function formats a prompt intended for AI to critique existing rules based on a given task. The task is described by a question and includes examples of both successful and failed trials.
+    This function formats a prompt intended for AI to critique existing insights based on a given task. The task is described by a question and includes examples of both successful and failed trials.
 
     Parameters:
-        rules (List[Tuple[str, int]]): A list of strings where each string represents an existing rule with a score. If the list is empty, it is treated as if there are no existing rules.
+        insights (List[Tuple[str, int]]): A list of strings where each string represents an existing insight with a score. If the list is empty, it is treated as if there are no existing insights.
         question (str): The question that defines the task.
         success_trial (str): A description or example of a successful trial for the task.
         failed_trial (str): A description or example of a failed trial for the task.
@@ -172,13 +172,13 @@ def _build_compare_prompt(
         str: A fully constructed prompt ready to be presented to the AI. The prompt includes a prefixed system instruction, task details formatted according to human critique template,
             and a suffix based on whether the prompt is in its full form.
     """
-    if rules == []:
-        rules = [("", 0)]
+    if insights == []:
+        insights = [("", 0)]
 
     # System prompt.
     prefix = PromptTemplate.from_template(SYSTEM_TEMPLATE).format(
-        ai_name=NON_EXISTENT_RULES_AT_NAME if not rules else EXISTING_RULES_AI_NAME,
-        instruction=SYSTEM_CRITIQUE_EXISTING_RULES_INSTRUCTION,
+        ai_name=NON_EXISTENT_INSIGHTS_AT_NAME if not insights else EXISTING_INSIGHTS_AI_NAME,
+        instruction=SYSTEM_CRITIQUE_EXISTING_INSIGHTS_INSTRUCTION,
     )
 
     # Task prompt.
@@ -186,13 +186,13 @@ def _build_compare_prompt(
         "question": question,
         "failed_traj": failed_trial,
         "success_traj": success_trial,
-        "existing_rules": "\n".join(
-            [f"{i}. {rule[0]}" for i, rule in enumerate(rules, 1)]
+        "existing_insights": "\n".join(
+            [f"{i}. {insight[0]}" for i, insight in enumerate(insights, 1)]
         ),
     }
 
     human_critique_summary_message = PromptTemplate.from_template(
-        HUMAN_CRITIQUE_EXISTING_RULES_TEMPLATE
+        HUMAN_CRITIQUE_EXISTING_INSIGHTS_TEMPLATE
     ).format(**human_format_dict)
     critique_summary_suffix = (
         CRITIQUE_SUMMARY_SUFFIX_FULL if is_full else CRITIQUE_SUMMARY_SUFFIX_NOT_FULL
@@ -204,41 +204,41 @@ def _build_compare_prompt(
 
 
 def _build_all_success_prompt(
-    rules: List[Tuple[str, int]],
+    insights: List[Tuple[str, int]],
     success_trajs_str: str,
     is_full: bool,
 ) -> str:
-    """Constructs a prompt focused on critiquing and enhancing existing rules based on successful task trials.
+    """Constructs a prompt focused on critiquing and enhancing existing insights based on successful task trials.
 
-    This function generates a prompt for AI interaction that incorporates a series of successful trials and existing rules.
+    This function generates a prompt for AI interaction that incorporates a series of successful trials and existing insights.
 
     Parameters:
-        rules (List[Tuple[str, int]]): A list of strings where each string represents an existing rule with a score. If the list is empty, it is treated as if there are no existing rules.
-        success_trajs_str (str): A string containing descriptions of successful trials related to the task. These descriptions are meant to provide context for the AI's critique of the existing rules.
+        insights (List[Tuple[str, int]]): A list of strings where each string represents an existing insight with a score. If the list is empty, it is treated as if there are no existing insights.
+        success_trajs_str (str): A string containing descriptions of successful trials related to the task. These descriptions are meant to provide context for the AI's critique of the existing insights.
         is_full (bool): A boolean flag that determines the verbosity of the critique summary's suffix. If `True`, a more comprehensive suffix is used.
 
     Returns:
-        str: A string that combines the system's instruction, the task context with successful trials, and the existing rules into a coherent prompt.
+        str: A string that combines the system's instruction, the task context with successful trials, and the existing insights into a coherent prompt.
     """
-    if rules == []:
-        rules = [("", 0)]
+    if insights == []:
+        insights = [("", 0)]
 
     # System prompt.
     prefix = PromptTemplate.from_template(SYSTEM_TEMPLATE).format(
-        ai_name=NON_EXISTENT_RULES_AT_NAME if not rules else EXISTING_RULES_AI_NAME,
-        instruction=SYSTEM_CRITIQUE_ALL_SUCCESS_EXISTING_RULES_INSTRUCTION,
+        ai_name=NON_EXISTENT_INSIGHTS_AT_NAME if not insights else EXISTING_INSIGHTS_AI_NAME,
+        instruction=SYSTEM_CRITIQUE_ALL_SUCCESS_EXISTING_INSIGHTS_INSTRUCTION,
     )
 
     # Task prompt.
     human_format_dict = {
         "success_trajs": success_trajs_str,
-        "existing_rules": "\n".join(
-            [f"{i}. {rule[0]}" for i, rule in enumerate(rules, 1)]
+        "existing_insights": "\n".join(
+            [f"{i}. {insight[0]}" for i, insight in enumerate(insights, 1)]
         ),
     }
 
     human_critique_summary_message = PromptTemplate.from_template(
-        HUMAN_CRITIQUE_EXISTING_RULES_ALL_SUCCESS_TEMPLATE
+        HUMAN_CRITIQUE_EXISTING_INSIGHTS_ALL_SUCCESS_TEMPLATE
     ).format(**human_format_dict)
     critique_summary_suffix = (
         CRITIQUE_SUMMARY_SUFFIX_FULL if is_full else CRITIQUE_SUMMARY_SUFFIX_NOT_FULL
@@ -251,20 +251,20 @@ def _build_all_success_prompt(
 
 def _prompt_compare_critique(
     llm: BaseChatModel,
-    rules: List[Tuple[str, int]],
+    insights: List[Tuple[str, int]],
     question: str,
     success_trial: str,
     failed_trial: str,
     is_full: bool,
     replace_newline: bool = False,
 ) -> str:
-    """Generates a critique from an LLM based on a comparison between successful and failed task trials, within the context of existing rules.
+    """Generates a critique from an LLM based on a comparison between successful and failed task trials, within the context of existing insights.
 
-    This function constructs a prompt that juxtaposes successful and failed trials of a task with a set of existing rules. It then requests a critique from the Large Language Model (LLM) based on this information. The critique aims to evaluate the rules' effectiveness and suggest modifications if necessary. An option is provided to format the LLM's output by removing newline characters.
+    This function constructs a prompt that juxtaposes successful and failed trials of a task with a set of existing insights. It then requests a critique from the Large Language Model (LLM) based on this information. The critique aims to evaluate the insights' effectiveness and suggest modifications if necessary. An option is provided to format the LLM's output by removing newline characters.
 
     Parameters:
         llm (BaseChatModel): The Large Language Model instance used to generate the critique.
-        rules (List[Tuple[str, int]]): A list of strings where each string represents an existing rule with a score. If the list is empty, it is treated as if there are no existing rules.
+        insights (List[Tuple[str, int]]): A list of strings where each string represents an existing insight with a score. If the list is empty, it is treated as if there are no existing insights.
         question (str): The task question related to the trials.
         success_trial (str): A description of a successful trial for the task.
         failed_trial (str): A description of a failed trial for the task.
@@ -275,7 +275,7 @@ def _prompt_compare_critique(
         str: The critique generated by the LLM, potentially with newline characters removed, based on the `replace_newline` parameter.
     """
     prompt = _build_compare_prompt(
-        rules=rules,
+        insights=insights,
         question=question,
         success_trial=success_trial,
         failed_trial=failed_trial,
@@ -297,18 +297,18 @@ def _prompt_compare_critique(
 
 def _prompt_all_success_critique(
     llm: BaseChatModel,
-    rules: List[Tuple[str, int]],
+    insights: List[Tuple[str, int]],
     success_trajs_str: str,
     is_full: bool,
     replace_newline: bool = False,
 ) -> str:
-    """Generates a critique from an LLM based on a compilation of successful task trials in the context of existing rules.
+    """Generates a critique from an LLM based on a compilation of successful task trials in the context of existing insights.
 
-    This function constructs a prompt emphasizing the successes in task trials and existing rules, and requests a critique from the Large Language Model (LLM).
+    This function constructs a prompt emphasizing the successes in task trials and existing insights, and requests a critique from the Large Language Model (LLM).
 
     Parameters:
         llm (BaseChatModel): The Large Language Model instance used for generating the critique.
-        rules (List[Tuple[str, int]]): A list of strings where each string represents an existing rule with a score. If the list is empty, it is treated as if there are no existing rules.
+        insights (List[Tuple[str, int]]): A list of strings where each string represents an existing insight with a score. If the list is empty, it is treated as if there are no existing insights.
         success_trajs_str (str): A string concatenating descriptions of successful trials related to the task.
         is_full (bool): Indicates whether the full critique summary is to be used in the prompt.
         replace_newline (bool, optional): If set to `True`, newline characters in the LLM output will be replaced with empty strings. The default is `False`.
@@ -317,7 +317,7 @@ def _prompt_all_success_critique(
         str: The generated critique from the LLM, optionally with newline characters removed depending on the `replace_newline` parameter.
     """
     prompt = _build_all_success_prompt(
-        rules=rules, success_trajs_str=success_trajs_str, is_full=is_full
+        insights=insights, success_trajs_str=success_trajs_str, is_full=is_full
     )
     out = llm(
         [
@@ -333,20 +333,20 @@ def _prompt_all_success_critique(
     return out
 
 
-def parse_rules(llm_text: str) -> List[Tuple[str, str]]:
-    """Parses and extracts rule operations and their descriptions from a given text.
+def parse_insights(llm_text: str) -> List[Tuple[str, str]]:
+    """Parses and extracts insight operations and their descriptions from a given text.
 
-    This function searches through the provided text for occurrences of rule operations (ADD, REMOVE, EDIT, AGREE) followed by their descriptions.
-    It applies specific criteria to ensure the extracted rules are valid: the rule description must not be empty, must not
+    This function searches through the provided text for occurrences of insight operations (ADD, REMOVE, EDIT, AGREE) followed by their descriptions.
+    It applies specific criteria to ensure the extracted insights are valid: the insight description must not be empty, must not
     contain certain banned words (to avoid inclusion of formatting instructions or similar), and must end with a period.
 
     Parameters:
-        llm_text (str): The text from which to extract rule operations and descriptions.
-            This text is expected to contain one or more statements formatted according to predefined rule operation patterns.
+        llm_text (str): The text from which to extract insight operations and descriptions.
+            This text is expected to contain one or more statements formatted according to predefined insight operation patterns.
 
     Returns:
-        List[Tuple[str, str]]: A list of tuples where each tuple contains two elements: the operation (ADD, REMOVE, EDIT, AGREE) and the clean, validated rule description.
-            The rules that do not meet the validation criteria are omitted.
+        List[Tuple[str, str]]: A list of tuples where each tuple contains two elements: the operation (ADD, REMOVE, EDIT, AGREE) and the clean, validated insight description.
+            The insights that do not meet the validation criteria are omitted.
     """
     pattern = r"((?:REMOVE|EDIT|ADD|AGREE)(?: \d+|)): (?:[a-zA-Z\s\d]+: |)(.*)"
     matches = re.findall(pattern, llm_text)
@@ -370,55 +370,55 @@ def parse_rules(llm_text: str) -> List[Tuple[str, str]]:
     return res
 
 
-def retrieve_rule_index(rules: List[Tuple[str, int]], operation_rule_text: str) -> int:
+def retrieve_insight_index(insights: List[Tuple[str, int]], operation_rule_text: str) -> int:
     """Retrieves the index of a rule based on its text.
 
-    Searches through a list of rules to find the index of the rule that matches part of the given operation rule text. This function is useful for identifying which rule is being referred to in operations like EDIT, REMOVE, or AGREE, where the rule text is included in the operation.
+    Searches through a list of insights to find the index of the rule that matches part of the given operation rule text. This function is useful for identifying which rule is being referred to in operations like EDIT, REMOVE, or AGREE, where the rule text is included in the operation.
 
     Parameters:
-        rules (List[Tuple[str, int]]): A list of tuples, where each tuple contains the rule text and its associated strength or any other numeric value.
+        insights (List[Tuple[str, int]]): A list of tuples, where each tuple contains the rule text and its associated strength or any other numeric value.
         operation_rule_text (str): The text of the operation which may contain or exactly match the text of a rule.
 
     Returns:
         int: The index of the rule within the list if found; otherwise, -1.
     """
-    for i in range(len(rules)):
-        if rules[i][0] in operation_rule_text:
+    for i in range(len(insights)):
+        if insights[i][0] in operation_rule_text:
             return i
     return -1
 
 
-def is_existing_rule(rules: List[Tuple[str, int]], operation_rule_text: str) -> bool:
+def is_existing_rule(insights: List[Tuple[str, int]], operation_rule_text: str) -> bool:
     """Checks if a rule exists based on its text.
 
-    Determines whether any rule's text in the provided list of rules matches part of the given operation rule text. This is useful for verifying if an operation like ADD is attempting to add a rule that already exists based on its text.
+    Determines whether any rule's text in the provided list of insights matches part of the given operation rule text. This is useful for verifying if an operation like ADD is attempting to add a rule that already exists based on its text.
 
     Parameters:
-        rules (List[Tuple[str, int]]): A list of tuples, where each tuple contains the rule text and its associated strength or any other numeric value.
+        insights (List[Tuple[str, int]]): A list of tuples, where each tuple contains the rule text and its associated strength or any other numeric value.
         operation_rule_text (str): The text of the operation which may contain or exactly match the text of an existing rule.
 
     Returns:
         bool: True if the rule exists in the list, otherwise False.
     """
-    for i in range(len(rules)):
-        if rules[i][0] in operation_rule_text:
+    for i in range(len(insights)):
+        if insights[i][0] in operation_rule_text:
             return True
     return False
 
 
 def remove_err_operations(
-    rules: List[Tuple[str, int]], operations: List[Tuple[str, str]]
+    insights: List[Tuple[str, int]], operations: List[Tuple[str, str]]
 ) -> List[Tuple[str, str]]:
     """Cleans a list of rule operations by removing or modifying erroneous entries.
 
-    This function iterates through a list of operations intended to modify a set of rules. It removes operations that are incorrect or not applicable (e.g., attempting to add a rule that already exists) and modifies certain operations based on their context (e.g., changing an EDIT to AGREE if the edited rule matches an existing rule). The goal is to ensure that the resulting list of operations is coherent and can be applied to update the rules without causing inconsistencies.
+    This function iterates through a list of operations intended to modify a set of insights. It removes operations that are incorrect or not applicable (e.g., attempting to add a rule that already exists) and modifies certain operations based on their context (e.g., changing an EDIT to AGREE if the edited rule matches an existing rule). The goal is to ensure that the resulting list of operations is coherent and can be applied to update the insights without causing inconsistencies.
 
     Parameters:
-        rules (List[Tuple[str, int]]): A list of tuples representing the existing rules. Each tuple contains the rule text and an associated numeric value, which could represent the rule's strength or priority.
-        operations (List[Tuple[str, str]]): A list of tuples representing the operations to be performed on the rules. Each tuple contains an operation type (ADD, REMOVE, EDIT, AGREE) and the associated rule text or modification.
+        insights (List[Tuple[str, int]]): A list of tuples representing the existing insights. Each tuple contains the rule text and an associated numeric value, which could represent the rule's strength or priority.
+        operations (List[Tuple[str, str]]): A list of tuples representing the operations to be performed on the insights. Each tuple contains an operation type (ADD, REMOVE, EDIT, AGREE) and the associated rule text or modification.
 
     Returns:
-        List[Tuple[str, str]]: A cleaned list of operations where erroneous or inapplicable operations have been removed or modified to ensure consistency and correctness when applied to the set of existing rules.
+        List[Tuple[str, str]]: A cleaned list of operations where erroneous or inapplicable operations have been removed or modified to ensure consistency and correctness when applied to the set of existing insights.
     """
     cleaned_operations = operations.copy()
 
@@ -431,24 +431,24 @@ def remove_err_operations(
 
         if operation_type == "ADD":
             if is_existing_rule(
-                rules, operation_rule_text
+                insights, operation_rule_text
             ):  # If new rule_text is an existing rule ('in').
                 delete_indices.append(i)
         else:
             if operation_type == "EDIT":
                 if is_existing_rule(
-                    rules, operation_rule_text
+                    insights, operation_rule_text
                 ):  # If rule is matching ('in') existing rule, change it to AGREE.
-                    rule_num = retrieve_rule_index(rules, operation_rule_text)
-                    cleaned_operations[i] = (f"AGREE {rule_num+1}", rules[rule_num][0])
+                    rule_num = retrieve_insight_index(insights, operation_rule_text)
+                    cleaned_operations[i] = (f"AGREE {rule_num+1}", insights[rule_num][0])
                 elif (rule_num is None) or (
-                    rule_num > len(rules)
+                    rule_num > len(insights)
                 ):  # If rule doesn't exist, remove.
                     delete_indices.append(i)
 
             elif operation_type == "REMOVE" or operation_type == "AGREE":
                 if not is_existing_rule(
-                    rules, operation_rule_text
+                    insights, operation_rule_text
                 ):  # If new operation_rule_text is not an existing rule.
                     delete_indices.append(i)
 
@@ -463,24 +463,24 @@ def remove_err_operations(
 
 
 def update_rules(
-    rules: List[Tuple[str, int]],
+    insights: List[Tuple[str, int]],
     operations: List[Tuple[str, str]],
     is_full: bool = False,
 ) -> List[Tuple[str, int]]:
-    """Updates a set of rules based on provided operations, adjusting their strengths and possibly adding or editing them.
+    """Updates a set of insights based on provided operations, adjusting their strengths and possibly adding or editing them.
 
     Operations are processed in a specific order: 'REMOVE', 'AGREE', 'EDIT', and 'ADD'. This ensures that removals and agreements are handled first, followed by edits and additions.
-    The function supports dynamically adjusting the impact of a 'REMOVE' operation based on the `is_full` flag, which represents whether the set of rules is considered comprehensive.
+    The function supports dynamically adjusting the impact of a 'REMOVE' operation based on the `is_full` flag, which represents whether the set of insights is considered comprehensive.
 
     Parameters:
-        rules (List[Tuple[str, int]]): The current set of rules, where each rule is represented by a tuple containing the rule text and its associated numeric value (e.g., strength, priority).
-        operations (List[Tuple[str, str]]): Operations to be applied to the rules, with each operation being a tuple of the operation type and the rule text.
-        is_full (bool, optional): A flag indicating if the rules set is considered comprehensive, affecting the strength adjustment of 'REMOVE' operations.
+        insights (List[Tuple[str, int]]): The current set of insights, where each rule is represented by a tuple containing the rule text and its associated numeric value (e.g., strength, priority).
+        operations (List[Tuple[str, str]]): Operations to be applied to the insights, with each operation being a tuple of the operation type and the rule text.
+        is_full (bool, optional): A flag indicating if the insights set is considered comprehensive, affecting the strength adjustment of 'REMOVE' operations.
 
     Returns:
-        List[Tuple[str, int]]: The updated set of rules after applying the operations, sorted by their numeric values in descending order. Rules with a numeric value of 0 or less are removed from the set.
+        List[Tuple[str, int]]: The updated set of insights after applying the operations, sorted by their numeric values in descending order. insights with a numeric value of 0 or less are removed from the set.
     """
-    updated_rules = rules.copy()
+    updated_rules = insights.copy()
 
     for op in ["REMOVE", "AGREE", "EDIT", "ADD"]:  # Order is important
         for i in range(len(operations)):
@@ -490,7 +490,7 @@ def update_rules(
                 continue
 
             if operation_type == "REMOVE":  # remove rule: -1
-                rule_index = retrieve_rule_index(
+                rule_index = retrieve_insight_index(
                     updated_rules, operation_rule_text
                 )  # if rule_num doesn't match but text does
                 remove_strength = 3 if is_full else 1
@@ -499,7 +499,7 @@ def update_rules(
                     updated_rules[rule_index][1] - remove_strength,
                 )  # -1 (-3 if list full) to the counter
             elif operation_type == "AGREE":  # agree with rule: +1
-                rule_index = retrieve_rule_index(
+                rule_index = retrieve_insight_index(
                     updated_rules, operation_rule_text
                 )  # if rule_num doesn't match but text does
                 updated_rules[rule_index] = (
@@ -518,44 +518,93 @@ def update_rules(
                 updated_rules.append((operation_rule_text, 2))
     updated_rules = [
         updated_rules[i] for i in range(len(updated_rules)) if updated_rules[i][1] > 0
-    ]  # remove rules when counter reach 0
+    ]  # remove insights when counter reach 0
     updated_rules.sort(key=lambda x: x[1], reverse=True)
 
     return updated_rules
 
+
+def get_operations_compare(
+    llm: BaseChatModel,
+    insights: List[Tuple[str, int]],
+    question: str,
+    success_trial: str,
+    failed_trial: str,
+    max_num_rules: int,
+    num_rules: int
+) -> List[Tuple[str, str]]:
+    # Prompt.
+    out = _prompt_compare_critique(
+        llm,
+        insights,
+        question,
+        success_trial,
+        failed_trial,
+        max_num_rules < num_rules,
+    )
+
+    # Parse.
+    operations = parse_insights(out)
+
+    # Remove no-ops.
+    operations = remove_err_operations(insights, operations)
+
+    return operations
+
+
+def get_operations_success(
+    llm: BaseChatModel,
+    success_trials: str,
+    insights: List[Tuple[str, int]],
+    max_num_rules: int,
+    num_rules: int
+) -> List[Tuple[str, str]]:
+    # Prompt.
+    out = _prompt_all_success_critique(
+        llm, insights, success_trials, max_num_rules < num_rules
+    )
+
+    # Parse.
+    operations = parse_insights(out)
+
+    # Remove no-ops.
+    operations = remove_err_operations(insights, operations)
+
+    return operations
+    
 
 def create_rules(
     llm: BaseChatModel,
     experiences: Dict[str, List],
     categories: Dict[str, int],
     train_idxs: List[int],
-    rules: List[Tuple[str, int]],
+    insights: List[Tuple[str, int]],
     max_num_rules: int,
     success_critique_num: int = 8,
 ) -> List[Tuple[str, int]]:
-    """Generates and updates rules based on experiences categorized as compare and success.
+    """Generates and updates insights based on experiences categorized as compare and success.
 
-    This function iteratively refines a set of rules by evaluating experiences through the lens of compare and success categories.
+    This function iteratively refines a set of insights by evaluating experiences through the lens of compare and success categories.
     For compare experiences, it juxtaposes successful trials against failed ones to draw insights.
     For success experiences, it aggregates successful trials to distill overarching successful strategies.
-    The insights drawn from these analyses are used to add, edit, remove, or agree with existing rules, thereby refining the rule set.
+    The insights drawn from these analyses are used to add, edit, remove, or agree with existing insights, thereby refining the rule set.
 
     Parameters:
         llm (BaseChatModel): An instance of a Large Language Model used to generate critiques and insights.
         experiences (Dict[str, List]): A dictionary containing lists of questions, keys, and trajectories categorized by task indices.
         categories (Dict[str, int]): A dictionary categorizing experiences into compare, success, and fail based on indices.
         train_idxs (List[int]): Indices of training data to be used for rule generation.
-        rules (List[Tuple[str, int]]): The current set of rules and their associated strength scores.
-        max_num_rules (int): The maximum number of rules to retain.
+        insights (List[Tuple[str, int]]): The current set of insights and their associated strength scores.
+        max_num_rules (int): The maximum number of insights to retain.
         success_critique_num (int, optional): The number of successes to batch together for critique. Defaults to 8.
 
     Returns:
-        List[Tuple[str, int]]: A list of updated rules as strings and their associated strength scores.
+        List[Tuple[str, int]]: A list of updated insights as strings and their associated strength scores.
 
     Note:
-        - The function internally utilizes helper functions to prompt the LLM, parse its output for operations on rules, and update the rule set accordingly.
-        - The operation of adding, editing, removing, or agreeing with rules is based on the critique provided by the LLM in response to the prompts generated from experiences.
-        - The function ensures that the rule set does not exceed the specified maximum number of rules, prioritizing rules by their strength scores.
+        - The function internally utilizes helper functions to prompt the LLM, parse its output for operations on insights, and update the rule set accordingly.
+        - The operation of adding, editing, removing, or agreeing with insights is based on the critique provided by the LLM in response to the prompts generated from experiences.
+        - The function ensures that the rule set does not exceed the specified maximum number of insights, prioritizing insights by their strength scores.
     """
     # Intersection between train_idxs and each category (compare, success, fail).
     train_category_idxs = {
@@ -578,24 +627,24 @@ def create_rules(
             # Prompt.
             out = _prompt_compare_critique(
                 llm,
-                rules,
+                insights,
                 question,
                 success_trial,
                 failed_trial,
-                max_num_rules < len(rules),
+                max_num_rules < len(insights),
             )
 
             # Parse.
-            operations = parse_rules(out)
+            operations = parse_insights(out)
 
             # Remove no-ops.
-            operations = remove_err_operations(rules, operations)
+            operations = remove_err_operations(insights, operations)
 
-            # Update rules with comparison insights.
-            rules = update_rules(
-                rules,
+            # Update insights with comparison insights.
+            insights = update_rules(
+                insights,
                 operations,
-                is_full=max_num_rules + 5 <= len(rules),
+                is_full=max_num_rules + 5 <= len(insights),
             )
 
     # Success.
@@ -616,23 +665,23 @@ def create_rules(
 
         # Prompt.
         out = _prompt_all_success_critique(
-            llm, rules, success_trajs_str, max_num_rules < len(rules)
+            llm, insights, success_trajs_str, max_num_rules < len(insights)
         )
 
         # Parse.
-        operations = parse_rules(out)
+        operations = parse_insights(out)
 
         # Remove no-ops.
-        operations = remove_err_operations(rules, operations)
+        operations = remove_err_operations(insights, operations)
 
-        # Update rules with success insights.
-        rules = update_rules(
-            rules,
+        # Update insights with success insights.
+        insights = update_rules(
+            insights,
             operations,
-            is_full=max_num_rules + 5 <= len(rules),
+            is_full=max_num_rules + 5 <= len(insights),
         )
 
-    return rules
+    return insights
 
 
 # ============================================== Inference ==============================================

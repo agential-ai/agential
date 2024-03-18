@@ -178,6 +178,10 @@ class ExpeLExperienceMemory(BaseMemory):
                 self.embedder
             )
 
+    def __len__(self) -> int:
+        """Returns length of experiences."""
+        return len(self.experiences['idxs'])
+
     def clear(self) -> None:
         """Clears all stored experiences from the memory.
 
@@ -419,6 +423,10 @@ class ExpeLInsightMemory(BaseMemory):
         self.max_num_insights = max_num_insights
 
         self._is_full = len(self.insights) >= self.max_num_insights
+
+    def __len__(self) -> int:
+        """Returns length of insights."""
+        return len(self.insights)
 
     def clear(self) -> None:
         """Clears all stored insights from the memory.
