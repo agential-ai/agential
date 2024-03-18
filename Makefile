@@ -43,7 +43,7 @@ clean: ## Delete all compiled Python files.
 lint: ## Lint using black and ruff, static check mypy exclude tests.
 	poetry run mypy discussion_agents
 	poetry run black --check discussion_agents tests
-	poetry run ruff check discussion_agents testsm
+	poetry run ruff check discussion_agents tests
 
 auto_lint: ## Automatic format & lint using black and ruff.
 	poetry run black discussion_agents tests

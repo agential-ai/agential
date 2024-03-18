@@ -40,14 +40,14 @@ Check the "Developer Setup" below for the developer workflow.
 ## 2. 🔨 Developer Setup
 
 First install [anaconda](https://docs.anaconda.com/free/anaconda/install/windows/) and follow the recommended settings. Once installed, open up the "Anaconda Prompt" and type in the command "conda --version". If everything has worked, it should print "conda xx.xx.x".
-For example: "conda 23.11.0
+For example: "conda 23.11.0"
 
-(P.S: You may add Anaconda to your path environment variables on your own (if you feel comfortable), however this is discouraged by Anaconda themselves as it may "interfere with other software". Instead, they recommend to use the Anaconda Prompt.)
+(P.S: You may add Anaconda to your path environment variables on your own [if you feel comfortable], however this is discouraged by Anaconda themselves as it may "interfere with other software". Instead, they recommend to use the Anaconda Prompt.)
 
 Ensure you have `make`. if it's not installed on your computer, Please follow this [article](https://earthly.dev/blog/makefiles-on-windows/).
 
 
-Open up the Anaconda Command Prompt and use the following command to create a conda environment `discussion-agents` with Python version 3.10.13. Any Python version above 3.9 is viable.
+Use the following command to create a conda environment `discussion-agents` with Python version 3.10.13. Any Python version above 3.9 is viable.
 
 ```
 conda create -n discussion-agents python=3.10.13
@@ -70,7 +70,7 @@ pipx install poetry
 
 Make sure to add poetry to path by adding `C:\Users\<username>\.local\bin` to path in advanced system settings. For other operating systems, the path will be different. Ensure poetry is in the environment variable paths.
 
-To Ensure that pipx has been successfully installed, type in the command:
+To ensure that pipx has been successfully installed, type in the command:
 
 ```
 pipx -- version
@@ -81,7 +81,7 @@ This should output the version if it has been installed properly. Then, to check
 ``` 
 poetry --version
 ```
-This will output the poetry version.
+This will output the poetry version (and also verify that poetry CLI is running).
 
 Then clone the repository and enter the discussion-agents directory.
 
@@ -97,15 +97,14 @@ poetry install
 
 ### Verifying Environment Installation
 
-To verify your environment is correctly installed, please run the following commands. It may take a couple of minutes to run each command:
+To verify your environment is correctly installed, please run the following commands.
 
 ```
 make lint
 ```
-This command will execute the pre-made `lint` target in the Makefile. Essentially, it will check that coding standards are adhered too within your code. Achieved by first running `mypy` to do type checking, then check for code formatting issues with `black` and lastly, performing linting with `ruff`.
+This command will execute the pre-made `lint` target in the Makefile, which, internally, uses `mypy`, `black`, and `ruff`.
 
 If this command fails to run, check if Poetry has properly installed by running (same as previous section):
-
 ```
 poetry --version
 ```
@@ -116,7 +115,7 @@ Next, run this command:
 make auto_lint
 ```
 
-Again, this command will execute the pre-made `auto-lint` target in the Makefile. Similar to the previous target `lint`, the makefile will run `black` to format your Python code in the `discussion-agents` and `tests` directories, and then use `ruff` to lint through those directories as well.
+This command will execute the pre-made `auto-lint` target in the Makefile. This command automatically formats your code with `black` and `ruff`.
 
 Finally, run this command:
 
@@ -124,7 +123,7 @@ Finally, run this command:
 make test
 ```
 
-The `test` command within the Makefile calls `pytest` on the `tests` directory, measuring how much of our code aligns with the unit tests we have created for it. With any errors or successes made with code, it will produce these reports in XML and into the terminal.
+The `test` command within the Makefile internally runs `pytest` on unit tests located in the `tests` directory. 
 
 
 ### Pre-commit Install/Uninstall (Optional)
