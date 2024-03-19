@@ -430,15 +430,16 @@ def test_expel_insight_memory_init() -> None:
     memory = ExpeLInsightMemory()
     assert not memory.insights
     assert memory.max_num_insights == 20
-    assert not memory._is_full
+    assert memory.leeway == 5
 
     # Test initialization with insights and max_num_insights.
     insights = [{'insight': 'Insight', 'score': 1}]
     max_num_insights = 5
-    memory = ExpeLInsightMemory(insights=insights, max_num_insights=max_num_insights)
+    leeway = 1
+    memory = ExpeLInsightMemory(insights=insights, max_num_insights=max_num_insights, leeway=1)
     assert memory.insights == insights
     assert memory.max_num_insights == max_num_insights
-    assert not memory._is_full
+    assert memory.leeway == leeway
 
 
 def test_expel_insight_memory_len() -> None:
@@ -458,7 +459,6 @@ def test_expel_insight_memory_clear() -> None:
     memory = ExpeLInsightMemory(insights=insights, max_num_insights=max_num_insights)
     memory.clear()
     assert memory.insights == []
-    assert not memory._is_full
 
 
 def test_expel_insight_memory_add_memories() -> None:
@@ -471,13 +471,12 @@ def test_expel_insight_memory_add_memories() -> None:
 
     # Test exceeding max_num_insights.
     memory.add_memories([{"insight": "Test 3", "score": 3}, {"insight": "Test 4", "score": 4}])
-    assert len(memory.insights) == 3  # Should not add beyond max_num_insights
-    assert memory._is_full
+    assert len(memory.insights) == 4  # Should not add beyond max_num_insights
 
 
 def test_expel_insight_memory_delete_memories() -> None:
     """Test ExpeLInsightMemory delete_memories method."""
-    memory = ExpeLInsightMemory(max_num_insights=3)
+    memory = ExpeLInsightMemory(max_num_insights=3, leeway=0)
     insights_to_add = [{"insight": "Test 1", "score": 1}, {"insight": "Test 2", "score": 2}]
     memory.add_memories(insights_to_add)
 
@@ -506,17 +505,44 @@ def test_expel_insight_memory_delete_memories() -> None:
     memory.delete_memories(5)  # Index out of range.
     assert len(memory.insights) == initial_length
 
+    # Test deleting memory when exceeding leeway.
+    memory = ExpeLInsightMemory(max_num_insights=2, leeway=1)
+    insights_to_add = [
+        {"insight": "Insight 1", "score": 1},
+        {"insight": "Insight 2", "score": 2},
+        {"insight": "Insight 3", "score": 3}
+    ]
+    
+    # Add insights to memory, exceeding the max_num_insights but within leeway.
+    memory.add_memories(insights_to_add)
+    
+    # Assert all insights are still in memory since we haven't exceeded max_num_insights + leeway.
+    assert len(memory.insights) == 3
+
+    # Add another insight to exceed the leeway limit.
+    memory.add_memories([{"insight": "Insight 4", "score": 4}])
+
+    # Attempt to delete an insight now that we've exceeded the leeway
+    memory.delete_memories(0)  # Try deleting the first insight.
+
+    # Check the insight was deleted.
+    assert len(memory.insights) == 3
+
+    # Further verify that the correct insights remain.
+    assert memory.insights[0]['insight'] == "Insight 2", "Insight 2 should remain as the first insight."
+    assert memory.insights[1]['insight'] == "Insight 3", "Insight 3 should now be the second insight."
+
 
 def test_expel_insight_memory_update_memories() -> None:
     """Test ExpeLInsightMemory update_memories method."""
     memory = ExpeLInsightMemory(max_num_insights=3)
     insights_to_add = [{"insight": "Test 1", "score": 1}]
     memory.add_memories(insights_to_add)
-    memory.update_memories(0, "Updated Test 1", "EDIT")
+    memory.update_memories(0, "EDIT", "Updated Test 1")
     assert memory.insights[0]["insight"] == "Updated Test 1"
     assert memory.insights[0]["score"] == 2
 
-    memory.update_memories(0, "", "AGREE")
+    memory.update_memories(0, "AGREE")
     assert memory.insights[0]["score"] == 3
 
 

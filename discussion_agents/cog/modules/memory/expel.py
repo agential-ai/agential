@@ -404,25 +404,26 @@ class ExpeLInsightMemory(BaseMemory):
     Attributes:
         insights (List[Dict[str, Any]]): A list to store insight dictionaries.
         max_num_insights (int): Maximum number of insights that can be stored.
-        _is_full (bool): Indicates whether the memory storage has reached its capacity.
     """
     def __init__(
         self, 
         insights: Optional[List[Dict[str, Any]]] = [],
-        max_num_insights: int = 20
+        max_num_insights: int = 20,
+        leeway: int = 5
     ) -> None:
         """Initializes the ExpeLInsightMemory with optional insights and a maximum storage limit.
 
         Args:
             insights (Optional[List[Dict[str, Any]]]): Initial list of insights to store in memory.
             max_num_insights (int): The maximum number of insights that can be stored.
+            leeway (int): Number of memories allowed over max_num_insights before 
+                delete_memories instantly deletes an indexed memory.
         """
         super().__init__()
 
         self.insights = deepcopy(insights)
         self.max_num_insights = max_num_insights
-
-        self._is_full = len(self.insights) >= self.max_num_insights
+        self.leeway = leeway
 
     def __len__(self) -> int:
         """Returns length of insights."""
@@ -432,7 +433,6 @@ class ExpeLInsightMemory(BaseMemory):
         """Clears all stored insights from the memory.
         """
         self.insights = []
-        self._is_full = False
 
     def add_memories(self, insights: List[Dict[str, Any]]) -> None:
         """Adds new insights to the memory, up to the maximum storage limit.
@@ -440,12 +440,7 @@ class ExpeLInsightMemory(BaseMemory):
         Args:
             insights (List[Dict[str, Any]]): A list of insights to add to the memory.
         """
-        for insight in insights:
-            if len(self.insights) >= self.max_num_insights:
-                break
-            self.insights.append(insight)
-
-        self._is_full = len(self.insights) >= self.max_num_insights        
+        self.insights.extend(insights)
 
     def delete_memories(self, idx: int) -> None:
         """Deletes an insight from memory based on its index. 
@@ -457,24 +452,22 @@ class ExpeLInsightMemory(BaseMemory):
         """
 
         if idx < len(self.insights):
-            if self._is_full:
+            if len(self.insights) >= self.max_num_insights + self.leeway:
                 _ = self.insights.pop(idx)
             else:
                 self.insights[idx]['score'] -= 1
                 if self.insights[idx]['score'] <= 0:
                     _ = self.insights.pop(idx)
 
-            self._is_full = len(self.insights) >= self.max_num_insights
-
-    def update_memories(self, idx: int, insight: str, update_type: str) -> None:
+    def update_memories(self, idx: int, update_type: str, insight: Optional[str] = None) -> None:
         """Updates an insight or its score based on the specified update type.
 
         Args:
             idx (int): The index of the insight to update.
-            insight (str): The new insight text (if applicable).
-            update_type (str): The type of update ("EDIT", "AGREE", or other custom types).
+            update_type (str): The type of update ("EDIT", "AGREE").
+            insight (str): The new insight text (if applicable). 
         """
-        if update_type == "EDIT":
+        if update_type == "EDIT" and insight:
             self.insights[idx]['insight'] = insight
             self.insights[idx]['score'] += 1
         elif update_type == "AGREE":

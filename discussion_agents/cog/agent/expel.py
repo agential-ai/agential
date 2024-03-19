@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -13,9 +13,11 @@ from discussion_agents.cog.functional.expel import (
     _prompt_compare_critique,
     parse_insights,
     remove_err_operations,
+    retrieve_insight_index,
     get_operations_compare, 
     get_operations_success,
 )
+from discussion_agents.utils.general import shuffle_chunk_list
 
 
 class ExpeLAgent(BaseAgent):
@@ -28,7 +30,7 @@ class ExpeLAgent(BaseAgent):
         reflexion_react_agent: Optional[ReflexionReActAgent] = None,
         experience_memory: Optional[ExpeLExperienceMemory] = None,
         insight_memory: Optional[ExpeLInsightMemory] = None,
-        max_num_insights: int = 20,
+        success_batch_size: int = 8
     ) -> None:
         super().__init__()
 
@@ -53,7 +55,7 @@ class ExpeLAgent(BaseAgent):
         else:
             self.insight_memory = insight_memory
 
-        self.max_num_insights = max_num_insights
+        self.success_batch_size = success_batch_size
 
     def generate(
         self, 
@@ -152,29 +154,71 @@ class ExpeLAgent(BaseAgent):
                     failed_trial = "\n".join(["\n".join(step) for step in failed_trial[-1]])
                     insights = self.insight_memory.load_memories()['insights']
 
-                    get_operations_compare(
+                    operations = get_operations_compare(
                         llm=self.llm,
                         insights=insights,
                         question=question,
                         success_trial=success_trial,
                         failed_trial=failed_trial,
-                        max_num_rules=
+                        is_full=self.insight_memory.max_num_insights < len(insights)
                     )
+                    self.update_insights(operations=operations)
 
-                    # Prompt.
-                    out = _prompt_compare_critique(
-                        llm=self.llm,
-                        insights=insights,
-                        question=question,
-                        success_trial=success_trial,
-                        failed_trial=failed_trial,
-                        is_full=self.max_num_insights < len(self.insight_memory),
+            # Success.
+            batched_success_trajs_idxs = shuffle_chunk_list(
+                train_category_idxs["success"], self.success_batch_size
+            )
+            for success_idxs in batched_success_trajs_idxs:
+                insights = self.insight_memory.load_memories()['insights']
+
+                # Concatenate batched successful trajectories.
+                concat_success_trajs = []
+                for idx in success_idxs:
+                    success_traj_str = "\n".join(
+                        ["\n".join(step) for step in experiences["trajectories"][idx][0][-1]]
                     )
+                    concat_success_trajs.append(
+                        f"{experiences['questions'][idx]}\n{success_traj_str}"
+                    )
+                success_trials = "\n\n".join(concat_success_trajs)
 
-                    # Parse.
-                    operations = parse_insights(out)
+                operations = get_operations_success(
+                    llm=self.llm,
+                    success_trials=success_trials,
+                    insights=insights,
+                    is_full=self.insight_memory.max_num_insights < len(insights)
+                )
+                self.update_insights(operations=operations)
 
-                    # Remove no-ops.
-                    operations = remove_err_operations(insights, operations)
+    def update_insights(self, operations: List[Tuple[str, str]]) -> None:
+        # Update rules with comparison insights.
+        for i in range(len(operations)):
+            insights = self.insight_memory.load_memories()['insights']
+            operation, operation_insight = operations[i]
+            operation_type = operation.split(" ")[0]
 
-                    # Update rules with comparison insights.
+            if operation_type == "REMOVE":
+                insight_idx = retrieve_insight_index(
+                    insights, operation_insight
+                )
+                self.insight_memory.delete_memories(insight_idx)
+            elif operation_type == "AGREE":
+                insight_idx = retrieve_insight_index(
+                    insights, operation_insight
+                )
+                self.insight_memory.update_memories(
+                    idx=insight_idx,
+                    insight="",
+                    update_type="AGREE"
+                )
+            elif operation_type == "EDIT":
+                insight_idx = int(operation.split(" ")[1]) - 1
+                self.insight_memory.update_memories(
+                    idx=insight_idx,
+                    insight=operation_insight,
+                    update_type="EDIT"
+                )
+            elif operation_type == "ADD":
+                self.insight_memory.add_memories(
+                    [{"insight": operation_insight, "score": 2}]
+                )

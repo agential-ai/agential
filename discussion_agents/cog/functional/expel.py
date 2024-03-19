@@ -482,40 +482,38 @@ def update_rules(
     """
     updated_rules = insights.copy()
 
-    for op in ["REMOVE", "AGREE", "EDIT", "ADD"]:  # Order is important
-        for i in range(len(operations)):
-            operation, operation_rule_text = operations[i]
-            operation_type = operation.split(" ")[0]
-            if operation_type != op:
-                continue
+    for i in range(len(operations)):
+        operation, operation_rule_text = operations[i]
+        operation_type = operation.split(" ")[0]
 
-            if operation_type == "REMOVE":  # remove rule: -1
-                rule_index = retrieve_insight_index(
-                    updated_rules, operation_rule_text
-                )  # if rule_num doesn't match but text does
-                remove_strength = 3 if is_full else 1
-                updated_rules[rule_index] = (
-                    updated_rules[rule_index][0],
-                    updated_rules[rule_index][1] - remove_strength,
-                )  # -1 (-3 if list full) to the counter
-            elif operation_type == "AGREE":  # agree with rule: +1
-                rule_index = retrieve_insight_index(
-                    updated_rules, operation_rule_text
-                )  # if rule_num doesn't match but text does
-                updated_rules[rule_index] = (
-                    updated_rules[rule_index][0],
-                    updated_rules[rule_index][1] + 1,
-                )  # +1 to the counter
-            elif (
-                operation_type == "EDIT"
-            ):  # edit the rule: +1 // NEED TO BE AFTER REMOVE AND AGREE
-                rule_index = int(operation.split(" ")[1]) - 1
-                updated_rules[rule_index] = (
-                    operation_rule_text,
-                    updated_rules[rule_index][1] + 1,
-                )  # +1 to the counter
-            elif operation_type == "ADD":  # add new rule: +2
-                updated_rules.append((operation_rule_text, 2))
+        if operation_type == "REMOVE":  # remove rule: -1
+            rule_index = retrieve_insight_index(
+                updated_rules, operation_rule_text
+            )  # if rule_num doesn't match but text does
+            remove_strength = 3 if is_full else 1
+            updated_rules[rule_index] = (
+                updated_rules[rule_index][0],
+                updated_rules[rule_index][1] - remove_strength,
+            )  # -1 (-3 if list full) to the counter
+        elif operation_type == "AGREE":  # agree with rule: +1
+            rule_index = retrieve_insight_index(
+                updated_rules, operation_rule_text
+            )  # if rule_num doesn't match but text does
+            updated_rules[rule_index] = (
+                updated_rules[rule_index][0],
+                updated_rules[rule_index][1] + 1,
+            )  # +1 to the counter
+        elif (
+            operation_type == "EDIT"
+        ):  # edit the rule: +1 // NEED TO BE AFTER REMOVE AND AGREE
+            rule_index = int(operation.split(" ")[1]) - 1
+            updated_rules[rule_index] = (
+                operation_rule_text,
+                updated_rules[rule_index][1] + 1,
+            )  # +1 to the counter
+        elif operation_type == "ADD":  # add new rule: +2
+            updated_rules.append((operation_rule_text, 2))
+
     updated_rules = [
         updated_rules[i] for i in range(len(updated_rules)) if updated_rules[i][1] > 0
     ]  # remove insights when counter reach 0
@@ -530,8 +528,7 @@ def get_operations_compare(
     question: str,
     success_trial: str,
     failed_trial: str,
-    max_num_rules: int,
-    num_rules: int
+    is_full: bool
 ) -> List[Tuple[str, str]]:
     # Prompt.
     out = _prompt_compare_critique(
@@ -540,7 +537,7 @@ def get_operations_compare(
         question,
         success_trial,
         failed_trial,
-        max_num_rules < num_rules,
+        is_full,
     )
 
     # Parse.
@@ -556,12 +553,11 @@ def get_operations_success(
     llm: BaseChatModel,
     success_trials: str,
     insights: List[Tuple[str, int]],
-    max_num_rules: int,
-    num_rules: int
+    is_full: bool
 ) -> List[Tuple[str, str]]:
     # Prompt.
     out = _prompt_all_success_critique(
-        llm, insights, success_trials, max_num_rules < num_rules
+        llm, insights, success_trials, is_full
     )
 
     # Parse.
