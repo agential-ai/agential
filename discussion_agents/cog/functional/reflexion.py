@@ -411,6 +411,42 @@ def cot_reflect(
     return reflections
 
 
+def _build_react_agent_prompt(
+    examples: str,
+    reflections: str,
+    question: str,
+    scratchpad: str,
+    max_steps: int,
+) -> str:
+    """Constructs a ReflexionReAct prompt template for the agent.
+
+    This function formats a predefined prompt template (REFLEXION_REACT_INSTRUCTION)
+    with examples, the provided question, and a scratchpad.
+
+    Args:
+        examples (str): Example inputs for the prompt template.
+        reflections (List[str]): Existing list of reflections.
+        question (str): The question being addressed.
+        scratchpad (str): The scratchpad content related to the question.
+        max_steps (int): Maximum number of steps.
+
+    Returns:
+        str: A formatted prompt template ready for use.
+    """
+    prompt = PromptTemplate(
+        input_variables=["examples", "reflections", "question", "scratchpad"],
+        template=REFLEXION_REACT_INSTRUCTION,
+    ).format(
+        examples=examples,
+        reflections=reflections,
+        question=question,
+        scratchpad=scratchpad,
+        max_steps=max_steps,
+    )
+
+    return prompt
+
+
 def _prompt_react_agent(
     llm: BaseChatModel,
     examples: str,
@@ -434,10 +470,7 @@ def _prompt_react_agent(
     Returns:
         str: The generated reflection prompt.
     """
-    prompt = PromptTemplate(
-        input_variables=["examples", "reflections", "question", "scratchpad"],
-        template=REFLEXION_REACT_INSTRUCTION,
-    ).format(
+    prompt = _build_react_agent_prompt(
         examples=examples,
         reflections=reflections,
         question=question,
@@ -454,6 +487,36 @@ def _prompt_react_agent(
     ).content
     assert isinstance(out, str)
     return remove_newline(out)
+
+
+def _build_react_reflection_prompt(
+    examples: str,
+    question: str,
+    scratchpad: str,
+) -> str:
+    """Constructs a ReflexionReAct prompt template for reflection.
+
+    This function formats a predefined prompt template (REFLEXION_REACT_REFLECT_INSTRUCTION)
+    with examples, the provided question, and a scratchpad.
+
+    Args:
+        examples (str): Example inputs for the prompt template.
+        question (str): The question being addressed.
+        scratchpad (str): The scratchpad content related to the question.
+
+    Returns:
+        str: A formatted prompt template ready for use.
+    """
+    prompt = PromptTemplate(
+        input_variables=["examples", "question", "scratchpad"],
+        template=REFLEXION_REACT_REFLECT_INSTRUCTION,
+    ).format(
+        examples=examples,
+        question=question,
+        scratchpad=scratchpad,
+    )
+
+    return prompt
 
 
 def _prompt_react_reflection(
@@ -475,14 +538,12 @@ def _prompt_react_reflection(
     Returns:
         str: The generated reflection prompt.
     """
-    prompt = PromptTemplate(
-        input_variables=["examples", "question", "scratchpad"],
-        template=REFLEXION_REACT_REFLECT_INSTRUCTION,
-    ).format(
+    prompt = _build_react_reflection_prompt(
         examples=examples,
         question=question,
         scratchpad=scratchpad,
     )
+
     out = llm(
         [
             HumanMessage(

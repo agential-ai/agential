@@ -382,7 +382,7 @@ class ReflexionReActAgent(BaseAgent):
                 self.memory.add_memories("\nThought:")
                 thought = _prompt_react_agent(
                     llm=self.action_llm,
-                    examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+                    examples=examples,
                     reflections=self.reflector.reflections_str,
                     question=question,
                     scratchpad=self.memory.load_memories()["scratchpad"],
@@ -394,7 +394,7 @@ class ReflexionReActAgent(BaseAgent):
                 self.memory.add_memories("\nAction:")
                 action = _prompt_react_agent(
                     llm=self.action_llm,
-                    examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+                    examples=examples,
                     reflections=self.reflector.reflections_str,
                     question=question,
                     scratchpad=self.memory.load_memories()["scratchpad"],
