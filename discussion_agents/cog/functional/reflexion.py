@@ -378,7 +378,7 @@ def _prompt_react_agent(
         scratchpad=scratchpad,
         max_steps=max_steps,
     )
-
+    print("PROMPT:\n\n", prompt, "\n\n==============================")
     out = llm(
         [
             HumanMessage(

@@ -26,7 +26,7 @@ class ExpeLAgent(BaseAgent):
         llm: BaseChatModel,
         self_reflect_llm: BaseChatModel, 
         action_llm: BaseChatModel,
-        reflexion_react_kwargs: Optional[Dict[str, Any]] = None,
+        reflexion_react_kwargs: Optional[Dict[str, Any]] = {},
         reflexion_react_agent: Optional[ReflexionReActAgent] = None,
         experience_memory: Optional[ExpeLExperienceMemory] = None,
         insight_memory: Optional[ExpeLInsightMemory] = None,
@@ -73,25 +73,22 @@ class ExpeLAgent(BaseAgent):
             self.reset()
 
         if reflect:
-            self.update_rules()
+            self.update_rules()  # TODO
 
         # Needs to be changed.
-        experience = gather_experience(
-            reflexion_react_agent=self.reflexion_react_agent, 
-            questions=[question],
-            keys=[key],
-            strategy=strategy
+        self.reflexion_react_agent.generate(
+            question=question,
+            key=key,
+            strategy=strategy,
+            examples=
         )
 
-        self.experience_memory.add_memories(
-            questions=experience['questions'],
-            keys=experience['keys'],
-            trajectories=experience['trajectories'],
-            reflections=experience['reflections']
-        )
-
-    def update_rules(self) -> None:
-        pass
+        # self.experience_memory.add_memories(
+        #     questions=experience['questions'],
+        #     keys=experience['keys'],
+        #     trajectories=experience['trajectories'],
+        #     reflections=experience['reflections']
+        # )
 
     def reset(self) -> None:
         self.reflexion_react_agent.reset()
@@ -126,15 +123,6 @@ class ExpeLAgent(BaseAgent):
         folds = get_folds(categories, len(self.experience_memory))
 
         for fold, train_idxs in folds.items():
-            # print(fold, train_idxs)
-            # rules = create_rules(
-            #     llm, 
-            #     experiences, 
-            #     categories, 
-            #     train_idxs, 
-            #     rules, 
-            #     max_num_rules
-            # )
 
             train_category_idxs = {
                 category: list(set(train_idxs).intersection(set(category_idxs)))  # type: ignore
@@ -208,15 +196,14 @@ class ExpeLAgent(BaseAgent):
                 )
                 self.insight_memory.update_memories(
                     idx=insight_idx,
-                    insight="",
                     update_type="AGREE"
                 )
             elif operation_type == "EDIT":
                 insight_idx = int(operation.split(" ")[1]) - 1
                 self.insight_memory.update_memories(
                     idx=insight_idx,
+                    update_type="EDIT",
                     insight=operation_insight,
-                    update_type="EDIT"
                 )
             elif operation_type == "ADD":
                 self.insight_memory.add_memories(

@@ -3,7 +3,7 @@
 import random
 import re
 
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Any
 
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
@@ -151,7 +151,7 @@ def get_folds(
 
 
 def _build_compare_prompt(
-    insights: List[Tuple[str, int]],
+    insights: List[Dict[str, Any]],
     question: str,
     success_trial: str,
     failed_trial: str,
@@ -172,9 +172,6 @@ def _build_compare_prompt(
         str: A fully constructed prompt ready to be presented to the AI. The prompt includes a prefixed system instruction, task details formatted according to human critique template,
             and a suffix based on whether the prompt is in its full form.
     """
-    if insights == []:
-        insights = [("", 0)]
-
     # System prompt.
     prefix = PromptTemplate.from_template(SYSTEM_TEMPLATE).format(
         ai_name=NON_EXISTENT_INSIGHTS_AT_NAME if not insights else EXISTING_INSIGHTS_AI_NAME,
@@ -187,8 +184,8 @@ def _build_compare_prompt(
         "failed_traj": failed_trial,
         "success_traj": success_trial,
         "existing_insights": "\n".join(
-            [f"{i}. {insight[0]}" for i, insight in enumerate(insights, 1)]
-        ),
+            [f"{i}. {insight['insight']}" for i, insight in enumerate(insights, 1)]
+        )  if insights else "",
     }
 
     human_critique_summary_message = PromptTemplate.from_template(
@@ -220,9 +217,6 @@ def _build_all_success_prompt(
     Returns:
         str: A string that combines the system's instruction, the task context with successful trials, and the existing insights into a coherent prompt.
     """
-    if insights == []:
-        insights = [("", 0)]
-
     # System prompt.
     prefix = PromptTemplate.from_template(SYSTEM_TEMPLATE).format(
         ai_name=NON_EXISTENT_INSIGHTS_AT_NAME if not insights else EXISTING_INSIGHTS_AI_NAME,
@@ -233,8 +227,8 @@ def _build_all_success_prompt(
     human_format_dict = {
         "success_trajs": success_trajs_str,
         "existing_insights": "\n".join(
-            [f"{i}. {insight[0]}" for i, insight in enumerate(insights, 1)]
-        ),
+            [f"{i}. {insight['insight']}" for i, insight in enumerate(insights, 1)]
+        ) if insights else "",
     }
 
     human_critique_summary_message = PromptTemplate.from_template(
@@ -383,7 +377,7 @@ def retrieve_insight_index(insights: List[Tuple[str, int]], operation_rule_text:
         int: The index of the rule within the list if found; otherwise, -1.
     """
     for i in range(len(insights)):
-        if insights[i][0] in operation_rule_text:
+        if insights[i]['insight'] in operation_rule_text:
             return i
     return -1
 
@@ -401,7 +395,7 @@ def is_existing_rule(insights: List[Tuple[str, int]], operation_rule_text: str) 
         bool: True if the rule exists in the list, otherwise False.
     """
     for i in range(len(insights)):
-        if insights[i][0] in operation_rule_text:
+        if insights[i]['insight'] in operation_rule_text:
             return True
     return False
 
