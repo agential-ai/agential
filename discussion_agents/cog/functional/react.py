@@ -6,12 +6,11 @@ from tiktoken import Encoding
 
 from discussion_agents.cog.prompts.react import (
     REACT_INSTRUCTION,
-    REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
 )
 from discussion_agents.utils.parse import remove_newline
 
 
-def _build_agent_prompt(question: str, scratchpad: str, max_steps: int) -> str:
+def _build_agent_prompt(question: str, scratchpad: str, examples: str, max_steps: int) -> str:
     """Constructs a prompt template for the agent.
 
     This function formats a predefined prompt template (REACT_INSTRUCTION) with examples,
@@ -20,22 +19,27 @@ def _build_agent_prompt(question: str, scratchpad: str, max_steps: int) -> str:
     Args:
         question (str): The question to be included in the prompt.
         scratchpad (str): Additional scratchpad information to be included.
+        examples (str): Fewshot examples.
         max_steps (int): Max number of steps.
 
     Returns:
         str: A formatted prompt template ready for use.
     """
     prompt = PromptTemplate.from_template(REACT_INSTRUCTION).format(
-        examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
         question=question,
         scratchpad=scratchpad,
+        examples=examples,
         max_steps=max_steps,
     )
     return prompt
 
 
 def _prompt_agent(
-    llm: BaseChatModel, question: str, scratchpad: str, max_steps: int
+    llm: BaseChatModel, 
+    question: str, 
+    scratchpad: str, 
+    examples: str,
+    max_steps: int, 
 ) -> str:
     """Generates a response from the LLM based on a given question and scratchpad.
 
@@ -46,13 +50,17 @@ def _prompt_agent(
         llm (BaseChatModel): The language model to be prompted.
         question (str): The question to ask the language model.
         scratchpad (str): Additional context or information for the language model.
+        examples (str): Fewshot examples.
         max_steps (int): Maximum number of steps.
 
     Returns:
         str: The processed response from the language model.
     """
     prompt = _build_agent_prompt(
-        question=question, scratchpad=scratchpad, max_steps=max_steps
+        question=question, 
+        scratchpad=scratchpad, 
+        examples=examples,
+        max_steps=max_steps, 
     )
     out = llm(
         [
@@ -69,9 +77,10 @@ def _prompt_agent(
 def _is_halted(
     finished: bool,
     step_n: int,
-    max_steps: int,
     question: str,
     scratchpad: str,
+    examples: str,
+    max_steps: int,
     max_tokens: int,
     enc: Encoding,
 ) -> bool:
@@ -84,9 +93,10 @@ def _is_halted(
     Args:
         finished (bool): Flag indicating if the operation is completed.
         step_n (int): Current step number.
-        max_steps (int): Maximum allowed steps.
         question (str): The question being processed.
         scratchpad (str): The scratchpad content.
+        examples (str): Fewshot examples.
+        max_steps (int): Maximum allowed steps.
         max_tokens (int): Maximum allowed token count.
         enc (Encoding): The encoder to calculate token length.
 
@@ -98,7 +108,10 @@ def _is_halted(
         len(
             enc.encode(
                 _build_agent_prompt(
-                    question=question, scratchpad=scratchpad, max_steps=max_steps
+                    question=question, 
+                    scratchpad=scratchpad, 
+                    examples=examples,
+                    max_steps=max_steps, 
                 )
             )
         )

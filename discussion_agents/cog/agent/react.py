@@ -24,7 +24,7 @@ from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.functional.react import _is_halted, _prompt_agent
 from discussion_agents.cog.modules.memory.react import ReActMemory
 from discussion_agents.utils.parse import parse_action, remove_newline
-
+from discussion_agents.cog.prompts.react import REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
 
 class ReActAgent(BaseAgent):
     """ReAct agent from the original paper.
@@ -71,7 +71,7 @@ class ReActAgent(BaseAgent):
         self._step_n = 1  #: :meta private:
         self._finished = False  #: :meta private:
 
-    def generate(self, question: str, reset: bool = True) -> List[Tuple[str, str, str]]:
+    def generate(self, question: str, reset: bool = True, examples: str = REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES) -> List[Tuple[str, str, str]]:
         """Processes a given question through ReAct.
 
         Iteratively applies the think-act-observe cycle to generate an answer for the question.
@@ -80,7 +80,8 @@ class ReActAgent(BaseAgent):
         Args:
             question (str): The question to be processed.
             reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
-
+            examples (str, optional): Fewshot examples. Defaults to REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES.
+            
         Returns:
             List[Tuple[str, str, str]]: The list of accumulated output from the ReAct process,
                 each tuple consists of a thought-action-observation triplet.
@@ -92,9 +93,10 @@ class ReActAgent(BaseAgent):
         while not _is_halted(
             finished=self._finished,
             step_n=self._step_n,
-            max_steps=self.max_steps,
             question=question,
             scratchpad=self.memory.load_memories()["scratchpad"],
+            examples=examples,
+            max_steps=self.max_steps,
             max_tokens=self.max_tokens,
             enc=self.enc,
         ):
@@ -104,6 +106,7 @@ class ReActAgent(BaseAgent):
                 llm=self.llm,
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
+                examples=examples,
                 max_steps=self.max_steps,
             ).split("Action")[0]
             self.memory.add_memories(" " + thought)
@@ -114,6 +117,7 @@ class ReActAgent(BaseAgent):
                 llm=self.llm,
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
+                examples=examples,
                 max_steps=self.max_steps,
             ).split("Observation")[0]
             self.memory.add_memories(" " + action)
