@@ -10,7 +10,9 @@ from discussion_agents.cog.prompts.react import (
 from discussion_agents.utils.parse import remove_newline
 
 
-def _build_agent_prompt(question: str, scratchpad: str, examples: str, max_steps: int) -> str:
+def _build_agent_prompt(
+    question: str, scratchpad: str, examples: str, max_steps: int
+) -> str:
     """Constructs a prompt template for the agent.
 
     This function formats a predefined prompt template (REACT_INSTRUCTION) with examples,
@@ -35,11 +37,11 @@ def _build_agent_prompt(question: str, scratchpad: str, examples: str, max_steps
 
 
 def _prompt_agent(
-    llm: BaseChatModel, 
-    question: str, 
-    scratchpad: str, 
+    llm: BaseChatModel,
+    question: str,
+    scratchpad: str,
     examples: str,
-    max_steps: int, 
+    max_steps: int,
 ) -> str:
     """Generates a response from the LLM based on a given question and scratchpad.
 
@@ -57,10 +59,10 @@ def _prompt_agent(
         str: The processed response from the language model.
     """
     prompt = _build_agent_prompt(
-        question=question, 
-        scratchpad=scratchpad, 
+        question=question,
+        scratchpad=scratchpad,
         examples=examples,
-        max_steps=max_steps, 
+        max_steps=max_steps,
     )
     out = llm(
         [
@@ -108,10 +110,10 @@ def _is_halted(
         len(
             enc.encode(
                 _build_agent_prompt(
-                    question=question, 
-                    scratchpad=scratchpad, 
+                    question=question,
+                    scratchpad=scratchpad,
                     examples=examples,
-                    max_steps=max_steps, 
+                    max_steps=max_steps,
                 )
             )
         )

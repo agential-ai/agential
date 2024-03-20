@@ -112,6 +112,8 @@ class ReflexionCoTAgent(BaseAgent):
             question (str): The question to answer.
             key (str): The key to evaluate the correctness of the answer.
             context (Optional[str]): The context or background information. Defaults to None.
+            examples (str, optional): Fewshot examples. Defaults to REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT and
+                REFLEXION_COT_FEWSHOT_EXAMPLES if context is specified.
             strategy (Optional[str]): The strategy to use for reflection. Defaults to None.
             reset (bool): Resets the agent's memory. Defaults to True.
 
@@ -315,7 +317,7 @@ class ReflexionReActAgent(BaseAgent):
         self,
         question: str,
         key: str,
-        examples: str = REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES, 
+        examples: str = REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
         strategy: Optional[str] = None,
         reset: bool = True,
     ) -> List[Tuple[bool, str, List[Tuple[str, str, str]]]]:

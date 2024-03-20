@@ -4,11 +4,11 @@ import pytest
 from langchain_community.chat_models.fake import FakeListChatModel
 
 from discussion_agents.cog.functional.reflexion import (
+    _build_cot_agent_prompt,
+    _build_cot_reflection_prompt,
     _format_last_attempt,
     _format_reflections,
-    _build_cot_agent_prompt,
     _prompt_cot_agent,
-    _build_cot_reflection_prompt,
     _prompt_cot_reflection,
     _prompt_react_agent,
     _prompt_react_reflection,
@@ -99,23 +99,15 @@ def test__format_last_attempt() -> None:
 
 def test__build_cot_agent_prompt() -> None:
     """Test _build_cot_agent_prompt function."""
-    gt_out = '\nSolve a question answering task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task.\nHere are some examples:\n\n(END OF EXAMPLES)\n\n\nQuestion: \n'
+    gt_out = "\nSolve a question answering task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task.\nHere are some examples:\n\n(END OF EXAMPLES)\n\n\nQuestion: \n"
     out = _build_cot_agent_prompt(
-        examples="",
-        reflections="",
-        question="",
-        scratchpad="",
-        context=""
+        examples="", reflections="", question="", scratchpad="", context=""
     )
     assert out == gt_out
 
-    gt_out = '\nSolve a question answering task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task.\nHere are some examples:\n\n(END OF EXAMPLES)\n\n\nQuestion: \n'
+    gt_out = "\nSolve a question answering task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task.\nHere are some examples:\n\n(END OF EXAMPLES)\n\n\nQuestion: \n"
     out = _build_cot_agent_prompt(
-        examples="",
-        reflections="",
-        question="",
-        scratchpad="",
-        context=None
+        examples="", reflections="", question="", scratchpad="", context=None
     )
     assert out == gt_out
 
@@ -274,21 +266,15 @@ def test__prompt_cot_agent() -> None:
 
 def test__build_cot_reflection_prompt() -> None:
     """Test _build_cot_reflection_prompt function."""
-    gt_out = 'You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.\nHere are some examples:\n\n(END OF EXAMPLES)\n\nPrevious trial:\nQuestion: \n\nReflection:'
+    gt_out = "You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.\nHere are some examples:\n\n(END OF EXAMPLES)\n\nPrevious trial:\nQuestion: \n\nReflection:"
     out = _build_cot_reflection_prompt(
-        examples="",
-        question="",
-        scratchpad="",
-        context=""
+        examples="", question="", scratchpad="", context=""
     )
     assert out == gt_out
 
-    gt_out = 'You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.\nHere are some examples:\n\n(END OF EXAMPLES)\n\nPrevious trial:\nQuestion: \n\nReflection:'
+    gt_out = "You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.\nHere are some examples:\n\n(END OF EXAMPLES)\n\nPrevious trial:\nQuestion: \n\nReflection:"
     out = _build_cot_reflection_prompt(
-        examples="",
-        question="",
-        scratchpad="",
-        context=None
+        examples="", question="", scratchpad="", context=None
     )
     assert out == gt_out
 

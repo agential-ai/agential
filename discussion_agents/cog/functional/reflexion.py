@@ -149,6 +149,7 @@ def _build_cot_agent_prompt(
 
     return prompt
 
+
 def _prompt_cot_agent(
     llm: BaseChatModel,
     examples: str,
