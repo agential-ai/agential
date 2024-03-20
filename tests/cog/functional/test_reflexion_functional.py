@@ -6,13 +6,13 @@ from langchain_community.chat_models.fake import FakeListChatModel
 from discussion_agents.cog.functional.reflexion import (
     _build_cot_agent_prompt,
     _build_cot_reflection_prompt,
+    _build_react_agent_prompt,
+    _build_react_reflection_prompt,
     _format_last_attempt,
     _format_reflections,
     _prompt_cot_agent,
     _prompt_cot_reflection,
-    _build_react_agent_prompt,
     _prompt_react_agent,
-    _build_react_reflection_prompt,
     _prompt_react_reflection,
     _truncate_scratchpad,
     cot_reflect,
@@ -462,7 +462,7 @@ def test_cot_reflect() -> None:
 
 def test__build_react_agent_prompt() -> None:
     """Test _build_react_agent_prompt function."""
-    gt_out = '\nSolve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: \n(1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.\n(2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.\n(3) Finish[answer], which returns the answer and finishes the task.\nYou have a maximum of 1 steps.\n\nHere are some examples:\n\n(END OF EXAMPLES)\n\n\n\nQuestion: \n'
+    gt_out = "\nSolve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: \n(1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.\n(2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.\n(3) Finish[answer], which returns the answer and finishes the task.\nYou have a maximum of 1 steps.\n\nHere are some examples:\n\n(END OF EXAMPLES)\n\n\n\nQuestion: \n"
     out = _build_react_agent_prompt(
         examples="", reflections="", question="", scratchpad="", max_steps=1
     )
@@ -602,10 +602,8 @@ def test__prompt_react_agent() -> None:
 
 def test__build_react_reflection_prompt() -> None:
     """Test _build_react_reflection_prompt function."""
-    gt_out = '\nYou are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  \nHere are some examples:\n\n\nPrevious trial:\nQuestion: \n\nReflection:\n'
-    out = _build_react_reflection_prompt(
-        examples="", question="", scratchpad=""
-    )
+    gt_out = "\nYou are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  \nHere are some examples:\n\n\nPrevious trial:\nQuestion: \n\nReflection:\n"
+    out = _build_react_reflection_prompt(examples="", question="", scratchpad="")
     assert out == gt_out
 
 

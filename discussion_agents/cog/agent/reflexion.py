@@ -191,7 +191,11 @@ class ReflexionCoTAgent(BaseAgent):
         return result
 
     def reflect(
-        self, strategy: str, question: str, context: Optional[str] = None, examples: str = REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT
+        self,
+        strategy: str,
+        question: str,
+        context: Optional[str] = None,
+        examples: str = REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT,
     ) -> str:
         """Reflects on the previous steps to improve the response.
 
@@ -207,8 +211,8 @@ class ReflexionCoTAgent(BaseAgent):
             question (str): The question to answer.
             context (Optional[str]): The context or background information. Defaults to None.
             examples (str, optional): Fewshot examples. Defaults to REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT
-                or REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES if context is provided. 
-            
+                or REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES if context is provided.
+
         Returns:
             str: Generated reflections based on the strategy.
         """
@@ -452,7 +456,12 @@ class ReflexionReActAgent(BaseAgent):
 
         return result
 
-    def reflect(self, strategy: str, question: str, examples: str = REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES) -> str:
+    def reflect(
+        self,
+        strategy: str,
+        question: str,
+        examples: str = REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
+    ) -> str:
         """Reflects on the previous steps to improve the response.
 
         Given the agent can reflect (strategy is not `None`), the strategy
