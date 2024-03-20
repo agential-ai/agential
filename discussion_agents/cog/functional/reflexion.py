@@ -248,7 +248,7 @@ def _prompt_cot_reflection(
     Returns:
         str: The generated reflection prompt.
     """
-    prompt = _build_cot_agent_prompt(
+    prompt = _build_cot_reflection_prompt(
         examples=examples,
         question=question,
         scratchpad=scratchpad,
