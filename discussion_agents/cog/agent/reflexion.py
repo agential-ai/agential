@@ -99,6 +99,7 @@ class ReflexionCoTAgent(BaseAgent):
         question: str,
         key: str,
         context: Optional[str] = None,
+        examples: str = REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
         strategy: Optional[str] = None,
         reset: bool = True,
     ) -> List[Tuple[bool, str, Tuple[str, str, str]]]:
@@ -118,6 +119,10 @@ class ReflexionCoTAgent(BaseAgent):
             result (List[Tuple[bool, str, List[str, str, str]]]): A list of tuples containing (is_correct, answer, output)
                 where output is a thought-action-observation 3-tuple.
         """
+        # If there's context and examples is unchanged, then use the fewshot examples with context.
+        if context and examples == REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT:
+            examples = REFLEXION_COT_FEWSHOT_EXAMPLES
+
         # Reset.
         if reset:
             self.reset()
@@ -134,9 +139,7 @@ class ReflexionCoTAgent(BaseAgent):
             self.memory.add_memories("\nThought:")
             thought = _prompt_cot_agent(
                 llm=self.action_llm,
-                examples=REFLEXION_COT_FEWSHOT_EXAMPLES
-                if context
-                else REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
+                examples=examples,
                 reflections=reflections_str,
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
@@ -148,9 +151,7 @@ class ReflexionCoTAgent(BaseAgent):
             self.memory.add_memories("\nAction:")
             action = _prompt_cot_agent(
                 llm=self.action_llm,
-                examples=REFLEXION_COT_FEWSHOT_EXAMPLES
-                if context
-                else REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
+                examples=examples,
                 reflections=reflections_str,
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],

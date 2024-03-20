@@ -105,6 +105,50 @@ def _format_last_attempt(
     )
 
 
+def _build_cot_agent_prompt(
+    examples: str,
+    reflections: str,
+    question: str,
+    scratchpad: str,
+    context: Optional[str] = None,
+) -> str:
+    """Constructs a ReflexionCoT prompt template for the agent.
+
+    This function formats a predefined prompt template (REFLEXION_COT_INSTRUCTION or
+    REFLEXION_COT_INSTRUCTION_NO_CONTEXT) with examples,
+    the provided question, and a scratchpad.
+
+    Args:
+        examples (str): Example inputs for the prompt template.
+        reflections (List[str]): Existing list of reflections.
+        question (str): The question being addressed.
+        scratchpad (str): The scratchpad content related to the question.
+        context (Optional[str]): The context of the conversation or query. Defaults to None.
+
+    Returns:
+        str: A formatted prompt template ready for use.
+    """
+    prompt = PromptTemplate(
+        input_variables=[
+            "examples",
+            "reflections",
+            "question",
+            "scratchpad",
+            "context",
+        ],
+        template=REFLEXION_COT_INSTRUCTION
+        if context
+        else REFLEXION_COT_INSTRUCTION_NO_CONTEXT,
+    ).format(
+        examples=examples,
+        reflections=reflections,
+        question=question,
+        scratchpad=scratchpad,
+        context=context if context else "",
+    )
+
+    return prompt
+
 def _prompt_cot_agent(
     llm: BaseChatModel,
     examples: str,
@@ -128,23 +172,12 @@ def _prompt_cot_agent(
     Returns:
         str: The generated reflection prompt.
     """
-    prompt = PromptTemplate(
-        input_variables=[
-            "examples",
-            "reflections",
-            "question",
-            "scratchpad",
-            "context",
-        ],
-        template=REFLEXION_COT_INSTRUCTION
-        if context
-        else REFLEXION_COT_INSTRUCTION_NO_CONTEXT,
-    ).format(
+    prompt = _build_cot_agent_prompt(
         examples=examples,
         reflections=reflections,
         question=question,
         scratchpad=scratchpad,
-        context=context if context else "",
+        context=context,
     )
 
     out = llm(
@@ -156,6 +189,42 @@ def _prompt_cot_agent(
     ).content
     assert isinstance(out, str)
     return remove_newline(out)
+
+
+def _build_cot_reflection_prompt(
+    examples: str,
+    question: str,
+    scratchpad: str,
+    context: Optional[str] = None,
+) -> str:
+    """Constructs a ReflexionCoT prompt template for reflection.
+
+    This function formats a predefined prompt template (REFLEXION_COT_REFLECT_INSTRUCTION or
+    REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT) with examples,
+    the provided question, and a scratchpad.
+
+    Args:
+        examples (str): Example inputs for the prompt template.
+        question (str): The question being addressed.
+        scratchpad (str): The scratchpad content related to the question.
+        context (Optional[str]): The context of the conversation or query. Defaults to None.
+
+    Returns:
+        str: A formatted prompt template ready for use.
+    """
+    prompt = PromptTemplate(
+        input_variables=["examples", "question", "scratchpad", "context"],
+        template=REFLEXION_COT_REFLECT_INSTRUCTION
+        if context
+        else REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT,
+    ).format(
+        examples=examples,
+        question=question,
+        scratchpad=scratchpad,
+        context=context if context else "",
+    )
+
+    return prompt
 
 
 def _prompt_cot_reflection(
@@ -179,17 +248,13 @@ def _prompt_cot_reflection(
     Returns:
         str: The generated reflection prompt.
     """
-    prompt = PromptTemplate(
-        input_variables=["examples", "question", "scratchpad", "context"],
-        template=REFLEXION_COT_REFLECT_INSTRUCTION
-        if context
-        else REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT,
-    ).format(
+    prompt = _build_cot_agent_prompt(
         examples=examples,
         question=question,
         scratchpad=scratchpad,
-        context=context if context else "",
+        context=context,
     )
+
     out = llm(
         [
             HumanMessage(
