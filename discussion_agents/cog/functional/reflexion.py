@@ -111,6 +111,7 @@ def _build_cot_agent_prompt(
     question: str,
     scratchpad: str,
     context: Optional[str] = None,
+    prompt: str = REFLEXION_COT_INSTRUCTION_NO_CONTEXT
 ) -> str:
     """Constructs a ReflexionCoT prompt template for the agent.
 
@@ -124,10 +125,16 @@ def _build_cot_agent_prompt(
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         context (Optional[str]): The context of the conversation or query. Defaults to None.
+        prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_INSTRUCTION_NO_CONTEXT and
+            REFLEXION_COT_INSTRUCTION if context is provided. Must include examples, reflections,
+            question, scratchpad, and context.
 
     Returns:
         str: A formatted prompt template ready for use.
     """
+    if context and prompt == REFLEXION_COT_INSTRUCTION_NO_CONTEXT:
+        prompt = REFLEXION_COT_INSTRUCTION
+
     prompt = PromptTemplate(
         input_variables=[
             "examples",
@@ -136,9 +143,7 @@ def _build_cot_agent_prompt(
             "scratchpad",
             "context",
         ],
-        template=REFLEXION_COT_INSTRUCTION
-        if context
-        else REFLEXION_COT_INSTRUCTION_NO_CONTEXT,
+        template=prompt,
     ).format(
         examples=examples,
         reflections=reflections,
@@ -157,6 +162,7 @@ def _prompt_cot_agent(
     question: str,
     scratchpad: str,
     context: Optional[str] = None,
+    prompt: str = REFLEXION_COT_INSTRUCTION_NO_CONTEXT
 ) -> str:
     """Generates a CoT prompt for thought and action.
 
@@ -169,16 +175,23 @@ def _prompt_cot_agent(
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         context (Optional[str]): The context of the conversation or query. Defaults to None.
+        prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_INSTRUCTION_NO_CONTEXT and
+            REFLEXION_COT_INSTRUCTION if context is provided. Must include examples, reflections,
+            question, scratchpad, and context.
 
     Returns:
         str: The generated reflection prompt.
     """
+    if context and prompt == REFLEXION_COT_INSTRUCTION_NO_CONTEXT:
+        prompt = REFLEXION_COT_INSTRUCTION
+
     prompt = _build_cot_agent_prompt(
         examples=examples,
         reflections=reflections,
         question=question,
         scratchpad=scratchpad,
         context=context,
+        prompt=prompt
     )
 
     out = llm(
@@ -197,6 +210,7 @@ def _build_cot_reflection_prompt(
     question: str,
     scratchpad: str,
     context: Optional[str] = None,
+    prompt: str = REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT
 ) -> str:
     """Constructs a ReflexionCoT prompt template for reflection.
 
@@ -209,15 +223,19 @@ def _build_cot_reflection_prompt(
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         context (Optional[str]): The context of the conversation or query. Defaults to None.
+        prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
+            REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. Must include examples,
+            question, scratchpad, and context.
 
     Returns:
         str: A formatted prompt template ready for use.
     """
+    if context and prompt == REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT:
+        prompt = REFLEXION_COT_REFLECT_INSTRUCTION
+
     prompt = PromptTemplate(
         input_variables=["examples", "question", "scratchpad", "context"],
-        template=REFLEXION_COT_REFLECT_INSTRUCTION
-        if context
-        else REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT,
+        template=prompt,
     ).format(
         examples=examples,
         question=question,
@@ -234,6 +252,7 @@ def _prompt_cot_reflection(
     question: str,
     scratchpad: str,
     context: Optional[str] = None,
+    prompt: str = REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT
 ) -> str:
     """Generates a reflection prompt.
 
@@ -245,15 +264,22 @@ def _prompt_cot_reflection(
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         context (Optional[str]): The context of the conversation or query. Defaults to None.
+        prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
+            REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. Must include examples,
+            question, scratchpad, and context.
 
     Returns:
         str: The generated reflection prompt.
     """
+    if context and prompt == REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT:
+        prompt = REFLEXION_COT_REFLECT_INSTRUCTION
+
     prompt = _build_cot_reflection_prompt(
         examples=examples,
         question=question,
         scratchpad=scratchpad,
         context=context,
+        prompt=prompt
     )
 
     out = llm(
@@ -289,6 +315,7 @@ def cot_reflect_reflexion(
     question: str,
     scratchpad: str,
     context: Optional[str] = None,
+    prompt: str = REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT
 ) -> List[str]:
     """Perform reflexion-based reflecting.
 
@@ -302,16 +329,23 @@ def cot_reflect_reflexion(
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         context (Optional[str]): The context of the conversation or query. Defaults to None.
+        prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
+            REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. Must include examples,
+            question, scratchpad, and context.
 
     Returns:
         List[str]: An updated list of reflections.
     """
+    if context and prompt == REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT:
+        prompt = REFLEXION_COT_REFLECT_INSTRUCTION
+
     new_reflection = _prompt_cot_reflection(
         llm=llm,
         examples=examples,
         question=question,
         scratchpad=scratchpad,
         context=context,
+        prompt=prompt
     )
     reflections += [new_reflection]
     return reflections
@@ -323,6 +357,7 @@ def cot_reflect_last_attempt_and_reflexion(
     question: str,
     scratchpad: str,
     context: Optional[str] = None,
+    prompt: str = REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT
 ) -> List[str]:
     """Performs reflection with the reflection of the last attempt and reflexion.
 
@@ -334,10 +369,16 @@ def cot_reflect_last_attempt_and_reflexion(
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         context (Optional[str]): The context of the conversation or query. Defaults to None.
-
+        prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
+            REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. Must include examples,
+            question, scratchpad, and context.
+        
     Returns:
         List[str]: A list with the new reflections.
     """
+    if context and prompt == REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT:
+        prompt = REFLEXION_COT_REFLECT_INSTRUCTION
+
     reflections = [
         _prompt_cot_reflection(
             llm=llm,
@@ -345,6 +386,7 @@ def cot_reflect_last_attempt_and_reflexion(
             question=question,
             scratchpad=scratchpad,
             context=context,
+            prompt=prompt
         )
     ]
     return reflections
@@ -358,6 +400,7 @@ def cot_reflect(
     question: str,
     scratchpad: str,
     context: Optional[str] = None,
+    prompt: str = REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT
 ) -> List[str]:
     """Performs reflection based on a specified strategy using provided context, question, and scratchpad.
 
@@ -373,6 +416,9 @@ def cot_reflect(
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         context (Optional[str]): The context of the conversation or query. Defaults to None.
+        prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
+            REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. Must include examples,
+            question, scratchpad, and context.
 
     Returns:
         List[str]: A list of reflections.
@@ -386,6 +432,9 @@ def cot_reflect(
         - "last_attempt_and_reflexion": This strategy combines the 'last_attempt' and 'reflexion' strategies.
           It first formats the last attempt using 'question' and 'scratchpad', then adds a new reflexion using all the parameters.
     """
+    if context and prompt == REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT:
+        prompt = REFLEXION_COT_REFLECT_INSTRUCTION
+
     if strategy == "last_attempt":
         reflections = cot_reflect_last_attempt(scratchpad)
     elif strategy == "reflexion":
@@ -396,6 +445,7 @@ def cot_reflect(
             question=question,
             scratchpad=scratchpad,
             context=context,
+            prompt=prompt
         )
     elif strategy == "last_attempt_and_reflexion":
         reflections = cot_reflect_last_attempt_and_reflexion(
@@ -404,6 +454,7 @@ def cot_reflect(
             question=question,
             scratchpad=scratchpad,
             context=context,
+            prompt=prompt
         )
     else:
         raise NotImplementedError(f"Unknown reflection strategy: {strategy}.")

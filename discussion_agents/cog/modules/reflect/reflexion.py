@@ -12,6 +12,8 @@ from discussion_agents.cog.functional.reflexion import (
 from discussion_agents.cog.modules.reflect.base import BaseReflector
 from discussion_agents.cog.prompts.reflexion import (
     REFLECTION_AFTER_LAST_TRIAL_HEADER,
+    REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT,
+    REFLEXION_COT_REFLECT_INSTRUCTION
 )
 
 
@@ -49,6 +51,7 @@ class ReflexionCoTReflector(BaseReflector):
         question: str,
         scratchpad: str,
         context: Optional[str] = None,
+        prompt: str = REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT
     ) -> Tuple[List[str], str]:
         """Wrapper around ReflexionCoT's `cot_reflect` method in functional.
 
@@ -62,6 +65,9 @@ class ReflexionCoTReflector(BaseReflector):
             question (str): The question being addressed.
             scratchpad (str): The scratchpad content related to the question.
             context (Optional[str]): The context of the conversation or query. Defaults to None.
+            prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
+                REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. Must include examples,
+                question, scratchpad, and context.
 
         Returns:
             Tuple[List[str], str]: A tuple of the updated list of reflections based on the selected strategy and the formatted
@@ -70,6 +76,9 @@ class ReflexionCoTReflector(BaseReflector):
         Raises:
             NotImplementedError: If an unknown reflection strategy is specified.
         """
+        if context and prompt == REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT:
+            prompt = REFLEXION_COT_REFLECT_INSTRUCTION
+
         reflections = cot_reflect(
             strategy=strategy,
             llm=self.llm,
@@ -78,6 +87,7 @@ class ReflexionCoTReflector(BaseReflector):
             question=question,
             scratchpad=scratchpad,
             context=context,
+            prompt=prompt
         )[-self.max_reflections :]
 
         self.reflections = reflections

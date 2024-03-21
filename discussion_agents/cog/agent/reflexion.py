@@ -29,11 +29,15 @@ from discussion_agents.cog.modules.reflect.reflexion import (
 )
 from discussion_agents.cog.prompts.react import REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
 from discussion_agents.cog.prompts.reflexion import (
+    REFLEXION_COT_INSTRUCTION,
+    REFLEXION_COT_INSTRUCTION_NO_CONTEXT,
     REFLEXION_COT_FEWSHOT_EXAMPLES,
     REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
     REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES,
     REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT,
     REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
+    REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT,
+    REFLEXION_COT_REFLECT_INSTRUCTION
 )
 from discussion_agents.utils.parse import parse_action, remove_newline
 
@@ -102,6 +106,9 @@ class ReflexionCoTAgent(BaseAgent):
         examples: str = REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
         strategy: Optional[str] = None,
         reset: bool = True,
+        prompt: str = REFLEXION_COT_INSTRUCTION_NO_CONTEXT,
+        reflect_examples: str = REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT,
+        reflect_prompt: str = REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT
     ) -> List[Tuple[bool, str, Tuple[str, str, str]]]:
         """Generates a response based on the provided context, question, and key.
 
@@ -116,14 +123,31 @@ class ReflexionCoTAgent(BaseAgent):
                 REFLEXION_COT_FEWSHOT_EXAMPLES if context is provided.
             strategy (Optional[str]): The strategy to use for reflection. Defaults to None.
             reset (bool): Resets the agent's memory. Defaults to True.
+            prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_INSTRUCTION_NO_CONTEXT and
+                REFLEXION_COT_INSTRUCTION if context is provided. Must include examples, reflections,
+                question, scratchpad, and context.
+            reflect_examples (str, optional): Reflection fewshot examples. Defaults to REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT
+                or REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES if context is provided.
+            reflect_prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
+                REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. Must include examples,
+                question, scratchpad, and context.
 
         Returns:
             result (List[Tuple[bool, str, List[str, str, str]]]): A list of tuples containing (is_correct, answer, output)
                 where output is a thought-action-observation 3-tuple.
         """
-        # If there's context and examples is unchanged, then use the fewshot examples with context.
+        # If there's context and examples/prompt is unchanged, then use the fewshot examples/prompt with context.
         if context and examples == REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT:
             examples = REFLEXION_COT_FEWSHOT_EXAMPLES
+
+        if context and prompt == REFLEXION_COT_INSTRUCTION_NO_CONTEXT:
+            prompt = REFLEXION_COT_INSTRUCTION
+
+        if context and reflect_examples == REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT:
+            reflect_examples = REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES
+
+        if context and reflect_prompt == REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT:
+            reflect_prompt = REFLEXION_COT_REFLECT_INSTRUCTION
 
         # Reset.
         if reset:
@@ -135,7 +159,13 @@ class ReflexionCoTAgent(BaseAgent):
             # Reflect if possible.
             reflections_str = ""
             if self._trial_n > 0 and not EM(self._answer, key) and strategy:
-                reflections_str = self.reflect(strategy, question, context)
+                reflections_str = self.reflect(
+                    strategy, 
+                    question, 
+                    context, 
+                    examples=reflect_examples, 
+                    prompt=reflect_prompt
+                )
 
             # Think.
             self.memory.add_memories("\nThought:")
@@ -146,6 +176,7 @@ class ReflexionCoTAgent(BaseAgent):
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
                 context=context,
+                prompt=prompt
             )
             self.memory.add_memories(" " + thought)
 
@@ -158,6 +189,7 @@ class ReflexionCoTAgent(BaseAgent):
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
                 context=context,
+                prompt=prompt
             )
             action_type, argument = parse_action(action.strip())
             self.memory.add_memories(" " + action)
@@ -196,6 +228,7 @@ class ReflexionCoTAgent(BaseAgent):
         question: str,
         context: Optional[str] = None,
         examples: str = REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT,
+        prompt: str = REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT
     ) -> str:
         """Reflects on the previous steps to improve the response.
 
@@ -212,6 +245,9 @@ class ReflexionCoTAgent(BaseAgent):
             context (Optional[str]): The context or background information. Defaults to None.
             examples (str, optional): Fewshot examples. Defaults to REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT
                 or REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES if context is provided.
+            prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
+                REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. Must include examples,
+                question, scratchpad, and context.
 
         Returns:
             str: Generated reflections based on the strategy.
@@ -219,12 +255,16 @@ class ReflexionCoTAgent(BaseAgent):
         if context and examples == REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT:
             examples = REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES
 
+        if context and prompt == REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT:
+            prompt = REFLEXION_COT_REFLECT_INSTRUCTION
+
         _, reflections_str = self.reflector.reflect(
             strategy=strategy,
             examples=examples,
             question=question,
             scratchpad=self.memory.load_memories()["scratchpad"],
             context=context,
+            prompt=prompt
         )
 
         return reflections_str

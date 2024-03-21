@@ -11,23 +11,25 @@ from discussion_agents.utils.parse import remove_newline
 
 
 def _build_agent_prompt(
-    question: str, scratchpad: str, examples: str, max_steps: int
+    question: str, scratchpad: str, examples: str, max_steps: int, prompt: str = REACT_INSTRUCTION
 ) -> str:
     """Constructs a prompt template for the agent.
 
-    This function formats a predefined prompt template (REACT_INSTRUCTION) with examples,
-    the provided question, and a scratchpad.
+    This function formats a prompt template string with examples,
+    the provided question, a scratchpad, and max steps.
 
     Args:
         question (str): The question to be included in the prompt.
         scratchpad (str): Additional scratchpad information to be included.
         examples (str): Fewshot examples.
         max_steps (int): Max number of steps.
+        prompt (str, optional): Prompt template string. Defaults to REACT_INSTRUCTION. Must include question,
+            scratchpad, examples, and max_steps. 
 
     Returns:
         str: A formatted prompt template ready for use.
     """
-    prompt = PromptTemplate.from_template(REACT_INSTRUCTION).format(
+    prompt = PromptTemplate.from_template(prompt).format(
         question=question,
         scratchpad=scratchpad,
         examples=examples,
@@ -42,6 +44,7 @@ def _prompt_agent(
     scratchpad: str,
     examples: str,
     max_steps: int,
+    prompt: str = REACT_INSTRUCTION
 ) -> str:
     """Generates a response from the LLM based on a given question and scratchpad.
 
@@ -54,6 +57,8 @@ def _prompt_agent(
         scratchpad (str): Additional context or information for the language model.
         examples (str): Fewshot examples.
         max_steps (int): Maximum number of steps.
+        prompt (str, optional): Prompt template string. Defaults to REACT_INSTRUCTION. Must include question,
+            scratchpad, examples, and max_steps. 
 
     Returns:
         str: The processed response from the language model.
@@ -63,6 +68,7 @@ def _prompt_agent(
         scratchpad=scratchpad,
         examples=examples,
         max_steps=max_steps,
+        prompt=prompt
     )
     out = llm(
         [
@@ -85,6 +91,7 @@ def _is_halted(
     max_steps: int,
     max_tokens: int,
     enc: Encoding,
+    prompt: str = REACT_INSTRUCTION
 ) -> bool:
     """Determines whether the agent's operation should be halted.
 
@@ -101,6 +108,8 @@ def _is_halted(
         max_steps (int): Maximum allowed steps.
         max_tokens (int): Maximum allowed token count.
         enc (Encoding): The encoder to calculate token length.
+        prompt (str, optional): Prompt template string. Defaults to REACT_INSTRUCTION. Must include question,
+            scratchpad, examples, and max_steps. 
 
     Returns:
         bool: True if the operation should be halted, False otherwise.
@@ -114,6 +123,7 @@ def _is_halted(
                     scratchpad=scratchpad,
                     examples=examples,
                     max_steps=max_steps,
+                    prompt=prompt
                 )
             )
         )

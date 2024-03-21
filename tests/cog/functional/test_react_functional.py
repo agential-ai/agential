@@ -97,6 +97,16 @@ def test__build_agent_prompt() -> None:
     assert isinstance(prompt, str)
     assert prompt == gt_out
 
+    gt_out = '  examples 1'
+    out = _build_agent_prompt(
+        question="",
+        scratchpad="",
+        examples="examples",
+        max_steps=1,
+        prompt="{question} {scratchpad} {examples} {max_steps}"
+    )
+    assert out == gt_out 
+
 
 def test__prompt_agent() -> None:
     """Test _prompt_agent function."""
@@ -106,6 +116,18 @@ def test__prompt_agent() -> None:
         scratchpad="",
         examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
         max_steps=1,
+    )
+    assert isinstance(out, str)
+    assert out == "1"
+
+    # Test with custom prompt template string.
+    out = _prompt_agent(
+        llm=FakeListChatModel(responses=["1"]),
+        question="",
+        scratchpad="",
+        examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        max_steps=1,
+        prompt="{question} {scratchpad} {examples} {max_steps}"
     )
     assert isinstance(out, str)
     assert out == "1"
@@ -185,4 +207,17 @@ def test__is_halted() -> None:
         10,
         1603,
         gpt3_5_turbo_enc,
+    )
+
+    # Test with custom prompt template string.
+    assert not _is_halted(
+        False,
+        1,
+        "question",
+        "scratchpad",
+        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        10,
+        1603,
+        gpt3_5_turbo_enc,
+        "{question} {scratchpad} {examples} {max_steps}"
     )

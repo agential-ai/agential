@@ -280,6 +280,13 @@ def test__build_cot_reflection_prompt() -> None:
     )
     assert out == gt_out
 
+    # Test with custom prompt.
+    gt_out = '   '
+    out = _build_cot_reflection_prompt(
+        examples="", question="", scratchpad="", context=None, prompt="{examples} {question} {scratchpad} {context}"
+    )
+    assert out == gt_out
+
 
 def test__prompt_cot_reflection() -> None:
     """Test _prompt_cot_reflection function."""
