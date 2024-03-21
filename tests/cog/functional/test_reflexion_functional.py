@@ -1,5 +1,6 @@
 """Unit tests for Reflexion functional methods."""
 import pytest
+import tiktoken
 
 from langchain_community.chat_models.fake import FakeListChatModel
 
@@ -23,6 +24,7 @@ from discussion_agents.cog.functional.reflexion import (
     react_reflect_last_attempt,
     react_reflect_last_attempt_and_reflexion,
     react_reflect_reflexion,
+    _is_halted
 )
 from discussion_agents.cog.prompts.react import REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
 from discussion_agents.cog.prompts.reflexion import (
@@ -605,6 +607,103 @@ def test__prompt_react_agent() -> None:
         max_steps=6,
     )
     assert out == gt_out
+
+
+def test__is_halted() -> None:
+    """Test _is_halted function."""
+    gpt3_5_turbo_enc = tiktoken.encoding_for_model("gpt-3.5-turbo")
+
+    # Test when finish is true.
+    assert _is_halted(
+        True,
+        1,
+        "question",
+        "scratchpad",
+        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        "",
+        10,
+        100,
+        gpt3_5_turbo_enc,
+    )
+
+    # Test when step_n exceeds max_steps.
+    assert _is_halted(
+        False,
+        11,
+        "question",
+        "scratchpad",
+        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        "",
+        10,
+        100,
+        gpt3_5_turbo_enc,
+    )
+
+    # Test when encoded prompt exceeds max_tokens.
+    assert _is_halted(
+        False,
+        1,
+        "question",
+        "scratchpad",
+        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        "",
+        10,
+        10,
+        gpt3_5_turbo_enc,
+    )
+
+    # Test when none of the conditions for halting are met.
+    assert not _is_halted(
+        False,
+        1,
+        "question",
+        "scratchpad",
+        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        "",
+        10,
+        100000,
+        gpt3_5_turbo_enc,
+    )
+
+    # Test edge case when step_n equals max_steps.
+    assert _is_halted(
+        False,
+        10,
+        "question",
+        "scratchpad",
+        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        "",
+        10,
+        100,
+        gpt3_5_turbo_enc,
+    )
+
+    # Test edge case when encoded prompt equals max_tokens.
+    assert _is_halted(
+        False,
+        1,
+        "question",
+        "scratchpad",
+        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        "",
+        10,
+        1603,
+        gpt3_5_turbo_enc,
+    )
+
+    # Test with custom prompt template string.
+    assert not _is_halted(
+        False,
+        1,
+        "question",
+        "scratchpad",
+        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        "",
+        10,
+        1603,
+        gpt3_5_turbo_enc,
+        "{question} {scratchpad} {examples} {max_steps}"
+    )
 
 
 def test__build_react_reflection_prompt() -> None:

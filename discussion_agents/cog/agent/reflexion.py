@@ -16,11 +16,11 @@ from tiktoken import Encoding
 
 from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.eval.reflexion import EM
-from discussion_agents.cog.functional.react import _is_halted
 from discussion_agents.cog.functional.reflexion import (
     _prompt_cot_agent,
     _prompt_react_agent,
     _truncate_scratchpad,
+    _is_halted
 )
 from discussion_agents.cog.modules.memory.reflexion import ReflexionMemory
 from discussion_agents.cog.modules.reflect.reflexion import (
@@ -412,9 +412,11 @@ class ReflexionReActAgent(BaseAgent):
                     question=question,
                     scratchpad=self.memory.load_memories()["scratchpad"],
                     examples=examples,
+                    reflections=self.reflector.reflections_str,
                     max_steps=self.max_steps,
                     max_tokens=self.max_tokens,
                     enc=self.enc,
+                    prompt=prompt
                 )
                 and not EM(self._answer, key)
                 and strategy
@@ -436,9 +438,11 @@ class ReflexionReActAgent(BaseAgent):
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
                 examples=examples,
+                reflections=self.reflector.reflections_str,
                 max_steps=self.max_steps,
                 max_tokens=self.max_tokens,
                 enc=self.enc,
+                prompt=prompt
             ):
                 # Think.
                 self.memory.add_memories("\nThought:")
