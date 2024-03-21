@@ -468,6 +468,7 @@ def _build_react_agent_prompt(
     question: str,
     scratchpad: str,
     max_steps: int,
+    prompt: str = REFLEXION_REACT_INSTRUCTION
 ) -> str:
     """Constructs a ReflexionReAct prompt template for the agent.
 
@@ -480,13 +481,15 @@ def _build_react_agent_prompt(
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         max_steps (int): Maximum number of steps.
+        prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION. 
+            Must include examples, reflections, question, and scratchpad.
 
     Returns:
         str: A formatted prompt template ready for use.
     """
     prompt = PromptTemplate(
         input_variables=["examples", "reflections", "question", "scratchpad"],
-        template=REFLEXION_REACT_INSTRUCTION,
+        template=prompt,
     ).format(
         examples=examples,
         reflections=reflections,
@@ -505,6 +508,7 @@ def _prompt_react_agent(
     question: str,
     scratchpad: str,
     max_steps: int,
+    prompt: str = REFLEXION_REACT_INSTRUCTION
 ) -> str:
     """Generates a ReAct prompt for thought and action.
 
@@ -517,6 +521,8 @@ def _prompt_react_agent(
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         max_steps (int): Maximum number of steps.
+        prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION. 
+            Must include examples, reflections, question, and scratchpad.
 
     Returns:
         str: The generated reflection prompt.
@@ -527,6 +533,7 @@ def _prompt_react_agent(
         question=question,
         scratchpad=scratchpad,
         max_steps=max_steps,
+        prompt=prompt
     )
 
     out = llm(
@@ -540,10 +547,29 @@ def _prompt_react_agent(
     return remove_newline(out)
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def _build_react_reflection_prompt(
     examples: str,
     question: str,
     scratchpad: str,
+    prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION
 ) -> str:
     """Constructs a ReflexionReAct prompt template for reflection.
 
@@ -554,13 +580,15 @@ def _build_react_reflection_prompt(
         examples (str): Example inputs for the prompt template.
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
+        prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION. 
+            Must include examples, question, and scratchpad.
 
     Returns:
         str: A formatted prompt template ready for use.
     """
     prompt = PromptTemplate(
         input_variables=["examples", "question", "scratchpad"],
-        template=REFLEXION_REACT_REFLECT_INSTRUCTION,
+        template=prompt,
     ).format(
         examples=examples,
         question=question,
@@ -575,6 +603,7 @@ def _prompt_react_reflection(
     examples: str,
     question: str,
     scratchpad: str,
+    prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION
 ) -> str:
     """Generates a reflection prompt.
 
@@ -585,6 +614,8 @@ def _prompt_react_reflection(
         examples (str): Example inputs for the prompt template.
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
+        prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION. 
+            Must include examples, question, and scratchpad.
 
     Returns:
         str: The generated reflection prompt.
@@ -593,6 +624,7 @@ def _prompt_react_reflection(
         examples=examples,
         question=question,
         scratchpad=scratchpad,
+        prompt=prompt
     )
 
     out = llm(
@@ -627,6 +659,7 @@ def react_reflect_reflexion(
     examples: str,
     question: str,
     scratchpad: str,
+    prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION
 ) -> List[str]:
     """Perform reflexion-based reflecting.
 
@@ -639,6 +672,8 @@ def react_reflect_reflexion(
         examples (str): Example inputs for the prompt template.
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
+        prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION. 
+            Must include examples, question, and scratchpad.
 
     Returns:
         List[str]: An updated list of reflections.
@@ -648,6 +683,7 @@ def react_reflect_reflexion(
         examples=examples,
         question=question,
         scratchpad=scratchpad,
+        prompt=prompt
     )
     reflections += [new_reflection]
     return reflections
@@ -658,6 +694,7 @@ def react_reflect_last_attempt_and_reflexion(
     examples: str,
     question: str,
     scratchpad: str,
+    prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION
 ) -> List[str]:
     """Performs reflection with the reflection of the last attempt and reflexion.
 
@@ -668,6 +705,8 @@ def react_reflect_last_attempt_and_reflexion(
         examples (str): Example inputs for the prompt template.
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
+        prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION. 
+            Must include examples, question, and scratchpad.
 
     Returns:
         List[str]: A list with the new reflections.
@@ -678,6 +717,7 @@ def react_reflect_last_attempt_and_reflexion(
             examples=examples,
             question=question,
             scratchpad=scratchpad,
+            prompt=prompt
         )
     ]
     return reflections
@@ -690,6 +730,7 @@ def react_reflect(
     examples: str,
     question: str,
     scratchpad: str,
+    prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION
 ) -> List[str]:
     """Performs reflection based on a specified strategy using the provided question and scratchpad.
 
@@ -704,6 +745,8 @@ def react_reflect(
         examples (str): Example inputs for the prompt template.
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
+        prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION. 
+            Must include examples, question, and scratchpad.
 
     Returns:
         List[str]: A tuple containing the updated list of reflections.
@@ -726,6 +769,7 @@ def react_reflect(
             examples=examples,
             question=question,
             scratchpad=scratchpad,
+            prompt=prompt
         )
     elif strategy == "last_attempt_and_reflexion":
         reflections = react_reflect_last_attempt_and_reflexion(
@@ -733,6 +777,7 @@ def react_reflect(
             examples=examples,
             question=question,
             scratchpad=scratchpad,
+            prompt=prompt
         )
     else:
         raise NotImplementedError(f"Unknown reflection strategy: {strategy}.")

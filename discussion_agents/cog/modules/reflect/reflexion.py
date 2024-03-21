@@ -13,7 +13,8 @@ from discussion_agents.cog.modules.reflect.base import BaseReflector
 from discussion_agents.cog.prompts.reflexion import (
     REFLECTION_AFTER_LAST_TRIAL_HEADER,
     REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT,
-    REFLEXION_COT_REFLECT_INSTRUCTION
+    REFLEXION_COT_REFLECT_INSTRUCTION,
+    REFLEXION_REACT_REFLECT_INSTRUCTION
 )
 
 
@@ -145,6 +146,7 @@ class ReflexionReActReflector(BaseReflector):
         examples: str,
         question: str,
         scratchpad: str,
+        prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION
     ) -> Tuple[List[str], str]:
         """Wrapper around ReflexionReAct's `react_reflect` method in functional.
 
@@ -157,6 +159,8 @@ class ReflexionReActReflector(BaseReflector):
             examples (str): Example inputs for the prompt template.
             question (str): The question being addressed.
             scratchpad (str): The scratchpad content related to the question.
+            prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION. 
+                Must include examples, question, and scratchpad.
 
         Returns:
             Tuple[List[str], str]: A tuple of the updated list of reflections based on the selected strategy and the formatted
@@ -172,6 +176,7 @@ class ReflexionReActReflector(BaseReflector):
             examples=examples,
             question=question,
             scratchpad=scratchpad,
+            prompt=prompt
         )[-self.max_reflections :]
 
         self.reflections = reflections
