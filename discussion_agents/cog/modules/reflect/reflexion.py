@@ -12,9 +12,9 @@ from discussion_agents.cog.functional.reflexion import (
 from discussion_agents.cog.modules.reflect.base import BaseReflector
 from discussion_agents.cog.prompts.reflexion import (
     REFLECTION_AFTER_LAST_TRIAL_HEADER,
-    REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT,
     REFLEXION_COT_REFLECT_INSTRUCTION,
-    REFLEXION_REACT_REFLECT_INSTRUCTION
+    REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT,
+    REFLEXION_REACT_REFLECT_INSTRUCTION,
 )
 
 
@@ -52,7 +52,7 @@ class ReflexionCoTReflector(BaseReflector):
         question: str,
         scratchpad: str,
         context: Optional[str] = None,
-        prompt: str = REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT
+        prompt: str = REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT,
     ) -> Tuple[List[str], str]:
         """Wrapper around ReflexionCoT's `cot_reflect` method in functional.
 
@@ -88,7 +88,7 @@ class ReflexionCoTReflector(BaseReflector):
             question=question,
             scratchpad=scratchpad,
             context=context,
-            prompt=prompt
+            prompt=prompt,
         )[-self.max_reflections :]
 
         self.reflections = reflections
@@ -146,7 +146,7 @@ class ReflexionReActReflector(BaseReflector):
         examples: str,
         question: str,
         scratchpad: str,
-        prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION
+        prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION,
     ) -> Tuple[List[str], str]:
         """Wrapper around ReflexionReAct's `react_reflect` method in functional.
 
@@ -159,7 +159,7 @@ class ReflexionReActReflector(BaseReflector):
             examples (str): Example inputs for the prompt template.
             question (str): The question being addressed.
             scratchpad (str): The scratchpad content related to the question.
-            prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION. 
+            prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION.
                 Must include examples, question, and scratchpad.
 
         Returns:
@@ -176,7 +176,7 @@ class ReflexionReActReflector(BaseReflector):
             examples=examples,
             question=question,
             scratchpad=scratchpad,
-            prompt=prompt
+            prompt=prompt,
         )[-self.max_reflections :]
 
         self.reflections = reflections

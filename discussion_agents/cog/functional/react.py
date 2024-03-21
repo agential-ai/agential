@@ -11,7 +11,11 @@ from discussion_agents.utils.parse import remove_newline
 
 
 def _build_agent_prompt(
-    question: str, scratchpad: str, examples: str, max_steps: int, prompt: str = REACT_INSTRUCTION
+    question: str,
+    scratchpad: str,
+    examples: str,
+    max_steps: int,
+    prompt: str = REACT_INSTRUCTION,
 ) -> str:
     """Constructs a prompt template for the agent.
 
@@ -24,7 +28,7 @@ def _build_agent_prompt(
         examples (str): Fewshot examples.
         max_steps (int): Max number of steps.
         prompt (str, optional): Prompt template string. Defaults to REACT_INSTRUCTION. Must include question,
-            scratchpad, examples, and max_steps. 
+            scratchpad, examples, and max_steps.
 
     Returns:
         str: A formatted prompt template ready for use.
@@ -44,7 +48,7 @@ def _prompt_agent(
     scratchpad: str,
     examples: str,
     max_steps: int,
-    prompt: str = REACT_INSTRUCTION
+    prompt: str = REACT_INSTRUCTION,
 ) -> str:
     """Generates a response from the LLM based on a given question and scratchpad.
 
@@ -58,7 +62,7 @@ def _prompt_agent(
         examples (str): Fewshot examples.
         max_steps (int): Maximum number of steps.
         prompt (str, optional): Prompt template string. Defaults to REACT_INSTRUCTION. Must include question,
-            scratchpad, examples, and max_steps. 
+            scratchpad, examples, and max_steps.
 
     Returns:
         str: The processed response from the language model.
@@ -68,7 +72,7 @@ def _prompt_agent(
         scratchpad=scratchpad,
         examples=examples,
         max_steps=max_steps,
-        prompt=prompt
+        prompt=prompt,
     )
     out = llm(
         [
@@ -91,7 +95,7 @@ def _is_halted(
     max_steps: int,
     max_tokens: int,
     enc: Encoding,
-    prompt: str = REACT_INSTRUCTION
+    prompt: str = REACT_INSTRUCTION,
 ) -> bool:
     """Determines whether the agent's operation should be halted.
 
@@ -109,7 +113,7 @@ def _is_halted(
         max_tokens (int): Maximum allowed token count.
         enc (Encoding): The encoder to calculate token length.
         prompt (str, optional): Prompt template string. Defaults to REACT_INSTRUCTION. Must include question,
-            scratchpad, examples, and max_steps. 
+            scratchpad, examples, and max_steps.
 
     Returns:
         bool: True if the operation should be halted, False otherwise.
@@ -123,7 +127,7 @@ def _is_halted(
                     scratchpad=scratchpad,
                     examples=examples,
                     max_steps=max_steps,
-                    prompt=prompt
+                    prompt=prompt,
                 )
             )
         )

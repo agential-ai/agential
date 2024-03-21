@@ -23,7 +23,10 @@ from tiktoken.core import Encoding
 from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.functional.react import _is_halted, _prompt_agent
 from discussion_agents.cog.modules.memory.react import ReActMemory
-from discussion_agents.cog.prompts.react import REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES, REACT_INSTRUCTION
+from discussion_agents.cog.prompts.react import (
+    REACT_INSTRUCTION,
+    REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+)
 from discussion_agents.utils.parse import parse_action, remove_newline
 
 
@@ -89,7 +92,7 @@ class ReActAgent(BaseAgent):
             reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
             examples (str, optional): Fewshot examples. Defaults to REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES.
             prompt (str, optional): Prompt template string. Defaults to REACT_INSTRUCTION. Must include question,
-                scratchpad, examples, and max_steps. 
+                scratchpad, examples, and max_steps.
 
         Returns:
             List[Tuple[str, str, str]]: The list of accumulated output from the ReAct process,

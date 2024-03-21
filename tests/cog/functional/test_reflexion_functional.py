@@ -11,6 +11,7 @@ from discussion_agents.cog.functional.reflexion import (
     _build_react_reflection_prompt,
     _format_last_attempt,
     _format_reflections,
+    _is_halted,
     _prompt_cot_agent,
     _prompt_cot_reflection,
     _prompt_react_agent,
@@ -24,7 +25,6 @@ from discussion_agents.cog.functional.reflexion import (
     react_reflect_last_attempt,
     react_reflect_last_attempt_and_reflexion,
     react_reflect_reflexion,
-    _is_halted
 )
 from discussion_agents.cog.prompts.react import REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
 from discussion_agents.cog.prompts.reflexion import (
@@ -283,9 +283,13 @@ def test__build_cot_reflection_prompt() -> None:
     assert out == gt_out
 
     # Test with custom prompt.
-    gt_out = '   '
+    gt_out = "   "
     out = _build_cot_reflection_prompt(
-        examples="", question="", scratchpad="", context=None, prompt="{examples} {question} {scratchpad} {context}"
+        examples="",
+        question="",
+        scratchpad="",
+        context=None,
+        prompt="{examples} {question} {scratchpad} {context}",
     )
     assert out == gt_out
 
@@ -702,7 +706,7 @@ def test__is_halted() -> None:
         10,
         1603,
         gpt3_5_turbo_enc,
-        "{question} {scratchpad} {examples} {max_steps}"
+        "{question} {scratchpad} {examples} {max_steps}",
     )
 
 
