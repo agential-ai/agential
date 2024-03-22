@@ -21,7 +21,6 @@ from langchain_core.tools import BaseTool, tool
 from tiktoken.core import Encoding
 
 
-
 from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.functional.react import _is_halted, _prompt_agent
 from discussion_agents.cog.modules.memory.react import ReActMemory
@@ -71,6 +70,7 @@ class ReActAgent(BaseAgent):
         """Initialization."""
         super().__init__()
         self.llm = llm
+
 
         if not memory:
             self.memory = ReActMemory()
@@ -257,6 +257,14 @@ class ReActAgent(BaseAgent):
 
         out = ""
 
+        
+        if not reset:
+            # No need to reset
+            pass
+        else:
+            self.reset()
+        out = ""
+
         while True:
             is_halted = _is_halted(
                 finished=self._finished,
@@ -277,10 +285,9 @@ class ReActAgent(BaseAgent):
 
             action = self.act(question, self.memory.load_memories()["scratchpad"], examples, prompt_template)
             out += "\n" + action
-
             self.observe(action)
-            out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
 
+            out += "\n" + self.memory.load_memories()["scratchpad"].split("\n")[-1]
             self._step_n += 1
 
         return out
