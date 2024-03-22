@@ -105,6 +105,56 @@ def _format_last_attempt(
     )
 
 
+def _build_cot_agent_prompt(
+    examples: str,
+    reflections: str,
+    question: str,
+    scratchpad: str,
+    context: Optional[str] = None,
+    prompt: str = REFLEXION_COT_INSTRUCTION_NO_CONTEXT,
+) -> str:
+    """Constructs a ReflexionCoT prompt template for the agent.
+
+    This function formats a predefined prompt template (REFLEXION_COT_INSTRUCTION or
+    REFLEXION_COT_INSTRUCTION_NO_CONTEXT) with examples,
+    the provided question, and a scratchpad.
+
+    Args:
+        examples (str): Example inputs for the prompt template.
+        reflections (List[str]): Existing list of reflections.
+        question (str): The question being addressed.
+        scratchpad (str): The scratchpad content related to the question.
+        context (Optional[str]): The context of the conversation or query. Defaults to None.
+        prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_INSTRUCTION_NO_CONTEXT and
+            REFLEXION_COT_INSTRUCTION if context is provided. Must include examples, reflections,
+            question, scratchpad, and context.
+
+    Returns:
+        str: A formatted prompt template ready for use.
+    """
+    if context and prompt == REFLEXION_COT_INSTRUCTION_NO_CONTEXT:
+        prompt = REFLEXION_COT_INSTRUCTION
+
+    prompt = PromptTemplate(
+        input_variables=[
+            "examples",
+            "reflections",
+            "question",
+            "scratchpad",
+            "context",
+        ],
+        template=prompt,
+    ).format(
+        examples=examples,
+        reflections=reflections,
+        question=question,
+        scratchpad=scratchpad,
+        context=context if context else "",
+    )
+
+    return prompt
+
+
 def _prompt_cot_agent(
     llm: BaseChatModel,
     examples: str,
@@ -112,6 +162,7 @@ def _prompt_cot_agent(
     question: str,
     scratchpad: str,
     context: Optional[str] = None,
+    prompt: str = REFLEXION_COT_INSTRUCTION_NO_CONTEXT,
 ) -> str:
     """Generates a CoT prompt for thought and action.
 
@@ -124,27 +175,23 @@ def _prompt_cot_agent(
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         context (Optional[str]): The context of the conversation or query. Defaults to None.
+        prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_INSTRUCTION_NO_CONTEXT and
+            REFLEXION_COT_INSTRUCTION if context is provided. Must include examples, reflections,
+            question, scratchpad, and context.
 
     Returns:
         str: The generated reflection prompt.
     """
-    prompt = PromptTemplate(
-        input_variables=[
-            "examples",
-            "reflections",
-            "question",
-            "scratchpad",
-            "context",
-        ],
-        template=REFLEXION_COT_INSTRUCTION
-        if context
-        else REFLEXION_COT_INSTRUCTION_NO_CONTEXT,
-    ).format(
+    if context and prompt == REFLEXION_COT_INSTRUCTION_NO_CONTEXT:
+        prompt = REFLEXION_COT_INSTRUCTION
+
+    prompt = _build_cot_agent_prompt(
         examples=examples,
         reflections=reflections,
         question=question,
         scratchpad=scratchpad,
-        context=context if context else "",
+        context=context,
+        prompt=prompt,
     )
 
     out = llm(
@@ -158,12 +205,54 @@ def _prompt_cot_agent(
     return remove_newline(out)
 
 
+def _build_cot_reflection_prompt(
+    examples: str,
+    question: str,
+    scratchpad: str,
+    context: Optional[str] = None,
+    prompt: str = REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT,
+) -> str:
+    """Constructs a ReflexionCoT prompt template for reflection.
+
+    This function formats a predefined prompt template (REFLEXION_COT_REFLECT_INSTRUCTION or
+    REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT) with examples,
+    the provided question, and a scratchpad.
+
+    Args:
+        examples (str): Example inputs for the prompt template.
+        question (str): The question being addressed.
+        scratchpad (str): The scratchpad content related to the question.
+        context (Optional[str]): The context of the conversation or query. Defaults to None.
+        prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
+            REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. Must include examples,
+            question, scratchpad, and context.
+
+    Returns:
+        str: A formatted prompt template ready for use.
+    """
+    if context and prompt == REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT:
+        prompt = REFLEXION_COT_REFLECT_INSTRUCTION
+
+    prompt = PromptTemplate(
+        input_variables=["examples", "question", "scratchpad", "context"],
+        template=prompt,
+    ).format(
+        examples=examples,
+        question=question,
+        scratchpad=scratchpad,
+        context=context if context else "",
+    )
+
+    return prompt
+
+
 def _prompt_cot_reflection(
     llm: BaseChatModel,
     examples: str,
     question: str,
     scratchpad: str,
     context: Optional[str] = None,
+    prompt: str = REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT,
 ) -> str:
     """Generates a reflection prompt.
 
@@ -175,21 +264,24 @@ def _prompt_cot_reflection(
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         context (Optional[str]): The context of the conversation or query. Defaults to None.
+        prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
+            REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. Must include examples,
+            question, scratchpad, and context.
 
     Returns:
         str: The generated reflection prompt.
     """
-    prompt = PromptTemplate(
-        input_variables=["examples", "question", "scratchpad", "context"],
-        template=REFLEXION_COT_REFLECT_INSTRUCTION
-        if context
-        else REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT,
-    ).format(
+    if context and prompt == REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT:
+        prompt = REFLEXION_COT_REFLECT_INSTRUCTION
+
+    prompt = _build_cot_reflection_prompt(
         examples=examples,
         question=question,
         scratchpad=scratchpad,
-        context=context if context else "",
+        context=context,
+        prompt=prompt,
     )
+
     out = llm(
         [
             HumanMessage(
@@ -223,6 +315,7 @@ def cot_reflect_reflexion(
     question: str,
     scratchpad: str,
     context: Optional[str] = None,
+    prompt: str = REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT,
 ) -> List[str]:
     """Perform reflexion-based reflecting.
 
@@ -236,16 +329,23 @@ def cot_reflect_reflexion(
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         context (Optional[str]): The context of the conversation or query. Defaults to None.
+        prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
+            REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. Must include examples,
+            question, scratchpad, and context.
 
     Returns:
         List[str]: An updated list of reflections.
     """
+    if context and prompt == REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT:
+        prompt = REFLEXION_COT_REFLECT_INSTRUCTION
+
     new_reflection = _prompt_cot_reflection(
         llm=llm,
         examples=examples,
         question=question,
         scratchpad=scratchpad,
         context=context,
+        prompt=prompt,
     )
     reflections += [new_reflection]
     return reflections
@@ -257,6 +357,7 @@ def cot_reflect_last_attempt_and_reflexion(
     question: str,
     scratchpad: str,
     context: Optional[str] = None,
+    prompt: str = REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT,
 ) -> List[str]:
     """Performs reflection with the reflection of the last attempt and reflexion.
 
@@ -268,10 +369,16 @@ def cot_reflect_last_attempt_and_reflexion(
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         context (Optional[str]): The context of the conversation or query. Defaults to None.
+        prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
+            REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. Must include examples,
+            question, scratchpad, and context.
 
     Returns:
         List[str]: A list with the new reflections.
     """
+    if context and prompt == REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT:
+        prompt = REFLEXION_COT_REFLECT_INSTRUCTION
+
     reflections = [
         _prompt_cot_reflection(
             llm=llm,
@@ -279,6 +386,7 @@ def cot_reflect_last_attempt_and_reflexion(
             question=question,
             scratchpad=scratchpad,
             context=context,
+            prompt=prompt,
         )
     ]
     return reflections
@@ -292,6 +400,7 @@ def cot_reflect(
     question: str,
     scratchpad: str,
     context: Optional[str] = None,
+    prompt: str = REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT,
 ) -> List[str]:
     """Performs reflection based on a specified strategy using provided context, question, and scratchpad.
 
@@ -307,6 +416,9 @@ def cot_reflect(
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         context (Optional[str]): The context of the conversation or query. Defaults to None.
+        prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
+            REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. Must include examples,
+            question, scratchpad, and context.
 
     Returns:
         List[str]: A list of reflections.
@@ -320,6 +432,9 @@ def cot_reflect(
         - "last_attempt_and_reflexion": This strategy combines the 'last_attempt' and 'reflexion' strategies.
           It first formats the last attempt using 'question' and 'scratchpad', then adds a new reflexion using all the parameters.
     """
+    if context and prompt == REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT:
+        prompt = REFLEXION_COT_REFLECT_INSTRUCTION
+
     if strategy == "last_attempt":
         reflections = cot_reflect_last_attempt(scratchpad)
     elif strategy == "reflexion":
@@ -330,6 +445,7 @@ def cot_reflect(
             question=question,
             scratchpad=scratchpad,
             context=context,
+            prompt=prompt,
         )
     elif strategy == "last_attempt_and_reflexion":
         reflections = cot_reflect_last_attempt_and_reflexion(
@@ -338,11 +454,51 @@ def cot_reflect(
             question=question,
             scratchpad=scratchpad,
             context=context,
+            prompt=prompt,
         )
     else:
         raise NotImplementedError(f"Unknown reflection strategy: {strategy}.")
 
     return reflections
+
+
+def _build_react_agent_prompt(
+    examples: str,
+    reflections: str,
+    question: str,
+    scratchpad: str,
+    max_steps: int,
+    prompt: str = REFLEXION_REACT_INSTRUCTION,
+) -> str:
+    """Constructs a ReflexionReAct prompt template for the agent.
+
+    This function formats a predefined prompt template (REFLEXION_REACT_INSTRUCTION)
+    with examples, the provided question, and a scratchpad.
+
+    Args:
+        examples (str): Example inputs for the prompt template.
+        reflections (List[str]): Existing list of reflections.
+        question (str): The question being addressed.
+        scratchpad (str): The scratchpad content related to the question.
+        max_steps (int): Maximum number of steps.
+        prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION.
+            Must include examples, reflections, question, and scratchpad.
+
+    Returns:
+        str: A formatted prompt template ready for use.
+    """
+    prompt = PromptTemplate(
+        input_variables=["examples", "reflections", "question", "scratchpad"],
+        template=prompt,
+    ).format(
+        examples=examples,
+        reflections=reflections,
+        question=question,
+        scratchpad=scratchpad,
+        max_steps=max_steps,
+    )
+
+    return prompt
 
 
 def _prompt_react_agent(
@@ -352,6 +508,7 @@ def _prompt_react_agent(
     question: str,
     scratchpad: str,
     max_steps: int,
+    prompt: str = REFLEXION_REACT_INSTRUCTION,
 ) -> str:
     """Generates a ReAct prompt for thought and action.
 
@@ -364,19 +521,19 @@ def _prompt_react_agent(
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         max_steps (int): Maximum number of steps.
+        prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION.
+            Must include examples, reflections, question, and scratchpad.
 
     Returns:
         str: The generated reflection prompt.
     """
-    prompt = PromptTemplate(
-        input_variables=["examples", "reflections", "question", "scratchpad"],
-        template=REFLEXION_REACT_INSTRUCTION,
-    ).format(
+    prompt = _build_react_agent_prompt(
         examples=examples,
         reflections=reflections,
         question=question,
         scratchpad=scratchpad,
         max_steps=max_steps,
+        prompt=prompt,
     )
     print("PROMPT:\n\n", prompt, "\n\n==============================")
     out = llm(
@@ -390,11 +547,98 @@ def _prompt_react_agent(
     return remove_newline(out)
 
 
+def _is_halted(
+    finished: bool,
+    step_n: int,
+    question: str,
+    scratchpad: str,
+    examples: str,
+    reflections: str,
+    max_steps: int,
+    max_tokens: int,
+    enc: Encoding,
+    prompt: str = REFLEXION_REACT_INSTRUCTION,
+) -> bool:
+    """Determines whether the agent's operation should be halted.
+
+    This function checks if the operation should be halted based on three conditions:
+    completion (finished), exceeding maximum steps, or exceeding maximum token limit.
+    The token limit is evaluated based on the encoded length of the prompt.
+
+    Args:
+        finished (bool): Flag indicating if the operation is completed.
+        step_n (int): Current step number.
+        question (str): The question being processed.
+        scratchpad (str): The scratchpad content.
+        examples (str): Fewshot examples.
+        reflections (str): Reflections.
+        max_steps (int): Maximum allowed steps.
+        max_tokens (int): Maximum allowed token count.
+        enc (Encoding): The encoder to calculate token length.
+        prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION.
+            Must include examples, reflections, question, and scratchpad.
+
+    Returns:
+        bool: True if the operation should be halted, False otherwise.
+    """
+    over_max_steps = step_n > max_steps
+    over_token_limit = (
+        len(
+            enc.encode(
+                _build_react_agent_prompt(
+                    examples=examples,
+                    reflections=reflections,
+                    question=question,
+                    scratchpad=scratchpad,
+                    max_steps=max_steps,
+                    prompt=prompt,
+                )
+            )
+        )
+        > max_tokens
+    )
+    return finished or over_max_steps or over_token_limit
+
+
+def _build_react_reflection_prompt(
+    examples: str,
+    question: str,
+    scratchpad: str,
+    prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION,
+) -> str:
+    """Constructs a ReflexionReAct prompt template for reflection.
+
+    This function formats a predefined prompt template (REFLEXION_REACT_REFLECT_INSTRUCTION)
+    with examples, the provided question, and a scratchpad.
+
+    Args:
+        examples (str): Example inputs for the prompt template.
+        question (str): The question being addressed.
+        scratchpad (str): The scratchpad content related to the question.
+        prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION.
+            Must include examples, question, and scratchpad.
+
+    Returns:
+        str: A formatted prompt template ready for use.
+    """
+    prompt = PromptTemplate(
+        input_variables=["examples", "question", "scratchpad"],
+        template=prompt,
+    ).format(
+        examples=examples,
+        question=question,
+        scratchpad=scratchpad,
+    )
+
+    return prompt
+
+
 def _prompt_react_reflection(
     llm: BaseChatModel,
     examples: str,
     question: str,
     scratchpad: str,
+    prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION,
 ) -> str:
     """Generates a reflection prompt.
 
@@ -405,18 +649,16 @@ def _prompt_react_reflection(
         examples (str): Example inputs for the prompt template.
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
+        prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION.
+            Must include examples, question, and scratchpad.
 
     Returns:
         str: The generated reflection prompt.
     """
-    prompt = PromptTemplate(
-        input_variables=["examples", "question", "scratchpad"],
-        template=REFLEXION_REACT_REFLECT_INSTRUCTION,
-    ).format(
-        examples=examples,
-        question=question,
-        scratchpad=scratchpad,
+    prompt = _build_react_reflection_prompt(
+        examples=examples, question=question, scratchpad=scratchpad, prompt=prompt
     )
+
     out = llm(
         [
             HumanMessage(
@@ -449,6 +691,7 @@ def react_reflect_reflexion(
     examples: str,
     question: str,
     scratchpad: str,
+    prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION,
 ) -> List[str]:
     """Perform reflexion-based reflecting.
 
@@ -461,6 +704,8 @@ def react_reflect_reflexion(
         examples (str): Example inputs for the prompt template.
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
+        prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION.
+            Must include examples, question, and scratchpad.
 
     Returns:
         List[str]: An updated list of reflections.
@@ -470,6 +715,7 @@ def react_reflect_reflexion(
         examples=examples,
         question=question,
         scratchpad=scratchpad,
+        prompt=prompt,
     )
     reflections += [new_reflection]
     return reflections
@@ -480,6 +726,7 @@ def react_reflect_last_attempt_and_reflexion(
     examples: str,
     question: str,
     scratchpad: str,
+    prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION,
 ) -> List[str]:
     """Performs reflection with the reflection of the last attempt and reflexion.
 
@@ -490,6 +737,8 @@ def react_reflect_last_attempt_and_reflexion(
         examples (str): Example inputs for the prompt template.
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
+        prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION.
+            Must include examples, question, and scratchpad.
 
     Returns:
         List[str]: A list with the new reflections.
@@ -500,6 +749,7 @@ def react_reflect_last_attempt_and_reflexion(
             examples=examples,
             question=question,
             scratchpad=scratchpad,
+            prompt=prompt,
         )
     ]
     return reflections
@@ -512,6 +762,7 @@ def react_reflect(
     examples: str,
     question: str,
     scratchpad: str,
+    prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION,
 ) -> List[str]:
     """Performs reflection based on a specified strategy using the provided question and scratchpad.
 
@@ -526,6 +777,8 @@ def react_reflect(
         examples (str): Example inputs for the prompt template.
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
+        prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION.
+            Must include examples, question, and scratchpad.
 
     Returns:
         List[str]: A tuple containing the updated list of reflections.
@@ -548,6 +801,7 @@ def react_reflect(
             examples=examples,
             question=question,
             scratchpad=scratchpad,
+            prompt=prompt,
         )
     elif strategy == "last_attempt_and_reflexion":
         reflections = react_reflect_last_attempt_and_reflexion(
@@ -555,6 +809,7 @@ def react_reflect(
             examples=examples,
             question=question,
             scratchpad=scratchpad,
+            prompt=prompt,
         )
     else:
         raise NotImplementedError(f"Unknown reflection strategy: {strategy}.")
