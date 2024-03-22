@@ -8,11 +8,17 @@ from discussion_agents.cog.functional.react import (
     _is_halted,
     _prompt_agent,
 )
+from discussion_agents.cog.prompts.react import REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
 
 
 def test__build_agent_prompt() -> None:
     """Test _build_agent_prompt function."""
-    prompt = _build_agent_prompt(question="", scratchpad="", max_steps=1)
+    prompt = _build_agent_prompt(
+        question="",
+        scratchpad="",
+        examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        max_steps=1,
+    )
 
     gt_out = (
         "Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: \n"
@@ -91,11 +97,37 @@ def test__build_agent_prompt() -> None:
     assert isinstance(prompt, str)
     assert prompt == gt_out
 
+    gt_out = "  examples 1"
+    out = _build_agent_prompt(
+        question="",
+        scratchpad="",
+        examples="examples",
+        max_steps=1,
+        prompt="{question} {scratchpad} {examples} {max_steps}",
+    )
+    assert out == gt_out
+
 
 def test__prompt_agent() -> None:
     """Test _prompt_agent function."""
     out = _prompt_agent(
-        llm=FakeListChatModel(responses=["1"]), question="", scratchpad="", max_steps=1
+        llm=FakeListChatModel(responses=["1"]),
+        question="",
+        scratchpad="",
+        examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        max_steps=1,
+    )
+    assert isinstance(out, str)
+    assert out == "1"
+
+    # Test with custom prompt template string.
+    out = _prompt_agent(
+        llm=FakeListChatModel(responses=["1"]),
+        question="",
+        scratchpad="",
+        examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        max_steps=1,
+        prompt="{question} {scratchpad} {examples} {max_steps}",
     )
     assert isinstance(out, str)
     assert out == "1"
@@ -106,21 +138,86 @@ def test__is_halted() -> None:
     gpt3_5_turbo_enc = tiktoken.encoding_for_model("gpt-3.5-turbo")
 
     # Test when finish is true.
-    assert _is_halted(True, 1, 10, "question", "scratchpad", 100, gpt3_5_turbo_enc)
+    assert _is_halted(
+        True,
+        1,
+        "question",
+        "scratchpad",
+        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        10,
+        100,
+        gpt3_5_turbo_enc,
+    )
 
     # Test when step_n exceeds max_steps.
-    assert _is_halted(False, 11, 10, "question", "scratchpad", 100, gpt3_5_turbo_enc)
+    assert _is_halted(
+        False,
+        11,
+        "question",
+        "scratchpad",
+        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        10,
+        100,
+        gpt3_5_turbo_enc,
+    )
 
     # Test when encoded prompt exceeds max_tokens.
-    assert _is_halted(False, 1, 10, "question", "scratchpad", 10, gpt3_5_turbo_enc)
+    assert _is_halted(
+        False,
+        1,
+        "question",
+        "scratchpad",
+        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        10,
+        10,
+        gpt3_5_turbo_enc,
+    )
 
     # Test when none of the conditions for halting are met.
     assert not _is_halted(
-        False, 1, 10, "question", "scratchpad", 100000, gpt3_5_turbo_enc
+        False,
+        1,
+        "question",
+        "scratchpad",
+        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        10,
+        100000,
+        gpt3_5_turbo_enc,
     )
 
     # Test edge case when step_n equals max_steps.
-    assert _is_halted(False, 10, 10, "question", "scratchpad", 100, gpt3_5_turbo_enc)
+    assert _is_halted(
+        False,
+        10,
+        "question",
+        "scratchpad",
+        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        10,
+        100,
+        gpt3_5_turbo_enc,
+    )
 
     # Test edge case when encoded prompt equals max_tokens.
-    assert _is_halted(False, 1, 10, "question", "scratchpad", 1603, gpt3_5_turbo_enc)
+    assert _is_halted(
+        False,
+        1,
+        "question",
+        "scratchpad",
+        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        10,
+        1603,
+        gpt3_5_turbo_enc,
+    )
+
+    # Test with custom prompt template string.
+    assert not _is_halted(
+        False,
+        1,
+        "question",
+        "scratchpad",
+        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        10,
+        1603,
+        gpt3_5_turbo_enc,
+        "{question} {scratchpad} {examples} {max_steps}",
+    )
