@@ -18,6 +18,7 @@ from discussion_agents.cog.functional.expel import (
     get_operations_success,
 )
 from discussion_agents.utils.general import shuffle_chunk_list
+from discussion_agents.cog.prompts.expel import EXPEL_REFLEXION_REACT_INSTRUCTION
 
 
 class ExpeLAgent(BaseAgent):
@@ -64,7 +65,9 @@ class ExpeLAgent(BaseAgent):
         reflect: bool = True, 
         reset: bool = False,
         reset_reflexion: bool = True,
-        strategy: str = "reflexion"
+        strategy: str = "reflexion",
+        prompt: str = EXPEL_REFLEXION_REACT_INSTRUCTION,
+        examples: Optional[str] = None,
     ):
         if reset_reflexion:
             self.reflexion_react_agent.reset()
@@ -76,11 +79,20 @@ class ExpeLAgent(BaseAgent):
             self.update_rules()  # TODO
 
         # Needs to be changed.
+        if not examples:
+            queries = {
+                "task": question,
+            }
+            examples = self.experience_memory.load_memories()['fewshots']
+
         self.reflexion_react_agent.generate(
             question=question,
             key=key,
+            examples=examples,
             strategy=strategy,
-            examples=
+            prompt=prompt,
+            reflect_examples=,
+            reflect_prompt=
         )
 
         # self.experience_memory.add_memories(

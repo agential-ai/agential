@@ -535,7 +535,6 @@ def _prompt_react_agent(
         max_steps=max_steps,
         prompt=prompt,
     )
-    print("PROMPT:\n\n", prompt, "\n\n==============================")
     out = llm(
         [
             HumanMessage(
@@ -658,7 +657,6 @@ def _prompt_react_reflection(
     prompt = _build_react_reflection_prompt(
         examples=examples, question=question, scratchpad=scratchpad, prompt=prompt
     )
-
     out = llm(
         [
             HumanMessage(

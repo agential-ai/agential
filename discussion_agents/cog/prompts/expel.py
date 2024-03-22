@@ -65,3 +65,20 @@ CRITIQUE_SUMMARY_SUFFIX_FULL = """Focus on REMOVE rules first, and stop ADD rule
 CRITIQUE_SUMMARY_SUFFIX_NOT_FULL = (
     """Below are the operations you do to the above list of EXISTING RULES:"""
 )
+
+# Task Inference: Similar to REFLEXION_REACT_INSTRUCTION, but formatted as the ExpeL Stage 3 task inference prompt.
+# {examples} now includes: examples, '(END OF EXAMPLES)' delimiter, and the insights.
+EXPEL_REFLEXION_REACT_INSTRUCTION = """
+Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: 
+(1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
+(2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
+(3) Finish[answer], which returns the answer and finishes the task.
+You have a maximum of {max_steps} steps.
+
+Here are some examples:
+{examples}
+
+{reflections}
+
+Question: {question}{scratchpad}
+"""

@@ -307,8 +307,7 @@ class ExpeLExperienceMemory(BaseMemory):
 
     def load_memories(
         self, 
-        queries: Dict[str, str], 
-        query_type: str, 
+        query: str, 
         k_docs: int = 24, 
         num_fewshots: int = 6, 
         max_fewshot_tokens: int = 1500,
@@ -317,8 +316,7 @@ class ExpeLExperienceMemory(BaseMemory):
         """Retrieves fewshot documents based on a similarity search, with optional re-ranking strategies.
         
         Args:
-            queries (Dict[str, str]): The queries to perform similarity search against.
-            query_type (str): The type of query to use for the search.
+            query (str): The query to perform similarity search against.
             k_docs (int): The number of documents to return from a similarity search.
             num_fewshots (int): The number of fewshot examples to utilize or retrieve.
             max_fewshot_tokens (int): The maximum number of tokens allowed in a single fewshot example. Defaults to 1500.
@@ -332,26 +330,25 @@ class ExpeLExperienceMemory(BaseMemory):
         if not len(self.experiences['idxs']) or not k_docs or not num_fewshots or not max_fewshot_tokens:
             return {"fewshots": []}
 
-        assert query_type in queries
 
         # Query the vectorstore.
-        fewshot_docs = self.vectorstore.similarity_search(queries[query_type], k=k_docs)
+        fewshot_docs = self.vectorstore.similarity_search(query, k=k_docs)
 
         # Post-processing.
 
         # Re-ranking, optional.
-        if not reranker_strategy or (reranker_strategy == 'thought' and not queries['thought']):
+        if not reranker_strategy:
             fewshot_docs = list(fewshot_docs)
         elif reranker_strategy == 'length':
             fewshot_docs = list(sorted(fewshot_docs, key=self._fewshot_doc_token_count, reverse=True))
-        elif reranker_strategy == 'thought' and queries['thought']:
+        elif reranker_strategy == 'thought':
             fewshot_tasks = set([doc.metadata['task_idx'] for doc in fewshot_docs])
             subset_docs = list(filter(lambda doc: doc.metadata['type'] == 'thought' and doc.metadata['task_idx'] in fewshot_tasks, list(self.success_traj_docs)))
-            fewshot_docs = sorted(subset_docs, key=lambda doc: cosine(self.embedder.embed_query(doc.page_content), self.embedder.embed_query(queries['thought'])))
+            fewshot_docs = sorted(subset_docs, key=lambda doc: cosine(self.embedder.embed_query(doc.page_content), self.embedder.embed_query(query)))
         elif reranker_strategy == 'task':
             fewshot_tasks = set([doc.metadata['task_idx'] for doc in fewshot_docs])
             subset_docs = list(filter(lambda doc: doc.metadata['type'] == 'thought' and doc.metadata['task_idx'] in fewshot_tasks, list(self.success_traj_docs)))
-            fewshot_docs = sorted(subset_docs, key=lambda doc: cosine(self.embedder.embed_query(doc.page_content), self.embedder.embed_query(queries['task'])))
+            fewshot_docs = sorted(subset_docs, key=lambda doc: cosine(self.embedder.embed_query(doc.page_content), self.embedder.embed_query(query)))
         else:
             raise NotImplementedError
         

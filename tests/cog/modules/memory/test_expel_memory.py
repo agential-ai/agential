@@ -315,88 +315,87 @@ def test_expel_experience_memory_load_memories(expel_experiences_10_fake_path: s
         "thought": ""
     }
 
-
     # Test when memory is empty.
     memory = ExpeLExperienceMemory()
-    memory_dict = memory.load_memories(queries=queries, query_type="task")
+    memory_dict = memory.load_memories(query=queries["task"])
     assert list(memory_dict.keys()) == ["fewshots"]
     assert not memory_dict['fewshots']
 
     # Test non-empty memory with different query types like "task" and "thought".
     # Other query types limited to keys of queries.
     memory = ExpeLExperienceMemory(experiences)
-    memory_dict = memory.load_memories(queries=queries, query_type="task")
+    memory_dict = memory.load_memories(query=queries["task"])
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict['fewshots'], list)
     assert len(memory_dict['fewshots']) == 2
 
-    memory_dict = memory.load_memories(queries=queries, query_type="thought")
+    memory_dict = memory.load_memories(query=queries["thought"])
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict['fewshots'], list)
     assert len(memory_dict['fewshots']) == 2
 
-    memory_dict = memory.load_memories(queries=queries, query_type="other")
+    memory_dict = memory.load_memories(query=queries["other"])
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict['fewshots'], list)
     assert len(memory_dict['fewshots']) == 2
 
     # Test with every reranking strategy + error.
     with pytest.raises(NotImplementedError):
-        memory_dict = memory.load_memories(queries, query_type="task", reranker_strategy="invalid input")
+        memory_dict = memory.load_memories(query=queries["task"], reranker_strategy="invalid input")
 
     # First case.
-    memory_dict = memory.load_memories(empty_thought_queries, query_type="task", reranker_strategy="thought")
+    memory_dict = memory.load_memories(empty_thought_queries["task"], reranker_strategy="thought")
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict['fewshots'], list)
     assert len(memory_dict['fewshots']) == 2
 
     # Length case.
-    memory_dict = memory.load_memories(queries, query_type="task", reranker_strategy="length")
+    memory_dict = memory.load_memories(query=queries["task"], reranker_strategy="length")
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict['fewshots'], list)
     assert len(memory_dict['fewshots']) == 2
 
     # Thought case.
-    memory_dict = memory.load_memories(queries, query_type="task", reranker_strategy="thought")
+    memory_dict = memory.load_memories(query=queries["task"], reranker_strategy="thought")
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict['fewshots'], list)
     assert len(memory_dict['fewshots']) == 2
 
     # Task case.
-    memory_dict = memory.load_memories(queries, query_type="task", reranker_strategy="task")
+    memory_dict = memory.load_memories(query=queries["task"], reranker_strategy="task")
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict['fewshots'], list)
     assert len(memory_dict['fewshots']) == 2
 
     # Test with varying max_fewshot_tokens.
-    memory_dict = memory.load_memories(queries, query_type="task", max_fewshot_tokens=0)
+    memory_dict = memory.load_memories(query=queries["task"], max_fewshot_tokens=0)
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict['fewshots'], list)
     assert len(memory_dict['fewshots']) == 0
 
     # Test with varying num_fewshots.
-    memory_dict = memory.load_memories(queries, query_type="task", num_fewshots=3)
+    memory_dict = memory.load_memories(query=queries["task"], num_fewshots=3)
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict['fewshots'], list)
     assert len(memory_dict['fewshots']) == 2
 
-    memory_dict = memory.load_memories(queries, query_type="task", num_fewshots=2)
+    memory_dict = memory.load_memories(query=queries["task"], num_fewshots=2)
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict['fewshots'], list)
     assert len(memory_dict['fewshots']) == 2
 
-    memory_dict = memory.load_memories(queries, query_type="task", num_fewshots=1)
+    memory_dict = memory.load_memories(query=queries["task"], num_fewshots=1)
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict['fewshots'], list)
     assert len(memory_dict['fewshots']) == 1
 
-    memory_dict = memory.load_memories(queries, query_type="task", num_fewshots=0)
+    memory_dict = memory.load_memories(query=queries["task"], num_fewshots=0)
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict['fewshots'], list)
     assert len(memory_dict['fewshots']) == 0
 
     # Test with varying k_docs.
-    memory_dict = memory.load_memories(queries, query_type="task", k_docs=0)
+    memory_dict = memory.load_memories(query=queries["task"], k_docs=0)
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict['fewshots'], list)
     assert len(memory_dict['fewshots']) == 0
