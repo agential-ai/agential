@@ -68,6 +68,7 @@ CRITIQUE_SUMMARY_SUFFIX_NOT_FULL = (
 
 # Task Inference: Similar to REFLEXION_REACT_INSTRUCTION, but formatted as the ExpeL Stage 3 task inference prompt.
 # {examples} now includes: examples, '(END OF EXAMPLES)' delimiter, and the insights.
+END_OF_EXAMPLES_DELIMITER = "(END OF EXAMPLES)"
 EXPEL_REFLEXION_REACT_INSTRUCTION = """
 Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: 
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
@@ -81,4 +82,9 @@ Here are some examples:
 {reflections}
 
 Question: {question}{scratchpad}
+"""
+
+# Task Inference: Insights.
+RULE_PREFIX = """
+The following are some experience you gather on a similar task of question answering using Wikipedia API. Use these as references to help you perform this task:
 """

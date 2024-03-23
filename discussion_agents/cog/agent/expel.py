@@ -18,8 +18,18 @@ from discussion_agents.cog.functional.expel import (
     get_operations_success,
 )
 from discussion_agents.utils.general import shuffle_chunk_list
-from discussion_agents.cog.prompts.expel import EXPEL_REFLEXION_REACT_INSTRUCTION
-
+from discussion_agents.cog.prompts.react import (
+    REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
+)
+from discussion_agents.cog.prompts.reflexion import (
+    REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
+    REFLEXION_REACT_REFLECT_INSTRUCTION,
+)
+from discussion_agents.cog.prompts.expel import (
+    EXPEL_REFLEXION_REACT_INSTRUCTION, 
+    END_OF_EXAMPLES_DELIMITER, 
+    RULE_PREFIX
+)
 
 class ExpeLAgent(BaseAgent):
     def __init__(
@@ -68,6 +78,12 @@ class ExpeLAgent(BaseAgent):
         strategy: str = "reflexion",
         prompt: str = EXPEL_REFLEXION_REACT_INSTRUCTION,
         examples: Optional[str] = None,
+        reflect_examples: str = REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
+        reflect_prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION,
+        k_docs: int = 24, 
+        num_fewshots: int = 6, 
+        max_fewshot_tokens: int = 1500,
+        reranker_strategy: Optional[str] = None
     ):
         if reset_reflexion:
             self.reflexion_react_agent.reset()
@@ -78,21 +94,33 @@ class ExpeLAgent(BaseAgent):
         if reflect:
             self.update_rules()  # TODO
 
-        # Needs to be changed.
+        # User has ability to override examples.
         if not examples:
-            queries = {
-                "task": question,
-            }
-            examples = self.experience_memory.load_memories()['fewshots']
+            # Dynamically load in relevant past successful trajectories as fewshot examples.
+            examples = self.experience_memory.load_memories(
+                query=question,
+                k_docs=k_docs, 
+                num_fewshots=num_fewshots, 
+                max_fewshot_tokens=max_fewshot_tokens,
+                reranker_strategy=reranker_strategy
+            )['fewshots']
+            examples = examples if examples else [REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES]
+            examples = "\n\n".join(examples + [END_OF_EXAMPLES_DELIMITER]) + "\n"
+            
+            # Dynamically load in all insights.
+            examples += RULE_PREFIX
+            insights = self.insight_memory.load_memories()['insights']
+            insights = "".join([f"{i}. {insight['insight']}\n" for i, insight in enumerate(insights, 1)])
+            examples += insights
 
-        self.reflexion_react_agent.generate(
+        out = self.reflexion_react_agent.generate(
             question=question,
             key=key,
             examples=examples,
             strategy=strategy,
             prompt=prompt,
-            reflect_examples=,
-            reflect_prompt=
+            reflect_examples=reflect_examples,
+            reflect_prompt=reflect_prompt
         )
 
         # self.experience_memory.add_memories(

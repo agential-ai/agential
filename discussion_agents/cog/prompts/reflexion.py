@@ -42,7 +42,8 @@ Action: Finish[Arthur's Magazine]
 
 Question: Were Pavel Urysohn and Leonid Levin known for the same type of work?
 Thought: Let's think step by step. Pavel Urysohn is a mathematician. Leonid Levin is a mathematician and computer scientist. So Pavel Urysohn and Leonid Levin have the same type of work.
-Action: Finish[Yes]"""
+Action: Finish[Yes]
+"""
 
 # Fewshot CoT examples for ReflexionCoT reflection.
 REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES = """
@@ -92,7 +93,8 @@ Reflection:
 """
 
 # Prompt template for ReflexionCoT reflection with no context.
-REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
+REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT = """
+You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
 Here are some examples:
 {examples}
 (END OF EXAMPLES)
@@ -100,7 +102,8 @@ Here are some examples:
 Previous trial:
 Question: {question}{scratchpad}
 
-Reflection:"""
+Reflection:
+"""
 
 # Prompt template for ReflexionCoT agent (think/act).
 REFLEXION_COT_INSTRUCTION = """

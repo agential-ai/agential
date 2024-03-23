@@ -193,7 +193,7 @@ def _prompt_cot_agent(
         context=context,
         prompt=prompt,
     )
-
+    print("PROMPT:\n\n", prompt, "\n\n")
     out = llm(
         [
             HumanMessage(
