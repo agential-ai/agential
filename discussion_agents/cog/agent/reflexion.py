@@ -161,6 +161,8 @@ class ReflexionCoTAgent(BaseAgent):
         patience_cnt = 0
         result = []
         while not EM(self._answer, key) and self._trial_n < self.max_trials:
+            self.memory.clear()
+
             # Reflect if possible.
             reflections_str = ""
             if self._trial_n > 0 and not EM(self._answer, key) and strategy:
@@ -432,6 +434,7 @@ class ReflexionReActAgent(BaseAgent):
             self._step_n = 1
             self._finished = False
             self._answer = ""
+            self.memory.clear()
             while not _is_halted(
                 finished=self._finished,
                 step_n=self._step_n,

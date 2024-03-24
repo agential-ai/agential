@@ -209,9 +209,6 @@ def _prompt_cot_agent(
         context=context,
         prompt=prompt,
     )
-    print("<============================================================>")
-    print(prompt)
-    print("<============================================================>")
     out = llm(
         [
             HumanMessage(
@@ -270,9 +267,7 @@ def _build_cot_reflection_prompt(
             question=question,
             scratchpad=scratchpad,
         )
-    # print("<REFLECT============================================================>")
-    # print(prompt)
-    # print("<REFLECT============================================================>")
+        
     return prompt
 
 
@@ -311,7 +306,6 @@ def _prompt_cot_reflection(
         context=context,
         prompt=prompt,
     )
-
     out = llm(
         [
             HumanMessage(

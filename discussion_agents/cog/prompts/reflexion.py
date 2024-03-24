@@ -124,8 +124,7 @@ REFLECTION_HEADER = "You have attempted to answer following question before and 
 LAST_TRIAL_HEADER = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\n"
 
 # Prompt template for ReflexionReAct agent (think/act).
-REFLEXION_REACT_INSTRUCTION = """
-Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: 
+REFLEXION_REACT_INSTRUCTION = """Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: 
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
 (3) Finish[answer], which returns the answer and finishes the task.
@@ -137,24 +136,21 @@ Here are some examples:
 
 {reflections}
 
-Question: {question}{scratchpad}
-"""
+Question: {question}{scratchpad}"""
 
 # Prompt template for ReflexionReAct agent reflect.
-REFLEXION_REACT_REFLECT_INSTRUCTION = """
-You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
+REFLEXION_REACT_REFLECT_INSTRUCTION = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
 Here are some examples:
 {examples}
+(END OF EXAMPLES)
 
 Previous trial:
 Question: {question}{scratchpad}
 
-Reflection:
-"""
+Reflection:"""
 
 # Fewshot examples for ReflexionReAct reflect.
-REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES = """
-Previous Trial:
+REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES = """Previous Trial:
 Question: The Rome Protocols were signed by three Prime Ministers one of which was assassinated as part of what?
 Thought 1: I need to search Rome Protocols, find the three Prime Ministers, then find what they were assassinated as part of.
 Action 1: Search[Rome Protocols]
@@ -190,5 +186,4 @@ Thought 6: I need to search The Prince & Me (2004 film).
 Action 6: Search[The Prince & Me (2004 film)]
 Observation 6: Could not find [The Prince & Me (2004 film)]. Similar: ['The Prince & Me', 'The Prince & Me 2: The Royal Wedding', 'Prince of Darkness (film)', 'Prince of Persia: The Sands of Time (film)', 'Rob Knox', 'Alexander (2004 film)', 'Prince (musician)', 'Prince of Persia', 'Kam Heskin', 'Brooklynn Prince']
 
-Reflection: I got stuck in a loop where I kept trying to search 'The Prince & Me (2004 film)' but the page could not be found. Instead I should have tried to search the similar results that had a similar name to see and they were made in 2004.
-"""
+Reflection: I got stuck in a loop where I kept trying to search 'The Prince & Me (2004 film)' but the page could not be found. Instead I should have tried to search the similar results that had a similar name to see and they were made in 2004."""
