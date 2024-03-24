@@ -81,9 +81,6 @@ def _prompt_agent(
             )
         ]
     ).content
-    print("<============================================================>")
-    print(prompt)
-    print("<============================================================>")
     assert isinstance(out, str)
     return remove_newline(out)
 

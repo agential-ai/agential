@@ -209,7 +209,9 @@ def _prompt_cot_agent(
         context=context,
         prompt=prompt,
     )
-    print("PROMPT:\n\n", prompt, "\n\n")
+    print("<============================================================>")
+    print(prompt)
+    print("<============================================================>")
     out = llm(
         [
             HumanMessage(
@@ -241,7 +243,7 @@ def _build_cot_reflection_prompt(
         context (Optional[str]): The context of the conversation or query. Defaults to None.
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
             REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. Must include examples,
-            question, scratchpad, and context.
+            question, scratchpad, and context, if context is provided.
 
     Returns:
         str: A formatted prompt template ready for use.
@@ -249,17 +251,28 @@ def _build_cot_reflection_prompt(
     if context and prompt == REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT:
         prompt = REFLEXION_COT_REFLECT_INSTRUCTION
 
-    prompt = PromptTemplate(
-        input_variables=["examples", "question", "scratchpad", "context"],
-        template=prompt,
-    ).format(
-        examples=examples,
-        question=question,
-        scratchpad=scratchpad,
-        context=context if context else "",
-    )
-    print("PROMPT REFLECTION:\n\n", prompt, "\n\n")
-
+    if context:
+        prompt = PromptTemplate(
+            input_variables=["examples", "question", "scratchpad", "context"],
+            template=prompt,
+        ).format(
+            examples=examples,
+            question=question,
+            scratchpad=scratchpad,
+            context=context,
+        )
+    else:
+        prompt = PromptTemplate(
+            input_variables=["examples", "question", "scratchpad"],
+            template=prompt,
+        ).format(
+            examples=examples,
+            question=question,
+            scratchpad=scratchpad,
+        )
+    # print("<REFLECT============================================================>")
+    # print(prompt)
+    # print("<REFLECT============================================================>")
     return prompt
 
 
