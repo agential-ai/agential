@@ -171,6 +171,7 @@ class ExpeLAgent(BaseAgent):
 
             # Compare.
             for train_idx in train_category_idxs["compare"]:
+                print("entering compare")
                 question = experiences["questions"][train_idx]
                 trajectory = experiences["trajectories"][
                     train_idx
@@ -193,30 +194,31 @@ class ExpeLAgent(BaseAgent):
                     self.update_insights(operations=operations)
 
             # Success.
-            batched_success_trajs_idxs = shuffle_chunk_list(
-                train_category_idxs["success"], self.success_batch_size
-            )
-            for success_idxs in batched_success_trajs_idxs:
-                insights = self.insight_memory.load_memories()['insights']
-
-                # Concatenate batched successful trajectories.
-                concat_success_trajs = []
-                for idx in success_idxs:
-                    success_traj_str = "\n".join(
-                        ["\n".join(step) for step in experiences["trajectories"][idx][0][-1]]
-                    )
-                    concat_success_trajs.append(
-                        f"{experiences['questions'][idx]}\n{success_traj_str}"
-                    )
-                success_trials = "\n\n".join(concat_success_trajs)
-
-                operations = get_operations_success(
-                    llm=self.llm,
-                    success_trials=success_trials,
-                    insights=insights,
-                    is_full=self.insight_memory.max_num_insights < len(insights)
+            if train_category_idxs['success']:
+                batched_success_trajs_idxs = shuffle_chunk_list(
+                    train_category_idxs["success"], self.success_batch_size
                 )
-                self.update_insights(operations=operations)
+                for success_idxs in batched_success_trajs_idxs:
+                    insights = self.insight_memory.load_memories()['insights']
+
+                    # Concatenate batched successful trajectories.
+                    concat_success_trajs = []
+                    for idx in success_idxs:
+                        success_traj_str = "\n".join(
+                            ["\n".join(step) for step in experiences["trajectories"][idx][0][-1]]
+                        )
+                        concat_success_trajs.append(
+                            f"{experiences['questions'][idx]}\n{success_traj_str}"
+                        )
+                    success_trials = "\n\n".join(concat_success_trajs)
+
+                    operations = get_operations_success(
+                        llm=self.llm,
+                        success_trials=success_trials,
+                        insights=insights,
+                        is_full=self.insight_memory.max_num_insights < len(insights)
+                    )
+                    self.update_insights(operations=operations)
 
     def update_insights(self, operations: List[Tuple[str, str]]) -> None:
         # Update rules with comparison insights.

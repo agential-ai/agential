@@ -93,7 +93,6 @@ def test__build_agent_prompt() -> None:
     )
 
     assert isinstance(prompt, str)
-    print(repr(prompt))
     assert prompt == gt_out
 
     gt_out = "  examples 1"
