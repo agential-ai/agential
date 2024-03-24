@@ -10,6 +10,7 @@ You have a maximum of {max_steps} steps.
 Here are some examples:
 {examples}
 (END OF EXAMPLES)
+
 Question: {question}{scratchpad}"""
 
 REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES = """Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?

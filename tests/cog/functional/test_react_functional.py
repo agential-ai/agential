@@ -88,7 +88,7 @@ def test__build_agent_prompt() -> None:
         "Observation 2: Leonid Anatolievich Levin is a Soviet-American mathematician and computer scientist. \n"
         "Thought 3: Leonid Levin is a mathematician and computer scientist. So Pavel Urysohn and Leonid Levin have the same type of work. \n"
         "Action 3: Finish[yes]\n"
-        "(END OF EXAMPLES)\n"
+        "(END OF EXAMPLES)\n\n"
         "Question: "
     )
 
