@@ -528,8 +528,8 @@ def test_expel_insight_memory_delete_memories() -> None:
     assert len(memory.insights) == 3
 
     # Further verify that the correct insights remain.
-    assert memory.insights[0]['insight'] == "Insight 2", "Insight 2 should remain as the first insight."
-    assert memory.insights[1]['insight'] == "Insight 3", "Insight 3 should now be the second insight."
+    assert memory.insights[0]['insight'] == "Insight 2"
+    assert memory.insights[1]['insight'] == "Insight 3"
 
 
 def test_expel_insight_memory_update_memories() -> None:

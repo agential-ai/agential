@@ -162,7 +162,7 @@ class ExpeLAgent(BaseAgent):
         categories = categorize_experiences(self.experience_memory.experiences)
         folds = get_folds(categories, len(self.experience_memory))
 
-        for fold, train_idxs in folds.items():
+        for train_idxs in folds.values():
 
             train_category_idxs = {
                 category: list(set(train_idxs).intersection(set(category_idxs)))  # type: ignore
