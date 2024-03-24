@@ -124,8 +124,9 @@ Solve a question answering task by having a Thought, then Finish with your answe
 Here are some examples:
 {examples}
 (END OF EXAMPLES)
+
 {reflections}
-{context}
+
 Question: {question}{scratchpad}
 """
 

@@ -103,13 +103,13 @@ def test__format_last_attempt() -> None:
 
 def test__build_cot_agent_prompt() -> None:
     """Test _build_cot_agent_prompt function."""
-    gt_out = "\nSolve a question answering task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task.\nHere are some examples:\n\n(END OF EXAMPLES)\n\n\nQuestion: \n"
+    gt_out = '\nSolve a question answering task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task.\nHere are some examples:\n\n(END OF EXAMPLES)\n\n\n\nQuestion: \n'
     out = _build_cot_agent_prompt(
         examples="", reflections="", question="", scratchpad="", context=""
     )
     assert out == gt_out
 
-    gt_out = "\nSolve a question answering task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task.\nHere are some examples:\n\n(END OF EXAMPLES)\n\n\nQuestion: \n"
+    gt_out = '\nSolve a question answering task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task.\nHere are some examples:\n\n(END OF EXAMPLES)\n\n\n\nQuestion: \n'
     out = _build_cot_agent_prompt(
         examples="", reflections="", question="", scratchpad="", context=None
     )

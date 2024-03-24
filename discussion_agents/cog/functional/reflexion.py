@@ -127,7 +127,7 @@ def _build_cot_agent_prompt(
         context (Optional[str]): The context of the conversation or query. Defaults to None.
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_INSTRUCTION_NO_CONTEXT and
             REFLEXION_COT_INSTRUCTION if context is provided. Must include examples, reflections,
-            question, scratchpad, and context.
+            question, scratchpad, and context, if context is provided.
 
     Returns:
         str: A formatted prompt template ready for use.
@@ -135,22 +135,38 @@ def _build_cot_agent_prompt(
     if context and prompt == REFLEXION_COT_INSTRUCTION_NO_CONTEXT:
         prompt = REFLEXION_COT_INSTRUCTION
 
-    prompt = PromptTemplate(
-        input_variables=[
-            "examples",
-            "reflections",
-            "question",
-            "scratchpad",
-            "context",
-        ],
-        template=prompt,
-    ).format(
-        examples=examples,
-        reflections=reflections,
-        question=question,
-        scratchpad=scratchpad,
-        context=context if context else "",
-    )
+    if context:
+        prompt = PromptTemplate(
+            input_variables=[
+                "examples",
+                "reflections",
+                "question",
+                "scratchpad",
+                "context",
+            ],
+            template=prompt,
+        ).format(
+            examples=examples,
+            reflections=reflections,
+            question=question,
+            scratchpad=scratchpad,
+            context=context,
+        )
+    else:
+        prompt = PromptTemplate(
+            input_variables=[
+                "examples",
+                "reflections",
+                "question",
+                "scratchpad",
+            ],
+            template=prompt,
+        ).format(
+            examples=examples,
+            reflections=reflections,
+            question=question,
+            scratchpad=scratchpad,
+        )
 
     return prompt
 
@@ -242,6 +258,7 @@ def _build_cot_reflection_prompt(
         scratchpad=scratchpad,
         context=context if context else "",
     )
+    print("PROMPT REFLECTION:\n\n", prompt, "\n\n")
 
     return prompt
 
