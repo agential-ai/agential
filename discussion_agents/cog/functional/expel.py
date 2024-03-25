@@ -10,6 +10,12 @@ from langchain_core.messages.human import HumanMessage
 from langchain_core.prompts.prompt import PromptTemplate
 
 from discussion_agents.cog.agent.reflexion import ReflexionReActAgent
+from discussion_agents.cog.prompts.react import REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
+from discussion_agents.cog.prompts.reflexion import (
+    REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
+    REFLEXION_REACT_REFLECT_INSTRUCTION,
+    REFLEXION_REACT_INSTRUCTION
+)
 from discussion_agents.cog.prompts.expel import (
     CRITIQUE_SUMMARY_SUFFIX_FULL,
     CRITIQUE_SUMMARY_SUFFIX_NOT_FULL,
@@ -31,6 +37,10 @@ def gather_experience(
     questions: List[str],
     keys: List[str],
     strategy: Optional[str] = "reflexion",
+    prompt: str = REFLEXION_REACT_INSTRUCTION,
+    examples: Optional[str] = REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+    reflect_examples: str = REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
+    reflect_prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION,
 ) -> Dict[str, List]:
     """Collects and aggregates experiences from a ReflexionReActAgent by generating trajectories and reflections for a set of questions and keys.
 
@@ -41,6 +51,12 @@ def gather_experience(
         questions (List[str]): A list of questions to be processed by the agent.
         keys (List[str]): A list of keys that are paired with the questions to guide the agent's generation.
         strategy (Optional[str]): The strategy used to generate experiences. Defaults to "reflexion" if not specified.
+        prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION.
+            Must include examples, reflections, question, scratchpad, and max_steps.
+        examples (str, optional): Fewshot examples. Defaults to REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES.
+        reflect_examples (str, optional): Reflection fewshot examples. Defaults to REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES.
+        reflect_prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION.
+            Must include examples, question, and scratchpad.
 
     Returns:
         Dict[str, List]: A dictionary containing lists of indices ('idxs'), questions ('questions'), keys ('keys'), generated trajectories ('trajectories'), and reflections ('reflections').
@@ -56,7 +72,14 @@ def gather_experience(
     }
     for idx, (question, key) in enumerate(zip(questions, keys)):
         trajectory = reflexion_react_agent.generate(
-            question=question, key=key, strategy=strategy, reset=True
+            question=question, 
+            key=key, 
+            strategy=strategy, 
+            reset=True,
+            prompt=prompt,
+            examples=examples,
+            reflect_examples=reflect_examples,
+            reflect_prompt=reflect_prompt
         )
 
         experiences["idxs"].append(idx)

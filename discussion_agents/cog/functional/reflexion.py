@@ -506,7 +506,7 @@ def _build_react_agent_prompt(
         scratchpad (str): The scratchpad content related to the question.
         max_steps (int): Maximum number of steps.
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION.
-            Must include examples, reflections, question, and scratchpad.
+            Must include examples, reflections, question, scratchpad, and max_steps.
 
     Returns:
         str: A formatted prompt template ready for use.
@@ -546,7 +546,7 @@ def _prompt_react_agent(
         scratchpad (str): The scratchpad content related to the question.
         max_steps (int): Maximum number of steps.
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION.
-            Must include examples, reflections, question, and scratchpad.
+            Must include examples, reflections, question, scratchpad, and max_steps.
 
     Returns:
         str: The generated reflection prompt.
@@ -599,7 +599,7 @@ def _is_halted(
         max_tokens (int): Maximum allowed token count.
         enc (Encoding): The encoder to calculate token length.
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION.
-            Must include examples, reflections, question, and scratchpad.
+            Must include examples, reflections, question, scratchpad, and max_steps.
 
     Returns:
         bool: True if the operation should be halted, False otherwise.

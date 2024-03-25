@@ -24,6 +24,7 @@ from discussion_agents.cog.prompts.react import (
 from discussion_agents.cog.prompts.reflexion import (
     REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
     REFLEXION_REACT_REFLECT_INSTRUCTION,
+    REFLEXION_REACT_INSTRUCTION
 )
 from discussion_agents.cog.prompts.expel import (
     EXPEL_REFLEXION_REACT_INSTRUCTION, 
@@ -91,9 +92,6 @@ class ExpeLAgent(BaseAgent):
         if reset:
             self.reset()
 
-        if reflect:
-            self.update_rules()  # TODO
-
         # User has ability to override examples.
         if not examples:
             # Dynamically load in relevant past successful trajectories as fewshot examples.
@@ -113,22 +111,25 @@ class ExpeLAgent(BaseAgent):
             insights = "".join([f"{i}. {insight['insight']}\n" for i, insight in enumerate(insights, 1)])
             examples += insights
 
-        out = self.reflexion_react_agent.generate(
-            question=question,
-            key=key,
-            examples=examples,
+        experience = self.gather_experience(
+            questions=[question],
+            keys=[key],
             strategy=strategy,
             prompt=prompt,
+            examples=examples,
             reflect_examples=reflect_examples,
             reflect_prompt=reflect_prompt
         )
 
-        # self.experience_memory.add_memories(
-        #     questions=experience['questions'],
-        #     keys=experience['keys'],
-        #     trajectories=experience['trajectories'],
-        #     reflections=experience['reflections']
-        # )
+        self.experience_memory.add_memories(
+            questions=experience['questions'],
+            keys=experience['keys'],
+            trajectories=experience['trajectories'],
+            reflections=experience['reflections']
+        )
+
+        if reflect:
+            self.extract_insights(experience)
 
     def reset(self) -> None:
         self.reflexion_react_agent.reset()
@@ -139,15 +140,22 @@ class ExpeLAgent(BaseAgent):
         self, 
         questions: List[str],
         keys: List[str],
-        strategy: Optional[str] = "reflexion"
-    ) -> None:
+        strategy: Optional[str] = "reflexion",
+        prompt: str = REFLEXION_REACT_INSTRUCTION,
+        examples: Optional[str] = REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        reflect_examples: str = REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
+        reflect_prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION,
+    ) -> Dict[str, Any]:
         # Gather experience.
-        self.reflexion_react_agent.reset()
         experiences = gather_experience(
             reflexion_react_agent=self.reflexion_react_agent,
             questions=questions,
             keys=keys,
-            strategy=strategy
+            strategy=strategy,
+            prompt=prompt,
+            examples=examples,
+            reflect_examples=reflect_examples,
+            reflect_prompt=reflect_prompt,
         )
         self.reflexion_react_agent.reset()
 
@@ -158,9 +166,12 @@ class ExpeLAgent(BaseAgent):
             reflections=experiences['reflections']
         )
 
+        return experiences
+    
+    def extract_insights(self, experiences: Dict[str, Any]) -> None:
         # Extract insights.
-        categories = categorize_experiences(self.experience_memory.experiences)
-        folds = get_folds(categories, len(self.experience_memory))
+        categories = categorize_experiences(experiences)
+        folds = get_folds(categories, len(experiences['idxs']))
 
         for train_idxs in folds.values():
 
