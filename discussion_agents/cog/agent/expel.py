@@ -10,9 +10,6 @@ from discussion_agents.cog.functional.expel import (
     gather_experience,
     categorize_experiences,
     get_folds,
-    _prompt_compare_critique,
-    parse_insights,
-    remove_err_operations,
     retrieve_insight_index,
     get_operations_compare, 
     get_operations_success,
@@ -57,17 +54,18 @@ class ExpeLAgent(BaseAgent):
         else:
             self.reflexion_react_agent = reflexion_react_agent
 
-        if not experience_memory:
-            self.experience_memory = ExpeLExperienceMemory()
-        else:
-            self.experience_memory = experience_memory
+        self.success_batch_size = success_batch_size
 
         if not insight_memory:
             self.insight_memory = ExpeLInsightMemory()
         else:
             self.insight_memory = insight_memory
 
-        self.success_batch_size = success_batch_size
+        if not experience_memory:
+            self.experience_memory = ExpeLExperienceMemory()
+        else:
+            self.experience_memory = experience_memory
+            self.extract_insights(self.experience_memory.experiences)
 
     def generate(
         self, 
@@ -119,13 +117,6 @@ class ExpeLAgent(BaseAgent):
             examples=examples,
             reflect_examples=reflect_examples,
             reflect_prompt=reflect_prompt
-        )
-
-        self.experience_memory.add_memories(
-            questions=experience['questions'],
-            keys=experience['keys'],
-            trajectories=experience['trajectories'],
-            reflections=experience['reflections']
         )
 
         if reflect:
@@ -182,7 +173,6 @@ class ExpeLAgent(BaseAgent):
 
             # Compare.
             for train_idx in train_category_idxs["compare"]:
-                print("entering compare")
                 question = experiences["questions"][train_idx]
                 trajectory = experiences["trajectories"][
                     train_idx
