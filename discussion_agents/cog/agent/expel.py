@@ -30,6 +30,26 @@ from discussion_agents.cog.prompts.expel import (
 )
 
 class ExpeLAgent(BaseAgent):
+    """Implements ExpeL, a reflective, experiential learning agent.
+
+    Attributes:
+        llm (BaseChatModel): Primary language model for general tasks.
+        self_reflect_llm (BaseChatModel): Language model used for ReflexionReActAgent reflect.
+        action_llm (BaseChatModel): Language model used for ReflexionReActAgent.
+        reflexion_react_kwargs (Optional[Dict[str, Any]]): Configuration options for the ReflexionReAct agent.
+        reflexion_react_agent (Optional[ReflexionReActAgent]): The ReflexionReAct agent. Optional.
+        experience_memory (Optional[ExpeLExperienceMemory]): Memory module for storing experiences.
+        insight_memory (Optional[ExpeLInsightMemory]): Memory module for storing insights derived from experiences.
+        success_batch_size (int): Batch size for processing success experiences in generating insights.
+
+    Methods:
+        generate(question, key): Generates a response based on a given question and key, potentially extracting insights and applying self-reflection in the process.
+        reset(): Resets the agent's state for a new problem-solving session, clearing memory modules and the ReAct agent's state.
+        gather_experience(questions, keys): Collects experiences from interactions, storing them for future reference and insight extraction.
+        extract_insights(experiences): Analyzes stored experiences to extract and store insights for improving future interactions.
+        update_insights(operations): Updates the stored insights based on the analysis of new experiences.
+        retrieve(): Retrieves the current state of the agent's memories, including both experiences and insights.
+    """
     def __init__(
         self,
         llm: BaseChatModel,
@@ -41,6 +61,7 @@ class ExpeLAgent(BaseAgent):
         insight_memory: Optional[ExpeLInsightMemory] = None,
         success_batch_size: int = 8
     ) -> None:
+        """Initialization."""
         super().__init__()
 
         self.llm = llm
@@ -71,7 +92,7 @@ class ExpeLAgent(BaseAgent):
         self, 
         question: str, 
         key: str, 
-        reflect: bool = True, 
+        should_extract_insights: bool = True, 
         reset: bool = False,
         reset_reflexion: bool = True,
         strategy: str = "reflexion",
@@ -119,7 +140,7 @@ class ExpeLAgent(BaseAgent):
             reflect_prompt=reflect_prompt
         )
 
-        if reflect:
+        if should_extract_insights:
             self.extract_insights(experience)
 
     def reset(self) -> None:
@@ -252,3 +273,15 @@ class ExpeLAgent(BaseAgent):
                 self.insight_memory.add_memories(
                     [{"insight": operation_insight, "score": 2}]
                 )
+
+    def retrieve(self) -> Dict[str, Any]:
+        """Retrieves the current state of the agent's memories: experiences and insights.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing fivve keys, 'experiences', 'success_traj_docs', 
+                'vectorstore', and 'insights'.
+        """
+        return {
+            **self.experience_memory.show_memories(),
+            **self.insight_memory.show_memories()
+        }

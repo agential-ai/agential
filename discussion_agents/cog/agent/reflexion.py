@@ -310,8 +310,8 @@ class ReflexionReActAgent(BaseAgent):
         enc (Encoding): tiktoken Encoding for tracking token count of prompts.
 
     Methods:
-        generate(context, question, key, strategy): Generates a response based on the given context, question, and strategy.
-        reflect(context, question, strategy): Reflects on the previous response and modifies the strategy accordingly.
+        generate(question, key, strategy): Generates a response based on the given question and strategy.
+        reflect(question, strategy): Reflects on the previous response and modifies the strategy accordingly.
         retrieve(): Retrieves the current memory state of the agent.
         reset(): Resets the agent's state for a new problem-solving session.
     """
