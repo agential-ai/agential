@@ -34,8 +34,8 @@ class ExpeLAgent(BaseAgent):
 
     Attributes:
         llm (BaseChatModel): Primary language model for general tasks.
-        self_reflect_llm (BaseChatModel): Language model used for ReflexionReActAgent reflect.
-        action_llm (BaseChatModel): Language model used for ReflexionReActAgent.
+        self_reflect_llm (Optional[BaseChatModel]): Language model used for ReflexionReActAgent reflect.
+        action_llm (Optional[BaseChatModel]): Language model used for ReflexionReActAgent.
         reflexion_react_kwargs (Optional[Dict[str, Any]]): Configuration options for the ReflexionReAct agent.
         reflexion_react_agent (Optional[ReflexionReActAgent]): The ReflexionReAct agent. Optional.
         experience_memory (Optional[ExpeLExperienceMemory]): Memory module for storing experiences.
@@ -53,8 +53,8 @@ class ExpeLAgent(BaseAgent):
     def __init__(
         self,
         llm: BaseChatModel,
-        self_reflect_llm: BaseChatModel, 
-        action_llm: BaseChatModel,
+        self_reflect_llm: Optional[BaseChatModel] = None, 
+        action_llm: Optional[BaseChatModel] = None,
         reflexion_react_kwargs: Optional[Dict[str, Any]] = {},
         reflexion_react_agent: Optional[ReflexionReActAgent] = None,
         experience_memory: Optional[ExpeLExperienceMemory] = None,
@@ -68,8 +68,8 @@ class ExpeLAgent(BaseAgent):
 
         if not reflexion_react_agent:
             self.reflexion_react_agent = ReflexionReActAgent(
-                self_reflect_llm=self_reflect_llm,
-                action_llm=action_llm,
+                self_reflect_llm=self_reflect_llm if self_reflect_llm else llm,
+                action_llm=action_llm if action_llm else llm,
                 **reflexion_react_kwargs
             )
         else:

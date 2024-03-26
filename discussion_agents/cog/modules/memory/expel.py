@@ -172,7 +172,7 @@ class ExpeLExperienceMemory(BaseMemory):
 
         # Create vectorstore.
         self.vectorstore = None
-        if len(self.experiences['idxs']):
+        if len(self.experiences['idxs']) and len(self.success_traj_docs):
             self.vectorstore = FAISS.from_documents(
                 [doc for doc in self.success_traj_docs if doc.metadata['type'] == self.strategy], 
                 self.embedder
