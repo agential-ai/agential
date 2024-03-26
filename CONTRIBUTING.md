@@ -39,8 +39,12 @@ Check the "Developer Setup" below for the developer workflow.
 
 ## 2. 🔨 Developer Setup
 
-First install [anaconda](https://docs.anaconda.com/free/anaconda/install/windows/) and follow the recommended settings. Once installed, open up the "Anaconda Prompt" and type in the command "conda --version". If everything has worked, it should print "conda xx.xx.x".
-For example: "conda 23.11.0"
+First install [anaconda](https://docs.anaconda.com/free/anaconda/install/windows/) and follow the recommended settings. 
+
+```
+conda --version
+```
+
 
 (P.S: You may add Anaconda to your path environment variables on your own [if you feel comfortable], however this is discouraged by Anaconda themselves as it may "interfere with other software". Instead, they recommend to use the Anaconda Prompt.)
 
@@ -109,7 +113,7 @@ If this command fails to run, check if Poetry has properly installed by running 
 poetry --version
 ```
 
-Next, run this command:
+Next, run `auto_lint`. This will execute the pre-made `auto_lint` target in the Makefile which automatically formats your code with `black` and `ruff`.
 
 ```
 make auto_lint
