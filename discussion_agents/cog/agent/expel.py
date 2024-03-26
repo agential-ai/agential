@@ -36,7 +36,8 @@ class ExpeLAgent(BaseAgent):
         llm (BaseChatModel): Primary language model for general tasks.
         self_reflect_llm (Optional[BaseChatModel]): Language model used for ReflexionReActAgent reflect.
         action_llm (Optional[BaseChatModel]): Language model used for ReflexionReActAgent.
-        reflexion_react_kwargs (Optional[Dict[str, Any]]): Configuration options for the ReflexionReAct agent.
+        reflexion_react_kwargs (Optional[Dict[str, Any]]): Configuration options for the ReflexionReAct agent. 
+            Defaults max_steps=7 and max_trials=3 for the ReflexionReActAgent.
         reflexion_react_agent (Optional[ReflexionReActAgent]): The ReflexionReAct agent. Optional.
         experience_memory (Optional[ExpeLExperienceMemory]): Memory module for storing experiences.
         insight_memory (Optional[ExpeLInsightMemory]): Memory module for storing insights derived from experiences.
@@ -55,7 +56,7 @@ class ExpeLAgent(BaseAgent):
         llm: BaseChatModel,
         self_reflect_llm: Optional[BaseChatModel] = None, 
         action_llm: Optional[BaseChatModel] = None,
-        reflexion_react_kwargs: Optional[Dict[str, Any]] = {},
+        reflexion_react_kwargs: Optional[Dict[str, Any]] = {"max_steps": 7, "max_trials": 3},
         reflexion_react_agent: Optional[ReflexionReActAgent] = None,
         experience_memory: Optional[ExpeLExperienceMemory] = None,
         insight_memory: Optional[ExpeLInsightMemory] = None,

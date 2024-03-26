@@ -131,6 +131,9 @@ def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
         keys=hotpotqa.answer.values[-1:]
     )
     assert new_experiences == gt_new_experiences
+    assert new_experiences == agent.experience_memory.experiences
+    assert len(agent.experience_memory.success_traj_docs) == 13
+    assert agent.experience_memory.vectorstore
 
 def test_update_insights() -> None:
     """"Test update_insights."""
