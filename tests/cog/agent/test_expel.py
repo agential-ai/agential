@@ -70,8 +70,9 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
 def test_generate() -> None:
     """Test generate."""
 
-def test_reset() -> None:
+def test_reset(expel_agent: ExpeLAgent) -> None:
     """Test reset."""
+    pass
 
 def test_retrieve() -> None:
     """Test retrieve."""
