@@ -248,7 +248,6 @@ class ExpeLAgent(BaseAgent):
         folds = get_folds(categories, len(experiences['idxs']))
 
         for train_idxs in folds.values():
-
             train_category_idxs = {
                 category: list(set(train_idxs).intersection(set(category_idxs)))  # type: ignore
                 for category, category_idxs in categories.items()
@@ -266,6 +265,16 @@ class ExpeLAgent(BaseAgent):
                 for failed_trial in trajectory[:-1]:
                     failed_trial = "\n".join(["\n".join(step) for step in failed_trial[-1]])
                     insights = self.insight_memory.load_memories()['insights']
+
+                    print("<===================================>")
+                    print("insights:\n", insights)
+                    print("question:\n", question)
+                    print("sccess trial:\n\n")
+                    print(repr(success_trial))
+                    print("\n\n")
+                    print(repr(failed_trial))
+                    print(self.insight_memory.max_num_insights < len(insights))
+                    print("<===================================>")
 
                     operations = get_operations_compare(
                         llm=self.llm,
@@ -295,6 +304,14 @@ class ExpeLAgent(BaseAgent):
                             f"{experiences['questions'][idx]}\n{success_traj_str}"
                         )
                     success_trials = "\n\n".join(concat_success_trajs)
+
+                    print("<===================================>")
+                    print("insights:\n", insights)
+                    print("sccess trials:\n\n")
+                    print(repr(success_trials))
+                    print("\n\n")
+                    print(self.insight_memory.max_num_insights < len(insights))
+                    print("<===================================>")
 
                     operations = get_operations_success(
                         llm=self.llm,
@@ -353,7 +370,7 @@ class ExpeLAgent(BaseAgent):
         """Retrieves the current state of the agent's memories: experiences and insights.
 
         Returns:
-            Dict[str, Any]: A dictionary containing fivve keys, 'experiences', 'success_traj_docs', 
+            Dict[str, Any]: A dictionary containing five keys, 'experiences', 'success_traj_docs', 
                 'vectorstore', and 'insights'.
         """
         return {

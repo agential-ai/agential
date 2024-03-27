@@ -547,6 +547,21 @@ def get_operations_compare(
     failed_trial: str,
     is_full: bool
 ) -> List[Tuple[str, str]]:
+    """Generates a list of operations based on a comparison between a successful trial and a failed trial of a question.
+
+    This function generates a critique prompt that includes the question, a successful trial, a failed trial, and existing insights. It then processes the critique from the LLM to identify actionable operations to update the insights.
+
+    Parameters:
+        llm (BaseChatModel): The language model used for generating the critique.
+        insights (List[Tuple[str, int]]): Current insights with their scores.
+        question (str): The question related to the trials.
+        success_trial (str): Description of the successful trial.
+        failed_trial (str): Description of the failed trial.
+        is_full (bool): Flag to indicate if the critique should consider all insights or be limited.
+
+    Returns:
+        List[Tuple[str, str]]: A list of tuples representing operations (e.g., "ADD", "EDIT") and their corresponding insights or modifications.
+    """
     # Prompt.
     out = _prompt_compare_critique(
         llm,
@@ -556,6 +571,7 @@ def get_operations_compare(
         failed_trial,
         is_full,
     )
+    print("compare out:\n", repr(out), "\n\n")
 
     # Parse.
     operations = parse_insights(out)
@@ -572,10 +588,24 @@ def get_operations_success(
     insights: List[Tuple[str, int]],
     is_full: bool
 ) -> List[Tuple[str, str]]:
+    """Generates a list of operations based on a set of successful trials.
+
+    This function creates a critique prompt from a string of successful trials and existing insights, requesting the LLM to provide a critique. The critique is analyzed to extract operations for insight modification or addition based on the success patterns identified in the trials.
+
+    Parameters:
+        llm (BaseChatModel): The language model used for generating the critique.
+        success_trials (str): A concatenated string of descriptions for each successful trial.
+        insights (List[Tuple[str, int]]): Current insights with their scores.
+        is_full (bool): Flag to indicate if the critique should consider all insights or be limited.
+
+    Returns:
+        List[Tuple[str, str]]: A list of tuples representing operations (e.g., "ADD", "EDIT") and their corresponding insights or modifications.
+    """
     # Prompt.
     out = _prompt_all_success_critique(
         llm, insights, success_trials, is_full
     )
+    print("success out:\n", repr(out), "\n\n")
 
     # Parse.
     operations = parse_insights(out)

@@ -199,9 +199,32 @@ def test_update_insights() -> None:
     assert agent.insight_memory.insights == gt_insights
 
 
-def test_extract_insights() -> None:
+def test_extract_insights(expel_experiences_10_fake_path: str) -> None:
     """Test extract_insights."""
-
+    experiences = joblib.load(expel_experiences_10_fake_path)
+    selected_indices = [6, 3, 0]
+    selected_dict = {key: [value[i] for i in selected_indices] for key, value in experiences.items()}
+    selected_dict['idxs'] = list(range(len(selected_indices)))
+    
+    gt_insights = [
+        {'insight': 'Always try multiple variations of search terms when looking for specific information.',
+        'score': 2},
+        {'insight': 'If unable to find relevant information through initial searches, consider looking for official announcements or press releases from the company.',
+        'score': 2},
+        {'insight': 'Consider reaching out directly to the company or checking their official website for specific information if initial searches do not yield relevant results.',
+        'score': 2},
+        {'insight': 'When searching for specific information, consider looking for biographical information about relevant individuals to gather additional context and insights.',
+        'score': 2}
+    ]
+    responses = [
+        'ADD 11: Always try multiple variations of search terms when looking for specific information.\nADD 12: If unable to find relevant information through initial searches, consider looking for official announcements or press releases from the company.\nREMOVE 3: Always use the exact search term provided in the question, do not try variations.\nEDIT 7: Make sure to exhaust all possible search options before concluding that the information is unavailable.',
+        'ADD 3: Consider reaching out directly to the company or checking their official website for specific information if initial searches do not yield relevant results.',
+        'ADD 4: When searching for specific information, consider looking for biographical information about relevant individuals to gather additional context and insights.'
+    ]
+    llm = FakeListChatModel(responses=responses)
+    agent = ExpeLAgent(llm=llm)
+    agent.extract_insights(selected_dict)
+    assert agent.insight_memory.insights == gt_insights
 
 def test_generate() -> None:
     """Test generate."""
