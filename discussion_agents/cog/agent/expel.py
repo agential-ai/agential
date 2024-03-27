@@ -326,15 +326,17 @@ class ExpeLAgent(BaseAgent):
                 insight_idx = retrieve_insight_index(
                     insights, operation_insight
                 )
-                self.insight_memory.delete_memories(insight_idx)
+                if insight_idx != -1:
+                    self.insight_memory.delete_memories(insight_idx)
             elif operation_type == "AGREE":
                 insight_idx = retrieve_insight_index(
                     insights, operation_insight
                 )
-                self.insight_memory.update_memories(
-                    idx=insight_idx,
-                    update_type="AGREE"
-                )
+                if insight_idx != -1:
+                    self.insight_memory.update_memories(
+                        idx=insight_idx,
+                        update_type="AGREE"
+                    )
             elif operation_type == "EDIT":
                 insight_idx = int(operation.split(" ")[1]) - 1
                 self.insight_memory.update_memories(

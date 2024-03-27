@@ -137,6 +137,66 @@ def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
 
 def test_update_insights() -> None:
     """"Test update_insights."""
+    insights = [{"insight": "Test 1", "score": 1}, {"insight": "Test 2", "score": 2}, {"insight": "Test 3", "score": 3}]
+    memory = ExpeLInsightMemory(insights, max_num_insights=3)
+    llm = FakeListChatModel(responses=['1'])
+    agent = ExpeLAgent(llm=llm, insight_memory=memory)
+
+    # Valid remove.
+    gt_insights = [{'insight': 'Test 2', 'score': 2}, {'insight': 'Test 3', 'score': 3}]
+    agent.update_insights(
+        [
+            ("REMOVE 0", "Test 1"),
+        ]
+    )
+    assert agent.insight_memory.insights == gt_insights
+
+    # Invalid remove.
+    agent.update_insights(
+        [
+            ("REMOVE 0", "Test askdasf"),
+        ]
+    )
+    assert agent.insight_memory.insights == gt_insights
+
+    # Valid agree.
+    gt_insights = [{'insight': 'Test 2', 'score': 3}, {'insight': 'Test 3', 'score': 3}]
+    agent.update_insights(
+        [
+            ("AGREE 0", "Test 2")
+        ]
+    )
+    assert agent.insight_memory.insights == gt_insights
+
+    # Invalid agree.
+    agent.update_insights(
+        [
+            ("AGREE 0", "Test asdjafh")
+        ]
+    )
+    assert agent.insight_memory.insights == gt_insights
+    
+    # Edit.
+    gt_insights = [{'insight': 'Test 4', 'score': 4}, {'insight': 'Test 3', 'score': 3}]
+    agent.update_insights(
+        [
+            ("EDIT 1", "Test 4")
+        ]
+    )
+    assert agent.insight_memory.insights == gt_insights
+
+    # Add.
+    gt_insights = [
+        {'insight': 'Test 4', 'score': 4},
+        {'insight': 'Test 3', 'score': 3},
+        {'insight': 'Another insight', 'score': 2}
+    ]
+    agent.update_insights(
+        [
+            ("ADD", "Another insight")
+        ]
+    )
+    assert agent.insight_memory.insights == gt_insights
 
 
 def test_extract_insights() -> None:
