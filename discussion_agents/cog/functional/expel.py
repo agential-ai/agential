@@ -571,7 +571,6 @@ def get_operations_compare(
         failed_trial,
         is_full,
     )
-    print("compare out:\n", repr(out), "\n\n")
 
     # Parse.
     operations = parse_insights(out)
@@ -605,7 +604,6 @@ def get_operations_success(
     out = _prompt_all_success_critique(
         llm, insights, success_trials, is_full
     )
-    print("success out:\n", repr(out), "\n\n")
 
     # Parse.
     operations = parse_insights(out)
