@@ -85,7 +85,7 @@ This should output the version if it has been installed properly. Then, to check
 ``` 
 poetry --version
 ```
-This will output the poetry version (and also verify that poetry CLI is running).
+This will output the poetry version and verify the existence of the poetry CLI.
 
 Then clone the repository and enter the discussion-agents directory.
 
