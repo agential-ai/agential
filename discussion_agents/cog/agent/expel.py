@@ -266,16 +266,6 @@ class ExpeLAgent(BaseAgent):
                     failed_trial = "\n".join(["\n".join(step) for step in failed_trial[-1]])
                     insights = self.insight_memory.load_memories()['insights']
 
-                    print("<===================================>")
-                    print("insights:\n", insights)
-                    print("question:\n", question)
-                    print("sccess trial:\n\n")
-                    print(repr(success_trial))
-                    print("\n\n")
-                    print(repr(failed_trial))
-                    print(self.insight_memory.max_num_insights < len(insights))
-                    print("<===================================>")
-
                     operations = get_operations_compare(
                         llm=self.llm,
                         insights=insights,
@@ -304,14 +294,6 @@ class ExpeLAgent(BaseAgent):
                             f"{experiences['questions'][idx]}\n{success_traj_str}"
                         )
                     success_trials = "\n\n".join(concat_success_trajs)
-
-                    print("<===================================>")
-                    print("insights:\n", insights)
-                    print("sccess trials:\n\n")
-                    print(repr(success_trials))
-                    print("\n\n")
-                    print(self.insight_memory.max_num_insights < len(insights))
-                    print("<===================================>")
 
                     operations = get_operations_success(
                         llm=self.llm,
