@@ -39,35 +39,95 @@ Check the "Developer Setup" below for the developer workflow.
 
 ## 2. 🔨 Developer Setup
 
-First install [anaconda](https://docs.anaconda.com/free/anaconda/install/windows/) and add to path by going to advanced system settings. Then, launch cmd.
+First install [anaconda](https://docs.anaconda.com/free/anaconda/install/windows/) and follow the recommended settings. 
+
+```
+conda --version
+```
 
 Ensure you have `make`. if it's not installed on your computer, Please follow this [article](https://earthly.dev/blog/makefiles-on-windows/).
 
 
 Use the following command to create a conda environment `discussion-agents` with Python version 3.10.13. Any Python version above 3.9 is viable.
+
 ```
 conda create -n discussion-agents python=3.10.13
 ```
+
 Now activate the environment.
+
 ```
 conda activate discussion-agents
 ```
+
+Please ensure you are in your virtual environment prior to beginning the next step. The Anaconda Command Prompt should have changed from `(base) C:\Users\<username>>` ---> `(discussion-agents) C:\Users\<username>>`. The change from (base) to (discussion-agents) indicates that you are now in your virtual environment.
+
 Next, we will install [Poetry](https://python-poetry.org/docs/) using [pipx](https://pipx.pypa.io/stable/docs/).
+
 ```
 pip install pipx
 pipx install poetry
 ```
+
 Make sure to add poetry to path by adding `C:\Users\<username>\.local\bin` to path in advanced system settings. For other operating systems, the path will be different. Ensure poetry is in the environment variable paths.
 
+To ensure that pipx has been successfully installed, type in the command:
+
+```
+pipx -- version
+``` 
+
+This should output the version if it has been installed properly. Then, to verify the poetry installation, type in the command:
+
+``` 
+poetry --version
+```
+This will output the poetry version and verify the existence of the poetry CLI.
+
 Then clone the repository and enter the discussion-agents directory.
+
 ``` 
 git clone https://github.com/alckasoc/discussion-agents/
 ```
+
 Finally install all of the packages.
+
 ```
 poetry install
 ```
-### Pre-commit Install/Uninstall
+
+### Verifying Environment Installation
+
+To verify your environment is correctly installed, please run the following commands.
+
+```
+make lint
+```
+This command will execute the pre-made `lint` target in the Makefile, which, internally, uses `mypy`, `black`, and `ruff`.
+
+If this command fails to run, check if Poetry has properly installed by running (same as previous section):
+```
+poetry --version
+```
+
+Next, run `auto_lint`. This will execute the pre-made `auto_lint` target in the Makefile which automatically formats your code with `black` and `ruff`.
+
+```
+make auto_lint
+```
+
+This command will execute the pre-made `auto-lint` target in the Makefile. This command automatically formats your code with `black` and `ruff`.
+
+Finally, run this command:
+
+```
+make test
+```
+
+The `test` command within the Makefile internally runs `pytest` on unit tests located in the `tests` directory. 
+
+
+### Pre-commit Install/Uninstall (Optional)
 
 Pre-commit automatically runs specified checks before each commit to ensure code quality, adherence to best practices, and error prevention. If the checks fail, the commit is rejected until the issues are resolved. 
 
