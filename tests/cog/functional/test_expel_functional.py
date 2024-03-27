@@ -10,14 +10,12 @@ from discussion_agents.cog.functional.expel import (
     _build_all_success_prompt,
     _build_compare_prompt,
     categorize_experiences,
-    create_rules,
     gather_experience,
     get_folds,
     is_existing_rule,
     parse_insights,
     remove_err_operations,
     retrieve_insight_index,
-    update_rules,
     get_operations_compare,
     get_operations_success
 )
@@ -255,29 +253,6 @@ def test_remove_err_operations() -> None:
     assert out == expected_operations
 
 
-def test_update_rules() -> None:
-    """Test update_rules."""
-    initial_rules = [("Rule1", 1), ("Rule2", 2), ("Rule3", 3)]
-    operations = [
-        ("REMOVE", "Rule1"),
-        ("AGREE", "Rule2"),
-        ("EDIT 3", "Rule3"),
-        ("ADD", "NewRule4"),
-    ]
-
-    # Expected outcomes.
-    expected_rules_full = [("Rule3", 4), ("Rule2", 3), ("NewRule4", 2)]
-    expected_rules_not_full = [("Rule3", 4), ("Rule2", 3), ("NewRule4", 2)]
-
-    # Test with is_full=True.
-    updated_rules_full = update_rules(initial_rules, operations, is_full=True)
-    assert updated_rules_full == expected_rules_full
-
-    # Test with is_full=False.
-    updated_rules_not_full = update_rules(initial_rules, operations, is_full=False)
-    assert updated_rules_not_full == expected_rules_not_full
-
-
 def test_get_operations_compare() -> None:
     """Test get_operations_compare."""
 
@@ -322,44 +297,3 @@ def test_get_operations_success() -> None:
         is_full
     )
     assert operations == gt_operations
-
-
-def test_create_rules(expel_experiences_10_fake_path: str) -> None:
-    """Test create_rules."""
-    gt_rules = [
-        ("Prioritize specific keywords in the question to guide search queries.", 2),
-        (
-            "Consider alternative search terms if the initial search query does not yield relevant results.",
-            2,
-        ),
-        (
-            "Break down complex search queries into smaller, more specific parts to guide the search process effectively.",
-            2,
-        ),
-        (
-            "Prioritize refining the search query based on the specific elements of the question to avoid ambiguity and ensure relevance in search results.",
-            2,
-        ),
-        (
-            "Prioritize verifying the accuracy of information obtained from search results before providing an answer.",
-            2,
-        ),
-    ]
-
-    max_num_rules = 20
-    experiences = joblib.load(expel_experiences_10_fake_path)
-    categories = categorize_experiences(experiences)
-    folds = get_folds(categories, len(experiences["idxs"]))
-    responses = [
-        "ADD 1: Prioritize specific keywords in the question to guide search queries.\nEDIT 2: Specify the need to directly find the information requested in the question.\nREMOVE 3: The action is unclear and redundant with previous searches.\nAGREE 4: The action of narrowing down the search to find specific information is valid.",
-        "ADD 2: Consider alternative search terms if the initial search query does not yield relevant results.",
-        "ADD 3: Break down complex search queries into smaller, more specific parts to guide the search process effectively.",
-        "ADD 4: Prioritize refining the search query based on the specific elements of the question to avoid ambiguity and ensure relevance in search results.",
-        "ADD 5: Prioritize verifying the accuracy of information obtained from search results before providing an answer.",
-    ]
-    llm = FakeListChatModel(responses=responses)
-
-    train_idxs = folds[0]
-    rules = []
-    rules = create_rules(llm, experiences, categories, train_idxs, rules, max_num_rules)
-    assert rules == gt_rules
