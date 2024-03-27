@@ -45,9 +45,6 @@ First install [anaconda](https://docs.anaconda.com/free/anaconda/install/windows
 conda --version
 ```
 
-
-(P.S: You may add Anaconda to your path environment variables on your own [if you feel comfortable], however this is discouraged by Anaconda themselves as it may "interfere with other software". Instead, they recommend to use the Anaconda Prompt.)
-
 Ensure you have `make`. if it's not installed on your computer, Please follow this [article](https://earthly.dev/blog/makefiles-on-windows/).
 
 
@@ -80,7 +77,7 @@ To ensure that pipx has been successfully installed, type in the command:
 pipx -- version
 ``` 
 
-This should output the version if it has been installed properly. Then, to check for poetry installation, type in the command:
+This should output the version if it has been installed properly. Then, to verify the poetry installation, type in the command:
 
 ``` 
 poetry --version
