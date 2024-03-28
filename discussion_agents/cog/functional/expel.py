@@ -437,46 +437,29 @@ def remove_err_operations(
     Returns:
         List[Tuple[str, str]]: A cleaned list of operations where erroneous or inapplicable operations have been removed or modified to ensure consistency and correctness when applied to the set of existing insights.
     """
-    cleaned_operations = operations.copy()
-
-    delete_indices = []
-    for i in range(len(cleaned_operations)):
-        # Split the operation into action type and optional rule number.
-        operation, operation_rule_text = cleaned_operations[i]
+    corrected_operations = []
+    for operation, text in operations.copy():
         operation_type = operation.split(" ")[0]
-        rule_num = int(operation.split(" ")[1]) if " " in operation else None
+        insight_idx = int(operation.split(" ")[1]) if " " in operation else None
+        index = retrieve_insight_index(insights, text)
 
-        if operation_type == "ADD":
-            if is_existing_rule(
-                insights, operation_rule_text
-            ):  # If new rule_text is an existing rule ('in').
-                delete_indices.append(i)
-        else:
-            if operation_type == "EDIT":
-                if is_existing_rule(
-                    insights, operation_rule_text
-                ):  # If rule is matching ('in') existing rule, change it to AGREE.
-                    rule_num = retrieve_insight_index(insights, operation_rule_text)
-                    cleaned_operations[i] = (f"AGREE {rule_num+1}", insights[rule_num][0])
-                elif (rule_num is None) or (
-                    rule_num > len(insights)
-                ):  # If rule doesn't exist, remove.
-                    delete_indices.append(i)
+        # ADDing an insight that doesn't exist. 
+        if operation_type == "ADD" and retrieve_insight_index(insights, text) == -1:
+            corrected_operations.append((operation, text))
+        # REMOVEing or AGREEing with an insight given that it exists.
+        elif (operation_type == "REMOVE" or operation_type == "AGREE") and index != -1:
+            corrected_operations.append((operation, text))
+        # EDITing an insight (AGREEing) given that it exists.
+        elif operation_type == "EDIT" and index != -1:
+            corrected_operations.append((f"AGREE {index+1}", text))
+        # EDITing an insight given:
+        # - it doesn't exist (text match) in the insights
+        # - the insight index to EDIT is not None
+        # - the insight index to EDIT is less than or equal to the length of insights (within range of the length of the insights) 
+        elif operation_type == "EDIT" and insight_idx is not None and insight_idx <= len(insights):
+            corrected_operations.append((operation, text))
 
-            elif operation_type == "REMOVE" or operation_type == "AGREE":
-                if not is_existing_rule(
-                    insights, operation_rule_text
-                ):  # If new operation_rule_text is not an existing rule.
-                    delete_indices.append(i)
-
-    # Remove problematic operations.
-    cleaned_operations = [
-        cleaned_operations[i]
-        for i in range(len(cleaned_operations))
-        if i not in delete_indices
-    ]
-
-    return cleaned_operations
+    return corrected_operations
 
 
 def get_operations_compare(
