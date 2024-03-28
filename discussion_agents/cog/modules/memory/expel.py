@@ -66,7 +66,7 @@ class ExpeLExperienceMemory(BaseMemory):
         self.encoder = encoder
 
         # Collect all successful trajectories.
-        success_traj_idxs = []
+        success_traj_idxs: List[int] = []
         if len(self.experiences["idxs"]):
             success_traj_idxs = []
             for idx in self.experiences["idxs"]:
@@ -76,7 +76,7 @@ class ExpeLExperienceMemory(BaseMemory):
                 if is_correct:
                     success_traj_idxs.append(idx)
 
-        self.success_traj_docs = []
+        self.success_traj_docs: List[Document] = []
         for idx in success_traj_idxs:
             question = self.experiences["questions"][idx]
             trajectory = self.experiences["trajectories"][idx][
@@ -216,8 +216,7 @@ class ExpeLExperienceMemory(BaseMemory):
         trajectories: List[List[Tuple[bool, str, List[Tuple[str, str, str]]]]],
         reflections: Optional[List[List[str]]] = [],
     ) -> None:
-        """Adds new experiences to the memory, including associated questions, keys,
-        trajectories, and optional reflections.
+        """Adds new experiences to the memory, including associated questions, keys, trajectories, and optional reflections.
 
         Args:
             questions (List[str]): Questions related to the experiences being added.
@@ -261,7 +260,7 @@ class ExpeLExperienceMemory(BaseMemory):
             trajectory = self.experiences["trajectories"][idx][
                 0
             ]  # Zero-th trial of trajectory.
-            is_correct, _, steps = trajectory
+            is_correct, _, steps = trajectory  # type: ignore
             assert is_correct  # Ensure trajectory is successful.
 
             # Add the task.
@@ -273,9 +272,9 @@ class ExpeLExperienceMemory(BaseMemory):
 
             # Add all trajectory actions.
             self.success_traj_docs.extend(
-                [
+                [  # type: ignore
                     Document(
-                        page_content=action,
+                        page_content=action,  # type: ignore
                         metadata={"type": "action", "task_idx": idx},
                     )
                     for (_, action, _) in steps
@@ -284,9 +283,9 @@ class ExpeLExperienceMemory(BaseMemory):
 
             # Add all trajectory thoughts.
             self.success_traj_docs.extend(
-                [
+                [  # type: ignore
                     Document(
-                        page_content=thought,
+                        page_content=thought,  # type: ignore
                         metadata={"type": "thought", "task_idx": idx},
                     )
                     for (thought, _, _) in steps
@@ -297,7 +296,7 @@ class ExpeLExperienceMemory(BaseMemory):
             for step in steps:
                 self.success_traj_docs.append(
                     Document(
-                        page_content="\n".join(step),
+                        page_content="\n".join(step),  # type: ignore
                         metadata={"type": "step", "task_idx": idx},
                     )
                 )
@@ -354,6 +353,7 @@ class ExpeLExperienceMemory(BaseMemory):
             or not k_docs
             or not num_fewshots
             or not max_fewshot_tokens
+            or not self.vectorstore
         ):
             return {"fewshots": []}
 
@@ -448,8 +448,7 @@ class ExpeLExperienceMemory(BaseMemory):
 
 
 class ExpeLInsightMemory(BaseMemory):
-    """A memory management class for ExpeL insights, handling operations like adding, deleting,
-    and updating insights within a memory storage with a maximum capacity.
+    """A memory management class for ExpeL insights, handling operations like adding, deleting, and updating insights within a memory storage with a maximum capacity.
 
     Attributes:
         insights (List[Dict[str, Any]]): A list to store insight dictionaries.
@@ -458,14 +457,14 @@ class ExpeLInsightMemory(BaseMemory):
 
     def __init__(
         self,
-        insights: Optional[List[Dict[str, Any]]] = [],
+        insights: List[Dict[str, Any]] = [],
         max_num_insights: int = 20,
         leeway: int = 5,
     ) -> None:
         """Initializes the ExpeLInsightMemory with optional insights and a maximum storage limit.
 
         Args:
-            insights (Optional[List[Dict[str, Any]]]): Initial list of insights to store in memory.
+            insights (List[Dict[str, Any]]): Initial list of insights to store in memory.
             max_num_insights (int): The maximum number of insights that can be stored.
             leeway (int): Number of memories allowed over max_num_insights before
                 delete_memories instantly deletes an indexed memory.
@@ -526,7 +525,7 @@ class ExpeLInsightMemory(BaseMemory):
         else:
             raise NotImplementedError
 
-    def load_memories(self, insights_key="insights") -> Dict[str, Any]:
+    def load_memories(self, insights_key: str = "insights") -> Dict[str, Any]:
         """Loads and returns stored insights.
 
         Args:
@@ -537,7 +536,7 @@ class ExpeLInsightMemory(BaseMemory):
         """
         return {insights_key: self.insights}
 
-    def show_memories(self, insights_key="insights") -> Dict[str, Any]:
+    def show_memories(self, insights_key: str = "insights") -> Dict[str, Any]:
         """Returns a dictionary of all stored insights for display or analysis.
 
         Args:

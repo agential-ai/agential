@@ -3,7 +3,7 @@
 import random
 import re
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
@@ -27,7 +27,6 @@ from discussion_agents.cog.prompts.reflexion import (
     REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
     REFLEXION_REACT_REFLECT_INSTRUCTION,
 )
-from discussion_agents.utils.general import shuffle_chunk_list
 
 # ============================================== Experience Gathering ==============================================
 
@@ -36,9 +35,9 @@ def gather_experience(
     reflexion_react_agent: ReflexionReActAgent,
     questions: List[str],
     keys: List[str],
-    strategy: Optional[str] = "reflexion",
+    strategy: str = "reflexion",
     prompt: str = REFLEXION_REACT_INSTRUCTION,
-    examples: Optional[str] = REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+    examples: str = REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
     reflect_examples: str = REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
     reflect_prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION,
 ) -> Dict[str, List]:
@@ -50,7 +49,7 @@ def gather_experience(
         reflexion_react_agent (ReflexionReActAgent): The agent from which experiences are generated.
         questions (List[str]): A list of questions to be processed by the agent.
         keys (List[str]): A list of keys that are paired with the questions to guide the agent's generation.
-        strategy (Optional[str]): The strategy used to generate experiences. Defaults to "reflexion" if not specified.
+        strategy (str, optional): The strategy used to generate experiences. Defaults to "reflexion" if not specified.
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION.
             Must include examples, reflections, question, scratchpad, and max_steps.
         examples (str, optional): Fewshot examples. Defaults to REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES.
@@ -228,7 +227,7 @@ def _build_compare_prompt(
 
 
 def _build_all_success_prompt(
-    insights: List[Tuple[str, int]],
+    insights: List[Dict[str, Any]],
     success_trajs_str: str,
     is_full: bool,
 ) -> str:
@@ -237,7 +236,7 @@ def _build_all_success_prompt(
     This function generates a prompt for AI interaction that incorporates a series of successful trials and existing insights.
 
     Parameters:
-        insights (List[Tuple[str, int]]): A list of strings where each string represents an existing insight with a score. If the list is empty, it is treated as if there are no existing insights.
+        insights (List[Dict[str, Any]]): A list of strings where each string represents an existing insight with a score. If the list is empty, it is treated as if there are no existing insights.
         success_trajs_str (str): A string containing descriptions of successful trials related to the task. These descriptions are meant to provide context for the AI's critique of the existing insights.
         is_full (bool): A boolean flag that determines the verbosity of the critique summary's suffix. If `True`, a more comprehensive suffix is used.
 
@@ -276,7 +275,7 @@ def _build_all_success_prompt(
 
 def _prompt_compare_critique(
     llm: BaseChatModel,
-    insights: List[Tuple[str, int]],
+    insights: List[Dict[str, Any]],
     question: str,
     success_trial: str,
     failed_trial: str,
@@ -289,7 +288,7 @@ def _prompt_compare_critique(
 
     Parameters:
         llm (BaseChatModel): The Large Language Model instance used to generate the critique.
-        insights (List[Tuple[str, int]]): A list of strings where each string represents an existing insight with a score. If the list is empty, it is treated as if there are no existing insights.
+        insights (List[Dict[str, Any]]): A list of strings where each string represents an existing insight with a score. If the list is empty, it is treated as if there are no existing insights.
         question (str): The task question related to the trials.
         success_trial (str): A description of a successful trial for the task.
         failed_trial (str): A description of a failed trial for the task.
@@ -322,7 +321,7 @@ def _prompt_compare_critique(
 
 def _prompt_all_success_critique(
     llm: BaseChatModel,
-    insights: List[Tuple[str, int]],
+    insights: List[Dict[str, Any]],
     success_trajs_str: str,
     is_full: bool,
     replace_newline: bool = False,
@@ -333,7 +332,7 @@ def _prompt_all_success_critique(
 
     Parameters:
         llm (BaseChatModel): The Large Language Model instance used for generating the critique.
-        insights (List[Tuple[str, int]]): A list of strings where each string represents an existing insight with a score. If the list is empty, it is treated as if there are no existing insights.
+        insights (List[Dict[str, Any]]): A list of strings where each string represents an existing insight with a score. If the list is empty, it is treated as if there are no existing insights.
         success_trajs_str (str): A string concatenating descriptions of successful trials related to the task.
         is_full (bool): Indicates whether the full critique summary is to be used in the prompt.
         replace_newline (bool, optional): If set to `True`, newline characters in the LLM output will be replaced with empty strings. The default is `False`.
@@ -396,14 +395,14 @@ def parse_insights(llm_text: str) -> List[Tuple[str, str]]:
 
 
 def retrieve_insight_index(
-    insights: List[Tuple[str, int]], operation_rule_text: str
+    insights: List[Dict[str, Any]], operation_rule_text: str
 ) -> int:
     """Retrieves the index of a rule based on its text.
 
     Searches through a list of insights to find the index of the rule that matches part of the given operation rule text. This function is useful for identifying which rule is being referred to in operations like EDIT, REMOVE, or AGREE, where the rule text is included in the operation.
 
     Parameters:
-        insights (List[Tuple[str, int]]): A list of tuples, where each tuple contains the rule text and its associated strength or any other numeric value.
+        insights (List[Dict[str, Any]]): A list of tuples, where each tuple contains the rule text and its associated strength or any other numeric value.
         operation_rule_text (str): The text of the operation which may contain or exactly match the text of a rule.
 
     Returns:
@@ -416,14 +415,14 @@ def retrieve_insight_index(
 
 
 def remove_err_operations(
-    insights: List[Tuple[str, int]], operations: List[Tuple[str, str]]
+    insights: List[Dict[str, Any]], operations: List[Tuple[str, str]]
 ) -> List[Tuple[str, str]]:
     """Cleans a list of rule operations by removing or modifying erroneous entries.
 
     This function iterates through a list of operations intended to modify a set of insights. It removes operations that are incorrect or not applicable (e.g., attempting to add a rule that already exists) and modifies certain operations based on their context (e.g., changing an EDIT to AGREE if the edited rule matches an existing rule). The goal is to ensure that the resulting list of operations is coherent and can be applied to update the insights without causing inconsistencies.
 
     Parameters:
-        insights (List[Tuple[str, int]]): A list of tuples representing the existing insights. Each tuple contains the rule text and an associated numeric value, which could represent the rule's strength or priority.
+        insights (List[Dict[str, Any]]): A list of tuples representing the existing insights. Each tuple contains the rule text and an associated numeric value, which could represent the rule's strength or priority.
         operations (List[Tuple[str, str]]): A list of tuples representing the operations to be performed on the insights. Each tuple contains an operation type (ADD, REMOVE, EDIT, AGREE) and the associated rule text or modification.
 
     Returns:
@@ -460,7 +459,7 @@ def remove_err_operations(
 
 def get_operations_compare(
     llm: BaseChatModel,
-    insights: List[Tuple[str, int]],
+    insights: List[Dict[str, Any]],
     question: str,
     success_trial: str,
     failed_trial: str,
@@ -472,7 +471,7 @@ def get_operations_compare(
 
     Parameters:
         llm (BaseChatModel): The language model used for generating the critique.
-        insights (List[Tuple[str, int]]): Current insights with their scores.
+        insights (List[Dict[str, Any]]): Current insights with their scores.
         question (str): The question related to the trials.
         success_trial (str): Description of the successful trial.
         failed_trial (str): Description of the failed trial.
@@ -503,7 +502,7 @@ def get_operations_compare(
 def get_operations_success(
     llm: BaseChatModel,
     success_trials: str,
-    insights: List[Tuple[str, int]],
+    insights: List[Dict[str, Any]],
     is_full: bool,
 ) -> List[Tuple[str, str]]:
     """Generates a list of operations based on a set of successful trials.
@@ -513,7 +512,7 @@ def get_operations_success(
     Parameters:
         llm (BaseChatModel): The language model used for generating the critique.
         success_trials (str): A concatenated string of descriptions for each successful trial.
-        insights (List[Tuple[str, int]]): Current insights with their scores.
+        insights (List[Dict[str, Any]]): Current insights with their scores.
         is_full (bool): Flag to indicate if the critique should consider all insights or be limited.
 
     Returns:

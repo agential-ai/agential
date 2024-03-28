@@ -188,7 +188,7 @@ def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
 
 
 def test_update_insights() -> None:
-    """ "Test update_insights."""
+    """Test update_insights."""
     insights = [
         {"insight": "Test 1", "score": 1},
         {"insight": "Test 2", "score": 2},
@@ -225,12 +225,16 @@ def test_update_insights() -> None:
     assert agent.insight_memory.insights == gt_insights
 
     # Edit.
-    gt_insights = [{'insight': 'Test 2', 'score': 3}, {'insight': 'Test 4', 'score': 4}]
+    gt_insights = [{"insight": "Test 2", "score": 3}, {"insight": "Test 4", "score": 4}]
     agent.update_insights([("EDIT 1", "Test 4")])
     assert agent.insight_memory.insights == gt_insights
 
     # Add.
-    gt_insights = [{'insight': 'Test 2', 'score': 3}, {'insight': 'Test 4', 'score': 4}, {'insight': 'Another insight', 'score': 2}]
+    gt_insights = [
+        {"insight": "Test 2", "score": 3},
+        {"insight": "Test 4", "score": 4},
+        {"insight": "Another insight", "score": 2},
+    ]
     agent.update_insights([("ADD", "Another insight")])
     assert agent.insight_memory.insights == gt_insights
 
@@ -312,7 +316,52 @@ def test_generate(expel_experiences_10_fake_path: str) -> None:
         ],
         "reflections": [[]],
     }
-    gt_insights = [{'insight': 'Ensure to directly search for the specific information needed instead of trying to find similar entities.', 'score': 2}, {'insight': 'Ensure to search for specific information directly related to the question asked, avoiding unnecessary details.', 'score': 5}, {'insight': 'When searching for specific information, consider using keywords related to the topic to ensure relevant results are obtained.', 'score': 2}, {'insight': 'Use specific search terms and relevant keywords when looking for information, rather than general terms.', 'score': 2}, {'insight': 'When searching for specific information, use keywords related to the topic to ensure relevant results are obtained.', 'score': 2}, {'insight': 'Focus on directly searching for the specific information needed instead of getting sidetracked by related but not directly relevant information.', 'score': 2}, {'insight': 'Prioritize using direct sources of information such as official announcements, press releases, and company websites when searching for specific details.', 'score': 2}, {'insight': 'When searching for specific information, consider using different search terms and approaches if initial searches do not yield relevant results.', 'score': 2}, {'insight': 'Prioritize using direct sources of information such as official announcements, press releases, and company websites when searching for specific details related to the task at hand.', 'score': 2}, {'insight': 'Prioritize using specific search terms and keywords related to the topic to ensure accurate and relevant results are obtained.', 'score': 2}, {'insight': 'Focus on efficiently summarizing key information obtained from search results to answer the question accurately.', 'score': 2}]
+    gt_insights = [
+        {
+            "insight": "Ensure to directly search for the specific information needed instead of trying to find similar entities.",
+            "score": 2,
+        },
+        {
+            "insight": "Ensure to search for specific information directly related to the question asked, avoiding unnecessary details.",
+            "score": 5,
+        },
+        {
+            "insight": "When searching for specific information, consider using keywords related to the topic to ensure relevant results are obtained.",
+            "score": 2,
+        },
+        {
+            "insight": "Use specific search terms and relevant keywords when looking for information, rather than general terms.",
+            "score": 2,
+        },
+        {
+            "insight": "When searching for specific information, use keywords related to the topic to ensure relevant results are obtained.",
+            "score": 2,
+        },
+        {
+            "insight": "Focus on directly searching for the specific information needed instead of getting sidetracked by related but not directly relevant information.",
+            "score": 2,
+        },
+        {
+            "insight": "Prioritize using direct sources of information such as official announcements, press releases, and company websites when searching for specific details.",
+            "score": 2,
+        },
+        {
+            "insight": "When searching for specific information, consider using different search terms and approaches if initial searches do not yield relevant results.",
+            "score": 2,
+        },
+        {
+            "insight": "Prioritize using direct sources of information such as official announcements, press releases, and company websites when searching for specific details related to the task at hand.",
+            "score": 2,
+        },
+        {
+            "insight": "Prioritize using specific search terms and keywords related to the topic to ensure accurate and relevant results are obtained.",
+            "score": 2,
+        },
+        {
+            "insight": "Focus on efficiently summarizing key information obtained from search results to answer the question accurately.",
+            "score": 2,
+        },
+    ]
     gt_trajectory = [
         (
             True,
