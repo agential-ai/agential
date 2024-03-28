@@ -405,24 +405,6 @@ def retrieve_insight_index(insights: List[Tuple[str, int]], operation_rule_text:
     return -1
 
 
-def is_existing_rule(insights: List[Tuple[str, int]], operation_rule_text: str) -> bool:
-    """Checks if a rule exists based on its text.
-
-    Determines whether any rule's text in the provided list of insights matches part of the given operation rule text. This is useful for verifying if an operation like ADD is attempting to add a rule that already exists based on its text.
-
-    Parameters:
-        insights (List[Tuple[str, int]]): A list of tuples, where each tuple contains the rule text and its associated strength or any other numeric value.
-        operation_rule_text (str): The text of the operation which may contain or exactly match the text of an existing rule.
-
-    Returns:
-        bool: True if the rule exists in the list, otherwise False.
-    """
-    for i in range(len(insights)):
-        if insights[i]['insight'] in operation_rule_text:
-            return True
-    return False
-
-
 def remove_err_operations(
     insights: List[Tuple[str, int]], operations: List[Tuple[str, str]]
 ) -> List[Tuple[str, str]]:

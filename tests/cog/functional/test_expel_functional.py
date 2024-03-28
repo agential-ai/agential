@@ -12,7 +12,6 @@ from discussion_agents.cog.functional.expel import (
     categorize_experiences,
     gather_experience,
     get_folds,
-    is_existing_rule,
     parse_insights,
     remove_err_operations,
     retrieve_insight_index,
@@ -163,19 +162,6 @@ def test_retrieve_insight_index() -> None:
 
     idx = retrieve_insight_index(rules, "No such rule")
     assert idx == -1
-
-
-def test_is_existing_rule() -> None:
-    """Tests is_existing_rule."""
-    rules = [
-        {'insight': 'Rule1', 'score': 1},
-        {'insight': 'Rule2', 'score': 2},
-        {'insight': 'Rule3', 'score': 3}
-    ]
-    assert is_existing_rule(rules, "Operation on Rule1")
-    assert is_existing_rule(rules, "Changes to Rule2")
-    assert is_existing_rule(rules, "Modification of Rule3")
-    assert not is_existing_rule(rules, "No such rule")
 
 
 def test_remove_err_operations() -> None:
