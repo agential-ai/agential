@@ -267,7 +267,7 @@ def _build_cot_reflection_prompt(
             question=question,
             scratchpad=scratchpad,
         )
-        
+
     return prompt
 
 

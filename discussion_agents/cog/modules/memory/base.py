@@ -25,15 +25,15 @@ class BaseMemory(ABC):
         pass
 
     def delete_memories(self, *args: Any, **kwargs: Any) -> None:
-        """Optionally deletes memories. 
-        
+        """Optionally deletes memories.
+
         Subclasses may override if deletion functionality is needed.
         """
         raise NotImplementedError("delete_memories is not implemented.")
-    
+
     def update_memories(self, *args: Any, **kwargs: Any) -> None:
-        """Optionally updates memories. 
-        
+        """Optionally updates memories.
+
         Subclasses may override if update functionality is needed.
         """
         raise NotImplementedError("update_memories is not implemented.")

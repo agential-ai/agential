@@ -5,10 +5,10 @@ import pytest
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_community.llms.fake import FakeListLLM
 
+from discussion_agents.cog.agent.expel import ExpeLAgent
 from discussion_agents.cog.agent.generative_agents import GenerativeAgent
 from discussion_agents.cog.agent.react import ReActAgent
 from discussion_agents.cog.agent.reflexion import ReflexionCoTAgent, ReflexionReActAgent
-from discussion_agents.cog.agent.expel import ExpeLAgent
 
 
 @pytest.fixture
@@ -50,7 +50,5 @@ def reflexion_react_agent() -> ReflexionReActAgent:
 @pytest.fixture
 def expel_agent() -> ExpeLAgent:
     """Creates a ExpeLAgent."""
-    agent = ExpeLAgent(
-        llm=FakeListChatModel(responses=["1"])
-    )
+    agent = ExpeLAgent(llm=FakeListChatModel(responses=["1"]))
     return agent

@@ -3,19 +3,13 @@
 import random
 import re
 
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Any, Dict, List, Optional, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
 from langchain_core.prompts.prompt import PromptTemplate
 
 from discussion_agents.cog.agent.reflexion import ReflexionReActAgent
-from discussion_agents.cog.prompts.react import REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
-from discussion_agents.cog.prompts.reflexion import (
-    REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
-    REFLEXION_REACT_REFLECT_INSTRUCTION,
-    REFLEXION_REACT_INSTRUCTION
-)
 from discussion_agents.cog.prompts.expel import (
     CRITIQUE_SUMMARY_SUFFIX_FULL,
     CRITIQUE_SUMMARY_SUFFIX_NOT_FULL,
@@ -26,6 +20,12 @@ from discussion_agents.cog.prompts.expel import (
     SYSTEM_CRITIQUE_ALL_SUCCESS_EXISTING_INSIGHTS_INSTRUCTION,
     SYSTEM_CRITIQUE_EXISTING_INSIGHTS_INSTRUCTION,
     SYSTEM_TEMPLATE,
+)
+from discussion_agents.cog.prompts.react import REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
+from discussion_agents.cog.prompts.reflexion import (
+    REFLEXION_REACT_INSTRUCTION,
+    REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
+    REFLEXION_REACT_REFLECT_INSTRUCTION,
 )
 from discussion_agents.utils.general import shuffle_chunk_list
 
@@ -72,14 +72,14 @@ def gather_experience(
     }
     for idx, (question, key) in enumerate(zip(questions, keys)):
         trajectory = reflexion_react_agent.generate(
-            question=question, 
-            key=key, 
-            strategy=strategy, 
+            question=question,
+            key=key,
+            strategy=strategy,
             reset=True,
             prompt=prompt,
             examples=examples,
             reflect_examples=reflect_examples,
-            reflect_prompt=reflect_prompt
+            reflect_prompt=reflect_prompt,
         )
 
         experiences["idxs"].append(idx)
@@ -197,7 +197,9 @@ def _build_compare_prompt(
     """
     # System prompt.
     prefix = PromptTemplate.from_template(SYSTEM_TEMPLATE).format(
-        ai_name=NON_EXISTENT_INSIGHTS_AT_NAME if not insights else EXISTING_INSIGHTS_AI_NAME,
+        ai_name=NON_EXISTENT_INSIGHTS_AT_NAME
+        if not insights
+        else EXISTING_INSIGHTS_AI_NAME,
         instruction=SYSTEM_CRITIQUE_EXISTING_INSIGHTS_INSTRUCTION,
     )
 
@@ -208,7 +210,9 @@ def _build_compare_prompt(
         "success_traj": success_trial,
         "existing_insights": "\n".join(
             [f"{i}. {insight['insight']}" for i, insight in enumerate(insights, 1)]
-        )  if insights else "",
+        )
+        if insights
+        else "",
     }
 
     human_critique_summary_message = PromptTemplate.from_template(
@@ -242,7 +246,9 @@ def _build_all_success_prompt(
     """
     # System prompt.
     prefix = PromptTemplate.from_template(SYSTEM_TEMPLATE).format(
-        ai_name=NON_EXISTENT_INSIGHTS_AT_NAME if not insights else EXISTING_INSIGHTS_AI_NAME,
+        ai_name=NON_EXISTENT_INSIGHTS_AT_NAME
+        if not insights
+        else EXISTING_INSIGHTS_AI_NAME,
         instruction=SYSTEM_CRITIQUE_ALL_SUCCESS_EXISTING_INSIGHTS_INSTRUCTION,
     )
 
@@ -251,7 +257,9 @@ def _build_all_success_prompt(
         "success_trajs": success_trajs_str,
         "existing_insights": "\n".join(
             [f"{i}. {insight['insight']}" for i, insight in enumerate(insights, 1)]
-        ) if insights else "",
+        )
+        if insights
+        else "",
     }
 
     human_critique_summary_message = PromptTemplate.from_template(
@@ -387,7 +395,9 @@ def parse_insights(llm_text: str) -> List[Tuple[str, str]]:
     return res
 
 
-def retrieve_insight_index(insights: List[Tuple[str, int]], operation_rule_text: str) -> int:
+def retrieve_insight_index(
+    insights: List[Tuple[str, int]], operation_rule_text: str
+) -> int:
     """Retrieves the index of a rule based on its text.
 
     Searches through a list of insights to find the index of the rule that matches part of the given operation rule text. This function is useful for identifying which rule is being referred to in operations like EDIT, REMOVE, or AGREE, where the rule text is included in the operation.
@@ -400,7 +410,7 @@ def retrieve_insight_index(insights: List[Tuple[str, int]], operation_rule_text:
         int: The index of the rule within the list if found; otherwise, -1.
     """
     for i in range(len(insights)):
-        if insights[i]['insight'] in operation_rule_text:
+        if insights[i]["insight"] in operation_rule_text:
             return i
     return -1
 
@@ -425,7 +435,7 @@ def remove_err_operations(
         insight_idx = int(operation.split(" ")[1]) if " " in operation else None
         index = retrieve_insight_index(insights, text)
 
-        # ADDing an insight that doesn't exist. 
+        # ADDing an insight that doesn't exist.
         if operation_type == "ADD" and retrieve_insight_index(insights, text) == -1:
             corrected_operations.append((operation, text))
         # REMOVEing or AGREEing with an insight given that it exists.
@@ -437,8 +447,12 @@ def remove_err_operations(
         # EDITing an insight given:
         # - it doesn't exist (text match) in the insights
         # - the insight index to EDIT is not None
-        # - the insight index to EDIT is less than or equal to the length of insights (within range of the length of the insights) 
-        elif operation_type == "EDIT" and insight_idx is not None and insight_idx <= len(insights):
+        # - the insight index to EDIT is less than or equal to the length of insights (within range of the length of the insights)
+        elif (
+            operation_type == "EDIT"
+            and insight_idx is not None
+            and insight_idx <= len(insights)
+        ):
             corrected_operations.append((operation, text))
 
     return corrected_operations
@@ -450,7 +464,7 @@ def get_operations_compare(
     question: str,
     success_trial: str,
     failed_trial: str,
-    is_full: bool
+    is_full: bool,
 ) -> List[Tuple[str, str]]:
     """Generates a list of operations based on a comparison between a successful trial and a failed trial of a question.
 
@@ -490,7 +504,7 @@ def get_operations_success(
     llm: BaseChatModel,
     success_trials: str,
     insights: List[Tuple[str, int]],
-    is_full: bool
+    is_full: bool,
 ) -> List[Tuple[str, str]]:
     """Generates a list of operations based on a set of successful trials.
 
@@ -506,9 +520,7 @@ def get_operations_success(
         List[Tuple[str, str]]: A list of tuples representing operations (e.g., "ADD", "EDIT") and their corresponding insights or modifications.
     """
     # Prompt.
-    out = _prompt_all_success_critique(
-        llm, insights, success_trials, is_full
-    )
+    out = _prompt_all_success_critique(llm, insights, success_trials, is_full)
 
     # Parse.
     operations = parse_insights(out)
