@@ -157,7 +157,7 @@ class ExpeLAgent(BaseAgent):
             insights = "".join(
                 [
                     f"{i}. {insight['insight']}\n"
-                    for i, insight in enumerate(insights, 1)
+                    for i, insight in enumerate(insights)
                 ]
             )
             examples += insights
@@ -349,7 +349,7 @@ class ExpeLAgent(BaseAgent):
                         idx=insight_idx, update_type="AGREE"
                     )
             elif operation_type == "EDIT":
-                insight_idx = int(operation.split(" ")[1]) - 1
+                insight_idx = int(operation.split(" ")[1])
                 self.insight_memory.update_memories(
                     idx=insight_idx,
                     update_type="EDIT",

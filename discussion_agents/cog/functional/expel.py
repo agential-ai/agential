@@ -209,7 +209,7 @@ def _build_compare_prompt(
         "failed_traj": failed_trial,
         "success_traj": success_trial,
         "existing_insights": "\n".join(
-            [f"{i}. {insight['insight']}" for i, insight in enumerate(insights, 1)]
+            [f"{i}. {insight['insight']}" for i, insight in enumerate(insights)]
         )
         if insights
         else "",
@@ -256,7 +256,7 @@ def _build_all_success_prompt(
     human_format_dict = {
         "success_trajs": success_trajs_str,
         "existing_insights": "\n".join(
-            [f"{i}. {insight['insight']}" for i, insight in enumerate(insights, 1)]
+            [f"{i}. {insight['insight']}" for i, insight in enumerate(insights)]
         )
         if insights
         else "",
@@ -443,7 +443,7 @@ def remove_err_operations(
             corrected_operations.append((operation, text))
         # EDITing an insight (AGREEing) given that it exists.
         elif operation_type == "EDIT" and index != -1:
-            corrected_operations.append((f"AGREE {index+1}", text))
+            corrected_operations.append((f"AGREE {index}", text))
         # EDITing an insight given:
         # - it doesn't exist (text match) in the insights
         # - the insight index to EDIT is not None
