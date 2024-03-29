@@ -9,7 +9,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
 
 from discussion_agents.cog.prompts.react import (
-    REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+    HOTPOTQA_FEWSHOT_EXAMPLES,
     REACT_INSTRUCTION_HOTPOTQA,
     REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES,
     REACT_INSTRUCTION_FEVER,
@@ -50,7 +50,7 @@ def test_generate() -> None:
     ]
     llm = FakeListChatModel(responses=responses)
     agent = ReActAgent(llm=llm)
-    out = agent.generate(question=q, examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES, prompt_template=REACT_INSTRUCTION_HOTPOTQA)
+    out = agent.generate(question=q, examples=HOTPOTQA_FEWSHOT_EXAMPLES, prompt_template=REACT_INSTRUCTION_HOTPOTQA)
     assert isinstance(out, str)
     assert agent._step_n <= agent.max_steps
     assert not agent._finished

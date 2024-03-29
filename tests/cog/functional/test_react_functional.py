@@ -14,9 +14,9 @@ from discussion_agents.cog.prompts.react import (
   REACT_ALFWORLD_INSTRUCTION, 
   REACT_ALFWORLD_PROMPTS_EXAMPLE, 
   REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES, 
-  REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
+  HOTPOTQA_FEWSHOT_EXAMPLES
 )
-from discussion_agents.cog.prompts.react import REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
+from discussion_agents.cog.prompts.react import HOTPOTQA_FEWSHOT_EXAMPLES
 
 gpt3_5_turbo_enc = tiktoken.encoding_for_model("gpt-3.5-turbo")
 
@@ -25,7 +25,7 @@ def test__build_agent_prompt() -> None:
     prompt = _build_agent_prompt(
         question="",
         scratchpad="",
-        examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES,
         max_steps=1,
     )
 
@@ -121,7 +121,7 @@ def test__prompt_agent() -> None:
         llm=FakeListChatModel(responses=["1"]),
         question="",
         scratchpad="",
-        examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES,
         max_steps=1,
     )
     assert isinstance(out, str)
@@ -132,7 +132,7 @@ def test__prompt_agent() -> None:
         llm=FakeListChatModel(responses=["1"]),
         question="",
         scratchpad="",
-        examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES,
         max_steps=1,
         prompt="{question} {scratchpad} {examples} {max_steps}",
     )
@@ -149,7 +149,7 @@ def test__is_halted() -> None:
         1,
         "question",
         "scratchpad",
-        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        HOTPOTQA_FEWSHOT_EXAMPLES,
         10,
         100,
         gpt3_5_turbo_enc,
@@ -161,7 +161,7 @@ def test__is_halted() -> None:
         11,
         "question",
         "scratchpad",
-        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        HOTPOTQA_FEWSHOT_EXAMPLES,
         10,
         100,
         gpt3_5_turbo_enc,
@@ -173,7 +173,7 @@ def test__is_halted() -> None:
         1,
         "question",
         "scratchpad",
-        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        HOTPOTQA_FEWSHOT_EXAMPLES,
         10,
         10,
         gpt3_5_turbo_enc,
@@ -185,7 +185,7 @@ def test__is_halted() -> None:
         1,
         "question",
         "scratchpad",
-        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        HOTPOTQA_FEWSHOT_EXAMPLES,
         10,
         100000,
         gpt3_5_turbo_enc,
@@ -197,16 +197,36 @@ def test__is_halted() -> None:
         10,
         "question",
         "scratchpad",
-        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        HOTPOTQA_FEWSHOT_EXAMPLES,
         10,
         100,
         gpt3_5_turbo_enc,
     )
 
     # Test edge case when encoded prompt equals max_tokens.
-<<<<<<< HEAD
+    assert _is_halted(
+        False,
+        1,
+        "question",
+        "scratchpad",
+        HOTPOTQA_FEWSHOT_EXAMPLES,
+        10,
+        1603,
+        gpt3_5_turbo_enc,
+    )
 
-    assert _is_halted(False, 1, 10, "question", "scratchpad", 20, gpt3_5_turbo_enc)
+    # Test with custom prompt template string.
+    assert not _is_halted(
+        False,
+        1,
+        "question",
+        "scratchpad",
+        HOTPOTQA_FEWSHOT_EXAMPLES,
+        10,
+        1603,
+        gpt3_5_turbo_enc,
+        "{question} {scratchpad} {examples} {max_steps}",
+    )
 
 def test_check_keyword():
     """
@@ -215,7 +235,7 @@ def test_check_keyword():
     This function tests the behavior of the _check_keyword() function by passing
     examples from different Prompts (REACT_ALFWORLD_PROMPTS_EXAMPLE,
     REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES, and
-    REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES) and asserting the expected output.
+    HOTPOTQA_FEWSHOT_EXAMPLES) and asserting the expected output.
     """
     alfworld_example = REACT_ALFWORLD_PROMPTS_EXAMPLE['react_put_0']
     step_utilised: List[bool] = _check_keyword(alfworld_example)
@@ -225,7 +245,7 @@ def test_check_keyword():
     step_utilised = _check_keyword(fever_example)
     assert [bool(item) for item in step_utilised] == [True, True, True]
 
-    hotpotqa_example = REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
+    hotpotqa_example = HOTPOTQA_FEWSHOT_EXAMPLES
     step_utilised = _check_keyword(hotpotqa_example)
     assert [bool(item) for item in step_utilised] == [True, True, True]
 
@@ -238,29 +258,3 @@ def test_process_ob():
     example_output = _process_ob(example_input)
     expected_output = "The fridge 1 is closed."
     assert example_output == expected_output
-    assert _is_halted(False, 1, 10, "question", "scratchpad", 1603, gpt3_5_turbo_enc)
-=======
-    assert _is_halted(
-        False,
-        1,
-        "question",
-        "scratchpad",
-        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
-        10,
-        1603,
-        gpt3_5_turbo_enc,
-    )
-
-    # Test with custom prompt template string.
-    assert not _is_halted(
-        False,
-        1,
-        "question",
-        "scratchpad",
-        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
-        10,
-        1603,
-        gpt3_5_turbo_enc,
-        "{question} {scratchpad} {examples} {max_steps}",
-    )
->>>>>>> main

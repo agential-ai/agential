@@ -26,7 +26,7 @@ from discussion_agents.cog.prompts.expel import (
     EXPEL_REFLEXION_REACT_INSTRUCTION,
     RULE_PREFIX,
 )
-from discussion_agents.cog.prompts.react import REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
+from discussion_agents.cog.prompts.react import HOTPOTQA_FEWSHOT_EXAMPLES
 from discussion_agents.cog.prompts.reflexion import (
     REFLEXION_REACT_INSTRUCTION,
     REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
@@ -152,7 +152,7 @@ class ExpeLAgent(BaseAgent):
                 reranker_strategy=reranker_strategy,
             )["fewshots"]
             examples = (
-                examples if examples else [REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES]  # type: ignore
+                examples if examples else [HOTPOTQA_FEWSHOT_EXAMPLES]  # type: ignore
             )
             examples = "\n\n".join(examples + [END_OF_EXAMPLES_DELIMITER]) + "\n"  # type: ignore
 
@@ -195,7 +195,7 @@ class ExpeLAgent(BaseAgent):
         keys: List[str],
         strategy: str = "reflexion",
         prompt: str = REFLEXION_REACT_INSTRUCTION,
-        examples: str = REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        examples: str = HOTPOTQA_FEWSHOT_EXAMPLES,
         reflect_examples: str = REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
         reflect_prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION,
     ) -> Dict[str, Any]:
@@ -214,7 +214,7 @@ class ExpeLAgent(BaseAgent):
                 - "last_attempt_and_reflexion": This strategy combines the 'last_attempt' and 'reflexion' strategies.
             prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION.
                 Must include examples, reflections, question, scratchpad, and max_steps.
-            examples (str, optional): Fewshot examples. Defaults to REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES.
+            examples (str, optional): Fewshot examples. Defaults to HOTPOTQA_FEWSHOT_EXAMPLES.
             reflect_examples (str, optional): Reflection fewshot examples. Defaults to REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES.
             reflect_prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION.
                 Must include examples, question, and scratchpad.
