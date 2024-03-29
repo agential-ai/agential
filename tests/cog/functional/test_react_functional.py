@@ -7,16 +7,11 @@ from discussion_agents.cog.functional.react import (
     _build_agent_prompt,
     _is_halted,
     _prompt_agent,
-    _check_keyword,
-    _process_ob
 )
-from discussion_agents.cog.prompts.react import (
-  REACT_ALFWORLD_INSTRUCTION, 
-  REACT_ALFWORLD_PROMPTS_EXAMPLE, 
+from discussion_agents.cog.prompts.react import ( 
   FEVER_FEWSHOT_EXAMPLES, 
   HOTPOTQA_FEWSHOT_EXAMPLES
 )
-from discussion_agents.cog.prompts.react import HOTPOTQA_FEWSHOT_EXAMPLES
 
 gpt3_5_turbo_enc = tiktoken.encoding_for_model("gpt-3.5-turbo")
 
@@ -227,34 +222,3 @@ def test__is_halted() -> None:
         gpt3_5_turbo_enc,
         "{question} {scratchpad} {examples} {max_steps}",
     )
-
-def test_check_keyword():
-    """
-    Test the _check_keyword() function with examples from different Prompts Example.
-
-    This function tests the behavior of the _check_keyword() function by passing
-    examples from different Prompts (REACT_ALFWORLD_PROMPTS_EXAMPLE,
-    REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES, and
-    HOTPOTQA_FEWSHOT_EXAMPLES) and asserting the expected output.
-    """
-    alfworld_example = REACT_ALFWORLD_PROMPTS_EXAMPLE['react_put_0']
-    step_utilised: List[bool] = _check_keyword(alfworld_example)
-    assert [bool(item) for item in step_utilised] == [False, True, True]
-
-    fever_example = FEVER_FEWSHOT_EXAMPLES
-    step_utilised = _check_keyword(fever_example)
-    assert [bool(item) for item in step_utilised] == [True, True, True]
-
-    hotpotqa_example = HOTPOTQA_FEWSHOT_EXAMPLES
-    step_utilised = _check_keyword(hotpotqa_example)
-    assert [bool(item) for item in step_utilised] == [True, True, True]
-
-def test_process_ob():
-    example_input = "You arrive at loc 22. On the countertop 2, you see a butterknife 1, a cellphone 1, a creditcard 1, a knife 1, a lettuce 1, a saltshaker 2, a saltshaker 1, a statue 1, and a tomato 1.\nYou pick up the tomato 1 from the countertop 2."
-    example_output = _process_ob(example_input)
-    expected_output = "On the countertop 2, you see a butterknife 1, a cellphone 1, a creditcard 1, a knife 1, a lettuce 1, a saltshaker 2, a saltshaker 1, a statue 1, and a tomato 1.\nYou pick up the tomato 1 from the countertop 2."
-    assert example_output == expected_output
-    example_input = "You arrive at loc 30. The fridge 1 is closed."
-    example_output = _process_ob(example_input)
-    expected_output = "The fridge 1 is closed."
-    assert example_output == expected_output
