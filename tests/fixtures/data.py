@@ -43,9 +43,9 @@ def alfworld_path(data_dir: str) -> str:
 
 
 @pytest.fixture
-def alfworld_base_config_path(data_dir: str) -> str:
+def alfworld_base_config_path(alfworld_path: str) -> str:
     """Dir path to Alfworld environment file."""
-    return os.path.join(data_dir, "base_config.yaml")
+    return os.path.join(alfworld_path, "base_config.yaml")
 
 
 @pytest.fixture
