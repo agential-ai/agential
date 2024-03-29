@@ -161,9 +161,9 @@ def test_FEVER_react_generate() -> None:
     assert not agent._finished
 
 
-def test_Alfworld_react_generate(alfworld_env) -> None:
+def test_Alfworld_react_generate(alfworld_base_config) -> None:
     """Testing for Alfworld."""
-    config = alfworld_env
+    config = alfworld_base_config
     split = "eval_out_of_distribution"
     env = getattr(alfworld.agents.environment, config["env"]["type"])(config, train_eval=split)
     env = env.init_env(batch_size=1)

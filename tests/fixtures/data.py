@@ -37,14 +37,20 @@ def expel_experiences_10_fake_path(expel_assets_path: str) -> str:
 
 
 @pytest.fixture
-def alfworld_file(data_dir: str) -> str:
+def alfworld_path(data_dir: str) -> str:
+    """Dir path to Alfworld asset path."""
+    return os.path.join(data_dir, "alfworld")
+
+
+@pytest.fixture
+def alfworld_base_config_path(data_dir: str) -> str:
     """Dir path to Alfworld environment file."""
     return os.path.join(data_dir, "base_config.yaml")
 
 
 @pytest.fixture
-def alfworld_env(alfworld_file: str) -> Dict[str, Any]:
+def alfworld_base_config(alfworld_base_config_path: str) -> Dict[str, Any]:
     """Alfworld environment config."""
-    with open(alfworld_file) as f:
+    with open(alfworld_base_config_path) as f:
         config = yaml.safe_load(f) 
     return config

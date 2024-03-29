@@ -1,18 +1,17 @@
 """Functional module for Generative Agents."""
 
 import re
+import faiss
 
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple, Union
-
-from langchain.vectorstores import FAISS 
 
 from langchain.chains import LLMChain
 from langchain.docstore import InMemoryDocstore
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.prompts import PromptTemplate
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores.faiss import FAISS
 from langchain_core.retrievers import BaseRetriever
 
 from discussion_agents.utils.fetch import fetch_memories
