@@ -13,7 +13,6 @@ from discussion_agents.cog.agent.react import ReActAgent, ZeroShotReActAgent
 from discussion_agents.cog.modules.memory.react import ReActMemory
 
 
-
 def test_init() -> None:
     """Test initialization."""
     llm = FakeListChatModel(responses=["1"])
@@ -104,6 +103,7 @@ def test_generate() -> None:
         assert isinstance(triplet, tuple)
     assert gt_out == gt_out
     assert agent.memory.load_memories()["scratchpad"] == gt_out
+
 
 def test_reset(react_agent: ReActAgent) -> None:
     """Test reset."""
