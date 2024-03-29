@@ -1,6 +1,5 @@
 """Unit tests for ReAct functional module."""
 import tiktoken
-from typing import List
 from langchain_community.chat_models.fake import FakeListChatModel
 
 from discussion_agents.cog.functional.react import (
@@ -9,11 +8,8 @@ from discussion_agents.cog.functional.react import (
     _prompt_agent,
 )
 from discussion_agents.cog.prompts.react import ( 
-  FEVER_FEWSHOT_EXAMPLES, 
   HOTPOTQA_FEWSHOT_EXAMPLES
 )
-
-gpt3_5_turbo_enc = tiktoken.encoding_for_model("gpt-3.5-turbo")
 
 def test__build_agent_prompt() -> None:
     """Test _build_agent_prompt function."""
@@ -137,6 +133,7 @@ def test__prompt_agent() -> None:
 
 def test__is_halted() -> None:
     """Test _is_halted function."""
+    gpt3_5_turbo_enc = tiktoken.encoding_for_model("gpt-3.5-turbo")
 
     # Test when finish is true.
     assert _is_halted(
