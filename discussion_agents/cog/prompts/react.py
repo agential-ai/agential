@@ -1,7 +1,7 @@
 """ReAct prompts and fewshot examples."""
 
 
-REACT_INSTRUCTION_HOTPOTQA = """Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: 
+REACT_INSTRUCTION = """Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: 
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
 (3) Finish[answer], which returns the answer and finishes the task.
@@ -73,11 +73,10 @@ Thought 2: Pavel Urysohn is a mathematician. I need to search Leonid Levin next 
 Action 2: Search[Leonid Levin]
 Observation 2: Leonid Anatolievich Levin is a Soviet-American mathematician and computer scientist. 
 Thought 3: Leonid Levin is a mathematician and computer scientist. So Pavel Urysohn and Leonid Levin have the same type of work. 
-<<<<<<< HEAD
-Action 3: Finish[yes]
-"""
+Action 3: Finish[yes]"""
 
 
+# <======================================================================== FEVER ========================================================================> #
 
 
 REACT_INSTRUCTION_FEVER = """Determine if there is Observation that SUPPORTS or REFUTES a Claim, or if there is NOT ENOUGH INFORMATION.  and Action can be two types: 
@@ -90,8 +89,7 @@ Here are some examples:
 Question: {question}{scratchpad}"""
 
 
-REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES = """
-Claim: Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.
+REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES = """Claim: Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.
 Thought 1: I need to search Nikolaj Coster-Waldau and find if he has worked with the Fox Broadcasting Company.
 Action 1: Search[Nikolaj Coster-Waldau]
 Observation 1: Nikolaj William Coster-Waldau (born 27 July 1970) is a Danish actor and producer. He graduated from the Danish National School of Performing Arts in Copenhagen in 1993,[1] and had his breakthrough role in Denmark with the film Nightwatch (1994). He played Jaime Lannister in the HBO fantasy drama series Game of Thrones, for which he received two Primetime Emmy Award nominations for Outstanding Supporting Actor in a Drama Series.. Coster-Waldau has appeared in numerous films in his native Denmark and Scandinavia, including Headhunters (2011) and A Thousand Times Good Night (2013). In the U.S, his debut film role was in the war film Black Hawk Down (2001), playing Medal of Honor recipient Gary Gordon.[2] He then played a detective in the short-lived Fox television series New Amsterdam (2008), and appeared in the 2009 Fox television film Virtuality, originally intended as a pilot.
@@ -116,17 +114,17 @@ Thought 3: It does not mention Billboard, so I need to look up "Billboard Hot 10
 Action 3: Lookup[Billboard Hot 100]
 Observation 3: (Result 1 / 3) The song peaked at number two on the Billboard Hot 100 in the United States, where it was certified Gold for 500,000 units shipped.
 Thought 4: It only says the song peaked at number two on the Billboard Hot 100, but not if it was in 2003. I am not sure if this claim is true or not.
-Action 4: Finish[NOT ENOUGH INFO]
-"""
+Action 4: Finish[NOT ENOUGH INFO]"""
 
 
-REACT_ALFWORLD_INSTRUCTION = """
-{examples}
+# <======================================================================== ALFWORLD ========================================================================> #
+
+
+REACT_ALFWORLD_INSTRUCTION = """{examples}
 (END OF EXAMPLES)
-{question}
-{scratchpad}
-"""
 
+{question}
+{scratchpad}"""
 
 
 REACT_ALFWORLD_PROMPTS_EXAMPLE  =   """
@@ -1076,6 +1074,4 @@ Observation: You position the statue 1 under the lit desklamp 3 and examine it c
 Thought: The task to look at the statue under the desk lamp is complete!
 
 """
-=======
 Action 3: Finish[yes]"""
->>>>>>> main
