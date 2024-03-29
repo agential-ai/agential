@@ -1,9 +1,11 @@
 """Fixtures for loading data-related assets."""
 
 import os
-import yaml
+
+from typing import Any, Dict
+
 import pytest
-from typing import Dict, Any
+import yaml
 
 
 @pytest.fixture
@@ -52,5 +54,5 @@ def alfworld_base_config_path(alfworld_path: str) -> str:
 def alfworld_base_config(alfworld_base_config_path: str) -> Dict[str, Any]:
     """Alfworld environment config."""
     with open(alfworld_base_config_path) as f:
-        config = yaml.safe_load(f) 
+        config = yaml.safe_load(f)
     return config

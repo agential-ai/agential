@@ -14,12 +14,8 @@ from discussion_agents.cog.modules.memory.expel import (
 )
 from discussion_agents.cog.prompts.react import HOTPOTQA_FEWSHOT_EXAMPLES
 
-fewshot_questions = re.findall(
-    r"Question: (.+?)\n", HOTPOTQA_FEWSHOT_EXAMPLES
-)
-fewshot_keys = re.findall(
-    r"Action \d+: Finish\[(.+?)\]", HOTPOTQA_FEWSHOT_EXAMPLES
-)
+fewshot_questions = re.findall(r"Question: (.+?)\n", HOTPOTQA_FEWSHOT_EXAMPLES)
+fewshot_keys = re.findall(r"Action \d+: Finish\[(.+?)\]", HOTPOTQA_FEWSHOT_EXAMPLES)
 blocks = re.split(r"(?=Question: )", HOTPOTQA_FEWSHOT_EXAMPLES)[
     1:
 ]  # Split and ignore the first empty result

@@ -1,5 +1,6 @@
 """Unit tests for ReAct functional module."""
 import tiktoken
+
 from langchain_community.chat_models.fake import FakeListChatModel
 
 from discussion_agents.cog.functional.react import (
@@ -7,9 +8,8 @@ from discussion_agents.cog.functional.react import (
     _is_halted,
     _prompt_agent,
 )
-from discussion_agents.cog.prompts.react import ( 
-  HOTPOTQA_FEWSHOT_EXAMPLES
-)
+from discussion_agents.cog.prompts.react import HOTPOTQA_FEWSHOT_EXAMPLES
+
 
 def test__build_agent_prompt() -> None:
     """Test _build_agent_prompt function."""

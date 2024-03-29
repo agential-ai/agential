@@ -24,8 +24,8 @@ from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.functional.react import _is_halted, _prompt_agent
 from discussion_agents.cog.modules.memory.react import ReActMemory
 from discussion_agents.cog.prompts.react import (
-    REACT_INSTRUCTION_HOTPOTQA,
     HOTPOTQA_FEWSHOT_EXAMPLES,
+    REACT_INSTRUCTION_HOTPOTQA,
 )
 from discussion_agents.utils.parse import parse_action, remove_newline
 

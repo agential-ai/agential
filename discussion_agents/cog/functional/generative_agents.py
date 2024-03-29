@@ -1,10 +1,11 @@
 """Functional module for Generative Agents."""
 
 import re
-import faiss
 
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple, Union
+
+import faiss
 
 from langchain.chains import LLMChain
 from langchain.docstore import InMemoryDocstore
