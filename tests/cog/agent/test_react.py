@@ -11,13 +11,12 @@ from tiktoken import Encoding
 from discussion_agents.cog.prompts.react import (
     HOTPOTQA_FEWSHOT_EXAMPLES,
     REACT_INSTRUCTION_HOTPOTQA,
-    REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES,
+    FEVER_FEWSHOT_EXAMPLES,
     REACT_INSTRUCTION_FEVER,
     REACT_ALFWORLD_PROMPTS_EXAMPLE,
     REACT_ALFWORLD_INSTRUCTION
 )
 from discussion_agents.cog.agent.react import ReActAgent, ZeroShotReActAgent
-from tests.fixtures.agent import alfworld_env
 from discussion_agents.cog.modules.memory.react import ReActMemory
 
 
@@ -155,7 +154,7 @@ def test_FEVER_react_generate() -> None:
     ]
     llm = FakeListChatModel(responses=responses)
     agent = ReActAgent(llm=llm)
-    out = agent.generate(question=q, examples=REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES, prompt_template=REACT_INSTRUCTION_FEVER)
+    out = agent.generate(question=q, examples=FEVER_FEWSHOT_EXAMPLES, prompt_template=REACT_INSTRUCTION_FEVER)
     assert isinstance(out, str)
     assert agent._step_n <= agent.max_steps + 1
     assert not agent._finished

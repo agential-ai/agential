@@ -13,7 +13,7 @@ from discussion_agents.cog.functional.react import (
 from discussion_agents.cog.prompts.react import (
   REACT_ALFWORLD_INSTRUCTION, 
   REACT_ALFWORLD_PROMPTS_EXAMPLE, 
-  REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES, 
+  FEVER_FEWSHOT_EXAMPLES, 
   HOTPOTQA_FEWSHOT_EXAMPLES
 )
 from discussion_agents.cog.prompts.react import HOTPOTQA_FEWSHOT_EXAMPLES
@@ -241,7 +241,7 @@ def test_check_keyword():
     step_utilised: List[bool] = _check_keyword(alfworld_example)
     assert [bool(item) for item in step_utilised] == [False, True, True]
 
-    fever_example = REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES
+    fever_example = FEVER_FEWSHOT_EXAMPLES
     step_utilised = _check_keyword(fever_example)
     assert [bool(item) for item in step_utilised] == [True, True, True]
 
