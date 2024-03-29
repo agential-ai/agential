@@ -7,8 +7,6 @@
 
  Our primary goal is to provide easy-to-use and clean functions for natural language processing tasks, enabling developers to build robust and efficient applications with ease.
 
-
-
 - Easy-to-Use Interface: Provides intuitive and user-friendly functions for rapid prototyping and development.
 
 - Clean Functions: Offers clean and well-structured functions, promoting readability and maintainability of code.
@@ -40,7 +38,8 @@ Thought: Ramon Dekkers has been involved in controversies and crimes. I need to 
 ```
 
 
-Project Organization
+## Project Organization
+
 ------------
 
  
@@ -77,7 +76,7 @@ Project Organization
     │                                          or model summaries.
     │       
     ├── notebooks                      <- Jupyter notebooks. Naming convention is a number 
-    │                                    (for ordering), the creator's initials, and a short `-` delimited │                                     description, e.g. `1.0-jqp-initial-data-exploration`.
+    │                                    (for ordering), the creator's initials, and a short `-` delimited │ description, e.g `10-jqp-initial-data-exploration`.
     │  
     │
     ├── references                     <- Data dictionaries, manuals, and all other explanatory materials.
@@ -90,6 +89,6 @@ Project Organization
 ---------
 
 
-## Contribution
+## Contributing
 
 If you want to contribute, please check the [contributing.md](https://github.com/alckasoc/discussion-agents/blob/main/CONTRIBUTING.md) for guidelines!

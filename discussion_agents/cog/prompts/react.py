@@ -10,10 +10,10 @@ You have a maximum of {max_steps} steps.
 Here are some examples:
 {examples}
 (END OF EXAMPLES)
+
 Question: {question}{scratchpad}"""
 
-REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES = """
-Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES = """Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
 Thought 1: I need to search Colorado orogeny, find the area that the eastern sector of the Colorado orogeny extends into, then find the elevation range of the area.
 Action 1: Search[Colorado orogeny]
 Observation 1: The Colorado orogeny was an episode of mountain building (an orogeny) in Colorado and surrounding areas.
@@ -73,6 +73,7 @@ Thought 2: Pavel Urysohn is a mathematician. I need to search Leonid Levin next 
 Action 2: Search[Leonid Levin]
 Observation 2: Leonid Anatolievich Levin is a Soviet-American mathematician and computer scientist. 
 Thought 3: Leonid Levin is a mathematician and computer scientist. So Pavel Urysohn and Leonid Levin have the same type of work. 
+<<<<<<< HEAD
 Action 3: Finish[yes]
 """
 
@@ -1075,3 +1076,6 @@ Observation: You position the statue 1 under the lit desklamp 3 and examine it c
 Thought: The task to look at the statue under the desk lamp is complete!
 
 """
+=======
+Action 3: Finish[yes]"""
+>>>>>>> main

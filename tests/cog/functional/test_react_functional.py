@@ -16,12 +16,18 @@ from discussion_agents.cog.prompts.react import (
   REACT_WEBTHINK_SIMPLE3_FEVER_EXAMPLES, 
   REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
 )
+from discussion_agents.cog.prompts.react import REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
 
 gpt3_5_turbo_enc = tiktoken.encoding_for_model("gpt-3.5-turbo")
 
 def test__build_agent_prompt() -> None:
     """Test _build_agent_prompt function."""
-    prompt = _build_agent_prompt(question="", scratchpad="", max_steps=1)
+    prompt = _build_agent_prompt(
+        question="",
+        scratchpad="",
+        examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        max_steps=1,
+    )
 
     gt_out = (
         "Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: \n"
@@ -30,7 +36,6 @@ def test__build_agent_prompt() -> None:
         "(3) Finish[answer], which returns the answer and finishes the task.\n"
         "You have a maximum of 1 steps.\n\n"
         "Here are some examples:\n"
-        "\n"
         "Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?\n"
         "Thought 1: I need to search Colorado orogeny, find the area that the eastern sector of the Colorado orogeny extends into, then find the elevation range of the area.\n"
         "Action 1: Search[Colorado orogeny]\n"
@@ -92,19 +97,44 @@ def test__build_agent_prompt() -> None:
         "Observation 2: Leonid Anatolievich Levin is a Soviet-American mathematician and computer scientist. \n"
         "Thought 3: Leonid Levin is a mathematician and computer scientist. So Pavel Urysohn and Leonid Levin have the same type of work. \n"
         "Action 3: Finish[yes]\n"
-        "\n"
-        "(END OF EXAMPLES)\n"
+        "(END OF EXAMPLES)\n\n"
         "Question: "
     )
 
     assert isinstance(prompt, str)
     assert prompt == gt_out
 
+    gt_out = "  examples 1"
+    out = _build_agent_prompt(
+        question="",
+        scratchpad="",
+        examples="examples",
+        max_steps=1,
+        prompt="{question} {scratchpad} {examples} {max_steps}",
+    )
+    assert out == gt_out
+
 
 def test__prompt_agent() -> None:
     """Test _prompt_agent function."""
     out = _prompt_agent(
-        llm=FakeListChatModel(responses=["1"]), question="", scratchpad="", max_steps=1
+        llm=FakeListChatModel(responses=["1"]),
+        question="",
+        scratchpad="",
+        examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        max_steps=1,
+    )
+    assert isinstance(out, str)
+    assert out == "1"
+
+    # Test with custom prompt template string.
+    out = _prompt_agent(
+        llm=FakeListChatModel(responses=["1"]),
+        question="",
+        scratchpad="",
+        examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        max_steps=1,
+        prompt="{question} {scratchpad} {examples} {max_steps}",
     )
     assert isinstance(out, str)
     assert out == "1"
@@ -114,23 +144,67 @@ def test__is_halted() -> None:
     """Test _is_halted function."""
 
     # Test when finish is true.
-    assert _is_halted(True, 1, 10, "question", "scratchpad", 100, gpt3_5_turbo_enc)
+    assert _is_halted(
+        True,
+        1,
+        "question",
+        "scratchpad",
+        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        10,
+        100,
+        gpt3_5_turbo_enc,
+    )
 
     # Test when step_n exceeds max_steps.
-    assert _is_halted(False, 11, 10, "question", "scratchpad", 100, gpt3_5_turbo_enc)
+    assert _is_halted(
+        False,
+        11,
+        "question",
+        "scratchpad",
+        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        10,
+        100,
+        gpt3_5_turbo_enc,
+    )
 
     # Test when encoded prompt exceeds max_tokens.
-    assert _is_halted(False, 1, 10, "question", "scratchpad", 10, gpt3_5_turbo_enc)
+    assert _is_halted(
+        False,
+        1,
+        "question",
+        "scratchpad",
+        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        10,
+        10,
+        gpt3_5_turbo_enc,
+    )
 
     # Test when none of the conditions for halting are met.
     assert not _is_halted(
-        False, 1, 10, "question", "scratchpad", 100000, gpt3_5_turbo_enc
+        False,
+        1,
+        "question",
+        "scratchpad",
+        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        10,
+        100000,
+        gpt3_5_turbo_enc,
     )
 
     # Test edge case when step_n equals max_steps.
-    assert _is_halted(False, 10, 10, "question", "scratchpad", 100, gpt3_5_turbo_enc)
+    assert _is_halted(
+        False,
+        10,
+        "question",
+        "scratchpad",
+        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        10,
+        100,
+        gpt3_5_turbo_enc,
+    )
 
     # Test edge case when encoded prompt equals max_tokens.
+<<<<<<< HEAD
 
     assert _is_halted(False, 1, 10, "question", "scratchpad", 20, gpt3_5_turbo_enc)
 
@@ -165,3 +239,28 @@ def test_process_ob():
     expected_output = "The fridge 1 is closed."
     assert example_output == expected_output
     assert _is_halted(False, 1, 10, "question", "scratchpad", 1603, gpt3_5_turbo_enc)
+=======
+    assert _is_halted(
+        False,
+        1,
+        "question",
+        "scratchpad",
+        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        10,
+        1603,
+        gpt3_5_turbo_enc,
+    )
+
+    # Test with custom prompt template string.
+    assert not _is_halted(
+        False,
+        1,
+        "question",
+        "scratchpad",
+        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        10,
+        1603,
+        gpt3_5_turbo_enc,
+        "{question} {scratchpad} {examples} {max_steps}",
+    )
+>>>>>>> main

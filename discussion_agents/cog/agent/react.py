@@ -24,6 +24,10 @@ from tiktoken.core import Encoding
 from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.functional.react import _is_halted, _prompt_agent
 from discussion_agents.cog.modules.memory.react import ReActMemory
+from discussion_agents.cog.prompts.react import (
+    REACT_INSTRUCTION,
+    REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+)
 from discussion_agents.utils.parse import parse_action, remove_newline
 
 from discussion_agents.cog.prompts.react import (
@@ -88,6 +92,17 @@ class ReActAgent(BaseAgent):
         self._finished = False  #: :meta private:
         self.is_think = True # this is for the 
 
+<<<<<<< HEAD
+=======
+    def generate(
+        self,
+        question: str,
+        reset: bool = True,
+        examples: str = REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        prompt: str = REACT_INSTRUCTION,
+    ) -> List[Tuple[str, str, str]]:
+        """Processes a given question through ReAct.
+>>>>>>> main
 
     def set_Alfworld(self) -> None:
         """
@@ -111,10 +126,18 @@ class ReActAgent(BaseAgent):
         - Generating an action based on the provided question, examples, and prompt template.
         - Parsing the action and performing the corresponding observation.
         Args:
+<<<<<<< HEAD
             question (str): The question for the conversation step.
             examples (str): Examples relevant to the question.
             prompt_template (str): Template for generating prompts.
             env_output (Optional[str], optional): Output from the environment. Defaults to None.
+=======
+            question (str): The question to be processed.
+            reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
+            examples (str, optional): Fewshot examples. Defaults to REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES.
+            prompt (str, optional): Prompt template string. Defaults to REACT_INSTRUCTION. Must include question,
+                scratchpad, examples, and max_steps.
+>>>>>>> main
 
         Returns:
             Tuple[List, bool]: A tuple containing a list of outputs from the step and a boolean
@@ -122,6 +145,7 @@ class ReActAgent(BaseAgent):
         """
 
         out = []
+<<<<<<< HEAD
 
         # Handling environment output if provided
         if env_output:
@@ -130,18 +154,53 @@ class ReActAgent(BaseAgent):
 
         # Handling "Thinking" mode
         if self.is_think:
+=======
+        while not _is_halted(
+            finished=self._finished,
+            step_n=self._step_n,
+            question=question,
+            scratchpad=self.memory.load_memories()["scratchpad"],
+            examples=examples,
+            max_steps=self.max_steps,
+            max_tokens=self.max_tokens,
+            enc=self.enc,
+            prompt=prompt,
+        ):
+            # Think.
+>>>>>>> main
             self.memory.add_memories("\nThought:")
             thought = _prompt_agent(
                 llm=self.llm,
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
                 examples=examples,
+<<<<<<< HEAD
                 prompt_template=prompt_template
             ).strip()
+=======
+                max_steps=self.max_steps,
+                prompt=prompt,
+            ).split("Action")[0]
+>>>>>>> main
             self.memory.add_memories(" " + thought)
             out.append(thought)
 
+<<<<<<< HEAD
         self.memory.add_memories(f"\nAction {self._step_n}:")
+=======
+            # Act.
+            self.memory.add_memories("\nAction:")
+            action = _prompt_agent(
+                llm=self.llm,
+                question=question,
+                scratchpad=self.memory.load_memories()["scratchpad"],
+                examples=examples,
+                max_steps=self.max_steps,
+                prompt=prompt,
+            ).split("Observation")[0]
+            self.memory.add_memories(" " + action)
+            action_type, query = parse_action(action)
+>>>>>>> main
 
         # Generating an action based on the question, examples, and prompt template
         action = _prompt_agent(

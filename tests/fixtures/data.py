@@ -1,99 +1,50 @@
-"""Fixtures for creating agents."""
+"""Fixtures for loading data-related assets."""
 
-import pytest
+import os
 import yaml
-
-from langchain.llms.fake import FakeListLLM
-from langchain_community.chat_models.fake import FakeListChatModel
-
-from discussion_agents.cog.agent.generative_agents import GenerativeAgent
-from discussion_agents.cog.agent.react import ReActAgent
-from discussion_agents.cog.agent.reflexion import ReflexionCoTAgent, ReflexionReActAgent
-from pathlib import Path
-
-import faiss
-
-from langchain.docstore import InMemoryDocstore
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.retrievers import TimeWeightedVectorStoreRetriever
-from langchain.vectorstores import FAISS
-
-
+import pytest
+from typing import Dict, Any
 
 
 @pytest.fixture
-def generative_agent() -> GenerativeAgent:
-    """Creates a GenerativeAgent."""
-    agent = GenerativeAgent(llm=FakeListLLM(responses=["1"]))
-    return agent
-
-
-@pytest.fixture
-def react_agent() -> ReActAgent:
-    """Creates a ReActAgent."""
-    agent = ReActAgent(llm=FakeListLLM(responses=["1"]))
-    return agent
-
-
-@pytest.fixture
-def reflexion_cot_agent() -> ReflexionCoTAgent:
-    """Creates a ReflexionCoTAgent."""
-    agent = ReflexionCoTAgent(
-        self_reflect_llm=FakeListChatModel(responses=["1"]),
-        action_llm=FakeListChatModel(responses=["1"]),
-    )
-    return agent
-
-
-@pytest.fixture
-def reflexion_react_agent() -> ReflexionReActAgent:
-    """Creates a ReflexionReActAgent."""
-    agent = ReflexionReActAgent(
-        self_reflect_llm=FakeListChatModel(responses=["1"]),
-        action_llm=FakeListChatModel(responses=["1"]),
-    )
-    return agent
-
-
-@pytest.fixture
-def data_dir(pytestconfig):
+def data_dir(pytestconfig) -> str:
     """Dir path to asset."""
-    return Path(pytestconfig.rootdir) / "tests/assets"
+    return os.path.join(pytestconfig.rootdir, "tests/assets")
+
 
 @pytest.fixture
-def alfworld_file(data_dir):
-    """Dir path to Alfworld environement file."""
-    return Path(data_dir) / "base_config.yaml"
+def hotpotqa_path(data_dir: str) -> str:
+    """Dir path to HotPotQA data sample."""
+    return os.path.join(data_dir, "hotpotqa")
+
 
 @pytest.fixture
-def alfworld_env(alfworld_file):
-    """Prepare for env init for Alfworld."""
-    with open(alfworld_file) as reader:
-        config = yaml.safe_load(reader) 
+def hotpotqa_distractor_sample_path(hotpotqa_path: str) -> str:
+    """Dir path to hotpotqa_distractor_sample path."""
+    return os.path.join(hotpotqa_path, "hotpot-qa-distractor-sample.joblib")
+
+
+@pytest.fixture
+def expel_assets_path(data_dir: str) -> str:
+    """Dir path to ExpeL assets."""
+    return os.path.join(data_dir, "expel")
+
+
+@pytest.fixture
+def expel_experiences_10_fake_path(expel_assets_path: str) -> str:
+    """Dir path to expel_experiences_10_fake experiences."""
+    return os.path.join(expel_assets_path, "expel_experiences_10_fake.joblib")
+
+
+@pytest.fixture
+def alfworld_file(data_dir: str) -> str:
+    """Dir path to Alfworld environment file."""
+    return os.path.join(data_dir, "base_config.yaml")
+
+
+@pytest.fixture
+def alfworld_env(alfworld_file: str) -> Dict[str, Any]:
+    """Alfworld environment config."""
+    with open(alfworld_file) as f:
+        config = yaml.safe_load(f) 
     return config
-
-"""Fixtures for creating retrievers."""
-
-
-embedding_size = (
-    768  # Embedding dimension for all-mpnet-base-v2. FAISS needs the same count.
-)
-model_name = "sentence-transformers/all-mpnet-base-v2"
-model_kwargs = {"device": "cpu"}
-encode_kwargs = {"normalize_embeddings": False}
-
-
-@pytest.fixture
-def time_weighted_retriever() -> TimeWeightedVectorStoreRetriever:
-    """Creates a TimeWeightedVectorStoreRetriever."""
-    embeddings_model = HuggingFaceEmbeddings(
-        model_name=model_name, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs
-    )
-    index = faiss.IndexFlatL2(embedding_size)
-    vectorstore = FAISS(embeddings_model.embed_query, index, InMemoryDocstore({}), {})
-    retriever = TimeWeightedVectorStoreRetriever(
-        vectorstore=vectorstore, otherScoreKeys=["importance"], k=5
-    )
-    return retriever
-
-
