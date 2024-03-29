@@ -76,7 +76,7 @@ Thought: Ramon Dekkers has been involved in controversies and crimes. I need to 
     │                                          or model summaries.
     │       
     ├── notebooks                      <- Jupyter notebooks. Naming convention is a number 
-    │                                    (for ordering), the creator's initials, and a short `-` delimited │ description, e.g. `10-jqp-initial-data-exploration`.
+    │                                    (for ordering), the creator's initials, and a short `-` delimited │ description, e.g. `1.0-jqp-initial-data-exploration`.
     │  
     │
     ├── references                     <- Data dictionaries, manuals, and all other explanatory materials.
