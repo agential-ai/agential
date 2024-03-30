@@ -330,3 +330,11 @@ def solution():
     return result
 
 ### END ###"""
+
+
+GSM8K_FEEDBACK_INSTRUCTION = "# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good."
+
+
+SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K = """{examples}
+
+{question_prefix}{solution}{intra_example_sep}{feedback_instruction}{answer_prefix}"""
