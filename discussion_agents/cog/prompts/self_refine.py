@@ -1,4 +1,10 @@
-GSM8K_FEWSHOT_EXAMPLES = """# Q: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops did Jason give to Denny?
+"""Self-Refine prompts and fewshot examples."""
+
+
+# ======================================================================== GSM8K ======================================================================== #
+
+
+FEWSHOT_EXAMPLES_GSM8K = """# Q: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops did Jason give to Denny?
 # solution using Python:
 
 def solution():
@@ -110,7 +116,10 @@ def solution():
     return result"""
 
 
-GSM8K_FEEDBACK_FEWSHOT_EXAMPLES = """def solution():
+SELF_REFINE_INSTRUCTION_GSM8K = "{prompt}{question_prefix}{question}{intra_example_sep}{answer_prefix}"
+
+
+FEEDBACK_FEWSHOT_EXAMPLES_GSM8K = """def solution():
     \"\"\"Kelly is grocery shopping at a supermarket and is making sure she has enough in her budget for the items in her cart. Her 5 packs of bacon cost $10 in total and she has 6 packets of chicken which each cost twice as much as a pack of bacon. She also has 3 packs of strawberries, priced at $4 each, and 7 packs of apples, each priced at half the price of a pack of strawberries. If Kelly’s budget is $65 then how much money, in dollars, does she have left in her budget?\"\"\"
     budget = 65
     bacon = 5
