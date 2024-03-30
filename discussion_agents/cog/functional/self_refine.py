@@ -3,7 +3,10 @@
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain.prompts import PromptTemplate
 from langchain_core.messages.human import HumanMessage
-from discussion_agents.cog.prompts.self_refine import SELF_REFINE_INSTRUCTION_GSM8K
+from discussion_agents.cog.prompts.self_refine import (
+    SELF_REFINE_INSTRUCTION_GSM8K,
+    SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K
+)
 
 def _build_agent_prompt(
     question: str,
@@ -89,9 +92,88 @@ def _prompt_agent(
     return out.strip()
 
 
-def _build_feedback_prompt() -> str:
-    pass
+def _build_feedback_prompt(
+    examples: str,
+    question_prefix: str,
+    solution: str,
+    intra_example_sep: str,
+    feedback_instruction: str,
+    answer_prefix: str, 
+    prompt: str = SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K
+) -> str:
+    """Invokes the language model to generate a response for the specified question using structured examples.
+
+    This function compiles a detailed prompt with contextual examples and a specific question format, then
+    prompts the language model for a response. It cleans up the response by stripping out any leading or
+    trailing whitespace or newline characters.
+
+    Parameters:
+        llm (BaseChatModel): The language model to prompt for a response.
+        question (str): The question to be answered by the language model.
+        examples (str): Pre-formatted examples that provide context to the question.
+        question_prefix (str): Text to precede the question within the prompt.
+        intra_example_sep (str): Text to separate individual examples within the prompt.
+        answer_prefix (str): Text to precede the language model's response within the prompt.
+        prompt (str): Prompt template string. Defaults to SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K.
+
+    Returns:
+        str: The language model's response to the question, trimmed of extraneous whitespace.
+    """
+    prompt = PromptTemplate.from_template(prompt).format(
+        examples=examples,
+        question_prefix=question_prefix,
+        solution=solution,
+        intra_example_sep=intra_example_sep,
+        feedback_instruction=feedback_instruction,
+        answer_prefix=answer_prefix
+    )
+    return prompt
 
 
-def _prompt_feedback() -> str:
-    pass
+def _prompt_feedback(
+    llm: BaseChatModel,
+    examples: str,
+    question_prefix: str,
+    solution: str,
+    intra_example_sep: str,
+    feedback_instruction: str,
+    answer_prefix: str, 
+    prompt: str = SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K
+) -> str:
+    """Requests feedback from the language model based on a provided solution and contextual examples.
+
+    A feedback prompt is constructed using the provided solution, examples, and a feedback instruction.
+    The language model is prompted with this structured request, and its output is cleaned of leading and
+    trailing whitespace.
+
+    Parameters:
+        llm (BaseChatModel): The language model to prompt for feedback.
+        examples (str): Contextual examples related to the solution.
+        question_prefix (str): Text to introduce the context of the solution.
+        solution (str): The solution for which feedback is being sought.
+        intra_example_sep (str): Separator text between different examples or sections.
+        feedback_instruction (str): Specific instruction for the type of feedback being requested.
+        answer_prefix (str): Text to lead into the expected feedback response.
+        prompt (str): Prompt template string. Defaults to SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K.
+
+    Returns:
+        str: The language model's feedback, with no leading or trailing whitespace.
+    """
+    prompt = _build_feedback_prompt(
+        examples=examples,
+        question_prefix=question_prefix,
+        solution=solution,
+        intra_example_sep=intra_example_sep,
+        feedback_instruction=feedback_instruction,
+        answer_prefix=answer_prefix,
+        prompt=prompt
+    )
+    out = llm(
+        [
+            HumanMessage(
+                content=prompt,
+            )
+        ]
+    ).content
+    assert isinstance(out, str)
+    return out.strip()
