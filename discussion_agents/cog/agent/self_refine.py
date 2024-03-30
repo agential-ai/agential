@@ -7,6 +7,8 @@ Paper Repository: https://github.com/madaan/self-refine
 from typing import Any
 from discussion_agents.cog.agent.base import BaseAgent
 from langchain_core.language_models.chat_models import BaseChatModel
+from discussion_agents.cog.functional.self_refine import _prompt_agent
+from discussion_agents.cog.prompts.self_refine import GSM8K_FEWSHOT_EXAMPLES, SELF_REFINE_INSTRUCTION_GSM8K
 
 class SelfRefineAgent(BaseAgent):
     def __init__(
@@ -19,22 +21,31 @@ class SelfRefineAgent(BaseAgent):
 
     def generate(
         self, 
-        examples: str,
-        prompt: str,
-        max_attempts: int = 3
+        question: str,
+        examples: str = GSM8K_FEWSHOT_EXAMPLES,
+        prompt: str = SELF_REFINE_INSTRUCTION_GSM8K,
+        max_attempts: int = 3,
+        question_prefix="# Q: ",
+        answer_prefix="# solution using Python:",
+        intra_example_sep="\n"
     ) -> Any:
 
         step_n = 0
         while step_n < max_attempts:
 
             if not step_n:
-                solution = task_init(solution=question)
+                solution = _prompt_agent(
+                    llm=self.llm,
+                    question=question,
+                    examples=examples,
+                    question_prefix=question_prefix,
+                    intra_example_sep=intra_example_sep,
+                    answer_prefix=answer_prefix,
+                    prompt=prompt
+                )
 
             fb_and_maybe_soln = task_feedback(solution=solution)
             
-
-            log.append({"attempt": n_attempts, "solution_curr": solution, "solution_fixed": fb_and_maybe_soln["solution"], "feedback": fb_and_maybe_soln["feedback"]})
-
             if "it is correct" in fb_and_maybe_soln["feedback"].lower():
                 break
 
