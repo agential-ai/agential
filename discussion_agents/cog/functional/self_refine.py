@@ -3,6 +3,7 @@
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain.prompts import PromptTemplate
 from langchain_core.messages.human import HumanMessage
+from discussion_agents.cog.prompts.self_refine import SELF_REFINE_INSTRUCTION_GSM8K
 
 def _build_agent_prompt(
     question: str,
@@ -10,7 +11,7 @@ def _build_agent_prompt(
     question_prefix: str,
     intra_example_sep: str,
     answer_prefix: str, 
-    prompt: str,
+    prompt: str = SELF_REFINE_INSTRUCTION_GSM8K,
 ) -> str:
     """Constructs a formatted prompt for the agent based on a template and provided components.
 
@@ -26,7 +27,7 @@ def _build_agent_prompt(
         answer_prefix (str): Text to be placed before the expected answer in the prompt.
         prompt (str): The base template string into which all other components will be inserted. This 
             template must have placeholders for the 'question', 'examples', 'question_prefix', 
-            'intra_example_sep', and 'answer_prefix'.
+            'intra_example_sep', and 'answer_prefix'. Defaults to SELF_REFINE_INSTRUCTION_GSM8K.
 
     Returns:
         str: The fully constructed and formatted prompt ready to be processed by the agent.
@@ -48,7 +49,7 @@ def _prompt_agent(
     question_prefix: str,
     intra_example_sep: str,
     answer_prefix: str, 
-    prompt: str,
+    prompt: str = SELF_REFINE_INSTRUCTION_GSM8K,
 ) -> str:
     """Generates a response from the LLM based on a given question and scratchpad.
 
@@ -64,7 +65,7 @@ def _prompt_agent(
         answer_prefix (str): Text to be placed before the expected answer in the prompt.
         prompt (str): The base template string into which all other components will be inserted. This 
             template must have placeholders for the 'question', 'examples', 'question_prefix', 
-            'intra_example_sep', and 'answer_prefix'.
+            'intra_example_sep', and 'answer_prefix'. Defaults to SELF_REFINE_INSTRUCTION_GSM8K.
 
     Returns:
         str: The processed response from the language model.
@@ -74,7 +75,8 @@ def _prompt_agent(
         examples=examples,
         question_prefix=question_prefix,
         intra_example_sep=intra_example_sep,
-        answer_prefix=answer_prefix
+        answer_prefix=answer_prefix,
+        prompt=prompt
     )
     out = llm(
         [
