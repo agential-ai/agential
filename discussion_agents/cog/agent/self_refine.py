@@ -34,7 +34,7 @@ class SelfRefineAgent(BaseAgent):
         while step_n < max_attempts:
 
             if not step_n:
-                solution = _prompt_agent(
+                out = _prompt_agent(
                     llm=self.llm,
                     question=question,
                     examples=examples,
@@ -44,12 +44,12 @@ class SelfRefineAgent(BaseAgent):
                     prompt=prompt
                 )
 
-            fb_and_maybe_soln = task_feedback(solution=solution)
+            fb_and_maybe_soln = task_feedback(solution=out)
             
             if "it is correct" in fb_and_maybe_soln["feedback"].lower():
                 break
 
-            solution = fb_and_maybe_soln["solution"]
+            out = fb_and_maybe_soln["solution"]
 
             step_n += 1
 

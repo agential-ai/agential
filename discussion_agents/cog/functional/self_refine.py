@@ -87,3 +87,11 @@ def _prompt_agent(
     ).content
     assert isinstance(out, str)
     return out.strip()
+
+
+def _build_feedback_prompt() -> str:
+    pass
+
+
+def _prompt_feedback() -> str:
+    pass
