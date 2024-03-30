@@ -8,7 +8,7 @@ from discussion_agents.cog.functional.react import (
     _is_halted,
     _prompt_agent,
 )
-from discussion_agents.cog.prompts.react import REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
+from discussion_agents.cog.prompts.react import HOTPOTQA_FEWSHOT_EXAMPLES
 
 
 def test__build_agent_prompt() -> None:
@@ -16,7 +16,7 @@ def test__build_agent_prompt() -> None:
     prompt = _build_agent_prompt(
         question="",
         scratchpad="",
-        examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES,
         max_steps=1,
     )
 
@@ -112,7 +112,7 @@ def test__prompt_agent() -> None:
         llm=FakeListChatModel(responses=["1"]),
         question="",
         scratchpad="",
-        examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES,
         max_steps=1,
     )
     assert isinstance(out, str)
@@ -123,7 +123,7 @@ def test__prompt_agent() -> None:
         llm=FakeListChatModel(responses=["1"]),
         question="",
         scratchpad="",
-        examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES,
         max_steps=1,
         prompt="{question} {scratchpad} {examples} {max_steps}",
     )
@@ -141,7 +141,7 @@ def test__is_halted() -> None:
         1,
         "question",
         "scratchpad",
-        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        HOTPOTQA_FEWSHOT_EXAMPLES,
         10,
         100,
         gpt3_5_turbo_enc,
@@ -153,7 +153,7 @@ def test__is_halted() -> None:
         11,
         "question",
         "scratchpad",
-        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        HOTPOTQA_FEWSHOT_EXAMPLES,
         10,
         100,
         gpt3_5_turbo_enc,
@@ -165,7 +165,7 @@ def test__is_halted() -> None:
         1,
         "question",
         "scratchpad",
-        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        HOTPOTQA_FEWSHOT_EXAMPLES,
         10,
         10,
         gpt3_5_turbo_enc,
@@ -177,7 +177,7 @@ def test__is_halted() -> None:
         1,
         "question",
         "scratchpad",
-        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        HOTPOTQA_FEWSHOT_EXAMPLES,
         10,
         100000,
         gpt3_5_turbo_enc,
@@ -189,7 +189,7 @@ def test__is_halted() -> None:
         10,
         "question",
         "scratchpad",
-        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        HOTPOTQA_FEWSHOT_EXAMPLES,
         10,
         100,
         gpt3_5_turbo_enc,
@@ -201,7 +201,7 @@ def test__is_halted() -> None:
         1,
         "question",
         "scratchpad",
-        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        HOTPOTQA_FEWSHOT_EXAMPLES,
         10,
         1603,
         gpt3_5_turbo_enc,
@@ -213,7 +213,7 @@ def test__is_halted() -> None:
         1,
         "question",
         "scratchpad",
-        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        HOTPOTQA_FEWSHOT_EXAMPLES,
         10,
         1603,
         gpt3_5_turbo_enc,

@@ -24,8 +24,8 @@ from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.functional.react import _is_halted, _prompt_agent
 from discussion_agents.cog.modules.memory.react import ReActMemory
 from discussion_agents.cog.prompts.react import (
-    REACT_INSTRUCTION,
-    REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+    HOTPOTQA_FEWSHOT_EXAMPLES,
+    REACT_INSTRUCTION_HOTPOTQA,
 )
 from discussion_agents.utils.parse import parse_action, remove_newline
 
@@ -79,8 +79,8 @@ class ReActAgent(BaseAgent):
         self,
         question: str,
         reset: bool = True,
-        examples: str = REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
-        prompt: str = REACT_INSTRUCTION,
+        examples: str = HOTPOTQA_FEWSHOT_EXAMPLES,
+        prompt: str = REACT_INSTRUCTION_HOTPOTQA,
     ) -> List[Tuple[str, str, str]]:
         """Processes a given question through ReAct.
 
@@ -90,8 +90,8 @@ class ReActAgent(BaseAgent):
         Args:
             question (str): The question to be processed.
             reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
-            examples (str, optional): Fewshot examples. Defaults to REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES.
-            prompt (str, optional): Prompt template string. Defaults to REACT_INSTRUCTION. Must include question,
+            examples (str, optional): Fewshot examples. Defaults to HOTPOTQA_FEWSHOT_EXAMPLES.
+            prompt (str, optional): Prompt template string. Defaults to REACT_INSTRUCTION_HOTPOTQA. Must include question,
                 scratchpad, examples, and max_steps.
 
         Returns:

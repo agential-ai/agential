@@ -12,15 +12,11 @@ from discussion_agents.cog.modules.memory.expel import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
-from discussion_agents.cog.prompts.react import REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
+from discussion_agents.cog.prompts.react import HOTPOTQA_FEWSHOT_EXAMPLES
 
-fewshot_questions = re.findall(
-    r"Question: (.+?)\n", REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
-)
-fewshot_keys = re.findall(
-    r"Action \d+: Finish\[(.+?)\]", REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
-)
-blocks = re.split(r"(?=Question: )", REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES)[
+fewshot_questions = re.findall(r"Question: (.+?)\n", HOTPOTQA_FEWSHOT_EXAMPLES)
+fewshot_keys = re.findall(r"Action \d+: Finish\[(.+?)\]", HOTPOTQA_FEWSHOT_EXAMPLES)
+blocks = re.split(r"(?=Question: )", HOTPOTQA_FEWSHOT_EXAMPLES)[
     1:
 ]  # Split and ignore the first empty result
 

@@ -26,7 +26,7 @@ from discussion_agents.cog.functional.reflexion import (
     react_reflect_last_attempt_and_reflexion,
     react_reflect_reflexion,
 )
-from discussion_agents.cog.prompts.react import REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES
+from discussion_agents.cog.prompts.react import HOTPOTQA_FEWSHOT_EXAMPLES
 from discussion_agents.cog.prompts.reflexion import (
     REFLEXION_COT_FEWSHOT_EXAMPLES,
     REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
@@ -507,7 +507,7 @@ def test__prompt_react_agent() -> None:
     gt_out = "I need to search for VIVA Media AG and find out what their new acronym stands for.Action: Search[VIVA Media AG]"
     out = _prompt_react_agent(
         llm=FakeListChatModel(responses=responses),
-        examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES,
         reflections="",
         question=q,
         scratchpad="\nThought:",
@@ -604,7 +604,7 @@ def test__prompt_react_agent() -> None:
     )
     out = _prompt_react_agent(
         llm=FakeListChatModel(responses=responses),
-        examples=REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES,
         reflections=reflections,
         question=q,
         scratchpad=scratchpad,
@@ -623,7 +623,7 @@ def test__is_halted() -> None:
         1,
         "question",
         "scratchpad",
-        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        HOTPOTQA_FEWSHOT_EXAMPLES,
         "",
         10,
         100,
@@ -636,7 +636,7 @@ def test__is_halted() -> None:
         11,
         "question",
         "scratchpad",
-        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        HOTPOTQA_FEWSHOT_EXAMPLES,
         "",
         10,
         100,
@@ -649,7 +649,7 @@ def test__is_halted() -> None:
         1,
         "question",
         "scratchpad",
-        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        HOTPOTQA_FEWSHOT_EXAMPLES,
         "",
         10,
         10,
@@ -662,7 +662,7 @@ def test__is_halted() -> None:
         1,
         "question",
         "scratchpad",
-        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        HOTPOTQA_FEWSHOT_EXAMPLES,
         "",
         10,
         100000,
@@ -675,7 +675,7 @@ def test__is_halted() -> None:
         10,
         "question",
         "scratchpad",
-        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        HOTPOTQA_FEWSHOT_EXAMPLES,
         "",
         10,
         100,
@@ -688,7 +688,7 @@ def test__is_halted() -> None:
         1,
         "question",
         "scratchpad",
-        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        HOTPOTQA_FEWSHOT_EXAMPLES,
         "",
         10,
         1603,
@@ -701,7 +701,7 @@ def test__is_halted() -> None:
         1,
         "question",
         "scratchpad",
-        REACT_WEBTHINK_SIMPLE6_FEWSHOT_EXAMPLES,
+        HOTPOTQA_FEWSHOT_EXAMPLES,
         "",
         10,
         1603,

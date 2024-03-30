@@ -5,7 +5,7 @@ from langchain_core.messages.human import HumanMessage
 from tiktoken import Encoding
 
 from discussion_agents.cog.prompts.react import (
-    REACT_INSTRUCTION,
+    REACT_INSTRUCTION_HOTPOTQA,
 )
 from discussion_agents.utils.parse import remove_newline
 
@@ -15,7 +15,7 @@ def _build_agent_prompt(
     scratchpad: str,
     examples: str,
     max_steps: int,
-    prompt: str = REACT_INSTRUCTION,
+    prompt: str = REACT_INSTRUCTION_HOTPOTQA,
 ) -> str:
     """Constructs a prompt template for the agent.
 
@@ -27,7 +27,7 @@ def _build_agent_prompt(
         scratchpad (str): Additional scratchpad information to be included.
         examples (str): Fewshot examples.
         max_steps (int): Max number of steps.
-        prompt (str, optional): Prompt template string. Defaults to REACT_INSTRUCTION. Must include question,
+        prompt (str, optional): Prompt template string. Defaults to REACT_INSTRUCTION_HOTPOTQA. Must include question,
             scratchpad, examples, and max_steps.
 
     Returns:
@@ -48,7 +48,7 @@ def _prompt_agent(
     scratchpad: str,
     examples: str,
     max_steps: int,
-    prompt: str = REACT_INSTRUCTION,
+    prompt: str = REACT_INSTRUCTION_HOTPOTQA,
 ) -> str:
     """Generates a response from the LLM based on a given question and scratchpad.
 
@@ -61,7 +61,7 @@ def _prompt_agent(
         scratchpad (str): Additional context or information for the language model.
         examples (str): Fewshot examples.
         max_steps (int): Maximum number of steps.
-        prompt (str, optional): Prompt template string. Defaults to REACT_INSTRUCTION. Must include question,
+        prompt (str, optional): Prompt template string. Defaults to REACT_INSTRUCTION_HOTPOTQA. Must include question,
             scratchpad, examples, and max_steps.
 
     Returns:
@@ -94,7 +94,7 @@ def _is_halted(
     max_steps: int,
     max_tokens: int,
     enc: Encoding,
-    prompt: str = REACT_INSTRUCTION,
+    prompt: str = REACT_INSTRUCTION_HOTPOTQA,
 ) -> bool:
     """Determines whether the agent's operation should be halted.
 
@@ -111,7 +111,7 @@ def _is_halted(
         max_steps (int): Maximum allowed steps.
         max_tokens (int): Maximum allowed token count.
         enc (Encoding): The encoder to calculate token length.
-        prompt (str, optional): Prompt template string. Defaults to REACT_INSTRUCTION. Must include question,
+        prompt (str, optional): Prompt template string. Defaults to REACT_INSTRUCTION_HOTPOTQA. Must include question,
             scratchpad, examples, and max_steps.
 
     Returns:
