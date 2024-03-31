@@ -11,9 +11,6 @@ from discussion_agents.cog.prompts.self_refine import (
 def _build_agent_prompt(
     question: str,
     examples: str,
-    question_prefix: str,
-    intra_example_sep: str,
-    answer_prefix: str, 
     prompt: str = SELF_REFINE_INSTRUCTION_GSM8K,
 ) -> str:
     """Constructs a formatted prompt for the agent based on a template and provided components.
@@ -25,9 +22,6 @@ def _build_agent_prompt(
     Parameters:
         question (str): The main question for which the agent is to generate an answer.
         examples (str): Pre-formatted few-shot examples that provide context for the question.
-        question_prefix (str): Text to be placed immediately before the question in the prompt.
-        intra_example_sep (str): Separator text to be placed between examples.
-        answer_prefix (str): Text to be placed before the expected answer in the prompt.
         prompt (str): The base template string into which all other components will be inserted. This 
             template must have placeholders for the 'question', 'examples', 'question_prefix', 
             'intra_example_sep', and 'answer_prefix'. Defaults to SELF_REFINE_INSTRUCTION_GSM8K.
@@ -38,9 +32,6 @@ def _build_agent_prompt(
     prompt = PromptTemplate.from_template(prompt).format(
         question=question,
         examples=examples,
-        question_prefix=question_prefix,
-        intra_example_sep=intra_example_sep,
-        answer_prefix=answer_prefix
     )
     return prompt
 
@@ -49,9 +40,6 @@ def _prompt_agent(
     llm: BaseChatModel,
     question: str,
     examples: str,
-    question_prefix: str,
-    intra_example_sep: str,
-    answer_prefix: str, 
     prompt: str = SELF_REFINE_INSTRUCTION_GSM8K,
 ) -> str:
     """Generates a response from the LLM based on a given question and scratchpad.
@@ -63,9 +51,6 @@ def _prompt_agent(
         llm (BaseChatModel): The language model to be prompted.
         question (str): The main question for which the agent is to generate an answer.
         examples (str): Pre-formatted few-shot examples that provide context for the question.
-        question_prefix (str): Text to be placed immediately before the question in the prompt.
-        intra_example_sep (str): Separator text to be placed between examples.
-        answer_prefix (str): Text to be placed before the expected answer in the prompt.
         prompt (str): The base template string into which all other components will be inserted. This 
             template must have placeholders for the 'question', 'examples', 'question_prefix', 
             'intra_example_sep', and 'answer_prefix'. Defaults to SELF_REFINE_INSTRUCTION_GSM8K.
@@ -76,11 +61,11 @@ def _prompt_agent(
     prompt = _build_agent_prompt(
         question=question,
         examples=examples,
-        question_prefix=question_prefix,
-        intra_example_sep=intra_example_sep,
-        answer_prefix=answer_prefix,
         prompt=prompt
     )
+    print("<==============================================================>")
+    print(prompt)
+    print("<==============================================================>")
     out = llm(
         [
             HumanMessage(
@@ -94,11 +79,7 @@ def _prompt_agent(
 
 def _build_feedback_prompt(
     examples: str,
-    question_prefix: str,
     solution: str,
-    intra_example_sep: str,
-    feedback_instruction: str,
-    answer_prefix: str, 
     prompt: str = SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K
 ) -> str:
     """Invokes the language model to generate a response for the specified question using structured examples.
@@ -111,9 +92,6 @@ def _build_feedback_prompt(
         llm (BaseChatModel): The language model to prompt for a response.
         question (str): The question to be answered by the language model.
         examples (str): Pre-formatted examples that provide context to the question.
-        question_prefix (str): Text to precede the question within the prompt.
-        intra_example_sep (str): Text to separate individual examples within the prompt.
-        answer_prefix (str): Text to precede the language model's response within the prompt.
         prompt (str): Prompt template string. Defaults to SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K.
 
     Returns:
@@ -121,11 +99,7 @@ def _build_feedback_prompt(
     """
     prompt = PromptTemplate.from_template(prompt).format(
         examples=examples,
-        question_prefix=question_prefix,
         solution=solution,
-        intra_example_sep=intra_example_sep,
-        feedback_instruction=feedback_instruction,
-        answer_prefix=answer_prefix
     )
     return prompt
 
@@ -133,11 +107,7 @@ def _build_feedback_prompt(
 def _prompt_feedback(
     llm: BaseChatModel,
     examples: str,
-    question_prefix: str,
     solution: str,
-    intra_example_sep: str,
-    feedback_instruction: str,
-    answer_prefix: str, 
     prompt: str = SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K
 ) -> str:
     """Requests feedback from the language model based on a provided solution and contextual examples.
@@ -149,11 +119,7 @@ def _prompt_feedback(
     Parameters:
         llm (BaseChatModel): The language model to prompt for feedback.
         examples (str): Contextual examples related to the solution.
-        question_prefix (str): Text to introduce the context of the solution.
         solution (str): The solution for which feedback is being sought.
-        intra_example_sep (str): Separator text between different examples or sections.
-        feedback_instruction (str): Specific instruction for the type of feedback being requested.
-        answer_prefix (str): Text to lead into the expected feedback response.
         prompt (str): Prompt template string. Defaults to SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K.
 
     Returns:
@@ -161,13 +127,12 @@ def _prompt_feedback(
     """
     prompt = _build_feedback_prompt(
         examples=examples,
-        question_prefix=question_prefix,
         solution=solution,
-        intra_example_sep=intra_example_sep,
-        feedback_instruction=feedback_instruction,
-        answer_prefix=answer_prefix,
         prompt=prompt
     )
+    print("<FEEDBACK==============================================================>")
+    print(prompt)
+    print("<FEEDBACK==============================================================>")
     out = llm(
         [
             HumanMessage(
