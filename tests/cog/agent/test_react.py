@@ -1,7 +1,5 @@
 """Unit tests for ReAct."""
-import yaml
-import alfworld
-import alfworld.agents.environment
+
 from langchain.agents.react.base import DocstoreExplorer
 from langchain.llms.fake import FakeListLLM
 from langchain_community.chat_models.fake import FakeListChatModel
@@ -19,8 +17,6 @@ from discussion_agents.cog.prompts.react import (
 from discussion_agents.cog.agent.react import ReActAgent, ZeroShotReActAgent
 from tests.fixtures.agent import alfworld_env
 from discussion_agents.cog.modules.memory.react import ReActMemory
-
-
 
 def test_init() -> None:
     """Test initialization."""

@@ -46,12 +46,12 @@ def reflexion_react_agent() -> ReflexionReActAgent:
 
 
 @pytest.fixture
-def data_dir(pytestconfig):
+def data_dir(pytestconfig) -> str:
     """Dir path to asset."""
     return Path(pytestconfig.rootdir) / "tests/assets"
 
 @pytest.fixture
-def alfworld_file(data_dir):
+def alfworld_file(data_dir) -> str:
     """Dir path to Alfworld environement file."""
     return Path(data_dir) / "base_config.yaml"
 

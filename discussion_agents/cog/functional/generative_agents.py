@@ -5,8 +5,6 @@ import re
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-from langchain.vectorstores import FAISS 
-
 from langchain.chains import LLMChain
 from langchain.docstore import InMemoryDocstore
 from langchain.embeddings import HuggingFaceEmbeddings

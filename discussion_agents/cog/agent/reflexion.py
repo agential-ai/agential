@@ -369,7 +369,7 @@ class ReflexionReActAgent(BaseAgent):
                 question=question,
                 scratchpad=self.memory.load_memories()["scratchpad"],
                 max_tokens=self.max_tokens,
-                enc=self.enc,
+                enc=self.enc
             ):
                 # Think.
                 self.memory.add_memories("\nThought:")
