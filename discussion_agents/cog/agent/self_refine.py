@@ -4,7 +4,7 @@ Original Webpage: https://selfrefine.info/
 Paper Repository: https://github.com/madaan/self-refine
 """
 
-from typing import Any, Optional, Dict
+from typing import Any, Dict, Optional
 
 from langchain.prompts import PromptTemplate
 from langchain_core.language_models.chat_models import BaseChatModel
@@ -39,6 +39,7 @@ class SelfRefineAgent(BaseAgent):
         llm (BaseChatModel): The language model used for generating solutions, feedback, and refinements.
         memory (SelfRefineMemory): A memory module for storing solutions and feedback across refinement iterations.
     """
+
     def __init__(
         self, llm: BaseChatModel, memory: Optional[SelfRefineMemory] = None
     ) -> None:
