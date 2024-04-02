@@ -118,6 +118,7 @@ def solution():
 
 SELF_REFINE_INSTRUCTION_GSM8K = """{examples}
 
+
 # Q: {question}
 # solution using Python:"""
 
@@ -335,8 +336,32 @@ def solution():
 
 SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K = """{examples}
 
-{format_instructions}
+{solution}
+
+# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good. Provide just the feedback."""
+
+
+SELF_REFINE_REFINE_INSTRUCTION_GSM8K = """{examples}
 
 {solution}
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good."""
+{feedback}
+
+# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good. Provide the improved solution."""
+
+
+SELF_REFINE_FEEDBACK_EXAMPLE_FORMAT_GSM8K = """{examples}
+
+{solution}
+
+# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+
+{feedback}
+
+Okay! Here is the rewrite:
+
+{improved_solution}
+
+### END ###
+
+"""
