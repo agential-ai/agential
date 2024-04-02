@@ -4,7 +4,7 @@ Original Webpage: https://selfrefine.info/
 Paper Repository: https://github.com/madaan/self-refine
 """
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from discussion_agents.cog.modules.memory.base import BaseMemory
 
@@ -17,12 +17,12 @@ class SelfRefineMemory(BaseMemory):
         feedback (List[str]): A list to store feedback memories.
     """
 
-    def __init__(self, solution: List = [], feedback: List = []) -> None:
+    def __init__(self, solution: Optional[List] = None, feedback: Optional[List] = None) -> None:
         """Initialization."""
         super().__init__()
 
-        self.solution = solution
-        self.feedback = feedback
+        self.solution = solution if solution else []
+        self.feedback = feedback if feedback else []
 
     def clear(self) -> None:
         """Clears both the solution and feedback memories, resetting them to empty lists."""
