@@ -119,9 +119,13 @@ def _prompt_feedback(
         str: The language model's feedback, with no leading or trailing whitespace.
     """
     prompt = _build_feedback_prompt(examples=examples, solution=solution, prompt=prompt)
-    print("<PROMPT FEEDBACK==============================================================>")
+    print(
+        "<PROMPT FEEDBACK==============================================================>"
+    )
     print(prompt)
-    print("<PROMPT FEEDBACK==============================================================>")
+    print(
+        "<PROMPT FEEDBACK==============================================================>"
+    )
     out = llm(
         [
             HumanMessage(
@@ -129,9 +133,13 @@ def _prompt_feedback(
             )
         ]
     ).content
-    print("<FEEDBACK OUT==============================================================>")
+    print(
+        "<FEEDBACK OUT==============================================================>"
+    )
     print(repr(out))
-    print("<FEEDBACK OUT==============================================================>")
+    print(
+        "<FEEDBACK OUT==============================================================>"
+    )
     assert isinstance(out, str)
     return out.strip()
 
@@ -184,9 +192,13 @@ def _prompt_refine(
     prompt = _build_refine_prompt(
         examples=examples, solution=solution, feedback=feedback, prompt=prompt
     )
-    print("<PROMPT REFINE==============================================================>")
+    print(
+        "<PROMPT REFINE==============================================================>"
+    )
     print(prompt)
-    print("<PROMPT REFINE==============================================================>")
+    print(
+        "<PROMPT REFINE==============================================================>"
+    )
     out = llm(
         [
             HumanMessage(
