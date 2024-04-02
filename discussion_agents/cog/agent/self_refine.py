@@ -4,7 +4,7 @@ Original Webpage: https://selfrefine.info/
 Paper Repository: https://github.com/madaan/self-refine
 """
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, List
 
 from langchain.prompts import PromptTemplate
 from langchain_core.language_models.chat_models import BaseChatModel
@@ -63,7 +63,8 @@ class SelfRefineAgent(BaseAgent):
         refine_examples: str = GSM8K_REFINE_FEWSHOT_EXAMPLES,
         refine_prompt: str = SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
         max_attempts: int = 3,
-    ) -> str:
+        reset: bool = True
+    ) -> List[str]:
         """Generates a refined solution for a given question through an iterative self-refinement process.
 
         The process includes generating initial solutions, soliciting feedback, and refining the solution
@@ -78,10 +79,14 @@ class SelfRefineAgent(BaseAgent):
             refine_examples (str): Precedent examples to guide solution refinement.
             refine_prompt (str): Instructional prompt for refining the solution.
             max_attempts (int): Maximum number of refinement iterations.
+            reset (bool): Resets the agent's state. Defaults to True.
 
         Returns:
             str: The final refined solution.
         """
+        if reset:
+            self.reset()
+
         step_n = 0
         while step_n < max_attempts:
             if not step_n:
@@ -123,11 +128,11 @@ class SelfRefineAgent(BaseAgent):
                 solution = improved_solution
 
                 # Add the new solution (no feedback) to the memory, if applicable.
-                self.memory.add_memories(solution, "")
+                self.memory.add_memories(solution, None)
 
             step_n += 1
 
-        return solution
+        return self.memory.load_memories()['solution']
 
     def reset(self) -> None:
         """Resets the agent's memory."""
