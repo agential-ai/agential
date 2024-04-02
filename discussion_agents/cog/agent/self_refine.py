@@ -4,7 +4,7 @@ Original Webpage: https://selfrefine.info/
 Paper Repository: https://github.com/madaan/self-refine
 """
 
-from typing import Any, Optional
+from typing import Any, Optional, Dict
 
 from langchain.prompts import PromptTemplate
 from langchain_core.language_models.chat_models import BaseChatModel
@@ -29,9 +29,20 @@ from discussion_agents.cog.prompts.self_refine import (
 
 
 class SelfRefineAgent(BaseAgent):
+    """The Self-Refine agent that utilizes the self-refinement process to iteratively improve solutions based on feedback.
+
+    The agent prompts a language model to generate solutions to a given problem, obtains feedback on the generated
+    solutions, and then refines the solutions based on this feedback. This process can be repeated a specified number
+    of times or until the feedback indicates that no further improvements are needed.
+
+    Attributes:
+        llm (BaseChatModel): The language model used for generating solutions, feedback, and refinements.
+        memory (SelfRefineMemory): A memory module for storing solutions and feedback across refinement iterations.
+    """
     def __init__(
         self, llm: BaseChatModel, memory: Optional[SelfRefineMemory] = None
     ) -> None:
+        """Initialization."""
         super().__init__()
 
         self.llm = llm
@@ -52,6 +63,24 @@ class SelfRefineAgent(BaseAgent):
         refine_prompt: str = SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
         max_attempts: int = 3,
     ) -> str:
+        """Generates a refined solution for a given question through an iterative self-refinement process.
+
+        The process includes generating initial solutions, soliciting feedback, and refining the solution
+        based on feedback, repeated for a maximum number of attempts or until feedback indicates satisfaction.
+
+        Args:
+            question (str): The question or problem to solve.
+            examples (str): Precedent examples to guide initial solution generation.
+            prompt (str): Instructional prompt for initial solution generation.
+            feedback_examples (str): Precedent examples to guide feedback generation.
+            feedback_prompt (str): Instructional prompt for feedback generation.
+            refine_examples (str): Precedent examples to guide solution refinement.
+            refine_prompt (str): Instructional prompt for refining the solution.
+            max_attempts (int): Maximum number of refinement iterations.
+
+        Returns:
+            str: The final refined solution.
+        """
         step_n = 0
         while step_n < max_attempts:
             if not step_n:
@@ -65,6 +94,9 @@ class SelfRefineAgent(BaseAgent):
                 solution=solution,
                 prompt=feedback_prompt,
             )
+
+            # Update memory with solution, feedback pair (tracks all previous solutions and feedbacks).
+            self.memory.add_memories(solution, feedback)
 
             # Halt condition.
             if _is_halted(feedback):
@@ -89,15 +121,21 @@ class SelfRefineAgent(BaseAgent):
                 )
                 solution = improved_solution
 
+                # Add the new solution (no feedback) to the memory, if applicable.
+                self.memory.add_memories(solution, "")
+
             step_n += 1
 
         return solution
 
-    def reset(self, *args: Any, **kwargs: Any) -> Any:
-        pass
+    def reset(self) -> None:
+        """Resets the agent's memory."""
+        self.memory.clear()
 
-    def reflect(self, *args: Any, **kwargs: Any) -> Any:
-        pass
+    def retrieve(self) -> Dict[str, Any]:
+        """Retrieves the current state of the agent's memory.
 
-    def retrieve(self, *args: Any, **kwargs: Any) -> Any:
-        pass
+        Returns:
+            Dict[str, Any]: The current state of the agent's memory.
+        """
+        return self.memory.load_memories()
