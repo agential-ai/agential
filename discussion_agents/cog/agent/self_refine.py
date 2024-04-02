@@ -4,7 +4,7 @@ Original Webpage: https://selfrefine.info/
 Paper Repository: https://github.com/madaan/self-refine
 """
 
-from typing import Any
+from typing import Any, Optional
 from discussion_agents.cog.agent.base import BaseAgent
 from langchain.prompts import PromptTemplate
 from langchain_core.language_models.chat_models import BaseChatModel
@@ -18,15 +18,22 @@ from discussion_agents.cog.prompts.self_refine import (
     SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
     SELF_REFINE_FEEDBACK_EXAMPLE_FORMAT_GSM8K
 )
+from discussion_agents.cog.modules.memory.self_refine import SelfRefineMemory 
 
 class SelfRefineAgent(BaseAgent):
     def __init__(
         self, 
-        llm: BaseChatModel
+        llm: BaseChatModel,
+        memory: Optional[SelfRefineMemory] = None
     ) -> None:
         super().__init__()
 
         self.llm = llm
+
+        if not memory:
+            self.memory = SelfRefineMemory()
+        else:
+            self.memory = memory
 
     def generate(
         self, 
@@ -37,7 +44,6 @@ class SelfRefineAgent(BaseAgent):
         feedback_prompt: str = SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K,
         refine_examples: str = GSM8K_REFINE_FEWSHOT_EXAMPLES,
         refine_prompt: str = SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
-
         max_attempts: int = 3,
     ) -> str:
 
@@ -80,7 +86,6 @@ class SelfRefineAgent(BaseAgent):
                     feedback=feedback,
                     improved_solution=improved_solution
                 )
-
                 solution = improved_solution
 
             step_n += 1
