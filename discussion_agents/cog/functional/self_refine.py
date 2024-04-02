@@ -5,7 +5,8 @@ from langchain.prompts import PromptTemplate
 from langchain_core.messages.human import HumanMessage
 from discussion_agents.cog.prompts.self_refine import (
     SELF_REFINE_INSTRUCTION_GSM8K,
-    SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K
+    SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K,
+    SELF_REFINE_REFINE_INSTRUCTION_GSM8K
 )
 
 def _build_agent_prompt(
@@ -13,11 +14,7 @@ def _build_agent_prompt(
     examples: str,
     prompt: str = SELF_REFINE_INSTRUCTION_GSM8K,
 ) -> str:
-    """Constructs a formatted prompt for the agent based on a template and provided components.
-
-    The prompt is created by inserting specific content into placeholders in the template string. 
-    This includes the current question to be answered, any preceding few-shot examples, and appropriate 
-    separators and prefixes to structure the prompt for better understanding by the agent.
+    """Constructs a formatted prompt for the agent based on the question and provided fewshot examples.
 
     Parameters:
         question (str): The main question for which the agent is to generate an answer.
@@ -42,10 +39,10 @@ def _prompt_agent(
     examples: str,
     prompt: str = SELF_REFINE_INSTRUCTION_GSM8K,
 ) -> str:
-    """Generates a response from the LLM based on a given question and scratchpad.
+    """Generates a response from the LLM based on a given question with fewshot examples.
 
     This function creates a prompt using `_build_agent_prompt` and then gets the LLM's
-    output. The newline characters in the output are removed before returning.
+    output. 
 
     Args:
         llm (BaseChatModel): The language model to be prompted.
@@ -82,11 +79,10 @@ def _build_feedback_prompt(
     solution: str,
     prompt: str = SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K
 ) -> str:
-    """Invokes the language model to generate a response for the specified question using structured examples.
+    """Builds feedback prompt.
 
     This function compiles a detailed prompt with contextual examples and a specific question format, then
-    prompts the language model for a response. It cleans up the response by stripping out any leading or
-    trailing whitespace or newline characters.
+    prompts the language model for a response.
 
     Parameters:
         llm (BaseChatModel): The language model to prompt for a response.
@@ -112,9 +108,7 @@ def _prompt_feedback(
 ) -> str:
     """Requests feedback from the language model based on a provided solution and contextual examples.
 
-    A feedback prompt is constructed using the provided solution, examples, and a feedback instruction.
-    The language model is prompted with this structured request, and its output is cleaned of leading and
-    trailing whitespace.
+    A feedback prompt is constructed using the provided examples and solution.
 
     Parameters:
         llm (BaseChatModel): The language model to prompt for feedback.
@@ -133,6 +127,73 @@ def _prompt_feedback(
     print("<FEEDBACK==============================================================>")
     print(prompt)
     print("<FEEDBACK==============================================================>")
+    out = llm(
+        [
+            HumanMessage(
+                content=prompt,
+            )
+        ]
+    ).content
+    assert isinstance(out, str)
+    return out.strip()
+
+
+def _build_refine_prompt(
+    examples: str,
+    solution: str,
+    feedback: str,
+    prompt: str = SELF_REFINE_REFINE_INSTRUCTION_GSM8K
+) -> str:
+    """Builds a refinement prompt.
+
+    Parameters:
+        llm (BaseChatModel): The language model to prompt for a response.
+        question (str): The question to be answered by the language model.
+        examples (str): Pre-formatted examples that provide context to the question.
+        feedback (str): The feedback on the solution.
+        prompt (str): Prompt template string. Defaults to SELF_REFINE_REFINE_INSTRUCTION_GSM8K.
+
+    Returns:
+        str: The language model's response to the question, trimmed of extraneous whitespace.
+    """
+    prompt = PromptTemplate.from_template(prompt).format(
+        examples=examples,
+        solution=solution,
+        feedback=feedback
+    )
+    return prompt
+
+
+def _prompt_refine(
+    llm: BaseChatModel,
+    examples: str,
+    solution: str,
+    feedback: str,
+    prompt: str = SELF_REFINE_REFINE_INSTRUCTION_GSM8K
+) -> str:
+    """Refines solution based on feedback from the language model.
+
+    A refine prompt is constructed using the provided solution, examples, and feedback.
+
+    Parameters:
+        llm (BaseChatModel): The language model to prompt for feedback.
+        examples (str): Contextual examples related to the solution.
+        solution (str): The solution for which feedback is being sought.
+        feedback (str): The feedback on the solution.
+        prompt (str): Prompt template string. Defaults to SELF_REFINE_REFINE_INSTRUCTION_GSM8K.
+
+    Returns:
+        str: The language model's feedback, with no leading or trailing whitespace.
+    """
+    prompt = _build_refine_prompt(
+        examples=examples,
+        solution=solution,
+        feedback=feedback,
+        prompt=prompt
+    )
+    print("<REFINE==============================================================>")
+    print(prompt)
+    print("<REFINE==============================================================>")
     out = llm(
         [
             HumanMessage(
