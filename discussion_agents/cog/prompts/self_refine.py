@@ -502,7 +502,7 @@ SELF_REFINE_REFINE_INSTRUCTION_GSM8K = """{examples}
 
 {feedback}
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good. Provide the improved solution."""
+# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good. Provide the improved solution. If there is no error, write out the entire solution again."""
 
 
 SELF_REFINE_FEEDBACK_EXAMPLE_FORMAT_GSM8K = """{examples}
