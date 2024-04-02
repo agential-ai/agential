@@ -13,11 +13,13 @@ class SelfRefineMemory(BaseMemory):
     """A class to store, retrieve, and manage solution and feedback memories in a self-refinement context.
 
     Attributes:
-        solution (List[str]): A list to store solution memories.
-        feedback (List[str]): A list to store feedback memories.
+        solution (Optional[List[str]]): A list to store solution memories.
+        feedback (Optional[List[str]]): A list to store feedback memories.
     """
 
-    def __init__(self, solution: Optional[List] = None, feedback: Optional[List] = None) -> None:
+    def __init__(
+        self, solution: Optional[List] = None, feedback: Optional[List] = None
+    ) -> None:
         """Initialization."""
         super().__init__()
 
@@ -51,7 +53,7 @@ class SelfRefineMemory(BaseMemory):
         Returns:
             Dict[str, Any]: A dictionary containing the solution and feedback memories.
         """
-        return {"solution": self.solution, "feedback": self.feedback}
+        return {solution_key: self.solution, feedback_key: self.feedback}
 
     def show_memories(
         self, solution_key: str = "solution", feedback_key: str = "feedback"
@@ -65,4 +67,4 @@ class SelfRefineMemory(BaseMemory):
         Returns:
             Dict[str, Any]: A dictionary containing the solution and feedback memories.
         """
-        return {"solution": self.solution, "feedback": self.feedback}
+        return {solution_key: self.solution, feedback_key: self.feedback}
