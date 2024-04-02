@@ -8,12 +8,14 @@ from typing import Any
 from discussion_agents.cog.agent.base import BaseAgent
 from langchain.prompts import PromptTemplate
 from langchain_core.language_models.chat_models import BaseChatModel
-from discussion_agents.cog.functional.self_refine import _prompt_agent, _prompt_feedback
+from discussion_agents.cog.functional.self_refine import _prompt_agent, _prompt_feedback, _prompt_refine, _is_halted
 from discussion_agents.cog.prompts.self_refine import (
     GSM8K_FEWSHOT_EXAMPLES, 
     GSM8K_FEEDBACK_FEWSHOT_EXAMPLES,
+    GSM8K_REFINE_FEWSHOT_EXAMPLES,
     SELF_REFINE_INSTRUCTION_GSM8K,
     SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K,
+    SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
     SELF_REFINE_FEEDBACK_EXAMPLE_FORMAT_GSM8K
 )
 
@@ -31,10 +33,11 @@ class SelfRefineAgent(BaseAgent):
         question: str,
         examples: str = GSM8K_FEWSHOT_EXAMPLES,
         prompt: str = SELF_REFINE_INSTRUCTION_GSM8K,
-        description: str = "",
         feedback_examples: str = GSM8K_FEEDBACK_FEWSHOT_EXAMPLES,
         feedback_prompt: str = SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K,
-        feedback_description: str = "",
+        refine_examples: str = GSM8K_REFINE_FEWSHOT_EXAMPLES,
+        refine_prompt: str = SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
+
         max_attempts: int = 3,
     ) -> str:
 
@@ -46,33 +49,39 @@ class SelfRefineAgent(BaseAgent):
                     llm=self.llm,
                     question=question,
                     examples=examples,
-                    description=description,
                     prompt=prompt
-                )['output']
+                )
 
-            out = _prompt_feedback(
+            feedback = _prompt_feedback(
                 llm=self.llm,
                 examples=feedback_examples,
                 solution=solution,
-                feedback_description=feedback_description,
-                solution_description=description,
                 prompt=feedback_prompt
             )
-            feedback = out['feedback']
-            improved_solution = out['improved_solution']
-
-            # Continuously update solution & feedback examples.
-            feedback_examples = PromptTemplate.from_template(SELF_REFINE_FEEDBACK_EXAMPLE_FORMAT_GSM8K).format(
-                examples=feedback_examples,
-                solution=solution,
-                feedback=feedback,
-                improved_solution=improved_solution
-            )
-            solution = improved_solution
 
             # Halt condition.
-            if "it is correct" in feedback.lower():
+            if _is_halted(feedback):
                 break
+            else:
+                improved_solution = _prompt_refine(
+                    llm=self.llm,
+                    examples=refine_examples,
+                    solution=solution,
+                    feedback=feedback,
+                    prompt=refine_prompt
+                )
+
+                # Continuously update solution & feedback examples.
+                feedback_examples = PromptTemplate.from_template(
+                    SELF_REFINE_FEEDBACK_EXAMPLE_FORMAT_GSM8K
+                ).format(
+                    examples=feedback_examples,
+                    solution=solution,
+                    feedback=feedback,
+                    improved_solution=improved_solution
+                )
+
+                solution = improved_solution
 
             step_n += 1
 
