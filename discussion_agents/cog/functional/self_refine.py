@@ -1,13 +1,15 @@
 """Functional module for Self-Refine."""
 
-from langchain_core.language_models.chat_models import BaseChatModel
 from langchain.prompts import PromptTemplate
+from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
+
 from discussion_agents.cog.prompts.self_refine import (
-    SELF_REFINE_INSTRUCTION_GSM8K,
     SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K,
-    SELF_REFINE_REFINE_INSTRUCTION_GSM8K
+    SELF_REFINE_INSTRUCTION_GSM8K,
+    SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
 )
+
 
 def _build_agent_prompt(
     question: str,
@@ -19,8 +21,8 @@ def _build_agent_prompt(
     Parameters:
         question (str): The main question for which the agent is to generate an answer.
         examples (str): Pre-formatted few-shot examples that provide context for the question.
-        prompt (str): The base template string into which all other components will be inserted. This 
-            template must have placeholders for the 'question', 'examples', 'question_prefix', 
+        prompt (str): The base template string into which all other components will be inserted. This
+            template must have placeholders for the 'question', 'examples', 'question_prefix',
             'intra_example_sep', and 'answer_prefix'. Defaults to SELF_REFINE_INSTRUCTION_GSM8K.
 
     Returns:
@@ -42,24 +44,20 @@ def _prompt_agent(
     """Generates a response from the LLM based on a given question with fewshot examples.
 
     This function creates a prompt using `_build_agent_prompt` and then gets the LLM's
-    output. 
+    output.
 
     Args:
         llm (BaseChatModel): The language model to be prompted.
         question (str): The main question for which the agent is to generate an answer.
         examples (str): Pre-formatted few-shot examples that provide context for the question.
-        prompt (str): The base template string into which all other components will be inserted. This 
-            template must have placeholders for the 'question', 'examples', 'question_prefix', 
+        prompt (str): The base template string into which all other components will be inserted. This
+            template must have placeholders for the 'question', 'examples', 'question_prefix',
             'intra_example_sep', and 'answer_prefix'. Defaults to SELF_REFINE_INSTRUCTION_GSM8K.
 
     Returns:
         str: The processed response from the language model.
     """
-    prompt = _build_agent_prompt(
-        question=question,
-        examples=examples,
-        prompt=prompt
-    )
+    prompt = _build_agent_prompt(question=question, examples=examples, prompt=prompt)
     print("<==============================================================>")
     print(prompt)
     print("<==============================================================>")
@@ -75,9 +73,7 @@ def _prompt_agent(
 
 
 def _build_feedback_prompt(
-    examples: str,
-    solution: str,
-    prompt: str = SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K
+    examples: str, solution: str, prompt: str = SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K
 ) -> str:
     """Builds feedback prompt.
 
@@ -104,7 +100,7 @@ def _prompt_feedback(
     llm: BaseChatModel,
     examples: str,
     solution: str,
-    prompt: str = SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K
+    prompt: str = SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K,
 ) -> str:
     """Requests feedback from the language model based on a provided solution and contextual examples.
 
@@ -119,11 +115,7 @@ def _prompt_feedback(
     Returns:
         str: The language model's feedback, with no leading or trailing whitespace.
     """
-    prompt = _build_feedback_prompt(
-        examples=examples,
-        solution=solution,
-        prompt=prompt
-    )
+    prompt = _build_feedback_prompt(examples=examples, solution=solution, prompt=prompt)
     print("<FEEDBACK==============================================================>")
     print(prompt)
     print("<FEEDBACK==============================================================>")
@@ -142,7 +134,7 @@ def _build_refine_prompt(
     examples: str,
     solution: str,
     feedback: str,
-    prompt: str = SELF_REFINE_REFINE_INSTRUCTION_GSM8K
+    prompt: str = SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
 ) -> str:
     """Builds a refinement prompt.
 
@@ -157,9 +149,7 @@ def _build_refine_prompt(
         str: The language model's response to the question, trimmed of extraneous whitespace.
     """
     prompt = PromptTemplate.from_template(prompt).format(
-        examples=examples,
-        solution=solution,
-        feedback=feedback
+        examples=examples, solution=solution, feedback=feedback
     )
     return prompt
 
@@ -169,7 +159,7 @@ def _prompt_refine(
     examples: str,
     solution: str,
     feedback: str,
-    prompt: str = SELF_REFINE_REFINE_INSTRUCTION_GSM8K
+    prompt: str = SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
 ) -> str:
     """Refines solution based on feedback from the language model.
 
@@ -186,10 +176,7 @@ def _prompt_refine(
         str: The language model's feedback, with no leading or trailing whitespace.
     """
     prompt = _build_refine_prompt(
-        examples=examples,
-        solution=solution,
-        feedback=feedback,
-        prompt=prompt
+        examples=examples, solution=solution, feedback=feedback, prompt=prompt
     )
     print("<REFINE==============================================================>")
     print(prompt)
