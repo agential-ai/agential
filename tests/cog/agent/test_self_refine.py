@@ -20,8 +20,10 @@ def test_init() -> None:
 
 def test_reset() -> None:
     """Test reset."""
-    agent = SelfRefineAgent(llm=FakeListChatModel(responses=['response']))
-    agent.memory.add_memories('solution1', 'feedback1')
+    agent = SelfRefineAgent(
+        llm=FakeListChatModel(responses=['response']), 
+        memory=SelfRefineMemory(solution=["solution1"], feedback=['feedback1'])
+    )
     assert agent.memory.solution != []
     assert agent.memory.feedback != []
     agent.reset()
@@ -42,10 +44,13 @@ def test_generate() -> None:
     """Test generate."""
     question = "A robe takes 2 bolts of blue fiber and half that much white fiber.  How many bolts in total does it take?"
     
-    gt_out = ""
+    gt_out = 'def solution():\n    """A robe takes 2 bolts of blue fiber and half that much white fiber. How many bolts in total does it take?"""\n    blue_fiber = 2\n    white_fiber = blue_fiber / 2\n    total_bolts = blue_fiber + white_fiber\n    result = total_bolts\n    return result'
     responses = [
-
+        'def solution():\n    """A robe takes 2 bolts of blue fiber and half that much white fiber. How many bolts in total does it take?"""\n    blue_fiber = 2\n    white_fiber = blue_fiber / 2\n    total_bolts = blue_fiber + white_fiber\n    result = total_bolts\n    return result',
+        'There is no error in the code! It is correct.'
     ]
     agent = SelfRefineAgent(llm=FakeListChatModel(responses=responses))
     out = agent.generate(question=question)
     assert out == gt_out
+
+    # Test with refinement.
