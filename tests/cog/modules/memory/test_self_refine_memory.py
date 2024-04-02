@@ -23,8 +23,8 @@ def test_load_memories() -> None:
     """Test load_memories function."""
     memory = SelfRefineMemory()
     memories = memory.load_memories()
-    assert memories["solution"] == ["solution1"]
-    assert memories["feedback"] == ["feedback1"]
+    assert memories["solution"] == []
+    assert memories["feedback"] == []
 
 
 def test_show_memories() -> None:
