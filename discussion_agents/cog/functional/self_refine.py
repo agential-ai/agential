@@ -58,9 +58,6 @@ def _prompt_agent(
         str: The processed response from the language model.
     """
     prompt = _build_agent_prompt(question=question, examples=examples, prompt=prompt)
-    print("<==============================================================>")
-    print(prompt)
-    print("<==============================================================>")
     out = llm(
         [
             HumanMessage(
@@ -68,6 +65,9 @@ def _prompt_agent(
             )
         ]
     ).content
+    print("<==============================================================>")
+    print(repr(out))
+    print("<==============================================================>")
     assert isinstance(out, str)
     return out.strip()
 
@@ -116,9 +116,6 @@ def _prompt_feedback(
         str: The language model's feedback, with no leading or trailing whitespace.
     """
     prompt = _build_feedback_prompt(examples=examples, solution=solution, prompt=prompt)
-    print("<FEEDBACK==============================================================>")
-    print(prompt)
-    print("<FEEDBACK==============================================================>")
     out = llm(
         [
             HumanMessage(
@@ -126,6 +123,9 @@ def _prompt_feedback(
             )
         ]
     ).content
+    print("<FEEDBACK==============================================================>")
+    print(repr(out))
+    print("<FEEDBACK==============================================================>")
     assert isinstance(out, str)
     return out.strip()
 
@@ -178,9 +178,6 @@ def _prompt_refine(
     prompt = _build_refine_prompt(
         examples=examples, solution=solution, feedback=feedback, prompt=prompt
     )
-    print("<REFINE==============================================================>")
-    print(prompt)
-    print("<REFINE==============================================================>")
     out = llm(
         [
             HumanMessage(
@@ -188,6 +185,9 @@ def _prompt_refine(
             )
         ]
     ).content
+    print("<REFINE==============================================================>")
+    print(repr(out))
+    print("<REFINE==============================================================>")
     assert isinstance(out, str)
     return out.strip()
 
