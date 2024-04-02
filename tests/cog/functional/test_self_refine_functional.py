@@ -79,7 +79,7 @@ def test__prompt_feedback() -> None:
 
 def test__build_refine_prompt() -> None:
     """Test _build_refine_prompt."""
-    gt_out = "\n\n\n\n\n\n# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good. Provide the improved solution."
+    gt_out = '\n\n\n\n\n\n# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good. Provide the improved solution. If there is no error, write out the entire solution again.'
     out = _build_refine_prompt(examples="", solution="", feedback="")
     assert out == gt_out
 
