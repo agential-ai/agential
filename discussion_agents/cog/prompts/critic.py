@@ -4,7 +4,8 @@
 CRITIC_INSTRUCTION_HOTPOTQA = """{examples}
 (END OF EXAMPLES)
 
-Q: {question}\nA: """
+Q: {question}
+A: """
 
 
 HOTPOTQA_FEWSHOT_EXAMPLES_COT = """Q: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
@@ -125,6 +126,19 @@ Thought 3: The evidence suggests that Nikita Katsalapov won the 2016 Russian nat
 Action 3: Finish[Nikita Katsalapov]
 
 ---"""
+
+
+CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA = """{examples}
+(END OF EXAMPLES)
+
+Question: {question}
+Proposed Answer: {answer}
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+"""
 
 
 HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC = """Question: Serianna is a band of what genre that combines elements of heavy metal and hardcore punk?
@@ -341,3 +355,16 @@ Question: Who won the 2016 Russian national silver medal with another Russian ic
 Here's the most possible answer: Let's think step by step. The 2016 Russian national silver medal in ice dancing was won by Victoria Sinitsina and Nikita Katsalapov. Victoria Sinitsina was born on April 29, 1995. So the answer is: Nikita Katsalapov.
 
 ---"""
+
+
+CRITIC_CRITIQUE_FORMAT_HOTPOTQA = """{examples}
+(END OF EXAMPLES)
+
+Question: {question}
+Proposed Answer: {answer}
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+{critique}"""
