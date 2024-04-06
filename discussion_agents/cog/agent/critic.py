@@ -92,7 +92,4 @@ class CriticAgent(BaseAgent):
             else:
                 if not critique:
                     break
-                context = res
-                context += f"Let's give the most possible answer.\n\nQuestion: {question}\nHere's "
-                print(context, end="")
-                formatted_critique += context
+                formatted_critique += f"Let's give the most possible answer.\n\nQuestion: {question}\nHere's "
