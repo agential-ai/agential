@@ -5,11 +5,7 @@ from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
 
-from discussion_agents.cog.agent.actre import (
-    ReActOutput,
-    ActReAgent,
-    ActreReActAgent
-)
+from discussion_agents.cog.agent.actre import ActReAgent, ActreReActAgent, ReActOutput
 from discussion_agents.cog.modules.memory.react import ReActMemory
 from discussion_agents.cog.prompts.react import (
     HOTPOTQA_FEWSHOT_EXAMPLES,
@@ -49,7 +45,7 @@ def test_generate() -> None:
     ]
     responses = [
         ' I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.\nAction: Search[best kick boxer]\nObservation: (Result 1/1) Ramon Dekkers is considered by many to be the best kickboxer in the world.\nThought: It mentions "unsportsmanlike conducts" and crimes of violence. I need to find more information about Ramon Dekkers.\nAction: Lookup[crimes]\nObservation: (Result 1/1) Dekkers was involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring.\nSynthesized Reasoning: Based on the observation that Ramon Dekkers is considered the best kickboxer but also involved in controversies and crimes, I decided to look up more details about his specific crimes to better answer the question.\nAction: Lookup[controversies]\nObservation: (Result 1/1) Dekkers was known for his aggressive style and has been involved in a number of controversies, including a bar brawl and an altercation with a bouncer.\nSynthesized Reasoning: The previous observation provided some examples of Dekkers\' controversies, like bar fights. To fully answer the question, I still need more information on his "unsportsmanlike conduct" in the sport.\nAction: Lookup[unsportsmanlike conducts]\nObservation: (Result',
-        ' Search[best kick boxer]\nObservation: The best kick boxer in the world is often a highly debated topic, but some notable names include Semmy Schilt, Peter Aerts, Ernesto Hoost, and Ramon Dekkers.\nSynthesized Reasoning: The search revealed several top kickboxers, but to answer the question about controversies and crimes, I should focus on a more recent one. Semmy Schilt is a good candidate to look into further.\nAction: Lookup[controversies and crimes]\nObservation: (Result 1/1) Semmy Schilt has been involved in several controversies, including accusations of using performance-enhancing drugs and unsportsmanlike conducts such as eye-gouging and low blows.\nSynthesized Reasoning: The lookup provided useful information about Schilt\'s controversies, specifically mentioning the "unsportsmanlike conducts" the question asks about. I will look up more details on those incidents.\nAction: Lookup[unsportsmanlike conducts]\nObservation: (Result 1/1) Semmy Schilt has been known for his aggressive and sometimes controversial fighting style, with incidents such as eye-gouging and low blows being reported by his opponents.\nSynthesized Reasoning: I now have good details on Schilt\'s unsportsmanlike conduct in his fights. The question also asks about crimes outside the ring, so I will search for any criminal charges against him to cover that aspect.\nAction: Search[Semmy Schilt criminal record]\nObservation',
+        " Search[best kick boxer]\nObservation: The best kick boxer in the world is often a highly debated topic, but some notable names include Semmy Schilt, Peter Aerts, Ernesto Hoost, and Ramon Dekkers.\nSynthesized Reasoning: The search revealed several top kickboxers, but to answer the question about controversies and crimes, I should focus on a more recent one. Semmy Schilt is a good candidate to look into further.\nAction: Lookup[controversies and crimes]\nObservation: (Result 1/1) Semmy Schilt has been involved in several controversies, including accusations of using performance-enhancing drugs and unsportsmanlike conducts such as eye-gouging and low blows.\nSynthesized Reasoning: The lookup provided useful information about Schilt's controversies, specifically mentioning the \"unsportsmanlike conducts\" the question asks about. I will look up more details on those incidents.\nAction: Lookup[unsportsmanlike conducts]\nObservation: (Result 1/1) Semmy Schilt has been known for his aggressive and sometimes controversial fighting style, with incidents such as eye-gouging and low blows being reported by his opponents.\nSynthesized Reasoning: I now have good details on Schilt's unsportsmanlike conduct in his fights. The question also asks about crimes outside the ring, so I will search for any criminal charges against him to cover that aspect.\nAction: Search[Semmy Schilt criminal record]\nObservation",
     ]
     llm = FakeListChatModel(responses=responses)
     agent = ActreReActAgent(llm=llm, max_steps=1)
@@ -100,13 +96,18 @@ def test_actre_reasoning() -> None:
     observation = "(Result 1/1) Ramon Dekkers is considered by many to be the best kickboxer in the world."
     action = "Search[controversies and crimes related to Ramon Dekkers]"
 
-    llm = FakeListChatModel(responses=[
-        "\nBased on the observation that Ramon Dekkers is considered the best kickboxer, I decided to search for any controversies and crimes related to him to answer the question about his unsportsmanlike conduct and violence outside the ring."
-    ])
+    llm = FakeListChatModel(
+        responses=[
+            "\nBased on the observation that Ramon Dekkers is considered the best kickboxer, I decided to search for any controversies and crimes related to him to answer the question about his unsportsmanlike conduct and violence outside the ring."
+        ]
+    )
     actre_agent = ActReAgent(llm)
     reason = actre_agent.generate(observation, action)
 
-    assert reason.strip() == "Based on the observation that Ramon Dekkers is considered the best kickboxer, I decided to search for any controversies and crimes related to him to answer the question about his unsportsmanlike conduct and violence outside the ring."
+    assert (
+        reason.strip()
+        == "Based on the observation that Ramon Dekkers is considered the best kickboxer, I decided to search for any controversies and crimes related to him to answer the question about his unsportsmanlike conduct and violence outside the ring."
+    )
 
 
 def test_sample_alternative_action() -> None:
@@ -131,7 +132,7 @@ def test_sample_alternative_action() -> None:
         "Lookup[meaning of unsportsmanlike conduct]",
         "Lookup[explanation of unsportsmanlike conduct]",
         "Lookup[unsportsmanlike conduct in the context of]",
-        "Lookup[unsportsmanlike conduct with respect to]",  
+        "Lookup[unsportsmanlike conduct with respect to]",
         "Lookup[unsportsmanlike conduct in relation to]",
         "Lookup[examples of unsportsmanlike conduct]",
         "Lookup[instances of unsportsmanlike conduct]",
@@ -146,14 +147,14 @@ def test_sample_alternative_action() -> None:
 def test_reset(actre_react_agent: ActreReActAgent) -> None:
     """Test reset."""
     assert actre_react_agent.memory.scratchpad == ""
-    actre_react_agent.memory.scratchpad = "abc" 
+    actre_react_agent.memory.scratchpad = "abc"
     assert not actre_react_agent._finished
     actre_react_agent._finished = True
     assert actre_react_agent._step_n == 1
     actre_react_agent._step_n = 10
     actre_react_agent.reset()
     assert actre_react_agent.memory.scratchpad == ""
-    assert not actre_react_agent._finished  
+    assert not actre_react_agent._finished
     assert actre_react_agent._step_n == 1
 
 
