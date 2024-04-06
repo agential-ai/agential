@@ -56,23 +56,24 @@ class CriticAgent(BaseAgent):
                 examples=critique_examples,
                 answer=answer,
                 prompt=critique_prompt
+            ).split("> Evidence: ")[0]
+
+            formatted_critique = _build_critique_format_prompt(
+                question=question,
+                examples=critique_examples,
+                answer=answer,
+                critique=critique,
+                prompt=critique_format_prompt
             )
 
             if "> Search Query: " in critique:
                 _, search_query = critique.split("> Search Query:")[:2]
                 search_query = search_query.split("\n")[0].strip()
-                a = _build_critique_format_prompt(
-                    question=question,
-                    examples=critique_examples,
-                    answer=answer,
-                    critique=critique,
-                    prompt=critique_format_prompt
-                )
 
                 if use_tool:
                     exist_query.append(search_query)
                     for k in range(exist_query.count(search_query), 8):
-                        search_result = self.search.results(search_query, k=k)
+                        search_result = self.search.results(search_query, num_results=k)[-1]
                         if search_result['snippet'] not in exist_evidence:
                             exist_evidence.add(search_result['snippet'])
                             break
@@ -83,5 +84,15 @@ class CriticAgent(BaseAgent):
                 else:
                     context = """> Evidence: """
 
-
-
+                formatted_critique += context
+            elif "most possible answer: " in critique:
+                _, revised_answer = critique.split("most possible answer: ")
+                revised_answer = revised_answer.strip()
+                break
+            else:
+                if not critique:
+                    break
+                context = res
+                context += f"Let's give the most possible answer.\n\nQuestion: {question}\nHere's "
+                print(context, end="")
+                formatted_critique += context
