@@ -6,8 +6,8 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
 
 from discussion_agents.cog.agent.react import (
-    ReActOutput,
     ReActAgent,
+    ReActOutput,
     ZeroShotReActAgent,
 )
 from discussion_agents.cog.modules.memory.react import ReActMemory
