@@ -46,6 +46,7 @@ class CriticAgent(BaseAgent):
             examples=examples,
             prompt=prompt
         )
+        
 
         exist_query = []
         exist_evidence = set()
@@ -57,6 +58,7 @@ class CriticAgent(BaseAgent):
                 answer=answer,
                 prompt=critique_prompt
             )
+            
 
             if "> Search Query: " in critique:
                 _, search_query = critique.split("> Search Query:")[:2]
@@ -69,19 +71,31 @@ class CriticAgent(BaseAgent):
                     prompt=critique_format_prompt
                 )
 
+                
+               
                 if use_tool:
                     exist_query.append(search_query)
-                    for k in range(exist_query.count(search_query), 8):
-                        search_result = self.search.results(search_query, k=k)
-                        if search_result['snippet'] not in exist_evidence:
-                            exist_evidence.add(search_result['snippet'])
-                            break
+                    for _ in range(exist_query.count(search_query), 8):
+                        search_results = self.search.results(search_query, num_results=1)
+                        if search_results:  # Check if the list is not empty
+                            first_result = search_results[0] 
+                            if first_result['snippet'] not in exist_evidence:
+                                exist_evidence.add(first_result['snippet'])
+                                break
 
-                    context = f"""> Evidence: [{search_result['title']}] {search_result['snippet'][:evidence_length]}\n\n"""
+                    context = f"""> Evidence: [{first_result['title']}] {first_result['snippet'][:evidence_length]}\n\n"""
+                    
+
                     if idx == max_interactions - 2:
                         context += f"Let's give the most possible answer.\n\nQuestion: {question}\nHere's "
+                        
+
                 else:
                     context = """> Evidence: """
+                   
 
+
+
+                
 
 
