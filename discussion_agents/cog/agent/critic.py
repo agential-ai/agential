@@ -8,7 +8,7 @@ from typing import Any
 from discussion_agents.cog.agent.base import BaseAgent
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
-from discussion_agents.cog.functional.critic import _prompt_agent, _prompt_critique, _build_critique_format_prompt , extract_cot_answer
+from discussion_agents.cog.functional.critic import _prompt_agent, _prompt_critique, _build_critique_format_prompt 
 from discussion_agents.cog.prompts.critic import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT, 
     CRITIC_INSTRUCTION_HOTPOTQA,

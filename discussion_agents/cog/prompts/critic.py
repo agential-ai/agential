@@ -641,7 +641,6 @@ Here's the most possible answer: Rhode Island had its bi-centenary of joining th
 
 
 """
-
 TRIVIAQA_CRITIQUE_FORMAT_HOTPOTQA = """{examples}
 (END OF EXAMPLES)
 
