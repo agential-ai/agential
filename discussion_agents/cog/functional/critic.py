@@ -6,7 +6,6 @@ from langchain_core.messages.human import HumanMessage
 from discussion_agents.cog.prompts.critic import (
     CRITIC_INSTRUCTION_HOTPOTQA,
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
-    CRITIC_CRITIQUE_FORMAT_HOTPOTQA
 )
 
 
@@ -84,19 +83,3 @@ def _prompt_critique(
     ).content
 
     return out
-
-
-def _build_critique_format_prompt(
-    question: str,
-    examples: str, 
-    answer: str,
-    critique: str,
-    prompt: str = CRITIC_CRITIQUE_FORMAT_HOTPOTQA
-) -> str:
-    prompt = PromptTemplate.from_template(prompt).format(
-        question=question,
-        examples=examples,
-        answer=answer,
-        critique=critique
-    )
-    return prompt
