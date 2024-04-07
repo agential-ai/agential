@@ -54,7 +54,7 @@ def _prompt_agent(
             )
         ]
     ).content
-
+    assert isinstance(out, str)
     return out
 
 
@@ -118,5 +118,5 @@ def _prompt_critique(
             )
         ]
     ).content
-
+    assert isinstance(out, str)
     return out
