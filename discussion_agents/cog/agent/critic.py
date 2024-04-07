@@ -5,33 +5,32 @@ Original Paper: http://arxiv.org/abs/2305.11738
 """
 
 from typing import Any
-from discussion_agents.cog.agent.base import BaseAgent
-from langchain_core.language_models.chat_models import BaseChatModel
+
 from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
+from langchain_core.language_models.chat_models import BaseChatModel
+
+from discussion_agents.cog.agent.base import BaseAgent
 from discussion_agents.cog.functional.critic import (
-    _prompt_agent, 
-    _prompt_critique, 
+    _prompt_agent,
+    _prompt_critique,
 )
 from discussion_agents.cog.prompts.critic import (
-    HOTPOTQA_FEWSHOT_EXAMPLES_COT, 
-    CRITIC_INSTRUCTION_HOTPOTQA,
-    HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
+    CRITIC_INSTRUCTION_HOTPOTQA,
+    HOTPOTQA_FEWSHOT_EXAMPLES_COT,
+    HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
 )
 
+
 class CriticAgent(BaseAgent):
-    def __init__(
-        self,
-        llm: BaseChatModel,
-        search: GoogleSearchAPIWrapper
-    ) -> None:
+    def __init__(self, llm: BaseChatModel, search: GoogleSearchAPIWrapper) -> None:
         super().__init__()
 
         self.llm = llm
         self.search = search
 
     def generate(
-        self, 
+        self,
         question: str,
         examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_COT,
         prompt: str = CRITIC_INSTRUCTION_HOTPOTQA,
@@ -39,13 +38,10 @@ class CriticAgent(BaseAgent):
         critique_prompt: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
         max_interactions: int = 7,
         use_tool: bool = True,
-        evidence_length: int = 400
+        evidence_length: int = 400,
     ) -> Any:
         answer = _prompt_agent(
-            llm=self.llm,
-            question=question,
-            examples=examples,
-            prompt=prompt
+            llm=self.llm, question=question, examples=examples, prompt=prompt
         )
 
         out, revised_answer = "", ""
@@ -58,7 +54,7 @@ class CriticAgent(BaseAgent):
                 examples=critique_examples,
                 answer=answer,
                 critique="" if not idx else out,
-                prompt=critique_prompt
+                prompt=critique_prompt,
             ).split("> Evidence: ")[0]
             out += critique
 
@@ -69,9 +65,11 @@ class CriticAgent(BaseAgent):
                 if use_tool:
                     exist_query.append(search_query)
                     for k in range(exist_query.count(search_query), 8):
-                        search_result = self.search.results(search_query, num_results=k)[-1]
-                        if search_result['snippet'] not in exist_evidence:
-                            exist_evidence.add(search_result['snippet'])
+                        search_result = self.search.results(
+                            search_query, num_results=k
+                        )[-1]
+                        if search_result["snippet"] not in exist_evidence:
+                            exist_evidence.add(search_result["snippet"])
                             break
 
                     context = f"""> Evidence: [{search_result['title']}] {search_result['snippet'][:evidence_length]}\n\n"""

@@ -3,16 +3,15 @@
 from langchain.prompts import PromptTemplate
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
+
 from discussion_agents.cog.prompts.critic import (
-    CRITIC_INSTRUCTION_HOTPOTQA,
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
+    CRITIC_INSTRUCTION_HOTPOTQA,
 )
 
 
 def _build_agent_prompt(
-    question: str,
-    examples: str, 
-    prompt: str = CRITIC_INSTRUCTION_HOTPOTQA
+    question: str, examples: str, prompt: str = CRITIC_INSTRUCTION_HOTPOTQA
 ) -> str:
     """Builds a prompt for questioning the agent using a template.
 
@@ -25,8 +24,7 @@ def _build_agent_prompt(
         str: A formatted prompt ready for use with the language model.
     """
     prompt = PromptTemplate.from_template(prompt).format(
-        question=question,
-        examples=examples
+        question=question, examples=examples
     )
     return prompt
 
@@ -35,7 +33,7 @@ def _prompt_agent(
     llm: BaseChatModel,
     question: str,
     examples: str,
-    prompt: str = CRITIC_INSTRUCTION_HOTPOTQA
+    prompt: str = CRITIC_INSTRUCTION_HOTPOTQA,
 ) -> str:
     """Prompts the agent to answer a question using the language model.
 
@@ -48,11 +46,7 @@ def _prompt_agent(
     Returns:
         str: The answer from the language model, with no leading or trailing whitespace.
     """
-    prompt = _build_agent_prompt(
-        question=question,
-        examples=examples,
-        prompt=prompt
-    )
+    prompt = _build_agent_prompt(question=question, examples=examples, prompt=prompt)
     out = llm(
         [
             HumanMessage(
@@ -66,10 +60,10 @@ def _prompt_agent(
 
 def _build_critique_prompt(
     question: str,
-    examples: str, 
+    examples: str,
     answer: str,
     critique: str = "",
-    prompt: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA
+    prompt: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
 ) -> str:
     """Builds a critique prompt for the agent using a template.
 
@@ -84,10 +78,7 @@ def _build_critique_prompt(
         str: A formatted critique prompt ready for use with the language model.
     """
     prompt = PromptTemplate.from_template(prompt).format(
-        question=question,
-        examples=examples,
-        answer=answer,
-        critique=critique
+        question=question, examples=examples, answer=answer, critique=critique
     )
     return prompt
 
@@ -98,7 +89,7 @@ def _prompt_critique(
     examples: str,
     answer: str,
     critique: str = "",
-    prompt: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA
+    prompt: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
 ) -> str:
     """Prompts the agent for a critique of an answer using the language model.
 
@@ -118,8 +109,8 @@ def _prompt_critique(
         examples=examples,
         answer=answer,
         critique=critique,
-        prompt=prompt
-    )    
+        prompt=prompt,
+    )
     out = llm(
         [
             HumanMessage(

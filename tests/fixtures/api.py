@@ -1,6 +1,7 @@
 """Fixtures for API keys."""
 
 import os
+
 import pytest
 
 
@@ -9,7 +10,9 @@ def google_api_key() -> str:
     """Fixture to retrieve the google_api_key from environment variables."""
     key = os.getenv("GOOGLE_API_KEY")
     if key is None:
-        pytest.fail("GOOGLE_API_KEY not set in the environment variables", pytrace=False)
+        pytest.fail(
+            "GOOGLE_API_KEY not set in the environment variables", pytrace=False
+        )
     return key
 
 
