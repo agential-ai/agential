@@ -52,9 +52,6 @@ class CriticAgent(BaseAgent):
         exist_query = []
         exist_evidence = set()
         for idx in range(max_interactions):
-            print(f"IDX: {idx} ====================================================>")
-            print(out)
-            print(f"IDX: {idx} ====================================================>")
             critique = _prompt_critique(
                 llm=self.llm,
                 question=question,
@@ -84,16 +81,13 @@ class CriticAgent(BaseAgent):
                     context = """> Evidence: """
 
                 out += context
-                print("A")
             elif "most possible answer: " in critique:
                 _, revised_answer = critique.split("most possible answer: ")
                 revised_answer = revised_answer.strip()
-                print("B")
                 break
             else:
                 if not critique:
                     break
                 out += f"\nLet's give the most possible answer.\n\nQuestion: {question}\nHere's "
-                print("C")
 
         return revised_answer
