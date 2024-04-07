@@ -8,7 +8,12 @@ from typing import Any
 from discussion_agents.cog.agent.base import BaseAgent
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
-from discussion_agents.cog.functional.critic import _prompt_agent, _prompt_critique, _build_critique_format_prompt
+from discussion_agents.cog.functional.critic import (
+    _prompt_agent, 
+    _prompt_critique, 
+    _build_critique_format_prompt,
+    _build_critique_prompt
+)
 from discussion_agents.cog.prompts.critic import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT, 
     CRITIC_INSTRUCTION_HOTPOTQA,
@@ -35,7 +40,6 @@ class CriticAgent(BaseAgent):
         prompt: str = CRITIC_INSTRUCTION_HOTPOTQA,
         critique_examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
         critique_prompt: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
-        critique_format_prompt: str = CRITIC_CRITIQUE_FORMAT_HOTPOTQA,
         max_interactions: int = 7,
         use_tool: bool = True,
         evidence_length: int = 400
@@ -47,6 +51,7 @@ class CriticAgent(BaseAgent):
             prompt=prompt
         )
 
+        out = ""
         exist_query = []
         exist_evidence = set()
         for idx in range(max_interactions):
@@ -55,16 +60,10 @@ class CriticAgent(BaseAgent):
                 question=question,
                 examples=critique_examples,
                 answer=answer,
+                critique="" if not idx else out,
                 prompt=critique_prompt
             ).split("> Evidence: ")[0]
-
-            formatted_critique = _build_critique_format_prompt(
-                question=question,
-                examples=critique_examples,
-                answer=answer,
-                critique=critique,
-                prompt=critique_format_prompt
-            )
+            out += critique
 
             if "> Search Query: " in critique:
                 _, search_query = critique.split("> Search Query:")[:2]
@@ -84,7 +83,7 @@ class CriticAgent(BaseAgent):
                 else:
                     context = """> Evidence: """
 
-                formatted_critique += context
+                out += context
             elif "most possible answer: " in critique:
                 _, revised_answer = critique.split("most possible answer: ")
                 revised_answer = revised_answer.strip()
@@ -92,4 +91,4 @@ class CriticAgent(BaseAgent):
             else:
                 if not critique:
                     break
-                formatted_critique += f"Let's give the most possible answer.\n\nQuestion: {question}\nHere's "
+                out += f"Let's give the most possible answer.\n\nQuestion: {question}\nHere's "

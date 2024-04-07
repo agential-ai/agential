@@ -48,12 +48,14 @@ def _build_critique_prompt(
     question: str,
     examples: str, 
     answer: str,
+    critique: str = "",
     prompt: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA
 ) -> str:
     prompt = PromptTemplate.from_template(prompt).format(
         question=question,
         examples=examples,
-        answer=answer
+        answer=answer,
+        critique=critique
     )
     return prompt
 
@@ -63,12 +65,14 @@ def _prompt_critique(
     question: str,
     examples: str,
     answer: str,
+    critique: str = "",
     prompt: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA
 ) -> str:
     prompt = _build_critique_prompt(
         question=question,
         examples=examples,
         answer=answer,
+        critique=critique,
         prompt=prompt
     )
     out = llm(
