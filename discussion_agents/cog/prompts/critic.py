@@ -138,7 +138,8 @@ What's the problem with the above answer?
 
 1. Plausibility:
 
-"""
+{critique}"""
+
 
 
 HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC = """Question: Serianna is a band of what genre that combines elements of heavy metal and hardcore punk?
@@ -357,17 +358,7 @@ Here's the most possible answer: Let's think step by step. The 2016 Russian nati
 ---"""
 
 
-CRITIC_CRITIQUE_FORMAT_HOTPOTQA = """{examples}
-(END OF EXAMPLES)
 
-Question: {question}
-Proposed Answer: {answer}
-
-What's the problem with the above answer?
-
-1. Plausibility:
-
-{critique}"""
 
 
 CRITIC_INSTRUCTION_TRIVIAQA = """{examples}
@@ -478,7 +469,7 @@ Action 4: Finish[Rhode Island]
 
 """
 
-TRIVIAQA_CRITIQUE_INSTRUCTION_HOTPOTQA = """{examples}
+CRITIC_CRITIQUE_INSTRUCTION_TRIVIAQA = """{examples}
 (END OF EXAMPLES)
 
 Question: {question}
@@ -488,7 +479,9 @@ What's the problem with the above answer?
 
 1. Plausibility:
 
-"""
+{critique}"""
+
+
 
 TRIVIAQA_FEWSHOT_EXAMPLES_CRITIC = """
 
@@ -641,14 +634,3 @@ Here's the most possible answer: Rhode Island had its bi-centenary of joining th
 
 
 """
-TRIVIAQA_CRITIQUE_FORMAT_HOTPOTQA = """{examples}
-(END OF EXAMPLES)
-
-Question: {question}
-Proposed Answer: {answer}
-
-What's the problem with the above answer?
-
-1. Plausibility:
-
-{critique}"""

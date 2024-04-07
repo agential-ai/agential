@@ -6,41 +6,63 @@ from langchain_core.messages.human import HumanMessage
 from discussion_agents.cog.prompts.critic import (
     CRITIC_INSTRUCTION_HOTPOTQA,
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
-    CRITIC_CRITIQUE_FORMAT_HOTPOTQA
+    CRITIC_INSTRUCTION_TRIVIAQA,
+    CRITIC_CRITIQUE_INSTRUCTION_TRIVIAQA,
+    
 )
+
+BENCHMARK_PROMPTS = {
+    'hotpotqa': CRITIC_INSTRUCTION_HOTPOTQA,
+    'triviaqa': CRITIC_INSTRUCTION_TRIVIAQA,
+    # Add more mappings as necessary
+}
+
+BENCHMARK_PROMPTS_CRITIQUE ={
+    'hotpotqa': CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
+    'triviaqa': CRITIC_CRITIQUE_INSTRUCTION_TRIVIAQA,
+}
+
 
 
 def _build_agent_prompt(
     question: str,
     examples: str, 
-    prompt: str = CRITIC_INSTRUCTION_HOTPOTQA
+    benchmark: str
 ) -> str:
-    prompt = PromptTemplate.from_template(prompt).format(
+    if benchmark in BENCHMARK_PROMPTS:
+        prompt = BENCHMARK_PROMPTS[benchmark]
+        
+    else:
+        raise ValueError(f"Unsupported benchmark: {benchmark}")
+    
+    formatted_prompt = PromptTemplate.from_template(prompt).format(
         question=question,
         examples=examples
     )
-    return prompt
+    return formatted_prompt
 
 
 def _prompt_agent(
     llm: BaseChatModel,
     question: str,
     examples: str,
-    prompt: str = CRITIC_INSTRUCTION_HOTPOTQA
+    benchmark: str
 ) -> str:
-    prompt = _build_agent_prompt(
+
+    formatted_prompt = _build_agent_prompt(
         question=question,
         examples=examples,
-        prompt=prompt
+        benchmark=benchmark
     )
+
     out = llm(
         [
             HumanMessage(
-                content=prompt,
+                content=formatted_prompt,
             )
         ]
     ).content
-
+    assert isinstance(out, str)
     return out
 
 
@@ -48,14 +70,34 @@ def _build_critique_prompt(
     question: str,
     examples: str, 
     answer: str,
-    prompt: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA
+    benchmark: str,
+    critique: str = ""
 ) -> str:
-    prompt = PromptTemplate.from_template(prompt).format(
+    
+    if benchmark in BENCHMARK_PROMPTS_CRITIQUE:
+        prompt = BENCHMARK_PROMPTS_CRITIQUE[benchmark]
+    else:
+        raise ValueError(f"Unsupported benchmark: {benchmark}")
+    
+    # print('_build_critique_prompt')
+    # print('-------------------------')
+    # print('question',question)
+    # print('-------------------------')
+    # print('example',examples)
+    # print('-------------------------')
+    # print('answer',answer)
+    # print('--------------------')
+    # print('benchmark :',prompt)
+    # print('--------------------')
+    # print('critique :',critique)
+    
+    formatted_prompt = PromptTemplate.from_template(prompt).format(
         question=question,
         examples=examples,
-        answer=answer
+        answer=answer,
+        critique=critique
     )
-    return prompt
+    return formatted_prompt
 
 
 def _prompt_critique(
@@ -63,36 +105,41 @@ def _prompt_critique(
     question: str,
     examples: str,
     answer: str,
-    prompt: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA
+    benchmark: str,
+    critique: str = ""
 ) -> str:
-    prompt = _build_critique_prompt(
+    
+    # print('question',question)
+    # print('-------------------------')
+    # print('example',examples)
+    # print('-------------------------')
+    # print('answer',answer)
+    # print('--------------------')
+    # print('benchmark',benchmark)
+    # print('--------------------')
+    # print('critique',critique)
+    
+    formatted_prompt = _build_critique_prompt(
         question=question,
         examples=examples,
         answer=answer,
-        prompt=prompt
+        critique=critique,
+        benchmark=benchmark
     )
+
+    # print('formatted_prompt',formatted_prompt)
+
     out = llm(
         [
             HumanMessage(
-                content=prompt,
+                content=formatted_prompt,
             )
         ]
     ).content
 
+    assert isinstance(out, str)
+
     return out
 
 
-def _build_critique_format_prompt(
-    question: str,
-    examples: str, 
-    answer: str,
-    critique: str,
-    prompt: str = CRITIC_CRITIQUE_FORMAT_HOTPOTQA
-) -> str:
-    prompt = PromptTemplate.from_template(prompt).format(
-        question=question,
-        examples=examples,
-        answer=answer,
-        critique=critique
-    )
-    return prompt
+
