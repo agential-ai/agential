@@ -14,6 +14,16 @@ def _build_agent_prompt(
     examples: str, 
     prompt: str = CRITIC_INSTRUCTION_HOTPOTQA
 ) -> str:
+    """Builds a prompt for questioning the agent using a template.
+
+    Parameters:
+        question (str): The question to be answered by the agent.
+        examples (str): Contextual examples related to the question.
+        prompt (str): Prompt template string. Defaults to CRITIC_INSTRUCTION_HOTPOTQA.
+
+    Returns:
+        str: A formatted prompt ready for use with the language model.
+    """
     prompt = PromptTemplate.from_template(prompt).format(
         question=question,
         examples=examples
@@ -27,6 +37,17 @@ def _prompt_agent(
     examples: str,
     prompt: str = CRITIC_INSTRUCTION_HOTPOTQA
 ) -> str:
+    """Prompts the agent to answer a question using the language model.
+
+    Parameters:
+        llm (BaseChatModel): The language model to use for generating the answer.
+        question (str): The question to be answered.
+        examples (str): Contextual examples relevant to the question.
+        prompt (str): Prompt template string. Defaults to CRITIC_INSTRUCTION_HOTPOTQA.
+
+    Returns:
+        str: The answer from the language model, with no leading or trailing whitespace.
+    """
     prompt = _build_agent_prompt(
         question=question,
         examples=examples,
@@ -50,6 +71,18 @@ def _build_critique_prompt(
     critique: str = "",
     prompt: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA
 ) -> str:
+    """Builds a critique prompt for the agent using a template.
+
+    Parameters:
+        question (str): The original question related to the answer.
+        examples (str): Contextual examples used in the question.
+        answer (str): The agent's answer to the question.
+        critique (str, optional): Additional critique information.
+        prompt (str): Prompt template string. Defaults to CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA.
+
+    Returns:
+        str: A formatted critique prompt ready for use with the language model.
+    """
     prompt = PromptTemplate.from_template(prompt).format(
         question=question,
         examples=examples,
@@ -67,6 +100,19 @@ def _prompt_critique(
     critique: str = "",
     prompt: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA
 ) -> str:
+    """Prompts the agent for a critique of an answer using the language model.
+
+    Parameters:
+        llm (BaseChatModel): The language model to use for generating the critique.
+        question (str): The question related to the answer.
+        examples (str): Contextual examples related to the question.
+        answer (str): The answer to critique.
+        critique (str, optional): Initial critique to refine the response.
+        prompt (str): Prompt template string. Defaults to CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA.
+
+    Returns:
+        str: The critique from the language model, with no leading or trailing whitespace.
+    """
     prompt = _build_critique_prompt(
         question=question,
         examples=examples,
