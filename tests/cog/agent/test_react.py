@@ -1,6 +1,5 @@
 """Unit tests for ReAct."""
 from langchain.agents.react.base import DocstoreExplorer
-from langchain.llms.fake import FakeListLLM
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
@@ -8,7 +7,6 @@ from tiktoken import Encoding
 from discussion_agents.cog.agent.react import (
     ReActAgent,
     ReActOutput,
-    ZeroShotReActAgent,
 )
 from discussion_agents.cog.modules.memory.react import ReActMemory
 from discussion_agents.cog.prompts.react import (
@@ -145,12 +143,3 @@ def test_retrieve(react_agent: ReActAgent) -> None:
     assert isinstance(out, dict)
     assert "scratchpad" in out
     assert not out["scratchpad"]
-
-
-def test_zeroshot_react_init() -> None:
-    """Tests ZeroShotReActAgent's initialization."""
-    agent = ZeroShotReActAgent(llm=FakeListLLM(responses=["1"]))
-    assert agent is not None
-    assert agent.llm is not None
-    assert len(agent.tools) >= 1
-    assert agent.agent is not None
