@@ -53,6 +53,9 @@ def _prompt_agent(
         examples=examples,
         prompt=prompt
     )
+    print("<PROMPT========================================================================>")
+    print(prompt)
+    print("<PROMPT========================================================================>")
     out = llm(
         [
             HumanMessage(
@@ -60,6 +63,9 @@ def _prompt_agent(
             )
         ]
     ).content
+    print("<OUT========================================================================>")
+    print(repr(out))
+    print("<OUT========================================================================>")
 
     return out
 
@@ -119,7 +125,10 @@ def _prompt_critique(
         answer=answer,
         critique=critique,
         prompt=prompt
-    )
+    )    
+    print("<PROMPT CRITIQUE========================================================================>")
+    print(prompt)
+    print("<PROMPT CRITIQUE========================================================================>")
     out = llm(
         [
             HumanMessage(
@@ -127,5 +136,7 @@ def _prompt_critique(
             )
         ]
     ).content
-
+    print("<OUT CRITIQUE========================================================================>")
+    print(repr(out))
+    print("<OUT CRITIQUE========================================================================>")
     return out
