@@ -96,3 +96,20 @@ def _build_critique_format_prompt(
         critique=critique
     )
     return prompt
+
+def extract_cot_answer(cot):
+    if not cot:
+        return ""
+
+    # get answer
+    cot = cot.strip(" ")
+    cot = cot.split("<|endoftext|>")[0]  # text-davinci-003
+    TEMPLATE = "is: "
+    if TEMPLATE not in cot:
+        return ""
+
+    start_idx = cot.rfind(TEMPLATE) + len(TEMPLATE)
+    end_idx = -1 if cot.endswith(".") else len(cot)
+    ans_span = cot[start_idx: end_idx].strip()
+
+    return ans_span

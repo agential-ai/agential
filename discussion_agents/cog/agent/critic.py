@@ -8,7 +8,7 @@ from typing import Any
 from discussion_agents.cog.agent.base import BaseAgent
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
-from discussion_agents.cog.functional.critic import _prompt_agent, _prompt_critique, _build_critique_format_prompt
+from discussion_agents.cog.functional.critic import _prompt_agent, _prompt_critique, _build_critique_format_prompt , extract_cot_answer
 from discussion_agents.cog.prompts.critic import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT, 
     CRITIC_INSTRUCTION_HOTPOTQA,
@@ -16,6 +16,7 @@ from discussion_agents.cog.prompts.critic import (
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
     CRITIC_CRITIQUE_FORMAT_HOTPOTQA
 )
+import re
 
 class CriticAgent(BaseAgent):
     def __init__(
@@ -78,7 +79,9 @@ class CriticAgent(BaseAgent):
                             exist_evidence.add(search_result['snippet'])
                             break
 
+                    
                     context = f"""> Evidence: [{search_result['title']}] {search_result['snippet'][:evidence_length]}\n\n"""
+                    
                     if idx == max_interactions - 2:
                         context += f"Let's give the most possible answer.\n\nQuestion: {question}\nHere's "
                 else:
@@ -93,3 +96,10 @@ class CriticAgent(BaseAgent):
                 if not critique:
                     break
                 formatted_critique += f"Let's give the most possible answer.\n\nQuestion: {question}\nHere's "
+
+
+        
+
+
+        
+
