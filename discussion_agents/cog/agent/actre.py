@@ -11,12 +11,12 @@ React Paper Repository: https://github.com/ysymyth/ReAct
 """
 import random
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Union
 
 import tiktoken
 
 from langchain.agents.react.base import DocstoreExplorer
-from langchain.schema import AIMessage, HumanMessage
+from langchain.schema import HumanMessage
 from langchain_community.docstore.wikipedia import Wikipedia
 from langchain_core.language_models.chat_models import BaseChatModel
 from pydantic import BaseModel, Field
@@ -70,7 +70,7 @@ class ActReAgent(BaseAgent):
 
     def synthesize_reason(
         self, observation: str, action: str
-    ) -> str | list[str | dict[Any, Any]]:
+    ) -> Union[str, List[Union[str, Dict[Any, Any]]]]:
         """Synthesizes the reasoning for a given observation and action."""
         prompt = (
             f"Observation: {observation}\n"

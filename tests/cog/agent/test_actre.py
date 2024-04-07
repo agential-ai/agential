@@ -2,7 +2,6 @@
 import pytest
 
 from langchain.agents.react.base import DocstoreExplorer
-from langchain.llms.fake import FakeListLLM
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
