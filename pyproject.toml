@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "discussion_agents"
-version = "0.1.0"
+version = "0.0.1"
 description = "A flexible agent library."
 authors = ["Vincent Tu <tuvincent0106@gmail.com>"]
 license = "MIT"
