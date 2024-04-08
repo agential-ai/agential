@@ -141,7 +141,6 @@ What's the problem with the above answer?
 {critique}"""
 
 
-
 HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC = """Question: Serianna is a band of what genre that combines elements of heavy metal and hardcore punk?
 Proposed Answer: Let's think step by step. Serianna is a band of metalcore genre. Metalcore is a subgenre of heavy metal and hardcore punk. So Serianna is a band of heavy metal and hardcore punk. So the answer is: heavy metal and hardcore punk.
 
@@ -358,9 +357,6 @@ Here's the most possible answer: Let's think step by step. The 2016 Russian nati
 ---"""
 
 
-
-
-
 CRITIC_INSTRUCTION_TRIVIAQA = """{examples}
 (END OF EXAMPLES)
 
@@ -480,7 +476,6 @@ What's the problem with the above answer?
 1. Plausibility:
 
 {critique}"""
-
 
 
 TRIVIAQA_FEWSHOT_EXAMPLES_CRITIC = """
