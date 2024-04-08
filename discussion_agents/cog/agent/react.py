@@ -1,11 +1,9 @@
-"""ReAct Agent implementation and LangChain's zero-shot ReAct.
+"""ReAct Agent implementation.
 
 This includes the original ReAct agent implementation
 
 Original Paper: https://arxiv.org/abs/2210.03629
 Paper Repository: https://github.com/ysymyth/ReAct
-LangChain: https://github.com/langchain-ai/langchain
-LangChain ReAct: https://python.langchain.com/docs/modules/agents/agent_types/react
 """
 from typing import Any, Dict, List, Optional
 
