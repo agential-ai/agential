@@ -141,7 +141,3 @@ def _prompt_critique(
     assert isinstance(out, str)
 
     return out
-<<<<<<< HEAD
-=======
-
->>>>>>> 59d72df6e4bd3e0800dd0ecd0dc713c26972fd54
