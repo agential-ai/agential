@@ -61,6 +61,7 @@ class CriticAgent(BaseAgent):
             str: The most refined answer after the specified number of critique iterations, or until
             a satisfactory answer is reached.
         """
+        print(benchmark_prompt)
         if benchmark_prompt == "hotpotqa":
             examples = HOTPOTQA_FEWSHOT_EXAMPLES_COT
             critique_examples = HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC
