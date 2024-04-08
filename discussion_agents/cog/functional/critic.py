@@ -141,5 +141,3 @@ def _prompt_critique(
 
     return out
 
-
-

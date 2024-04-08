@@ -113,9 +113,3 @@ class CriticAgent(BaseAgent):
                 out += f"\nLet's give the most possible answer.\n\nQuestion: {question}\nHere's "
 
         return revised_answer
-
-        
-
-
-        
-
