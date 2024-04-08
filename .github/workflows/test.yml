@@ -54,6 +54,9 @@ jobs:
         poetry install --with dev
 
     - name: Run Tests
+      env:
+        GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        GOOGLE_CSE_ID: ${{ secrets.GOOGLE_CSE_ID }}
       run: |
         make test
 
