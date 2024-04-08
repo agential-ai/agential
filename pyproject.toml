@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "discussion_agents"
-version = "0.1.0"
+version = "0.0.1"
 description = "A flexible agent library."
 authors = ["Vincent Tu <tuvincent0106@gmail.com>"]
 license = "MIT"
@@ -30,6 +30,7 @@ langchain = "^0.0.354"
 langchainhub = "^0.1.14"
 langchain-core = "^0.1.5"
 pandas = "1.5.3"
+google-api-python-client = ">=2.100.0"
 
 [tool.poetry.group.dev.dependencies]
 sphinx = "^7.2.6"

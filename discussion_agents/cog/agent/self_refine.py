@@ -60,6 +60,7 @@ class SelfRefineAgent(BaseAgent):
         prompt: str = SELF_REFINE_INSTRUCTION_GSM8K,
         feedback_examples: str = GSM8K_FEEDBACK_FEWSHOT_EXAMPLES,
         feedback_prompt: str = SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K,
+        feedback_format: str = SELF_REFINE_FEEDBACK_EXAMPLE_FORMAT_GSM8K,
         refine_examples: str = GSM8K_REFINE_FEWSHOT_EXAMPLES,
         refine_prompt: str = SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
         max_attempts: int = 3,
@@ -72,12 +73,13 @@ class SelfRefineAgent(BaseAgent):
 
         Args:
             question (str): The question or problem to solve.
-            examples (str): Precedent examples to guide initial solution generation.
-            prompt (str): Instructional prompt for initial solution generation.
-            feedback_examples (str): Precedent examples to guide feedback generation.
-            feedback_prompt (str): Instructional prompt for feedback generation.
-            refine_examples (str): Precedent examples to guide solution refinement.
-            refine_prompt (str): Instructional prompt for refining the solution.
+            examples (str): Precedent examples to guide initial solution generation. Defaults to GSM8K_FEWSHOT_EXAMPLES.
+            prompt (str): Instructional prompt for initial solution generation. Defaults to SELF_REFINE_INSTRUCTION_GSM8K.
+            feedback_examples (str): Precedent examples to guide feedback generation. Defaults to GSM8K_FEEDBACK_FEWSHOT_EXAMPLES.
+            feedback_prompt (str): Instructional prompt for feedback generation. Defaults to SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K.
+            feedback_format (str): Format for continuously updating the feedback fewshot examples. Defaults to SELF_REFINE_FEEDBACK_EXAMPLE_FORMAT_GSM8K.
+            refine_examples (str): Precedent examples to guide solution refinement. Defaults to GSM8K_REFINE_FEWSHOT_EXAMPLES.
+            refine_prompt (str): Instructional prompt for refining the solution. Defaults to SELF_REFINE_REFINE_INSTRUCTION_GSM8K.
             max_attempts (int): Maximum number of refinement iterations.
             reset (bool): Resets the agent's state. Defaults to True.
 
@@ -118,7 +120,7 @@ class SelfRefineAgent(BaseAgent):
 
                 # Continuously update solution & feedback examples.
                 feedback_examples = PromptTemplate.from_template(
-                    SELF_REFINE_FEEDBACK_EXAMPLE_FORMAT_GSM8K
+                    feedback_format
                 ).format(
                     examples=feedback_examples,
                     solution=solution,
