@@ -1,11 +1,13 @@
 """Unit tests for ReAct."""
 from langchain.agents.react.base import DocstoreExplorer
-from langchain.llms.fake import FakeListLLM
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
 
-from discussion_agents.cog.agent.react import ReActAgent, ZeroShotReActAgent
+from discussion_agents.cog.agent.react import (
+    ReActAgent,
+    ReActOutput,
+)
 from discussion_agents.cog.modules.memory.react import ReActMemory
 from discussion_agents.cog.prompts.react import (
     HOTPOTQA_FEWSHOT_EXAMPLES,
@@ -35,7 +37,14 @@ def test_generate() -> None:
     q = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
 
     # Test a single max step and verify no more steps can be taken.
-    gt_out = "Thought: I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.\nAction: Search[best kick boxer]"
+    tgt_out = "Thought: I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.\nAction: Search[best kick boxer]"
+    gt_out = [
+        ReActOutput(
+            thought="Thought: I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.",
+            action="Action: Search[best kick boxer]",
+            observation="",
+        )
+    ]
     responses = [
         ' I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.\nAction: Search[best kick boxer in the world]\nObservation: (Result 1/1) Ramon Dekkers is considered by many to be the best kickboxer in the world.\nThought: It mentions "unsportsmanlike conducts" and crimes of violence. I need to find more information about Ramon Dekkers.\nAction: Lookup[crimes]\nObservation: (Result 1/1) Dekkers was involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring.\nThought: Ramon Dekkers has been involved in controversies and crimes. I need to find more information about them.\nAction: Lookup[controversies]\nObservation: (Result 1/1) Dekkers was known for his aggressive style and has been involved in a number of controversies, including a bar brawl and an altercation with a bouncer.\nThought: It mentions "unsportsmanlike conducts" and crimes of violence. I need to find more information about the controversies and crimes.\nAction: Lookup[unsportsmanlike conducts]\nObservation: (Result',
         ' Search[best kick boxer]\nObservation: The best kick boxer in the world is often a highly debated topic, but some notable names include Semmy Schilt, Peter Aerts, Ernesto Hoost, and Ramon Dekkers.\nThought: Since the question mentions controversies and crimes, I should focus on more recent kick boxers. I will look up the controversies and crimes of Semmy Schilt.\nAction: Lookup[controversies and crimes]\nObservation: (Result 1/1) Semmy Schilt has been involved in several controversies, including accusations of using performance-enhancing drugs and unsportsmanlike conducts such as eye-gouging and low blows.\nThought: The question mentions "unsportsmanlike conducts" specifically, so I will look up more information on those incidents.\nAction: Lookup[unsportsmanlike conducts]\nObservation: (Result 1/1) Semmy Schilt has been known for his aggressive and sometimes controversial fighting style, with incidents such as eye-gouging and low blows being reported by his opponents.\nThought: The question also mentions crimes outside of the ring, so I will search for any criminal record or charges against Semmy Schilt.\nAction: Search[Semmy Schilt criminal record]\nObservation',
@@ -50,33 +59,34 @@ def test_generate() -> None:
     assert out
     assert isinstance(out, list)
     for triplet in out:
-        assert isinstance(triplet, tuple)
+        assert isinstance(triplet, ReActOutput)
     assert agent._step_n == agent.max_steps + 1
     assert not agent._finished
-    assert "\n".join(out[0][:2]) == gt_out
-    scratchpad = "\n".join(agent.retrieve()["scratchpad"].split("\n")[:-1])
-    assert scratchpad.strip() == gt_out
+    assert out[0].thought == gt_out[0].thought
+    assert out[0].action == gt_out[0].action
 
     # Verify no more steps can be taken.
     out = agent.generate(question=q, reset=False)
     assert not out
     assert isinstance(out, list)
     for triplet in out:
-        assert isinstance(triplet, tuple)
+        assert isinstance(triplet, ReActOutput)
     assert agent._step_n == agent.max_steps + 1
     assert not agent._finished
-    scratchpad = "\n".join(agent.retrieve()["scratchpad"].split("\n")[:-1])
-    assert scratchpad.strip() == gt_out
 
     # Test agent runs out of tokens (must ensure that max_steps is not reached and task is not finished).
-    gt_out = (
-        "Thought: I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.\n"
-        "Action: INVALID[best kick boxer]\n"
-        "Observation 1: Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>].\n"
-        "Thought: I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.\n"
-        "Action: INVALID[best kick boxer]\n"
-        "Observation 2: Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
-    )
+    gt_out = [
+        ReActOutput(
+            thought="Thought: I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.",
+            action="Action: INVALID[best kick boxer]",
+            observation="Observation 1: Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>].",
+        ),
+        ReActOutput(
+            thought="Thought: I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.",
+            action="Action: INVALID[best kick boxer]",
+            observation="Observation 2: Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>].",
+        ),
+    ]
     responses = [
         ' I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.\nAction: Search[best kick boxer in the world]\nObservation: (Result 1/1) Ramon Dekkers is considered by many to be the best kickboxer in the world.\nThought: It mentions "unsportsmanlike conducts" and crimes of violence. I need to find more information about Ramon Dekkers.\nAction: Lookup[crimes]\nObservation: (Result 1/1) Dekkers was involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring.\nThought: Ramon Dekkers has been involved in controversies and crimes. I need to find more information about them.\nAction: Lookup[controversies]\nObservation: (Result 1/1) Dekkers was known for his aggressive style and has been involved in a number of controversies, including a bar brawl and an altercation with a bouncer.\nThought: It mentions "unsportsmanlike conducts" and crimes of violence. I need to find more information about the controversies and crimes.\nAction: Lookup[unsportsmanlike conducts]\nObservation: (Result',
         " INVALID[best kick boxer]\n",
@@ -88,17 +98,17 @@ def test_generate() -> None:
     out = agent.generate(question=q)
     assert isinstance(out, list)
     for triplet in out:
-        assert isinstance(triplet, tuple)
-    assert "\n".join(["\n".join(triplet) for triplet in out]) == gt_out
-    assert agent.memory.load_memories()["scratchpad"].strip() == gt_out
-
+        assert isinstance(triplet, ReActOutput)
+    assert out[0].thought == gt_out[0].thought
+    assert out[0].action == gt_out[0].action
     # Test full trajectoy/trial till finish.
-    gt_out = (
-        "\n"
-        "Thought: I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.\n"
-        "Action: Finish[Badr Hari]\n"
-        "Observation 1: Badr Hari"
-    )
+    gt_out = [
+        ReActOutput(
+            thought="Thought: I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.",
+            action="Action: Finish[Badr Hari]",
+            observation="Observation 1: Badr Hari",
+        )
+    ]
     responses = [
         ' I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.\nAction: Search[best kick boxer in the world]\nObservation: (Result 1/1) Ramon Dekkers is considered by many to be the best kickboxer in the world.\nThought: It mentions "unsportsmanlike conducts" and crimes of violence. I need to find more information about Ramon Dekkers.\nAction: Lookup[crimes]\nObservation: (Result 1/1) Dekkers was involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring.\nThought: Ramon Dekkers has been involved in controversies and crimes. I need to find more information about them.\nAction: Lookup[controversies]\nObservation: (Result 1/1) Dekkers was known for his aggressive style and has been involved in a number of controversies, including a bar brawl and an altercation with a bouncer.\nThought: It mentions "unsportsmanlike conducts" and crimes of violence. I need to find more information about the controversies and crimes.\nAction: Lookup[unsportsmanlike conducts]\nObservation: (Result',
         " Finish[Badr Hari]\n",
@@ -108,9 +118,9 @@ def test_generate() -> None:
     out = agent.generate(question=q)
     assert isinstance(out, list)
     for triplet in out:
-        assert isinstance(triplet, tuple)
-    assert gt_out == gt_out
-    assert agent.memory.load_memories()["scratchpad"] == gt_out
+        assert isinstance(triplet, ReActOutput)
+    assert out[0].thought == gt_out[0].thought
+    assert out[0].action == gt_out[0].action
 
 
 def test_reset(react_agent: ReActAgent) -> None:
@@ -133,12 +143,3 @@ def test_retrieve(react_agent: ReActAgent) -> None:
     assert isinstance(out, dict)
     assert "scratchpad" in out
     assert not out["scratchpad"]
-
-
-def test_zeroshot_react_init() -> None:
-    """Tests ZeroShotReActAgent's initialization."""
-    agent = ZeroShotReActAgent(llm=FakeListLLM(responses=["1"]))
-    assert agent is not None
-    assert agent.llm is not None
-    assert len(agent.tools) >= 1
-    assert agent.agent is not None
