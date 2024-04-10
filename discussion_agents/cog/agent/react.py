@@ -9,11 +9,9 @@ from typing import Any, Dict, List, Optional
 
 import tiktoken
 
-from langchain import hub
 from langchain.agents.react.base import DocstoreExplorer
 from langchain_community.docstore.wikipedia import Wikipedia
 from langchain_core.language_models.chat_models import BaseChatModel
-from langchain_core.tools import tool
 from pydantic import BaseModel, Field
 from tiktoken.core import Encoding
 
@@ -197,10 +195,3 @@ class ReActAgent(BaseAgent):
         self._step_n = 1
         self._finished = False
         self.memory.clear()
-
-
-@tool
-def search(query: str) -> str:
-    """Searches Wikipedia given query."""
-    docstore = DocstoreExplorer(Wikipedia())
-    return docstore.search(query)
