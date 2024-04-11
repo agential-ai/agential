@@ -46,14 +46,14 @@ def _prompt_agent(
     Returns:
         str: The answer from the language model, with no leading or trailing whitespace.
     """
-    formatted_prompt = _build_agent_prompt(
+    prompt = _build_agent_prompt(
         question=question, examples=examples, prompt=prompt
     )
 
     out = llm(
         [
             HumanMessage(
-                content=formatted_prompt,
+                content=prompt,
             )
         ]
     ).content
@@ -80,10 +80,10 @@ def _build_critique_prompt(
     Returns:
         str: A formatted critique prompt ready for use with the language model.
     """
-    formatted_prompt = PromptTemplate.from_template(prompt).format(
+    prompt = PromptTemplate.from_template(prompt).format(
         question=question, examples=examples, answer=answer, critique=critique
     )
-    return formatted_prompt
+    return prompt
 
 
 def _prompt_critique(
@@ -107,7 +107,7 @@ def _prompt_critique(
     Returns:
         str: The critique from the language model, with no leading or trailing whitespace.
     """
-    formatted_prompt = _build_critique_prompt(
+    prompt = _build_critique_prompt(
         question=question,
         examples=examples,
         answer=answer,
@@ -118,7 +118,7 @@ def _prompt_critique(
     out = llm(
         [
             HumanMessage(
-                content=formatted_prompt,
+                content=prompt,
             )
         ]
     ).content
