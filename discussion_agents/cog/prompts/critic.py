@@ -477,9 +477,7 @@ What's the problem with the above answer?
 {critique}"""
 
 
-TRIVIAQA_FEWSHOT_EXAMPLES_CRITIC = """
-
-Question: Which innovation for the car was developed by Prince Henry of Prussia in 1911? 
+TRIVIAQA_FEWSHOT_EXAMPLES_CRITIC = """Question: Which innovation for the car was developed by Prince Henry of Prussia in 1911? 
 
 Proposed Answer: Prince Henry of Prussia developed the innovation for the car called the spark plug in 1911. So the answer is: Spark plug.
 
