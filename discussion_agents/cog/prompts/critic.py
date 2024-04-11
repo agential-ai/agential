@@ -618,7 +618,4 @@ The evidence shows North Carolina entered Union in 1789, and Rhode Island entere
 This support the proposed answer.
 
 Question: What state had its bi-centenary of joining the Union a year after North Carolina?
-Here's the most possible answer: Rhode Island had its bi-centenary of joining the Union a year after North Carolina. So the answer is: Rhode Island.
-
-
-"""
+Here's the most possible answer: Rhode Island had its bi-centenary of joining the Union a year after North Carolina. So the answer is: Rhode Island."""
