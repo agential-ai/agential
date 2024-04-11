@@ -370,7 +370,7 @@ Q: {question}
 A: """
 
 
-TRIVIAQA_FEWSHOT_EXAMPLES_COT = """ Q: Mendelssohn's 'Wedding March' was. originally written as incidental music for which Shakespeare play in 1842? 
+TRIVIAQA_FEWSHOT_EXAMPLES_COT = """Q: Mendelssohn's 'Wedding March' was. originally written as incidental music for which Shakespeare play in 1842? 
 A: Mendelssohn's 'Wedding March' was originally written as incidental music for A Midsummer Night's Dream in 1842. So the answer is: A Midsummer Night's Dream.
 
 Q: Christ in the House of his Parents"" is one of the best known paintings of which artist?" 
@@ -416,13 +416,9 @@ Q: What chemical makes hot peppers hot?
 A: Capscaicin
 
 Q: What term applies to an engine comprising two banks of four cylinders inclined towards each other, with a common crankshaft? 
-A: V8 engine
+A: V8 engine"""
 
-
-"""
-
-TRIVIAQA_FEWSHOT_EXAMPLES_REACT = """
-Question: Which innovation for the car was developed by Prince Henry of Prussia in 1911? 
+TRIVIAQA_FEWSHOT_EXAMPLES_REACT = """Question: Which innovation for the car was developed by Prince Henry of Prussia in 1911? 
 Thought 1: Let's search the question in google
 Action 1: Search[Which innovation for the car was developed by Prince Henry of Prussia in 1911? site: wikipedia.org]
 Observation 1: [Prince Henry of Prussia (1862–1929) - Wikipedia] Henry was interested in motor cars as well and supposedly invented a windshield wiper and, according to other sources, the car horn.
@@ -466,10 +462,7 @@ Thought 3: Not enough evidence, we need further search.
 Action 3: Search[What state joined the Union a year after North Carolina?] 
 Observation 3: [States by Order of Entry into Union - Infoplease] Joining the Union | State | Entered Union | Year Settled | | North Carolina | Nov. 21, 1789 | 1660 | | Rhode Island | May 29, 1790 | 1636 | | Vermont | Mar. 4, 1791 | 1724 | 
 Thought 4: The evidence shows North Carolina entered Union in 1789, and Rhode Island entered Union in 1790, which is a year after North Carolina. 
-Action 4: Finish[Rhode Island]
-
-
-"""
+Action 4: Finish[Rhode Island]"""
 
 CRITIC_CRITIQUE_INSTRUCTION_TRIVIAQA = """{examples}
 (END OF EXAMPLES)
@@ -631,7 +624,4 @@ The evidence shows North Carolina entered Union in 1789, and Rhode Island entere
 This support the proposed answer.
 
 Question: What state had its bi-centenary of joining the Union a year after North Carolina?
-Here's the most possible answer: Rhode Island had its bi-centenary of joining the Union a year after North Carolina. So the answer is: Rhode Island.
-
-
-"""
+Here's the most possible answer: Rhode Island had its bi-centenary of joining the Union a year after North Carolina. So the answer is: Rhode Island."""
