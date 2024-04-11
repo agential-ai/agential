@@ -6,9 +6,7 @@ from langchain_core.messages.human import HumanMessage
 
 from discussion_agents.cog.prompts.critic import (
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
-    CRITIC_CRITIQUE_INSTRUCTION_TRIVIAQA,
     CRITIC_INSTRUCTION_HOTPOTQA,
-    CRITIC_INSTRUCTION_TRIVIAQA,
 )
 
 
