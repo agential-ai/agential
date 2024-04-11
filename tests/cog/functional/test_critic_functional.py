@@ -37,7 +37,7 @@ def test__build_critique_prompt(benchmark) -> None:
     """Test _build_critique_prompt function."""
     gt_out = "\n(END OF EXAMPLES)\n\nQuestion: \nProposed Answer: \n\nWhat's the problem with the above answer?\n\n1. Plausibility:\n\n"
     prompt = _build_critique_prompt(
-        question="", examples="", answer="", benchmark=benchmark, critique=""
+        question="", examples="", answer=""
     )
     assert prompt == gt_out
 

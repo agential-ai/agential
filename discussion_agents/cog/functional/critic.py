@@ -11,43 +11,27 @@ from discussion_agents.cog.prompts.critic import (
     CRITIC_INSTRUCTION_TRIVIAQA,
 )
 
-BENCHMARK_PROMPTS = {
-    "hotpotqa": CRITIC_INSTRUCTION_HOTPOTQA,
-    "triviaqa": CRITIC_INSTRUCTION_TRIVIAQA,
-    # Add more mappings as necessary
-}
 
-BENCHMARK_PROMPTS_CRITIQUE = {
-    "hotpotqa": CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
-    "triviaqa": CRITIC_CRITIQUE_INSTRUCTION_TRIVIAQA,
-}
-
-
-def _build_agent_prompt(question: str, examples: str, benchmark: str) -> str:
+def _build_agent_prompt(question: str, examples: str, prompt: str = CRITIC_INSTRUCTION_HOTPOTQA) -> str:
     """Builds a prompt for questioning the agent using a template.
 
     Parameters:
         question (str): The question to be answered by the agent.
         examples (str): Contextual examples related to the question.
-        prompt_benchmark (str): Prompt template string. Select Prompt from Benchmark dict
+        prompt (str): Prompt template string. Defaults to CRITIC_INSTRUCTION_HOTPOTQA.
 
     Returns:
         str: A formatted prompt ready for use with the language model.
     """
-    if benchmark in BENCHMARK_PROMPTS:
-        prompt = BENCHMARK_PROMPTS[benchmark]
 
-    else:
-        raise ValueError(f"Unsupported benchmark: {benchmark}")
-
-    formatted_prompt = PromptTemplate.from_template(prompt).format(
+    prompt = PromptTemplate.from_template(prompt).format(
         question=question, examples=examples
     )
-    return formatted_prompt
+    return prompt
 
 
 def _prompt_agent(
-    llm: BaseChatModel, question: str, examples: str, benchmark: str
+    llm: BaseChatModel, question: str, examples: str, prompt: str = CRITIC_INSTRUCTION_HOTPOTQA
 ) -> str:
     """Prompts the agent to answer a question using the language model.
 
@@ -55,13 +39,13 @@ def _prompt_agent(
         llm (BaseChatModel): The language model to use for generating the answer.
         question (str): The question to be answered.
         examples (str): Contextual examples relevant to the question.
-        prompt_benchmark (str): Prompt template string. Select Prompt from Benchmark dict
+        prompt (str): Prompt template string. Defaults to CRITIC_INSTRUCTION_HOTPOTQA.
 
     Returns:
         str: The answer from the language model, with no leading or trailing whitespace.
     """
     formatted_prompt = _build_agent_prompt(
-        question=question, examples=examples, benchmark=benchmark
+        question=question, examples=examples, prompt=prompt
     )
 
     out = llm(
@@ -76,7 +60,7 @@ def _prompt_agent(
 
 
 def _build_critique_prompt(
-    question: str, examples: str, answer: str, benchmark: str, critique: str = ""
+    question: str, examples: str, answer: str, critique: str = "", prompt: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA
 ) -> str:
     """Builds a critique prompt for the agent using a template.
 
@@ -85,15 +69,11 @@ def _build_critique_prompt(
         examples (str): Contextual examples used in the question.
         answer (str): The agent's answer to the question.
         critique (str, optional): Additional critique information.
-        prompt_benchmark (str): Prompt template string. Select Prompt from Benchmark dict
+        prompt (str): Prompt template string. Defaults to CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA.
 
     Returns:
         str: A formatted critique prompt ready for use with the language model.
     """
-    if benchmark in BENCHMARK_PROMPTS_CRITIQUE:
-        prompt = BENCHMARK_PROMPTS_CRITIQUE[benchmark]
-    else:
-        raise ValueError(f"Unsupported benchmark: {benchmark}")
 
     formatted_prompt = PromptTemplate.from_template(prompt).format(
         question=question, examples=examples, answer=answer, critique=critique
@@ -106,8 +86,8 @@ def _prompt_critique(
     question: str,
     examples: str,
     answer: str,
-    benchmark: str,
     critique: str = "",
+    prompt: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
 ) -> str:
     """Prompts the agent for a critique of an answer using the language model.
 
@@ -117,7 +97,7 @@ def _prompt_critique(
         examples (str): Contextual examples related to the question.
         answer (str): The answer to critique.
         critique (str, optional): Initial critique to refine the response.
-        prompt_benchmark (str): Prompt template string. Select Prompt from Benchmark dict
+        prompt (str): Prompt template string. Defaults to CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA.
 
     Returns:
         str: The critique from the language model, with no leading or trailing whitespace.
@@ -127,7 +107,7 @@ def _prompt_critique(
         examples=examples,
         answer=answer,
         critique=critique,
-        benchmark=benchmark,
+        prompt=prompt,
     )
 
     out = llm(

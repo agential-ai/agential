@@ -1,6 +1,9 @@
 """CRITIC prompts and fewshot examples."""
 
 
+# ======================================================================== HOTPOTQA ======================================================================== #
+
+
 CRITIC_INSTRUCTION_HOTPOTQA = """{examples}
 (END OF EXAMPLES)
 
@@ -355,6 +358,9 @@ Question: Who won the 2016 Russian national silver medal with another Russian ic
 Here's the most possible answer: Let's think step by step. The 2016 Russian national silver medal in ice dancing was won by Victoria Sinitsina and Nikita Katsalapov. Victoria Sinitsina was born on April 29, 1995. So the answer is: Nikita Katsalapov.
 
 ---"""
+
+
+# ======================================================================== TRIVIAQA ======================================================================== #
 
 
 CRITIC_INSTRUCTION_TRIVIAQA = """{examples}

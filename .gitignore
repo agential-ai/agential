@@ -2,6 +2,7 @@
 __pycache__/
 
 # Distribution / packaging
+dist/
 
 # Unit test / coverage reports
 .pytest_cache/
