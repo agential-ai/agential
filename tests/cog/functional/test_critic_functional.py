@@ -1,5 +1,4 @@
 """Unit tests for CRITIC functional methods."""
-import pytest
 
 from langchain_community.chat_models.fake import FakeListChatModel
 
@@ -11,44 +10,62 @@ from discussion_agents.cog.functional.critic import (
 )
 
 
-@pytest.mark.parametrize("benchmark", ["hotpotqa", "triviaqa"])
-def test__build_agent_prompt(benchmark) -> None:
+def test__build_agent_prompt() -> None:
     """Test _build_agent_prompt function."""
     gt_out = "\n(END OF EXAMPLES)\n\nQ: \nA: "
+    prompt = _build_agent_prompt(
+        question="",
+        examples="",
+    )
+    assert prompt == gt_out
 
-    prompt = _build_agent_prompt(question="", examples="", benchmark=benchmark)
-    assert prompt == gt_out, f"Failed for benchmark: {benchmark}"
+    # Test custom prompt.
+    prompt = _build_agent_prompt(
+        question="", examples="", prompt="{question}{examples}"
+    )
+    assert prompt == ""
 
 
-@pytest.mark.parametrize("benchmark", ["hotpotqa", "triviaqa"])
-def test__prompt_agent(benchmark) -> None:
+def test__prompt_agent() -> None:
     """Test _prompt_agent function."""
     out = _prompt_agent(
         llm=FakeListChatModel(responses=["1"]),
         question="",
         examples="",
-        benchmark=benchmark,
+    )
+    assert out == "1"
+
+    # Test custom prompt.
+    out = _prompt_agent(
+        llm=FakeListChatModel(responses=["1"]),
+        question="",
+        examples="",
+        prompt="{question}{examples}",
     )
     assert out == "1"
 
 
-@pytest.mark.parametrize("benchmark", ["hotpotqa", "triviaqa"])
-def test__build_critique_prompt(benchmark) -> None:
+def test__build_critique_prompt() -> None:
     """Test _build_critique_prompt function."""
     gt_out = "\n(END OF EXAMPLES)\n\nQuestion: \nProposed Answer: \n\nWhat's the problem with the above answer?\n\n1. Plausibility:\n\n"
-    prompt = _build_critique_prompt(question="", examples="", answer="")
+    prompt = _build_critique_prompt(question="", examples="", answer="", critique="")
     assert prompt == gt_out
 
-
-@pytest.mark.parametrize("benchmark", ["hotpotqa", "triviaqa"])
-def test__prompt_critique(benchmark) -> None:
-    """Test _prompt_critique function."""
-    out = _prompt_critique(
-        llm=FakeListChatModel(responses=["1"]),
+    # Test custom prompt.
+    prompt = _build_critique_prompt(
         question="",
         examples="",
         answer="",
-        benchmark=benchmark,
+        critique="",
+        prompt="{question}{examples}{answer}{critique}",
+    )
+    assert prompt == ""
+
+
+def test__prompt_critique() -> None:
+    """Test _prompt_critique function."""
+    out = _prompt_critique(
+        llm=FakeListChatModel(responses=["1"]), question="", examples="", answer=""
     )
     assert out == "1"
 
@@ -58,6 +75,6 @@ def test__prompt_critique(benchmark) -> None:
         question="",
         examples="",
         answer="",
-        benchmark=benchmark,
+        prompt="{question}{examples}",
     )
     assert out == "1"
