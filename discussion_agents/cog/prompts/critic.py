@@ -410,10 +410,7 @@ Q: What chemical makes hot peppers hot?
 A: Capscaicin
 
 Q: What term applies to an engine comprising two banks of four cylinders inclined towards each other, with a common crankshaft? 
-A: V8 engine
-
-
-"""
+A: V8 engine"""
 
 TRIVIAQA_FEWSHOT_EXAMPLES_REACT = """
 Question: Which innovation for the car was developed by Prince Henry of Prussia in 1911? 
