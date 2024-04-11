@@ -12,7 +12,9 @@ from discussion_agents.cog.prompts.critic import (
 )
 
 
-def _build_agent_prompt(question: str, examples: str, prompt: str = CRITIC_INSTRUCTION_HOTPOTQA) -> str:
+def _build_agent_prompt(
+    question: str, examples: str, prompt: str = CRITIC_INSTRUCTION_HOTPOTQA
+) -> str:
     """Builds a prompt for questioning the agent using a template.
 
     Parameters:
@@ -23,7 +25,6 @@ def _build_agent_prompt(question: str, examples: str, prompt: str = CRITIC_INSTR
     Returns:
         str: A formatted prompt ready for use with the language model.
     """
-
     prompt = PromptTemplate.from_template(prompt).format(
         question=question, examples=examples
     )
@@ -31,7 +32,10 @@ def _build_agent_prompt(question: str, examples: str, prompt: str = CRITIC_INSTR
 
 
 def _prompt_agent(
-    llm: BaseChatModel, question: str, examples: str, prompt: str = CRITIC_INSTRUCTION_HOTPOTQA
+    llm: BaseChatModel,
+    question: str,
+    examples: str,
+    prompt: str = CRITIC_INSTRUCTION_HOTPOTQA,
 ) -> str:
     """Prompts the agent to answer a question using the language model.
 
@@ -60,7 +64,11 @@ def _prompt_agent(
 
 
 def _build_critique_prompt(
-    question: str, examples: str, answer: str, critique: str = "", prompt: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA
+    question: str,
+    examples: str,
+    answer: str,
+    critique: str = "",
+    prompt: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
 ) -> str:
     """Builds a critique prompt for the agent using a template.
 
@@ -74,7 +82,6 @@ def _build_critique_prompt(
     Returns:
         str: A formatted critique prompt ready for use with the language model.
     """
-
     formatted_prompt = PromptTemplate.from_template(prompt).format(
         question=question, examples=examples, answer=answer, critique=critique
     )
