@@ -7,7 +7,7 @@ authors = ["Vincent Tu <tuvincent0106@gmail.com>"]
 name = "docs"
 version = "0.0.1"
 description = ""
-readme = "README.md"
+readme = "DOCS_README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
