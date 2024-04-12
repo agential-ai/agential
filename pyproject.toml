@@ -12,12 +12,12 @@ readme = "README.md"
 repository = "https://github.com/alckasoc/discussion-agents"
 keywords = ["packaging", "poetry", "agent", "LLM"]
 classifiers = [
-    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Topic :: Scientific/Engineering :: Artificial Intelligence"
 ]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.11"
 openai = "^0.28.0"
 tiktoken = "^0.5.1"
 torch = ">=2.0.0, !=2.0.1, !=2.1.0"
@@ -33,7 +33,6 @@ pandas = "1.5.3"
 google-api-python-client = ">=2.100.0"
 
 [tool.poetry.group.dev.dependencies]
-sphinx = "^7.2.6"
 python-dotenv = "^1.0.0"
 black = "^23.9.1"
 ruff = "^0.0.289"
@@ -52,7 +51,7 @@ markers = [
 
 [tool.black]
 line-length = 88
-target-version = ["py39", "py310", "py311"]
+target-version = ["py311"]
 
 [tool.ruff]
 format = "github"
@@ -60,7 +59,7 @@ select = [
     "D",  # pydocstyle
     "I",  # isort
 ]
-target-version = "py39"
+target-version = "py311"
 
 [tool.ruff.pydocstyle]
 convention = "google"
