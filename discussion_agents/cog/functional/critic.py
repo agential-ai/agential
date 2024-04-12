@@ -47,6 +47,9 @@ def _prompt_agent(
         str: The answer from the language model, with no leading or trailing whitespace.
     """
     prompt = _build_agent_prompt(question=question, examples=examples, prompt=prompt)
+    print("PROMPT<===================================================================================>")
+    print(prompt)
+    print("PROMPT<===================================================================================>")
     out = llm(
         [
             HumanMessage(
@@ -111,7 +114,9 @@ def _prompt_critique(
         critique=critique,
         prompt=prompt,
     )
-
+    print("CRITIQUE PROMPT<===================================================================================>")
+    print(prompt)
+    print("CRITIQUE PROMPT<===================================================================================>")
     out = llm(
         [
             HumanMessage(
