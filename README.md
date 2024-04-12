@@ -70,7 +70,7 @@ Thought: Ramon Dekkers has been involved in controversies and crimes. I need to 
     │   │
     │   └── utils                      <- Utility methods.
     │       
-    ├── docs                           <- A default Sphinx project; see sphinx-doc.org for details.
+    ├── docs                           <- An mkdocs project.
     │
     ├── models                         <- Trained and serialized models, model predictions,
     │                                          or model summaries.

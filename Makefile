@@ -8,7 +8,7 @@ PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 PROFILE = default
 PROJECT_NAME = discussion-agents
 PYTHON_INTERPRETER = python
-PYTHON_VERSION = 3.10
+PYTHON_VERSION = 3.11
 POETRY_VERSION = 1.6.1
 
 ifeq (,$(shell which conda 2>/dev/null))
