@@ -48,10 +48,10 @@ conda --version
 Ensure you have `make`. if it's not installed on your computer, Please follow this [article](https://earthly.dev/blog/makefiles-on-windows/).
 
 
-Use the following command to create a conda environment `discussion-agents` with Python version 3.10.13. Any Python version above 3.9 is viable.
+Use the following command to create a conda environment `discussion-agents` with Python version 3.11.5. Any Python version above 3.11 is viable.
 
 ```
-conda create -n discussion-agents python=3.10.13
+conda create -n discussion-agents python=3.11.5
 ```
 
 Now activate the environment.
