@@ -1,0 +1,14 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+authors = ["Vincent Tu <tuvincent0106@gmail.com>"]
+name = "docs"
+version = "0.0.1"
+description = ""
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+mkdocs = "^1.5.3"
