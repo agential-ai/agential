@@ -118,5 +118,7 @@ def _prompt_critique(
             )
         ]
     ).content
+
     assert isinstance(out, str)
+
     return out

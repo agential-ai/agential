@@ -1,7 +1,5 @@
 """Unit tests for CRITIC."""
 
-import os
-
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
 from langchain_core.language_models.chat_models import BaseChatModel
