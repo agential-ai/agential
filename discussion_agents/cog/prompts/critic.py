@@ -632,7 +632,7 @@ CRITIC_INSTRUCTION_GSM8K = """{examples}
 Q: {question}
 A: """
 
-GSM8k_FEWSHOT_EXAMPLES_DIRECT = """Question: Olivia has $23. She bought five bagels for $3 each. How much money does she have left? Answer: 8
+GSM8K_FEWSHOT_EXAMPLES_DIRECT = """Question: Olivia has $23. She bought five bagels for $3 each. How much money does she have left? Answer: 8
 
 Question: Michael had 58 golf balls. On tuesday, he lost 23 golf balls. On wednesday, he lost 2 more. How many golf balls did he have at the end of wednesday? Answer: 33
 
@@ -646,7 +646,7 @@ Question: Leah had 32 chocolates and her sister had 42. If they ate 35, how many
 
 Question: There are 15 trees in the grove. Grove workers will plant trees in the grove today. After they are done, there will be 21 trees. How many trees did the grove workers plant today? Answer: 6"""
 
-CRITIC_CRITIQUE_INSTRUCTION_GSM8k = """{examples}
+CRITIC_CRITIQUE_INSTRUCTION_GSM8K = """{examples}
 (END OF EXAMPLES)
 
 Question: {question}
@@ -658,7 +658,7 @@ What's the problem with the above code?
 
 Here's a better solution: {solution}"""
 
-GSM8k_FEWSHOT_EXAMPLES_CRITIC = """Question: Janet hires six employees. Four of them are warehouse workers who make $15/hour, and the other two are managers who make $20/hour. Janet has to pay 10% of her workers' salaries in FICA taxes. If everyone works 25 days a month and 8 hours a day, how much does Janet owe total for their wages and taxes for one month?
+GSM8K_FEWSHOT_EXAMPLES_CRITIC = """Question: Janet hires six employees. Four of them are warehouse workers who make $15/hour, and the other two are managers who make $20/hour. Janet has to pay 10% of her workers' salaries in FICA taxes. If everyone works 25 days a month and 8 hours a day, how much does Janet owe total for their wages and taxes for one month?
 ```python
 num_of_warehouse_workers = 4
 num_of_managers = 2
@@ -896,7 +896,7 @@ answer = total_cost
 ---"""
 
 
-CRITIC_NO_TOOL_INSTRUCTION_GSM8k = """{examples}
+CRITIC_NO_TOOL_INSTRUCTION_GSM8K = """{examples}
 (END OF EXAMPLES)
 
 Question: {question}
@@ -908,7 +908,7 @@ What's the problem with the above code?
 Here's a better solution: {solution}"""
 
 
-GSM8k_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL = """Question: Janet hires six employees. Four of them are warehouse workers who make $15/hour, and the other two are managers who make $20/hour. Janet has to pay 10% of her workers' salaries in FICA taxes. If everyone works 25 days a month and 8 hours a day, how much does Janet owe total for their wages and taxes for one month?
+GSM8K_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL = """Question: Janet hires six employees. Four of them are warehouse workers who make $15/hour, and the other two are managers who make $20/hour. Janet has to pay 10% of her workers' salaries in FICA taxes. If everyone works 25 days a month and 8 hours a day, how much does Janet owe total for their wages and taxes for one month?
 ```python
 num_of_warehouse_workers = 4
 num_of_managers = 2
@@ -1137,14 +1137,14 @@ answer = total_cost
 
 ---"""
 
-CRITIC_POT_INSTRUCTION_GSM8k = """{examples}
+CRITIC_POT_INSTRUCTION_GSM8K = """{examples}
 (END OF EXAMPLES)
 
 Question: {question}
 answer: {answer}"""
 
 
-GSM8k_FEWSHOT_EXAMPLES_POT = """# Write Python Code to solve the following questions. Store your result as a variable named 'answer'.
+GSM8K_FEWSHOT_EXAMPLES_POT = """# Write Python Code to solve the following questions. Store your result as a variable named 'answer'.
 
 Question: Janet’s ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with four. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?
 # Python code, return answer
