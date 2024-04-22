@@ -32,7 +32,7 @@ langchain = "^0.1.16"
 
 [tool.poetry.group.dev.dependencies]
 python-dotenv = "^1.0.0"
-black = "^23.9.1"
+black = ">=23.9.1,<25.0.0"
 ruff = "^0.0.289"
 ipython = "^8.15.0"
 mypy = "^1.5.1"
