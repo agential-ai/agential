@@ -5,10 +5,10 @@ import pytest
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_community.llms.fake import FakeListLLM
 
-from discussion_agents.cog.agent.expel import ExpeLAgent
-from discussion_agents.cog.agent.generative_agents import GenerativeAgent
-from discussion_agents.cog.agent.react import ReActAgent
-from discussion_agents.cog.agent.reflexion import ReflexionCoTAgent, ReflexionReActAgent
+from agential.cog.agent.expel import ExpeLAgent
+from agential.cog.agent.generative_agents import GenerativeAgent
+from agential.cog.agent.react import ReActAgent
+from agential.cog.agent.reflexion import ReflexionCoTAgent, ReflexionReActAgent
 
 
 @pytest.fixture

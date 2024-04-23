@@ -1,6 +1,6 @@
 """Unit tests for ReAct memory module."""
 
-from discussion_agents.cog.modules.memory.react import ReActMemory
+from agential.cog.modules.memory.react import ReActMemory
 
 
 def test_clear() -> None:

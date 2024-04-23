@@ -1,6 +1,6 @@
 """Unit tests for Reflexion memory module."""
 
-from discussion_agents.cog.modules.memory.reflexion import ReflexionMemory
+from agential.cog.modules.memory.reflexion import ReflexionMemory
 
 
 def test_clear() -> None:

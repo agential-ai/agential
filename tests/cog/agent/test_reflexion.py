@@ -4,9 +4,9 @@ from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken.core import Encoding
 
-from discussion_agents.cog.agent.reflexion import ReflexionCoTAgent, ReflexionReActAgent
-from discussion_agents.cog.modules.memory.reflexion import ReflexionMemory
-from discussion_agents.cog.modules.reflect.reflexion import (
+from agential.cog.agent.reflexion import ReflexionCoTAgent, ReflexionReActAgent
+from agential.cog.modules.memory.reflexion import ReflexionMemory
+from agential.cog.modules.reflect.reflexion import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )

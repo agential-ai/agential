@@ -1,6 +1,6 @@
 """Unit tests for Self-Refine memory module."""
 
-from discussion_agents.cog.modules.memory.self_refine import SelfRefineMemory
+from agential.cog.modules.memory.self_refine import SelfRefineMemory
 
 
 def test_clear() -> None:

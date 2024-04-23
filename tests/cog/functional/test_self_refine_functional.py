@@ -2,7 +2,7 @@
 
 from langchain_community.chat_models.fake import FakeListChatModel
 
-from discussion_agents.cog.functional.self_refine import (
+from agential.cog.functional.self_refine import (
     _build_agent_prompt,
     _build_feedback_prompt,
     _build_refine_prompt,
