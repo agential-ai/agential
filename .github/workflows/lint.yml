@@ -15,7 +15,7 @@ on:
       - ".github/workflows/lint.yml"
 
 env:
-  POETRY_VERSION: "1.6.1"
+  POETRY_VERSION: "1.8.2"
   SUPPORTED_PYTHON_VERSIONS: "3.11"
 
 jobs:
