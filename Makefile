@@ -9,7 +9,7 @@ PROFILE = default
 PROJECT_NAME = agential
 PYTHON_INTERPRETER = python
 PYTHON_VERSION = 3.11
-POETRY_VERSION = 1.6.1
+POETRY_VERSION = 1.8.2
 
 ifeq (,$(shell which conda 2>/dev/null))
 HAS_CONDA=False
