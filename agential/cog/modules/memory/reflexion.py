@@ -5,6 +5,7 @@ Paper Repositories:
     - https://github.com/noahshinn/reflexion-draft
     - https://github.com/noahshinn/reflexion
 """
+
 from typing import Any, Dict, Optional
 
 from agential.cog.modules.memory.base import BaseMemory

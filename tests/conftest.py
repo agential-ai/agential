@@ -1,4 +1,5 @@
 """Configs for pytest."""
+
 from dotenv import load_dotenv
 
 from tests.fixtures.agent import *

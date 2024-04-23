@@ -5,6 +5,7 @@ Paper Repository: https://github.com/ysymyth/ReAct
 LangChain: https://github.com/langchain-ai/langchain
 LangChain ReAct: https://python.langchain.com/docs/modules/agents/agent_types/react
 """
+
 from typing import Any, Dict, Optional
 
 from agential.cog.modules.memory.base import BaseMemory
