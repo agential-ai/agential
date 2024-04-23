@@ -1,1 +1,1 @@
-"""Unit tests for discussion-agents."""
+"""Unit tests for Agential."""

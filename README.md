@@ -1,5 +1,5 @@
 
-# Discussion Agents
+# Agential
 
 
 ## Features
@@ -50,7 +50,7 @@ Thought: Ramon Dekkers has been involved in controversies and crimes. I need to 
     │   ├── processed                  <- The final, canonical data sets for modeling.
     │   └── raw                        <- The original, immutable data dump.
     │
-    ├── discussion_agents              <- Source code for this project.
+    ├── agential                       <- Source code for this project.
     │   ├── cog   
     │   │   ├── agent                  <- Model/agent-related modules.
     │   │   │   
@@ -91,4 +91,4 @@ Thought: Ramon Dekkers has been involved in controversies and crimes. I need to 
 
 ## Contributing
 
-If you want to contribute, please check the [contributing.md](https://github.com/alckasoc/discussion-agents/blob/main/CONTRIBUTING.md) for guidelines!
+If you want to contribute, please check the [contributing.md](https://github.com/alckasoc/agential/blob/main/CONTRIBUTING.md) for guidelines!

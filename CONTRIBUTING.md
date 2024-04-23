@@ -10,9 +10,9 @@ Please read through this document before submitting any issues or pull requests 
 
 ### 🍴 Fork the Repository
 
-To start your journey, you'll need your very own copy of discussion-agents. Think of it as your innovation lab. 🧪
+To start your journey, you'll need your very own copy of agential. Think of it as your innovation lab. 🧪
 
-- Navigate to the discussion-agents repository on GitHub.
+- Navigate to the agential repository on GitHub.
 - In the upper-right corner, click the `Fork` button.
 
 
@@ -48,19 +48,19 @@ conda --version
 Ensure you have `make`. if it's not installed on your computer, Please follow this [article](https://earthly.dev/blog/makefiles-on-windows/).
 
 
-Use the following command to create a conda environment `discussion-agents` with Python version 3.11.5. Any Python version above 3.11 is viable.
+Use the following command to create a conda environment `agential` with Python version 3.11.5. Any Python version above 3.11 is viable.
 
 ```
-conda create -n discussion-agents python=3.11.5
+conda create -n agential python=3.11.5
 ```
 
 Now activate the environment.
 
 ```
-conda activate discussion-agents
+conda activate agential
 ```
 
-Please ensure you are in your virtual environment prior to beginning the next step. The Anaconda Command Prompt should have changed from `(base) C:\Users\<username>>` ---> `(discussion-agents) C:\Users\<username>>`. The change from (base) to (discussion-agents) indicates that you are now in your virtual environment.
+Please ensure you are in your virtual environment prior to beginning the next step. The Anaconda Command Prompt should have changed from `(base) C:\Users\<username>>` ---> `(agential) C:\Users\<username>>`. The change from (base) to (agential) indicates that you are now in your virtual environment.
 
 Next, we will install [Poetry](https://python-poetry.org/docs/) using [pipx](https://pipx.pypa.io/stable/docs/).
 
@@ -84,10 +84,10 @@ poetry --version
 ```
 This will output the poetry version and verify the existence of the poetry CLI.
 
-Then clone the repository and enter the discussion-agents directory.
+Then clone the repository and enter the agential directory.
 
 ``` 
-git clone https://github.com/alckasoc/discussion-agents/
+git clone https://github.com/alckasoc/agential/
 ```
 
 Finally install all of the packages.
@@ -144,7 +144,7 @@ pre-commit install
 
 ## 3. 🧭 How To Navigate
 
-Head to the `discussion_agents` where the project source code is. Within the `cog` directory, you'll find various modules and subdirectories catering to different aspects of the project's functionality.
+Head to the `agential` where the project source code is. Within the `cog` directory, you'll find various modules and subdirectories catering to different aspects of the project's functionality.
 
 - `agent`: Agent implementations
 - `eval`: Evaluation module
@@ -155,11 +155,11 @@ Head to the `discussion_agents` where the project source code is. Within the `co
 - `utils`: Utility functions for fetching, formatting, parsing, etc.
 
 
-Please take a look at the [README](https://github.com/alckasoc/discussion-agents/blob/main/README.md) for a well-structured overview of the project!
+Please take a look at the [README](https://github.com/alckasoc/agential/blob/main/README.md) for a well-structured overview of the project!
 
 ## 4. ⚒️ What do I work on?
 
-You can start by browsing through our list of [issues](https://github.com/alckasoc/discussion-agents/issues) or suggesting your own!
+You can start by browsing through our list of [issues](https://github.com/alckasoc/agential/issues) or suggesting your own!
 
 Once you’ve decided on an issue, leave a comment and wait for approval! We don't want multiple people on a single issue unless the issue stresses it! 
 
