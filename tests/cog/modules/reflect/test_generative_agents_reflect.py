@@ -4,7 +4,7 @@ from datetime import datetime
 from langchain.llms.fake import FakeListLLM
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
 
-from discussion_agents.cog.modules.reflect.generative_agents import (
+from agential.cog.modules.reflect.generative_agents import (
     GenerativeAgentReflector,
 )
 

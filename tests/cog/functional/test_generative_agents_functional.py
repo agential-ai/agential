@@ -4,7 +4,7 @@ from datetime import datetime
 from langchain.llms.fake import FakeListLLM
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
 
-from discussion_agents.cog.functional.generative_agents import (
+from agential.cog.functional.generative_agents import (
     _create_default_time_weighted_retriever,
     get_insights_on_topics,
     get_topics_of_reflection,

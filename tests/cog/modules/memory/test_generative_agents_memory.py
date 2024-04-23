@@ -11,7 +11,7 @@ from langchain.llms.fake import FakeListLLM
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.vectorstores import FAISS
 
-from discussion_agents.cog.modules.memory.generative_agents import GenerativeAgentMemory
+from agential.cog.modules.memory.generative_agents import GenerativeAgentMemory
 
 test_date = datetime(year=2022, month=11, day=14, hour=3, minute=14)
 

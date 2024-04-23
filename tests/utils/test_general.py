@@ -1,6 +1,6 @@
 """Unit tests for general util functions."""
 
-from discussion_agents.utils.general import shuffle_chunk_list
+from agential.utils.general import shuffle_chunk_list
 
 
 def test_shuffle_chunk_list() -> None:

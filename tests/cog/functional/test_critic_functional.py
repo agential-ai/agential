@@ -2,7 +2,7 @@
 
 from langchain_community.chat_models.fake import FakeListChatModel
 
-from discussion_agents.cog.functional.critic import (
+from agential.cog.functional.critic import (
     _build_agent_prompt,
     _build_critique_prompt,
     _prompt_agent,

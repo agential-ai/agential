@@ -4,9 +4,9 @@ import joblib
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 
-from discussion_agents.cog.agent.expel import ExpeLAgent
-from discussion_agents.cog.agent.reflexion import ReflexionReActAgent
-from discussion_agents.cog.modules.memory.expel import (
+from agential.cog.agent.expel import ExpeLAgent
+from agential.cog.agent.reflexion import ReflexionReActAgent
+from agential.cog.modules.memory.expel import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )

@@ -3,12 +3,12 @@ import tiktoken
 
 from langchain_community.chat_models.fake import FakeListChatModel
 
-from discussion_agents.cog.functional.react import (
+from agential.cog.functional.react import (
     _build_agent_prompt,
     _is_halted,
     _prompt_agent,
 )
-from discussion_agents.cog.prompts.react import HOTPOTQA_FEWSHOT_EXAMPLES
+from agential.cog.prompts.react import HOTPOTQA_FEWSHOT_EXAMPLES
 
 
 def test__build_agent_prompt() -> None:
