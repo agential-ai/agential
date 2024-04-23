@@ -1,4 +1,5 @@
 """Reflecting module for Generative Agents."""
+
 from datetime import datetime
 from typing import Any, List, Optional, Union
 

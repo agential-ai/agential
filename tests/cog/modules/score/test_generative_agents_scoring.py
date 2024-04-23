@@ -1,4 +1,5 @@
 """Unit tests for Generative Agents scoring module."""
+
 from langchain.llms.fake import FakeListLLM
 
 from agential.cog.modules.score.generative_agents import (

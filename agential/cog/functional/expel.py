@@ -196,9 +196,9 @@ def _build_compare_prompt(
     """
     # System prompt.
     prefix = PromptTemplate.from_template(SYSTEM_TEMPLATE).format(
-        ai_name=NON_EXISTENT_INSIGHTS_AT_NAME
-        if not insights
-        else EXISTING_INSIGHTS_AI_NAME,
+        ai_name=(
+            NON_EXISTENT_INSIGHTS_AT_NAME if not insights else EXISTING_INSIGHTS_AI_NAME
+        ),
         instruction=SYSTEM_CRITIQUE_EXISTING_INSIGHTS_INSTRUCTION,
     )
 
@@ -207,11 +207,13 @@ def _build_compare_prompt(
         "question": question,
         "failed_traj": failed_trial,
         "success_traj": success_trial,
-        "existing_insights": "\n".join(
-            [f"{i}. {insight['insight']}" for i, insight in enumerate(insights)]
-        )
-        if insights
-        else "",
+        "existing_insights": (
+            "\n".join(
+                [f"{i}. {insight['insight']}" for i, insight in enumerate(insights)]
+            )
+            if insights
+            else ""
+        ),
     }
 
     human_critique_summary_message = PromptTemplate.from_template(
@@ -245,20 +247,22 @@ def _build_all_success_prompt(
     """
     # System prompt.
     prefix = PromptTemplate.from_template(SYSTEM_TEMPLATE).format(
-        ai_name=NON_EXISTENT_INSIGHTS_AT_NAME
-        if not insights
-        else EXISTING_INSIGHTS_AI_NAME,
+        ai_name=(
+            NON_EXISTENT_INSIGHTS_AT_NAME if not insights else EXISTING_INSIGHTS_AI_NAME
+        ),
         instruction=SYSTEM_CRITIQUE_ALL_SUCCESS_EXISTING_INSIGHTS_INSTRUCTION,
     )
 
     # Task prompt.
     human_format_dict = {
         "success_trajs": success_trajs_str,
-        "existing_insights": "\n".join(
-            [f"{i}. {insight['insight']}" for i, insight in enumerate(insights)]
-        )
-        if insights
-        else "",
+        "existing_insights": (
+            "\n".join(
+                [f"{i}. {insight['insight']}" for i, insight in enumerate(insights)]
+            )
+            if insights
+            else ""
+        ),
     }
 
     human_critique_summary_message = PromptTemplate.from_template(

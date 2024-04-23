@@ -11,6 +11,7 @@ https://github.com/langchain-ai/langchain/tree/master/libs/experimental/langchai
 LangChain Generative Agents Doc Page:
 https://python.langchain.com/docs/use_cases/more/agents/agent_simulations/characters
 """
+
 from datetime import datetime
 from itertools import chain
 from typing import Any, Dict, List, Optional, Tuple, Union

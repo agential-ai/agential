@@ -1,4 +1,5 @@
 """Unit tests for formatting functions."""
+
 from datetime import datetime
 
 import pytest

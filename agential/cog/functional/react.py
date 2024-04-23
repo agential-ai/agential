@@ -1,4 +1,5 @@
 """Functional module for ReAct."""
+
 from langchain.prompts import PromptTemplate
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage

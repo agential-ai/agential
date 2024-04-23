@@ -1,4 +1,5 @@
 """Unit tests for ReAct."""
+
 from langchain.agents.react.base import DocstoreExplorer
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel

@@ -1,4 +1,5 @@
 """Unit tests for Generative Agents functional methods."""
+
 from datetime import datetime
 
 from langchain.llms.fake import FakeListLLM

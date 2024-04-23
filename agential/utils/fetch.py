@@ -1,4 +1,5 @@
 """Utility methods for fetching memories."""
+
 from datetime import datetime
 from typing import List, Optional
 
