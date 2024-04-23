@@ -1,1 +1,1 @@
-"""Discussion agents."""
+"""Agential."""

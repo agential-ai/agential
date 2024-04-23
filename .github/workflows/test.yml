@@ -3,14 +3,14 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
     paths:
-      - "discussion_agents/**"
+      - "agential/**"
       - "tests/**"
       - ".github/workflows/test.yml"
   push:
     branches:
       - main
     paths:
-      - "discussion_agents/**"
+      - "agential/**"
       - "tests/**"
       - ".github/workflows/test.yml"
 
