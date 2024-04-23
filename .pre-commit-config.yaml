@@ -4,14 +4,14 @@ repos:
     hooks:
     -   id: black
         args:
-        - discussion_agents/
+        - agential/
         - tests/
 -   repo: https://github.com/charliermarsh/ruff-pre-commit
     rev: v0.0.289
     hooks:
       - id: ruff
         args:
-        - discussion_agents/
+        - agential/
         - tests/
         - --fix
         - --show-fixes
