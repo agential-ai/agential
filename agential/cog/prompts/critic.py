@@ -622,3 +622,269 @@ This support the proposed answer.
 
 Question: What state had its bi-centenary of joining the Union a year after North Carolina?
 Here's the most possible answer: Rhode Island had its bi-centenary of joining the Union a year after North Carolina. So the answer is: Rhode Island."""
+
+# ======================================================================== TabMWP ======================================================================== #
+
+TabMWP_FREE_TEXT = """ 
+Table Text:
+Day | Kilometers
+Tuesday | 0
+Wednesday | 0
+Thursday | 4
+Friday | 0
+Saturday | 0
+Question:
+Allie kept track of how many kilometers she walked during the past 5 days. What is the range of the numbers?
+Answer:
+4
+Solution:
+Read the numbers from the table.
+
+0, 0, 4, 0, 0
+
+First, find the greatest number. The greatest number is 4.
+
+Next, find the least number. The least number is 0.
+
+Subtract the least number from the greatest number:
+
+4 − 0 = 4
+
+The range is 4.
+
+---
+Table Text:
+Country | 1980s | 1990s
+Germany | 11 | 7
+Canada | 3 | 8
+Italy | 3 | 1
+Question:
+For an assignment, Harry looked at which countries got the most Nobel Prizes in various decades. In the 1990s, how many more Nobel Prize winners did Canada have than Italy?
+Answer:
+7
+Solution:
+Find the 1990 s column. Find the numbers in this column for Canada and Italy.
+
+Canada: 8
+Italy: 1
+
+Now subtract:
+
+8 − 1 = 7
+
+Canada had 7 more Nobel Prize winners in the 1990 s than Italy.
+
+---
+Table Text:
+cucumber | $1.13
+yellow pepper | $1.37
+grapefruit | $1.31
+red pepper | $1.46
+watermelon | $2.03
+Question:
+How much money does Julie need to buy 4 yellow peppers?
+Answer:
+5.48
+Solution:
+Find the total cost of 4 yellow peppers by multiplying 4 times the price of a yellow pepper.
+
+$1.37 × 4 = $5.48
+
+Julie needs $5.48.
+
+---
+Table Text:
+Number of scarves | Frequency
+0 | 20
+1 | 2
+2 | 13
+3 | 7
+4 | 15
+5 | 12
+6 | 17
+Question:
+Bobby's Crafts is interested in offering a scarf knitting class, so the store considers how many scarves people already own. How many people are there in all?
+Answer:
+86
+Solution:
+Add the frequencies for each row.
+
+Add:
+
+20 + 2 + 13 + 7 + 15 + 12 + 17 = 86
+
+There are 86 people in all.
+
+---
+Table Text:
+hot sauce | $3/lb
+soy sauce | $3/lb
+mayonnaise | $2/lb
+ketchup | $3/lb
+mustard | $6/lb
+Dijon mustard | $5/lb
+Question:
+Brittany went to the store and bought 1.4 pounds of mustard. How much did she spend?
+Answer:
+8.40
+Solution:
+Find the cost of the mustard. Multiply the price per pound by the number of pounds.
+$6 × 1.4 = $8.40
+She spent $8.40.
+
+---
+Table Text:
+Day | Number of laps
+Sunday | 6
+Monday | 7
+Tuesday | 8
+Wednesday | 8
+Thursday | 7
+Friday | 8
+Question:
+Johnny tracked how many laps he ran in the past 6 days. What is the mode of the numbers?
+Answer:
+8
+Solution:
+Read the numbers from the table.
+
+6, 7, 8, 8, 7, 8
+
+First, arrange the numbers from least to greatest:
+
+6, 7, 7, 8, 8, 8
+
+Now count how many times each number appears.
+
+6 appears 1 time.
+7 appears 2 times.
+8 appears 3 times.
+
+The number that appears most often is 8.
+
+The mode is 8.
+"""
+
+
+TabMWP_MULTI_CHOICE = """
+Table Text:
+Country | 1970s | 1980s
+Japan | 2 | 2
+Italy | 2 | 3
+Russia | 5 | 1
+Question:
+For an assignment, Ruben looked at which countries got the most Nobel Prizes in various decades. Of the countries shown, which country had the most Nobel Prize winners in the 1980s?
+Choices:
+Japan, Italy, Russia
+Answer:
+Italy
+Solution:
+Look at the numbers in the 1980 s column. Find the greatest number in this column.
+
+The greatest number is 3, which is in the Italy row. Of the countries shown, Italy had the most Nobel Prize winners in the 1980 s.
+
+---
+Table Text:
+Foggy Port | 7:00 A.M. | 7:15 A.M. | 7:30 A.M. | 7:45 A.M. | 8:00 A.M.
+Green Harbor | 8:30 A.M. | 8:45 A.M. | 9:00 A.M. | 9:15 A.M. | 9:30 A.M.
+Grassy Beach | 10:15 A.M. | 10:30 A.M. | 10:45 A.M. | 11:00 A.M. | 11:15 A.M.
+Bay Harbor | 12:00 P.M. | 12:15 P.M. | 12:30 P.M. | 12:45 P.M. | 1:00 P.M.
+Seagull Port | 1:45 P.M. | 2:00 P.M. | 2:15 P.M. | 2:30 P.M. | 2:45 P.M.
+Sandy Shores | 3:15 P.M. | 3:30 P.M. | 3:45 P.M. | 4:00 P.M. | 4:15 P.M.
+Cliff View | 5:00 P.M. | 5:15 P.M. | 5:30 P.M. | 5:45 P.M. | 6:00 P.M.
+Question:
+Look at the following schedule. How long does it take to get from Foggy Port to Cliff View?
+Choices:
+9 hours and 30 minutes, 7 hours and 45 minutes, 7 hours and 30 minutes, 10 hours
+Answer:
+10 hours
+Solution:
+Read the times in the first column for Foggy Port and Cliff View.
+
+Find the elapsed time between 7:00 A. M. and 5:00 P. M. The elapsed time is 10 hours.
+
+No matter which column of times you look at, the elapsed time is always 10 hours.
+
+---
+Table Text:
+x | y
+10 | 15
+11 | 9
+12 | 2
+Question:
+The table shows a function. Is the function linear or nonlinear?
+Choices:
+linear, nonlinear
+Answer:
+nonlinear
+Solution:
+To determine whether the function is linear or nonlinear, see whether it has a constant rate of change.
+Pick the points in any two rows of the table and calculate the rate of change between them. The first two rows are a good place to start.
+Call the values in the first row x1 and y1. Call the values in the second row x2 and y2.
+Rate of change = \frac{y2 - y1}{x2 - x1}
+ = \frac{9 - 15}{11 - 10}
+ = \frac{-6}{1}
+ = -6
+Now pick any other two rows and calculate the rate of change between them.
+Call the values in the first row x1 and y1. Call the values in the third row x2 and y2.
+Rate of change = \frac{y2 - y1}{x2 - x1}
+ = \frac{2 - 15}{12 - 10}
+ = \frac{-13}{2}
+ = -6\frac{1}{2}
+The rate of change is not the same for each pair of points. So, the function does not have a constant rate of change.
+The function is nonlinear.
+
+---
+Table Text:
+Name | Number of coins
+Pete | 654
+Sally | 646
+Ariel | 668
+Bernie | 645
+Question:
+Some friends discussed the sizes of their coin collections. Who has the fewest coins?
+Choices:
+Pete, Sally, Ariel, Bernie
+Answer:
+Bernie
+Solution:
+Find the least number in the table. Remember to compare the numbers starting with the highest place value. The least number is 645.
+
+Now find the corresponding name. Bernie corresponds to 645.
+
+---
+Table Text:
+Day | Number of hammers
+Friday | 28
+Saturday | 27
+Sunday | 21
+Monday | 29
+Question:
+A hardware store monitored how many hammers it sold in the past 4 days. On which day did the store sell the fewest hammers?
+Choices:
+Friday, Saturday, Sunday, Monday
+Answer:
+Sunday
+Solution:
+Find the least number in the table. Remember to compare the numbers starting with the highest place value. The least number is 21.
+
+Now find the corresponding day. Sunday corresponds to 21.
+
+---
+Table Text:
+School | Number of students
+Green Pastures Elementary | 778
+Pine Elementary | 798
+Canyon Elementary | 797
+Oceanside Elementary | 789
+Question:
+A school district compared how many students attend each elementary school. Which school has the fewest students?
+Choices:
+Green Pastures Elementary, Pine Elementary, Canyon Elementary, Oceanside Elementary
+Answer:
+Green Pastures Elementary
+Solution:
+Find the least number in the table. Remember to compare the numbers starting with the highest place value. The least number is 778.
+
+Now find the corresponding school. Green Pastures Elementary corresponds to 778.
+"""
