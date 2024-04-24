@@ -3,8 +3,8 @@
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 
-from discussion_agents.cog.agent.self_refine import SelfRefineAgent
-from discussion_agents.cog.modules.memory.self_refine import SelfRefineMemory
+from agential.cog.agent.self_refine import SelfRefineAgent
+from agential.cog.modules.memory.self_refine import SelfRefineMemory
 
 
 def test_init() -> None:

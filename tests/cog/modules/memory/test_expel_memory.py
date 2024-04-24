@@ -8,11 +8,11 @@ import pytest
 from langchain_core.embeddings import Embeddings
 from tiktoken.core import Encoding
 
-from discussion_agents.cog.modules.memory.expel import (
+from agential.cog.modules.memory.expel import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
-from discussion_agents.cog.prompts.react import HOTPOTQA_FEWSHOT_EXAMPLES
+from agential.cog.prompts.react import HOTPOTQA_FEWSHOT_EXAMPLES
 
 fewshot_questions = re.findall(r"Question: (.+?)\n", HOTPOTQA_FEWSHOT_EXAMPLES)
 fewshot_keys = re.findall(r"Action \d+: Finish\[(.+?)\]", HOTPOTQA_FEWSHOT_EXAMPLES)

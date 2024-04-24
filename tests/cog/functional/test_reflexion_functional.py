@@ -1,10 +1,11 @@
 """Unit tests for Reflexion functional methods."""
+
 import pytest
 import tiktoken
 
 from langchain_community.chat_models.fake import FakeListChatModel
 
-from discussion_agents.cog.functional.reflexion import (
+from agential.cog.functional.reflexion import (
     _build_cot_agent_prompt,
     _build_cot_reflection_prompt,
     _build_react_agent_prompt,
@@ -26,8 +27,8 @@ from discussion_agents.cog.functional.reflexion import (
     react_reflect_last_attempt_and_reflexion,
     react_reflect_reflexion,
 )
-from discussion_agents.cog.prompts.react import HOTPOTQA_FEWSHOT_EXAMPLES
-from discussion_agents.cog.prompts.reflexion import (
+from agential.cog.prompts.react import HOTPOTQA_FEWSHOT_EXAMPLES
+from agential.cog.prompts.reflexion import (
     REFLEXION_COT_FEWSHOT_EXAMPLES,
     REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
     REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES,

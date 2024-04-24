@@ -1,11 +1,12 @@
 """Unit tests for formatting functions."""
+
 from datetime import datetime
 
 import pytest
 
 from langchain.schema.document import Document
 
-from discussion_agents.utils.format import (
+from agential.utils.format import (
     format_memories_detail,
     format_memories_simple,
 )

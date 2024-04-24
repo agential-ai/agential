@@ -1,6 +1,6 @@
 """Unit tests for Generative Agents Persona."""
 
-from discussion_agents.cog.persona.generative_agents import GenerativeAgentPersona
+from agential.cog.persona.generative_agents import GenerativeAgentPersona
 
 
 def test_generative_agent_persona() -> None:

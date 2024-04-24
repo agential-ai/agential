@@ -1,5 +1,6 @@
 """Unit tests for parsing-related functions."""
-from discussion_agents.utils.parse import (
+
+from agential.utils.parse import (
     normalize_answer,
     parse_action,
     parse_list,

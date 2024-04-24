@@ -6,10 +6,10 @@
 
 PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 PROFILE = default
-PROJECT_NAME = discussion-agents
+PROJECT_NAME = agential
 PYTHON_INTERPRETER = python
 PYTHON_VERSION = 3.11
-POETRY_VERSION = 1.6.1
+POETRY_VERSION = 1.8.2
 
 ifeq (,$(shell which conda 2>/dev/null))
 HAS_CONDA=False
@@ -41,16 +41,16 @@ clean: ## Delete all compiled Python files.
 	find . -type d -name "__pycache__" -delete
 
 lint: ## Lint using black and ruff, static check mypy exclude tests.
-	poetry run mypy discussion_agents
-	poetry run black --check discussion_agents tests
-	poetry run ruff check discussion_agents tests
+	poetry run mypy agential
+	poetry run black --check agential tests
+	poetry run ruff check agential tests
 
 auto_lint: ## Automatic format & lint using black and ruff.
-	poetry run black discussion_agents tests
-	poetry run ruff discussion_agents tests --fix --show-fixes --show-source
+	poetry run black agential tests
+	poetry run ruff agential tests --fix --show-fixes --show-source
 
 test: ## Run all pytest tests.
-	poetry run pytest --cov=discussion_agents \
+	poetry run pytest --cov=agential \
 		--cov-report xml \
 		--cov-report term-missing:skip-covered \
 		tests/

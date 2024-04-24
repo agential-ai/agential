@@ -1,9 +1,10 @@
 """Unit tests for utility fetch memory functions."""
+
 from datetime import datetime
 
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
 
-from discussion_agents.utils.fetch import fetch_memories
+from agential.utils.fetch import fetch_memories
 
 test_date = datetime(year=2022, month=11, day=14, hour=3, minute=14)
 

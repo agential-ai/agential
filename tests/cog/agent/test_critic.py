@@ -4,7 +4,7 @@ from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
 from langchain_core.language_models.chat_models import BaseChatModel
 
-from discussion_agents.cog.agent.critic import CriticAgent
+from agential.cog.agent.critic import CriticAgent
 
 
 def test_init(google_api_key: str, google_cse_id: str) -> None:

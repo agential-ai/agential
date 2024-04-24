@@ -1,15 +1,16 @@
 """Unit tests for ReAct."""
+
 from langchain.agents.react.base import DocstoreExplorer
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
 
-from discussion_agents.cog.agent.react import (
+from agential.cog.agent.react import (
     ReActAgent,
     ReActOutput,
 )
-from discussion_agents.cog.modules.memory.react import ReActMemory
-from discussion_agents.cog.prompts.react import (
+from agential.cog.modules.memory.react import ReActMemory
+from agential.cog.prompts.react import (
     HOTPOTQA_FEWSHOT_EXAMPLES,
     REACT_INSTRUCTION_HOTPOTQA,
 )

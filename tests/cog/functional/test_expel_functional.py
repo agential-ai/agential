@@ -5,8 +5,8 @@ import joblib
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.messages.human import HumanMessage
 
-from discussion_agents.cog.agent.reflexion import ReflexionReActAgent
-from discussion_agents.cog.functional.expel import (
+from agential.cog.agent.reflexion import ReflexionReActAgent
+from agential.cog.functional.expel import (
     _build_all_success_prompt,
     _build_compare_prompt,
     categorize_experiences,

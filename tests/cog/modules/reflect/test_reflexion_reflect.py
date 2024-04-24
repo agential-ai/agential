@@ -1,13 +1,14 @@
 """Unit tests for Reflexion reflect module."""
+
 import pytest
 
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 
-from discussion_agents.cog.functional.reflexion import (
+from agential.cog.functional.reflexion import (
     _format_reflections,
 )
-from discussion_agents.cog.modules.reflect.reflexion import (
+from agential.cog.modules.reflect.reflexion import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )
