@@ -116,8 +116,6 @@ Next, run `auto_lint`. This will execute the pre-made `auto_lint` target in the 
 make auto_lint
 ```
 
-This command will execute the pre-made `auto-lint` target in the Makefile. This command automatically formats your code with `black` and `ruff`.
-
 Finally, run this command:
 
 ```
