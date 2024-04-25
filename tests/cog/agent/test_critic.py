@@ -1,13 +1,13 @@
 """Unit tests for CRITIC."""
 
+from unittest.mock import MagicMock
+
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.agent.critic import CriticAgent
 
-
-from unittest.mock import MagicMock
 
 def test_init(google_api_key: str, google_cse_id: str) -> None:
     """Test initialization."""
