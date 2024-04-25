@@ -1,5 +1,42 @@
 site_name: Agential
+extra_css:
+  - css/extra.css
 theme:
   name: material
+  logo: _static/assets/bell.svg
+  features:
+    - navigation.instant
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.indexes
+    - navigation.footer
+    - toc.follow
+    - toc.integrate
+    - content.code.copy
+    - content.tabs.link
+    - content.code.annotation
+    - search.suggest
+    - search.highlight
+  language: en
+  palette:
+    - media: (prefers-color-scheme)
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    - accent: purple
+      media: "(prefers-color-scheme: light)"
+      primary: white
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - accent: purple
+      media: "(prefers-color-scheme: dark)"
+      primary: black
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
 nav:
   - 'index.md'
