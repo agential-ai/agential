@@ -12,3 +12,4 @@ readme = "DOCS_README.md"
 [tool.poetry.dependencies]
 python = "^3.11"
 mkdocs = "^1.5.3"
+mkdocs-material = "^9.5.19"
