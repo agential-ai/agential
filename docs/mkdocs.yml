@@ -1,1 +1,5 @@
-site_name: My docs page
+site_name: Agential
+theme:
+  name: material
+nav:
+  - 'index.md'
