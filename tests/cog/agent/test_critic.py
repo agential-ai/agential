@@ -9,7 +9,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from agential.cog.agent.critic import CriticAgent
 
 
-def test_init(google_api_key: str, google_cse_id: str) -> None:
+def test_init() -> None:
     """Test initialization."""
     llm = FakeListChatModel(responses=["1"])
     search = MagicMock(spec=GoogleSearchAPIWrapper)
@@ -18,7 +18,7 @@ def test_init(google_api_key: str, google_cse_id: str) -> None:
     assert isinstance(search, GoogleSearchAPIWrapper)
 
 
-def test_generate(google_api_key: str, google_cse_id: str) -> None:
+def test_generate() -> None:
     """Test generate method."""
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
 
