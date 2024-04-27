@@ -1,4 +1,6 @@
-# Welcome to Agential, the encyclopedia of LLM-based agent methods!
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+# Welcome to Agential!
 
 For full documentation visit [mkdocs.org](https://www.mkdocs.org).
 
