@@ -24,17 +24,29 @@ theme:
     - search.highlight
   language: en
   palette:
-    - scheme: slate
-      primary: black
-      accent: deep orange
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      accent: amber
       toggle:
-        icon: material/weather-night
+        icon: material/brightness-auto
         name: Switch to light mode
-    - scheme: default
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
       primary: white
-      accent: deep orange
+      accent: amber
       toggle:
         icon: material/weather-sunny
-        name: Switch to night mode
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: amber
+      toggle:
+        icon: material/weather-night
+        name: Switch to system preference
 nav:
   - 'index.md'
