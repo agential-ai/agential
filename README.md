@@ -5,7 +5,7 @@
 ## Features
 
 
- Our primary goal is to provide easy-to-use and clean functions for natural language processing tasks, enabling developers to build robust and efficient applications with ease.
+ Our primary goal is to provide easy-to-use and clean implementations of popular LLM-based agent methods: an encyclopedia! This library is one of our contributions for our research project empirically surveying and investigating the performance of these methods across a diverse set of reasoning/decision-making tasks. Learn more about this [here](https://equatorial-jobaria-9ad.notion.site/Project-Lifecycle-Management-70d65e9a76eb4c86b6aed007f717aa41?pvs=4)! 
 
 - Easy-to-Use Interface: Provides intuitive and user-friendly functions for rapid prototyping and development.
 
@@ -16,25 +16,20 @@
 
 ## Getting Started 
 
+First, install the library with `pip`:
+
+```
+pip install agential
+```
+
+Next, let's query the `ReActAgent`!
+
 ```python
 question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring?'
 
 llm = ChatOpenAI(openai_api_key="YOUR_API_KEY")
 agent = ReActAgent(llm=llm)
 out = agent.generate(question=question)
-```
-
-
-Here's what the output would look like!
-```
-Thought : I need to search for the best kick boxer in the world, and then find any controversies or crimes they have been involved in.
-Action : Search[best kick boxer in the world]
-Observation : (Result 1/1) Ramon Dekkers is considered by many to be the best kickboxer in the world.
-Thought : It mentions "unsportsmanlike conducts" and crimes of violence. I need to find more information about Ramon Dekkers.
-Action : Lookup[crimes]
-Observation: (Result 1/1) Dekkers was involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring.
-Thought: Ramon Dekkers has been involved in controversies and crimes. I need to find more information about them.
-...
 ```
 
 
