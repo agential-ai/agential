@@ -121,7 +121,6 @@ Action 4: Finish[NOT ENOUGH INFO]"""
 
 # ======================================================================== TRIVIAQA ======================================================================== #
 
-
 REACT_INSTRUCTION_TRIVIAQA = """Answer a trivia question with interleaving Thought, Action, Observation steps. Thought can reason about the current question and plan the retrieval steps, and Action can be three types:
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
@@ -143,15 +142,31 @@ Action 2: Lookup[Scotland]
 Observation 2: Dunvegan Castle (Caisteal Dhùn Bheagain) is located 1 mile (1.6 km) to the north of Dunvegan on the Isle of Skye, off the west coast of Scotland.
 Thought 3: The observation says Dunvegan Castle is located off the west coast of Scotland.
 Action 3: Finish[off the west coast of Scotland]
+
+Question: American Callan Pinckney's eponymously named system became a best-selling (1980s-2000s) book/video franchise in what genre?
+Thought 1: I need to identify the genre of Callan Pinckney's fitness system that became popular through books and videos.
+Action 1: Search[Callan Pinckney fitness system]
+Observation 1: Callan Pinckney created Callanetics, a system of exercise involving frequent repetition of small muscular movements and squeezes, which was promoted through best-selling books and videos.
+Thought 2: Callanetics is mentioned as a system involving exercise. I need more information to confirm the genre.
+Action 2: Lookup[Callanetics genre]
+Observation 2: Callanetics is a type of fitness and exercise genre focusing on core strength, flexibility, and body shaping, becoming highly popular in the fitness world during the 1980s and 1990s.
+Thought 3: Callanetics fits into the fitness and exercise genre.
+Action 3: Finish[Fitness]
+
+Question: The Dodecanese Campaign of WWII that was an attempt by the Allied forces to capture islands in the Aegean Sea was the inspiration for which acclaimed 1961 commando film?
+Thought 1: I need to search the Dodecanese Campaign of WWII to find out more about the event and any related films.
+Action 1: Search[Dodecanese Campaign of WWII]
+Observation 1: The Dodecanese Campaign of World War II was an attempt by the Allied forces to capture the Italian-held Dodecanese islands in the Aegean Sea. The campaign was not fully successful and involved numerous battles and operations.
+Thought 2: The campaign details are noted, but there is no mention of films directly related to this event. I need to look up movies inspired by the Dodecanese Campaign.
+Action 2: Lookup[movie inspired by the Dodecanese Campaign]
+Observation 2: One notable film, "The Guns of Navarone," was inspired by the events of the Dodecanese Campaign. The film is about an Allied commando team tasked with destroying a heavily defended German fortress that threatens Allied naval ships in the Aegean Sea.
+Thought 3: "The Guns of Navarone" is identified as a film inspired by the Dodecanese Campaign.
 Question: Which Lloyd Webber musical premiered in the US on 10th December 1993?
-Thought 1: I need to search Lloyd Webber, find his musical premiered on 10th December 1993. 
-Action 1: Search[Lloyd Webber]
-Observation 1: Andrew Lloyd Webber, Baron Lloyd-Webber KG (born 22 March 1948) is an English composer and impresario of musical theatre.
-Thought 2: It does not mention 10th December 1993. So I need to look up the date.
-Action 2: Look up[10th December 1993]
-Observation 2:
-Action 2: Finish[Sunset Boulevard]
-
-
-"""
-
+Thought 1: I need to identify which Andrew Lloyd Webber musical had its US premiere on that specific date.
+Action 1: Search[Andrew Lloyd Webber musicals 1993 US premiere]
+Observation 1: Several Andrew Lloyd Webber musicals were running during the early 1990s, including 'Sunset Boulevard', which had its US premiere in 1993.
+Thought 2: I found that 'Sunset Boulevard' had its US premiere around that time, but I need to confirm the exact date.
+Action 2: Lookup[Sunset Boulevard US premiere date]
+Observation 2: 'Sunset Boulevard' premiered in the United States on December 9, 1993, at the Shubert Theatre in Los Angeles.
+Thought 3: The date is one day off from the query. It seems there might be a slight discrepancy in dates, or the date in the question might be rounded or listed differently across sources. I'll assume 'Sunset Boulevard' is the correct answer based on close proximity.
+Action 3: Finish[Sunset Boulevard]"""
