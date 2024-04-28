@@ -143,11 +143,14 @@ Action 2: Lookup[Scotland]
 Observation 2: Dunvegan Castle (Caisteal Dhùn Bheagain) is located 1 mile (1.6 km) to the north of Dunvegan on the Isle of Skye, off the west coast of Scotland.
 Thought 3: The observation says Dunvegan Castle is located off the west coast of Scotland.
 Action 3: Finish[off the west coast of Scotland]
-Question: 
-
-
-
-
+Question: Which Lloyd Webber musical premiered in the US on 10th December 1993?
+Thought 1: I need to search Lloyd Webber, find his musical premiered on 10th December 1993. 
+Action 1: Search[Lloyd Webber]
+Observation 1: Andrew Lloyd Webber, Baron Lloyd-Webber KG (born 22 March 1948) is an English composer and impresario of musical theatre.
+Thought 2: It does not mention 10th December 1993. So I need to look up the date.
+Action 2: Look up[10th December 1993]
+Observation 2:
+Action 2: Finish[Sunset Boulevard]
 
 
 """
