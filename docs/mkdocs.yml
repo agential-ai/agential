@@ -10,10 +10,13 @@ theme:
     - header.autohide
     - announce.dismiss
     - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - navigation.tracking
     - navigation.tabs
     - navigation.sections
-    - navigation.top
     - navigation.indexes
+    - navigation.top
     - navigation.footer
     - toc.follow
     - toc.integrate
@@ -49,4 +52,7 @@ theme:
         icon: material/weather-night
         name: Switch to system preference
 nav:
-  - 'index.md'
+  - Home:
+    - Agential: index.md
+  - bruh:
+    - bruhhh: test.md
