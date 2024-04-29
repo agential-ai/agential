@@ -7,6 +7,8 @@ from langchain_core.messages.human import HumanMessage
 from agential.cog.prompts.critic import (
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
     CRITIC_INSTRUCTION_HOTPOTQA,
+    TabMWP_MULTI_CHOICE, 
+    TabMWP_FREE_TEXT
 )
 
 
