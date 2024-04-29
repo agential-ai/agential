@@ -123,11 +123,9 @@ Action 4: Finish[NOT ENOUGH INFO]"""
 # ======================================================================== GSM8k ======================================================================== #
 
 
-REACT_INSTRUCTION_GSM8k = """ Determine the solution to a math problem, providing Observation that SUPPORTS or REFUTES the answer, or indicating if there is NOT ENOUGH INFORMATION. Action can be four types:
-(1) Calculate, which performs the necessary mathematical calculations to solve the problem.
-(2) Identify, which identifies relevant information or steps required to solve the problem.
-(3) Explain, which provides reasoning or steps to support or refute the solution.
-(4) Finish[answer], which returns the answer and finishes the task.
+REACT_INSTRUCTION_GSM8k = """Determine the solution to a math problem, providing Observation that SUPPORTS the answer, or indicating if there is NOT ENOUGH INFORMATION. Action can be two types:
+(1) Calculate[thought], which performs the necessary mathematical calculations to solve the problem.
+(2) Finish[answer], which returns the answer and finishes the task.
 You have a maximum of {max_steps} steps.
 
 Here are some examples:
@@ -136,50 +134,50 @@ Here are some examples:
 
 Question: {question}{scratchpad} """
 
-GSM8k_FEWSHOT_EXAMPLES = """ Question: Olivia has $23. She bought five bagels for $3 each. Calculate how much money Olivia has left after buying the bagels.
+GSM8k_FEWSHOT_EXAMPLES = """Question: Olivia has $23. She bought five bagels for $3 each. Calculate how much money Olivia has left after buying the bagels.
 Thought 1: The question involves calculating the amount of money Olivia has left after buying bagels.
-Action 1: Calculate
+Action 1: Calculate[Thought 1]
 Observation 1: Olivia initially has $23. Each bagel costs $3, so five bagels cost $3 x 5 = $15. Subtracting $15 from $23, Olivia has $23 - $15 = $8 left.
 Action 2: Finish[$8]
 
 Question: Michael had 58 golf balls. On Tuesday, he lost 23 golf balls. On Wednesday, he lost 2 more. Calculate how many golf balls Michael had at the end of Wednesday.
 Thought 1: The question requires determining the number of golf balls Michael had at the end of Wednesday.
-Action 1: Calculate
+Action 1: Calculate[Thought 1]
 Observation 1: Michael initially had 58 golf balls. He lost 23 on Tuesday and 2 more on Wednesday. Subtracting these losses from the initial count, Michael had 58 - 23 - 2 = 33 golf balls at the end of Wednesday.
 Action 2: Finish[33 golf balls]
 
 Question: There were nine computers in the server room. Five more computers were installed each day, from Monday to Thursday. Calculate how many computers are now in the server room.
 Thought 1: The question involves calculating the total number of computers in the server room after additional installations.
-Action 1: Calculate
+Action 1: Calculate[Thought 1]
 Observation 1: Initially, there were 9 computers in the server room. Five more were installed each day for four days. So, the total number of computers now in the server room is 9 + (5 x 4) = 29.
 Action 2: Finish[29 computers]
 
 Question: Shawn has five toys. For Christmas, he got two toys each from his mom and dad. Calculate how many toys Shawn has now.
 Thought 1: The question requires determining the total number of toys Shawn has after receiving gifts for Christmas.
-Action 1: Calculate
+Action 1: Calculate[Thought 1]
 Observation 1: Shawn initially had 5 toys. He received 2 toys each from his mom and dad for Christmas, so he got 2 + 2 = 4 toys in total. Adding these to his initial count, Shawn now has 5 + 4 = 9 toys.
 Action 2: Finish[9 toys]
 
 Question: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. Calculate how many lollipops Jason gave to Denny.
 Thought 1: The question involves determining the number of lollipops Jason gave to Denny.
-Action 1: Calculate
+Action 1: Calculate[Thought 1]
 Observation 1: Jason initially had 20 lollipops. After giving some to Denny, he has 12 left. So, Jason gave away 20 - 12 = 8 lollipops to Denny.
 Action 2: Finish[8 lollipops]
 
 Question: Leah had 32 chocolates and her sister had 42. If they ate 35, calculate how many pieces they have left in total.
 Thought 1: The question requires determining the total number of chocolate pieces Leah and her sister have left after eating some.
-Action 1: Calculate
+Action 1: Calculate[Thought 1]
 Observation 1: Leah and her sister initially had a total of 32 + 42 = 74 chocolates. After eating 35, they have 74 - 35 = 39 pieces left in total.
 Action 2: Finish[39 pieces left]
 
 Question: If there are 3 cars in the parking lot and 2 more cars arrive, calculate how many cars are in the parking lot now.
 Thought 1: The question involves calculating the total number of cars in the parking lot after additional arrivals.
-Action 1: Calculate
+Action 1: Calculate[Thought 1]
 Observation 1: Initially, there were 3 cars in the parking lot. With 2 more arriving, the total number of cars in the parking lot now is 3 + 2 = 5.
 Action 2: Finish[5 cars]
 
 Question: There are 15 trees in the grove. Grove workers will plant trees today, and after they are done, there will be 21 trees. Calculate how many trees the grove workers planted today.
 Thought 1: The question involves calculating the number of trees planted by the grove workers today.
-Action 1: Calculate
+Action 1: Calculate[Thought 1]
 Observation 1: Initially, there were 15 trees in the grove. After the workers planted trees, there were 21. So, the workers planted 21 - 15 = 6 trees today.
-Action 2: Finish[6 trees] """
+Action 2: Finish[6 trees]"""

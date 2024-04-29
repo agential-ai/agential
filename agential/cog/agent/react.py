@@ -164,8 +164,10 @@ class ReActAgent(BaseAgent):
                     obs = remove_newline(self.docstore.lookup(query))
                 except ValueError:
                     obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
+            elif action_type.lower() == "calculate":
+                continue
             else:
-                obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
+                obs = f"Invalid Action: {action_type}. Valid Actions are Lookup[<topic>] Search[<topic>] Calculate[observation] and Finish[<answer>]."
             self.memory.add_memories(obs)
 
             out.append(

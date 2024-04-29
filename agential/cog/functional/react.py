@@ -75,6 +75,14 @@ def _prompt_agent(
         max_steps=max_steps,
         prompt=prompt,
     )
+    print(
+        "GSM8k EXAMPLES + PROMPT <--------------------------------------------------------------->"
+    )
+    print(prompt)
+    print(
+        "END GSM8k EXAMPLES + PROMPT <--------------------------------------------------------------->"
+    )
+    print()
     out = llm(
         [
             HumanMessage(
@@ -82,6 +90,14 @@ def _prompt_agent(
             )
         ]
     ).content
+    print(
+        "AGENT OUTPUT <--------------------------------------------------------------->"
+    )
+    print(out)
+    print(
+        "END AGENT OUTPUT <--------------------------------------------------------------->"
+    )
+    print()
     assert isinstance(out, str)
     return remove_newline(out)
 
