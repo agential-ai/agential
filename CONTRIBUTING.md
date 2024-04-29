@@ -124,6 +124,19 @@ make test
 
 The `test` command within the Makefile internally runs `pytest` on unit tests located in the `tests` directory. 
 
+### Setting up the `.env`
+
+To test your implementations, you will most likely need an API key. API keys are kept locally in the `.env` file. At the root directory, create a `.env` file and include your relevant API keys. 
+
+To use them, simply:
+
+```
+import os
+import dotenv
+
+dotenv.load_dotenv()
+api_key = os.getenv("<NAME OF YOUR API KEY>")
+```
 
 ### Pre-commit Install/Uninstall (Optional)
 
