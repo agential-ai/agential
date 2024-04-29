@@ -625,6 +625,13 @@ Here's the most possible answer: Rhode Island had its bi-centenary of joining th
 
 # ======================================================================== TabMWP ======================================================================== #
 
+CRITIC_INSTRUCTION_TabMWP = """{examples}
+(END OF EXAMPLES)
+
+Question: {question}
+Answer: {answer}
+"""
+
 TabMWP_FREE_TEXT = """ 
 Table Text:
 Day | Kilometers
