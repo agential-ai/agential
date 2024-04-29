@@ -3,7 +3,7 @@
 # ======================================================================== HOTPOTQA ======================================================================== #
 
 
-REACT_INSTRUCTION_HOTPOTQA = """Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: 
+REACT_INSTRUCTION_HOTPOTQA = """Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types:
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
 (3) Finish[answer], which returns the answer and finishes the task.
@@ -36,7 +36,7 @@ Action 1: Search[Milhouse]
 Observation 1: Milhouse Mussolini Van Houten is a recurring character in the Fox animated television series The Simpsons voiced by Pamela Hayden and created by Matt Groening.
 Thought 2: The paragraph does not tell who Milhouse is named after, maybe I can look up "named after".
 Action 2: Lookup[named after]
-Observation 2: (Result 1 / 1) Milhouse was named after U.S. president Richard Nixon, whose middle name was Milhous. 
+Observation 2: (Result 1 / 1) Milhouse was named after U.S. president Richard Nixon, whose middle name was Milhous.
 Thought 3: Milhouse was named after U.S. president Richard Nixon, so the answer is Richard Nixon.
 Action 3: Finish[Richard Nixon]
 Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
@@ -61,10 +61,10 @@ Action 3: Finish[director, screenwriter, actor]
 Question: Which magazine was started first Arthur's Magazine or First for Women?
 Thought 1: I need to search Arthur's Magazine and First for Women, and find which was started first.
 Action 1: Search[Arthur's Magazine]
-Observation 1: Arthur's Magazine (1844-1846) was an American literary periodical published in Philadelphia in the 19th century. 
+Observation 1: Arthur's Magazine (1844-1846) was an American literary periodical published in Philadelphia in the 19th century.
 Thought 2: Arthur's Magazine was started in 1844. I need to search First for Women next.
 Action 2: Search[First for Women]
-Observation 2: First for Women is a woman's magazine published by Bauer Media Group in the USA.[1] The magazine was started in 1989. 
+Observation 2: First for Women is a woman's magazine published by Bauer Media Group in the USA.[1] The magazine was started in 1989.
 Thought 3: First for Women was started in 1989. 1844 (Arthur's Magazine) < 1989 (First for Women), so Arthur's Magazine was started first.
 Action 3: Finish[Arthur's Magazine]
 Question: Were Pavel Urysohn and Leonid Levin known for the same type of work?
@@ -73,15 +73,15 @@ Action 1: Search[Pavel Urysohn]
 Observation 1: Pavel Samuilovich Urysohn (February 3, 1898 â August 17, 1924) was a Soviet mathematician who is best known for his contributions in dimension theory.
 Thought 2: Pavel Urysohn is a mathematician. I need to search Leonid Levin next and find its type of work.
 Action 2: Search[Leonid Levin]
-Observation 2: Leonid Anatolievich Levin is a Soviet-American mathematician and computer scientist. 
-Thought 3: Leonid Levin is a mathematician and computer scientist. So Pavel Urysohn and Leonid Levin have the same type of work. 
+Observation 2: Leonid Anatolievich Levin is a Soviet-American mathematician and computer scientist.
+Thought 3: Leonid Levin is a mathematician and computer scientist. So Pavel Urysohn and Leonid Levin have the same type of work.
 Action 3: Finish[yes]"""
 
 
 # ======================================================================== FEVER ======================================================================== #
 
 
-REACT_INSTRUCTION_FEVER = """Determine if there is Observation that SUPPORTS or REFUTES a Claim, or if there is NOT ENOUGH INFORMATION.  and Action can be two types: 
+REACT_INSTRUCTION_FEVER = """Determine if there is Observation that SUPPORTS or REFUTES a Claim, or if there is NOT ENOUGH INFORMATION.  and Action can be two types:
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 (3) Finish[answer], which returns the answer and finishes the task.
 You have a maximum of {max_steps} steps.
@@ -102,7 +102,7 @@ Action 2: Finish[SUPPORTS]
 Claim: Stranger Things is set in Bloomington, Indiana.
 Thought 1: I should search for Stranger Things, and see if it is set in Bloomington, Indiana.
 Action 1: Search[Stranger Things]
-Observation 1: Stranger Things is an American science fiction horror drama television series created by the Duffer Brothers. Set in the 1980s, primarily in the fictional town of Hawkins, Indiana, the series centers on a number of mysteries and supernatural events occurring around the town and their impact on an ensemble of child and adult characters. 
+Observation 1: Stranger Things is an American science fiction horror drama television series created by the Duffer Brothers. Set in the 1980s, primarily in the fictional town of Hawkins, Indiana, the series centers on a number of mysteries and supernatural events occurring around the town and their impact on an ensemble of child and adult characters.
 Thought 2: The observation says that it is set in a "fictional town of Hawkins, Indiana", so it is not set in Bloomington.
 Action 2: Finish[REFUTES]
 
@@ -118,3 +118,68 @@ Action 3: Lookup[Billboard Hot 100]
 Observation 3: (Result 1 / 3) The song peaked at number two on the Billboard Hot 100 in the United States, where it was certified Gold for 500,000 units shipped.
 Thought 4: It only says the song peaked at number two on the Billboard Hot 100, but not if it was in 2003. I am not sure if this claim is true or not.
 Action 4: Finish[NOT ENOUGH INFO]"""
+
+
+# ======================================================================== GSM8k ======================================================================== #
+
+
+REACT_INSTRUCTION_GSM8k = """ Determine the solution to a math problem, providing Observation that SUPPORTS or REFUTES the answer, or indicating if there is NOT ENOUGH INFORMATION. Action can be four types:
+(1) Calculate, which performs the necessary mathematical calculations to solve the problem.
+(2) Identify, which identifies relevant information or steps required to solve the problem.
+(3) Explain, which provides reasoning or steps to support or refute the solution.
+(4) Finish[answer], which returns the answer and finishes the task.
+You have a maximum of {max_steps} steps.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Question: {question}{scratchpad} """
+
+GSM8k_FEWSHOT_EXAMPLES = """ Question: Olivia has $23. She bought five bagels for $3 each. Calculate how much money Olivia has left after buying the bagels.
+Thought 1: The question involves calculating the amount of money Olivia has left after buying bagels.
+Action 1: Calculate
+Observation 1: Olivia initially has $23. Each bagel costs $3, so five bagels cost $3 x 5 = $15. Subtracting $15 from $23, Olivia has $23 - $15 = $8 left.
+Action 2: Finish[$8]
+
+Question: Michael had 58 golf balls. On Tuesday, he lost 23 golf balls. On Wednesday, he lost 2 more. Calculate how many golf balls Michael had at the end of Wednesday.
+Thought 1: The question requires determining the number of golf balls Michael had at the end of Wednesday.
+Action 1: Calculate
+Observation 1: Michael initially had 58 golf balls. He lost 23 on Tuesday and 2 more on Wednesday. Subtracting these losses from the initial count, Michael had 58 - 23 - 2 = 33 golf balls at the end of Wednesday.
+Action 2: Finish[33 golf balls]
+
+Question: There were nine computers in the server room. Five more computers were installed each day, from Monday to Thursday. Calculate how many computers are now in the server room.
+Thought 1: The question involves calculating the total number of computers in the server room after additional installations.
+Action 1: Calculate
+Observation 1: Initially, there were 9 computers in the server room. Five more were installed each day for four days. So, the total number of computers now in the server room is 9 + (5 x 4) = 29.
+Action 2: Finish[29 computers]
+
+Question: Shawn has five toys. For Christmas, he got two toys each from his mom and dad. Calculate how many toys Shawn has now.
+Thought 1: The question requires determining the total number of toys Shawn has after receiving gifts for Christmas.
+Action 1: Calculate
+Observation 1: Shawn initially had 5 toys. He received 2 toys each from his mom and dad for Christmas, so he got 2 + 2 = 4 toys in total. Adding these to his initial count, Shawn now has 5 + 4 = 9 toys.
+Action 2: Finish[9 toys]
+
+Question: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. Calculate how many lollipops Jason gave to Denny.
+Thought 1: The question involves determining the number of lollipops Jason gave to Denny.
+Action 1: Calculate
+Observation 1: Jason initially had 20 lollipops. After giving some to Denny, he has 12 left. So, Jason gave away 20 - 12 = 8 lollipops to Denny.
+Action 2: Finish[8 lollipops]
+
+Question: Leah had 32 chocolates and her sister had 42. If they ate 35, calculate how many pieces they have left in total.
+Thought 1: The question requires determining the total number of chocolate pieces Leah and her sister have left after eating some.
+Action 1: Calculate
+Observation 1: Leah and her sister initially had a total of 32 + 42 = 74 chocolates. After eating 35, they have 74 - 35 = 39 pieces left in total.
+Action 2: Finish[39 pieces left]
+
+Question: If there are 3 cars in the parking lot and 2 more cars arrive, calculate how many cars are in the parking lot now.
+Thought 1: The question involves calculating the total number of cars in the parking lot after additional arrivals.
+Action 1: Calculate
+Observation 1: Initially, there were 3 cars in the parking lot. With 2 more arriving, the total number of cars in the parking lot now is 3 + 2 = 5.
+Action 2: Finish[5 cars]
+
+Question: There are 15 trees in the grove. Grove workers will plant trees today, and after they are done, there will be 21 trees. Calculate how many trees the grove workers planted today.
+Thought 1: The question involves calculating the number of trees planted by the grove workers today.
+Action 1: Calculate
+Observation 1: Initially, there were 15 trees in the grove. After the workers planted trees, there were 21. So, the workers planted 21 - 15 = 6 trees today.
+Action 2: Finish[6 trees] """
