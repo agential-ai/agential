@@ -126,7 +126,7 @@ def test_reflexion_cot_generate() -> None:
     assert out[0].answer == "Company with Limited Liability"
     assert (
         out[0].thought
-        == 'Thought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.'
+        == 'The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.'
     )
     assert out[0].action == "Action: Finish[Company with Limited Liability]"
     assert out[0].observation == "Observation: Answer is INCORRECT"
