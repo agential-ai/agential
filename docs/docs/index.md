@@ -1,4 +1,75 @@
-# Welcome to MkDocs
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+# Welcome to Agential!
+
+## Implementing...
+
+| **Methods / Benchmarks** |      HotpotQA       |        FEVER        |      TriviaQA       |       AmbigNQ       |
+| ------------------------ | :-----------------: | :-----------------: | :-----------------: | :-----------------: |
+| ReAct                    | :octicons-check-16: | :octicons-check-16: |                     |                     |
+| Reflexion                | :octicons-check-16: |                     |                     |                     |
+| CRITIC                   | :octicons-check-16: |                     | :octicons-check-16: | :octicons-check-16: |
+| Self-Refine              |                     |                     |                     |                     |
+| LATS                     |                     |                     |                     |                     |
+
+| **Methods / Benchmarks** |        GSM8k        | SVAMP | TabMWP |
+| ------------------------ | :-----------------: | :---: | :----: |
+| ReAct                    |                     |       |        |
+| Reflexion                |                     |       |        |
+| CRITIC                   |                     |       |        |
+| Self-Refine              | :octicons-check-16: |       |        |
+| LATS                     |                     |       |        |
+
+| **Methods / Benchmarks** | MBPP     | HumanEval |
+| ------------------------ | :------: | :-------: |
+| ReAct                    |          |           |
+| Reflexion                |          |           |
+| CRITIC                   |          |           |
+| Self-Refine              |          |           |
+| LATS                     |          |           |
+
+| **Methods / Benchmarks** | ALFWorld | WebShop | AgentBench |
+| ------------------------ | :------: | :-----: | :--------: |
+| ReAct                    |          |         |            |
+| Reflexion                |          |         |            |
+| CRITIC                   |          |         |            |
+| Self-Refine              |          |         |            |
+| LATS                     |          |         |            |
+
+## Experimenting...
+
+
+| **Methods / Benchmarks** | HotpotQA | FEVER | TriviaQA | AmbigNQ |
+| ------------------------ | :------: | :---: | :------: | :-----: |
+| ReAct                    |          |       |          |         |
+| Reflexion                |          |       |          |         |
+| CRITIC                   |          |       |          |         |
+| Self-Refine              |          |       |          |         |
+| LATS                     |          |       |          |         |
+
+| **Methods / Benchmarks** | GSM8k    | SVAMP  | TabMWP  |
+| ------------------------ | :------: | :----: | :-----: |
+| ReAct                    |          |        |         |
+| Reflexion                |          |        |         |
+| CRITIC                   |          |        |         |
+| Self-Refine              |          |        |         |
+| LATS                     |          |        |         |
+
+| **Methods / Benchmarks** | MBPP     | HumanEval |
+| ------------------------ | :------: | :-------: |
+| ReAct                    |          |           |
+| Reflexion                |          |           |
+| CRITIC                   |          |           |
+| Self-Refine              |          |           |
+| LATS                     |          |           |
+
+| **Methods / Benchmarks** | ALFWorld | WebShop | AgentBench |
+| ------------------------ | :------: | :-----: | :--------: |
+| ReAct                    |          |         |            |
+| Reflexion                |          |         |            |
+| CRITIC                   |          |         |            |
+| Self-Refine              |          |         |            |
+| LATS                     |          |         |            |
 
 For full documentation visit [mkdocs.org](https://www.mkdocs.org).
 
