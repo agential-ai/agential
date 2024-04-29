@@ -133,34 +133,7 @@ Here are some examples:
 
 Question: {question}{scratchpad}"""
 
-TRIVIAQA_FEWSHOT_EXAMPLES = """
-Question: American Callan Pinckney's eponymously named system became a best-selling (1980s-2000s) book/video franchise in what genre?
-Thought 1: I need to identify the genre of Callan Pinckney's fitness system that became popular through books and videos.
-Action 1: Search[Callan Pinckney fitness system]
-Observation 1: Callan Pinckney created Callanetics, a system of exercise involving frequent repetition of small muscular movements and squeezes, which was promoted through best-selling books and videos.
-Thought 2: Callanetics is mentioned as a system involving exercise. I need more information to confirm the genre.
-Action 2: Lookup[Callanetics genre]
-Observation 2: Callanetics is a type of fitness and exercise genre focusing on core strength, flexibility, and body shaping, becoming highly popular in the fitness world during the 1980s and 1990s.
-Thought 3: Callanetics fits into the fitness and exercise genre.
-Action 3: Finish[Fitness]
-Question: The Dodecanese Campaign of WWII that was an attempt by the Allied forces to capture islands in the Aegean Sea was the inspiration for which acclaimed 1961 commando film?
-Thought 1: I need to search the Dodecanese Campaign of WWII to find out more about the event and any related films.
-Action 1: Search[Dodecanese Campaign of WWII]
-Observation 1: The Dodecanese Campaign of World War II was an attempt by the Allied forces to capture the Italian-held Dodecanese islands in the Aegean Sea. The campaign was not fully successful and involved numerous battles and operations.
-Thought 2: The campaign details are noted, but there is no mention of films directly related to this event. I need to look up movies inspired by the Dodecanese Campaign.
-Action 2: Lookup[movie inspired by the Dodecanese Campaign]
-Observation 2: One notable film, "The Guns of Navarone," was inspired by the events of the Dodecanese Campaign. The film is about an Allied commando team tasked with destroying a heavily defended German fortress that threatens Allied naval ships in the Aegean Sea.
-Thought 3: "The Guns of Navarone" is identified as a film inspired by the Dodecanese Campaign.
-Question: Which Lloyd Webber musical premiered in the US on 10th December 1993?
-Thought 1: I need to identify which Andrew Lloyd Webber musical had its US premiere on that specific date.
-Action 1: Search[Andrew Lloyd Webber musicals 1993 US premiere]
-Observation 1: Several Andrew Lloyd Webber musicals were running during the early 1990s, including 'Sunset Boulevard', which had its US premiere in 1993.
-Thought 2: I found that 'Sunset Boulevard' had its US premiere around that time, but I need to confirm the exact date.
-Action 2: Lookup[Sunset Boulevard US premiere date]
-Observation 2: 'Sunset Boulevard' premiered in the United States on December 9, 1993, at the Shubert Theatre in Los Angeles.
-Thought 3: The date is one day off from the query. It seems there might be a slight discrepancy in dates, or the date in the question might be rounded or listed differently across sources. I'll assume 'Sunset Boulevard' is the correct answer based on close proximity.
-Action 3: Finish[Sunset Boulevard]
-Question: Which innovation for the car was developed by Prince Henry of Prussia in 1911? 
+TRIVIAQA_FEWSHOT_EXAMPLES = """Question: Which innovation for the car was developed by Prince Henry of Prussia in 1911? 
 Thought 1: I need to search Prince Henry of Prussia in 1911, then find which innovation for the car was developed in 1911.
 Action 1: Search[Prince Henry of Prussia in 1911]
 Observation 1: Prince Henry of Prussia (German: Albert Wilhelm Heinrich; 14 August 1862 – 20 April 1929) was a younger brother of German Emperor Wilhelm II and a Prince of Prussia. He was also a grandson of Queen Victoria.
@@ -169,12 +142,16 @@ Action 2: Lookup[car]
 Observation 2: Henry was interested in motor cars as well and supposedly invented a windshield wiper[1] and, according to other sources, the car horn.
 Thought 3: According to the evidence, Prince Henry of Prussia invented a windshield wiper for the car. 
 Action 3: Finish[windshield wiper]
+
+-----
 Question: When did the founder of Jehovah's Witnesses say the world would end?
 Thought 1: Let's search the question in google
 Action 1: Search[When did the founder of Jehovah's Witnesses say the world would end? site: wikipedia.org]
 Observation 1: [Eschatology of Jehovah's Witnesses - Wikipedia] In 1911, Russell wrote that October 1914 would witness the "full end" of Babylon, or nominal Christianity, "utterly destroyed as a system". At first, the hopes ... 
 Thought 2: The evidence shows that the founder of Jehovah's Witnesses predicted the world would end in October 1914
 Action 2: Finish[1914]
+
+-----
 Question: Three people have featured on the reverse of the £5 note, the two most recent are George Stephenson and Elizabeth Fry, who was the first?
 Thought 1:  I need to search the first person featured on the reverse of the £5 note before George Stephenson and Elizabeth Fry.
 Action 1: Search[the first person featured on the reverse of the £5 note before George Stephenson and Elizabeth Fry]
@@ -187,6 +164,8 @@ Action 3: Search[People have featured on the reverse of the £5 note: George Ste
 Observation 3: [Historical British figures featured on banknotes (1970-2017)] £5 – The Duke of Wellington, George Stephenson, Elizabeth Fry, Sir Winston Churchill £10 – Florence Nightingale, Charles Dickens, Charles Darwin £20 – William Shakespeare, ...
 Thought 4: The evidence shows that the Duke of Wellington and Sir Winston Churchill were also featured on £5.
 Action 4: Finish[Duke of Wellington]
+
+-----
 Question: What state had its bi-centenary of joining the Union a year after North Carolina? 
 Thought 1: I need to search the states had its bi-centenary of joining the Union a year after North Carolina.
 Action 1: Search[What state had its bi-centenary of joining the Union a year after North Carolina?] 

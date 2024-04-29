@@ -75,6 +75,9 @@ def _prompt_agent(
         max_steps=max_steps,
         prompt=prompt,
     )
+    print("-------------------------------")
+    print(prompt)
+    print("-------------------------------")
     out = llm(
         [
             HumanMessage(
@@ -82,6 +85,9 @@ def _prompt_agent(
             )
         ]
     ).content
+    print("-------------------------------")
+    print(out)
+    print("-------------------------------")
     assert isinstance(out, str)
     return remove_newline(out)
 
