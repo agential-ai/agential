@@ -174,5 +174,4 @@ Thought 2: The evidence does not mention Wilma's mom in the flintstones movie.
 Action 2: Search[Who played Wilma's mom in the flintstones movie?] 
 Observation 2: [] The Flintstones / Wilma Flintstone / Mother / Played by Elizabeth Taylor 
 Thought 3: The evidence shows that Elizabeth Taylor played the role of Wilma's mother. 
-Action 3: Finish[Elizabeth Taylor]
-"""
+Action 3: Finish[Elizabeth Taylor]"""
