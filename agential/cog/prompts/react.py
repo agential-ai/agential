@@ -142,7 +142,6 @@ Action 2: Lookup[Scotland]
 Observation 2: Dunvegan Castle (Caisteal Dhùn Bheagain) is located 1 mile (1.6 km) to the north of Dunvegan on the Isle of Skye, off the west coast of Scotland.
 Thought 3: The observation says Dunvegan Castle is located off the west coast of Scotland.
 Action 3: Finish[off the west coast of Scotland]
-
 Question: American Callan Pinckney's eponymously named system became a best-selling (1980s-2000s) book/video franchise in what genre?
 Thought 1: I need to identify the genre of Callan Pinckney's fitness system that became popular through books and videos.
 Action 1: Search[Callan Pinckney fitness system]
@@ -152,7 +151,6 @@ Action 2: Lookup[Callanetics genre]
 Observation 2: Callanetics is a type of fitness and exercise genre focusing on core strength, flexibility, and body shaping, becoming highly popular in the fitness world during the 1980s and 1990s.
 Thought 3: Callanetics fits into the fitness and exercise genre.
 Action 3: Finish[Fitness]
-
 Question: The Dodecanese Campaign of WWII that was an attempt by the Allied forces to capture islands in the Aegean Sea was the inspiration for which acclaimed 1961 commando film?
 Thought 1: I need to search the Dodecanese Campaign of WWII to find out more about the event and any related films.
 Action 1: Search[Dodecanese Campaign of WWII]
