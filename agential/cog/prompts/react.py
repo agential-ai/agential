@@ -134,8 +134,7 @@ Here are some examples:
 
 Question: {question}{scratchpad}"""
 
-REACT_AMBIGQA_EXAMPLES = """
-Question: When did men's figure skating become a summer Olympic sport? 
+REACT_AMBIGQA_EXAMPLES = """Question: When did men's figure skating become a summer Olympic sport? 
 Thought 1: Let's search the question in google 
 Action 1: Search[When did men's figure skating become a summer Olympic sport?] 
 Observation 1: [Figure skating at the Olympic Games - Wikipedia] Figure skating was first contested in the Olympic Games at the 1908 Summer Olympics . Since 1924, the sport has been a part of the Winter Olympic Games . 
