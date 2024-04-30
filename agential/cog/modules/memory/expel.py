@@ -9,11 +9,10 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import tiktoken
 
-
 from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores.faiss import FAISS
 from langchain_core.documents.base import Document
 from langchain_core.embeddings import Embeddings
-from langchain_community.vectorstores.faiss import FAISS
 from scipy.spatial.distance import cosine
 from tiktoken.core import Encoding
 
