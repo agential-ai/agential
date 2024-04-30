@@ -9,10 +9,11 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import tiktoken
 
+
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.vectorstores.faiss import FAISS
 from langchain_core.documents.base import Document
 from langchain_core.embeddings import Embeddings
+from langchain.vectorstores import chroma
 from scipy.spatial.distance import cosine
 from tiktoken.core import Encoding
 
@@ -181,7 +182,7 @@ class ExpeLExperienceMemory(BaseMemory):
         # Create vectorstore.
         self.vectorstore = None
         if len(self.experiences["idxs"]) and len(self.success_traj_docs):
-            self.vectorstore = FAISS.from_documents(
+            self.vectorstore = FAISS.fromdocuments(
                 [
                     doc
                     for doc in self.success_traj_docs
@@ -303,7 +304,7 @@ class ExpeLExperienceMemory(BaseMemory):
 
         if success_traj_idxs:
             # Create vectorstore.
-            self.vectorstore = FAISS.from_documents(
+            self.vectorstore = Chroma.from_documents(
                 [
                     doc
                     for doc in self.success_traj_docs
