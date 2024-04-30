@@ -6,7 +6,7 @@
 
 | **Methods / Benchmarks** |      HotpotQA       |        FEVER        |      TriviaQA       |       AmbigNQ       |
 | ------------------------ | :-----------------: | :-----------------: | :-----------------: | :-----------------: |
-| ReAct                    | :octicons-check-16: | :octicons-check-16: | :octicons-check-16: |                     |
+| ReAct                    | :octicons-check-16: | :octicons-check-16: | :octicons-check-16: | :octicons-check-16: |
 | Reflexion                | :octicons-check-16: |                     |                     |                     |
 | CRITIC                   | :octicons-check-16: |                     | :octicons-check-16: | :octicons-check-16: |
 | Self-Refine              |                     |                     |                     |                     |
