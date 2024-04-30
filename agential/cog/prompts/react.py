@@ -119,7 +119,9 @@ Observation 3: (Result 1 / 3) The song peaked at number two on the Billboard Hot
 Thought 4: It only says the song peaked at number two on the Billboard Hot 100, but not if it was in 2003. I am not sure if this claim is true or not.
 Action 4: Finish[NOT ENOUGH INFO]"""
 
+
 # ======================================================================== TRIVIAQA ======================================================================== #
+
 
 REACT_INSTRUCTION_TRIVIAQA = """Answer a trivia question with interleaving Thought, Action, Observation steps. Thought can reason about the current question and plan the retrieval steps, and Action can be three types:
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
