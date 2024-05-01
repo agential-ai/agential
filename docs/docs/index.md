@@ -5,6 +5,7 @@
 ## Implementing...
 
 :octicons-check-16: **:** not tested in the original paper
+
 :material-check-all: **:** tested in the original paper
 
 | **Methods / Benchmarks** |       HotpotQA       |        FEVER         |       TriviaQA       |       AmbigNQ        |
