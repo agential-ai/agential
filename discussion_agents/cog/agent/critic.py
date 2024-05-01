@@ -18,6 +18,7 @@ from discussion_agents.cog.prompts.critic import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
     HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
 )
+from discussion_agents.utils.general import remove_comment, safe_execute
 
 
 class CriticAgent(BaseAgent):
@@ -45,7 +46,8 @@ class CriticAgent(BaseAgent):
         critique_examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
         critique_prompt: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
         max_interactions: int = 7,
-        use_tool: bool = True,
+        use_search_tool: bool = True,
+        use_interpreter_tool: bool = True,
         evidence_length: int = 400,
     ) -> str:
         """Generates an answer that is refined with search results.
@@ -57,7 +59,8 @@ class CriticAgent(BaseAgent):
             critique_examples (str): Few-shot examples to guide the language model in generating critiques. Defaults to HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC.
             critique_prompt (str): The instruction template for generating critiques. Defaults to CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA.
             max_interactions (int): The maximum number of critique cycles. Defaults to 7.
-            use_tool (bool): Flag to decide whether to use the search tool for evidence gathering. Defaults to True.
+            use_search_tool (bool): Flag to decide whether to use the search tool for evidence gathering. Defaults to True.
+            use_interpreter_tool (bool): Flag to decide whether to use the interpreter tool for evidence gathering. Defaults to True.
             evidence_length (int): The maximum length of the evidence snippet to be included in the context. Defaults to 400.
 
         Returns:
@@ -82,34 +85,50 @@ class CriticAgent(BaseAgent):
             ).split("> Evidence: ")[0]
             out += critique
 
-            if "> Search Query: " in critique:
-                _, search_query = critique.split("> Search Query:")[:2]
-                search_query = search_query.split("\n")[0].strip()
-
-                if use_tool:
-                    exist_query.append(search_query)
-                    for k in range(exist_query.count(search_query), 8):
-                        search_result = self.search.results(
-                            search_query, num_results=k
-                        )[-1]
-                        if search_result["snippet"] not in exist_evidence:
-                            exist_evidence.add(search_result["snippet"])
-                            break
-
-                    context = f"""> Evidence: [{search_result['title']}] {search_result['snippet'][:evidence_length]}\n\n"""
-                    if idx == max_interactions - 2:
-                        context += f"Let's give the most possible answer.\n\nQuestion: {question}\nHere's "
-                else:
-                    context = """> Evidence: """
-
-                out += context
-            elif "``` " in critique:
-                _, revised_answer = critique.split("``` ")
-                revised_answer = revised_answer.strip()
-                break
-            else:
-                if not critique:
+            if use_interpreter_tool:
+                if " is correct" in critique and "```python" in revised_answer:
+                    revised_answer += critique
                     break
-                out += f"\nLet's give the most possible answer.\n\nQuestion: {question}\nHere's answer: {answer}\n\n"
+                if "```python" in critique:
+                    _, code = critique.split("```python")[:2]
+                    code = code.split("```")[0].strip()
+                    code = remove_comment(code)
+                    an, execution = safe_execute(code)
+                    out = f"Question: {question}\n```python\n{code}\n```\nExecution: {execution}\nOutput: Answer =  {an}\n\nWhat's the problem with the code?\n\n"
+                else:
+                    out = f"\nQuestion: {question}\n Write Python Code to solve the following questions. Store your result as a variable named 'answer'"
 
-        return revised_answer,out
+                revised_answer = out
+
+            else:
+                if "> Search Query: " in critique:
+                    _, search_query = critique.split("> Search Query:")[:2]
+                    search_query = search_query.split("\n")[0].strip()
+
+                    if use_search_tool:
+                        exist_query.append(search_query)
+                        for k in range(exist_query.count(search_query), 8):
+                            search_result = self.search.results(
+                                search_query, num_results=k
+                            )[-1]
+                            if search_result["snippet"] not in exist_evidence:
+                                exist_evidence.add(search_result["snippet"])
+                                break
+
+                        context = f"""> Evidence: [{search_result['title']}] {search_result['snippet'][:evidence_length]}\n\n"""
+                        if idx == max_interactions - 2:
+                            context += f"Let's give the most possible answer.\n\nQuestion: {question}\nHere's "
+                    else:
+                        context = """> Evidence: """
+
+                    out += context
+                elif "most possible answer: " in critique:
+                    _, revised_answer = critique.split("most possible answer: ")
+                    revised_answer = revised_answer.strip()
+                    break
+                else:
+                    if not critique:
+                        break
+                    out += f"\nLet's give the most possible answer.\n\nQuestion: {question}\nHere's "
+
+        return revised_answer
