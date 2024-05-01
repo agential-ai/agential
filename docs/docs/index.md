@@ -4,29 +4,32 @@
 
 ## Implementing...
 
-| **Methods / Benchmarks** |      HotpotQA       |        FEVER        |      TriviaQA       |       AmbigNQ       |
-| ------------------------ | :-----------------: | :-----------------: | :-----------------: | :-----------------: |
-| ReAct                    | :octicons-check-16: | :octicons-check-16: | :octicons-check-16: | :octicons-check-16: |
-| Reflexion                | :octicons-check-16: |                     |                     |                     |
-| CRITIC                   | :octicons-check-16: |                     | :octicons-check-16: | :octicons-check-16: |
-| Self-Refine              |                     |                     |                     |                     |
-| LATS                     |                     |                     |                     |                     |
+:octicons-check-16: **:** not tested in the original paper
+:material-check-all: **:** tested in the original paper
 
-| **Methods / Benchmarks** |        GSM8k        | SVAMP | TabMWP |
-| ------------------------ | :-----------------: | :---: | :----: |
-| ReAct                    |                     |       |        |
-| Reflexion                |                     |       |        |
-| CRITIC                   |                     |       |        |
-| Self-Refine              | :octicons-check-16: |       |        |
-| LATS                     |                     |       |        |
+| **Methods / Benchmarks** |       HotpotQA       |        FEVER         |       TriviaQA       |       AmbigNQ        |
+| ------------------------ | :------------------: | :------------------: | :------------------: | :------------------: |
+| ReAct                    | :material-check-all: | :material-check-all: | :octicons-check-16:  | :octicons-check-16:  |
+| Reflexion                | :material-check-all: |                      |                      |                      |
+| CRITIC                   | :material-check-all: |                      | :material-check-all: | :material-check-all: |
+| Self-Refine              |                      |                      |                      |                      |
+| LATS                     |                      |                      |                      |                      |
 
-| **Methods / Benchmarks** | MBPP     | HumanEval |
-| ------------------------ | :------: | :-------: |
-| ReAct                    |          |           |
-| Reflexion                |          |           |
-| CRITIC                   |          |           |
-| Self-Refine              |          |           |
-| LATS                     |          |           |
+| **Methods / Benchmarks** |        GSM8k         | SVAMP | TabMWP |
+| ------------------------ | :------------------: | :---: | :----: |
+| ReAct                    |                      |       |        |
+| Reflexion                |                      |       |        |
+| CRITIC                   |                      |       |        |
+| Self-Refine              | :material-check-all: |       |        |
+| LATS                     |                      |       |        |
+
+| **Methods / Benchmarks** | MBPP  | HumanEval |
+| ------------------------ | :---: | :-------: |
+| ReAct                    |       |           |
+| Reflexion                |       |           |
+| CRITIC                   |       |           |
+| Self-Refine              |       |           |
+| LATS                     |       |           |
 
 | **Methods / Benchmarks** | ALFWorld | WebShop | AgentBench |
 | ------------------------ | :------: | :-----: | :--------: |
@@ -47,21 +50,21 @@
 | Self-Refine              |          |       |          |         |
 | LATS                     |          |       |          |         |
 
-| **Methods / Benchmarks** | GSM8k    | SVAMP  | TabMWP  |
-| ------------------------ | :------: | :----: | :-----: |
-| ReAct                    |          |        |         |
-| Reflexion                |          |        |         |
-| CRITIC                   |          |        |         |
-| Self-Refine              |          |        |         |
-| LATS                     |          |        |         |
+| **Methods / Benchmarks** | GSM8k | SVAMP | TabMWP |
+| ------------------------ | :---: | :---: | :----: |
+| ReAct                    |       |       |        |
+| Reflexion                |       |       |        |
+| CRITIC                   |       |       |        |
+| Self-Refine              |       |       |        |
+| LATS                     |       |       |        |
 
-| **Methods / Benchmarks** | MBPP     | HumanEval |
-| ------------------------ | :------: | :-------: |
-| ReAct                    |          |           |
-| Reflexion                |          |           |
-| CRITIC                   |          |           |
-| Self-Refine              |          |           |
-| LATS                     |          |           |
+| **Methods / Benchmarks** | MBPP  | HumanEval |
+| ------------------------ | :---: | :-------: |
+| ReAct                    |       |           |
+| Reflexion                |       |           |
+| CRITIC                   |       |           |
+| Self-Refine              |       |           |
+| LATS                     |       |           |
 
 | **Methods / Benchmarks** | ALFWorld | WebShop | AgentBench |
 | ------------------------ | :------: | :-----: | :--------: |
