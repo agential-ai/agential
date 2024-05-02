@@ -2,6 +2,7 @@
 
 from typing import Dict
 
+from langchain.prompts import PromptTemplate
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.utils.prompt import prompt_llm
@@ -31,11 +32,18 @@ def _prompt_agent(
     Returns:
         str: The answer from the language model, with no leading or trailing whitespace.
     """
-    return prompt_llm(
+    prompt = PromptTemplate.from_template(prompt_template).format(**keys)
+    print("<PROMPT IN =======================================================================>")
+    print(prompt)
+    print("<PROMPT IN =======================================================================>")
+    out = prompt_llm(
         llm=llm,
-        keys=keys,
-        prompt_template=prompt_template
+        prompt=prompt
     )
+    print("<PROMPT OUT =======================================================================>")
+    print(out)
+    print("<PROMPT OUT =======================================================================>")
+    return out
 
 
 def _prompt_critic(
@@ -60,8 +68,15 @@ def _prompt_critic(
     Returns:
         str: The critique from the language model.
     """
-    return prompt_llm(
+    prompt = PromptTemplate.from_template(prompt_template).format(**keys)
+    print("<PROMPT IN =======================================================================>")
+    print(prompt)
+    print("<PROMPT IN =======================================================================>")
+    out = prompt_llm(
         llm=llm,
-        keys=keys,
-        prompt_template=prompt_template
+        prompt=prompt
     )
+    print("<PROMPT OUT =======================================================================>")
+    print(out)
+    print("<PROMPT OUT =======================================================================>")
+    return out
