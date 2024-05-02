@@ -11,17 +11,17 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from agential.cog.agent.base import BaseAgent
 from agential.cog.functional.critic import (
     _prompt_agent,
-    _prompt_critique,
+    _prompt_critic,
 )
 from agential.cog.prompts.critic import (
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
     CRITIC_INSTRUCTION_HOTPOTQA,
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
     HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
-    GSM8K_FEWSHOT_EXAMPLES_POT,
-    CRITIC_INSTRUCTION_GSM8K_POT,
-    GSM8K_FEWSHOT_EXAMPLES_CRITIC,
-    CRITIC_CRITIQUE_INSTRUCTION_GSM8K
+    # GSM8K_FEWSHOT_EXAMPLES_POT,
+    # CRITIC_INSTRUCTION_GSM8K_POT,
+    # GSM8K_FEWSHOT_EXAMPLES_CRITIC,
+    # CRITIC_CRITIQUE_INSTRUCTION_GSM8K
 )
 
 
@@ -99,7 +99,7 @@ class CriticAgent(BaseAgent):
         exist_query = []
         exist_evidence = set()
         for idx in range(max_interactions):
-            critique = _prompt_critique(
+            critique = _prompt_critic(
                 llm=self.llm,
                 question=question,
                 examples=critique_examples,

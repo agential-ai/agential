@@ -2,9 +2,7 @@
 
 from typing import Dict
 
-from langchain.prompts import PromptTemplate
 from langchain_core.language_models.chat_models import BaseChatModel
-from langchain_core.messages.human import HumanMessage
 
 from agential.utils.prompt import prompt_llm
 from agential.cog.prompts.critic import (
@@ -40,7 +38,7 @@ def _prompt_agent(
     )
 
 
-def _prompt_critique(
+def _prompt_critic(
     llm: BaseChatModel,
     keys: Dict[str, str],
     prompt_template: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA
