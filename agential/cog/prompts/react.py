@@ -241,3 +241,104 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 Question: {question}{scratchpad} """
+
+TABMWP_FEWSHOT_EXAMPLES = """
+Table:
+Price | Quantity demanded | Quantity supplied
+$895 | 21,000 | 3,400
+$945 | 17,200 | 7,400
+$995 | 13,400 | 11,400
+$1,045 | 9,600 | 15,400
+$1,095 | 5,800 | 19,400
+
+Questions: Look at the table. Then answer the question. At a price of $995, is there a shortage or
+a surplus? Please select from the following options: ['shortage', 'surplus'].
+Thought 1: To determine whether there is a shortage or a surplus at a price of $995, I need to compare the quantity demanded to the quantity supplied at that price point.
+Action 1 : python-generator[Thought 1]
+Observation 1: [code python]
+# Given data for the price of $995
+quantity_demanded = 13400
+quantity_supplied = 11400
+# Calculate difference to determine market condition
+difference = quantity_demanded - quantity_supplied
+difference
+Thought 2: If the difference is positive, there is a surplus; if it is negative, there is a shortage. A zero difference indicates equilibrium.
+Action 2: Finish['shortage']
+
+
+Table:
+toy guitar | $32.42
+toy piano | $10.55
+model railroad set | $65.51
+toy rocket | $80.93
+chess board | $15.76
+
+Question: Cody has $49.50. Does he have enough to buy a toy guitar and a chess board? Please select from the following options: ['yes', 'no'].
+Thought 1: To determine if Cody has enough money to buy both a toy guitar and a chess board, we need to add the prices of these two items and compare the total with Cody's available funds of $49.50.
+Action 1 : python-generator[Thought 1]
+Observation 1: [code python]
+# Prices of items
+price_toy_guitar = 32.42
+price_chess_board = 15.76
+# Calculate total cost of the toy guitar and chess board
+total_cost = price_toy_guitar + price_chess_board
+# Compare total cost with Cody's budget
+cody_budget = 49.50
+is_enough_money = total_cost <= cody_budget
+total_cost, is_enough_money
+Thought 2: If the total cost is less than or equal to Cody's budget, then he has enough money to purchase both items. Otherwise, he does not.
+Action 2 : Finish['Yes']
+
+
+Table:
+Name | Number of coins
+Shelby | 81
+Oliver | 84
+Jamal | 78
+Vince | 81
+Abby | 79
+Farid | 77
+Tara | 85
+Krysta | 83
+
+Question: Some friends discussed the sizes of their coin collections. What is the mean of the numbers?
+Thought 1:To find the mean of the numbers representing the sizes of the coin collections, we need to sum all the coin counts and divide by the total number of entries.
+Action 1 : python-generator[Thought 1]
+Observation 1: [code python]
+# Given data of the number of coins
+coin_counts = [81, 84, 78, 81, 79, 77, 85, 83]
+# Calculate the mean of the numbers
+mean_coins = sum(coin_counts) / len(coin_counts)
+mean_coins
+Thought 2:The mean value calculated will provide the average number of coins held by each person in the group, which is the answer to the question.
+Action 2 : Finish[81]
+
+
+Table:
+square beads | $2.97 per kilogram
+oval beads | $3.41 per kilogram
+flower-shaped beads | $2.18 per kilogram
+star-shaped beads | $1.95 per kilogram
+heart-shaped beads | $1.52 per kilogram
+spherical beads | $3.42 per kilogram
+rectangular beads | $1.97 per kilogram
+
+Question: If Tracy buys 5 kilograms of spherical beads, 4 kilograms of star-shaped beads, and 3 kilograms of flower-shaped beads, how much will she spend? (unit: $)
+Thought 1: To determine the total amount Tracy will spend, the cost per kilogram of each type of bead she buys must be multiplied by the respective quantities she purchases. We then sum these amounts to get the total cost.
+Action 1 : python-generator[Thought 1]
+Observation 1: [code python]
+# Recalculating the total cost for Tracy with provided prices and quantities to ensure accuracy
+price_spherical_beads = 3.42
+price_star_shaped_beads = 1.95
+price_flower_shaped_beads = 2.18
+quantity_spherical = 5
+quantity_star_shaped = 4
+quantity_flower_shaped = 3
+# Calculate total cost again
+total_cost = (price_spherical_beads * quantity_spherical) + \
+(price_star_shaped_beads * quantity_star_shaped) + \
+(price_flower_shaped_beads * quantity_flower_shaped)
+total_cost
+Thought 2:The calculation provides a straightforward method to find the total spending based on the quantities and prices of the beads.
+Action 2 : Finish[$31.44]
+"""
