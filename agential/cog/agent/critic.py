@@ -4,6 +4,7 @@ GitHub Repository: https://github.com/microsoft/ProphetNet/tree/master/CRITIC
 Original Paper: http://arxiv.org/abs/2305.11738
 """
 
+import func_timeout
 from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -17,7 +18,33 @@ from agential.cog.prompts.critic import (
     CRITIC_INSTRUCTION_HOTPOTQA,
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
     HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
+    GSM8K_FEWSHOT_EXAMPLES_POT,
+    CRITIC_INSTRUCTION_GSM8K_POT,
+    GSM8K_FEWSHOT_EXAMPLES_CRITIC,
+    CRITIC_CRITIQUE_INSTRUCTION_GSM8K
 )
+
+
+def safe_execute(code_string: str, keys=None):
+    def execute(x):
+        try:
+            exec(x)
+            locals_ = locals()
+            if keys is None:
+                an = locals_.get('answer', None)
+            else:
+                an = [locals_.get(k, None) for k in keys]
+            return an, "Done"
+        except BaseException as e: # jump wrong case
+            return None, repr(e)
+
+    try:
+        an, report = func_timeout.func_timeout(3, execute, args=(code_string,))
+    except func_timeout.FunctionTimedOut:
+        an = None
+        report = "TimeoutError: execution timeout"
+
+    return an, report
 
 
 class CriticAgent(BaseAgent):
@@ -77,7 +104,7 @@ class CriticAgent(BaseAgent):
                 question=question,
                 examples=critique_examples,
                 answer=answer,
-                critique="" if not idx else out,
+                critique=out,
                 prompt=critique_prompt,
             ).split("> Evidence: ")[0]
             out += critique
@@ -113,3 +140,38 @@ class CriticAgent(BaseAgent):
                 out += f"\nLet's give the most possible answer.\n\nQuestion: {question}\nHere's "
 
         return revised_answer
+
+    # def generate_( 
+    #     self,       
+    #     question: str,
+    #     examples: str = GSM8K_FEWSHOT_EXAMPLES_POT,
+    #     prompt: str = CRITIC_INSTRUCTION_GSM8K_POT,
+    #     critique_examples: str = GSM8K_FEWSHOT_EXAMPLES_CRITIC,
+    #     critique_prompt: str = CRITIC_CRITIQUE_INSTRUCTION_GSM8K,
+    #     max_interactions: int = 7,
+    #     use_tool: bool = True,
+    #     evidence_length: int = 400,
+    # ) -> str:
+    #     code = _prompt_agent(
+    #         llm=self.llm, question=question, examples=examples, prompt=prompt
+    #     )
+
+    #     answer, status = safe_execute(code)
+
+    #     critic_prompt = CRITIC_CRITIQUE_INSTRUCTION_GSM8K.format(
+    #     examples=GSM8K_FEWSHOT_EXAMPLES_CRITIC,
+    #     question=question,
+    #     answer=answer,
+    #     status=status,
+    #     code=out,
+    #     critique=""
+    # )
+
+    # out_ = ""
+    # critique = llm(
+    #     [
+    #         HumanMessage(
+    #             content=critic_prompt,
+    #         )
+    #     ]
+    # ).content.split("Here's")[0]
