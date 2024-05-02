@@ -42,34 +42,28 @@ def _prompt_agent(
 
 def _prompt_critique(
     llm: BaseChatModel,
-    question: str,
-    examples: str,
-    answer: str,
-    critique: str = "",
-    prompt: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
+    keys: Dict[str, str],
+    prompt_template: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA
 ) -> str:
     """Prompts the agent for a critique of an answer using the language model.
 
     Parameters:
         llm (BaseChatModel): The language model to use for generating the critique.
-        question (str): The question related to the answer.
-        examples (str): Contextual examples related to the question.
-        answer (str): The answer to critique.
-        critique (str, optional): Initial critique to refine the response.
-        prompt (str): Prompt template string. Defaults to CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA.
+        keys (Dict[str, str]): The keys and values to format the prompt. Required keys are listed below.
+        prompt_template (str): Prompt template string. Defaults to CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA.
+
+    Keys Required:
+        - For QA Benchmarks:
+            question (str): The question related to the answer.
+            examples (str): Fewshot examples related to the question.
+            answer (str): The answer to critique.
+            critique (str, optional): Critique to refine the response. Defaults to None.
 
     Returns:
-        str: The critique from the language model, with no leading or trailing whitespace.
+        str: The critique from the language model.
     """
-    prompt = PromptTemplate.from_template(prompt).format(
-        question=question, examples=examples, answer=answer, critique=critique
+    return prompt_llm(
+        llm=llm,
+        keys=keys,
+        prompt_template=prompt_template
     )
-    out = llm(
-        [
-            HumanMessage(
-                content=prompt,
-            )
-        ]
-    ).content
-    assert isinstance(out, str)
-    return out
