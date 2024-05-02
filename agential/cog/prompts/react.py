@@ -118,3 +118,7 @@ Action 3: Lookup[Billboard Hot 100]
 Observation 3: (Result 1 / 3) The song peaked at number two on the Billboard Hot 100 in the United States, where it was certified Gold for 500,000 units shipped.
 Thought 4: It only says the song peaked at number two on the Billboard Hot 100, but not if it was in 2003. I am not sure if this claim is true or not.
 Action 4: Finish[NOT ENOUGH INFO]"""
+
+
+#SVAMP for REACT Examples:
+SVAMP_REACT_EXAMPLES = "" COME BACK HERE
