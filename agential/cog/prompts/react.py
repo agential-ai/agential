@@ -232,3 +232,12 @@ Action 3: Search[What state joined the Union a year after North Carolina?]
 Observation 3: [States by Order of Entry into Union - Infoplease] Joining the Union | State | Entered Union | Year Settled | | North Carolina | Nov. 21, 1789 | 1660 | | Rhode Island | May 29, 1790 | 1636 | | Vermont | Mar. 4, 1791 | 1724 | 
 Thought 4: The evidence shows North Carolina entered Union in 1789, and Rhode Island entered Union in 1790, which is a year after North Carolina. 
 Action 4: Finish[Rhode Island]"""
+
+REACT_INSTRUCTION_TABMWP = """Read the following table and question to solve the problem,providing Observation that SUPPORTS the answer, or indicating if there is NOT ENOUGH INFORMATION. Action can be two types:
+(1) python-generator[Thought], generates an executable python program that can solve the given question
+(2) Finish[answer], which returns the answer and finishes the task.
+You have a maximum of {max_steps} steps.
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+Question: {question}{scratchpad} """
