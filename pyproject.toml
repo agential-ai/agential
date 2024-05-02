@@ -30,6 +30,7 @@ langchain = "^0.1.16"
 tiktoken = "^0.6.0"
 openai = "^1.25.0"
 func-timeout = "^4.3.5"
+guidance = "^0.1.13"
 
 [tool.poetry.group.dev.dependencies]
 python-dotenv = "^1.0.0"
