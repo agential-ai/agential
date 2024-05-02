@@ -17,7 +17,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = ">=3.11,<3.12"
 torch = ">=2.0.0, !=2.0.1, !=2.1.0"
 numpy = "^1.25.2"
 faiss-cpu = "^1.7.4"
@@ -30,7 +30,6 @@ langchain = "^0.1.16"
 tiktoken = "^0.6.0"
 openai = "^1.25.0"
 func-timeout = "^4.3.5"
-lmql = "^0.7.3"
 
 [tool.poetry.group.dev.dependencies]
 python-dotenv = "^1.0.0"
