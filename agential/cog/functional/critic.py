@@ -55,7 +55,7 @@ def _prompt_critic(
             question (str): The question related to the answer.
             examples (str): Fewshot examples related to the question.
             answer (str): The answer to critique.
-            critique (str, optional): Critique to refine the response. Defaults to None.
+            critique (str): Critique to refine the response.
 
     Returns:
         str: The critique from the language model.
