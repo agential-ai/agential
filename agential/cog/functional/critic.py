@@ -1,5 +1,7 @@
 """Functional module for CRITIC."""
 
+from typing import Dict
+
 from langchain.prompts import PromptTemplate
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
@@ -10,29 +12,9 @@ from agential.cog.prompts.critic import (
 )
 
 
-def _build_agent_prompt(
-    question: str, examples: str, prompt: str = CRITIC_INSTRUCTION_HOTPOTQA
-) -> str:
-    """Builds a prompt for questioning the agent using a template.
-
-    Parameters:
-        question (str): The question to be answered by the agent.
-        examples (str): Contextual examples related to the question.
-        prompt (str): Prompt template string. Defaults to CRITIC_INSTRUCTION_HOTPOTQA.
-
-    Returns:
-        str: A formatted prompt ready for use with the language model.
-    """
-    prompt = PromptTemplate.from_template(prompt).format(
-        question=question, examples=examples
-    )
-    return prompt
-
-
 def _prompt_agent(
     llm: BaseChatModel,
-    question: str,
-    examples: str,
+    keys: Dict[str, str],
     prompt: str = CRITIC_INSTRUCTION_HOTPOTQA,
 ) -> str:
     """Prompts the agent to answer a question using the language model.
@@ -46,7 +28,9 @@ def _prompt_agent(
     Returns:
         str: The answer from the language model, with no leading or trailing whitespace.
     """
-    prompt = _build_agent_prompt(question=question, examples=examples, prompt=prompt)
+    prompt = PromptTemplate.from_template(prompt).format(
+        question=question, examples=examples
+    )
     out = llm(
         [
             HumanMessage(
@@ -56,31 +40,6 @@ def _prompt_agent(
     ).content
     assert isinstance(out, str)
     return out
-
-
-def _build_critique_prompt(
-    question: str,
-    examples: str,
-    answer: str,
-    critique: str = "",
-    prompt: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
-) -> str:
-    """Builds a critique prompt for the agent using a template.
-
-    Parameters:
-        question (str): The original question related to the answer.
-        examples (str): Contextual examples used in the question.
-        answer (str): The agent's answer to the question.
-        critique (str, optional): Additional critique information.
-        prompt (str): Prompt template string. Defaults to CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA.
-
-    Returns:
-        str: A formatted critique prompt ready for use with the language model.
-    """
-    prompt = PromptTemplate.from_template(prompt).format(
-        question=question, examples=examples, answer=answer, critique=critique
-    )
-    return prompt
 
 
 def _prompt_critique(
@@ -104,12 +63,8 @@ def _prompt_critique(
     Returns:
         str: The critique from the language model, with no leading or trailing whitespace.
     """
-    prompt = _build_critique_prompt(
-        question=question,
-        examples=examples,
-        answer=answer,
-        critique=critique,
-        prompt=prompt,
+    prompt = PromptTemplate.from_template(prompt).format(
+        question=question, examples=examples, answer=answer, critique=critique
     )
     out = llm(
         [
@@ -118,7 +73,5 @@ def _prompt_critique(
             )
         ]
     ).content
-
     assert isinstance(out, str)
-
     return out
