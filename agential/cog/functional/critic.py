@@ -6,6 +6,7 @@ from langchain.prompts import PromptTemplate
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
 
+from agential.utils.prompt import prompt_llm
 from agential.cog.prompts.critic import (
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
     CRITIC_INSTRUCTION_HOTPOTQA,
@@ -15,31 +16,28 @@ from agential.cog.prompts.critic import (
 def _prompt_agent(
     llm: BaseChatModel,
     keys: Dict[str, str],
-    prompt: str = CRITIC_INSTRUCTION_HOTPOTQA,
+    prompt_template: str = CRITIC_INSTRUCTION_HOTPOTQA,
 ) -> str:
     """Prompts the agent to answer a question using the language model.
 
     Parameters:
         llm (BaseChatModel): The language model to use for generating the answer.
-        question (str): The question to be answered.
-        examples (str): Contextual examples relevant to the question.
-        prompt (str): Prompt template string. Defaults to CRITIC_INSTRUCTION_HOTPOTQA.
+        keys (Dict[str, str]): The keys and values to format the prompt. Required keys are listed below.
+        prompt_template (str): Prompt template string. Defaults to CRITIC_INSTRUCTION_HOTPOTQA.
+
+    Keys Required:
+        - For QA Benchmarks:
+            question (str): The question that the agent needs to answer.
+            examples (str): Fewshot examples relevant to the question.
 
     Returns:
         str: The answer from the language model, with no leading or trailing whitespace.
     """
-    prompt = PromptTemplate.from_template(prompt).format(
-        question=question, examples=examples
+    return prompt_llm(
+        llm=llm,
+        keys=keys,
+        prompt_template=prompt_template
     )
-    out = llm(
-        [
-            HumanMessage(
-                content=prompt,
-            )
-        ]
-    ).content
-    assert isinstance(out, str)
-    return out
 
 
 def _prompt_critique(

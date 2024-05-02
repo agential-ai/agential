@@ -11,7 +11,7 @@ def prompt_llm(
     keys: Dict[str, str],
     prompt_template: str,
 ) -> str:
-    """General function to prompt the language model.
+    """General function to prompt a large language model (LLM).
 
     Parameters:
         llm (BaseChatModel): The language model to use.
@@ -19,7 +19,7 @@ def prompt_llm(
         prompt_template (str): The template string used to generate the prompt.
 
     Returns:
-        str: The trimmed response from the language model.
+        str: The response from the language model.
     """
     # Use the prompt template and keys to generate the final prompt.
     try:
