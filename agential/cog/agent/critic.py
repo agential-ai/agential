@@ -17,7 +17,14 @@ from agential.cog.prompts.critic import (
     CRITIC_INSTRUCTION_HOTPOTQA,
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
     HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
+    CRITIC_CRITIQUE_INSTRUCTION_SVAMP,
+    CRITIC_INSTRUCTION_SVAMP,   
+    SVAMP_FEWSHOT_EXAMPLES_CRITIC,
+    SVAMP_FEWSHOT_EXAMPLES_DIRECT,
+    SVAMP_FEWSHOT_EXAMPLES_POT,
 )
+
+from discussion-agents.agential.utils.interpreter_api import safe_execute
 
 
 class CriticAgent(BaseAgent):
@@ -45,7 +52,9 @@ class CriticAgent(BaseAgent):
         critique_examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
         critique_prompt: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
         max_interactions: int = 7,
-        use_tool: bool = True,
+        # use_tool: bool = True,
+        use_search_tool: bool = True,
+        use_interpreter_api: bool = True,
         evidence_length: int = 400,
     ) -> str:
         """Generates an answer that is refined with search results.
@@ -57,7 +66,8 @@ class CriticAgent(BaseAgent):
             critique_examples (str): Few-shot examples to guide the language model in generating critiques. Defaults to HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC.
             critique_prompt (str): The instruction template for generating critiques. Defaults to CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA.
             max_interactions (int): The maximum number of critique cycles. Defaults to 7.
-            use_tool (bool): Flag to decide whether to use the search tool for evidence gathering. Defaults to True.
+            use_search_tool (bool): Flag to decide whether to use the search tool for evidence gathering. Defaults to True.
+            use_interpreter_api (bool): Flag to decide whether to use the interpreter API for code execution. Defaults to True.
             evidence_length (int): The maximum length of the evidence snippet to be included in the context. Defaults to 400.
 
         Returns:
@@ -82,11 +92,19 @@ class CriticAgent(BaseAgent):
             ).split("> Evidence: ")[0]
             out += critique
 
-            if "> Search Query: " in critique:
+            if use_interpreter_api:
+                if "most possible answer: " in critique:
+                    revised_answer += critique.split("most possible answer: ")[1].strip()
+                if "```python" in critique:
+                    code = critique.split("```python")[1].split("```")[0]
+                    an, report = safe_execute(code)
+                    out = f"Question: {question}\n```python\n{code}\n```\nExecution: {report}\nOutput: Answer = {an}\n\nWhat's the problem with the code?\n\n"
+                    
+            elif "> Search Query: " in critique:
                 _, search_query = critique.split("> Search Query:")[:2]
                 search_query = search_query.split("\n")[0].strip()
 
-                if use_tool:
+                if use_search_tool:
                     exist_query.append(search_query)
                     for k in range(exist_query.count(search_query), 8):
                         search_result = self.search.results(
