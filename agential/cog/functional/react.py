@@ -7,6 +7,11 @@ from tiktoken import Encoding
 
 from agential.cog.prompts.react import (
     REACT_INSTRUCTION_HOTPOTQA,
+    REACT_SVAMP_EXAMPLES_DIRECT,
+    REACT_SVAMP_EXAMPLES_POT,
+    REACT_SVAMP_INSTRUCTIONS,
+    REACT_SVAMP_EXAMPLES_CRITIQUE,
+    REACT_SVAMP_INSTRUCTIONS_CRITIC,
 )
 from agential.utils.parse import remove_newline
 
@@ -16,7 +21,7 @@ def _build_agent_prompt(
     scratchpad: str,
     examples: str,
     max_steps: int,
-    prompt: str = REACT_INSTRUCTION_HOTPOTQA,
+    prompt: str = REACT_SVAMP_EXAMPLES_DIRECT,
 ) -> str:
     """Constructs a prompt template for the agent.
 
@@ -49,7 +54,7 @@ def _prompt_agent(
     scratchpad: str,
     examples: str,
     max_steps: int,
-    prompt: str = REACT_INSTRUCTION_HOTPOTQA,
+    prompt: str = REACT_SVAMP_EXAMPLES_DIRECT,
 ) -> str:
     """Generates a response from the LLM based on a given question and scratchpad.
 
@@ -95,7 +100,7 @@ def _is_halted(
     max_steps: int,
     max_tokens: int,
     enc: Encoding,
-    prompt: str = REACT_INSTRUCTION_HOTPOTQA,
+    prompt: str = REACT_SVAMP_EXAMPLES_DIRECT,
 ) -> bool:
     """Determines whether the agent's operation should be halted.
 
