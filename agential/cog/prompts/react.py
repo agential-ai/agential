@@ -124,7 +124,7 @@ Action 4: Finish[NOT ENOUGH INFO]"""
 
 
 REACT_INSTRUCTION_GSM8k = """Determine the solution to a math problem, providing Observation that SUPPORTS the answer, or indicating if there is NOT ENOUGH INFORMATION. Action can be two types:
-(1) Calculate[thought], which performs the necessary mathematical calculations to solve the problem.
+(1) python_interpreter[Thought], executes given python code.
 (2) Finish[answer], which returns the answer and finishes the task.
 You have a maximum of {max_steps} steps.
 
@@ -135,51 +135,59 @@ Here are some examples:
 Question: {question}{scratchpad} """
 
 GSM8k_FEWSHOT_EXAMPLES = """Question: Olivia has $23. She bought five bagels for $3 each. Calculate how much money Olivia has left after buying the bagels.
-Thought 1: The question involves calculating the amount of money Olivia has left after buying bagels.
-Action 1: Calculate[Thought 1]
-Observation 1: Olivia initially has $23. Each bagel costs $3, so five bagels cost $3 x 5 = $15. Subtracting $15 from $23, Olivia has $23 - $15 = $8 left.
+Thought 1: #olivia has $23\\no = 23\\n #she buys 5 bagels for $3 each\\nspent = 3 * 5\\n #the total is o-spent\\ntotal = o - spent
+Action 1: python_interpreter[Thought 1]
+Observation 1: \{ o:23, spent:15, total: 8 \}
+Thought 2: Olivia initially has $23. Each bagel costs $3, so five bagels cost $3 x 5 = $15. Subtracting $15 from $23, Olivia has $23 - $15 = $8 left.
 Action 2: Finish[$8]
 
 Question: Michael had 58 golf balls. On Tuesday, he lost 23 golf balls. On Wednesday, he lost 2 more. Calculate how many golf balls Michael had at the end of Wednesday.
-Thought 1: The question requires determining the number of golf balls Michael had at the end of Wednesday.
-Action 1: Calculate[Thought 1]
-Observation 1: Michael initially had 58 golf balls. He lost 23 on Tuesday and 2 more on Wednesday. Subtracting these losses from the initial count, Michael had 58 - 23 - 2 = 33 golf balls at the end of Wednesday.
+Thought 1: #michael has 58 golf balls\\nm = 58\\n #he first lost 23 golf balls\\n lost = 23\\n #he then lost 2 more\\n lost += 2\\n #the total is m-lost\\n total = m-lost
+Action 1: python_interpreter[Thought 1]
+Observation 1: \{ m:58, spent:25, total: 33 \}
+Thought 2: Michael initially had 58 golf balls. He lost 23 on Tuesday and 2 more on Wednesday. Subtracting these losses from the initial count, Michael had 58 - 23 - 2 = 33 golf balls at the end of Wednesday.
 Action 2: Finish[33 golf balls]
 
 Question: There were nine computers in the server room. Five more computers were installed each day, from Monday to Thursday. Calculate how many computers are now in the server room.
-Thought 1: The question involves calculating the total number of computers in the server room after additional installations.
-Action 1: Calculate[Thought 1]
-Observation 1: Initially, there were 9 computers in the server room. Five more were installed each day for four days. So, the total number of computers now in the server room is 9 + (5 x 4) = 29.
+Thought 1: #there were initially 9 computers\\ncomputers = 9\\n #5 more were added each day for 4 days\\nnew_installed = (5*4)\\n #the total is computers + new_intalled\\ntotal = computers + new_installed
+Action 1: python_interpreter[Thought 1]
+Observation 1: \{ computers:9, new_installed:20, total: 29 \}
+Thought 2: Initially, there were 9 computers in the server room. Five more were installed each day for four days. So, the total number of computers now in the server room is 9 + (5 x 4) = 29.
 Action 2: Finish[29 computers]
 
 Question: Shawn has five toys. For Christmas, he got two toys each from his mom and dad. Calculate how many toys Shawn has now.
-Thought 1: The question requires determining the total number of toys Shawn has after receiving gifts for Christmas.
-Action 1: Calculate[Thought 1]
-Observation 1: Shawn initially had 5 toys. He received 2 toys each from his mom and dad for Christmas, so he got 2 + 2 = 4 toys in total. Adding these to his initial count, Shawn now has 5 + 4 = 9 toys.
+Thought 1: #shawn has 5 toys\\n s=5\\n #two parents each give him two toys\\ngiven = 2+2\\n #the total is s + given\\n total = s+given
+Action 1: python_interpreter[Thought 1]
+Observation 1: \{ s:5, given:5, total: 9 \}
+Thought 2: Shawn initially had 5 toys. He received 2 toys each from his mom and dad for Christmas, so he got 2 + 2 = 4 toys in total. Adding these to his initial count, Shawn now has 5 + 4 = 9 toys.
 Action 2: Finish[9 toys]
 
 Question: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. Calculate how many lollipops Jason gave to Denny.
-Thought 1: The question involves determining the number of lollipops Jason gave to Denny.
-Action 1: Calculate[Thought 1]
-Observation 1: Jason initially had 20 lollipops. After giving some to Denny, he has 12 left. So, Jason gave away 20 - 12 = 8 lollipops to Denny.
+Thought 1: #jason had 20 lollipops\\n j=20\\n #he has 12 after giving some to denny\\n j_after = 12\\n #the total is j-j_after\\n total=j-j_after
+Action 1: python_interpreter[Thought 1]
+Observation 1: \{ j:20, j_after:12, total: 8 \}
+Thought 2: Jason initially had 20 lollipops. After giving some to Denny, he has 12 left. So, Jason gave away 20 - 12 = 8 lollipops to Denny.
 Action 2: Finish[8 lollipops]
 
 Question: Leah had 32 chocolates and her sister had 42. If they ate 35, calculate how many pieces they have left in total.
-Thought 1: The question requires determining the total number of chocolate pieces Leah and her sister have left after eating some.
-Action 1: Calculate[Thought 1]
-Observation 1: Leah and her sister initially had a total of 32 + 42 = 74 chocolates. After eating 35, they have 74 - 35 = 39 pieces left in total.
+Thought 1: #leah had 32 chocolates\\n l=32\\n her sister had 42\\n s=42\\n #they ate 35\\n ate=35\\n #total is l+s-ate\\n total=l+s-ate
+Action 1: python_interpreter[Thought 1]
+Observation 1: \{ l:32, s:42, ate:35, total: 39 \}
+Thought 2: Leah and her sister initially had a total of 32 + 42 = 74 chocolates. After eating 35, they have 74 - 35 = 39 pieces left in total.
 Action 2: Finish[39 pieces left]
 
 Question: If there are 3 cars in the parking lot and 2 more cars arrive, calculate how many cars are in the parking lot now.
-Thought 1: The question involves calculating the total number of cars in the parking lot after additional arrivals.
-Action 1: Calculate[Thought 1]
-Observation 1: Initially, there were 3 cars in the parking lot. With 2 more arriving, the total number of cars in the parking lot now is 3 + 2 = 5.
+Thought 1: #there are 3 cars\\n cars=3\\n #two new cars arrive\\n new_cars=2\\n #the total is cars + new_cars\\n total=cars+new_cars
+Action 1: python_interpreter[Thought 1]
+Observation 1: \{ cars:3, new_cars:2, total: 5 \}
+Thought 2: Initially, there were 3 cars in the parking lot. With 2 more arriving, the total number of cars in the parking lot now is 3 + 2 = 5.
 Action 2: Finish[5 cars]
 
 Question: There are 15 trees in the grove. Grove workers will plant trees today, and after they are done, there will be 21 trees. Calculate how many trees the grove workers planted today.
-Thought 1: The question involves calculating the number of trees planted by the grove workers today.
-Action 1: Calculate[Thought 1]
-Observation 1: Initially, there were 15 trees in the grove. After the workers planted trees, there were 21. So, the workers planted 21 - 15 = 6 trees today.
+Thought 1: #there are 15 trees initially\\n trees=15\\n #there will be 21 trees\\n end_trees=21\\n #the total is end_trees-trees\\n #total=end_trees-trees
+Action 1: python_interpreter[Thought 1]
+Observation 1: \{ trees:15, end_trees:21, total: 6 \}
+Thought 2: Initially, there were 15 trees in the grove. After the workers planted trees, there were 21. So, the workers planted 21 - 15 = 6 trees today.
 Action 2: Finish[6 trees]"""
 
 # ======================================================================== TRIVIAQA ======================================================================== #

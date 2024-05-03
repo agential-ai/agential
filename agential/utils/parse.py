@@ -161,3 +161,17 @@ def normalize_answer(s: str) -> str:
         str: The normalized string.
     """
     return white_space_fix(remove_articles(remove_punc(s.lower())))
+
+
+def fix_newline(s: str) -> str:
+    """Replace trailing whitespace at the end of each line with newline characters.
+
+    Args:
+        s (str): Input string containing lines of text.
+
+    Returns:
+        str: String with trailing whitespace replaced by newline characters.
+    """
+    lines = s.split("\n")
+    cleaned_lines = [line.rstrip() for line in lines]
+    return "\n".join(cleaned_lines)

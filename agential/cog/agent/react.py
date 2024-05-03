@@ -24,6 +24,7 @@ from agential.cog.prompts.react import (
     REACT_INSTRUCTION_HOTPOTQA,
 )
 from agential.utils.parse import parse_action, remove_newline
+from agential.utils.python_executor import execute
 
 
 class ReActOutput(BaseModel):
@@ -164,10 +165,15 @@ class ReActAgent(BaseAgent):
                     obs = remove_newline(self.docstore.lookup(query))
                 except ValueError:
                     obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
-            elif action_type.lower() == "calculate":
+            elif action_type.lower() == "python_generator":
                 continue
+            elif action_type.lower() == "python_interpreter":
+                code = self.memory.load_memories()["scratchpad"].split(
+                    "Observation 1:"
+                )[-1]
+                obs = execute(code)
             else:
-                obs = f"Invalid Action: {action_type}. Valid Actions are Lookup[<topic>] Search[<topic>] Calculate[observation] and Finish[<answer>]."
+                obs = f"Invalid Action: {action} with action type: {action_type}. Valid Actions are Lookup[<topic>] Search[<topic>] python_generator[<question>] python_interpreter[<thought>] and Finish[<answer>]."
             self.memory.add_memories(obs)
 
             out.append(
