@@ -94,8 +94,8 @@ class ReActAgent(BaseAgent):
         self,
         question: str,
         reset: bool = True,
-        examples: str = HOTPOTQA_FEWSHOT_EXAMPLES,
-        prompt: str = REACT_INSTRUCTION_HOTPOTQA,
+        examples: str = REACT_SVAMP_EXAMPLES_DIRECT,
+        prompt: str = REACT_SVAMP_INSTRUCTIONS,
     ) -> List[ReActOutput]:
         """Processes a given question through ReAct.
 
