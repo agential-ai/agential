@@ -1,5 +1,4 @@
 """Utility function for running python code and returning the executed code or error."""
-from agential.utils.parse import fix_newline
 
 
 def execute(input_code: str) -> str:
@@ -17,7 +16,11 @@ def execute(input_code: str) -> str:
         # "a = 100"
     """
     local_vars = {}
-    input_code = fix_newline(input_code)
+    print(f"INPUT CODE AT BEGINNING: {input_code}")
+    input_code = input_code.split(";")
+    input_code = [line.strip() for line in input_code]
+    input_code = "\n".join(input_code)
+    print(f"INPUT CODE ABOUT TO BE PARSED: {input_code}")
     try:
         exec(input_code, globals(), local_vars)
     except Exception as e:
@@ -30,12 +33,12 @@ def execute(input_code: str) -> str:
 
     # Convert the dictionary to a string representation
     result = ", ".join([f"{key} = {value}" for key, value in variables_dict.items()])
-    # print(f"LOCAL_VARS = {local_vars}")
+    print(f"LOCAL_VARS = {local_vars}")
 
     return result
 
 
 if __name__ == "__main__":
     # Example usage:
-    code = """#Sheila has a 15-page research paper\ntotal_pages = 15\n#She already finished 1/3 of the paper\nfinished_pages = total_pages * (1/3)\n#The pages left to write is the total minus the finished pages\npages_left = total_pages - finished_pages"""
+    code = """total_pages = 15 #Sheila has a 15-page research paper;finished_pages = total_pages * (1/3) #She already finished 1/3 of the paper;pages_left = total_pages - finished_pages #The pages left to write is the total minus the finished pages"""
     print(execute(code))

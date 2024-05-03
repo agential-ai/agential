@@ -168,10 +168,7 @@ class ReActAgent(BaseAgent):
             elif action_type.lower() == "python_generator":
                 continue
             elif action_type.lower() == "python_interpreter":
-                code = self.memory.load_memories()["scratchpad"].split(
-                    "Observation 1:"
-                )[-1]
-                obs = execute(code)
+                obs = execute(thought)
             else:
                 obs = f"Invalid Action: {action} with action type: {action_type}. Valid Actions are Lookup[<topic>] Search[<topic>] python_generator[<question>] python_interpreter[<thought>] and Finish[<answer>]."
             self.memory.add_memories(obs)
