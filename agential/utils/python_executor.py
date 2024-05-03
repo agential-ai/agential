@@ -16,11 +16,9 @@ def execute(input_code: str) -> str:
         # "a = 100"
     """
     local_vars = {}
-    print(f"INPUT CODE AT BEGINNING: {input_code}")
     input_code = input_code.split(";")
     input_code = [line.strip() for line in input_code]
     input_code = "\n".join(input_code)
-    print(f"INPUT CODE ABOUT TO BE PARSED: {input_code}")
     try:
         exec(input_code, globals(), local_vars)
     except Exception as e:
@@ -33,7 +31,6 @@ def execute(input_code: str) -> str:
 
     # Convert the dictionary to a string representation
     result = ", ".join([f"{key} = {value}" for key, value in variables_dict.items()])
-    print(f"LOCAL_VARS = {local_vars}")
 
     return result
 
