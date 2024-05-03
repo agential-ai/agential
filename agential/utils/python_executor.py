@@ -15,10 +15,10 @@ def execute(input_code: str) -> str:
         execute(code)
         # "a = 100"
     """
-    local_vars = {}
-    input_code = input_code.split(";")
-    input_code = [line.strip() for line in input_code]
-    input_code = "\n".join(input_code)
+    local_vars: dict[str, int] = {}
+    input_code_lines = input_code.split(";")
+    input_code_lines = [line.strip() for line in input_code_lines]
+    input_code = "\n".join(input_code_lines)
     try:
         exec(input_code, globals(), local_vars)
     except Exception as e:
