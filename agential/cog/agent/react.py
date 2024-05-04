@@ -22,6 +22,8 @@ from agential.cog.modules.memory.react import ReActMemory
 from agential.cog.prompts.react import (
     HOTPOTQA_FEWSHOT_EXAMPLES,
     REACT_INSTRUCTION_HOTPOTQA,
+    TABMWP_FEWSHOT_EXAMPLES,
+    REACT_INSTRUCTION_TABMWP,
 )
 from agential.utils.parse import parse_action, remove_newline
 
@@ -89,8 +91,8 @@ class ReActAgent(BaseAgent):
         self,
         question: str,
         reset: bool = True,
-        examples: str = HOTPOTQA_FEWSHOT_EXAMPLES,
-        prompt: str = REACT_INSTRUCTION_HOTPOTQA,
+        examples: str = TABMWP_FEWSHOT_EXAMPLES,
+        prompt: str = REACT_INSTRUCTION_TABMWP,
     ) -> List[ReActOutput]:
         """Processes a given question through ReAct.
 
