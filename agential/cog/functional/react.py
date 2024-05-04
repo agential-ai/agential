@@ -21,7 +21,7 @@ def _build_agent_prompt(
     scratchpad: str,
     examples: str,
     max_steps: int,
-    prompt: str = REACT_SVAMP_INSTRUCTIONS,
+    prompt: str = REACT_INSTRUCTION_HOTPOTQA,
 ) -> str:
     """Constructs a prompt template for the agent.
 
@@ -41,9 +41,9 @@ def _build_agent_prompt(
     """
     prompt = PromptTemplate.from_template(prompt).format(
         question=question,
-        # scratchpad=scratchpad,
+        scratchpad=scratchpad,
         examples=examples,
-        # max_steps=max_steps,
+        max_steps=max_steps,
     )
     return prompt
 
@@ -54,7 +54,7 @@ def _prompt_agent(
     scratchpad: str,
     examples: str,
     max_steps: int,
-    prompt: str = REACT_SVAMP_INSTRUCTIONS,
+    prompt: str = REACT_INSTRUCTION_HOTPOTQA,
 ) -> str:
     """Generates a response from the LLM based on a given question and scratchpad.
 
@@ -75,9 +75,9 @@ def _prompt_agent(
     """
     prompt = _build_agent_prompt(
         question=question,
-        #scratchpad=scratchpad,
+        scratchpad=scratchpad,
         examples=examples,
-        #max_steps=max_steps,
+        max_steps=max_steps,
         prompt=prompt,
     )
     out = llm(
@@ -100,7 +100,7 @@ def _is_halted(
     max_steps: int,
     max_tokens: int,
     enc: Encoding,
-    prompt: str = REACT_SVAMP_INSTRUCTIONS,
+    prompt: str = REACT_INSTRUCTION_HOTPOTQA,
 ) -> bool:
     """Determines whether the agent's operation should be halted.
 
@@ -129,9 +129,9 @@ def _is_halted(
             enc.encode(
                 _build_agent_prompt(
                     question=question,
-                    #scratchpad=scratchpad,
+                    scratchpad=scratchpad,
                     examples=examples,
-                    #max_steps=max_steps,
+                    max_steps=max_steps,
                     prompt=prompt,
                 )
             )
