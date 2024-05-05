@@ -2,7 +2,6 @@
 
 import math
 import random
-
 from typing import Any, List
 
 
