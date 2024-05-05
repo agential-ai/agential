@@ -37,9 +37,6 @@ def remove_comment(code):
     code = [line for line in code if line.strip() != ""]
     return "\n".join(code)
 
-
-
-
 def safe_execute(code_string: str, keys=None):
     def execute(x):
         try:
