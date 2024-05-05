@@ -1,5 +1,7 @@
 """Functional module for CRITIC."""
 
+import func_timeout
+from typing import Optional, Tuple
 from langchain.prompts import PromptTemplate
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
@@ -8,6 +10,55 @@ from agential.cog.prompts.critic import (
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
     CRITIC_INSTRUCTION_HOTPOTQA,
 )
+
+
+# Ref: https://github.com/microsoft/ProphetNet/blob/master/CRITIC/src/program/utils.py.
+def remove_comment(code: str) -> str:
+    """Removes all comment lines and empty lines from the given block of code.
+
+    Args:
+        code (str): A string containing the block of code from which comments and empty lines will be removed.
+
+    Returns:
+        str: The code with all comment lines that start with '#' and empty lines removed.
+    """
+    code = code.split("\n")
+    code = [line for line in code if not line.startswith("#")]
+    code = [line for line in code if line.strip() != ""]
+    return "\n".join(code)
+
+
+# Ref: https://github.com/microsoft/ProphetNet/blob/master/CRITIC/src/tools/interpreter_api.py.
+def safe_execute(code_string: str, keys=None) -> Tuple[Optional[str], str]:
+    """Executes the provided Python code string in a safe manner with a timeout and returns specified variables from the execution.
+
+    Args:
+        code_string (str): Python code to execute.
+        keys (list of str, optional): A list of variable names whose values are to be returned after execution. If None, the function tries to return a variable named 'answer'.
+
+    Returns:
+        tuple: A tuple containing the result(s) of the specified variable(s) and a status message. If an exception occurs or timeout happens, it returns None for the result.
+    """
+    def execute(x: str) -> Tuple[Optional[str], str]:
+        """Executes the code string with python exec()."""
+        try:
+            exec(x)
+            locals_ = locals()
+            if keys is None:
+                an = locals_.get('answer', None)
+            else:
+                an = [locals_.get(k, None) for k in keys]
+            return an, "Done"
+        except BaseException as e: # jump wrong case
+            return None, repr(e)
+
+    try:
+        an, report = func_timeout.func_timeout(3, execute, args=(code_string,))
+    except func_timeout.FunctionTimedOut:
+        an = None
+        report = "TimeoutError: execution timeout"
+
+    return an, report
 
 
 def _build_agent_prompt(
