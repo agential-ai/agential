@@ -4,7 +4,6 @@ GitHub Repository: https://github.com/microsoft/ProphetNet/tree/master/CRITIC
 Original Paper: http://arxiv.org/abs/2305.11738
 """
 
-from typing import Optional
 from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -140,7 +139,7 @@ class CriticAgent(BaseAgent):
                     question=question,
                     examples=critique_examples,
                     answer=answer,
-                    critique="" if not idx else out,
+                    critique=out,
                     prompt=critique_prompt,
                 ).split("> Evidence: ")[0]
                 out += critique
@@ -154,9 +153,9 @@ class CriticAgent(BaseAgent):
                         code = code.split("```")[0].strip()
                         code = remove_comment(code)
                         an, execution = safe_execute(code)
-                        out = f"Question: {question}\n```python\n{code}\n```\nExecution: {execution}\nOutput: Answer =  {an}\n\nWhat's the problem with the code?\n\n"
+                        out += f"Question: {question}\n```python\n{code}\n```\nExecution: {execution}\nOutput: Answer =  {an}\n\nWhat's the problem with the code?\n\n"
                     else:
-                        out = f"\nQuestion: {question}\n Write Python Code to solve the following questions. Store your result as a variable named 'answer'"
+                        out += f"\nQuestion: {question}\n Write Python Code to solve the following questions. Store your result as a variable named 'answer'"
 
                     revised_answer = out
 
