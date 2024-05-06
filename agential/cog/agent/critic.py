@@ -4,16 +4,17 @@ GitHub Repository: https://github.com/microsoft/ProphetNet/tree/master/CRITIC
 Original Paper: http://arxiv.org/abs/2305.11738
 """
 
-from typing import Optional, List, Dict
+from typing import Dict, List, Optional
+
 from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.agent.base import BaseAgent
 from agential.cog.functional.critic import (
-    remove_comment, 
-    safe_execute,
     _prompt_agent,
     _prompt_critique,
+    remove_comment,
+    safe_execute,
 )
 from agential.cog.prompts.critic import (
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
@@ -29,15 +30,15 @@ class CriticAgent(BaseAgent):
     Attributes:
         llm (BaseChatModel): An instance of a language model used for generating initial answers
             and critiques.
-        mode (str): The CRITIC agent's mode. Can be "search" or "code_intepreter". 
+        mode (str): The CRITIC agent's mode. Can be "search" or "code_intepreter".
         search (Optional[GoogleSearchAPIWrapper]): A search API wrapper used for obtaining evidence to
             support or refute generated answers and critiques. Defaults to None. Required if mode = "search".
     """
 
     def __init__(
-        self, 
+        self,
         llm: BaseChatModel,
-        mode: str, 
+        mode: str,
         search: Optional[GoogleSearchAPIWrapper] = None,
     ) -> None:
         """Initialization."""
@@ -75,8 +76,8 @@ class CriticAgent(BaseAgent):
             evidence_length (int): The maximum length of the evidence snippet to be included in the context. Defaults to 400.
 
         Returns:
-            List[Dict[str, str]]: A list of dictionaries. 
-                "search" mode: 
+            List[Dict[str, str]]: A list of dictionaries.
+                "search" mode:
                     - Each dictionary contains an "answer" and "critique". Optionally, a
                     dictionary may include the search "query" and the final dictionary includes the final "revised_answer".
                 "code_interpreter" mode:
@@ -102,13 +103,12 @@ class CriticAgent(BaseAgent):
                     answer=answer,
                     critique=criticism,
                     prompt=critique_prompt,
-                ).split("> Evidence: ")[0]  # Stop at ""> Evidence: ".
+                ).split("> Evidence: ")[
+                    0
+                ]  # Stop at ""> Evidence: ".
                 criticism += critique
 
-                out.append({
-                    "answer": answer,
-                    "critique": critique
-                })
+                out.append({"answer": answer, "critique": critique})
 
                 if "> Search Query: " in critique:
                     _, search_query = critique.split("> Search Query:")[:2]
@@ -154,10 +154,12 @@ class CriticAgent(BaseAgent):
                 # Get additional code execution information.
                 additional_keys = {}
                 if use_interpreter_tool:
-                    code_answer, execution_status = safe_execute(code)  # Can be None, "Exception".
+                    code_answer, execution_status = safe_execute(
+                        code
+                    )  # Can be None, "Exception".
                     additional_keys = {
                         "execution_status": execution_status,
-                        "code_answer": code_answer
+                        "code_answer": code_answer,
                     }
 
                 # Generate code critique.
@@ -169,13 +171,12 @@ class CriticAgent(BaseAgent):
                     critique="",
                     additional_keys=additional_keys,
                     prompt=critique_prompt,
-                ).split("Here's")[0]  # Stop at Here's.
-                out.append({
-                    "code": code,
-                    "critique": critique
-                })
-                out[idx]['execution_status'] = execution_status
-                out[idx]['code_answer'] = code_answer
+                ).split("Here's")[
+                    0
+                ]  # Stop at Here's.
+                out.append({"code": code, "critique": critique})
+                out[idx]["execution_status"] = execution_status
+                out[idx]["code_answer"] = code_answer
 
                 # Halting condition.
                 if "it is correct." in critique.lower():
@@ -187,13 +188,19 @@ class CriticAgent(BaseAgent):
                     question=question,
                     examples=critique_examples,
                     answer=code,
-                    critique=critique + "\n\n" + "Here's a better solution:\n```python\n",
+                    critique=critique
+                    + "\n\n"
+                    + "Here's a better solution:\n```python\n",
                     additional_keys=additional_keys,
                     prompt=critique_prompt,
-                ).split("```")[0]  # Stop at ```.
+                ).split("```")[
+                    0
+                ]  # Stop at ```.
                 out[idx]["improved_code"] = code
 
             return out
 
         else:
-            raise ValueError("mode must be set to either 'search' or 'code_interpreter'.")
+            raise ValueError(
+                "mode must be set to either 'search' or 'code_interpreter'."
+            )

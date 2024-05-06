@@ -3,12 +3,12 @@
 from langchain_community.chat_models.fake import FakeListChatModel
 
 from agential.cog.functional.critic import (
-    remove_comment,
-    safe_execute,
     _build_agent_prompt,
     _build_critique_prompt,
     _prompt_agent,
     _prompt_critique,
+    remove_comment,
+    safe_execute,
 )
 
 
@@ -27,7 +27,7 @@ def test_safe_execute() -> None:
     code_string = """budget = 1000\nfood = 0.3\naccommodation = 0.15\nentertainment = 0.25\ncoursework_materials = 1 - food - accommodation - entertainment\nanswer = budget * coursework_materials"""
     answer, report = safe_execute(code_string)
     assert int(answer) == 299
-    assert report == 'Done'
+    assert report == "Done"
 
 
 def test__build_agent_prompt() -> None:
