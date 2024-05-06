@@ -1316,7 +1316,7 @@ Question: {question}
 {answer}
 ```
 
-What's the problem with the above code?
+What's the problem with the above code? If nothing is wrong, output 'It is correct.'
 
 {critique}"""
 
