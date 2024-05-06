@@ -17,7 +17,7 @@ from pydantic import BaseModel, Field
 from tiktoken.core import Encoding
 
 from agential.cog.agent.base import BaseAgent
-from agential.cog.functional.react import _is_halted, _prompt_agent
+from agential.cog.functional.react import _is_halted, _prompt_agent,program_generator
 from agential.cog.modules.memory.react import ReActMemory
 from agential.cog.prompts.react import (
     HOTPOTQA_FEWSHOT_EXAMPLES,
@@ -168,6 +168,11 @@ class ReActAgent(BaseAgent):
                     obs = remove_newline(self.docstore.lookup(query))
                 except ValueError:
                     obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
+            elif action_type.lower() == "python":
+                try:
+                    obs = remove_newline(program_generator(query,question,self.llm))
+                except Exception:
+                    obs = "Could not Generate Python Program, please try again."
             else:
                 obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
             self.memory.add_memories(obs)
