@@ -7,10 +7,17 @@ from tiktoken import Encoding
 
 from agential.cog.prompts.react import (
     REACT_INSTRUCTION_HOTPOTQA,
+    Prompt_PG,
+    REACT_INSTRUCTION_TABMWP,
 )
 from agential.utils.parse import remove_newline
 from langchain import PromptTemplate
-
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+)
+from langchain.chains import LLMChain
+from langchain_core.messages import SystemMessage
 
 
 def _build_agent_prompt(
@@ -18,7 +25,7 @@ def _build_agent_prompt(
     scratchpad: str,
     examples: str,
     max_steps: int,
-    prompt: str = REACT_INSTRUCTION_HOTPOTQA,
+    prompt: str = REACT_INSTRUCTION_TABMWP,
 ) -> str:
     """Constructs a prompt template for the agent.
 
@@ -51,7 +58,7 @@ def _prompt_agent(
     scratchpad: str,
     examples: str,
     max_steps: int,
-    prompt: str = REACT_INSTRUCTION_HOTPOTQA,
+    prompt: str = REACT_INSTRUCTION_TABMWP,
 ) -> str:
     """Generates a response from the LLM based on a given question and scratchpad.
 
@@ -97,7 +104,7 @@ def _is_halted(
     max_steps: int,
     max_tokens: int,
     enc: Encoding,
-    prompt: str = REACT_INSTRUCTION_HOTPOTQA,
+    prompt: str = REACT_INSTRUCTION_TABMWP,
 ) -> bool:
     """Determines whether the agent's operation should be halted.
 
@@ -138,7 +145,31 @@ def _is_halted(
     return finished or over_max_steps or over_token_limit
 
 
+def program_generator(question,context,llm):
 
+    print('inside python generator')
+
+    print("context :",context)
+    
+    
+    template_messages = [
+    SystemMessage(content=Prompt_PG),
+    HumanMessagePromptTemplate.from_template(context),
+    ]
+    prompt_template = ChatPromptTemplate.from_messages(template_messages)
+
+    chain = LLMChain(
+        llm=llm,
+        prompt=prompt_template,
+        verbose=False
+       )
+    try:
+      
+      response = chain.invoke(question)
+      
+    except Exception:
+        response = ""
+    return response
 
 
 
