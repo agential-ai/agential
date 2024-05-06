@@ -79,7 +79,7 @@ class CriticAgent(BaseAgent):
             List[Dict[str, str]]: A list of dictionaries.
                 "search" mode:
                     - Each dictionary contains an "answer" and "critique". Optionally, a
-                    dictionary may include the search "query" and the final dictionary includes the final "revised_answer".
+                    dictionary may include the search "query" and "search_result", and the final dictionary includes the final "revised_answer".
                 "code_interpreter" mode:
                     - Each dictionary contains "code" and "critique". Optionally, a dictionary may include
                     the "execution_status" and "code_answer" if use_interpreter_tool is True. If the critic
@@ -132,6 +132,11 @@ class CriticAgent(BaseAgent):
 
                     criticism += context
                     out[idx]["query"] = search_query if use_search_tool else None
+                    out[idx]["search_result"] = (
+                        search_result["snippet"][:evidence_length]
+                        if use_search_tool
+                        else None
+                    )
 
                 elif "most possible answer: " in critique:
                     _, revised_answer = critique.split("most possible answer: ")
@@ -175,8 +180,9 @@ class CriticAgent(BaseAgent):
                     0
                 ]  # Stop at Here's.
                 out.append({"code": code, "critique": critique})
-                out[idx]["execution_status"] = execution_status
-                out[idx]["code_answer"] = code_answer
+                if use_interpreter_tool:
+                    out[idx]["execution_status"] = execution_status
+                    out[idx]["code_answer"] = code_answer
 
                 # Halting condition.
                 if "it is correct." in critique.lower():

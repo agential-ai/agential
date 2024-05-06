@@ -112,13 +112,6 @@ def _prompt_agent(
         additional_keys=additional_keys,
         prompt=prompt,
     )
-    print(
-        "<AGENT PROMPT==========================================================================>"
-    )
-    print(prompt)
-    print(
-        "<AGENT PROMPT==========================================================================>"
-    )
     out = llm(
         [
             HumanMessage(
@@ -126,13 +119,7 @@ def _prompt_agent(
             )
         ]
     ).content
-    print(
-        "<AGENT OUT==========================================================================>"
-    )
     print(repr(out))
-    print(
-        "<AGENT OUT==========================================================================>"
-    )
     assert isinstance(out, str)
     return out
 
@@ -199,13 +186,6 @@ def _prompt_critique(
         additional_keys=additional_keys,
         prompt=prompt,
     )
-    print(
-        "<CRITIC PROMPT==========================================================================>"
-    )
-    print(prompt)
-    print(
-        "<CRITIC PROMPT==========================================================================>"
-    )
     out = llm(
         [
             HumanMessage(
@@ -213,12 +193,6 @@ def _prompt_critique(
             )
         ]
     ).content
-    print(
-        "<CRITIC OUT==========================================================================>"
-    )
     print(repr(out))
-    print(
-        "<CRITIC OUT==========================================================================>"
-    )
     assert isinstance(out, str)
     return out
