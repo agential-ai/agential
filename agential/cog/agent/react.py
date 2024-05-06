@@ -147,7 +147,6 @@ class ReActAgent(BaseAgent):
                 max_steps=self.max_steps,
                 prompt=prompt,
             ).split("Observation")[0]
-            print("action:",action)
             self.memory.add_memories(" " + action)
             action_type, query = parse_action(action)
             

@@ -145,12 +145,17 @@ def _is_halted(
     return finished or over_max_steps or over_token_limit
 
 
-def program_generator(question,context,llm):
+def program_generator(query,context,llm):
 
-    print('inside python generator')
+    """ the function for answering the python question
 
-    print("context :",context)
-    
+    Args:
+        query (str): The question to be processed From Thought React.
+        llm (BaseChatModel): The language model used by the agent.
+        context : the table content from the input user
+    Returns:
+        string: response from llm used by the agent
+    """
     
     template_messages = [
     SystemMessage(content=Prompt_PG),
@@ -165,7 +170,7 @@ def program_generator(question,context,llm):
        )
     try:
       
-      response = chain.invoke(question)
+      response = chain.invoke(query)
       
     except Exception:
         response = ""
