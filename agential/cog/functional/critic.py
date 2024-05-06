@@ -1,7 +1,7 @@
 """Functional module for CRITIC."""
 
 import func_timeout
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Dict
 from langchain.prompts import PromptTemplate
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
@@ -62,20 +62,24 @@ def safe_execute(code_string: str, keys=None) -> Tuple[Optional[str], str]:
 
 
 def _build_agent_prompt(
-    question: str, examples: str, prompt: str = CRITIC_INSTRUCTION_HOTPOTQA
+    question: str, 
+    examples: str,
+    additional_keys: Dict[str, str] = {}, 
+    prompt: str = CRITIC_INSTRUCTION_HOTPOTQA
 ) -> str:
     """Builds a prompt for questioning the agent using a template.
 
     Parameters:
         question (str): The question to be answered by the agent.
         examples (str): Contextual examples related to the question.
+        additional_keys (Optional[Dict[str, str]]): Additional keys to format the prompt. Defaults to {}.
         prompt (str): Prompt template string. Defaults to CRITIC_INSTRUCTION_HOTPOTQA.
 
     Returns:
         str: A formatted prompt ready for use with the language model.
     """
     prompt = PromptTemplate.from_template(prompt).format(
-        question=question, examples=examples
+        question=question, examples=examples, **additional_keys
     )
     return prompt
 
@@ -84,6 +88,7 @@ def _prompt_agent(
     llm: BaseChatModel,
     question: str,
     examples: str,
+    additional_keys: Dict[str, str] = {},
     prompt: str = CRITIC_INSTRUCTION_HOTPOTQA,
 ) -> str:
     """Prompts the agent to answer a question using the language model.
@@ -92,12 +97,18 @@ def _prompt_agent(
         llm (BaseChatModel): The language model to use for generating the answer.
         question (str): The question to be answered.
         examples (str): Contextual examples relevant to the question.
+        additional_keys (Optional[Dict[str, str]]): Additional keys to format the prompt. Defaults to {}.
         prompt (str): Prompt template string. Defaults to CRITIC_INSTRUCTION_HOTPOTQA.
 
     Returns:
         str: The answer from the language model, with no leading or trailing whitespace.
     """
-    prompt = _build_agent_prompt(question=question, examples=examples, prompt=prompt)
+    prompt = _build_agent_prompt(
+        question=question, 
+        examples=examples, 
+        additional_keys=additional_keys, 
+        prompt=prompt
+    )
     print("<AGENT PROMPT==========================================================================>")
     print(prompt)
     print("<AGENT PROMPT==========================================================================>")
@@ -120,6 +131,7 @@ def _build_critique_prompt(
     examples: str,
     answer: str,
     critique: str = "",
+    additional_keys: Dict[str, str] = {},
     prompt: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
 ) -> str:
     """Builds a critique prompt for the agent using a template.
@@ -129,13 +141,14 @@ def _build_critique_prompt(
         examples (str): Contextual examples used in the question.
         answer (str): The agent's answer to the question.
         critique (str, optional): Additional critique information.
+        additional_keys (Optional[Dict[str, str]]): Additional keys to format the prompt. Defaults to {}.
         prompt (str): Prompt template string. Defaults to CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA.
 
     Returns:
         str: A formatted critique prompt ready for use with the language model.
     """
     prompt = PromptTemplate.from_template(prompt).format(
-        question=question, examples=examples, answer=answer, critique=critique
+        question=question, examples=examples, answer=answer, critique=critique, **additional_keys
     )
     return prompt
 
@@ -146,6 +159,7 @@ def _prompt_critique(
     examples: str,
     answer: str,
     critique: str = "",
+    additional_keys: Optional[Dict[str, str]] = {},
     prompt: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
 ) -> str:
     """Prompts the agent for a critique of an answer using the language model.
@@ -156,6 +170,7 @@ def _prompt_critique(
         examples (str): Contextual examples related to the question.
         answer (str): The answer to critique.
         critique (str, optional): Initial critique to refine the response.
+        additional_keys (Optional[Dict[str, str]]): Additional keys to format the prompt. Defaults to {}.
         prompt (str): Prompt template string. Defaults to CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA.
 
     Returns:
@@ -166,6 +181,7 @@ def _prompt_critique(
         examples=examples,
         answer=answer,
         critique=critique,
+        additional_keys=additional_keys,
         prompt=prompt,
     )
     print("<CRITIC PROMPT==========================================================================>")

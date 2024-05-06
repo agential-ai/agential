@@ -126,39 +126,66 @@ class CriticAgent(BaseAgent):
 
             return revised_answer
         elif self.mode == "code_interpreter":
-            answer = _prompt_agent(
+            code = _prompt_agent(
                 llm=self.llm, question=question, examples=examples, prompt=prompt
             )
 
-            out, revised_answer = "", ""
-            exist_query = []
-            exist_evidence = set()
             for idx in range(max_interactions):
+                # Generate code critique.
                 critique = _prompt_critique(
                     llm=self.llm,
                     question=question,
                     examples=critique_examples,
-                    answer=answer,
-                    critique=out,
+                    answer=code,
+                    critique="",
                     prompt=critique_prompt,
-                ).split("> Evidence: ")[0]
-                out += critique
+                ).split("Here's")[0]  # Stop at Here's.
 
-                if use_interpreter_tool:
-                    if " is correct" in critique and "```python" in revised_answer:
-                        revised_answer += critique
-                        break
-                    if "```python" in critique:
-                        _, code = critique.split("```python")[:2]
-                        code = code.split("```")[0].strip()
-                        code = remove_comment(code)
-                        an, execution = safe_execute(code)
-                        out += f"Question: {question}\n```python\n{code}\n```\nExecution: {execution}\nOutput: Answer =  {an}\n\nWhat's the problem with the code?\n\n"
-                    else:
-                        out += f"\nQuestion: {question}\n Write Python Code to solve the following questions. Store your result as a variable named 'answer'"
+                # Halting condition.
+                if "is correct" in critique.lower():
+                    break
 
-                    revised_answer = out
+                # Generate the new solution from the critique.
+                code = _prompt_critique(
+                    llm=self.llm,
+                    question=question,
+                    examples=critique_examples,
+                    answer=code,
+                    critique=critique + "\n\n" + "Here's a better solution:\n```python\n",
+                    prompt=critique_prompt,
+                ).split("```")[0]  # Stop at ```.
 
-            return revised_answer
-        else:
-            raise ValueError("mode must be set to either 'search' or 'code_interpreter'.")
+            return code
+
+
+
+
+
+
+
+
+
+
+
+
+
+        #         if use_interpreter_tool:
+        #             if " is correct" in critique and "```python" in revised_answer:
+        #                 revised_answer += critique
+        #                 break
+        #             if "```python" in critique:
+        #                 _, code = critique.split("```python")[:2]
+        #                 code = code.split("```")[0].strip()
+        #                 code = remove_comment(code)
+        #                 an, execution = safe_execute(code)
+        #                 out += f"Question: {question}\n```python\n{code}\n```\nExecution: {execution}\nOutput: Answer =  {an}\n\nWhat's the problem with the code?\n\n"
+        #             else:
+        #                 out += f"\nQuestion: {question}\n Write Python Code to solve the following questions. Store your result as a variable named 'answer'"
+
+        #             revised_answer = out
+        #         else:
+        #             out += "Here's a better solution:\n```python\n"
+
+        #     return revised_answer
+        # else:
+        #     raise ValueError("mode must be set to either 'search' or 'code_interpreter'.")
