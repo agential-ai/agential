@@ -1063,11 +1063,15 @@ CRITIC_CRITIQUE_INSTRUCTION_GSM8K = """{examples}
 (END OF EXAMPLES)
 
 Question: {question}
+```python
+{answer}
+```
+Execution: {execution_status} 
+Output: answer = {code_answer}
 
-What's the problem with the above code?
-{critique}
+What's the problem with the above code? If nothing is wrong, output 'It is correct.'
 
-Here's a better solution: {answer}"""
+{critique}"""
 
 
 GSM8K_FEWSHOT_EXAMPLES_CRITIC = """Question: Janet hires six employees. Four of them are warehouse workers who make $15/hour, and the other two are managers who make $20/hour. Janet has to pay 10% of her workers' salaries in FICA taxes. If everyone works 25 days a month and 8 hours a day, how much does Janet owe total for their wages and taxes for one month?
