@@ -4,6 +4,7 @@ GitHub Repository: https://github.com/microsoft/ProphetNet/tree/master/CRITIC
 Original Paper: http://arxiv.org/abs/2305.11738
 """
 
+from typing import Optional
 from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -29,15 +30,15 @@ class CriticAgent(BaseAgent):
         llm (BaseChatModel): An instance of a language model used for generating initial answers
             and critiques.
         mode (str): The CRITIC agent's mode. Can be "search" or "code_intepreter". 
-        search (GoogleSearchAPIWrapper): A search API wrapper used for obtaining evidence to
-            support or refute generated answers and critiques.
+        search (Optional[GoogleSearchAPIWrapper]): A search API wrapper used for obtaining evidence to
+            support or refute generated answers and critiques. Defaults to None. Required if mode = "search".
     """
 
     def __init__(
         self, 
         llm: BaseChatModel,
         mode: str, 
-        search: GoogleSearchAPIWrapper,
+        search: Optional[GoogleSearchAPIWrapper] = None,
     ) -> None:
         """Initialization."""
         super().__init__()
@@ -45,6 +46,8 @@ class CriticAgent(BaseAgent):
         self.llm = llm
         self.mode = mode
         self.search = search
+        if self.mode == "search" and not self.search:
+            raise ValueError("A search API wrapper is required when mode is 'search'.")
 
     def generate(
         self,
@@ -131,8 +134,7 @@ class CriticAgent(BaseAgent):
             )
 
             for idx in range(max_interactions):
-                # Generate code critique.
-                
+                # Get additional code execution information.
                 additional_keys = {}
                 if use_interpreter_tool:
                     code_answer, execution_status = safe_execute(code)  # Can be None, "Exception".
@@ -141,6 +143,7 @@ class CriticAgent(BaseAgent):
                         "code_answer": code_answer
                     }
 
+                # Generate code critique.
                 critique = _prompt_critique(
                     llm=self.llm,
                     question=question,
@@ -152,7 +155,7 @@ class CriticAgent(BaseAgent):
                 ).split("Here's")[0]  # Stop at Here's.
 
                 # Halting condition.
-                if "is correct" in critique.lower():
+                if "it is correct." in critique.lower():
                     break
 
                 # Generate the new solution from the critique.
@@ -168,35 +171,5 @@ class CriticAgent(BaseAgent):
 
             return code
 
-
-
-
-
-
-
-
-
-
-
-
-
-        #         if use_interpreter_tool:
-        #             if " is correct" in critique and "```python" in revised_answer:
-        #                 revised_answer += critique
-        #                 break
-        #             if "```python" in critique:
-        #                 _, code = critique.split("```python")[:2]
-        #                 code = code.split("```")[0].strip()
-        #                 code = remove_comment(code)
-        #                 an, execution = safe_execute(code)
-        #                 out += f"Question: {question}\n```python\n{code}\n```\nExecution: {execution}\nOutput: Answer =  {an}\n\nWhat's the problem with the code?\n\n"
-        #             else:
-        #                 out += f"\nQuestion: {question}\n Write Python Code to solve the following questions. Store your result as a variable named 'answer'"
-
-        #             revised_answer = out
-        #         else:
-        #             out += "Here's a better solution:\n```python\n"
-
-        #     return revised_answer
-        # else:
-        #     raise ValueError("mode must be set to either 'search' or 'code_interpreter'.")
+        else:
+            raise ValueError("mode must be set to either 'search' or 'code_interpreter'.")
