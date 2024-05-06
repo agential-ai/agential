@@ -132,12 +132,22 @@ class CriticAgent(BaseAgent):
 
             for idx in range(max_interactions):
                 # Generate code critique.
+                
+                additional_keys = {}
+                if use_interpreter_tool:
+                    code_answer, execution_status = safe_execute(code)  # Can be None, "Exception".
+                    additional_keys = {
+                        "execution_status": execution_status,
+                        "code_answer": code_answer
+                    }
+
                 critique = _prompt_critique(
                     llm=self.llm,
                     question=question,
                     examples=critique_examples,
                     answer=code,
                     critique="",
+                    additional_keys=additional_keys,
                     prompt=critique_prompt,
                 ).split("Here's")[0]  # Stop at Here's.
 
@@ -152,6 +162,7 @@ class CriticAgent(BaseAgent):
                     examples=critique_examples,
                     answer=code,
                     critique=critique + "\n\n" + "Here's a better solution:\n```python\n",
+                    additional_keys=additional_keys,
                     prompt=critique_prompt,
                 ).split("```")[0]  # Stop at ```.
 
