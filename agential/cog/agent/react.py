@@ -136,7 +136,7 @@ class ReActAgent(BaseAgent):
                 prompt=prompt,
             ).split("Action")[0]
             self.memory.add_memories(" " + thought)
-
+            
             # Act.
             self.memory.add_memories("\nAction:")
             action = _prompt_agent(
@@ -147,15 +147,17 @@ class ReActAgent(BaseAgent):
                 max_steps=self.max_steps,
                 prompt=prompt,
             ).split("Observation")[0]
+            print("action:",action)
             self.memory.add_memories(" " + action)
             action_type, query = parse_action(action)
-
+            
             # Observe.
             self.memory.add_memories(f"\nObservation {self._step_n}: ")
             if action_type.lower() == "finish":
                 self._answer = query
                 self._finished = True
                 obs = query
+                
             elif action_type.lower() == "search":
                 try:
                     obs = remove_newline(self.docstore.search(query))

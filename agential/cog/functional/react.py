@@ -9,6 +9,8 @@ from agential.cog.prompts.react import (
     REACT_INSTRUCTION_HOTPOTQA,
 )
 from agential.utils.parse import remove_newline
+from langchain import PromptTemplate
+
 
 
 def _build_agent_prompt(
@@ -134,3 +136,11 @@ def _is_halted(
         > max_tokens
     )
     return finished or over_max_steps or over_token_limit
+
+
+
+
+
+
+    
+    

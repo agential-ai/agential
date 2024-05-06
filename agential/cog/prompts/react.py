@@ -234,7 +234,7 @@ Thought 4: The evidence shows North Carolina entered Union in 1789, and Rhode Is
 Action 4: Finish[Rhode Island]"""
 
 REACT_INSTRUCTION_TABMWP = """Read the following table and question to solve the problem,providing Observation that SUPPORTS the answer, or indicating if there is NOT ENOUGH INFORMATION. Action can be two types:
-(1) python-generator[Thought], generates an executable python python code using the Sympy library using the Context. The first line of the code should be 'from sympy import *'
+(1) Python[Question], generates an executable python python code using the Sympy library using the Context. The first line of the code should be 'from sympy import *'
 (2) Finish[answer], which returns the answer and finishes the task.
 You have a maximum of {max_steps} steps.
 Here are some examples:
@@ -254,7 +254,7 @@ $1,095 | 5,800 | 19,400
 Questions: Look at the table. Then answer the question. At a price of $995, is there a shortage or
 a surplus? Please select from the following options: ['shortage', 'surplus'].
 Thought 1: To determine whether there is a shortage or a surplus at a price of $995, I need to compare the quantity demanded to the quantity supplied at that price point.
-Action 1 : python-generator('Calculate the difference between quantity demanded and quantity supplied at a price of $995 to determine if it results in a positive (surplus) or negative (shortage) value.')
+Action 1 : Python['Calculate the difference between quantity demanded and quantity supplied at a price of $995 to determine if it results in a positive (surplus) or negative (shortage) value.']
 Observation 1: [code python] # Given data for the price of $995 quantity_demanded = 13400 quantity_supplied = 11400 # Calculate difference to determine market condition difference = quantity_demanded - quantity_supplied difference
 Thought 2: If the difference is positive, there is a surplus; if it is negative, there is a shortage. A zero difference indicates equilibrium.
 Action 2: Finish['shortage']
@@ -269,7 +269,7 @@ chess board | $15.76
 
 Question: Cody has $49.50. Does he have enough to buy a toy guitar and a chess board? Please select from the following options: ['yes', 'no'].
 Thought 1: To determine if Cody has enough money to buy both a toy guitar and a chess board, we need to add the prices of these two items and compare the total with Cody's available funds of $49.50.
-Action 1 : python-generator('Calculate the combined cost of the toy guitar and the chess board and compare it to Cody's budget to see if he has sufficient funds.')
+Action 1 : Python['Calculate the combined cost of the toy guitar and the chess board and compare it to Cody's budget to see if he has sufficient funds.']
 Observation 1: [code python] # Prices of items price_toy_guitar = 32.42 price_chess_board = 15.76 # Calculate total cost of the toy guitar and chess board total_cost = price_toy_guitar + price_chess_board # Compare total cost with Cody's budget cody_budget = 49.50 is_enough_money = total_cost <= cody_budget total_cost, is_enough_money
 Thought 2: If the total cost is less than or equal to Cody's budget, then he has enough money to purchase both items. Otherwise, he does not.
 Action 2 : Finish['Yes']
@@ -288,7 +288,7 @@ Krysta | 83
 
 Question: Some friends discussed the sizes of their coin collections. What is the mean of the numbers?
 Thought 1:To find the mean of the numbers representing the sizes of the coin collections, we need to sum all the coin counts and divide by the total number of entries.
-Action 1 : python-generator('Compute the mean by summing all the values in the coin count list and dividing by the number of entries, which will give us the average number of coins per person.')
+Action 1 : Python['Compute the mean by summing all the values in the coin count list and dividing by the number of entries, which will give us the average number of coins per person.']
 Observation 1: [code python] # Given data of the number of coins coin_counts = [81, 84, 78, 81, 79, 77, 85, 83] # Calculate the mean of the numbers mean_coins = sum(coin_counts) / len(coin_counts) mean_coins
 Thought 2:The mean value calculated will provide the average number of coins held by each person in the group, which is the answer to the question.
 Action 2 : Finish[81]
@@ -305,8 +305,21 @@ rectangular beads | $1.97 per kilogram
 
 Question: If Tracy buys 5 kilograms of spherical beads, 4 kilograms of star-shaped beads, and 3 kilograms of flower-shaped beads, how much will she spend? (unit: $)
 Thought 1: To determine the total amount Tracy will spend, the cost per kilogram of each type of bead she buys must be multiplied by the respective quantities she purchases. We then sum these amounts to get the total cost.
-Action 1 : python-generator('Calculate the total cost for Tracy by multiplying the price per kilogram of spherical beads, star-shaped beads, and flower-shaped beads by the respective quantities purchased and then summing these values.')
+Action 1 : Python['Calculate the total cost for Tracy by multiplying the price per kilogram of spherical beads, star-shaped beads, and flower-shaped beads by the respective quantities purchased and then summing these values.']
 Observation 1: [code python] # Recalculating the total cost for Tracy with provided prices and quantities to ensure accuracy price_spherical_beads = 3.42 price_star_shaped_beads = 1.95 price_flower_shaped_beads = 2.18 quantity_spherical = 5 quantity_star_shaped = 4 quantity_flower_shaped = 3 # Calculate total cost again total_cost = (price_spherical_beads * quantity_spherical) + \ (price_star_shaped_beads * quantity_star_shaped) + \ (price_flower_shaped_beads * quantity_flower_shaped) total_cost
 Thought 2:The calculation provides a straightforward method to find the total spending based on the quantities and prices of the beads.
 Action 2 : Finish[$31.44]
 """
+
+Prompt_PG = """ You're a skilled Python programmer, Read the following mathematical question and then write Python code using the below python libraries to answer the question or generate an intermediate result. Information on each of the libraries is provided below.
+
+Libraries:
+Math: This is the most basic math module that is available in Python. It covers basic mathematical operations like sum, exponential, modulus, etc. This library is not useful when dealing with complex mathematical operations like multiplication of matrices.
+***********************************************************************************
+Numpy: The numpy library in Python is most widely used for carrying out mathematical operations that involve matrices.
+***********************************************************************************
+Sympy: SymPy is a powerful Python library for symbolic mathematics. It allows you to perform a wide range of mathematical operations, including algebraic manipulation, calculus, and equation solving, using symbolic rather than numerical techniques.IT is useful in a wide range of fields, including polynomials, calculus, matrices, geometry, physics, plotting, combinatorics, statistics, and cryptography.
+      Examples: sympy.geometry, sympy.ntheory,sympy.combinatorics, sympy.calculus, sympy.solvers, sympy.simplify, etc.
+***********************************************************************************
+Scipy: SciPy is a comprehensive Python library that is widely used in the scientific community for scientific and engineering applications.It includes routines for manipulating arrays, matrices, and other kinds of multidimensional data; performing linear algebra operations; working with probability distributions, statistics, and random number generators; generating graphical displays; and carrying out many other mathematical operations.
+      Examples: scipy.cluster, scipy.constants, scipy.datasets, scipy.fft,scipy.fftpack, scipy.integrate, scipy.interpolate, scipy.io, scipy.linalg, scipy.misc, scipy.optimize, scipy.signal, scipy.sparse, scipy.spatial, scipy.special, scipy.stats, etc."""
