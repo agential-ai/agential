@@ -1,7 +1,9 @@
 """Functional module for CRITIC."""
 
+from typing import Dict, Optional, Tuple
+
 import func_timeout
-from typing import Optional, Tuple, Dict
+
 from langchain.prompts import PromptTemplate
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
@@ -39,17 +41,18 @@ def safe_execute(code_string: str, keys=None) -> Tuple[Optional[str], str]:
     Returns:
         tuple: A tuple containing the result(s) of the specified variable(s) and a status message. If an exception occurs or timeout happens, it returns None for the result.
     """
+
     def execute(x: str) -> Tuple[Optional[str], str]:
         """Executes the code string with python exec()."""
         try:
             exec(x)
             locals_ = locals()
             if keys is None:
-                an = locals_.get('answer', None)
+                an = locals_.get("answer", None)
             else:
                 an = [locals_.get(k, None) for k in keys]
             return an, "Done"
-        except BaseException as e: # jump wrong case
+        except BaseException as e:  # jump wrong case
             return None, repr(e)
 
     try:
@@ -62,10 +65,10 @@ def safe_execute(code_string: str, keys=None) -> Tuple[Optional[str], str]:
 
 
 def _build_agent_prompt(
-    question: str, 
+    question: str,
     examples: str,
-    additional_keys: Dict[str, str] = {}, 
-    prompt: str = CRITIC_INSTRUCTION_HOTPOTQA
+    additional_keys: Dict[str, str] = {},
+    prompt: str = CRITIC_INSTRUCTION_HOTPOTQA,
 ) -> str:
     """Builds a prompt for questioning the agent using a template.
 
@@ -104,14 +107,18 @@ def _prompt_agent(
         str: The answer from the language model, with no leading or trailing whitespace.
     """
     prompt = _build_agent_prompt(
-        question=question, 
-        examples=examples, 
-        additional_keys=additional_keys, 
-        prompt=prompt
+        question=question,
+        examples=examples,
+        additional_keys=additional_keys,
+        prompt=prompt,
     )
-    print("<AGENT PROMPT==========================================================================>")
+    print(
+        "<AGENT PROMPT==========================================================================>"
+    )
     print(prompt)
-    print("<AGENT PROMPT==========================================================================>")
+    print(
+        "<AGENT PROMPT==========================================================================>"
+    )
     out = llm(
         [
             HumanMessage(
@@ -119,9 +126,13 @@ def _prompt_agent(
             )
         ]
     ).content
-    print("<AGENT OUT==========================================================================>")
+    print(
+        "<AGENT OUT==========================================================================>"
+    )
     print(repr(out))
-    print("<AGENT OUT==========================================================================>")
+    print(
+        "<AGENT OUT==========================================================================>"
+    )
     assert isinstance(out, str)
     return out
 
@@ -148,7 +159,11 @@ def _build_critique_prompt(
         str: A formatted critique prompt ready for use with the language model.
     """
     prompt = PromptTemplate.from_template(prompt).format(
-        question=question, examples=examples, answer=answer, critique=critique, **additional_keys
+        question=question,
+        examples=examples,
+        answer=answer,
+        critique=critique,
+        **additional_keys,
     )
     return prompt
 
@@ -184,9 +199,13 @@ def _prompt_critique(
         additional_keys=additional_keys,
         prompt=prompt,
     )
-    print("<CRITIC PROMPT==========================================================================>")
+    print(
+        "<CRITIC PROMPT==========================================================================>"
+    )
     print(prompt)
-    print("<CRITIC PROMPT==========================================================================>")
+    print(
+        "<CRITIC PROMPT==========================================================================>"
+    )
     out = llm(
         [
             HumanMessage(
@@ -194,8 +213,12 @@ def _prompt_critique(
             )
         ]
     ).content
-    print("<CRITIC OUT==========================================================================>")
+    print(
+        "<CRITIC OUT==========================================================================>"
+    )
     print(repr(out))
-    print("<CRITIC OUT==========================================================================>")
+    print(
+        "<CRITIC OUT==========================================================================>"
+    )
     assert isinstance(out, str)
     return out
