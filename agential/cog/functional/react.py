@@ -148,7 +148,6 @@ def _is_halted(
 def program_generator(query,context,llm):
 
     """ the function for answering the python question
-
     Args:
         query (str): The question to be processed From Thought React.
         llm (BaseChatModel): The language model used by the agent.
