@@ -25,6 +25,37 @@ Q: Who played kitt in knight rider?
 A: kitt was voice most often by William Daniels. So the answer is: William Daniels"""
 
 
+AMBIGNQ_FEWSHOT_EXAMPLES_DIRECT = """Q: When did men's figure skating become a summer Olympic sport?
+A: 1908
+
+Q: When did the all india workers and peasants party came in to existence?
+A: November 1925
+
+Q: Flight that went down in the hudson river?
+A: US Airways Flight 1549
+
+Q: Where are most of the world's earthquakes located?
+A: Rim of Fire
+
+Q: Csi when do grissom and sara reunite?
+A: series finale
+
+Q: Who did rizzo go to the dance with?
+A: Kenickie Murdoch
+
+Q: What country won the womens curling winter olympics 2018?
+A: Sweden
+
+Q: Who plays barnaby's wife in midsomer murders series 1-13?
+A: Jane Wymark
+
+Q: Who plays 7-9 year old Nelson Mandela in the movie Mandela: Long Walk to Freedom?
+A: Siza Pini
+
+Q: When did the movie coyote ugly come out?
+A: August 4, 2000"""
+
+
 AMBIGNQ_FEWSHOT_EXAMPLES_REACT = """Question: When did men's figure skating become a summer Olympic sport?
 Thought 1: Let's search the question in google
 Action 1: Search[When did men's figure skating become a summer Olympic sport?]
@@ -334,6 +365,25 @@ A: Let's think step by step. Arthur's Magazine was started in 1844. First for Wo
 
 Q: Were Pavel Urysohn and Leonid Levin known for the same type of work?
 A: Let's think step by step. Pavel Urysohn is a mathematician. Leonid Levin is a mathematician and computer scientist. So Pavel Urysohn and Leonid Levin have the same type of work. So the answer is: Yes."""
+
+
+HOTPOTQA_FEWSHOT_EXAMPLES_DIRECT = """Q: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+A: 1,800 to 7,000 ft
+
+Q: Musician and satirist Allie Goertz wrote a song about the \"The Simpsons\" character Milhouse, who Matt Groening named after who?
+A: Richard Nixon
+
+Q: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
+A: The Saimaa Gesture
+
+Q: What profession does Nicholas Ray and Elia Kazan have in common?
+A: director, screenwriter, actor
+
+Q: Which magazine was started first Arthur's Magazine or First for Women?
+A: Arthur's Magazine
+
+Q: Were Pavel Urysohn and Leonid Levin known for the same type of work?
+A: Yes"""
 
 
 HOTPOTQA_FEWSHOT_EXAMPLES_REACT = """Question: Serianna is a band of what genre that combines elements of heavy metal and hardcore punk?
@@ -674,6 +724,37 @@ A: George Frideric Handel initially studied law at the University of Halle. So t
 
 Q: Which great philosopher corresponded with Queen Christina of Sweden in his final years and died in 1650 in Stockholm where he had been invited as a teacher for her? 
 A: René Descartes is a great philosopher who corresponded with Queen Christina of Sweden in his final years and died in 1650 in Stockholm where he had been invited as a teacher for her. So the answer is: René Descartes."""
+
+
+TRIVIAQA_FEWSHOT_EXAMPLES_DIRECT = """Q: Mendelssohn's 'Wedding March' was. originally written as incidental music for which Shakespeare play in 1842?
+A: A Midsummer Night's Dream
+
+Q: \"\"\"Christ in the House of his Parents\"\" is one of the best known paintings of which artist?"
+A: John Millais
+
+Q: Who designed the National Theatre building on the South Bank in London ?
+A: Sir Denys Lasdun
+
+Q: Also a two-time World Champion, which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics?
+A: Bodie Miller
+
+Q: Famous composer, Handel, originally studied what?
+A: Law 
+
+Q: Which great philosopher corresponded with Queen Christina of Sweden in his final years and died in 1650 in Stockholm where he had been invited as a teacher for her?
+A: René Decartes
+
+Q: Who was the female member of Britain's gang of four?
+A: Baroness Williams
+
+Q: An icosahedron has how many faces?
+A: twenty
+
+Q: What chemical makes hot peppers hot?
+A: Capscaicin
+
+Q: What term applies to an engine comprising two banks of four cylinders inclined towards each other, with a common crankshaft?
+A: V8 engine"""
 
 
 TRIVIAQA_FEWSHOT_EXAMPLES_REACT = """Question: Which innovation for the car was developed by Prince Henry of Prussia in 1911? 
