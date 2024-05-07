@@ -1764,7 +1764,7 @@ answer = num_emails_sent_in_morning + num_emails_sent_in_afternoon
 ---"""
 
 
-CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_GSM8K = """{examples}
+CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_SVAMP = """{examples}
 (END OF EXAMPLES)
 
 Question: {question}
