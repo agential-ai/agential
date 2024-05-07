@@ -13,7 +13,6 @@ from agential.cog.agent.base import BaseAgent
 from agential.cog.functional.critic import (
     _prompt_agent,
     _prompt_critique,
-    remove_comment,
     safe_execute,
 )
 from agential.cog.prompts.critic import (
