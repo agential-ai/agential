@@ -6,7 +6,7 @@ Original Paper: http://arxiv.org/abs/2305.11738
 
 from typing import Dict, List, Optional
 
-from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
+from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.agent.base import BaseAgent
@@ -30,7 +30,7 @@ class CriticAgent(BaseAgent):
         llm (BaseChatModel): An instance of a language model used for generating initial answers
             and critiques.
         mode (str): The CRITIC agent's mode. Can be "search" or "code_intepreter".
-        search (Optional[GoogleSearchAPIWrapper]): A search API wrapper used for obtaining evidence to
+        search (Optional[GoogleSerperAPIWrapper]): A search API wrapper used for obtaining evidence to
             support or refute generated answers and critiques. Defaults to None. Required if mode = "search".
     """
 
@@ -38,7 +38,7 @@ class CriticAgent(BaseAgent):
         self,
         llm: BaseChatModel,
         mode: str,
-        search: Optional[GoogleSearchAPIWrapper] = None,
+        search: Optional[GoogleSerperAPIWrapper] = None,
     ) -> None:
         """Initialization."""
         super().__init__()
@@ -47,7 +47,9 @@ class CriticAgent(BaseAgent):
         self.mode = mode
         self.search = search
         if self.mode == "search" and not self.search:
-            raise ValueError("A search API wrapper is required when mode is 'search'.")
+            raise ValueError(
+                "`GoogleSerperAPIWrapper` is required when mode is 'search'."
+            )
 
     def generate(
         self,
@@ -92,8 +94,6 @@ class CriticAgent(BaseAgent):
             )
 
             criticism, revised_answer = "", ""
-            exist_query = []
-            exist_evidence = set()
             for idx in range(max_interactions):
                 critique = _prompt_critique(
                     llm=self.llm,
@@ -113,16 +113,8 @@ class CriticAgent(BaseAgent):
                     _, search_query = critique.split("> Search Query:")[:2]
                     search_query = search_query.split("\n")[0].strip()
 
-                    if use_search_tool:
-                        exist_query.append(search_query)
-                        for k in range(exist_query.count(search_query), 8):
-                            search_result = self.search.results(
-                                search_query, num_results=k
-                            )[-1]
-                            if search_result["snippet"] not in exist_evidence:
-                                exist_evidence.add(search_result["snippet"])
-                                break
-
+                    if use_search_tool and self.search:
+                        search_result = self.search.results(search_query)["organic"][0]
                         context = f"""> Evidence: [{search_result['title']}] {search_result['snippet'][:evidence_length]}\n\n"""
                         if idx == max_interactions - 2:
                             context += f"Let's give the most possible answer.\n\nQuestion: {question}\nHere's "
@@ -130,11 +122,11 @@ class CriticAgent(BaseAgent):
                         context = """> Evidence: """
 
                     criticism += context
-                    out[idx]["query"] = search_query if use_search_tool else None
+                    out[idx]["query"] = search_query if use_search_tool else ""
                     out[idx]["search_result"] = (
                         search_result["snippet"][:evidence_length]
                         if use_search_tool
-                        else None
+                        else ""
                     )
 
                 elif "most possible answer: " in critique:
@@ -173,7 +165,7 @@ class CriticAgent(BaseAgent):
                     examples=critique_examples,
                     answer=code,
                     critique="",
-                    additional_keys=additional_keys,
+                    additional_keys=additional_keys,  # type: ignore
                     prompt=critique_prompt,
                 ).split("Here's")[
                     0
@@ -181,7 +173,7 @@ class CriticAgent(BaseAgent):
                 out.append({"code": code, "critique": critique})
                 if use_interpreter_tool:
                     out[idx]["execution_status"] = execution_status
-                    out[idx]["code_answer"] = code_answer
+                    out[idx]["code_answer"] = code_answer  # type: ignore
 
                 # Halting condition.
                 if "it is correct." in critique.lower():
@@ -196,7 +188,7 @@ class CriticAgent(BaseAgent):
                     critique=critique
                     + "\n\n"
                     + "Here's a better solution:\n```python\n",
-                    additional_keys=additional_keys,
+                    additional_keys=additional_keys,  # type: ignore
                     prompt=critique_prompt,
                 ).split("```")[
                     0

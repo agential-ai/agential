@@ -1,6 +1,6 @@
 """Functional module for CRITIC."""
 
-from typing import Dict, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import func_timeout
 
@@ -24,19 +24,21 @@ def remove_comment(code: str) -> str:
     Returns:
         str: The code with all comment lines that start with '#' and empty lines removed.
     """
-    code = code.split("\n")
-    code = [line for line in code if not line.startswith("#")]
-    code = [line for line in code if line.strip() != ""]
-    return "\n".join(code)
+    code_lines = code.split("\n")
+    code_lines = [line for line in code_lines if not line.startswith("#")]
+    code_lines = [line for line in code_lines if line.strip() != ""]
+    return "\n".join(code_lines)
 
 
 # Ref: https://github.com/microsoft/ProphetNet/blob/master/CRITIC/src/tools/interpreter_api.py.
-def safe_execute(code_string: str, keys=None) -> Tuple[Optional[str], str]:
+def safe_execute(
+    code_string: str, keys: Optional[List[str]] = None
+) -> Tuple[Optional[str], str]:
     """Executes the provided Python code string in a safe manner with a timeout and returns specified variables from the execution.
 
     Args:
         code_string (str): Python code to execute.
-        keys (list of str, optional): A list of variable names whose values are to be returned after execution. If None, the function tries to return a variable named 'answer'.
+        keys (Optional[List[str]]): A list of variable names whose values are to be returned after execution. If None, the function tries to return a variable named 'answer'.
 
     Returns:
         tuple: A tuple containing the result(s) of the specified variable(s) and a status message. If an exception occurs or timeout happens, it returns None for the result.
@@ -75,7 +77,7 @@ def _build_agent_prompt(
     Parameters:
         question (str): The question to be answered by the agent.
         examples (str): Contextual examples related to the question.
-        additional_keys (Optional[Dict[str, str]]): Additional keys to format the prompt. Defaults to {}.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
         prompt (str): Prompt template string. Defaults to CRITIC_INSTRUCTION_HOTPOTQA.
 
     Returns:
@@ -100,7 +102,7 @@ def _prompt_agent(
         llm (BaseChatModel): The language model to use for generating the answer.
         question (str): The question to be answered.
         examples (str): Contextual examples relevant to the question.
-        additional_keys (Optional[Dict[str, str]]): Additional keys to format the prompt. Defaults to {}.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
         prompt (str): Prompt template string. Defaults to CRITIC_INSTRUCTION_HOTPOTQA.
 
     Returns:
@@ -112,9 +114,13 @@ def _prompt_agent(
         additional_keys=additional_keys,
         prompt=prompt,
     )
-    print("<PROMPT AGENT===========================================================================>")
+    print(
+        "<PROMPT AGENT===========================================================================>"
+    )
     print(prompt)
-    print("<PROMPT AGENT===========================================================================>")
+    print(
+        "<PROMPT AGENT===========================================================================>"
+    )
     out = llm(
         [
             HumanMessage(
@@ -122,9 +128,13 @@ def _prompt_agent(
             )
         ]
     ).content
-    print("<OUT AGENT===========================================================================>")
+    print(
+        "<OUT AGENT===========================================================================>"
+    )
     print(repr(out))
-    print("<OUT AGENT===========================================================================>")
+    print(
+        "<OUT AGENT===========================================================================>"
+    )
     assert isinstance(out, str)
     return out
 
@@ -144,7 +154,7 @@ def _build_critique_prompt(
         examples (str): Contextual examples used in the question.
         answer (str): The agent's answer to the question.
         critique (str, optional): Additional critique information.
-        additional_keys (Optional[Dict[str, str]]): Additional keys to format the prompt. Defaults to {}.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
         prompt (str): Prompt template string. Defaults to CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA.
 
     Returns:
@@ -166,7 +176,7 @@ def _prompt_critique(
     examples: str,
     answer: str,
     critique: str = "",
-    additional_keys: Optional[Dict[str, str]] = {},
+    additional_keys: Dict[str, str] = {},
     prompt: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
 ) -> str:
     """Prompts the agent for a critique of an answer using the language model.
@@ -177,7 +187,7 @@ def _prompt_critique(
         examples (str): Contextual examples related to the question.
         answer (str): The answer to critique.
         critique (str, optional): Initial critique to refine the response.
-        additional_keys (Optional[Dict[str, str]]): Additional keys to format the prompt. Defaults to {}.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
         prompt (str): Prompt template string. Defaults to CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA.
 
     Returns:
@@ -191,9 +201,13 @@ def _prompt_critique(
         additional_keys=additional_keys,
         prompt=prompt,
     )
-    print("<PROMPT CRITIC===========================================================================>")
+    print(
+        "<PROMPT CRITIC===========================================================================>"
+    )
     print(prompt)
-    print("<PROMPT CRITIC===========================================================================>")
+    print(
+        "<PROMPT CRITIC===========================================================================>"
+    )
     out = llm(
         [
             HumanMessage(
@@ -201,8 +215,12 @@ def _prompt_critique(
             )
         ]
     ).content
-    print("<OUT CRITIC===========================================================================>")
+    print(
+        "<OUT CRITIC===========================================================================>"
+    )
     print(repr(out))
-    print("<OUT CRITIC===========================================================================>")
+    print(
+        "<OUT CRITIC===========================================================================>"
+    )
     assert isinstance(out, str)
     return out
