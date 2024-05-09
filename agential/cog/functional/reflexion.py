@@ -713,8 +713,8 @@ def _prompt_react_reflection(
         examples=examples,
         question=question,
         scratchpad=scratchpad,
-        prompt=prompt,
         additional_keys=additional_keys,
+        prompt=prompt,
     )
     out = llm(
         [
