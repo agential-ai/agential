@@ -4,11 +4,10 @@ from langchain.prompts import PromptTemplate
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
 from tiktoken import Encoding
-
+from langchain_openai import OpenAI
 from agential.cog.prompts.react import (
     REACT_INSTRUCTION_HOTPOTQA,
-    Prompt_PG,
-    REACT_INSTRUCTION_TABMWP,
+    PROMPT_PYTHON_GENERATOR,
 )
 from agential.utils.parse import remove_newline
 from langchain import PromptTemplate
@@ -25,7 +24,7 @@ def _build_agent_prompt(
     scratchpad: str,
     examples: str,
     max_steps: int,
-    prompt: str = REACT_INSTRUCTION_TABMWP,
+    prompt: str = REACT_INSTRUCTION_HOTPOTQA,
 ) -> str:
     """Constructs a prompt template for the agent.
 
@@ -58,7 +57,7 @@ def _prompt_agent(
     scratchpad: str,
     examples: str,
     max_steps: int,
-    prompt: str = REACT_INSTRUCTION_TABMWP,
+    prompt: str = REACT_INSTRUCTION_HOTPOTQA,
 ) -> str:
     """Generates a response from the LLM based on a given question and scratchpad.
 
@@ -104,7 +103,7 @@ def _is_halted(
     max_steps: int,
     max_tokens: int,
     enc: Encoding,
-    prompt: str = REACT_INSTRUCTION_TABMWP,
+    prompt: str = REACT_INSTRUCTION_HOTPOTQA,
 ) -> bool:
     """Determines whether the agent's operation should be halted.
 
@@ -145,7 +144,7 @@ def _is_halted(
     return finished or over_max_steps or over_token_limit
 
 
-def program_generator(query,context,llm):
+def program_generator(question,context,llm):
 
     """ the function for answering the python question
     Args:
@@ -155,9 +154,8 @@ def program_generator(query,context,llm):
     Returns:
         string: response from llm used by the agent
     """
-    
     template_messages = [
-    SystemMessage(content=Prompt_PG),
+    SystemMessage(content=PROMPT_PYTHON_GENERATOR),
     HumanMessagePromptTemplate.from_template(context),
     ]
     prompt_template = ChatPromptTemplate.from_messages(template_messages)
@@ -167,12 +165,14 @@ def program_generator(query,context,llm):
         prompt=prompt_template,
         verbose=False
        )
+    
     try:
       
-      response = chain.invoke(query)
-      
+      response = chain.invoke(question)
+
     except Exception:
-        response = ""
+
+        response = " "
     return response
 
 

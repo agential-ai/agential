@@ -17,13 +17,11 @@ from pydantic import BaseModel, Field
 from tiktoken.core import Encoding
 
 from agential.cog.agent.base import BaseAgent
-from agential.cog.functional.react import _is_halted, _prompt_agent,program_generator
+from agential.cog.functional.react import _is_halted, _prompt_agent, program_generator
 from agential.cog.modules.memory.react import ReActMemory
 from agential.cog.prompts.react import (
     HOTPOTQA_FEWSHOT_EXAMPLES,
     REACT_INSTRUCTION_HOTPOTQA,
-    TABMWP_FEWSHOT_EXAMPLES,
-    REACT_INSTRUCTION_TABMWP,
 )
 from agential.utils.parse import parse_action, remove_newline
 
@@ -91,8 +89,8 @@ class ReActAgent(BaseAgent):
         self,
         question: str,
         reset: bool = True,
-        examples: str = TABMWP_FEWSHOT_EXAMPLES,
-        prompt: str = REACT_INSTRUCTION_TABMWP,
+        examples: str = HOTPOTQA_FEWSHOT_EXAMPLES,
+        prompt: str = REACT_INSTRUCTION_HOTPOTQA,
     ) -> List[ReActOutput]:
         """Processes a given question through ReAct.
 

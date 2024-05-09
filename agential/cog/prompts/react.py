@@ -234,7 +234,7 @@ Thought 4: The evidence shows North Carolina entered Union in 1789, and Rhode Is
 Action 4: Finish[Rhode Island]"""
 
 REACT_INSTRUCTION_TABMWP = """Read the following table and question to solve the problem,providing Observation that SUPPORTS the answer, or indicating if there is NOT ENOUGH INFORMATION. Action can be two types:
-(1) Python[Question], generates an executable python python code using the Sympy library using the Context. The first line of the code should be 'from sympy import *'
+(1) Python[question], generates an executable python code using the Sympy library using the Context. The first line of the code should be 'from sympy import *'
 (2) Finish[answer], which returns the answer and finishes the task.
 You have a maximum of {max_steps} steps.
 Here are some examples:
@@ -311,7 +311,7 @@ Thought 2:The calculation provides a straightforward method to find the total sp
 Action 2 : Finish[$31.44]
 """
 
-Prompt_PG = """ You're a skilled Python programmer, Read the following mathematical question and then write Python code using the below python libraries to answer the question or generate an intermediate result. Information on each of the libraries is provided below.
+PROMPT_PYTHON_GENERATOR = """ You're a skilled Python programmer, Read the following mathematical question and then write Python code using the below python libraries to answer the question or generate an intermediate result. Information on each of the libraries is provided below.
 
 Libraries:
 Math: This is the most basic math module that is available in Python. It covers basic mathematical operations like sum, exponential, modulus, etc. This library is not useful when dealing with complex mathematical operations like multiplication of matrices.
