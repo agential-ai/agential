@@ -268,12 +268,11 @@ def _build_all_success_prompt(
             if insights
             else ""
         ),
-        **additional_keys,
     }
 
     human_critique_summary_message = PromptTemplate.from_template(
         HUMAN_CRITIQUE_EXISTING_INSIGHTS_ALL_SUCCESS_TEMPLATE
-    ).format(**human_format_dict)
+    ).format(**human_format_dict, **additional_keys)
     critique_summary_suffix = (
         CRITIQUE_SUMMARY_SUFFIX_FULL if is_full else CRITIQUE_SUMMARY_SUFFIX_NOT_FULL
     )
