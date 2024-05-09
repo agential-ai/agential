@@ -67,8 +67,8 @@ def _prompt_agent(
     prompt = _build_agent_prompt(
         question=question,
         examples=examples,
-        prompt=prompt,
         additional_keys=additional_keys,
+        prompt=prompt,
     )
     out = llm(
         [
