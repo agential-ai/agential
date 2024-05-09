@@ -4,6 +4,7 @@ from langchain.prompts import PromptTemplate
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
 from tiktoken import Encoding
+from typing import Dict, List, Optional, Tuple
 
 from agential.cog.prompts.react import (
     REACT_INSTRUCTION_HOTPOTQA,
@@ -16,6 +17,7 @@ def _build_agent_prompt(
     scratchpad: str,
     examples: str,
     max_steps: int,
+    additional_keys: Dict[str, str] = {},
     prompt: str = REACT_INSTRUCTION_HOTPOTQA,
 ) -> str:
     """Constructs a prompt template for the agent.
@@ -28,6 +30,7 @@ def _build_agent_prompt(
         scratchpad (str): Additional scratchpad information to be included.
         examples (str): Fewshot examples.
         max_steps (int): Max number of steps.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
         prompt (str, optional): Prompt template string. Defaults to REACT_INSTRUCTION_HOTPOTQA. Must include question,
             scratchpad, examples, and max_steps.
 
@@ -39,6 +42,7 @@ def _build_agent_prompt(
         scratchpad=scratchpad,
         examples=examples,
         max_steps=max_steps,
+        **additional_keys,
     )
     return prompt
 
@@ -49,6 +53,7 @@ def _prompt_agent(
     scratchpad: str,
     examples: str,
     max_steps: int,
+    additional_keys: Dict[str, str] = {},
     prompt: str = REACT_INSTRUCTION_HOTPOTQA,
 ) -> str:
     """Generates a response from the LLM based on a given question and scratchpad.
@@ -62,6 +67,7 @@ def _prompt_agent(
         scratchpad (str): Additional context or information for the language model.
         examples (str): Fewshot examples.
         max_steps (int): Maximum number of steps.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
         prompt (str, optional): Prompt template string. Defaults to REACT_INSTRUCTION_HOTPOTQA. Must include question,
             scratchpad, examples, and max_steps.
 
@@ -73,6 +79,7 @@ def _prompt_agent(
         scratchpad=scratchpad,
         examples=examples,
         max_steps=max_steps,
+        additional_keys=additional_keys,
         prompt=prompt,
     )
     out = llm(
