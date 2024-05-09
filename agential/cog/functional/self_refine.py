@@ -201,8 +201,8 @@ def _prompt_refine(
         examples=examples,
         solution=solution,
         feedback=feedback,
-        prompt=prompt,
         additional_keys=additional_keys,
+        prompt=prompt,
     )
     out = llm(
         [
