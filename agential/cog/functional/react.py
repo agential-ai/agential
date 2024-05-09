@@ -1,10 +1,11 @@
 """Functional module for ReAct."""
 
+from typing import Dict, List, Optional, Tuple
+
 from langchain.prompts import PromptTemplate
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
 from tiktoken import Encoding
-from typing import Dict, List, Optional, Tuple
 
 from agential.cog.prompts.react import (
     REACT_INSTRUCTION_HOTPOTQA,
