@@ -4,6 +4,13 @@
 # ======================================================================== FEVER ======================================================================== #
 
 
+CRITIC_INSTRUCTION_FEVER = """{examples}
+(END OF EXAMPLES)
+
+Claim: {question}
+A: """
+
+
 FEVER_FEWSHOT_EXAMPLES_COT = """Claim: Did Nikolaj Coster-Waldau work with the Fox Broadcasting Company?
 A: Yes, he appeared in the 2009 Fox television film Virtuality. So the answer is: SUPPORTS.
 
@@ -50,6 +57,83 @@ Action 3: Lookup[Billboard Hot 100]
 Observation 3: (Result 1 / 3) The song peaked at number two on the Billboard Hot 100 in the United States, where it was certified Gold for 500,000 units shipped.
 Thought 4: It only says the song peaked at number two on the Billboard Hot 100, but not if it was in 2003. I am not sure if this claim is true or not.
 Action 4: Finish[NOT ENOUGH INFO]"""
+
+
+CRITIC_CRITIQUE_INSTRUCTION_FEVER = """{examples}
+(END OF EXAMPLES)
+
+Claim: {question}
+Proposed Answer: {answer}
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+{critique}"""
+
+
+FEVER_FEWSHOT_EXAMPLES_CRITIC = """Claim: Did Nikolaj Coster-Waldau work with the Fox Broadcasting Company?
+Proposed Answer: REFUTES
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The answer "REFUTES" incorrectly negates the claim without supporting details.
+
+2. Truthfulness:
+
+> Search Query: Did Nikolaj Coster-Waldau work with Fox Broadcasting?
+> Evidence: [Nikolaj Coster-Waldau - IMDb] Nikolaj Coster-Waldau appeared in the 2009 Fox television film Virtuality.
+
+The evidence contradicts the proposed answer, confirming he did work with Fox in the television film Virtuality.
+
+Claim: Did Nikolaj Coster-Waldau work with the Fox Broadcasting Company?
+Here's the most possible answer: Yes, Nikolaj Coster-Waldau worked with the Fox Broadcasting Company as he appeared in the 2009 Fox television film Virtuality. So the answer is: SUPPORTS.
+
+---
+
+Claim: Is Stranger Things set in Bloomington, Indiana?
+Proposed Answer: No
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The answer is correct but lacks specific details that verify the claim.
+
+2. Truthfulness:
+
+> Search Query: Setting of Stranger Things
+> Evidence: Stranger Things is set in the fictional town of Hawkins, Indiana, not Bloomington.
+
+Although the proposed answer is correct, it could be more informative by mentioning the specific setting.
+
+Claim: Is Stranger Things set in Bloomington, Indiana?
+Here's the most possible answer: No, Stranger Things is set in the fictional town of Hawkins, Indiana. So the answer is: REFUTES.
+
+---
+
+Claim: Did the song "Beautiful" by Christina Aguilera reach number two on the Billboard Hot 100 in 2003?
+Proposed Answer: NOT ENOUGH INFO
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The answer "NOT ENOUGH INFO" is appropriate as it reflects the uncertainty due to incomplete information about the timing of the chart position.
+
+2. Truthfulness:
+
+> Search Query: Billboard Hot 100 position of "Beautiful" by Christina Aguilera in 2003
+> Evidence: The song peaked at number two on the Billboard Hot 100, but the specific year it achieved this ranking was not directly specified in the sources found.
+
+Given that the year 2003 is not verified in the available evidence, the proposed answer correctly reflects the uncertainty regarding the exact year of the chart position.
+
+Claim: Did the song "Beautiful" by Christina Aguilera reach number two on the Billboard Hot 100 in 2003?
+Here's the most possible answer: The song "Beautiful" by Christina Aguilera peaked at number two on the Billboard Hot 100, but there is no specific evidence confirming this occurred in 2003. So the answer is: NOT ENOUGH INFO.
+
+---"""
 
 
 # ======================================================================== AMBIGNQ ======================================================================== #
