@@ -34,9 +34,8 @@ def _build_agent_prompt(
     prompt = PromptTemplate.from_template(prompt).format(
         question=question,
         examples=examples,
+        **additional_keys,
     )
-    for key, value in additional_keys.items():
-        prompt += value
     return prompt
 
 
@@ -64,7 +63,7 @@ def _prompt_agent(
     Returns:
         str: The processed response from the language model.
     """
-    prompt = _build_agent_prompt(question=question, examples=examples, prompt=prompt, **additional_keys)
+    prompt = _build_agent_prompt(question=question, examples=examples, prompt=prompt, additional_keys = additional_keys)
     out = llm(
         [
             HumanMessage(
@@ -97,9 +96,8 @@ def _build_feedback_prompt(
     prompt = PromptTemplate.from_template(prompt).format(
         examples=examples,
         solution=solution,
+        **additional_keys,
     )
-    for key, value in additional_keys.items():
-        prompt += value
     return prompt
 
 
@@ -124,7 +122,7 @@ def _prompt_feedback(
     Returns:
         str: The language model's feedback, with no leading or trailing whitespace.
     """
-    prompt = _build_feedback_prompt(examples=examples, solution=solution, **additional_keys, prompt=prompt, )
+    prompt = _build_feedback_prompt(examples=examples, solution=solution, additional_keys=additional_keys, prompt=prompt, )
     out = llm(
         [
             HumanMessage(
@@ -157,10 +155,8 @@ def _build_refine_prompt(
         str: The language model's response to the question, trimmed of extraneous whitespace.
     """
     prompt = PromptTemplate.from_template(prompt).format(
-        examples=examples, solution=solution, feedback=feedback
+        examples=examples, solution=solution, feedback=feedback, **additional_keys
     )
-    for key, value in additional_keys.items():
-        prompt += value
     return prompt
 
 
@@ -188,7 +184,7 @@ def _prompt_refine(
         str: The language model's feedback, with no leading or trailing whitespace.
     """
     prompt = _build_refine_prompt(
-        examples=examples, solution=solution, feedback=feedback, prompt=prompt, **additional_keys
+        examples=examples, solution=solution, feedback=feedback, prompt=prompt, additional_keys=additional_keys
     )
     out = llm(
         [

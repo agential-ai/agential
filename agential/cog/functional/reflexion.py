@@ -668,7 +668,7 @@ def _build_react_reflection_prompt(
         str: A formatted prompt template ready for use.
     """
     prompt = PromptTemplate(
-        input_variables=["examples", "question", "scratchpad"] + list(additional_keys.keys()),
+        input_variables=["examples", "question", "scratchpad"],
         template=prompt,
     ).format(
         examples=examples,
@@ -705,7 +705,7 @@ def _prompt_react_reflection(
         str: The generated reflection prompt.
     """
     prompt = _build_react_reflection_prompt(
-        examples=examples, question=question, scratchpad=scratchpad, prompt=prompt, **additional_keys
+        examples=examples, question=question, scratchpad=scratchpad, prompt=prompt, additional_keys=additional_keys
     )
     out = llm(
         [
