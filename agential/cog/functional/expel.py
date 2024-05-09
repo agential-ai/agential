@@ -290,7 +290,7 @@ def _prompt_compare_critique(
     failed_trial: str,
     is_full: bool,
     replace_newline: bool = False,
-    additional_keys: Dict[str, str] = {},         
+    additional_keys: Dict[str, str] = {},
 ) -> str:
     """Generates a critique from an LLM based on a comparison between successful and failed task trials, within the context of existing insights.
 
@@ -355,7 +355,10 @@ def _prompt_all_success_critique(
         str: The generated critique from the LLM, optionally with newline characters removed depending on the `replace_newline` parameter.
     """
     prompt = _build_all_success_prompt(
-        insights=insights, success_trajs_str=success_trajs_str, is_full=is_full, additional_keys=additional_keys,
+        insights=insights,
+        success_trajs_str=success_trajs_str,
+        is_full=is_full,
+        additional_keys=additional_keys,
     )
     out = llm(
         [

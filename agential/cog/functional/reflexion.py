@@ -1,6 +1,6 @@
 """Functional module for Reflexion."""
 
-from typing import List, Optional, Dict
+from typing import Dict, List, Optional
 
 import tiktoken
 
@@ -146,7 +146,8 @@ def _build_cot_agent_prompt(
                 "question",
                 "scratchpad",
                 "context",
-            ] + list(additional_keys.keys()),
+            ]
+            + list(additional_keys.keys()),
             template=prompt,
         ).format(
             examples=examples,
@@ -163,7 +164,8 @@ def _build_cot_agent_prompt(
                 "reflections",
                 "question",
                 "scratchpad",
-            ] + list(additional_keys.keys()),
+            ]
+            + list(additional_keys.keys()),
             template=prompt,
         ).format(
             examples=examples,
@@ -260,7 +262,8 @@ def _build_cot_reflection_prompt(
 
     if context:
         prompt = PromptTemplate(
-            input_variables=["examples", "question", "scratchpad", "context"] + list(additional_keys.keys()),
+            input_variables=["examples", "question", "scratchpad", "context"]
+            + list(additional_keys.keys()),
             template=prompt,
         ).format(
             examples=examples,
@@ -271,7 +274,8 @@ def _build_cot_reflection_prompt(
         )
     else:
         prompt = PromptTemplate(
-            input_variables=["examples", "question", "scratchpad"] + list(additional_keys.keys()),
+            input_variables=["examples", "question", "scratchpad"]
+            + list(additional_keys.keys()),
             template=prompt,
         ).format(
             examples=examples,
@@ -529,7 +533,8 @@ def _build_react_agent_prompt(
         str: A formatted prompt template ready for use.
     """
     prompt = PromptTemplate(
-        input_variables=["examples", "reflections", "question", "scratchpad"] + list(additional_keys.keys()),
+        input_variables=["examples", "reflections", "question", "scratchpad"]
+        + list(additional_keys.keys()),
         template=prompt,
     ).format(
         examples=examples,
@@ -705,7 +710,11 @@ def _prompt_react_reflection(
         str: The generated reflection prompt.
     """
     prompt = _build_react_reflection_prompt(
-        examples=examples, question=question, scratchpad=scratchpad, prompt=prompt, additional_keys=additional_keys
+        examples=examples,
+        question=question,
+        scratchpad=scratchpad,
+        prompt=prompt,
+        additional_keys=additional_keys,
     )
     out = llm(
         [
