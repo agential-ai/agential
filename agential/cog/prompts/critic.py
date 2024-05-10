@@ -2494,3 +2494,131 @@ for company, num_employees in companies.items():
 answer = min_company  
 ```
 ---"""
+
+
+# ======================================================================== HUMANEVAL ======================================================================== #
+
+
+CRITIC_POT_INSTRUCTION_HUMANEVAL = """You are an AI that only responds with python code, NOT ENGLISH. You will be given a function signature and its docstring by the user. Write your full implementation (restate the function signature).
+Use a Python code block to write your response. For example:
+```python
+print('Hello world!')
+```
+
+{examples}
+(END OF EXAMPLES)
+
+{question}"""
+
+
+HUMANEVAL_FEWSHOT_EXAMPLES_POT = """
+def has_duplicate_names(names_list) -> bool:
+    \"\"\"Check if there is any name that appears more than once in the list.
+    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) True
+    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) False
+    \"\"\"
+    return len(names_list) != len(set(names_list))
+
+def are_points_close(points, threshold) -> bool:
+    \"\"\"Determine if any two points in the list are closer than the given threshold.
+    >>> are_points_close([(0,0), (1,1), (2,2)], 1.5) False
+    >>> are_points_close([(0,0), (0.5,0.5), (2,2)], 1.0) True
+    \"\"\"
+    from math import sqrt
+    for i in range(len(points)):
+        for j in range(i + 1, len(points)):
+            if sqrt((points[i][0] - points[j][0])**2 + (points[i][1] - points[j][1])**2) < threshold:
+                return True
+    return False
+
+def exceeds_threshold(measurements, threshold) -> int:
+    \"\"\"Return the count of instances where the difference between any two successive measurements exceeds the given threshold.
+    >>> exceeds_threshold([100, 102, 107, 103], 5) 1
+    >>> exceeds_threshold([100, 101, 102, 103], 2) 0
+    \"\"\"
+    count = 0
+    for i in range(1, len(measurements)):
+        if abs(measurements[i] - measurements[i - 1]) > threshold:
+            count += 1
+    return count
+
+def has_proximal_elements(arr, close_value) -> list:
+    \"\"\"Return a list of tuples of indices for pairs of elements in the array where the absolute difference is less than or equal to the close_value.
+    >>> has_proximal_elements([10, 20, 30, 40], 5) []
+    >>> has_proximal_elements([10, 15, 20, 25], 5) [(0, 1), (1, 2), (2, 3)]
+    \"\"\"
+    pairs = []
+    for i in range(len(arr)):
+        for j in range(i + 1, len(arr)):
+            if abs(arr[i] - arr[j]) <= close_value:
+                pairs.append((i, j))
+    return pairs
+
+def has_similar_temperatures(temp_list, max_diff) -> dict:
+    \"\"\"Return a dictionary where keys are pairs of indices and values are the differences between temperatures if the difference is within the max difference.
+    >>> has_similar_temperatures([22.0, 22.5, 23.0, 24.0], 0.6) {(0, 1): 0.5, (0, 2): 1.0, (1, 2): 0.5}
+    >>> has_similar_temperatures([22.0, 23.0, 24.0, 26.0], 0.5) {}
+    \"\"\"
+    close_temps = {}
+    for i in range(len(temp_list)):
+        for j in range(i + 1, len(temp_list)):
+            diff = abs(temp_list[i] - temp_list[j])
+            if diff <= max_diff:
+                close_temps[(i, j)] = diff
+    return close_temps"""
+
+ 
+
+CRITIC_CRITIQUE_INSTRUCTION_HUMANEVAL = """{examples}
+(END OF EXAMPLES)
+
+Question: {question}
+{answer}
+Execution: {execution_status} 
+Output: answer = {code_answer}
+
+What's the problem with the above code? If nothing is wrong, output 'It is correct.'
+
+{critique}"""
+
+
+HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC = """
+```python
+names_list = ['Alice', 'Bob', 'Charlie', 'Alice', 'Dave']
+def has_duplicate_names(names_list) -> bool:
+    \"\"\"Check if there is any name that appears more than once in the list.
+    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) True
+    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) False
+    \"\"\"
+    # This implementation mistakenly counts all names instead of checking for duplicates
+    return len(names_list) > len(set(names_list))
+
+# Calling the function with an incorrect list that doesn't include duplicates
+incorrect_list = ['Alice', 'Bob', 'Charlie', 'Dave']
+duplicate_exists = has_duplicate_names(incorrect_list)
+```
+Execution: Done
+Output: answer = True
+
+What's the problem with the above code?
+
+1. The function incorrectly returns True for a list without any duplicates. This indicates a logical error in the implementation.
+
+2. Let's check the code:
+
+> names_list = ['Alice', 'Bob', 'Charlie', 'Dave']
+> This defines a list of names without any deliberate duplication, contrary to the expected test conditions.
+
+> def has_duplicate_names(names_list):
+> The function is supposed to check for duplicates by comparing the length of the list with the length of the set derived from the list. However, the current logic only checks if there are more names than unique names, which is always true if the list is non-empty, resulting in a misleading True output.
+
+Overall, the function does not perform as expected. It should identify that there are no duplicates in the provided list, but it fails to do so due to a misunderstanding of how to apply the set length comparison.
+
+Here's a better solution:
+```python
+def has_duplicate_names(names_list):
+    return len(names_list) != len(set(names_list))
+```
+
+---
+```"""
