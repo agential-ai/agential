@@ -23,19 +23,19 @@ def test_init() -> None:
     """Test initialization."""
     llm = FakeListChatModel(responses=["1"])
     search = MagicMock(spec=GoogleSearchAPIWrapper)
-    agent = CriticAgent(llm=llm, mode="search", search=search)
+    agent = CriticAgent(llm=llm, mode="qa", search=search)
     assert isinstance(agent.llm, BaseChatModel)
     assert isinstance(search, GoogleSearchAPIWrapper)
 
     with pytest.raises(ValueError):
-        agent = CriticAgent(llm=llm, mode="search", search=None)
+        agent = CriticAgent(llm=llm, mode="qa", search=None)
 
 
 def test_generate() -> None:
     """Test generate method."""
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
 
-    # Test "search" mode without search tool.
+    # Test "qa" mode without search tool.
     responses = [
         "Let's break it down step by step. The person described is a former kickboxer who was once considered the best in the world but has been involved in controversies and crimes of violence. Based on this description, the person in question is likely Badr Hari. So the answer is: Badr Hari.",
         'The question asks for the name of a person meeting specific criteria, and the answer "Badr Hari" is a name that fits the description provided. So it\'s plausible.',
@@ -43,13 +43,13 @@ def test_generate() -> None:
     ]
     search = MagicMock(spec=GoogleSearchAPIWrapper)
     agent = CriticAgent(
-        llm=FakeListChatModel(responses=responses), mode="search", search=search
+        llm=FakeListChatModel(responses=responses), mode="qa", search=search
     )
     out = agent.generate(question=question, use_search_tool=False)
     assert isinstance(out, list)
     assert len(out) == 2
 
-    # Test "search" mode with search tool.
+    # Test "qa" mode with search tool.
     responses = [
         "Let's think step by step. The kick boxer who fits this description is Badr Hari. So the answer is: Badr Hari.",
         'The question asks for a kick boxer who was once considered the best in the world but has been involved in controversies and crimes. The answer "Badr Hari" is a plausible response.\n\n2. Truthfulness:\n\nLet\'s search the question in google:\n\n> Search Query: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring\n> Evidence: [Badr Hari - Wikipedia] Badr Hari is a Moroccan-Dutch super heavyweight kickboxer from Amsterdam, fighting out of Mike\'s Gym in Oostzaan. Hari has been a prominent figure in the world of kickboxing and considered one of the best kickboxers in the world.\n\nThe evidence supports that Badr Hari was once considered one of the best kickboxers in the world but has been involved in controversies and crimes.\n\nTherefore, the proposed answer is both plausible and truthful.\n\nQuestion: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring\nHere\'s the most possible answer: Let\'s think step by step. The kick boxer who was once considered the best in the world, involved in controversies and crimes is Badr Hari. So the answer is: Badr Hari.',
@@ -59,7 +59,7 @@ def test_generate() -> None:
     ]
     search = MagicMock(spec=GoogleSearchAPIWrapper)
     agent = CriticAgent(
-        llm=FakeListChatModel(responses=responses), mode="search", search=search
+        llm=FakeListChatModel(responses=responses), mode="qa", search=search
     )
     out = agent.generate(question=question)
     assert isinstance(out, list)
@@ -67,7 +67,7 @@ def test_generate() -> None:
 
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
 
-    # Test "code_interpreter" mode without interpreter tool.
+    # Test "math" mode without interpreter tool.
     responses = [
         "total_eggs = 16\neaten_eggs = 3\nbaked_eggs = 4933828\nsold_eggs = total_eggs - eaten_eggs - baked_eggs\ndollars_per_egg = 2\nanswer = sold_eggs * dollars_per_egg",
         "Question: Jacob is going on a road trip. His car gets 25 miles per gallon of gas. If the trip is 400 miles long, how many gallons of gas does he need?\n\n```python\nmiles_per_gallon = 25\ntrip_length = 400\ngallons_needed = trip_length / miles_per_gallon\nanswer = gallons_needed\n```\n\nWhat do you think of the above code?\n\n1. The calculation of gallons needed based on the miles per gallon and trip length is correct.\n2. The answer should be a positive number, 16 > 0, which is reasonable.\n3. The code is clear and concise, and it correctly calculates the gallons of gas needed for the trip.",
@@ -76,7 +76,7 @@ def test_generate() -> None:
         'Question: In a school, the average weight of boys is 60 kg, and the average weight of girls is 45 kg. If the average weight of all students in the school is 50 kg, what is the ratio of boys to girls in the school?\n```python\navg_weight_boys = 60\navg_weight_girls = 45\ntotal_avg_weight = 50\nratio_boys = (total_avg_weight - avg_weight_girls) / (avg_weight_boys - total_avg_weight)\nratio_girls = 1 - ratio_boys\nanswer = f"{ratio_boys}:{ratio_girls}"\n```\n\nWhat\'s the problem with the above code?\n\n1. The ratio of boys to girls should be in integer form, for example, 2:3, so the answer should be simplified.\n\n2. Let\'s check the code:\n\n> avg_weight_boys = 60\n> avg_weight_girls = 45\n> total_avg_weight = 50\n\nIt defines the average weights correctly.\n\n> ratio_boys = (total_avg_weight - avg_weight_girls) / (avg_weight_boys - total_avg_weight)\n> ratio_girls = 1 - ratio_boys\n\nThe calculation of ratios seems to be incorrect. The ratio of boys to girls is based on their weights, so we should consider the weights to find the correct ratio.\n\nHere\'s a better solution:\n```python\n# Given data\navg_weight_boys = 60\navg_weight_girls = 45\ntotal_avg_weight = 50\n\n# Let the number of boys be x and number of girls be y\n# We can set up the following equations based on the weights and average weight\n# x * 60 + y * 45 = (x + y) * 50\n# x + y = total_students\n\n# Solving the equations\ntotal_students = 1  # assume total students is 1 (for ratios)\ny = (60 - total_avg_weight) / (total_avg_weight - 45)  # number of girls\nx = total_students - y  # number of boys\n\n# Calculate the simplified ratio of boys to girls\n# Since the total_students is 1, we can simplify the ratio\nratio_boys = int(x)\nratio_girls = int(y)\n\nanswer = f"{ratio_boys}:{ratio_girls}"\n```\n\nThis solution correctly calculates the ratio of boys to girls based on their average weights and the total average weight.',
     ]
     agent = CriticAgent(
-        llm=FakeListChatModel(responses=responses), mode="code_interpreter"
+        llm=FakeListChatModel(responses=responses), mode="math"
     )
     out = agent.generate(
         question=question,
@@ -90,7 +90,7 @@ def test_generate() -> None:
     assert isinstance(out, list)
     assert len(out) == 2
 
-    # Test "code_interpreter" mode with interpreter tool.
+    # Test "math" mode with interpreter tool.
     responses = [
         "total_eggs = 16\neaten_eggs = 3\nbaked_eggs = 4933828\nsold_eggs = total_eggs - eaten_eggs - baked_eggs\ndollars_per_egg = 2\nanswer = sold_eggs * dollars_per_egg",
         "The problem with the above code is that the calculation for the number of eggs sold is incorrect. \n\nLet's correct the code:\n\n```python\ntotal_eggs = 16\neaten_eggs = 3\nbaked_eggs = 4933828\nsold_eggs = total_eggs - eaten_eggs - baked_eggs\ndollars_per_egg = 2\n\n# Make sure the number of sold eggs is non-negative\nif sold_eggs < 0:\n    sold_eggs = 0\n\nanswer = sold_eggs * dollars_per_egg\n```",
@@ -98,7 +98,7 @@ def test_generate() -> None:
         "It is correct.",
     ]
     agent = CriticAgent(
-        llm=FakeListChatModel(responses=responses), mode="code_interpreter"
+        llm=FakeListChatModel(responses=responses), mode="math"
     )
     out = agent.generate(
         question=question,

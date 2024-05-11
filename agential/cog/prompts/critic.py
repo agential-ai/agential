@@ -2500,13 +2500,12 @@ answer = min_company
 
 
 CRITIC_POT_INSTRUCTION_HUMANEVAL = """You are an AI that only responds with python code, NOT ENGLISH. You will be given a function signature and its docstring by the user. Write your full implementation (restate the function signature).
-Use a Python code block to write your response. For example:
-```python
-print('Hello world!')
-```
+Restate and call the tests below. 
 
 {examples}
 (END OF EXAMPLES)
+
+{tests}
 
 {question}"""
 
@@ -2572,7 +2571,7 @@ def has_similar_temperatures(temp_list, max_diff) -> dict:
 CRITIC_CRITIQUE_INSTRUCTION_HUMANEVAL = """{examples}
 (END OF EXAMPLES)
 
-Question: {question}
+{question}
 {answer}
 Execution: {execution_status} 
 Output: answer = {code_answer}
@@ -2584,16 +2583,13 @@ What's the problem with the above code? If nothing is wrong, output 'It is corre
 
 HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC = """
 ```python
-names_list = ['Alice', 'Bob', 'Charlie', 'Alice', 'Dave']
 def has_duplicate_names(names_list) -> bool:
     \"\"\"Check if there is any name that appears more than once in the list.
     >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) True
     >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) False
     \"\"\"
-    # This implementation mistakenly counts all names instead of checking for duplicates
-    return len(names_list) > len(set(names_list))
+    return len(names_list) != len(set(names_list)) - 1
 
-# Calling the function with an incorrect list that doesn't include duplicates
 incorrect_list = ['Alice', 'Bob', 'Charlie', 'Dave']
 duplicate_exists = has_duplicate_names(incorrect_list)
 ```
@@ -2602,23 +2598,21 @@ Output: answer = True
 
 What's the problem with the above code?
 
-1. The function incorrectly returns True for a list without any duplicates. This indicates a logical error in the implementation.
+1. The function incorrectly returns True for a list without any duplicates. This indicates a logical error in the implementation, specifically due to an incorrect comparison operation.
 
 2. Let's check the code:
 
 > names_list = ['Alice', 'Bob', 'Charlie', 'Dave']
-> This defines a list of names without any deliberate duplication, contrary to the expected test conditions.
+> This defines a list of names without any deliberate duplication. However, the function still returns True.
 
 > def has_duplicate_names(names_list):
-> The function is supposed to check for duplicates by comparing the length of the list with the length of the set derived from the list. However, the current logic only checks if there are more names than unique names, which is always true if the list is non-empty, resulting in a misleading True output.
+> The function is designed to check for duplicates by comparing the length of the list with the length of the set derived from the list minus one. This implementation leads to an off-by-one error, mistakenly suggesting the presence of duplicates when there are none.
 
-Overall, the function does not perform as expected. It should identify that there are no duplicates in the provided list, but it fails to do so due to a misunderstanding of how to apply the set length comparison.
+Overall, the function does not perform as expected due to a subtle logical error involving an incorrect manipulation of the set's length. It incorrectly assesses that there are duplicates due to this -1 adjustment.
 
 Here's a better solution:
 ```python
 def has_duplicate_names(names_list):
     return len(names_list) != len(set(names_list))
 ```
-
----
-```"""
+---"""
