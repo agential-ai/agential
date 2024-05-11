@@ -29,9 +29,9 @@ class CriticAgent(BaseAgent):
     Attributes:
         llm (BaseChatModel): An instance of a language model used for generating initial answers
             and critiques.
-        mode (str): The CRITIC agent's mode. Can be "search" or "code_intepreter".
+        mode (str): The CRITIC agent's mode. Can be "qa", "math", or "code".
         search (Optional[GoogleSerperAPIWrapper]): A search API wrapper used for obtaining evidence to
-            support or refute generated answers and critiques. Defaults to None. Required if mode = "search".
+            support or refute generated answers and critiques. Defaults to None. Required if mode = "qa".
     """
 
     def __init__(
@@ -46,9 +46,9 @@ class CriticAgent(BaseAgent):
         self.llm = llm
         self.mode = mode
         self.search = search
-        if self.mode == "search" and not self.search:
+        if self.mode == "qa" and not self.search:
             raise ValueError(
-                "`GoogleSerperAPIWrapper` is required when mode is 'search'."
+                "`GoogleSerperAPIWrapper` is required when mode is 'qa'."
             )
 
     def generate(
@@ -58,6 +58,8 @@ class CriticAgent(BaseAgent):
         prompt: str = CRITIC_INSTRUCTION_HOTPOTQA,
         critique_examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
         critique_prompt: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
+        additional_keys: Dict[str, str] = {},
+        critique_additional_keys: Dict[str, str] = {},
         max_interactions: int = 7,
         use_search_tool: bool = True,
         use_interpreter_tool: bool = True,
@@ -71,26 +73,28 @@ class CriticAgent(BaseAgent):
             prompt (str): The instruction template used to prompt the language model for the initial answer. Defaults to CRITIC_INSTRUCTION_HOTPOTQA.
             critique_examples (str): Few-shot examples to guide the language model in generating critiques. Defaults to HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC.
             critique_prompt (str): The instruction template for generating critiques. Defaults to CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA.
+            additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
+            critique_additional_keys (Dict[str, str]): Additional keys to format the critique_prompt. Defaults to {}.
             max_interactions (int): The maximum number of critique cycles. Defaults to 7.
-            use_search_tool (bool): Only for "search" mode. Flag to decide whether to use the search tool for evidence gathering. Defaults to True.
-            use_interpreter_tool (bool): Only for "code_interpreter" mode. Flag to decide whether to use the interpreter tool for code execution. Defaults to True.
+            use_search_tool (bool): Only for "qa" mode. Flag to decide whether to use the search tool for evidence gathering. Defaults to True.
+            use_interpreter_tool (bool): Only for "math" or "code" mode. Flag to decide whether to use the interpreter tool for code execution. Defaults to True.
             evidence_length (int): The maximum length of the evidence snippet to be included in the context. Defaults to 400.
 
         Returns:
             List[Dict[str, str]]: A list of dictionaries.
-                "search" mode:
+                "qa" mode:
                     - Each dictionary contains an "answer" and "critique". Optionally, a
                     dictionary may include the search "query" and "search_result", and the final dictionary includes the final "revised_answer".
-                "code_interpreter" mode:
+                "math" mode:
                     - Each dictionary contains "code" and "critique". Optionally, a dictionary may include
                     the "execution_status" and "code_answer" if use_interpreter_tool is True. If the critic
                     improves the solution, then the dictionary will have an "improved_code" key.
         """
-        if self.mode == "search":
+        if self.mode == "qa":
             out = []
 
             answer = _prompt_agent(
-                llm=self.llm, question=question, examples=examples, prompt=prompt
+                llm=self.llm, question=question, examples=examples, additional_keys=additional_keys, prompt=prompt
             )
 
             criticism, revised_answer = "", ""
@@ -101,6 +105,7 @@ class CriticAgent(BaseAgent):
                     examples=critique_examples,
                     answer=answer,
                     critique=criticism,
+                    additional_keys=critique_additional_keys,
                     prompt=critique_prompt,
                 ).split("> Evidence: ")[
                     0
@@ -140,20 +145,19 @@ class CriticAgent(BaseAgent):
                     criticism += f"\nLet's give the most possible answer.\n\nQuestion: {question}\nHere's "
 
             return out
-        elif self.mode == "code_interpreter":
+        elif self.mode == "math":
             out = []
             code = _prompt_agent(
-                llm=self.llm, question=question, examples=examples, prompt=prompt
+                llm=self.llm, question=question, examples=examples, additional_keys=additional_keys, prompt=prompt
             )
 
             for idx in range(max_interactions):
                 # Get additional code execution information.
-                additional_keys = {}
                 if use_interpreter_tool:
                     code_answer, execution_status = safe_execute(
                         code
                     )  # Can be None, "Exception".
-                    additional_keys = {
+                    critique_additional_keys = {
                         "execution_status": execution_status,
                         "code_answer": code_answer,
                     }
@@ -165,7 +169,7 @@ class CriticAgent(BaseAgent):
                     examples=critique_examples,
                     answer=code,
                     critique="",
-                    additional_keys=additional_keys,  # type: ignore
+                    additional_keys=critique_additional_keys,  # type: ignore
                     prompt=critique_prompt,
                 ).split("Here's")[
                     0
@@ -188,7 +192,7 @@ class CriticAgent(BaseAgent):
                     critique=critique
                     + "\n\n"
                     + "Here's a better solution:\n```python\n",
-                    additional_keys=additional_keys,  # type: ignore
+                    additional_keys=critique_additional_keys,  # type: ignore
                     prompt=critique_prompt,
                 ).split("```")[
                     0
@@ -196,8 +200,9 @@ class CriticAgent(BaseAgent):
                 out[idx]["improved_code"] = code
 
             return out
-
+        elif self.mode == "code":
+            pass
         else:
             raise ValueError(
-                "mode must be set to either 'search' or 'code_interpreter'."
+                "mode must be set to either 'qa', 'math', or 'code'."
             )
