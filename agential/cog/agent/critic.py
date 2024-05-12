@@ -173,7 +173,7 @@ class CriticAgent(BaseAgent):
                     )  # Can be None, "Exception".
                     critique_additional_keys = {
                         "execution_status": execution_status,
-                        "code_answer": code_answer,
+                        "code_answer": code_answer if code_answer else "",
                     }
 
                 # Generate code critique.
@@ -239,7 +239,7 @@ class CriticAgent(BaseAgent):
                     )  # Can be None, "Exception".
                     critique_additional_keys = {
                         "execution_status": execution_status,
-                        "code_answer": code_answer,
+                        "code_answer": code_answer if code_answer else "",
                     }
 
                 # Generate code critique.
