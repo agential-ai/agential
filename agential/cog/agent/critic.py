@@ -18,10 +18,10 @@ from agential.cog.functional.critic import (
 from agential.cog.prompts.critic import (
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
     CRITIC_INSTRUCTION_HOTPOTQA,
+    CRITIC_POT_INSTRUCTION_TEST_HUMANEVAL,
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
     HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
-    CRITIC_POT_INSTRUCTION_TEST_HUMANEVAL,
-    HUMANEVAL_FEWSHOT_EXAMPLES_POT_TEST
+    HUMANEVAL_FEWSHOT_EXAMPLES_POT_TEST,
 )
 
 
@@ -49,9 +49,7 @@ class CriticAgent(BaseAgent):
         self.mode = mode
         self.search = search
         if self.mode == "qa" and not self.search:
-            raise ValueError(
-                "`GoogleSerperAPIWrapper` is required when mode is 'qa'."
-            )
+            raise ValueError("`GoogleSerperAPIWrapper` is required when mode is 'qa'.")
 
     def generate(
         self,
@@ -87,7 +85,7 @@ class CriticAgent(BaseAgent):
             tests (str): The unit tests. Used in "code" mode. Defaults to "".
             test_prompt (str): The instruction template for generating unit tests. Used only in "code" mode. Defaults to CRITIC_POT_INSTRUCTION_TEST_HUMANEVAL.
             test_examples (str): Few-shot examples to guide model in generating unit tests. Used only in "code" mode. Defaults to HUMANEVAL_FEWSHOT_EXAMPLES_POT_TEST.
-            
+
         Returns:
             List[Dict[str, str]]: A list of dictionaries.
                 "qa" mode:
@@ -102,7 +100,11 @@ class CriticAgent(BaseAgent):
             out = []
 
             answer = _prompt_agent(
-                llm=self.llm, question=question, examples=examples, additional_keys=additional_keys, prompt=prompt
+                llm=self.llm,
+                question=question,
+                examples=examples,
+                additional_keys=additional_keys,
+                prompt=prompt,
             )
 
             criticism, revised_answer = "", ""
@@ -156,7 +158,11 @@ class CriticAgent(BaseAgent):
         elif self.mode == "math":
             out = []
             code = _prompt_agent(
-                llm=self.llm, question=question, examples=examples, additional_keys=additional_keys, prompt=prompt
+                llm=self.llm,
+                question=question,
+                examples=examples,
+                additional_keys=additional_keys,
+                prompt=prompt,
             )
 
             for idx in range(max_interactions):
@@ -211,9 +217,13 @@ class CriticAgent(BaseAgent):
         elif self.mode == "code":
             out = []
             code = _prompt_agent(
-                llm=self.llm, question=question, examples=examples, additional_keys=additional_keys, prompt=prompt
+                llm=self.llm,
+                question=question,
+                examples=examples,
+                additional_keys=additional_keys,
+                prompt=prompt,
             )
-            
+
             for idx in range(max_interactions):
                 # Generate unit tests like in Reflexion and execute unit tests.
                 if use_interpreter_tool:
@@ -222,7 +232,7 @@ class CriticAgent(BaseAgent):
                             llm=self.llm,
                             question=question,
                             examples=test_examples,
-                            prompt=test_prompt
+                            prompt=test_prompt,
                         )
                     code_answer, execution_status = safe_execute(
                         code + "\n\n" + tests
@@ -240,7 +250,7 @@ class CriticAgent(BaseAgent):
                     answer=tests,
                     critique="",
                     additional_keys=critique_additional_keys,
-                    prompt=critique_prompt
+                    prompt=critique_prompt,
                 ).split("Here's")[
                     0
                 ]  # Stop at Here's.
@@ -268,9 +278,7 @@ class CriticAgent(BaseAgent):
                     0
                 ]  # Stop at ```.
                 out[idx]["improved_code"] = code
-    
+
             return out
         else:
-            raise ValueError(
-                "mode must be set to either 'qa', 'math', or 'code'."
-            )
+            raise ValueError("mode must be set to either 'qa', 'math', or 'code'.")

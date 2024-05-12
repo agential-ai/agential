@@ -2576,7 +2576,7 @@ def are_anagrams(s1: str, s2: str) -> bool:
     return Counter(s1.lower()) == Counter(s2.lower())
 """
 
- 
+
 CRITIC_POT_INSTRUCTION_TEST_HUMANEVAL = """You are an AI coding assistant that can write unique, diverse, and intuitive unit tests for functions given the signature and docstring.
 
 {examples}

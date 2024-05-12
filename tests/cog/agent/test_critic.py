@@ -11,11 +11,19 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from agential.cog.agent.critic import CriticAgent
 from agential.cog.prompts.critic import (
     CRITIC_CRITIQUE_INSTRUCTION_GSM8K,
+    CRITIC_CRITIQUE_INSTRUCTION_HUMANEVAL,
     CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_GSM8K,
+    CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_HUMANEVAL,
     CRITIC_POT_INSTRUCTION_GSM8K,
+    CRITIC_POT_INSTRUCTION_HUMANEVAL,
+    CRITIC_POT_INSTRUCTION_TEST_HUMANEVAL,
     GSM8K_FEWSHOT_EXAMPLES_CRITIC,
     GSM8K_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
     GSM8K_FEWSHOT_EXAMPLES_POT,
+    HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC,
+    HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
+    HUMANEVAL_FEWSHOT_EXAMPLES_POT,
+    HUMANEVAL_FEWSHOT_EXAMPLES_POT_TEST,
 )
 
 
@@ -75,9 +83,7 @@ def test_generate() -> None:
         "Question: Janet hires six employees. Four of them are warehouse workers who make $15/hour, and the other two are managers who make $20/hour. Janet has to pay 10% of her workers' salaries in FICA taxes. If everyone works 25 days a month and 8 hours a day, how much does Janet owe total for their wages and taxes for one month?\n```python\nnum_of_warehouse_workers = 4\nnum_of_managers = 2\nwage_of_warehouse_workers = 15\nwage_of_managers = 20\nnum_of_days = 25\nnum_of_hours = 8\ntotal_hours = num_of_days * num_of_hours\ntotal_wage = num_of_warehouse_workers * wage_of_warehouse_workers * total_hours + num_of_managers * wage_of_managers * total_hours\nanswer = total_wage * 1.1\n```\n\nWhat's the problem with the above code?\n\n1. The code correctly calculates the total amount owed for wages and taxes.\n\n2. The code could be improved by adding comments for better readability and organization. \n\nHere's the same code with added comments:\n\n```python\n# Define the number of warehouse workers and managers\nnum_of_warehouse_workers = 4\nnum_of_managers = 2\n\n# Define the wages for warehouse workers and managers\nwage_of_warehouse_workers = 15\nwage_of_managers = 20\n\n# Calculate the total number of hours worked in a month\nnum_of_days = 25\nnum_of_hours = 8\ntotal_hours = num_of_days * num_of_hours\n\n# Calculate the total wages for the workers\ntotal_wage = num_of_warehouse_workers * wage_of_warehouse_workers * total_hours + num_of_managers * wage_of_managers * total_hours\n\n# Calculate the total FICA taxes owed (10% of total wages)\ntotal_fica_tax = total_wage * 0.1\n\n# Calculate the total amount owed (wages + taxes)\ntotal_owed = total_wage + total_fica_tax\nanswer = total_owed\n``` \n\nThis code snippet is correct and calculates the total amount Janet owes for the wages and taxes for one month.",
         'Question: In a school, the average weight of boys is 60 kg, and the average weight of girls is 45 kg. If the average weight of all students in the school is 50 kg, what is the ratio of boys to girls in the school?\n```python\navg_weight_boys = 60\navg_weight_girls = 45\ntotal_avg_weight = 50\nratio_boys = (total_avg_weight - avg_weight_girls) / (avg_weight_boys - total_avg_weight)\nratio_girls = 1 - ratio_boys\nanswer = f"{ratio_boys}:{ratio_girls}"\n```\n\nWhat\'s the problem with the above code?\n\n1. The ratio of boys to girls should be in integer form, for example, 2:3, so the answer should be simplified.\n\n2. Let\'s check the code:\n\n> avg_weight_boys = 60\n> avg_weight_girls = 45\n> total_avg_weight = 50\n\nIt defines the average weights correctly.\n\n> ratio_boys = (total_avg_weight - avg_weight_girls) / (avg_weight_boys - total_avg_weight)\n> ratio_girls = 1 - ratio_boys\n\nThe calculation of ratios seems to be incorrect. The ratio of boys to girls is based on their weights, so we should consider the weights to find the correct ratio.\n\nHere\'s a better solution:\n```python\n# Given data\navg_weight_boys = 60\navg_weight_girls = 45\ntotal_avg_weight = 50\n\n# Let the number of boys be x and number of girls be y\n# We can set up the following equations based on the weights and average weight\n# x * 60 + y * 45 = (x + y) * 50\n# x + y = total_students\n\n# Solving the equations\ntotal_students = 1  # assume total students is 1 (for ratios)\ny = (60 - total_avg_weight) / (total_avg_weight - 45)  # number of girls\nx = total_students - y  # number of boys\n\n# Calculate the simplified ratio of boys to girls\n# Since the total_students is 1, we can simplify the ratio\nratio_boys = int(x)\nratio_girls = int(y)\n\nanswer = f"{ratio_boys}:{ratio_girls}"\n```\n\nThis solution correctly calculates the ratio of boys to girls based on their average weights and the total average weight.',
     ]
-    agent = CriticAgent(
-        llm=FakeListChatModel(responses=responses), mode="math"
-    )
+    agent = CriticAgent(llm=FakeListChatModel(responses=responses), mode="math")
     out = agent.generate(
         question=question,
         use_interpreter_tool=False,
@@ -97,9 +103,7 @@ def test_generate() -> None:
         "total_eggs = 16\neaten_eggs = 3\nbaked_eggs = 4933828\nsold_eggs = total_eggs - eaten_eggs - baked_eggs\n\n# Check if the number of sold eggs is negative and correct it\nif sold_eggs < 0:\n    sold_eggs = 0\n\ndollars_per_egg = 2\ntotal_money_made = sold_eggs * dollars_per_egg\n\nanswer = total_money_made",
         "It is correct.",
     ]
-    agent = CriticAgent(
-        llm=FakeListChatModel(responses=responses), mode="math"
-    )
+    agent = CriticAgent(llm=FakeListChatModel(responses=responses), mode="math")
     out = agent.generate(
         question=question,
         examples=GSM8K_FEWSHOT_EXAMPLES_POT,
@@ -110,7 +114,50 @@ def test_generate() -> None:
     assert isinstance(out, list)
     assert len(out) == 2
 
+    question = """from typing import List 
+
+    def has_close_elements(numbers: List[float], threshold: float) -> bool: 
+        \"\"\"Check if in given list of numbers, are any two numbers closer to each other than given threshold. 
+        >>> has_close_elements([1.0, 2.0, 3.0], 0.5) False 
+        >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) True
+        \"\"\"
+    """
+
     # Test "code" mode without interpreter tool.
-    
+    responses = [
+        'from typing import List \n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool: \n    """Check if in given list of numbers, are any two numbers closer to each other than given threshold. \n    >>> has_close_elements([1.0, 2.0, 3.0], 0.5) False \n    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) True\n    """\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False',
+        "It is correct.",
+    ]
+    agent = CriticAgent(llm=FakeListChatModel(responses=responses), mode="code")
+    out = agent.generate(
+        question=question,
+        examples=HUMANEVAL_FEWSHOT_EXAMPLES_POT,
+        prompt=CRITIC_POT_INSTRUCTION_HUMANEVAL,
+        critique_examples=HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
+        critique_prompt=CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_HUMANEVAL,
+        use_interpreter_tool=False,
+        test_prompt=CRITIC_POT_INSTRUCTION_TEST_HUMANEVAL,
+        test_examples=HUMANEVAL_FEWSHOT_EXAMPLES_POT_TEST,
+    )
+    assert isinstance(out, list)
+    assert len(out) == 1
 
     # Test "code" mode with interpreter tool.
+    responses = [
+        'from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    """\n    Check if in given list of numbers, are any two numbers closer to each other than given threshold.\n    >>> has_close_elements([1.0, 2.0, 3.0], 0.5) \n    False\n    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) \n    True\n    """\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False',
+        'assert has_close_elements([1.0, 2.0, 3.0], 0.5) == False, "Test failed: has_close_elements([1.0, 2.0, 3.0], 0.5) should return False"\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True, "Test failed: has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) should return True"',
+        "It is correct.",
+    ]
+    agent = CriticAgent(llm=FakeListChatModel(responses=responses), mode="code")
+    out = agent.generate(
+        question=question,
+        examples=HUMANEVAL_FEWSHOT_EXAMPLES_POT,
+        prompt=CRITIC_POT_INSTRUCTION_HUMANEVAL,
+        critique_examples=HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC,
+        critique_prompt=CRITIC_CRITIQUE_INSTRUCTION_HUMANEVAL,
+        use_interpreter_tool=True,
+        test_prompt=CRITIC_POT_INSTRUCTION_TEST_HUMANEVAL,
+        test_examples=HUMANEVAL_FEWSHOT_EXAMPLES_POT_TEST,
+    )
+    assert isinstance(out, list)
+    assert len(out) == 1
