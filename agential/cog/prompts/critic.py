@@ -2499,41 +2499,47 @@ answer = min_company
 # ======================================================================== HUMANEVAL ======================================================================== #
 
 
-CRITIC_POT_INSTRUCTION_HUMANEVAL = """You are an AI that only responds with python code, NOT ENGLISH. You will be given a function signature and its docstring by the user. Write your full implementation (restate the function signature).
-Restate and call the tests below. 
+CRITIC_POT_INSTRUCTION_HUMANEVAL = """You are an AI that only responds with python code, NOT ENGLISH. You will be given a function signature and its docstring by the user. Write your full implementation (restate the function signature, all imports, and docstring).
 
 {examples}
 (END OF EXAMPLES)
 
-{tests}
-
+[function signature]:
 {question}"""
 
 
-HUMANEVAL_FEWSHOT_EXAMPLES_POT = """
-def has_duplicate_names(names_list) -> bool:
+HUMANEVAL_FEWSHOT_EXAMPLES_POT = """[function signature]:
+def has_duplicate_names(names_list: List[str]) -> bool:
     \"\"\"Check if there is any name that appears more than once in the list.
-    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) True
-    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) False
+    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice'])
+    True
+    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) 
+    False
     \"\"\"
     return len(names_list) != len(set(names_list))
 
-def are_points_close(points, threshold) -> bool:
-    \"\"\"Determine if any two points in the list are closer than the given threshold.
-    >>> are_points_close([(0,0), (1,1), (2,2)], 1.5) False
-    >>> are_points_close([(0,0), (0.5,0.5), (2,2)], 1.0) True
+[function signature]:
+def average_positive(numbers: List[int]) -> float:
+    \"\"\"Calculate the average of positive numbers in the list.
+    >>> average_positive([1, -1, 2, -2, 3])
+    2.0
+    >>> average_positive([-5, 0, 5, 15])
+    10.0
+    >>> average_positive([100, 200, -100, 0])
+    150.0
+    >>> average_positive([-1, -2, -3])
+    0
     \"\"\"
-    from math import sqrt
-    for i in range(len(points)):
-        for j in range(i + 1, len(points)):
-            if sqrt((points[i][0] - points[j][0])**2 + (points[i][1] - points[j][1])**2) < threshold:
-                return True
-    return False
+    positive_numbers = [num for num in numbers if num > 0]
+    return sum(positive_numbers) / len(positive_numbers) if positive_numbers else 0
 
-def exceeds_threshold(measurements, threshold) -> int:
+[function signature]:
+def exceeds_threshold(measurements: List[float], threshold: float) -> int:
     \"\"\"Return the count of instances where the difference between any two successive measurements exceeds the given threshold.
-    >>> exceeds_threshold([100, 102, 107, 103], 5) 1
-    >>> exceeds_threshold([100, 101, 102, 103], 2) 0
+    >>> exceeds_threshold([100, 102, 107, 103], 5) 
+    1
+    >>> exceeds_threshold([100, 101, 102, 103], 2) 
+    0
     \"\"\"
     count = 0
     for i in range(1, len(measurements)):
@@ -2541,38 +2547,143 @@ def exceeds_threshold(measurements, threshold) -> int:
             count += 1
     return count
 
-def has_proximal_elements(arr, close_value) -> list:
-    \"\"\"Return a list of tuples of indices for pairs of elements in the array where the absolute difference is less than or equal to the close_value.
-    >>> has_proximal_elements([10, 20, 30, 40], 5) []
-    >>> has_proximal_elements([10, 15, 20, 25], 5) [(0, 1), (1, 2), (2, 3)]
+[function signature]:
+def sum_even_indexed(numbers: List[int]) -> int:
+    \"\"\"Sum numbers that are located at even indices in the list.
+    >>> sum_even_indexed([10, 3, 5, 2, 8])
+    23
+    >>> sum_even_indexed([1, 2, 3, 4, 5, 6])
+    9
+    >>> sum_even_indexed([0, 100, 200, 300])
+    200
+    >>> sum_even_indexed([7])
+    7
     \"\"\"
-    pairs = []
-    for i in range(len(arr)):
-        for j in range(i + 1, len(arr)):
-            if abs(arr[i] - arr[j]) <= close_value:
-                pairs.append((i, j))
-    return pairs
+    return sum(num for i, num in enumerate(numbers) if i % 2 == 0)
 
-def has_similar_temperatures(temp_list, max_diff) -> dict:
-    \"\"\"Return a dictionary where keys are pairs of indices and values are the differences between temperatures if the difference is within the max difference.
-    >>> has_similar_temperatures([22.0, 22.5, 23.0, 24.0], 0.6) {(0, 1): 0.5, (0, 2): 1.0, (1, 2): 0.5}
-    >>> has_similar_temperatures([22.0, 23.0, 24.0, 26.0], 0.5) {}
+[function signature]:
+from collections import Counter
+
+def are_anagrams(s1: str, s2: str) -> bool:
+    \"\"\"Check if two strings are anagrams of each other, ignoring case.
+    >>> are_anagrams('Listen', 'Silent')
+    True
+    >>> are_anagrams('Hello', 'World')
+    False
+    >>> are_anagrams('Angel', 'Glean')
+    True
     \"\"\"
-    close_temps = {}
-    for i in range(len(temp_list)):
-        for j in range(i + 1, len(temp_list)):
-            diff = abs(temp_list[i] - temp_list[j])
-            if diff <= max_diff:
-                close_temps[(i, j)] = diff
-    return close_temps"""
+    return Counter(s1.lower()) == Counter(s2.lower())
+"""
 
  
+CRITIC_POT_INSTRUCTION_TEST_HUMANEVAL = """You are an AI coding assistant that can write unique, diverse, and intuitive unit tests for functions given the signature and docstring.
+
+{examples}
+(END OF EXAMPLES)
+
+[function signature]:
+{question}
+
+[unit tests]:"""
+
+
+HUMANEVAL_FEWSHOT_EXAMPLES_POT_TEST = """[function signature]:
+def has_duplicate_names(names_list: List[str]) -> bool:
+    \"\"\"Check if there is any name that appears more than once in the list.
+    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice'])
+    True
+    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) 
+    False
+    \"\"\"
+
+[unit tests]:
+assert has_duplicate_names(['Alice', 'Bob', 'Alice']) == True, "Test failed: has_duplicate_names(['Alice', 'Bob', 'Alice']) should return True"
+assert has_duplicate_names(['John', 'Jane', 'Joe', 'Jill', 'John']) == True, "Test failed: has_duplicate_names(['John', 'Jane', 'Joe', 'Jill', 'John']) should return True"
+assert has_duplicate_names(['Anna', 'Anna', 'Anna']) == True, "Test failed: has_duplicate_names(['Anna', 'Anna', 'Anna']) should return True"
+assert has_duplicate_names(['Mike', 'Mike', 'Mike', 'Mike']) == True, "Test failed: has_duplicate_names(['Mike', 'Mike', 'Mike', 'Mike']) should return True"
+assert has_duplicate_names(['Sarah', 'Derek', 'Ian', 'Sara']) == False, "Test failed: has_duplicate_names(['Sarah', 'Derek', 'Ian', 'Sara']) should return False"
+
+[function signature]:
+def average_positive(numbers: List[int]) -> float:
+    \"\"\"Calculate the average of positive numbers in the list.
+    >>> average_positive([1, -1, 2, -2, 3])
+    2.0
+    >>> average_positive([-5, 0, 5, 15])
+    10.0
+    >>> average_positive([100, 200, -100, 0])
+    150.0
+    >>> average_positive([-1, -2, -3])
+    0
+    \"\"\"
+
+[unit tests]:
+assert average_positive([1, -1, 2, -2, 3]) == 2.0, "Test failed: average_positive([1, -1, 2, -2, 3]) should return 2.0"
+assert average_positive([-5, 0, 5, 15]) == 10.0, "Test failed: average_positive([-5, 0, 5, 15]) should return 10.0"
+assert average_positive([100, 200, -100, 0]) == 150.0, "Test failed: average_positive([100, 200, -100, 0]) should return 150.0"
+assert average_positive([-1, -2, -3]) == 0, "Test failed: average_positive([-1, -2, -3]) should return 0"
+
+[function signature]:
+def exceeds_threshold(measurements: List[float], threshold: float) -> int:
+    \"\"\"Return the count of instances where the difference between any two successive measurements exceeds the given threshold.
+    >>> exceeds_threshold([100, 102, 107, 103], 5) 
+    1
+    >>> exceeds_threshold([100, 101, 102, 103], 2) 
+    0
+    \"\"\"
+
+[unit tests]:
+assert exceeds_threshold([100, 102, 107, 103], 5) == 1, "Test failed: exceeds_threshold([100, 102, 107, 103], 5) should return 1"
+assert exceeds_threshold([100, 101, 102, 103], 2) == 0, "Test failed: exceeds_threshold([100, 101, 102, 103], 2) should return 0"
+
+[function signature]:
+def sum_even_indexed(numbers: List[int]) -> int:
+    \"\"\"Sum numbers that are located at even indices in the list.
+    >>> sum_even_indexed([10, 3, 5, 2, 8])
+    23
+    >>> sum_even_indexed([1, 2, 3, 4, 5, 6])
+    9
+    >>> sum_even_indexed([0, 100, 200, 300])
+    200
+    >>> sum_even_indexed([7])
+    7
+    \"\"\"
+
+[unit tests]:
+assert sum_even_indexed([10, 3, 5, 2, 8]) == 23, "Test failed: sum_even_indexed([10, 3, 5, 2, 8]) should return 23"
+assert sum_even_indexed([1, 2, 3, 4, 5, 6]) == 9, "Test failed: sum_even_indexed([1, 2, 3, 4, 5, 6]) should return 9"
+assert sum_even_indexed([0, 100, 200, 300]) == 200, "Test failed: sum_even_indexed([0, 100, 200, 300]) should return 200"
+assert sum_even_indexed([7]) == 7, "Test failed: sum_even_indexed([7]) should return 7"
+
+[function signature]:
+from collections import Counter
+
+def are_anagrams(s1: str, s2: str) -> bool:
+    \"\"\"Check if two strings are anagrams of each other, ignoring case.
+    >>> are_anagrams('Listen', 'Silent')
+    True
+    >>> are_anagrams('Hello', 'World')
+    False
+    >>> are_anagrams('Angel', 'Glean')
+    True
+    \"\"\"
+
+[unit tests]:
+assert are_anagrams('Listen', 'Silent') == True, "Test failed: are_anagrams('Listen', 'Silent') should return True"
+assert are_anagrams('Hello', 'World') == False, "Test failed: are_anagrams('Hello', 'World') should return False"
+assert are_anagrams('Angel', 'Glean') == True, "Test failed: are_anagrams('Angel', 'Glean') should return True"
+"""
+
 
 CRITIC_CRITIQUE_INSTRUCTION_HUMANEVAL = """{examples}
 (END OF EXAMPLES)
 
+```python
 {question}
+
 {answer}
+```
+
 Execution: {execution_status} 
 Output: answer = {code_answer}
 
@@ -2581,8 +2692,7 @@ What's the problem with the above code? If nothing is wrong, output 'It is corre
 {critique}"""
 
 
-HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC = """
-```python
+HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC = """```python
 def has_duplicate_names(names_list) -> bool:
     \"\"\"Check if there is any name that appears more than once in the list.
     >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) True
@@ -2590,11 +2700,15 @@ def has_duplicate_names(names_list) -> bool:
     \"\"\"
     return len(names_list) != len(set(names_list)) - 1
 
-incorrect_list = ['Alice', 'Bob', 'Charlie', 'Dave']
-duplicate_exists = has_duplicate_names(incorrect_list)
+assert has_duplicate_names(['Alice', 'Bob', 'Alice']) == True, "Test failed: has_duplicate_names(['Alice', 'Bob', 'Alice']) should return True"
+assert has_duplicate_names(['John', 'Jane', 'Joe', 'Jill', 'John']) == True, "Test failed: has_duplicate_names(['John', 'Jane', 'Joe', 'Jill', 'John']) should return True"
+assert has_duplicate_names(['Anna', 'Anna', 'Anna']) == True, "Test failed: has_duplicate_names(['Anna', 'Anna', 'Anna']) should return True"
+assert has_duplicate_names(['Mike', 'Mike', 'Mike', 'Mike']) == True, "Test failed: has_duplicate_names(['Mike', 'Mike', 'Mike', 'Mike']) should return True"
+assert has_duplicate_names(['Sarah', 'Derek', 'Ian', 'Sara']) == False, "Test failed: has_duplicate_names(['Sarah', 'Derek', 'Ian', 'Sara']) should return False"
 ```
-Execution: Done
-Output: answer = True
+
+Execution: AssertionError("Test failed: has_duplicate_names([\'Sarah\', \'Derek\', \'Ian\', \'Sara\']) should return False")
+Output: answer = None
 
 What's the problem with the above code?
 
@@ -2612,7 +2726,126 @@ Overall, the function does not perform as expected due to a subtle logical error
 
 Here's a better solution:
 ```python
-def has_duplicate_names(names_list):
+def has_duplicate_names(names_list) -> bool:
+    \"\"\"Check if there is any name that appears more than once in the list.
+    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) True
+    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) False
+    \"\"\"
     return len(names_list) != len(set(names_list))
 ```
+
+---
+
+```python
+def average_positive(numbers: List[int]) -> float:
+    \"\"\"Calculate the average of positive numbers in the list.
+    >>> average_positive([1, -1, 2, -2, 3])
+    2.0
+    >>> average_positive([-5, 0, 5, 15])
+    10.0
+    >>> average_positive([100, 200, -100, 0])
+    150.0
+    >>> average_positive([-1, -2, -3])
+    0
+    \"\"\"
+    total = sum(numbers)
+    count = sum(1 for x in numbers if x > 0)
+    return total / count if count else 0
+
+assert average_positive([1, -1, 2, -2, 3]) == 2.0, "Test failed: average_positive([1, -1, 2, -2, 3]) should return 2.0"
+assert average_positive([-5, 0, 5, 15]) == 10.0, "Test failed: average_positive([-5, 0, 5, 15]) should return 10.0"
+assert average_positive([100, 200, -100, 0]) == 150.0, "Test failed: average_positive([100, 200, -100, 0]) should return 150.0"
+assert average_positive([-1, -2, -3]) == 0, "Test failed: average_positive([-1, -2, -3]) should return 0"
+```
+
+Execution: AssertionError('Test failed: average_positive([1, -1, 2, -2, 3]) should return 2.0')
+Output: answer = None
+
+What's the problem with the above code?
+
+1. The function incorrectly returns an average of all numbers, not just the positives. This leads to incorrect calculations when negative numbers are present in the list.
+
+2. Let's check the code:
+
+> numbers = [1, -1, 2, -2, 3]
+> This list includes both positive and negative numbers, but the function's calculation should focus only on the positives.
+
+> def average_positive(numbers):
+> The function is intended to calculate the average of positive numbers only. However, it first sums up all numbers, which is incorrect. The count of positives is correct, but using the total of all numbers leads to a logical flaw.
+
+Overall, the function does not perform as expected due to an error in the summing process, where it incorrectly includes negative and zero values in the total used for the average calculation.
+
+Here's a better solution:
+```python
+def average_positive(numbers: List[int]) -> float:
+    \"\"\"Calculate the average of positive numbers in the list.
+    >>> average_positive([1, -1, 2, -2, 3])
+    2.0
+    >>> average_positive([-5, 0, 5, 15])
+    10.0
+    >>> average_positive([100, 200, -100, 0])
+    150.0
+    >>> average_positive([-1, -2, -3])
+    0
+    \"\"\"
+    positive_numbers = [num for num in numbers if num > 0]
+    return sum(positive_numbers) / len(positive_numbers) if positive_numbers else 0
+```
+
+---"""
+
+
+
+"""
+```python
+def exceeds_threshold(measurements: List[float], threshold: float) -> int:
+    \"\"\"Return the count of instances where the difference between any two successive measurements exceeds the given threshold.
+    >>> exceeds_threshold([100, 102, 107, 103], 5) 
+    1
+    >>> exceeds_threshold([100, 101, 102, 103], 2) 
+    0
+    \"\"\"
+    count = 0
+    for i in range(1, len(measurements)):
+        if abs(measurements[i] - measurements[i - 1]) > (threshold + 1):
+            count += 1
+    return count
+
+assert exceeds_threshold([100, 102, 107, 103], 5) == 1, "Test failed: exceeds_threshold([100, 102, 107, 103], 5) should return 1"
+assert exceeds_threshold([100, 101, 102, 103], 2) == 0, "Test failed: exceeds_threshold([100, 101, 102, 103], 2) should return 0"
+```
+
+Execution: AssertionError('Test failed: exceeds_threshold([100, 102, 107, 103], 5) should return 1')
+Output: answer = None
+
+What's the problem with the above code?
+
+1. The function incorrectly fails to count differences that exactly meet the threshold because it mistakenly uses a threshold incremented by 1. This causes it to underreport the number of threshold exceedances.
+
+2. Let's check the code:
+
+> measurements = [100, 102, 107, 103]
+> This set of data points includes instances where the difference between successive measurements is equal to or greater than the threshold set.
+
+> def exceeds_threshold(measurements, threshold):
+> The function is supposed to count how many times the difference between successive measurements exceeds a given threshold. However, adding 1 to the threshold in the comparison `(threshold + 1)` mistakenly increases the threshold, causing valid exceedances to be ignored.
+
+Overall, the function does not perform as expected due to a subtle logical error involving incorrect threshold handling. It incorrectly assesses the count of exceedances, missing those that are exactly at the threshold.
+
+Here's a better solution:
+```python
+def exceeds_threshold(measurements: List[float], threshold: float) -> int:
+    \"\"\"Return the count of instances where the difference between any two successive measurements exceeds the given threshold.
+    >>> exceeds_threshold([100, 102, 107, 103], 5) 
+    1
+    >>> exceeds_threshold([100, 101, 102, 103], 2) 
+    0
+    \"\"\"
+    count = 0
+    for i in range(1, len(measurements)):
+        if abs(measurements[i] - measurements[i - 1]) > threshold:
+            count += 1
+    return count
+```
+
 ---"""
