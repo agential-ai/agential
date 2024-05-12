@@ -17,8 +17,13 @@ Claim: Is Stranger Things set in Bloomington, Indiana?
 A: No, it is set in the fictional town of Hawkins, Indiana. So the answer is: REFUTES.
 
 Claim: Did the song "Beautiful" by Christina Aguilera reach number two on the Billboard Hot 100 in 2003?
-A: The song peaked at number two on the Billboard Hot 100, but it does not specify that it was in 2003. So the answer is: NOT ENOUGH INFO."""
+A: The song peaked at number two on the Billboard Hot 100, but it does not specify that it was in 2003. So the answer is: NOT ENOUGH INFO.
 
+Claim: Roman Atwood is a content creator.
+A: Yes, he is a YouTuber and a prankster. So the answer is: SUPPORTS.
+
+Claim: Peggy Sue Got Married is an Egyptian film released in 1986.
+A: No, it is an American fantasy comedy-drama film directed by Francis Ford Coppola. So the answer is: REFUTES."""
 
 FEVER_FEWSHOT_EXAMPLES_DIRECT = """Claim: Did Nikolaj Coster-Waldau work with the Fox Broadcasting Company?
 A: SUPPORTS
@@ -27,7 +32,14 @@ Claim: Is Stranger Things set in Bloomington, Indiana?
 A: REFUTES
 
 Claim: Did the song "Beautiful" by Christina Aguilera reach number two on the Billboard Hot 100 in 2003?
-A: NOT ENOUGH INFO"""
+A: NOT ENOUGH INFO
+
+Claim: Roman Atwood is a content creator.
+A: SUPPORTS
+
+Claim: Peggy Sue Got Married is an Egyptian film released in 1986.
+A: REFUTES"""
+
 
 
 FEVER_FEWSHOT_EXAMPLES_REACT = """Claim: Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.
@@ -55,7 +67,21 @@ Thought 3: It does not mention Billboard, so I need to look up "Billboard Hot 10
 Action 3: Lookup[Billboard Hot 100]
 Observation 3: (Result 1 / 3) The song peaked at number two on the Billboard Hot 100 in the United States, where it was certified Gold for 500,000 units shipped.
 Thought 4: It only says the song peaked at number two on the Billboard Hot 100, but not if it was in 2003. I am not sure if this claim is true or not.
-Action 4: Finish[NOT ENOUGH INFO]"""
+Action 4: Finish[NOT ENOUGH INFO]
+
+Claim: Roman Atwood is a content creator.
+Thought 1: I need to verify if Roman Atwood is indeed a content creator.
+Action 1: Search[Roman Atwood]
+Observation 1: Roman Bernard Atwood (born May 28, 1983) is an American YouTuber, vlogger, and prankster. He is known for his hidden camera public prank videos.
+Thought 2: The observation confirms that Roman Atwood is a YouTuber and a prankster, which aligns with being a content creator.
+Action 2: Finish[SUPPORTS]
+
+Claim: Peggy Sue Got Married is an Egyptian film released in 1986.
+Thought 1: I should search for the film Peggy Sue Got Married and verify if it is an Egyptian film released in 1986.
+Action 1: Search[Peggy Sue Got Married]
+Observation 1: Peggy Sue Got Married is a 1986 American fantasy comedy-drama film directed by Francis Ford Coppola.
+Thought 2: The observation clearly states that Peggy Sue Got Married is an American film, not an Egyptian one.
+Action 2: Finish[REFUTES]"""
 
 
 CRITIC_CRITIQUE_INSTRUCTION_FEVER = """{examples}
@@ -132,6 +158,49 @@ Given that the year 2003 is not verified in the available evidence, the proposed
 Claim: Did the song "Beautiful" by Christina Aguilera reach number two on the Billboard Hot 100 in 2003?
 Here's the most possible answer: The song "Beautiful" by Christina Aguilera peaked at number two on the Billboard Hot 100, but there is no specific evidence confirming this occurred in 2003. So the answer is: NOT ENOUGH INFO.
 
+---
+
+Claim: Roman Atwood is a content creator.
+
+Proposed Answer: SUPPORTS
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The answer "SUPPORTS" aligns with the claim but lacks supporting details.
+
+2. Truthfulness:
+
+> Search Query: Roman Atwood occupation
+> Evidence: Roman Atwood is an American YouTuber known for his vlogs and prank videos, indicating his role as a content creator.
+
+Given that the evidence confirms Roman Atwood's occupation as a content creator, supporting the claim.
+
+Claim: Roman Atwood is a content creator.
+Here's the most possible answer: Yes, Roman Atwood is a content creator, known for his YouTube vlogs and prank videos. So the answer is: SUPPORTS.
+
+---
+
+Claim: Peggy Sue Got Married is an Egyptian film released in 1986.
+
+Proposed Answer: REFUTES
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The answer "REFUTES" contradicts the claim without providing supporting evidence.
+
+2. Truthfulness:
+
+> Search Query: Peggy Sue Got Married film details
+> Evidence: Peggy Sue Got Married is a 1986 American fantasy comedy-drama film directed by Francis Ford Coppola.
+
+Given that the evidence contradicts the claim by confirming that Peggy Sue Got Married is an American film, not Egyptian.
+
+Claim: Peggy Sue Got Married is an Egyptian film released in 1986.
+Here's the most possible answer: No, Peggy Sue Got Married is an American film directed by Francis Ford Coppola and released in 1986. So the answer is: REFUTES.
 ---"""
 
 
