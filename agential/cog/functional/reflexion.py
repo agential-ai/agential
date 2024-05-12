@@ -1,6 +1,6 @@
 """Functional module for Reflexion."""
 
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 import tiktoken
 
@@ -112,6 +112,7 @@ def _build_cot_agent_prompt(
     question: str,
     scratchpad: str,
     context: Optional[str] = None,
+    additional_keys: Dict[str, str] = {},
     prompt: str = REFLEXION_COT_INSTRUCTION_NO_CONTEXT,
 ) -> str:
     """Constructs a ReflexionCoT prompt template for the agent.
@@ -126,6 +127,7 @@ def _build_cot_agent_prompt(
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         context (Optional[str]): The context of the conversation or query. Defaults to None.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_INSTRUCTION_NO_CONTEXT and
             REFLEXION_COT_INSTRUCTION if context is provided. Must include examples, reflections,
             question, scratchpad, and context, if context is provided.
@@ -144,7 +146,8 @@ def _build_cot_agent_prompt(
                 "question",
                 "scratchpad",
                 "context",
-            ],
+            ]
+            + list(additional_keys.keys()),
             template=prompt,
         ).format(
             examples=examples,
@@ -152,6 +155,7 @@ def _build_cot_agent_prompt(
             question=question,
             scratchpad=scratchpad,
             context=context,
+            **additional_keys,
         )
     else:
         prompt = PromptTemplate(
@@ -160,13 +164,15 @@ def _build_cot_agent_prompt(
                 "reflections",
                 "question",
                 "scratchpad",
-            ],
+            ]
+            + list(additional_keys.keys()),
             template=prompt,
         ).format(
             examples=examples,
             reflections=reflections,
             question=question,
             scratchpad=scratchpad,
+            **additional_keys,
         )
 
     return prompt
@@ -179,6 +185,7 @@ def _prompt_cot_agent(
     question: str,
     scratchpad: str,
     context: Optional[str] = None,
+    additional_keys: Dict[str, str] = {},
     prompt: str = REFLEXION_COT_INSTRUCTION_NO_CONTEXT,
 ) -> str:
     """Generates a CoT prompt for thought and action.
@@ -192,6 +199,7 @@ def _prompt_cot_agent(
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         context (Optional[str]): The context of the conversation or query. Defaults to None.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_INSTRUCTION_NO_CONTEXT and
             REFLEXION_COT_INSTRUCTION if context is provided. Must include examples, reflections,
             question, scratchpad, and context.
@@ -208,6 +216,7 @@ def _prompt_cot_agent(
         question=question,
         scratchpad=scratchpad,
         context=context,
+        additional_keys=additional_keys,
         prompt=prompt,
     )
     out = llm(
@@ -226,6 +235,7 @@ def _build_cot_reflection_prompt(
     question: str,
     scratchpad: str,
     context: Optional[str] = None,
+    additional_keys: Dict[str, str] = {},
     prompt: str = REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT,
 ) -> str:
     """Constructs a ReflexionCoT prompt template for reflection.
@@ -239,6 +249,7 @@ def _build_cot_reflection_prompt(
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         context (Optional[str]): The context of the conversation or query. Defaults to None.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
             REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. Must include examples,
             question, scratchpad, and context, if context is provided.
@@ -251,22 +262,26 @@ def _build_cot_reflection_prompt(
 
     if context:
         prompt = PromptTemplate(
-            input_variables=["examples", "question", "scratchpad", "context"],
+            input_variables=["examples", "question", "scratchpad", "context"]
+            + list(additional_keys.keys()),
             template=prompt,
         ).format(
             examples=examples,
             question=question,
             scratchpad=scratchpad,
             context=context,
+            **additional_keys,
         )
     else:
         prompt = PromptTemplate(
-            input_variables=["examples", "question", "scratchpad"],
+            input_variables=["examples", "question", "scratchpad"]
+            + list(additional_keys.keys()),
             template=prompt,
         ).format(
             examples=examples,
             question=question,
             scratchpad=scratchpad,
+            **additional_keys,
         )
 
     return prompt
@@ -278,6 +293,7 @@ def _prompt_cot_reflection(
     question: str,
     scratchpad: str,
     context: Optional[str] = None,
+    additional_keys: Dict[str, str] = {},
     prompt: str = REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT,
 ) -> str:
     """Generates a reflection prompt.
@@ -290,6 +306,7 @@ def _prompt_cot_reflection(
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         context (Optional[str]): The context of the conversation or query. Defaults to None.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
             REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. Must include examples,
             question, scratchpad, and context.
@@ -305,6 +322,7 @@ def _prompt_cot_reflection(
         question=question,
         scratchpad=scratchpad,
         context=context,
+        additional_keys=additional_keys,
         prompt=prompt,
     )
     out = llm(
@@ -493,6 +511,7 @@ def _build_react_agent_prompt(
     question: str,
     scratchpad: str,
     max_steps: int,
+    additional_keys: Dict[str, str] = {},
     prompt: str = REFLEXION_REACT_INSTRUCTION,
 ) -> str:
     """Constructs a ReflexionReAct prompt template for the agent.
@@ -506,6 +525,7 @@ def _build_react_agent_prompt(
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         max_steps (int): Maximum number of steps.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION.
             Must include examples, reflections, question, scratchpad, and max_steps.
 
@@ -513,7 +533,8 @@ def _build_react_agent_prompt(
         str: A formatted prompt template ready for use.
     """
     prompt = PromptTemplate(
-        input_variables=["examples", "reflections", "question", "scratchpad"],
+        input_variables=["examples", "reflections", "question", "scratchpad"]
+        + list(additional_keys.keys()),
         template=prompt,
     ).format(
         examples=examples,
@@ -521,6 +542,7 @@ def _build_react_agent_prompt(
         question=question,
         scratchpad=scratchpad,
         max_steps=max_steps,
+        **additional_keys,
     )
 
     return prompt
@@ -533,6 +555,7 @@ def _prompt_react_agent(
     question: str,
     scratchpad: str,
     max_steps: int,
+    additional_keys: Dict[str, str] = {},
     prompt: str = REFLEXION_REACT_INSTRUCTION,
 ) -> str:
     """Generates a ReAct prompt for thought and action.
@@ -546,6 +569,7 @@ def _prompt_react_agent(
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         max_steps (int): Maximum number of steps.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION.
             Must include examples, reflections, question, scratchpad, and max_steps.
 
@@ -558,6 +582,7 @@ def _prompt_react_agent(
         question=question,
         scratchpad=scratchpad,
         max_steps=max_steps,
+        additional_keys=additional_keys,
         prompt=prompt,
     )
     out = llm(
@@ -628,6 +653,7 @@ def _build_react_reflection_prompt(
     examples: str,
     question: str,
     scratchpad: str,
+    additional_keys: Dict[str, str] = {},
     prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION,
 ) -> str:
     """Constructs a ReflexionReAct prompt template for reflection.
@@ -639,6 +665,7 @@ def _build_react_reflection_prompt(
         examples (str): Example inputs for the prompt template.
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
         prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION.
             Must include examples, question, and scratchpad.
 
@@ -652,6 +679,7 @@ def _build_react_reflection_prompt(
         examples=examples,
         question=question,
         scratchpad=scratchpad,
+        **additional_keys,
     )
 
     return prompt
@@ -662,6 +690,7 @@ def _prompt_react_reflection(
     examples: str,
     question: str,
     scratchpad: str,
+    additional_keys: Dict[str, str] = {},
     prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION,
 ) -> str:
     """Generates a reflection prompt.
@@ -673,6 +702,7 @@ def _prompt_react_reflection(
         examples (str): Example inputs for the prompt template.
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
         prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION.
             Must include examples, question, and scratchpad.
 
@@ -680,7 +710,11 @@ def _prompt_react_reflection(
         str: The generated reflection prompt.
     """
     prompt = _build_react_reflection_prompt(
-        examples=examples, question=question, scratchpad=scratchpad, prompt=prompt
+        examples=examples,
+        question=question,
+        scratchpad=scratchpad,
+        additional_keys=additional_keys,
+        prompt=prompt,
     )
     out = llm(
         [
