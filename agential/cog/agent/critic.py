@@ -20,6 +20,8 @@ from agential.cog.prompts.critic import (
     CRITIC_INSTRUCTION_HOTPOTQA,
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
     HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
+    CRITIC_POT_INSTRUCTION_TEST_HUMANEVAL,
+    HUMANEVAL_FEWSHOT_EXAMPLES_POT_TEST
 )
 
 
@@ -64,6 +66,9 @@ class CriticAgent(BaseAgent):
         use_search_tool: bool = True,
         use_interpreter_tool: bool = True,
         evidence_length: int = 400,
+        tests: str = "",
+        test_prompt: str = CRITIC_POT_INSTRUCTION_TEST_HUMANEVAL,
+        test_examples: str = HUMANEVAL_FEWSHOT_EXAMPLES_POT_TEST,
     ) -> List[Dict[str, str]]:
         """Generates an answer that is refined with search results.
 
@@ -78,8 +83,11 @@ class CriticAgent(BaseAgent):
             max_interactions (int): The maximum number of critique cycles. Defaults to 7.
             use_search_tool (bool): Only for "qa" mode. Flag to decide whether to use the search tool for evidence gathering. Defaults to True.
             use_interpreter_tool (bool): Only for "math" or "code" mode. Flag to decide whether to use the interpreter tool for code execution. Defaults to True.
-            evidence_length (int): The maximum length of the evidence snippet to be included in the context. Defaults to 400.
-
+            evidence_length (int): The maximum length of the evidence snippet to be included in the context. Used only in "qa" mode. Defaults to 400.
+            tests (str): The unit tests. Used in "code" mode. Defaults to "".
+            test_prompt (str): The instruction template for generating unit tests. Used only in "code" mode. Defaults to CRITIC_POT_INSTRUCTION_TEST_HUMANEVAL.
+            test_examples (str): Few-shot examples to guide model in generating unit tests. Used only in "code" mode. Defaults to HUMANEVAL_FEWSHOT_EXAMPLES_POT_TEST.
+            
         Returns:
             List[Dict[str, str]]: A list of dictionaries.
                 "qa" mode:
@@ -201,7 +209,39 @@ class CriticAgent(BaseAgent):
 
             return out
         elif self.mode == "code":
-            pass
+            out = []
+            code = _prompt_agent(
+                llm=self.llm, question=question, examples=examples, additional_keys=additional_keys, prompt=prompt
+            )
+            
+            for idx in range(max_interactions):
+                # Generate unit tests like in Reflexion and execute unit tests.
+                if use_interpreter_tool:
+                    if not tests:
+                        tests = _prompt_agent(
+                            llm=self.llm,
+                            question=question,
+                            examples=test_examples,
+                            prompt=test_prompt
+                        )
+                    code_answer, execution_status = safe_execute(
+                        code + "\n\n" + tests
+                    )  # Can be None, "Exception".
+                    critique_additional_keys = {
+                        "execution_status": execution_status,
+                        "code_answer": code_answer,
+                    }
+
+                critique = _prompt_critique(
+                    llm=self.llm,
+                    question=code,
+                    examples=critique_examples,
+                    answer=tests,
+                    critique="",
+                    additional_keys=critique_additional_keys,
+                    prompt=critique_prompt
+                )
+
         else:
             raise ValueError(
                 "mode must be set to either 'qa', 'math', or 'code'."
