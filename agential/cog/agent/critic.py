@@ -232,6 +232,7 @@ class CriticAgent(BaseAgent):
                         "code_answer": code_answer,
                     }
 
+                # Generate code critique.
                 critique = _prompt_critique(
                     llm=self.llm,
                     question=code,
@@ -240,8 +241,35 @@ class CriticAgent(BaseAgent):
                     critique="",
                     additional_keys=critique_additional_keys,
                     prompt=critique_prompt
-                )
+                ).split("Here's")[
+                    0
+                ]  # Stop at Here's.
+                out.append({"code": code, "critique": critique})
+                if use_interpreter_tool:
+                    out[idx]["execution_status"] = execution_status
+                    out[idx]["code_answer"] = code_answer  # type: ignore
 
+                # Halting condition.
+                if "it is correct." in critique.lower():
+                    break
+
+                # Generate the new solution from the critique.
+                code = _prompt_critique(
+                    llm=self.llm,
+                    question=code,
+                    examples=critique_examples,
+                    answer=tests,
+                    critique=critique
+                    + "\n\n"
+                    + "Here's a better solution:\n```python\n",
+                    additional_keys=critique_additional_keys,  # type: ignore
+                    prompt=critique_prompt,
+                ).split("```")[
+                    0
+                ]  # Stop at ```.
+                out[idx]["improved_code"] = code
+    
+            return out
         else:
             raise ValueError(
                 "mode must be set to either 'qa', 'math', or 'code'."
