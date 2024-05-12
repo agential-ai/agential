@@ -2499,7 +2499,8 @@ answer = min_company
 # ======================================================================== HUMANEVAL ======================================================================== #
 
 
-CRITIC_POT_INSTRUCTION_HUMANEVAL = """You are an AI that only responds with python code, NOT ENGLISH. You will be given a function signature and its docstring by the user. Write your full implementation (restate the function signature, all imports, and docstring).
+CRITIC_POT_INSTRUCTION_HUMANEVAL = """You are an AI that only responds with python code, NOT ENGLISH. You will be given a function signature and its docstring by the user. 
+Write your full implementation (restate the function signature, all imports, and docstring).
 
 {examples}
 (END OF EXAMPLES)
@@ -2562,17 +2563,16 @@ def sum_even_indexed(numbers: List[int]) -> int:
     return sum(num for i, num in enumerate(numbers) if i % 2 == 0)
 
 [function signature]:
-from collections import Counter
-
 def are_anagrams(s1: str, s2: str) -> bool:
     \"\"\"Check if two strings are anagrams of each other, ignoring case.
-    >>> are_anagrams('Listen', 'Silent')
+    >>> are_anagrams('Listen', 'silent')
     True
     >>> are_anagrams('Hello', 'World')
     False
     >>> are_anagrams('Angel', 'Glean')
     True
     \"\"\"
+    from collections import Counter
     return Counter(s1.lower()) == Counter(s2.lower())
 """
 
@@ -2656,11 +2656,9 @@ assert sum_even_indexed([0, 100, 200, 300]) == 200, "Test failed: sum_even_index
 assert sum_even_indexed([7]) == 7, "Test failed: sum_even_indexed([7]) should return 7"
 
 [function signature]:
-from collections import Counter
-
 def are_anagrams(s1: str, s2: str) -> bool:
     \"\"\"Check if two strings are anagrams of each other, ignoring case.
-    >>> are_anagrams('Listen', 'Silent')
+    >>> are_anagrams('Listen', 'silent')
     True
     >>> are_anagrams('Hello', 'World')
     False
@@ -2669,7 +2667,7 @@ def are_anagrams(s1: str, s2: str) -> bool:
     \"\"\"
 
 [unit tests]:
-assert are_anagrams('Listen', 'Silent') == True, "Test failed: are_anagrams('Listen', 'Silent') should return True"
+assert are_anagrams('Listen', 'silent') == True, "Test failed: are_anagrams('Listen', 'silent') should return True"
 assert are_anagrams('Hello', 'World') == False, "Test failed: are_anagrams('Hello', 'World') should return False"
 assert are_anagrams('Angel', 'Glean') == True, "Test failed: are_anagrams('Angel', 'Glean') should return True"
 """
@@ -2913,9 +2911,59 @@ def sum_even_indexed(numbers: List[int]) -> int:
     return sum(num for i, num in enumerate(numbers) if i % 2 == 0)
 ```
 
+---
+
+```python
+def are_anagrams(s1: str, s2: str) -> bool:
+    \"\"\"Check if two strings are anagrams of each other, ignoring case.
+    >>> are_anagrams('Listen', 'silent')
+    True
+    >>> are_anagrams('Hello', 'World')
+    False
+    >>> are_anagrams('Angel', 'Glean')
+    True
+    \"\"\"
+    from collections import Counter
+    return Counter(s1) == Counter(s2)
+
+assert are_anagrams('Listen', 'silent') == True, "Test failed: are_anagrams('Listen', 'silent') should return True"
+assert are_anagrams('Hello', 'World') == False, "Test failed: are_anagrams('Hello', 'World') should return False"
+assert are_anagrams('Angel', 'Glean') == True, "Test failed: are_anagrams('Angel', 'Glean') should return True"
+```
+
+Execution: AssertionError("Test failed: are_anagrams('Listen', 'silent') should return True")
+Output: answer = None
+
+What's the problem with the above code?
+
+1. The function fails to account for case sensitivity because it does not convert the strings to a uniform case before using the `Counter` to compare them, leading to incorrect results when strings differ only in case.
+
+2. Let's check the code:
+
+> s1 = 'Listen'; s2 = 'silent'
+> This defines two strings where the correct function should return True given they are case-insensitive anagrams.
+
+> from collections import Counter
+> This import brings in the `Counter` class which is used to count the frequency of each character in the strings.
+
+> return Counter(s1) == Counter(s2)
+> The function returns `False` for `Counter('Listen') == Counter('silent')` because the `Counter` is case-sensitive, and thus counts 'L' and 'l' as different characters, resulting in unequal counters.
+
+Overall, the primary issue is that the function does not perform a case conversion before counting the characters, which is essential for a correct case-insensitive anagram comparison. This oversight leads to the function incorrectly determining that strings like 'Listen' and 'silent' are not anagrams due to case differences. The correct approach should involve converting both input strings to the same case (either all uppercase or all lowercase) before applying the `Counter`.
+
+Here's a better solution:
+```python
+def are_anagrams(s1: str, s2: str) -> bool:
+    \"\"\"Check if two strings are anagrams of each other, ignoring case.
+    >>> are_anagrams('Listen', 'silent')
+    True
+    >>> are_anagrams('Hello', 'World')
+    False
+    >>> are_anagrams('Angel', 'Glean')
+    True
+    \"\"\"
+    from collections import Counter
+    return Counter(s1.lower()) == Counter(s2.lower())
+```
+
 ---"""
-
-
-
-"""
-"""
