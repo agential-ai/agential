@@ -109,3 +109,8 @@ def test_generate() -> None:
     )
     assert isinstance(out, list)
     assert len(out) == 2
+
+    # Test "code" mode without interpreter tool.
+    
+
+    # Test "code" mode with interpreter tool.
