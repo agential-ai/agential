@@ -54,7 +54,7 @@ def safe_execute(
             else:
                 an = [locals_.get(k, None) for k in keys]
             return an, "Done"
-        except BaseException as e:  # jump wrong case
+        except BaseException as e:
             return None, repr(e)
 
     try:
