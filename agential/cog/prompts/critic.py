@@ -2967,3 +2967,281 @@ def are_anagrams(s1: str, s2: str) -> bool:
 ```
 
 ---"""
+
+
+CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_HUMANEVAL = """{examples}
+(END OF EXAMPLES)
+
+```python
+{question}
+
+{answer}
+```
+
+What's the problem with the above code? If nothing is wrong, output 'It is correct.'
+
+{critique}"""
+
+
+HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL = """```python
+def has_duplicate_names(names_list: List[str]) -> bool:
+    \"\"\"Check if there is any name that appears more than once in the list.
+    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice'])
+    True
+    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) 
+    False
+    \"\"\"
+    return len(names_list) != len(set(names_list)) - 1
+
+assert has_duplicate_names(['Alice', 'Bob', 'Alice']) == True, "Test failed: has_duplicate_names(['Alice', 'Bob', 'Alice']) should return True"
+assert has_duplicate_names(['John', 'Jane', 'Joe', 'Jill', 'John']) == True, "Test failed: has_duplicate_names(['John', 'Jane', 'Joe', 'Jill', 'John']) should return True"
+assert has_duplicate_names(['Anna', 'Anna', 'Anna']) == True, "Test failed: has_duplicate_names(['Anna', 'Anna', 'Anna']) should return True"
+assert has_duplicate_names(['Mike', 'Mike', 'Mike', 'Mike']) == True, "Test failed: has_duplicate_names(['Mike', 'Mike', 'Mike', 'Mike']) should return True"
+assert has_duplicate_names(['Sarah', 'Derek', 'Ian', 'Sara']) == False, "Test failed: has_duplicate_names(['Sarah', 'Derek', 'Ian', 'Sara']) should return False"
+```
+
+What's the problem with the above code?
+
+1. The function incorrectly returns True for a list without any duplicates. This indicates a logical error in the implementation, specifically due to an incorrect comparison operation.
+
+2. Let's check the code:
+
+> names_list = ['Sarah', 'Derek', 'Ian', 'Sara']
+> This defines a list of names without any deliberate duplication. However, the function still returns True.
+
+> return len(names_list) != len(set(names_list)) - 1
+> This line is designed to check for duplicates by comparing the length of the list with the length of the set created from the list, which inherently removes any duplicate entries. The subtraction of one from the set’s length is intended to allow exactly one duplicated name in the list for the condition to hold true. However, this approach is logically flawed. The subtraction results in a condition that falsely identifies duplicates if there's even one unique item that makes the set’s size smaller than the list’s size. This error leads to a false positive for duplicates whenever the list has any unique items.
+
+Overall, the function does not perform as expected due to a critical error in this line. The incorrect manipulation of the set's length by subtracting one introduces a logical fallacy, causing the function to misidentify non-duplicate scenarios as having duplicates. This is a conceptual error in understanding how to handle the detection of a single allowed duplicate in the context of set and list length comparison.
+
+Here's a better solution:
+```python
+def has_duplicate_names(names_list: List[str]) -> bool:
+    \"\"\"Check if there is any name that appears more than once in the list.
+    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice'])
+    True
+    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) 
+    False
+    \"\"\"
+    return len(names_list) != len(set(names_list))
+```
+
+---
+
+```python
+def average_positive(numbers: List[int]) -> float:
+    \"\"\"Calculate the average of positive numbers in the list.
+    >>> average_positive([1, -1, 2, -2, 3])
+    2.0
+    >>> average_positive([-5, 0, 5, 15])
+    10.0
+    >>> average_positive([100, 200, -100, 0])
+    150.0
+    >>> average_positive([-1, -2, -3])
+    0
+    \"\"\"
+    total = sum(numbers)
+    count = sum(1 for x in numbers if x > 0)
+    return total / count if count else 0
+
+assert average_positive([1, -1, 2, -2, 3]) == 2.0, "Test failed: average_positive([1, -1, 2, -2, 3]) should return 2.0"
+assert average_positive([-5, 0, 5, 15]) == 10.0, "Test failed: average_positive([-5, 0, 5, 15]) should return 10.0"
+assert average_positive([100, 200, -100, 0]) == 150.0, "Test failed: average_positive([100, 200, -100, 0]) should return 150.0"
+assert average_positive([-1, -2, -3]) == 0, "Test failed: average_positive([-1, -2, -3]) should return 0"
+```
+
+What's the problem with the above code?
+
+1. The function incorrectly returns an average of all numbers, not just the positives. This leads to incorrect calculations when negative numbers are present in the list.
+
+2. Let's check the code:
+
+> numbers = [1, -1, 2, -2, 3]
+> This list includes both positive and negative numbers, but the function's calculation should focus only on the positives.
+
+> total = sum(numbers)
+> This line incorrectly calculates the total sum of all numbers in the list, not just the positive ones. This is the root of the error as it fails to exclude negative numbers and zeros, which should not contribute to the average of positive numbers. 
+
+> count = sum(1 for x in numbers if x > 0)
+> While this line correctly counts the number of positive numbers, the previous calculation of the total sum includes all numbers, thus distorting the average calculation.
+
+Overall, the function does not perform as expected due to a critical oversight in the initial summing process. The inclusion of all numbers in the total, regardless of their sign, leads to an incorrect average calculation for positive numbers only. This error could be easily overlooked as it merges the concepts of filtering and summing but applies them incorrectly by not aligning the filtering of positives in both the sum and count operations.
+
+Here's a better solution:
+```python
+def average_positive(numbers: List[int]) -> float:
+    \"\"\"Calculate the average of positive numbers in the list.
+    >>> average_positive([1, -1, 2, -2, 3])
+    2.0
+    >>> average_positive([-5, 0, 5, 15])
+    10.0
+    >>> average_positive([100, 200, -100, 0])
+    150.0
+    >>> average_positive([-1, -2, -3])
+    0
+    \"\"\"
+    positive_numbers = [num for num in numbers if num > 0]
+    return sum(positive_numbers) / len(positive_numbers) if positive_numbers else 0
+```
+
+---
+
+```python
+def exceeds_threshold(measurements: List[float], threshold: float) -> int:
+    \"\"\"Return the count of instances where the difference between any two successive measurements exceeds the given threshold.
+    >>> exceeds_threshold([100, 102, 107, 103], 5) 
+    1
+    >>> exceeds_threshold([100, 101, 102, 103], 2) 
+    0
+    \"\"\"
+    count = 0
+    for i in range(1, len(measurements)):
+        if abs(measurements[i] - measurements[i - 1]) > (threshold + 1):
+            count += 1
+    return count
+
+assert exceeds_threshold([100, 102, 107, 103], 5) == 1, "Test failed: exceeds_threshold([100, 102, 107, 103], 5) should return 1"
+assert exceeds_threshold([100, 101, 102, 103], 2) == 0, "Test failed: exceeds_threshold([100, 101, 102, 103], 2) should return 0"
+```
+
+What's the problem with the above code?
+
+1. The function incorrectly fails to count differences that exactly meet the threshold because it mistakenly uses a threshold incremented by 1. This causes it to underreport the number of threshold exceedances.
+
+2. Let's check the code:
+
+> measurements = [100, 102, 107, 103]
+> This set of data points includes instances where the difference between successive measurements is equal to or greater than the threshold set.
+
+> count = 0
+> Initializes a counter to zero. This line is correct as it sets up the counting variable which will be used to tally the number of exceedances.
+
+> for i in range(1, len(measurements)):
+> Begins a loop starting from the second element (index 1) of the measurements list. This is correct, as it prepares to compare each element with its predecessor to check the difference against the threshold.
+
+> if abs(measurements[i] - measurements[i - 1]) > (threshold + 1):
+> This line is the crux of the problem. It increases the threshold by 1, thereby raising the condition required to count an exceedance. The addition of 1 to the threshold misrepresents the intended logic of the function by requiring differences to exceed the original threshold by more than intended. This modification in the threshold results in undercounting actual exceedances, as it does not count differences that are exactly equal to the original threshold, or only slightly above it by less than 1.
+
+Overall, the function fails to perform as expected because it incorrectly manipulates the threshold condition. The increase in the threshold by 1 leads to the function not recognizing valid exceedances that meet the original criteria set by the threshold. The logical error is a straightforward misunderstanding of how to apply the threshold in comparing measurement differences.
+
+Here's a better solution:
+```python
+def exceeds_threshold(measurements: List[float], threshold: float) -> int:
+    \"\"\"Return the count of instances where the difference between any two successive measurements exceeds the given threshold.
+    >>> exceeds_threshold([100, 102, 107, 103], 5) 
+    1
+    >>> exceeds_threshold([100, 101, 102, 103], 2) 
+    0
+    \"\"\"
+    count = 0
+    for i in range(1, len(measurements)):
+        if abs(measurements[i] - measurements[i - 1]) > threshold:
+            count += 1
+    return count
+```
+
+---
+
+```python
+def sum_even_indexed(numbers: List[int]) -> int:
+    \"\"\"Sum numbers that are located at even indices in the list.
+    >>> sum_even_indexed([10, 3, 5, 2, 8])
+    23
+    >>> sum_even_indexed([1, 2, 3, 4, 5, 6])
+    9
+    >>> sum_even_indexed([0, 100, 200, 300])
+    200
+    >>> sum_even_indexed([7])
+    7
+    \"\"\"
+    return sum(num for i, num in enumerate(numbers) if (i + 1) % 2 == 0)
+
+assert sum_even_indexed([10, 3, 5, 2, 8]) == 23, "Test failed: sum_even_indexed([10, 3, 5, 2, 8]) should return 23"
+assert sum_even_indexed([1, 2, 3, 4, 5, 6]) == 9, "Test failed: sum_even_indexed([1, 2, 3, 4, 5, 6]) should return 9"
+assert sum_even_indexed([0, 100, 200, 300]) == 200, "Test failed: sum_even_indexed([0, 100, 200, 300]) should return 200"
+assert sum_even_indexed([7]) == 7, "Test failed: sum_even_indexed([7]) should return 7"
+```
+
+What's the problem with the above code?
+
+1. The function incorrectly sums up numbers at odd indices instead of even indices due to an off-by-one error. This error results from misinterpreting index positions because of adding 1 to the index before modulo operation.
+
+2. Let's check the code:
+
+> numbers = [10, 3, 5, 2, 8]
+> This defines a list of numbers where the correct function should sum the numbers at even indices (1, 3, 5) according to 0-based indexing.
+
+> return sum(num for i, num in enumerate(numbers) if (i + 1) % 2 == 0)
+> This line contains the core functionality but introduces a logical error. The condition `(i + 1) % 2 == 0` is intended to sum numbers at even indices based on a zero-based index system. However, by adding 1 to the index, the function checks if the position is odd (1-based index), not even. This results in the function summing numbers at what are technically odd indices in a zero-based index system, like 1, 3, 5, etc., instead of 0, 2, 4.
+
+Overall, the function does not perform as expected because of a subtle logical error in handling index values. It miscounts the indices, summing the wrong set of numbers.
+
+Here's a better solution:
+```python
+def sum_even_indexed(numbers: List[int]) -> int:
+    \"\"\"Sum numbers that are located at even indices in the list.
+    >>> sum_even_indexed([10, 3, 5, 2, 8])
+    23
+    >>> sum_even_indexed([1, 2, 3, 4, 5, 6])
+    9
+    >>> sum_even_indexed([0, 100, 200, 300])
+    200
+    >>> sum_even_indexed([7])
+    7
+    \"\"\"
+    return sum(num for i, num in enumerate(numbers) if i % 2 == 0)
+```
+
+---
+
+```python
+def are_anagrams(s1: str, s2: str) -> bool:
+    \"\"\"Check if two strings are anagrams of each other, ignoring case.
+    >>> are_anagrams('Listen', 'silent')
+    True
+    >>> are_anagrams('Hello', 'World')
+    False
+    >>> are_anagrams('Angel', 'Glean')
+    True
+    \"\"\"
+    from collections import Counter
+    return Counter(s1) == Counter(s2)
+
+assert are_anagrams('Listen', 'silent') == True, "Test failed: are_anagrams('Listen', 'silent') should return True"
+assert are_anagrams('Hello', 'World') == False, "Test failed: are_anagrams('Hello', 'World') should return False"
+assert are_anagrams('Angel', 'Glean') == True, "Test failed: are_anagrams('Angel', 'Glean') should return True"
+```
+
+What's the problem with the above code?
+
+1. The function fails to account for case sensitivity because it does not convert the strings to a uniform case before using the `Counter` to compare them, leading to incorrect results when strings differ only in case.
+
+2. Let's check the code:
+
+> s1 = 'Listen'; s2 = 'silent'
+> This defines two strings where the correct function should return True given they are case-insensitive anagrams.
+
+> from collections import Counter
+> This import brings in the `Counter` class which is used to count the frequency of each character in the strings.
+
+> return Counter(s1) == Counter(s2)
+> The function returns `False` for `Counter('Listen') == Counter('silent')` because the `Counter` is case-sensitive, and thus counts 'L' and 'l' as different characters, resulting in unequal counters.
+
+Overall, the primary issue is that the function does not perform a case conversion before counting the characters, which is essential for a correct case-insensitive anagram comparison. This oversight leads to the function incorrectly determining that strings like 'Listen' and 'silent' are not anagrams due to case differences. The correct approach should involve converting both input strings to the same case (either all uppercase or all lowercase) before applying the `Counter`.
+
+Here's a better solution:
+```python
+def are_anagrams(s1: str, s2: str) -> bool:
+    \"\"\"Check if two strings are anagrams of each other, ignoring case.
+    >>> are_anagrams('Listen', 'silent')
+    True
+    >>> are_anagrams('Hello', 'World')
+    False
+    >>> are_anagrams('Angel', 'Glean')
+    True
+    \"\"\"
+    from collections import Counter
+    return Counter(s1.lower()) == Counter(s2.lower())
+```
+
+---"""
