@@ -1,6 +1,8 @@
 """Functional module for CRITIC."""
 
-from typing import Dict, List, Optional, Tuple
+import builtins
+import sys
+from typing import Dict, List, Optional, Any, Tuple
 
 import func_timeout
 
@@ -32,14 +34,17 @@ def remove_comment(code: str) -> str:
 
 # Ref: https://github.com/microsoft/ProphetNet/blob/master/CRITIC/src/tools/interpreter_api.py.
 def safe_execute(
-    code_string: str, keys: Optional[List[str]] = None
+    code_string: str, 
+    keys: Optional[List[str]] = None, 
+    safe_globals: Dict[str, Any] = {'__builtins__': builtins, 'sys': sys}
 ) -> Tuple[Optional[str], str]:
     """Executes the provided Python code string in a safe manner with a timeout and returns specified variables from the execution.
 
     Args:
         code_string (str): Python code to execute.
         keys (Optional[List[str]]): A list of variable names whose values are to be returned after execution. If None, the function tries to return a variable named 'answer'.
-
+        safe_globals (Dict[str, Any]): A dictionary of safe global names. Defaults to `{'__builtins__': builtins, 'sys': sys}`.
+        
     Returns:
         tuple: A tuple containing the result(s) of the specified variable(s) and a status message. If an exception occurs or timeout happens, it returns None for the result.
     """
@@ -47,7 +52,7 @@ def safe_execute(
     def execute(x: str) -> Tuple[Optional[str], str]:
         """Executes the code string with python exec()."""
         try:
-            exec(x)
+            exec(x, safe_globals)
             locals_ = locals()
             if keys is None:
                 an = locals_.get("answer", None)
@@ -114,6 +119,9 @@ def _prompt_agent(
         additional_keys=additional_keys,
         prompt=prompt,
     )
+    print("<PROMPT AGENT=============================================================================>")
+    print(prompt)
+    print("<PROMPT AGENT=============================================================================>")
     out = llm(
         [
             HumanMessage(
@@ -121,6 +129,9 @@ def _prompt_agent(
             )
         ]
     ).content
+    print("<OUT AGENT=============================================================================>")
+    print(repr(out))
+    print("<OUT AGENT=============================================================================>")
     assert isinstance(out, str)
     return out
 
@@ -187,6 +198,9 @@ def _prompt_critique(
         additional_keys=additional_keys,
         prompt=prompt,
     )
+    print("<PROMPT CRITIC=============================================================================>")
+    print(prompt)
+    print("<PROMPT CRITIC=============================================================================>")
     out = llm(
         [
             HumanMessage(
@@ -194,5 +208,8 @@ def _prompt_critique(
             )
         ]
     ).content
+    print("<OUT CRITIC=============================================================================>")
+    print(repr(out))
+    print("<OUT CRITIC=============================================================================>")
     assert isinstance(out, str)
     return out

@@ -4,6 +4,7 @@ GitHub Repository: https://github.com/microsoft/ProphetNet/tree/master/CRITIC
 Original Paper: http://arxiv.org/abs/2305.11738
 """
 
+import re
 from typing import Dict, List, Optional
 
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
@@ -165,6 +166,12 @@ class CriticAgent(BaseAgent):
                 prompt=prompt,
             )
 
+            try:  # Attempt to extract code from ```python ```.
+                matches = re.findall(r"`python\s+(.*?)\s+`", code, re.DOTALL)
+                code = matches[0]
+            except:  # Keep code the same if cannot extract.
+                pass
+
             for idx in range(max_interactions):
                 # Get additional code execution information.
                 if use_interpreter_tool:
@@ -223,6 +230,12 @@ class CriticAgent(BaseAgent):
                 additional_keys=additional_keys,
                 prompt=prompt,
             )
+
+            try:  # Attempt to extract code from ```python ```.
+                matches = re.findall(r"`python\s+(.*?)\s+`", code, re.DOTALL)
+                code = matches[0]
+            except:  # Keep code the same if cannot extract.
+                pass
 
             for idx in range(max_interactions):
                 # Generate unit tests like in Reflexion and execute unit tests.

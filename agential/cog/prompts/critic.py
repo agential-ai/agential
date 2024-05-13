@@ -2563,6 +2563,8 @@ def sum_even_indexed(numbers: List[int]) -> int:
     return sum(num for i, num in enumerate(numbers) if i % 2 == 0)
 
 [function signature]:
+from collections import Counter
+
 def are_anagrams(s1: str, s2: str) -> bool:
     \"\"\"Check if two strings are anagrams of each other, ignoring case.
     >>> are_anagrams('Listen', 'silent')
@@ -2572,9 +2574,113 @@ def are_anagrams(s1: str, s2: str) -> bool:
     >>> are_anagrams('Angel', 'Glean')
     True
     \"\"\"
-    from collections import Counter
-    return Counter(s1.lower()) == Counter(s2.lower())
-"""
+    return Counter(s1.lower()) == Counter(s2.lower())"""
+
+
+CRITIC_POT_INSTRUCTION_WITH_TESTS_HUMANEVAL = """You are an AI that only responds with python code, NOT ENGLISH. You will be given a function signature and its docstring by the user. 
+Write your full implementation (restate the function signature, all imports, and docstring).
+
+{examples}
+(END OF EXAMPLES)
+
+[unit tests]:
+{tests}
+
+[function signature]:
+{question}"""
+
+
+HUMANEVAL_FEWSHOT_EXAMPLES_POT_WITH_TESTS = """[unit tests]:
+assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) == True, "Test failed: has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) should return True"
+assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) == False, "Test failed: has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) should return False"
+
+[function signature]:
+def has_duplicate_names(names_list: List[str]) -> bool:
+    \"\"\"Check if there is any name that appears more than once in the list.
+    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice'])
+    True
+    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) 
+    False
+    \"\"\"
+    return len(names_list) != len(set(names_list))
+
+[unit tests]:
+assert average_positive([1, -1, 2, -2, 3]) == 2.0, "Test failed: average_positive([1, -1, 2, -2, 3]) should return 2.0"
+assert average_positive([-5, 0, 5, 15]) == 10.0, "Test failed: average_positive([-5, 0, 5, 15]) should return 10.0"
+assert average_positive([100, 200, -100, 0]) == 150.0, "Test failed: average_positive([100, 200, -100, 0]) should return 150.0"
+assert average_positive([-1, -2, -3]) == 0, "Test failed: average_positive([-1, -2, -3]) should return 0"
+
+[function signature]:
+def average_positive(numbers: List[int]) -> float:
+    \"\"\"Calculate the average of positive numbers in the list.
+    >>> average_positive([1, -1, 2, -2, 3])
+    2.0
+    >>> average_positive([-5, 0, 5, 15])
+    10.0
+    >>> average_positive([100, 200, -100, 0])
+    150.0
+    >>> average_positive([-1, -2, -3])
+    0
+    \"\"\"
+    positive_numbers = [num for num in numbers if num > 0]
+    return sum(positive_numbers) / len(positive_numbers) if positive_numbers else 0
+
+[unit tests]:
+assert exceeds_threshold([100, 102, 107, 103], 5) == 1, "Test failed: exceeds_threshold([100, 102, 107, 103], 5) should return 1"
+assert exceeds_threshold([100, 101, 102, 103], 2) == 0, "Test failed: exceeds_threshold([100, 101, 102, 103], 2) should return 0"
+
+[function signature]:
+def exceeds_threshold(measurements: List[float], threshold: float) -> int:
+    \"\"\"Return the count of instances where the difference between any two successive measurements exceeds the given threshold.
+    >>> exceeds_threshold([100, 102, 107, 103], 5) 
+    1
+    >>> exceeds_threshold([100, 101, 102, 103], 2) 
+    0
+    \"\"\"
+    count = 0
+    for i in range(1, len(measurements)):
+        if abs(measurements[i] - measurements[i - 1]) > threshold:
+            count += 1
+    return count
+
+[unit tests]:
+assert sum_even_indexed([10, 3, 5, 2, 8]) == 23, "Test failed: sum_even_indexed([10, 3, 5, 2, 8]) should return 23"
+assert sum_even_indexed([1, 2, 3, 4, 5, 6]) == 9, "Test failed: sum_even_indexed([1, 2, 3, 4, 5, 6]) should return 9"
+assert sum_even_indexed([0, 100, 200, 300]) == 200, "Test failed: sum_even_indexed([0, 100, 200, 300]) should return 200"
+assert sum_even_indexed([7]) == 7, "Test failed: sum_even_indexed([7]) should return 7"
+
+[function signature]:
+def sum_even_indexed(numbers: List[int]) -> int:
+    \"\"\"Sum numbers that are located at even indices in the list.
+    >>> sum_even_indexed([10, 3, 5, 2, 8])
+    23
+    >>> sum_even_indexed([1, 2, 3, 4, 5, 6])
+    9
+    >>> sum_even_indexed([0, 100, 200, 300])
+    200
+    >>> sum_even_indexed([7])
+    7
+    \"\"\"
+    return sum(num for i, num in enumerate(numbers) if i % 2 == 0)
+
+[unit tests]:
+assert are_anagrams('Listen', 'silent') == True, "Test failed: are_anagrams('Listen', 'silent') should return True"
+assert are_anagrams('Hello', 'World') == False, "Test failed: are_anagrams('Hello', 'World') should return False"
+assert are_anagrams('Angel', 'Glean') == True, "Test failed: are_anagrams('Angel', 'Glean') should return True"
+
+[function signature]:
+from collections import Counter
+
+def are_anagrams(s1: str, s2: str) -> bool:
+    \"\"\"Check if two strings are anagrams of each other, ignoring case.
+    >>> are_anagrams('Listen', 'silent')
+    True
+    >>> are_anagrams('Hello', 'World')
+    False
+    >>> are_anagrams('Angel', 'Glean')
+    True
+    \"\"\"
+    return Counter(s1.lower()) == Counter(s2.lower())"""
 
 
 CRITIC_POT_INSTRUCTION_TEST_HUMANEVAL = """You are an AI coding assistant that can write unique, diverse, and intuitive unit tests for functions given the signature and docstring.
@@ -2598,11 +2704,8 @@ def has_duplicate_names(names_list: List[str]) -> bool:
     \"\"\"
 
 [unit tests]:
-assert has_duplicate_names(['Alice', 'Bob', 'Alice']) == True, "Test failed: has_duplicate_names(['Alice', 'Bob', 'Alice']) should return True"
-assert has_duplicate_names(['John', 'Jane', 'Joe', 'Jill', 'John']) == True, "Test failed: has_duplicate_names(['John', 'Jane', 'Joe', 'Jill', 'John']) should return True"
-assert has_duplicate_names(['Anna', 'Anna', 'Anna']) == True, "Test failed: has_duplicate_names(['Anna', 'Anna', 'Anna']) should return True"
-assert has_duplicate_names(['Mike', 'Mike', 'Mike', 'Mike']) == True, "Test failed: has_duplicate_names(['Mike', 'Mike', 'Mike', 'Mike']) should return True"
-assert has_duplicate_names(['Sarah', 'Derek', 'Ian', 'Sara']) == False, "Test failed: has_duplicate_names(['Sarah', 'Derek', 'Ian', 'Sara']) should return False"
+assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) == True, "Test failed: has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) should return True"
+assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) == False, "Test failed: has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) should return False"
 
 [function signature]:
 def average_positive(numbers: List[int]) -> float:
@@ -2700,14 +2803,11 @@ def has_duplicate_names(names_list: List[str]) -> bool:
     \"\"\"
     return len(names_list) != len(set(names_list)) - 1
 
-assert has_duplicate_names(['Alice', 'Bob', 'Alice']) == True, "Test failed: has_duplicate_names(['Alice', 'Bob', 'Alice']) should return True"
-assert has_duplicate_names(['John', 'Jane', 'Joe', 'Jill', 'John']) == True, "Test failed: has_duplicate_names(['John', 'Jane', 'Joe', 'Jill', 'John']) should return True"
-assert has_duplicate_names(['Anna', 'Anna', 'Anna']) == True, "Test failed: has_duplicate_names(['Anna', 'Anna', 'Anna']) should return True"
-assert has_duplicate_names(['Mike', 'Mike', 'Mike', 'Mike']) == True, "Test failed: has_duplicate_names(['Mike', 'Mike', 'Mike', 'Mike']) should return True"
-assert has_duplicate_names(['Sarah', 'Derek', 'Ian', 'Sara']) == False, "Test failed: has_duplicate_names(['Sarah', 'Derek', 'Ian', 'Sara']) should return False"
+assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) == True, "Test failed: has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) should return True"
+assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) == False, "Test failed: has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) should return False"
 ```
 
-Execution: AssertionError("Test failed: has_duplicate_names(['Sarah', 'Derek', 'Ian', 'Sara']) should return False")
+Execution: AssertionError("Test failed: has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) should return False")
 Output: answer = None
 
 What's the problem with the above code?
@@ -2716,11 +2816,13 @@ What's the problem with the above code?
 
 2. Let's check the code:
 
-> names_list = ['Sarah', 'Derek', 'Ian', 'Sara']
-> This defines a list of names without any deliberate duplication. However, the function still returns True.
+> names_list = ['Alice', 'Bob', 'Charlie', 'Dave']
+
+This defines a list of names without any deliberate duplication. However, the function still returns True.
 
 > return len(names_list) != len(set(names_list)) - 1
-> This line is designed to check for duplicates by comparing the length of the list with the length of the set created from the list, which inherently removes any duplicate entries. The subtraction of one from the set’s length is intended to allow exactly one duplicated name in the list for the condition to hold true. However, this approach is logically flawed. The subtraction results in a condition that falsely identifies duplicates if there's even one unique item that makes the set’s size smaller than the list’s size. This error leads to a false positive for duplicates whenever the list has any unique items.
+
+This line is designed to check for duplicates by comparing the length of the list with the length of the set created from the list, which inherently removes any duplicate entries. The subtraction of one from the set’s length is intended to allow exactly one duplicated name in the list for the condition to hold true. However, this approach is logically flawed. The subtraction results in a condition that falsely identifies duplicates if there's even one unique item that makes the set’s size smaller than the list’s size. This error leads to a false positive for duplicates whenever the list has any unique items.
 
 Overall, the function does not perform as expected due to a critical error in this line. The incorrect manipulation of the set's length by subtracting one introduces a logical fallacy, causing the function to misidentify non-duplicate scenarios as having duplicates. This is a conceptual error in understanding how to handle the detection of a single allowed duplicate in the context of set and list length comparison.
 
@@ -2770,13 +2872,16 @@ What's the problem with the above code?
 2. Let's check the code:
 
 > numbers = [1, -1, 2, -2, 3]
-> This list includes both positive and negative numbers, but the function's calculation should focus only on the positives.
+
+This list includes both positive and negative numbers, but the function's calculation should focus only on the positives.
 
 > total = sum(numbers)
-> This line incorrectly calculates the total sum of all numbers in the list, not just the positive ones. This is the root of the error as it fails to exclude negative numbers and zeros, which should not contribute to the average of positive numbers. 
+
+This line incorrectly calculates the total sum of all numbers in the list, not just the positive ones. This is the root of the error as it fails to exclude negative numbers and zeros, which should not contribute to the average of positive numbers. 
 
 > count = sum(1 for x in numbers if x > 0)
-> While this line correctly counts the number of positive numbers, the previous calculation of the total sum includes all numbers, thus distorting the average calculation.
+
+While this line correctly counts the number of positive numbers, the previous calculation of the total sum includes all numbers, thus distorting the average calculation.
 
 Overall, the function does not perform as expected due to a critical oversight in the initial summing process. The inclusion of all numbers in the total, regardless of their sign, leads to an incorrect average calculation for positive numbers only. This error could be easily overlooked as it merges the concepts of filtering and summing but applies them incorrectly by not aligning the filtering of positives in both the sum and count operations.
 
@@ -2827,16 +2932,20 @@ What's the problem with the above code?
 2. Let's check the code:
 
 > measurements = [100, 102, 107, 103]
-> This set of data points includes instances where the difference between successive measurements is equal to or greater than the threshold set.
+
+This set of data points includes instances where the difference between successive measurements is equal to or greater than the threshold set.
 
 > count = 0
-> Initializes a counter to zero. This line is correct as it sets up the counting variable which will be used to tally the number of exceedances.
+
+Initializes a counter to zero. This line is correct as it sets up the counting variable which will be used to tally the number of exceedances.
 
 > for i in range(1, len(measurements)):
-> Begins a loop starting from the second element (index 1) of the measurements list. This is correct, as it prepares to compare each element with its predecessor to check the difference against the threshold.
+
+Begins a loop starting from the second element (index 1) of the measurements list. This is correct, as it prepares to compare each element with its predecessor to check the difference against the threshold.
 
 > if abs(measurements[i] - measurements[i - 1]) > (threshold + 1):
-> This line is the crux of the problem. It increases the threshold by 1, thereby raising the condition required to count an exceedance. The addition of 1 to the threshold misrepresents the intended logic of the function by requiring differences to exceed the original threshold by more than intended. This modification in the threshold results in undercounting actual exceedances, as it does not count differences that are exactly equal to the original threshold, or only slightly above it by less than 1.
+
+This line is the crux of the problem. It increases the threshold by 1, thereby raising the condition required to count an exceedance. The addition of 1 to the threshold misrepresents the intended logic of the function by requiring differences to exceed the original threshold by more than intended. This modification in the threshold results in undercounting actual exceedances, as it does not count differences that are exactly equal to the original threshold, or only slightly above it by less than 1.
 
 Overall, the function fails to perform as expected because it incorrectly manipulates the threshold condition. The increase in the threshold by 1 leads to the function not recognizing valid exceedances that meet the original criteria set by the threshold. The logical error is a straightforward misunderstanding of how to apply the threshold in comparing measurement differences.
 
@@ -2888,10 +2997,12 @@ What's the problem with the above code?
 2. Let's check the code:
 
 > numbers = [10, 3, 5, 2, 8]
-> This defines a list of numbers where the correct function should sum the numbers at even indices (1, 3, 5) according to 0-based indexing.
+
+This defines a list of numbers where the correct function should sum the numbers at even indices (1, 3, 5) according to 0-based indexing.
 
 > return sum(num for i, num in enumerate(numbers) if (i + 1) % 2 == 0)
-> This line contains the core functionality but introduces a logical error. The condition `(i + 1) % 2 == 0` is intended to sum numbers at even indices based on a zero-based index system. However, by adding 1 to the index, the function checks if the position is odd (1-based index), not even. This results in the function summing numbers at what are technically odd indices in a zero-based index system, like 1, 3, 5, etc., instead of 0, 2, 4.
+
+This line contains the core functionality but introduces a logical error. The condition `(i + 1) % 2 == 0` is intended to sum numbers at even indices based on a zero-based index system. However, by adding 1 to the index, the function checks if the position is odd (1-based index), not even. This results in the function summing numbers at what are technically odd indices in a zero-based index system, like 1, 3, 5, etc., instead of 0, 2, 4.
 
 Overall, the function does not perform as expected because of a subtle logical error in handling index values. It miscounts the indices, summing the wrong set of numbers.
 
@@ -2914,6 +3025,8 @@ def sum_even_indexed(numbers: List[int]) -> int:
 ---
 
 ```python
+from collections import Counter
+
 def are_anagrams(s1: str, s2: str) -> bool:
     \"\"\"Check if two strings are anagrams of each other, ignoring case.
     >>> are_anagrams('Listen', 'silent')
@@ -2923,7 +3036,6 @@ def are_anagrams(s1: str, s2: str) -> bool:
     >>> are_anagrams('Angel', 'Glean')
     True
     \"\"\"
-    from collections import Counter
     return Counter(s1) == Counter(s2)
 
 assert are_anagrams('Listen', 'silent') == True, "Test failed: are_anagrams('Listen', 'silent') should return True"
@@ -2941,18 +3053,19 @@ What's the problem with the above code?
 2. Let's check the code:
 
 > s1 = 'Listen'; s2 = 'silent'
-> This defines two strings where the correct function should return True given they are case-insensitive anagrams.
 
-> from collections import Counter
-> This import brings in the `Counter` class which is used to count the frequency of each character in the strings.
+This defines two strings where the correct function should return True given they are case-insensitive anagrams.
 
 > return Counter(s1) == Counter(s2)
-> The function returns `False` for `Counter('Listen') == Counter('silent')` because the `Counter` is case-sensitive, and thus counts 'L' and 'l' as different characters, resulting in unequal counters.
+
+The function returns `False` for `Counter('Listen') == Counter('silent')` because the `Counter` is case-sensitive, and thus counts 'L' and 'l' as different characters, resulting in unequal counters.
 
 Overall, the primary issue is that the function does not perform a case conversion before counting the characters, which is essential for a correct case-insensitive anagram comparison. This oversight leads to the function incorrectly determining that strings like 'Listen' and 'silent' are not anagrams due to case differences. The correct approach should involve converting both input strings to the same case (either all uppercase or all lowercase) before applying the `Counter`.
 
 Here's a better solution:
 ```python
+from collections import Counter
+
 def are_anagrams(s1: str, s2: str) -> bool:
     \"\"\"Check if two strings are anagrams of each other, ignoring case.
     >>> are_anagrams('Listen', 'silent')
@@ -2962,7 +3075,6 @@ def are_anagrams(s1: str, s2: str) -> bool:
     >>> are_anagrams('Angel', 'Glean')
     True
     \"\"\"
-    from collections import Counter
     return Counter(s1.lower()) == Counter(s2.lower())
 ```
 
@@ -2993,11 +3105,8 @@ def has_duplicate_names(names_list: List[str]) -> bool:
     \"\"\"
     return len(names_list) != len(set(names_list)) - 1
 
-assert has_duplicate_names(['Alice', 'Bob', 'Alice']) == True, "Test failed: has_duplicate_names(['Alice', 'Bob', 'Alice']) should return True"
-assert has_duplicate_names(['John', 'Jane', 'Joe', 'Jill', 'John']) == True, "Test failed: has_duplicate_names(['John', 'Jane', 'Joe', 'Jill', 'John']) should return True"
-assert has_duplicate_names(['Anna', 'Anna', 'Anna']) == True, "Test failed: has_duplicate_names(['Anna', 'Anna', 'Anna']) should return True"
-assert has_duplicate_names(['Mike', 'Mike', 'Mike', 'Mike']) == True, "Test failed: has_duplicate_names(['Mike', 'Mike', 'Mike', 'Mike']) should return True"
-assert has_duplicate_names(['Sarah', 'Derek', 'Ian', 'Sara']) == False, "Test failed: has_duplicate_names(['Sarah', 'Derek', 'Ian', 'Sara']) should return False"
+assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) == True, "Test failed: has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) should return True"
+assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) == False, "Test failed: has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) should return False"
 ```
 
 What's the problem with the above code?
@@ -3006,11 +3115,13 @@ What's the problem with the above code?
 
 2. Let's check the code:
 
-> names_list = ['Sarah', 'Derek', 'Ian', 'Sara']
-> This defines a list of names without any deliberate duplication. However, the function still returns True.
+> names_list = ['Alice', 'Bob', 'Charlie', 'Dave']
+
+This defines a list of names without any deliberate duplication. However, the function still returns True.
 
 > return len(names_list) != len(set(names_list)) - 1
-> This line is designed to check for duplicates by comparing the length of the list with the length of the set created from the list, which inherently removes any duplicate entries. The subtraction of one from the set’s length is intended to allow exactly one duplicated name in the list for the condition to hold true. However, this approach is logically flawed. The subtraction results in a condition that falsely identifies duplicates if there's even one unique item that makes the set’s size smaller than the list’s size. This error leads to a false positive for duplicates whenever the list has any unique items.
+
+This line is designed to check for duplicates by comparing the length of the list with the length of the set created from the list, which inherently removes any duplicate entries. The subtraction of one from the set’s length is intended to allow exactly one duplicated name in the list for the condition to hold true. However, this approach is logically flawed. The subtraction results in a condition that falsely identifies duplicates if there's even one unique item that makes the set’s size smaller than the list’s size. This error leads to a false positive for duplicates whenever the list has any unique items.
 
 Overall, the function does not perform as expected due to a critical error in this line. The incorrect manipulation of the set's length by subtracting one introduces a logical fallacy, causing the function to misidentify non-duplicate scenarios as having duplicates. This is a conceptual error in understanding how to handle the detection of a single allowed duplicate in the context of set and list length comparison.
 
@@ -3057,13 +3168,16 @@ What's the problem with the above code?
 2. Let's check the code:
 
 > numbers = [1, -1, 2, -2, 3]
-> This list includes both positive and negative numbers, but the function's calculation should focus only on the positives.
+
+This list includes both positive and negative numbers, but the function's calculation should focus only on the positives.
 
 > total = sum(numbers)
-> This line incorrectly calculates the total sum of all numbers in the list, not just the positive ones. This is the root of the error as it fails to exclude negative numbers and zeros, which should not contribute to the average of positive numbers. 
+
+This line incorrectly calculates the total sum of all numbers in the list, not just the positive ones. This is the root of the error as it fails to exclude negative numbers and zeros, which should not contribute to the average of positive numbers. 
 
 > count = sum(1 for x in numbers if x > 0)
-> While this line correctly counts the number of positive numbers, the previous calculation of the total sum includes all numbers, thus distorting the average calculation.
+
+While this line correctly counts the number of positive numbers, the previous calculation of the total sum includes all numbers, thus distorting the average calculation.
 
 Overall, the function does not perform as expected due to a critical oversight in the initial summing process. The inclusion of all numbers in the total, regardless of their sign, leads to an incorrect average calculation for positive numbers only. This error could be easily overlooked as it merges the concepts of filtering and summing but applies them incorrectly by not aligning the filtering of positives in both the sum and count operations.
 
@@ -3111,16 +3225,20 @@ What's the problem with the above code?
 2. Let's check the code:
 
 > measurements = [100, 102, 107, 103]
-> This set of data points includes instances where the difference between successive measurements is equal to or greater than the threshold set.
+
+This set of data points includes instances where the difference between successive measurements is equal to or greater than the threshold set.
 
 > count = 0
-> Initializes a counter to zero. This line is correct as it sets up the counting variable which will be used to tally the number of exceedances.
+
+Initializes a counter to zero. This line is correct as it sets up the counting variable which will be used to tally the number of exceedances.
 
 > for i in range(1, len(measurements)):
-> Begins a loop starting from the second element (index 1) of the measurements list. This is correct, as it prepares to compare each element with its predecessor to check the difference against the threshold.
+
+Begins a loop starting from the second element (index 1) of the measurements list. This is correct, as it prepares to compare each element with its predecessor to check the difference against the threshold.
 
 > if abs(measurements[i] - measurements[i - 1]) > (threshold + 1):
-> This line is the crux of the problem. It increases the threshold by 1, thereby raising the condition required to count an exceedance. The addition of 1 to the threshold misrepresents the intended logic of the function by requiring differences to exceed the original threshold by more than intended. This modification in the threshold results in undercounting actual exceedances, as it does not count differences that are exactly equal to the original threshold, or only slightly above it by less than 1.
+
+This line is the crux of the problem. It increases the threshold by 1, thereby raising the condition required to count an exceedance. The addition of 1 to the threshold misrepresents the intended logic of the function by requiring differences to exceed the original threshold by more than intended. This modification in the threshold results in undercounting actual exceedances, as it does not count differences that are exactly equal to the original threshold, or only slightly above it by less than 1.
 
 Overall, the function fails to perform as expected because it incorrectly manipulates the threshold condition. The increase in the threshold by 1 leads to the function not recognizing valid exceedances that meet the original criteria set by the threshold. The logical error is a straightforward misunderstanding of how to apply the threshold in comparing measurement differences.
 
@@ -3169,10 +3287,12 @@ What's the problem with the above code?
 2. Let's check the code:
 
 > numbers = [10, 3, 5, 2, 8]
-> This defines a list of numbers where the correct function should sum the numbers at even indices (1, 3, 5) according to 0-based indexing.
+
+This defines a list of numbers where the correct function should sum the numbers at even indices (1, 3, 5) according to 0-based indexing.
 
 > return sum(num for i, num in enumerate(numbers) if (i + 1) % 2 == 0)
-> This line contains the core functionality but introduces a logical error. The condition `(i + 1) % 2 == 0` is intended to sum numbers at even indices based on a zero-based index system. However, by adding 1 to the index, the function checks if the position is odd (1-based index), not even. This results in the function summing numbers at what are technically odd indices in a zero-based index system, like 1, 3, 5, etc., instead of 0, 2, 4.
+
+This line contains the core functionality but introduces a logical error. The condition `(i + 1) % 2 == 0` is intended to sum numbers at even indices based on a zero-based index system. However, by adding 1 to the index, the function checks if the position is odd (1-based index), not even. This results in the function summing numbers at what are technically odd indices in a zero-based index system, like 1, 3, 5, etc., instead of 0, 2, 4.
 
 Overall, the function does not perform as expected because of a subtle logical error in handling index values. It miscounts the indices, summing the wrong set of numbers.
 
@@ -3195,6 +3315,8 @@ def sum_even_indexed(numbers: List[int]) -> int:
 ---
 
 ```python
+from collections import Counter
+
 def are_anagrams(s1: str, s2: str) -> bool:
     \"\"\"Check if two strings are anagrams of each other, ignoring case.
     >>> are_anagrams('Listen', 'silent')
@@ -3204,7 +3326,6 @@ def are_anagrams(s1: str, s2: str) -> bool:
     >>> are_anagrams('Angel', 'Glean')
     True
     \"\"\"
-    from collections import Counter
     return Counter(s1) == Counter(s2)
 
 assert are_anagrams('Listen', 'silent') == True, "Test failed: are_anagrams('Listen', 'silent') should return True"
@@ -3219,18 +3340,19 @@ What's the problem with the above code?
 2. Let's check the code:
 
 > s1 = 'Listen'; s2 = 'silent'
-> This defines two strings where the correct function should return True given they are case-insensitive anagrams.
 
-> from collections import Counter
-> This import brings in the `Counter` class which is used to count the frequency of each character in the strings.
+This defines two strings where the correct function should return True given they are case-insensitive anagrams.
 
 > return Counter(s1) == Counter(s2)
-> The function returns `False` for `Counter('Listen') == Counter('silent')` because the `Counter` is case-sensitive, and thus counts 'L' and 'l' as different characters, resulting in unequal counters.
+
+The function returns `False` for `Counter('Listen') == Counter('silent')` because the `Counter` is case-sensitive, and thus counts 'L' and 'l' as different characters, resulting in unequal counters.
 
 Overall, the primary issue is that the function does not perform a case conversion before counting the characters, which is essential for a correct case-insensitive anagram comparison. This oversight leads to the function incorrectly determining that strings like 'Listen' and 'silent' are not anagrams due to case differences. The correct approach should involve converting both input strings to the same case (either all uppercase or all lowercase) before applying the `Counter`.
 
 Here's a better solution:
 ```python
+from collections import Counter
+
 def are_anagrams(s1: str, s2: str) -> bool:
     \"\"\"Check if two strings are anagrams of each other, ignoring case.
     >>> are_anagrams('Listen', 'silent')
@@ -3240,8 +3362,312 @@ def are_anagrams(s1: str, s2: str) -> bool:
     >>> are_anagrams('Angel', 'Glean')
     True
     \"\"\"
-    from collections import Counter
     return Counter(s1.lower()) == Counter(s2.lower())
 ```
 
 ---"""
+
+
+# ======================================================================== MBPP ======================================================================== #
+
+
+CRITIC_POT_INSTRUCTION_WITH_TESTS_MBPP = """You are an expert Python programmer that only responds with python code, NOT ENGLISH. You will be given a function signature and its docstring by the user. 
+Write your full implementation (restate the function signature, all imports, and docstring).
+
+{examples}
+(END OF EXAMPLES)
+
+Your code should pass these tests:
+{tests}
+
+{question}"""
+
+
+MBPP_FEWSHOT_EXAMPLES_POT_WITH_TESTS = """Your code should pass these tests:
+assert set(similar_elements((3, 4, 5, 6), (5, 7, 4, 10))) == set((4, 5)), "Test failed for input (3, 4, 5, 6), (5, 7, 4, 10)"
+assert set(similar_elements((1, 2, 3, 4), (5, 4, 3, 7))) == set((3, 4)), "Test failed for input (1, 2, 3, 4), (5, 4, 3, 7)"
+assert set(similar_elements((11, 12, 14, 13), (17, 15, 14, 13))) == set((13, 14)), "Test failed for input (11, 12, 14, 13), (17, 15, 14, 13)"
+
+Write a function to find the shared elements from the given two lists.
+def similar_elements(test_tup1, test_tup2):
+    res = tuple(set(test_tup1) & set(test_tup2))
+    return res
+
+Your code should pass these tests:
+assert is_not_prime(2) == False, "Test failed for input 2"
+assert is_not_prime(10) == True, "Test failed for input 10"
+assert is_not_prime(35) == True, "Test failed for input 35"
+assert is_not_prime(37) == False, "Test failed for input 37"
+
+Write a python function to identify non-prime numbers.
+import math
+
+def is_not_prime(n):
+    result = False
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            result = True
+            break
+    return result
+
+Your code should pass these tests:
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 3) == [85, 75, 65], "Test failed for top 3"
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 2) == [85, 75], "Test failed for top 2"
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 5) == [85, 75, 65, 58, 35], "Test failed for top 5"
+
+Write a function to find the n largest integers from a given list of numbers, returned in descending order.
+import heapq as hq
+
+def heap_queue_largest(nums, n):
+    largest_nums = hq.nlargest(n, nums)
+    return largest_nums
+
+Your code should pass these tests:
+assert differ_at_one_bit_pos(13, 9) == True, "Test failed for input (13, 9)"
+assert differ_at_one_bit_pos(15, 8) == False, "Test failed for input (15, 8)"
+assert differ_at_one_bit_pos(2, 4) == False, "Test failed for input (2, 4)"
+assert differ_at_one_bit_pos(2, 3) == True, "Test failed for input (2, 3)"
+assert differ_at_one_bit_pos(5, 1) == True, "Test failed for input (5, 1)"
+assert differ_at_one_bit_pos(1, 5) == True, "Test failed for input (1, 5)"
+
+Write a python function to check whether the two numbers differ at one bit position only or not.
+def is_power_of_two(x):
+    return x and (not(x & (x - 1)))
+
+def differ_at_one_bit_pos(a, b):
+    return is_power_of_two(a ^ b)
+
+Your code should pass these tests:
+assert set(find_char_long('Please move back to stream')) == set(['Please', 'move', 'back', 'stream']), "Test failed for 'Please move back to stream'"
+assert set(find_char_long('Jing Eco and Tech')) == set(['Jing', 'Tech']), "Test failed for 'Jing Eco and Tech'"
+assert set(find_char_long('Jhingai wulu road Zone 3')) == set(['Jhingai', 'wulu', 'road', 'Zone']), "Test failed for 'Jhingai wulu road Zone 3'"
+
+Write a function to find all words which are at least 4 characters long in a string.
+import re
+
+def find_char_long(text):
+    return re.findall(r"\b\w{4,}\b", text)"""
+
+
+CRITIC_CRITIQUE_INSTRUCTION_MBPP = """{examples}
+(END OF EXAMPLES)
+
+```python
+{question}
+
+{answer}
+```
+
+Execution: {execution_status} 
+Output: answer = {code_answer}
+
+What's the problem with the above code? If nothing is wrong, output 'It is correct.'
+
+{critique}"""
+
+
+MBPP_FEWSHOT_EXAMPLES_CRITIC = """```python
+def similar_elements(test_tup1, test_tup2):
+    return tuple(set(test_tup1) | set(test_tup2))
+
+assert set(similar_elements((3, 4, 5, 6), (5, 7, 4, 10))) == set((4, 5)), "Test failed for input (3, 4, 5, 6), (5, 7, 4, 10)"
+assert set(similar_elements((1, 2, 3, 4), (5, 4, 3, 7))) == set((3, 4)), "Test failed for input (1, 2, 3, 4), (5, 4, 3, 7)"
+assert set(similar_elements((11, 12, 14, 13), (17, 15, 14, 13))) == set((13, 14)), "Test failed for input (11, 12, 14, 13), (17, 15, 14, 13)"
+```
+
+Execution: AssertionError('Test failed for input (3, 4, 5, 6), (5, 7, 4, 10)')
+Output: answer = None
+
+What's the problem with the above code?
+
+1. The function incorrectly returns a set of all unique elements from both lists rather than the intersection. This indicates a logical error in the implementation due to incorrect set operation.
+
+2. Let's check the code:
+
+> test_tup1 = (3, 4, 5, 6)
+> test_tup2 = (5, 7, 4, 10)
+
+This should define two lists of numbers where only 4 and 5 are common in both.
+
+> return tuple(set(test_tup1) | set(test_tup2))
+
+This line erroneously uses the set union operator (`|`) which combines all elements from both sets, instead of the set intersection operator (`&`) which would correctly identify elements present in both sets. This error results in incorrect function output when no duplicates should be reported.
+
+Overall, the function fails to perform as expected due to a critical error in using the wrong set operation. The incorrect manipulation of set operators introduces a fundamental flaw, mistaking union for intersection, thus misidentifying the intended behavior of finding common elements.
+
+Here's a better solution:
+```python
+def similar_elements(test_tup1, test_tup2):
+    return tuple(set(test_tup1) & set(test_tup2))
+```
+
+---
+
+```python
+import math
+
+def is_not_prime(n):
+    if n == 2:
+        return True
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            return True
+    return False
+
+assert is_not_prime(2) == False, "Test failed for input 2"
+assert is_not_prime(10) == True, "Test passed for input 10"
+assert is_not_prime(35) == True, "Test passed for input 35"
+assert is_not_prime(37) == False, "Test passed for input 37"
+```
+
+Execution: AssertionError('Test failed for input 2')
+Output: answer = None
+
+What's the problem with the above code?
+
+> n = 2
+
+This should identify the number 2, which is a prime number and should return False.
+
+> if n == 2:
+> return True
+
+This line erroneously returns True for the input 2, indicating it as not prime, which is incorrect. The condition should be modified to correctly handle prime identification.
+
+Here's a better solution:
+```python
+def is_not_prime(n):
+    result = False
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            result = True
+            break
+    return result
+```
+
+---
+
+```python
+def heap_queue_largest(nums, n):
+    return sorted(nums)[-n:]
+
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 3) == [85, 75, 65], "Test failed for top 3"
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 2) == [85, 75], "Test failed for top 2"
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 5) == [85, 75, 65, 58, 35], "Test failed for top 5"
+```
+
+Execution: AssertionError('Test failed for top 3')
+Output: answer = None
+
+What's the problem with the above code?
+
+1. The function incorrectly returns the sorted list of all elements, taking the last n elements. This indicates a logical error in the implementation due to incorrect sorting and slicing.
+
+2. Let's check the code:
+
+> nums = [25, 35, 22, 85, 14, 65, 75, 22, 58]
+> n = 3
+
+This should identify the three largest numbers in the list, which are 85, 75, and 65, in descending order.
+
+> return sorted(nums)[-n:]
+
+This line erroneously sorts the entire list and takes the last n elements, which may not be the n largest elements in descending order. This error results in incorrect function output when the largest elements should be reported.
+
+Overall, the function fails to perform as expected due to a critical error in using the wrong sorting and slicing approach. The incorrect manipulation of list sorting and slicing introduces a fundamental flaw, misidentifying the intended behavior of finding the n largest elements.
+
+Here's a better solution:
+```python
+import heapq as hq
+
+def heap_queue_largest(nums, n):
+    largest_nums = hq.nlargest(n, nums)
+    return largest_nums
+```
+
+---
+
+```python
+def differ_at_one_bit_pos(a, b):
+    return a ^ b == 1
+
+assert differ_at_one_bit_pos(13, 9) == True, "Test failed for input (13, 9)"
+assert differ_at_one_bit_pos(15, 8) == False, "Test failed for input (15, 8)"
+assert differ_at_one_bit_pos(2, 4) == False, "Test failed for input (2, 4)"
+assert differ_at_one_bit_pos(2, 3) == True, "Test failed for input (2, 3)"
+assert differ_at_one_bit_pos(5, 1) == True, "Test failed for input (5, 1)"
+assert differ_at_one_bit_pos(1, 5) == True, "Test failed for input (1, 5)"
+```
+
+Execution: AssertionError('Test failed for input (13, 9)')
+Output: answer = None
+
+What's the problem with the above code?
+
+1. The function incorrectly returns True for inputs that do not differ at exactly one bit position. This indicates a logical error in the implementation due to incorrect comparison of the XOR result.
+
+2. Let's check the code:
+
+> a = 13
+> b = 9
+
+This should identify that 13 (1101 in binary) and 9 (1001 in binary) differ at more than one bit position and should return False.
+
+> return a ^ b == 1
+
+This line erroneously checks if the XOR result is exactly 1, which does not account for multiple differing bits. This error results in incorrect function output when more than one bit differs.
+
+Overall, the function fails to perform as expected due to a critical error in comparing the XOR result. The incorrect manipulation of the XOR operation introduces a fundamental flaw, misidentifying the intended behavior of checking for exactly one differing bit.
+
+Here's a better solution:
+```python
+def is_power_of_two(x):
+    return x and (not(x & (x - 1)))
+
+def differ_at_one_bit_pos(a, b):
+    return is_power_of_two(a ^ b)
+```
+
+---
+
+```python
+def find_char_long(text):
+    return text.split()
+
+assert set(find_char_long('Please move back to stream')) == set(['Please', 'move', 'back', 'stream']), "Test failed for 'Please move back to stream'"
+assert set(find_char_long('Jing Eco and Tech')) == set(['Jing', 'Tech']), "Test failed for 'Jing Eco and Tech'"
+assert set(find_char_long('Jhingai wulu road Zone 3')) == set(['Jhingai', 'wulu', 'road', 'Zone']), "Test failed for 'Jhingai wulu road Zone 3'"
+```
+
+Execution: AssertionError('Test failed for input 'Please move back to stream'')
+Output: answer = None
+
+What's the problem with the above code?
+
+1. The function incorrectly returns all words in the string, rather than only those that are at least 4 characters long. This indicates a logical error in the implementation due to incorrect filtering of words.
+
+2. Let's check the code:
+
+> text = 'Please move back to stream'
+
+This should identify all words which are at least 4 characters long, which are 'Please', 'move', 'back', and 'stream'.
+
+> return text.split()
+
+This line erroneously splits the string into all words, without filtering out words shorter than 4 characters. This error results in incorrect function output when only words with at least 4 characters should be reported.
+
+Overall, the function fails to perform as expected due to a critical error in filtering the words. The incorrect manipulation of string splitting introduces a fundamental flaw, misidentifying the intended behavior of finding words with a minimum length.
+
+Here's a better solution:
+```python
+import re
+
+def find_char_long(text):
+    return re.findall(r"\b\w{4,}\b", text)
+```
+
+---"""
+
+
+CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_MBPP = """"""
+MBPP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL = """"""
