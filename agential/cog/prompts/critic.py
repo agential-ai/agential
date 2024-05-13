@@ -3670,4 +3670,191 @@ def find_char_long(text):
 
 
 CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_MBPP = """"""
-MBPP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL = """"""
+
+
+MBPP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL = """```python
+def similar_elements(test_tup1, test_tup2):
+    return tuple(set(test_tup1) | set(test_tup2))
+
+assert set(similar_elements((3, 4, 5, 6), (5, 7, 4, 10))) == set((4, 5)), "Test failed for input (3, 4, 5, 6), (5, 7, 4, 10)"
+assert set(similar_elements((1, 2, 3, 4), (5, 4, 3, 7))) == set((3, 4)), "Test failed for input (1, 2, 3, 4), (5, 4, 3, 7)"
+assert set(similar_elements((11, 12, 14, 13), (17, 15, 14, 13))) == set((13, 14)), "Test failed for input (11, 12, 14, 13), (17, 15, 14, 13)"
+```
+
+What's the problem with the above code?
+
+1. The function incorrectly returns a set of all unique elements from both lists rather than the intersection. This indicates a logical error in the implementation due to incorrect set operation.
+
+2. Let's check the code:
+
+> test_tup1 = (3, 4, 5, 6)
+> test_tup2 = (5, 7, 4, 10)
+
+This should define two lists of numbers where only 4 and 5 are common in both.
+
+> return tuple(set(test_tup1) | set(test_tup2))
+
+This line erroneously uses the set union operator (`|`) which combines all elements from both sets, instead of the set intersection operator (`&`) which would correctly identify elements present in both sets. This error results in incorrect function output when no duplicates should be reported.
+
+Overall, the function fails to perform as expected due to a critical error in using the wrong set operation. The incorrect manipulation of set operators introduces a fundamental flaw, mistaking union for intersection, thus misidentifying the intended behavior of finding common elements.
+
+Here's a better solution:
+```python
+def similar_elements(test_tup1, test_tup2):
+    return tuple(set(test_tup1) & set(test_tup2))
+```
+
+---
+
+```python
+import math
+
+def is_not_prime(n):
+    if n == 2:
+        return True
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            return True
+    return False
+
+assert is_not_prime(2) == False, "Test failed for input 2"
+assert is_not_prime(10) == True, "Test passed for input 10"
+assert is_not_prime(35) == True, "Test passed for input 35"
+assert is_not_prime(37) == False, "Test passed for input 37"
+```
+
+What's the problem with the above code?
+
+> n = 2
+
+This should identify the number 2, which is a prime number and should return False.
+
+> if n == 2:
+> return True
+
+This line erroneously returns True for the input 2, indicating it as not prime, which is incorrect. The condition should be modified to correctly handle prime identification.
+
+Here's a better solution:
+```python
+def is_not_prime(n):
+    result = False
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            result = True
+            break
+    return result
+```
+
+---
+
+```python
+def heap_queue_largest(nums, n):
+    return sorted(nums)[-n:]
+
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 3) == [85, 75, 65], "Test failed for top 3"
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 2) == [85, 75], "Test failed for top 2"
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 5) == [85, 75, 65, 58, 35], "Test failed for top 5"
+```
+
+What's the problem with the above code?
+
+1. The function incorrectly returns the sorted list of all elements, taking the last n elements. This indicates a logical error in the implementation due to incorrect sorting and slicing.
+
+2. Let's check the code:
+
+> nums = [25, 35, 22, 85, 14, 65, 75, 22, 58]
+> n = 3
+
+This should identify the three largest numbers in the list, which are 85, 75, and 65, in descending order.
+
+> return sorted(nums)[-n:]
+
+This line erroneously sorts the entire list and takes the last n elements, which may not be the n largest elements in descending order. This error results in incorrect function output when the largest elements should be reported.
+
+Overall, the function fails to perform as expected due to a critical error in using the wrong sorting and slicing approach. The incorrect manipulation of list sorting and slicing introduces a fundamental flaw, misidentifying the intended behavior of finding the n largest elements.
+
+Here's a better solution:
+```python
+import heapq as hq
+
+def heap_queue_largest(nums, n):
+    largest_nums = hq.nlargest(n, nums)
+    return largest_nums
+```
+
+---
+
+```python
+def differ_at_one_bit_pos(a, b):
+    return a ^ b == 1
+
+assert differ_at_one_bit_pos(13, 9) == True, "Test failed for input (13, 9)"
+assert differ_at_one_bit_pos(15, 8) == False, "Test failed for input (15, 8)"
+assert differ_at_one_bit_pos(2, 4) == False, "Test failed for input (2, 4)"
+assert differ_at_one_bit_pos(2, 3) == True, "Test failed for input (2, 3)"
+assert differ_at_one_bit_pos(5, 1) == True, "Test failed for input (5, 1)"
+assert differ_at_one_bit_pos(1, 5) == True, "Test failed for input (1, 5)"
+```
+
+What's the problem with the above code?
+
+1. The function incorrectly returns True for inputs that do not differ at exactly one bit position. This indicates a logical error in the implementation due to incorrect comparison of the XOR result.
+
+2. Let's check the code:
+
+> a = 13
+> b = 9
+
+This should identify that 13 (1101 in binary) and 9 (1001 in binary) differ at more than one bit position and should return False.
+
+> return a ^ b == 1
+
+This line erroneously checks if the XOR result is exactly 1, which does not account for multiple differing bits. This error results in incorrect function output when more than one bit differs.
+
+Overall, the function fails to perform as expected due to a critical error in comparing the XOR result. The incorrect manipulation of the XOR operation introduces a fundamental flaw, misidentifying the intended behavior of checking for exactly one differing bit.
+
+Here's a better solution:
+```python
+def is_power_of_two(x):
+    return x and (not(x & (x - 1)))
+
+def differ_at_one_bit_pos(a, b):
+    return is_power_of_two(a ^ b)
+```
+
+---
+
+```python
+def find_char_long(text):
+    return text.split()
+
+assert set(find_char_long('Please move back to stream')) == set(['Please', 'move', 'back', 'stream']), "Test failed for 'Please move back to stream'"
+assert set(find_char_long('Jing Eco and Tech')) == set(['Jing', 'Tech']), "Test failed for 'Jing Eco and Tech'"
+assert set(find_char_long('Jhingai wulu road Zone 3')) == set(['Jhingai', 'wulu', 'road', 'Zone']), "Test failed for 'Jhingai wulu road Zone 3'"
+```
+
+What's the problem with the above code?
+
+1. The function incorrectly returns all words in the string, rather than only those that are at least 4 characters long. This indicates a logical error in the implementation due to incorrect filtering of words.
+
+2. Let's check the code:
+
+> text = 'Please move back to stream'
+
+This should identify all words which are at least 4 characters long, which are 'Please', 'move', 'back', and 'stream'.
+
+> return text.split()
+
+This line erroneously splits the string into all words, without filtering out words shorter than 4 characters. This error results in incorrect function output when only words with at least 4 characters should be reported.
+
+Overall, the function fails to perform as expected due to a critical error in filtering the words. The incorrect manipulation of string splitting introduces a fundamental flaw, misidentifying the intended behavior of finding words with a minimum length.
+
+Here's a better solution:
+```python
+import re
+
+def find_char_long(text):
+    return re.findall(r"\b\w{4,}\b", text)
+```
+
+---"""
