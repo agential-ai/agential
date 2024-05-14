@@ -5,6 +5,7 @@ Original Paper: http://arxiv.org/abs/2305.11738
 """
 
 import re
+
 from typing import Dict, List, Optional
 
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
@@ -201,7 +202,7 @@ class CriticAgent(BaseAgent):
                     out[idx]["code_answer"] = code_answer  # type: ignore
 
                 # Halting condition.
-                if "it is correct." in critique.lower():
+                if "is correct." in critique.lower():
                     break
 
                 # Generate the new solution from the critique.
@@ -273,7 +274,7 @@ class CriticAgent(BaseAgent):
                     out[idx]["code_answer"] = code_answer  # type: ignore
 
                 # Halting condition.
-                if "it is correct." in critique.lower():
+                if "is correct." in critique.lower():
                     break
 
                 # Generate the new solution from the critique.

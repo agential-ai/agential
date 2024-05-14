@@ -3669,7 +3669,18 @@ def find_char_long(text):
 ---"""
 
 
-CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_MBPP = """"""
+CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_MBPP = """{examples}
+(END OF EXAMPLES)
+
+```python
+{question}
+
+{answer}
+```
+
+What's the problem with the above code? If nothing is wrong, output 'It is correct.'
+
+{critique}"""
 
 
 MBPP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL = """```python
