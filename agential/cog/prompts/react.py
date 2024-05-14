@@ -175,6 +175,7 @@ Observation 2: [] The Flintstones / Wilma Flintstone / Mother / Played by Elizab
 Thought 3: The evidence shows that Elizabeth Taylor played the role of Wilma's mother. 
 Action 3: Finish[Elizabeth Taylor]"""
 
+
 # ======================================================================== TRIVIAQA ======================================================================== #
 
 
@@ -232,3 +233,76 @@ Action 3: Search[What state joined the Union a year after North Carolina?]
 Observation 3: [States by Order of Entry into Union - Infoplease] Joining the Union | State | Entered Union | Year Settled | | North Carolina | Nov. 21, 1789 | 1660 | | Rhode Island | May 29, 1790 | 1636 | | Vermont | Mar. 4, 1791 | 1724 | 
 Thought 4: The evidence shows North Carolina entered Union in 1789, and Rhode Island entered Union in 1790, which is a year after North Carolina. 
 Action 4: Finish[Rhode Island]"""
+
+
+# ======================================================================== MBPP ======================================================================== #
+
+
+
+REACT_POT_INSTRUCTION_WITH_TESTS_MBPP = """"""
+
+
+MBPP_FEWSHOT_EXAMPLES_POT_WITH_TESTS = """Your code should pass these tests:
+assert set(similar_elements((3, 4, 5, 6), (5, 7, 4, 10))) == set((4, 5)), "Test failed for input (3, 4, 5, 6), (5, 7, 4, 10)"
+assert set(similar_elements((1, 2, 3, 4), (5, 4, 3, 7))) == set((3, 4)), "Test failed for input (1, 2, 3, 4), (5, 4, 3, 7)"
+assert set(similar_elements((11, 12, 14, 13), (17, 15, 14, 13))) == set((13, 14)), "Test failed for input (11, 12, 14, 13), (17, 15, 14, 13)"
+
+Write a function to find the shared elements from the given two lists.
+def similar_elements(test_tup1, test_tup2):
+    res = tuple(set(test_tup1) & set(test_tup2))
+    return res
+
+Your code should pass these tests:
+assert is_not_prime(2) == False, "Test failed for input 2"
+assert is_not_prime(10) == True, "Test failed for input 10"
+assert is_not_prime(35) == True, "Test failed for input 35"
+assert is_not_prime(37) == False, "Test failed for input 37"
+
+Write a python function to identify non-prime numbers.
+import math
+
+def is_not_prime(n):
+    result = False
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            result = True
+            break
+    return result
+
+Your code should pass these tests:
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 3) == [85, 75, 65], "Test failed for top 3"
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 2) == [85, 75], "Test failed for top 2"
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 5) == [85, 75, 65, 58, 35], "Test failed for top 5"
+
+Write a function to find the n largest integers from a given list of numbers, returned in descending order.
+import heapq as hq
+
+def heap_queue_largest(nums, n):
+    largest_nums = hq.nlargest(n, nums)
+    return largest_nums
+
+Your code should pass these tests:
+assert differ_at_one_bit_pos(13, 9) == True, "Test failed for input (13, 9)"
+assert differ_at_one_bit_pos(15, 8) == False, "Test failed for input (15, 8)"
+assert differ_at_one_bit_pos(2, 4) == False, "Test failed for input (2, 4)"
+assert differ_at_one_bit_pos(2, 3) == True, "Test failed for input (2, 3)"
+assert differ_at_one_bit_pos(5, 1) == True, "Test failed for input (5, 1)"
+assert differ_at_one_bit_pos(1, 5) == True, "Test failed for input (1, 5)"
+
+Write a python function to check whether the two numbers differ at one bit position only or not.
+def is_power_of_two(x):
+    return x and (not(x & (x - 1)))
+
+def differ_at_one_bit_pos(a, b):
+    return is_power_of_two(a ^ b)
+
+Your code should pass these tests:
+assert set(find_char_long('Please move back to stream')) == set(['Please', 'move', 'back', 'stream']), "Test failed for 'Please move back to stream'"
+assert set(find_char_long('Jing Eco and Tech')) == set(['Jing', 'Tech']), "Test failed for 'Jing Eco and Tech'"
+assert set(find_char_long('Jhingai wulu road Zone 3')) == set(['Jhingai', 'wulu', 'road', 'Zone']), "Test failed for 'Jhingai wulu road Zone 3'"
+
+Write a function to find all words which are at least 4 characters long in a string.
+import re
+
+def find_char_long(text):
+    return re.findall(r"\b\w{4,}\b", text)"""
