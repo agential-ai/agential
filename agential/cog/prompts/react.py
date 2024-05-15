@@ -124,19 +124,19 @@ Observation 3: (Result 1 / 3) The song peaked at number two on the Billboard Hot
 Thought 4: It only says the song peaked at number two on the Billboard Hot 100, but not if it was in 2003. I am not sure if this claim is true or not.
 Action 4: Finish[NOT ENOUGH INFO]
 
-Claim: Roman Atwood is a content creator.
-Thought 1: I need to verify if Roman Atwood is indeed a content creator.
-Action 1: Search[Roman Atwood]
-Observation 1: Roman Bernard Atwood (born May 28, 1983) is an American YouTuber, vlogger, and prankster. He is known for his hidden camera public prank videos.
-Thought 2: The observation confirms that Roman Atwood is a YouTuber and a prankster, which aligns with being a content creator.
+Claim: Is Mount Everest the tallest mountain in the world?
+Thought 1: I need to verify if Mount Everest is indeed the tallest mountain in the world.
+Action 1: Search[Mount Everest]
+Observation 1: Mount Everest is the Earth's highest mountain above sea level, located in the Mahalangur Himal sub-range of the Himalayas.
+Thought 2: The observation confirms that Mount Everest is the highest mountain above sea level, which implies it is the tallest mountain in the world.
 Action 2: Finish[SUPPORTS]
 
-Claim: Peggy Sue Got Married is an Egyptian film released in 1986.
-Thought 1: I should search for the film Peggy Sue Got Married and verify if it is an Egyptian film released in 1986.
-Action 1: Search[Peggy Sue Got Married]
-Observation 1: Peggy Sue Got Married is a 1986 American fantasy comedy-drama film directed by Francis Ford Coppola.
-Thought 2: The observation clearly states that Peggy Sue Got Married is an American film, not an Egyptian one.
-Action 2: Finish[REFUTES]"""
+Claim: Did Albert Einstein invent the theory of relativity?
+Thought 1: I should verify if Albert Einstein invented the theory of relativity.
+Action 1: Search[Albert Einstein]
+Observation 1: Albert Einstein was a German-born theoretical physicist who developed the theory of relativity, one of the two pillars of modern physics (alongside quantum mechanics).
+Thought 2: The observation confirms that Albert Einstein indeed developed the theory of relativity.
+Action 2: Finish[SUPPORTS]"""
 
 
 # ======================================================================== AMBIGQA ======================================================================== #
