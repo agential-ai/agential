@@ -146,13 +146,15 @@ def _is_halted(
 
 
 def program_generator(question: str, context: str, llm: BaseChatModel) -> str:
-    """The function for answering the python question
+    """Answer a python question using the provided language model.
+
     Args:
         question (str): The question to be processed.
+        context (str): The table content from the user input.
         llm (BaseChatModel): The language model used by the agent.
-        context (str): the table content from the user input
+
     Returns:
-        str: response from llm used by the agent.
+        str: Response from llm used by the agent.
     """
     template_messages: Sequence[
         Union[
@@ -173,3 +175,5 @@ def program_generator(question: str, context: str, llm: BaseChatModel) -> str:
     except Exception:
         response = "Error during processing."
     return response
+
+
