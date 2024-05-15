@@ -41,7 +41,6 @@ Claim: Peggy Sue Got Married is an Egyptian film released in 1986.
 A: REFUTES"""
 
 
-
 FEVER_FEWSHOT_EXAMPLES_REACT = """Claim: Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.
 Thought 1: I need to search Nikolaj Coster-Waldau and find if he has worked with the Fox Broadcasting Company.
 Action 1: Search[Nikolaj Coster-Waldau]
@@ -565,10 +564,7 @@ Q: What profession does Nicholas Ray and Elia Kazan have in common?
 A: Let's think step by step. Professions of Nicholas Ray are director, screenwriter, and actor. Professions of Elia Kazan are director, producer, screenwriter, and actor. So profession Nicholas Ray and Elia Kazan have in common is director, screenwriter, and actor. So the answer is: director, screenwriter, actor.
 
 Q: Which magazine was started first Arthur's Magazine or First for Women?
-A: Let's think step by step. Arthur's Magazine was started in 1844. First for Women was started in 1989. 1844 (Arthur's Magazine) < 1989 (First for Women), so Arthur's Magazine was started first. So the answer is: Arthur's Magazine.
-
-Q: Were Pavel Urysohn and Leonid Levin known for the same type of work?
-A: Let's think step by step. Pavel Urysohn is a mathematician. Leonid Levin is a mathematician and computer scientist. So Pavel Urysohn and Leonid Levin have the same type of work. So the answer is: Yes."""
+A: Let's think step by step. Arthur's Magazine was started in 1844. First for Women was started in 1989. 1844 (Arthur's Magazine) < 1989 (First for Women), so Arthur's Magazine was started first. So the answer is: Arthur's Magazine."""
 
 
 HOTPOTQA_FEWSHOT_EXAMPLES_DIRECT = """Q: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
@@ -656,18 +652,6 @@ Action 4: Search[Did Tony Hiller appear with Rip Taylor?]
 Observation 4: [Tony Hiller - Wikipedia] The Hiller Brothers appeared with many performers of the time including Alma Cogan , Tommy Cooper , Val Doonican , Matt Monro , The Shadows , Bernard Manning , Kathy Kirby , Roger Whittaker , Rip Taylor , Gene Vincent , Lance Percival , Tessie O'Shea...
 Thought 5: The evidence shows that Tony Hiller appeared with Rip Taylor.
 Action 5: Finish[Rip Taylor]
-
----
-
-Question: Who won the 2016 Russian national silver medal with another Russian ice dancer born 29 April 1995?
-Thought 1: Let's search the question in google:
-Action 1: Search[Who won the 2016 Russian national silver medal with another Russian ice dancer born 29 April 1995? site: wikipedia.org]
-Observation 1: [Victoria Sinitsina - Wikipedia] Victoria Alexandrovna Sinitsina is a Russian ice dancer .
-Thought 2: The evidence suggests that Victoria Sinitsina is a Russian ice dancer born 29 April 1995. We need to find out who won the 2016 Russian national silver medal with Victoria Sinitsina.
-Action 2: Search[Who won the 2016 Russian national silver medal with Victoria Sinitsina?]
-Observation 2: [Nikita Katsalapov - Wikipedia] In December, Sinitsina/Katsalapov won the silver medal behind Bobrova/Soloviev at the 2016 Russian Championships in Yekaterinburg.
-Thought 3: The evidence suggests that Nikita Katsalapov won the 2016 Russian national silver medal with Victoria Sinitsina.
-Action 3: Finish[Nikita Katsalapov]
 
 ---"""
 
@@ -860,43 +844,6 @@ The answer needs major revision.
 
 Question: Which artist did Anthony Toby "Tony" Hiller appear with that liked showering himself (and others) with confetti?
 Here's the most possible answer: Let's think step by step. The artist that liked showering himself with confetti is Rip Taylor. Anthony Toby "Tony" Hiller is a songwriter and record producer, he appeared with Rip Taylor. So the answer is: Rip Taylor.
-
----
-
-Question: Who won the 2016 Russian national silver medal with another Russian ice dancer born 29 April 1995?
-Proposed Answer: Let's think step by step. The 2016 Russian national silver medal was won by Alexandra Stepanova and Ivan Bukin. Alexandra Stepanova was born 29 April 1995. Ivan Bukin was born 10 April 1993. So the answer is: Ivan Bukin.
-
-What's the problem with the above answer?
-
-1. Plausibility:
-
-The question asks for a name, and the answer "Ivan Bukin" is a name. So it's plausible.
-
-2. Truthfulness:
-
-Let's search the question in google:
-
-> Search Query: Who won the 2016 Russian national silver medal with another Russian ice dancer born 29 April 1995? site: wikipedia.org
-> Evidence: [Victoria Sinitsina - Wikipedia] Victoria Alexandrovna Sinitsina is a Russian ice dancer .
-
-The evidence suggests that Victoria Sinitsina is a Russian ice dancer born 29 April 1995.
-
-Let's search the proposed answer in google:
-
-> Search Query: The 2016 Russian national silver medal was won by Alexandra Stepanova and Ivan Bukin.
-> Evidence: [Alexandra Stepanova - Wikipedia] They won silver at the 2012 Russian Junior Championships. Stepanova/Bukin then competed at the 2012 World Junior Championships and won the silver medal.
-
-From the evidence, Stepanova/Bukin won silver at the 2012 Russian Junior Championships, not 2016.
-
-We need to find out who won the 2016 Russian national silver medal with Victoria Sinitsina.
-
-> Search Query: Who won the 2016 Russian national silver medal with Victoria Sinitsina?
-> Evidence: [Nikita Katsalapov - Wikipedia] In December, Sinitsina/Katsalapov won the silver medal behind Bobrova/Soloviev at the 2016 Russian Championships in Yekaterinburg.
-
-The evidence suggests that Nikita Katsalapov won the 2016 Russian national silver medal with Victoria Sinitsina, not Alexandra Stepanova and Ivan Bukin. The answer provided in the proposed answer is incorrect.
-
-Question: Who won the 2016 Russian national silver medal with another Russian ice dancer born 29 April 1995?
-Here's the most possible answer: Let's think step by step. The 2016 Russian national silver medal in ice dancing was won by Victoria Sinitsina and Nikita Katsalapov. Victoria Sinitsina was born on April 29, 1995. So the answer is: Nikita Katsalapov.
 
 ---"""
 

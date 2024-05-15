@@ -4,20 +4,30 @@
 
 
 # Fewshot CoT examples for prompting ReflexionCoT agent (think/act).
-REFLEXION_COT_FEWSHOT_EXAMPLES = """Relevant Context: The Nile River is the longest river in the world, spanning approximately 6,650 kilometers (4,132 miles) in length. It flows through eleven countries in northeastern Africa, including Egypt, Sudan, and Uganda.
-Question: What is the longest river in the world?
-Thought: The question asks for the longest river in the world, which I know is the Nile River based on the context provided.
-Action: Finish[Nile River]
+REFLEXION_COT_FEWSHOT_EXAMPLES = """Relevant Context: The eastern sector of the Colorado orogeny extends into the High Plains, which is characterized by its relatively flat terrain with elevations ranging from around 1,800 to 7,000 feet.
+Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+Thought: The question asks about the elevation range of the area where the eastern sector of the Colorado orogeny extends into. From the context, I know that the High Plains cover this area and their elevation ranges from around 1,800 to 7,000 feet.
+Action: Finish[1,800 to 7,000 feet]
 
-Relevant Context: Ludwig van Beethoven was a German composer and pianist who was a crucial figure in the transition between the Classical and Romantic eras in Western classical music. One of his most famous compositions is the Symphony No. 9, also known as the "Choral" symphony.
-Question: Which composer created Symphony No. 9?
-Thought: The question is asking for the composer of Symphony No. 9. Based on the context, I know that Ludwig van Beethoven composed this symphony.
-Action: Finish[Ludwig van Beethoven]
+Relevant Context: Musician and satirist Allie Goertz wrote a song about the "The Simpsons" character Milhouse. Matt Groening, the creator of "The Simpsons," named Milhouse after a real-life person.
+Question: Who did Matt Groening name the "The Simpsons" character Milhouse after?
+Thought: The question is about the person after whom Matt Groening named the character Milhouse in "The Simpsons." Based on the context, Milhouse was named after U.S. President Richard Nixon.
+Action: Finish[Richard Nixon]
 
-Relevant Context: Photosynthesis is the process by which green plants and some other organisms convert light energy into chemical energy. During this process, plants absorb sunlight, carbon dioxide, and water to produce glucose and oxygen.
-Question: What do plants produce during photosynthesis?
-Thought: The question is asking about the products of photosynthesis. From the context, I know that plants produce glucose and oxygen during this process.
-Action: Finish[Glucose and Oxygen]"""
+Relevant Context: "Adam Clayton Powell" is a documentary about an African-American politician and civil rights leader. "The Saimaa Gesture," on the other hand, is a documentary about Finnish rock groups.
+Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
+Thought: The question asks about the documentary related to Finnish rock groups. Considering the context, "Adam Clayton Powell" focuses on a different subject, so the documentary about Finnish rock groups must be "The Saimaa Gesture."
+Action: Finish[The Saimaa Gesture]
+
+Relevant Context: Nicholas Ray was a director, screenwriter, and actor. Elia Kazan was also a director, screenwriter, and actor.
+Question: What profession does Nicholas Ray and Elia Kazan have in common?
+Thought: Both Nicholas Ray and Elia Kazan share the professions of director, screenwriter, and actor. These are the common professions between the two.
+Action: Finish[director, screenwriter, actor]
+
+Relevant Context: Arthur's Magazine was started in 1844, while First for Women was started in 1989.
+Question: Which magazine was started first, Arthur's Magazine or First for Women?
+Thought: Arthur's Magazine was established in 1844, predating the founding of First for Women in 1989. Therefore, Arthur's Magazine was started first.
+Action: Finish[Arthur's Magazine]"""
 
 # Fewshot CoT examples for prompting ReflexionCoT agent (think/act) with no context.
 REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT = """Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
@@ -38,11 +48,7 @@ Action: Finish[director, screenwriter, actor]
 
 Question: Which magazine was started first Arthur's Magazine or First for Women?
 Thought: Let's think step by step. Arthur's Magazine was started in 1844. First for Women was started in 1989. 1844 (Arthur's Magazine) < 1989 (First for Women), so Arthur's Magazine was started first.
-Action: Finish[Arthur's Magazine]
-
-Question: Were Pavel Urysohn and Leonid Levin known for the same type of work?
-Thought: Let's think step by step. Pavel Urysohn is a mathematician. Leonid Levin is a mathematician and computer scientist. So Pavel Urysohn and Leonid Levin have the same type of work.
-Action: Finish[Yes]"""
+Action: Finish[Arthur's Magazine]"""
 
 # Fewshot CoT examples for ReflexionCoT reflection.
 REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES = """Relevant Context: Ernest Hemingway's novel "The Old Man and the Sea" tells the story of Santiago, an aging Cuban fisherman, who struggles to catch a giant marlin in the Gulf Stream. The book won the Pulitzer Prize for Fiction in 1953 and contributed to Hemingway's Nobel Prize for Literature in 1954.
