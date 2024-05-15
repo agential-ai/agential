@@ -3,7 +3,6 @@
 from typing import Any, Dict, List, Sequence, Tuple, Union
 
 from langchain.chains import LLMChain
-from typing import Dict, List, Optional, Tuple
 
 from langchain.prompts import PromptTemplate
 from langchain.prompts.chat import (
