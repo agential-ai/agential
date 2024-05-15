@@ -4,6 +4,8 @@ GitHub Repository: https://github.com/microsoft/ProphetNet/tree/master/CRITIC
 Original Paper: http://arxiv.org/abs/2305.11738
 """
 
+import re
+
 from typing import Dict, List, Optional
 
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
@@ -165,6 +167,12 @@ class CriticAgent(BaseAgent):
                 prompt=prompt,
             )
 
+            try:  # Attempt to extract code from ```python ```.
+                matches = re.findall(r"`python\s+(.*?)\s+`", code, re.DOTALL)
+                code = matches[0]
+            except:  # Keep code the same if cannot extract.
+                pass
+
             for idx in range(max_interactions):
                 # Get additional code execution information.
                 if use_interpreter_tool:
@@ -194,7 +202,7 @@ class CriticAgent(BaseAgent):
                     out[idx]["code_answer"] = code_answer  # type: ignore
 
                 # Halting condition.
-                if "it is correct." in critique.lower():
+                if "is correct." in critique.lower():
                     break
 
                 # Generate the new solution from the critique.
@@ -223,6 +231,12 @@ class CriticAgent(BaseAgent):
                 additional_keys=additional_keys,
                 prompt=prompt,
             )
+
+            try:  # Attempt to extract code from ```python ```.
+                matches = re.findall(r"`python\s+(.*?)\s+`", code, re.DOTALL)
+                code = matches[0]
+            except:  # Keep code the same if cannot extract.
+                pass
 
             for idx in range(max_interactions):
                 # Generate unit tests like in Reflexion and execute unit tests.
@@ -260,7 +274,7 @@ class CriticAgent(BaseAgent):
                     out[idx]["code_answer"] = code_answer  # type: ignore
 
                 # Halting condition.
-                if "it is correct." in critique.lower():
+                if "is correct." in critique.lower():
                     break
 
                 # Generate the new solution from the critique.

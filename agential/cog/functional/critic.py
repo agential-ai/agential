@@ -1,6 +1,9 @@
 """Functional module for CRITIC."""
 
-from typing import Dict, List, Optional, Tuple
+import builtins
+import sys
+
+from typing import Any, Dict, List, Optional, Tuple
 
 import func_timeout
 
@@ -32,27 +35,29 @@ def remove_comment(code: str) -> str:
 
 # Ref: https://github.com/microsoft/ProphetNet/blob/master/CRITIC/src/tools/interpreter_api.py.
 def safe_execute(
-    code_string: str, keys: Optional[List[str]] = None
-) -> Tuple[Optional[str], str]:
+    code_string: str,
+    keys: Optional[List[str]] = None,
+    safe_globals: Dict[str, Any] = {"__builtins__": builtins, "sys": sys},
+) -> Tuple[Optional[Any], str]:
     """Executes the provided Python code string in a safe manner with a timeout and returns specified variables from the execution.
 
     Args:
         code_string (str): Python code to execute.
         keys (Optional[List[str]]): A list of variable names whose values are to be returned after execution. If None, the function tries to return a variable named 'answer'.
+        safe_globals (Dict[str, Any]): A dictionary of safe global names. Defaults to `{'__builtins__': builtins, 'sys': sys}`.
 
     Returns:
         tuple: A tuple containing the result(s) of the specified variable(s) and a status message. If an exception occurs or timeout happens, it returns None for the result.
     """
 
-    def execute(x: str) -> Tuple[Optional[str], str]:
+    def execute(x: str) -> Tuple[Optional[Any], str]:
         """Executes the code string with python exec()."""
         try:
-            exec(x)
-            locals_ = locals()
+            exec(x, safe_globals)
             if keys is None:
-                an = locals_.get("answer", None)
+                an = safe_globals.get("answer", None)
             else:
-                an = [locals_.get(k, None) for k in keys]
+                an = [safe_globals.get(k, None) for k in keys]
             return an, "Done"
         except BaseException as e:
             return None, repr(e)
