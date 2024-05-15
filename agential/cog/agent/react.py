@@ -134,7 +134,7 @@ class ReActAgent(BaseAgent):
                 prompt=prompt,
             ).split("Action")[0]
             self.memory.add_memories(" " + thought)
-            
+
             # Act.
             self.memory.add_memories("\nAction:")
             action = _prompt_agent(
@@ -147,14 +147,14 @@ class ReActAgent(BaseAgent):
             ).split("Observation")[0]
             self.memory.add_memories(" " + action)
             action_type, query = parse_action(action)
-            
+
             # Observe.
             self.memory.add_memories(f"\nObservation {self._step_n}: ")
             if action_type.lower() == "finish":
                 self._answer = query
                 self._finished = True
                 obs = query
-                
+
             elif action_type.lower() == "search":
                 try:
                     obs = remove_newline(self.docstore.search(query))
@@ -167,7 +167,7 @@ class ReActAgent(BaseAgent):
                     obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
             elif action_type.lower() == "python":
                 try:
-                    obs = remove_newline(program_generator(query,question,self.llm))
+                    obs = remove_newline(program_generator(query, question, self.llm))
                 except Exception:
                     obs = "Could not Generate Python Program, please try again."
             else:

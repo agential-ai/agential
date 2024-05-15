@@ -1,22 +1,23 @@
 """Functional module for ReAct."""
 
+from typing import Any, Dict, List, Sequence, Tuple, Union
+
+from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from langchain_core.language_models.chat_models import BaseChatModel
-from langchain_core.messages.human import HumanMessage
-from tiktoken import Encoding
-from langchain_openai import OpenAI
-from agential.cog.prompts.react import (
-    REACT_INSTRUCTION_HOTPOTQA,
-    PROMPT_PYTHON_GENERATOR,
-)
-from agential.utils.parse import remove_newline
-from langchain import PromptTemplate
 from langchain.prompts.chat import (
     ChatPromptTemplate,
     HumanMessagePromptTemplate,
 )
-from langchain.chains import LLMChain
+from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import SystemMessage
+from langchain_core.messages.human import HumanMessage
+from tiktoken import Encoding
+
+from agential.cog.prompts.react import (
+    PROMPT_PYTHON_GENERATOR,
+    REACT_INSTRUCTION_HOTPOTQA,
+)
+from agential.utils.parse import remove_newline
 
 
 def _build_agent_prompt(
@@ -144,38 +145,31 @@ def _is_halted(
     return finished or over_max_steps or over_token_limit
 
 
-def program_generator(question,context,llm):
-
-    """ the function for answering the python question
+def program_generator(question: str, context: str, llm: BaseChatModel) -> str:
+    """The function for answering the python question
     Args:
-        query (str): The question to be processed From Thought React.
+        question (str): The question to be processed.
         llm (BaseChatModel): The language model used by the agent.
-        context : the table content from the input user
+        context (str): the table content from the user input
     Returns:
-        string: response from llm used by the agent
+        str: response from llm used by the agent.
     """
-    template_messages = [
-    SystemMessage(content=PROMPT_PYTHON_GENERATOR),
-    HumanMessagePromptTemplate.from_template(context),
+    template_messages: Sequence[
+        Union[
+            SystemMessage,
+            HumanMessagePromptTemplate,
+            Tuple[str, Union[str, List[Dict[Any, Any]], List[Any]]],
+        ]
+    ] = [
+        SystemMessage(content=PROMPT_PYTHON_GENERATOR),
+        HumanMessagePromptTemplate.from_template(context),
     ]
     prompt_template = ChatPromptTemplate.from_messages(template_messages)
 
-    chain = LLMChain(
-        llm=llm,
-        prompt=prompt_template,
-        verbose=False
-       )
-    
+    chain = LLMChain(llm=llm, prompt=prompt_template, verbose=False)
+
     try:
-      
-      response = chain.invoke(question)
-
+        response = chain.invoke(question)
     except Exception:
-
-        response = " "
+        response = "Error during processing."
     return response
-
-
-
-    
-    
