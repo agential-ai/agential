@@ -250,4 +250,12 @@ Thought 3: Not enough evidence, we need further search.
 Action 3: Search[What state joined the Union a year after North Carolina?] 
 Observation 3: [States by Order of Entry into Union - Infoplease] Joining the Union | State | Entered Union | Year Settled | | North Carolina | Nov. 21, 1789 | 1660 | | Rhode Island | May 29, 1790 | 1636 | | Vermont | Mar. 4, 1791 | 1724 | 
 Thought 4: The evidence shows North Carolina entered Union in 1789, and Rhode Island entered Union in 1790, which is a year after North Carolina. 
-Action 4: Finish[Rhode Island]"""
+Action 4: Finish[Rhode Island]
+
+Question: Who designed the National Theatre building on the South Bank in London?
+Thought 1: Let's search the question in google
+Action 1: Search[Who designed the National Theatre building on the South Bank in London? site: wikipedia.org]
+Observation 1: [National Theatre (London) - Wikipedia] The National Theatre building is designed by architects Sir Denys Lasdun and Peter Softley and structural engineers Flint & Neill and contains three stages, which opened individually between 1976 and 1977.
+Thought 2: The evidence indicates that Sir Denys Lasdun was one of the architects who designed the National Theatre building.
+Action 2: Finish[Sir Denys Lasdun]
+"""

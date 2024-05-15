@@ -871,10 +871,7 @@ Q: Also a two-time World Champion, which American skier won the gold medal in th
 A: The only American skier who won the gold medal in the Men's Combined at the 2010 Winter Olympics is Bode Miller. So the answer is: Bode Miller.
 
 Q: Famous composer, Handel, originally studied what? 
-A: George Frideric Handel initially studied law at the University of Halle. So the answer is: Law.
-
-Q: Which great philosopher corresponded with Queen Christina of Sweden in his final years and died in 1650 in Stockholm where he had been invited as a teacher for her? 
-A: René Descartes is a great philosopher who corresponded with Queen Christina of Sweden in his final years and died in 1650 in Stockholm where he had been invited as a teacher for her. So the answer is: René Descartes."""
+A: George Frideric Handel initially studied law at the University of Halle. So the answer is: Law."""
 
 
 TRIVIAQA_FEWSHOT_EXAMPLES_DIRECT = """Q: Mendelssohn's 'Wedding March' was. originally written as incidental music for which Shakespeare play in 1842?
@@ -890,22 +887,7 @@ Q: Also a two-time World Champion, which American skier won the gold medal in th
 A: Bodie Miller
 
 Q: Famous composer, Handel, originally studied what?
-A: Law 
-
-Q: Which great philosopher corresponded with Queen Christina of Sweden in his final years and died in 1650 in Stockholm where he had been invited as a teacher for her?
-A: René Decartes
-
-Q: Who was the female member of Britain's gang of four?
-A: Baroness Williams
-
-Q: An icosahedron has how many faces?
-A: twenty
-
-Q: What chemical makes hot peppers hot?
-A: Capscaicin
-
-Q: What term applies to an engine comprising two banks of four cylinders inclined towards each other, with a common crankshaft?
-A: V8 engine"""
+A: Law"""
 
 
 TRIVIAQA_FEWSHOT_EXAMPLES_REACT = """Question: Which innovation for the car was developed by Prince Henry of Prussia in 1911? 
@@ -952,7 +934,14 @@ Thought 3: Not enough evidence, we need further search.
 Action 3: Search[What state joined the Union a year after North Carolina?] 
 Observation 3: [States by Order of Entry into Union - Infoplease] Joining the Union | State | Entered Union | Year Settled | | North Carolina | Nov. 21, 1789 | 1660 | | Rhode Island | May 29, 1790 | 1636 | | Vermont | Mar. 4, 1791 | 1724 | 
 Thought 4: The evidence shows North Carolina entered Union in 1789, and Rhode Island entered Union in 1790, which is a year after North Carolina. 
-Action 4: Finish[Rhode Island]"""
+Action 4: Finish[Rhode Island]
+
+Question: Who designed the National Theatre building on the South Bank in London?
+Thought 1: Let's search the question in google
+Action 1: Search[Who designed the National Theatre building on the South Bank in London? site: wikipedia.org]
+Observation 1: [National Theatre (London) - Wikipedia] The National Theatre building is designed by architects Sir Denys Lasdun and Peter Softley and structural engineers Flint & Neill and contains three stages, which opened individually between 1976 and 1977.
+Thought 2: The evidence indicates that Sir Denys Lasdun was one of the architects who designed the National Theatre building.
+Action 2: Finish[Sir Denys Lasdun]"""
 
 CRITIC_CRITIQUE_INSTRUCTION_TRIVIAQA = """{examples}
 (END OF EXAMPLES)
@@ -1112,7 +1101,31 @@ The evidence shows North Carolina entered Union in 1789, and Rhode Island entere
 This support the proposed answer.
 
 Question: What state had its bi-centenary of joining the Union a year after North Carolina?
-Here's the most possible answer: Rhode Island had its bi-centenary of joining the Union a year after North Carolina. So the answer is: Rhode Island."""
+Here's the most possible answer: Rhode Island had its bi-centenary of joining the Union a year after North Carolina. So the answer is: Rhode Island.
+
+------
+
+Question: Who designed the National Theatre building on the South Bank in London?
+Proposed Answer: Sir Denys Lasdun designed the National Theatre building on the South Bank in London. So the answer is: Sir Denys Lasdun.
+
+What's the problem with the above answer?
+
+1.Plausibility:
+
+The question asks for the name of the architect who designed the National Theatre building, and the answer is "Sir Denys Lasdun", which is an architect's name. So it's plausible.
+
+2.Truthfulness:
+
+Let's search the question in Google:
+
+> Search Query: Who designed the National Theatre building on the South Bank in London? site:wikipedia.org
+> Evidence: [National Theatre (London) - Wikipedia] The National Theatre building is located next to the River Thames in the South Bank area of central London. It is a notable example of Brutalist design, designed by architect Sir Denys Lasdun, completed in 1977, and opened by Queen Elizabeth II on 25 October 1976.
+
+The evidence from Wikipedia confirms that the National Theatre building was indeed designed by Sir Denys Lasdun.
+
+Question: Who designed the National Theatre building on the South Bank in London?
+
+Here's the most possible answer: Sir Denys Lasdun designed the National Theatre building on the South Bank in London. So the answer is: Sir Denys Lasdun."""
 
 
 # ======================================================================== GSM8k ======================================================================== #
