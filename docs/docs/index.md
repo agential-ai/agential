@@ -12,25 +12,25 @@
 | ------------------------ | :------------------: | :------------------: | :------------------: | :------------------: |
 | ReAct                    | :material-check-all: | :material-check-all: | :octicons-check-16:  | :octicons-check-16:  |
 | Reflexion                | :material-check-all: |                      |                      |                      |
-| CRITIC                   | :material-check-all: |                      | :material-check-all: | :material-check-all: |
+| CRITIC                   | :material-check-all: | :octicons-check-16:  | :material-check-all: | :material-check-all: |
 | Self-Refine              |                      |                      |                      |                      |
 | LATS                     |                      |                      |                      |                      |
 
-| **Methods / Benchmarks** |        GSM8k         | SVAMP | TabMWP |
-| ------------------------ | :------------------: | :---: | :----: |
-| ReAct                    |                      |       |        |
-| Reflexion                |                      |       |        |
-| CRITIC                   |                      |       |        |
-| Self-Refine              | :material-check-all: |       |        |
-| LATS                     |                      |       |        |
+| **Methods / Benchmarks** |        GSM8k         |        SVAMP         |        TabMWP        |
+| ------------------------ | :------------------: | :------------------: | :------------------: |
+| ReAct                    |                      |                      |                      |
+| Reflexion                |                      |                      |                      |
+| CRITIC                   | :material-check-all: | :material-check-all: | :material-check-all: |
+| Self-Refine              | :material-check-all: |                      |                      |
+| LATS                     |                      |                      |                      |
 
-| **Methods / Benchmarks** | MBPP  | HumanEval |
-| ------------------------ | :---: | :-------: |
-| ReAct                    |       |           |
-| Reflexion                |       |           |
-| CRITIC                   |       |           |
-| Self-Refine              |       |           |
-| LATS                     |       |           |
+| **Methods / Benchmarks** |         MBPP         |      HumanEval       |
+| ------------------------ | :------------------: | :------------------: |
+| ReAct                    |                      |                      |
+| Reflexion                |                      |                      |
+| CRITIC                   | :octicons-check-16:  | :octicons-check-16:  |
+| Self-Refine              |                      |                      |
+| LATS                     |                      |                      |
 
 | **Methods / Benchmarks** | ALFWorld | WebShop | AgentBench |
 | ------------------------ | :------: | :-----: | :--------: |
