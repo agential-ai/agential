@@ -105,7 +105,7 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
         "reflections",
     ]
     for v in memory.experiences.values():
-        assert len(v) == 6
+        assert len(v) == 5
     assert memory.fewshot_questions
     assert memory.fewshot_keys
     assert memory.fewshot_examples
@@ -113,7 +113,7 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
     assert isinstance(memory.embedder, Embeddings)
     assert isinstance(memory.encoder, Encoding)
 
-    assert len(memory.success_traj_docs) == 48
+    assert len(memory.success_traj_docs) == 44
     assert memory.vectorstore
 
     # Test with experiences and fewshot examples.
@@ -131,7 +131,7 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
         "reflections",
     ]
     for v in memory.experiences.values():
-        assert len(v) == 16
+        assert len(v) == 15
     assert memory.fewshot_questions
     assert memory.fewshot_keys
     assert memory.fewshot_examples
@@ -139,7 +139,7 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
     assert isinstance(memory.embedder, Embeddings)
     assert isinstance(memory.encoder, Encoding)
 
-    assert len(memory.success_traj_docs) == 86
+    assert len(memory.success_traj_docs) == 82
     assert memory.vectorstore
 
 
@@ -293,9 +293,7 @@ def test_expel_experience_memory__fewshot_doc_token_count(
         assert token_count == 1245
 
     # Testing with fewshots only.
-    gt_token_counts = (
-        [273] * 13 + [149] * 7 + [156] * 7 + [163] * 7 + [134] * 7 + [154] * 7
-    )
+    gt_token_counts = [146] * 7 + [137] * 7 + [300] * 10 + [190] * 7 + [424] * 13
     memory = ExpeLExperienceMemory(
         fewshot_questions=fewshot_questions,
         fewshot_keys=fewshot_keys,
