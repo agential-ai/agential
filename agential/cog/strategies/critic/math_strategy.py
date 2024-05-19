@@ -19,8 +19,8 @@ class MathStrategy(CriticBaseStrategy):
             pass
         return code
 
-    def generate_critique(self, llm, question: str, examples: str, answer: str, prompt: str, additional_keys: Dict[str, str], critique_additional_keys: Dict[str, str], tests: str, use_interpreter_tool: bool):
-        additional_keys_update = {}
+    def generate_critique(self, llm, question: str, examples: str, answer: str, prompt: str, additional_keys: Dict[str, str], use_interpreter_tool: bool):
+        critique_additional_keys = additional_keys.copy()
         if use_interpreter_tool:
             code_answer, execution_status = safe_execute(answer)
             critique_additional_keys.update({
@@ -38,7 +38,7 @@ class MathStrategy(CriticBaseStrategy):
             prompt=prompt,
         ).split("Here's")[0]
 
-        return critique, additional_keys_update
+        return critique, critique_additional_keys
 
     def create_output_dict(self, answer: str, critique: str, additional_keys_update: Dict[str, str]) -> Dict[str, str]:
         output_dict = {"code": answer, "critique": critique}
@@ -46,17 +46,18 @@ class MathStrategy(CriticBaseStrategy):
             output_dict["execution_status"] = additional_keys_update["execution_status"]
         if "code_answer" in additional_keys_update:
             output_dict["code_answer"] = additional_keys_update["code_answer"]
-        if "improved_code" in additional_keys_update:
-            output_dict["improved_code"] = additional_keys_update["improved_code"]
         return output_dict
 
-    def update_answer_based_on_critique(self, llm, question: str, answer: str, critique: str) -> str:
+    def update_answer_based_on_critique(self, llm, question: str, examples: str, answer: str, critique: str, prompt: str, additional_keys: Dict[str, str]) -> str:
         return _prompt_critique(
             llm=llm,
             question=question,
-            examples="",
+            examples=examples,
             answer=answer,
             critique=critique + "\n\n" + "Here's a better solution:\n```python\n",
-            additional_keys={},
-            prompt="",
+            additional_keys=additional_keys,
+            prompt=prompt,
         ).split("```")[0]
+
+    def halting_condition(self, critique: str) -> bool:
+        return "is correct." in critique.lower() or not critique

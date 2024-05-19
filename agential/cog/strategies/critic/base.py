@@ -14,3 +14,7 @@ class CriticBaseStrategy(BaseStrategy):
     @abstractmethod
     def update_answer_based_on_critique(self, llm, question: str, answer: str, critique: str) -> str:
         pass
+    
+    @abstractmethod
+    def halting_condition(self, critique: str) -> bool:
+        pass

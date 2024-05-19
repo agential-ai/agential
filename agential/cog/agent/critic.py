@@ -1,3 +1,5 @@
+# agential/cog/agent/critic.py
+
 from typing import Dict, List, Optional
 
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
@@ -94,28 +96,42 @@ class CriticAgent(BaseAgent):
         answer = self.strategy.generate(self.llm, question, examples, prompt, additional_keys)
 
         for idx in range(max_interactions):
-            critique, additional_keys_update = self.strategy.generate_critique(
-                self.llm, question, critique_examples, answer, critique_prompt, additional_keys, critique_additional_keys, tests, use_interpreter_tool
+            critique, critique_additional_keys = self.strategy.generate_critique(
+                llm=self.llm, 
+                question=question, 
+                examples=critique_examples, 
+                answer=answer, 
+                prompt=critique_prompt, 
+                additional_keys=critique_additional_keys, 
+                use_interpreter_tool=use_interpreter_tool
             )
 
-            out.append(self.strategy.create_output_dict(answer, critique, additional_keys_update))
+            out.append(self.strategy.create_output_dict(answer, critique, critique_additional_keys))
 
-            if "query" in additional_keys_update:
+            if "query" in critique_additional_keys:
                 search_result, evidence_context = self.handle_search_query(
-                    additional_keys_update["query"], evidence_length, use_search_tool
+                    critique_additional_keys["query"], evidence_length, use_search_tool
                 )
                 critique += evidence_context
                 out[idx]["search_result"] = search_result
 
-            if "revised_answer" in additional_keys_update:
-                out[idx]["revised_answer"] = additional_keys_update["revised_answer"]
+            if "revised_answer" in critique_additional_keys:
+                out[idx]["revised_answer"] = critique_additional_keys["revised_answer"]
                 break
 
-            if not critique:
+            if self.strategy.halting_condition(critique):
                 break
 
             # Update answer for the next iteration
-            answer = self.strategy.update_answer_based_on_critique(self.llm, question, answer, critique)
+            answer = self.strategy.update_answer_based_on_critique(
+                llm=self.llm, 
+                question=question, 
+                examples=critique_examples, 
+                answer=answer, 
+                critique=critique,
+                prompt=critique_prompt,
+                additional_keys=critique_additional_keys
+            )
 
         return out
 
