@@ -938,6 +938,7 @@ Observation 3: [States by Order of Entry into Union - Infoplease] Joining the Un
 Thought 4: The evidence shows North Carolina entered Union in 1789, and Rhode Island entered Union in 1790, which is a year after North Carolina. 
 Action 4: Finish[Rhode Island]"""
 
+
 CRITIC_CRITIQUE_INSTRUCTION_TRIVIAQA = """{examples}
 (END OF EXAMPLES)
 
