@@ -22,14 +22,26 @@ class QAStrategy(CriticBaseStrategy):
             prompt=prompt,
         )
 
-    def generate_critique(self, question: str, examples: str, answer: str, prompt: str, additional_keys: Dict[str, str], use_interpreter_tool: bool, use_search_tool: bool, **kwargs):
+    def generate_critique(
+        self, 
+        idx: int,
+        question: str, 
+        examples: str, 
+        answer: str, 
+        critique: str,
+        prompt: str, 
+        additional_keys: Dict[str, str], 
+        use_search_tool: bool, 
+        max_interactions: int,
+        **kwargs
+    ):
         external_tool_info = {}
         critique = _prompt_critique(
             llm=self.llm,
             question=question,
             examples=examples,
             answer=answer,
-            critique="",
+            critique=critique,
             additional_keys=additional_keys,
             prompt=prompt,
         ).split("> Evidence: ")[0]
@@ -38,8 +50,8 @@ class QAStrategy(CriticBaseStrategy):
             _, search_query = critique.split("> Search Query:")[:2]
             search_query = search_query.split("\n")[0].strip()
 
-            search_result, evidence_context = self.handle_search_query(search_query, use_search_tool, **kwargs)
-            critique += evidence_context
+            search_result, context = self.handle_search_query(idx, question, search_query, use_search_tool, max_interactions, **kwargs)
+            critique += context
             external_tool_info['search_query'] = search_query
             external_tool_info['search_result'] = search_result
         
@@ -55,7 +67,7 @@ class QAStrategy(CriticBaseStrategy):
             revised_answer = revised_answer.strip()
             return revised_answer
         
-        updated_critique = f"\nLet's give the most possible answer.\n\nQuestion: {question}\nHere's"
+        updated_critique = f"\nLet's give the most possible answer.\n\nQuestion: {question}\nHere's "
         revised_answer = _prompt_critique(
             llm=self.llm,
             question=question,
@@ -69,24 +81,31 @@ class QAStrategy(CriticBaseStrategy):
         return revised_answer
 
     def halting_condition(self, critique: str) -> bool:
-        return "most possible answer: " in critique or not critique
+        return "most possible answer: " in critique
 
-    def handle_search_query(self, search_query, use_search_tool, **kwargs):
+    def handle_search_query(self, idx, question, search_query, use_search_tool, max_interactions, **kwargs):
         evidence_length = kwargs.get('evidence_length', self.evidence_length)
         num_results = kwargs.get('num_results', self.num_results)
+        
         if use_search_tool:
             if not self.search:
                 raise ValueError("Search tool is required but not provided.")
+            
             self._query_history.append(search_query)
-            for k in range(self._query_history.count(search_query), num_results):
+            count = self._query_history.count(search_query)
+            start = count if count < num_results else num_results - 1
+
+            for k in range(start, num_results):
                 search_result = self.search.results(search_query, num_results=k)[-1]
                 if search_result['snippet'] not in self._evidence_history:
                     self._evidence_history.add(search_result['snippet'])
                     break
 
             context = f"""> Evidence: [{search_result['title']}] {search_result['snippet'][:evidence_length]}\n\n"""
+            if idx == max_interactions - 2:
+                context += f"Let's give the most possible answer.\n\nQuestion: {question}\nHere's "
         else:
-            search_result = ""
+            search_result = {}
             context = """> Evidence: """
         return search_result, context
 
