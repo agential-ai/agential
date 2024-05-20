@@ -19,7 +19,7 @@ class MathStrategy(CriticBaseStrategy):
             pass
         return code
 
-    def generate_critique(self, llm, question: str, examples: str, answer: str, prompt: str, additional_keys: Dict[str, str], use_interpreter_tool: bool):
+    def generate_critique(self, llm, question: str, examples: str, answer: str, prompt: str, additional_keys: Dict[str, str], use_interpreter_tool: bool, use_search_tool: bool):
         critique_additional_keys = additional_keys.copy()
         if use_interpreter_tool:
             code_answer, execution_status = safe_execute(answer)
@@ -40,12 +40,12 @@ class MathStrategy(CriticBaseStrategy):
 
         return critique, critique_additional_keys
 
-    def create_output_dict(self, answer: str, critique: str, additional_keys_update: Dict[str, str]) -> Dict[str, str]:
+    def create_output_dict(self, answer: str, critique: str, external_tool_info: Dict[str, str]) -> Dict[str, str]:
         output_dict = {"code": answer, "critique": critique}
-        if "execution_status" in additional_keys_update:
-            output_dict["execution_status"] = additional_keys_update["execution_status"]
-        if "code_answer" in additional_keys_update:
-            output_dict["code_answer"] = additional_keys_update["code_answer"]
+        if "execution_status" in external_tool_info:
+            output_dict["execution_status"] = external_tool_info["execution_status"]
+        if "code_answer" in external_tool_info:
+            output_dict["code_answer"] = external_tool_info["code_answer"]
         return output_dict
 
     def update_answer_based_on_critique(self, llm, question: str, examples: str, answer: str, critique: str, prompt: str, additional_keys: Dict[str, str]) -> str:
@@ -60,4 +60,4 @@ class MathStrategy(CriticBaseStrategy):
         ).split("```")[0]
 
     def halting_condition(self, critique: str) -> bool:
-        return "is correct." in critique.lower() or not critique
+        return "is correct." in critique.lower()

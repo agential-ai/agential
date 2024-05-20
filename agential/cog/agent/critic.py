@@ -1,8 +1,5 @@
-# agential/cog/agent/critic.py
+from typing import Dict, List
 
-from typing import Dict, List, Optional
-
-from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.agent.base import BaseAgent
@@ -24,26 +21,21 @@ class CriticAgent(BaseAgent):
         llm (BaseChatModel): An instance of a language model used for generating initial answers
             and critiques.
         mode (str): The CRITIC agent's mode. Can be "qa", "math", or "code".
-        search (Optional[GoogleSerperAPIWrapper]): A search API wrapper used for obtaining evidence to
-            support or refute generated answers and critiques. Defaults to None. Required if mode = "qa".
     """
 
     def __init__(
         self,
         llm: BaseChatModel,
         mode: str,
-        search: Optional[GoogleSerperAPIWrapper] = None,
+        **strategy_kwargs
     ) -> None:
         """Initialization."""
         super().__init__()
 
         self.llm = llm
         self.mode = mode
-        self.search = search
-        if self.mode == "qa" and not self.search:
-            raise ValueError("`GoogleSerperAPIWrapper` is required when mode is 'qa'.")
 
-        self.strategy = CriticStrategyFactory.get_strategy(self.mode)
+        self.strategy = CriticStrategyFactory().get_strategy(self.mode, llm=self.llm, **strategy_kwargs)
 
     def generate(
         self,
@@ -57,10 +49,7 @@ class CriticAgent(BaseAgent):
         max_interactions: int = 7,
         use_search_tool: bool = True,
         use_interpreter_tool: bool = True,
-        evidence_length: int = 400,
-        tests: str = "",
-        test_prompt: str = CRITIC_POT_INSTRUCTION_TEST_HUMANEVAL,
-        test_examples: str = HUMANEVAL_FEWSHOT_EXAMPLES_POT_TEST,
+        **kwargs
     ) -> List[Dict[str, str]]:
         """Generates an answer that is refined with search results.
 
@@ -75,11 +64,8 @@ class CriticAgent(BaseAgent):
             max_interactions (int): The maximum number of critique cycles. Defaults to 7.
             use_search_tool (bool): Only for "qa" mode. Flag to decide whether to use the search tool for evidence gathering. Defaults to True.
             use_interpreter_tool (bool): Only for "math" or "code" mode. Flag to decide whether to use the interpreter tool for code execution. Defaults to True.
-            evidence_length (int): The maximum length of the evidence snippet to be included in the context. Used only in "qa" mode. Defaults to 400.
-            tests (str): The unit tests. Used in "code" mode. Defaults to "".
-            test_prompt (str): The instruction template for generating unit tests. Used only in "code" mode. Defaults to CRITIC_POT_INSTRUCTION_TEST_HUMANEVAL.
-            test_examples (str): Few-shot examples to guide model in generating unit tests. Used only in "code" mode. Defaults to HUMANEVAL_FEWSHOT_EXAMPLES_POT_TEST.
-
+            **kwargs: Additional parameters for flexibility.
+            
         Returns:
             List[Dict[str, str]]: A list of dictionaries.
                 "qa" mode:
@@ -93,53 +79,34 @@ class CriticAgent(BaseAgent):
         out = []
 
         # Initial answer generation
-        answer = self.strategy.generate(self.llm, question, examples, prompt, additional_keys)
+        answer = self.strategy.generate(question, examples, prompt, additional_keys)
 
-        for idx in range(max_interactions):
-            critique, critique_additional_keys = self.strategy.generate_critique(
-                llm=self.llm, 
+        for _ in range(max_interactions):
+            critique, external_tool_info = self.strategy.generate_critique(
                 question=question, 
                 examples=critique_examples, 
                 answer=answer, 
                 prompt=critique_prompt, 
                 additional_keys=critique_additional_keys, 
-                use_interpreter_tool=use_interpreter_tool
+                use_interpreter_tool=use_interpreter_tool,
+                use_search_tool=use_search_tool,
+                **kwargs
             )
 
-            out.append(self.strategy.create_output_dict(answer, critique, critique_additional_keys))
-
-            if "query" in critique_additional_keys:
-                search_result, evidence_context = self.handle_search_query(
-                    critique_additional_keys["query"], evidence_length, use_search_tool
-                )
-                critique += evidence_context
-                out[idx]["search_result"] = search_result
-
-            if "revised_answer" in critique_additional_keys:
-                out[idx]["revised_answer"] = critique_additional_keys["revised_answer"]
-                break
+            out.append(self.strategy.create_output_dict(answer, critique, external_tool_info))
 
             if self.strategy.halting_condition(critique):
                 break
 
             # Update answer for the next iteration
             answer = self.strategy.update_answer_based_on_critique(
-                llm=self.llm, 
                 question=question, 
                 examples=critique_examples, 
                 answer=answer, 
                 critique=critique,
                 prompt=critique_prompt,
-                additional_keys=critique_additional_keys
+                additional_keys=critique_additional_keys,
+                **kwargs
             )
 
         return out
-
-    def handle_search_query(self, search_query, evidence_length, use_search_tool):
-        if use_search_tool and self.search:
-            search_result = self.search.results(search_query)["organic"][0]
-            context = f"""> Evidence: [{search_result['title']}] {search_result['snippet'][:evidence_length]}\n\n"""
-        else:
-            search_result = ""
-            context = """> Evidence: """
-        return search_result, context

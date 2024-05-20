@@ -4,7 +4,7 @@ from agential.cog.strategies.base import BaseStrategy
 
 class CriticBaseStrategy(BaseStrategy):
     @abstractmethod
-    def generate_critique(self, llm, question: str, examples: str, answer: str, prompt: str, additional_keys: Dict[str, str], critique_additional_keys: Dict[str, str], tests: str, use_interpreter_tool: bool):
+    def generate_critique(self, llm, question: str, examples: str, answer: str, prompt: str, additional_keys: Dict[str, str], critique_additional_keys: Dict[str, str], tests: str, use_interpreter_tool: bool, use_search_tool: bool):
         pass
 
     @abstractmethod
