@@ -105,7 +105,7 @@ class CriticAgent(BaseAgent):
             if self.strategy.halting_condition(critique):
                 break
 
-            # Update answer for the next iteration
+            # Update answer for the next iteration.
             answer = self.strategy.update_answer_based_on_critique(
                 question=question, 
                 examples=critique_examples, 

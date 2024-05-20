@@ -37,7 +37,7 @@ class QAStrategy(CriticBaseStrategy):
         **kwargs
     ):
         external_tool_info = {}
-        critique = _prompt_critique(
+        new_critique = _prompt_critique(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -47,49 +47,54 @@ class QAStrategy(CriticBaseStrategy):
             prompt=prompt,
         ).split("> Evidence: ")[0]
 
-        if "> Search Query: " in critique:
-            _, search_query = critique.split("> Search Query:")[:2]
+        if "> Search Query: " in new_critique:
+            _, search_query = new_critique.split("> Search Query:")[:2]
             search_query = search_query.split("\n")[0].strip()
 
-            search_result, context = self.handle_search_query(idx, question, search_query, use_search_tool, max_interactions, **kwargs)
+            search_result, context = self.handle_search_query(
+                idx, 
+                question, 
+                search_query, 
+                use_search_tool, 
+                max_interactions, 
+                **kwargs
+            )
             external_tool_info['search_query'] = search_query
             external_tool_info['search_result'] = search_result
-            critique += context
+            new_critique = f"{critique}\n{new_critique}{context}"
         else:
-            if "most possible answer: " not in critique:
-                critique += f"\nLet's give the most possible answer.\n\nQuestion: {question}\nHere's "
-                critique = _prompt_critique(
+            if "most possible answer: " not in new_critique:
+                new_critique = f"{critique}\n{new_critique}\nLet's give the most possible answer.\n\nQuestion: {question}\nHere's "
+                new_critique = _prompt_critique(
                     llm=self.llm,
                     question=question,
                     examples=examples,
                     answer=answer,
-                    critique=critique,
+                    critique=new_critique,
                     additional_keys=additional_keys,
                     prompt=prompt,
                 ).split("> Evidence: ")[0]
-            _, revised_answer = critique.split("most possible answer: ")
-            critique = revised_answer.strip()
+
+            new_critique = new_critique.split("most possible answer: ")[-1].strip()
             self._halt = True
 
-        return critique, external_tool_info
+        return new_critique, external_tool_info
 
     def create_output_dict(self, answer: str, critique: str, external_tool_info: Dict[str, str]) -> Dict[str, str]:
-        output_dict = {"answer": answer, "critique": critique, **external_tool_info}
+        output_dict = {"answer": answer if not self._halt else critique, "critique": critique, **external_tool_info}
         return output_dict
     
-    def update_answer_based_on_critique(self, question: str, examples: str, answer: str, critique: str, prompt: str, additional_keys: Dict[str, str], **kwargs) -> str:
-        updated_critique = f"\nLet's give the most possible answer.\n\nQuestion: {question}\nHere's "
-        revised_answer = _prompt_critique(
-            llm=self.llm,
-            question=question,
-            examples=examples,
-            answer=answer,
-            critique=critique + updated_critique,
-            additional_keys=additional_keys,
-            prompt=prompt,
-        )
-        revised_answer = revised_answer.split("most possible answer: ")[-1].strip()
-        return revised_answer
+    def update_answer_based_on_critique(
+        self, 
+        question: str, 
+        examples: str, 
+        answer: str, 
+        critique: str, 
+        prompt: str, 
+        additional_keys: Dict[str, str], 
+        **kwargs
+    ) -> str:
+        return answer
 
     def halting_condition(self, critique: str) -> bool:
         if self._halt:
