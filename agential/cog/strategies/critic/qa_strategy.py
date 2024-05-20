@@ -12,6 +12,7 @@ class QAStrategy(CriticBaseStrategy):
 
         self._query_history = []
         self._evidence_history = set()
+        self._halt = False
 
     def generate(self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]) -> str:
         return _prompt_agent(
@@ -51,10 +52,25 @@ class QAStrategy(CriticBaseStrategy):
             search_query = search_query.split("\n")[0].strip()
 
             search_result, context = self.handle_search_query(idx, question, search_query, use_search_tool, max_interactions, **kwargs)
-            critique += context
             external_tool_info['search_query'] = search_query
             external_tool_info['search_result'] = search_result
-        
+            critique += context
+        else:
+            if "most possible answer: " not in critique:
+                critique += f"\nLet's give the most possible answer.\n\nQuestion: {question}\nHere's "
+                critique = _prompt_critique(
+                    llm=self.llm,
+                    question=question,
+                    examples=examples,
+                    answer=answer,
+                    critique=critique,
+                    additional_keys=additional_keys,
+                    prompt=prompt,
+                ).split("> Evidence: ")[0]
+            _, revised_answer = critique.split("most possible answer: ")
+            critique = revised_answer.strip()
+            self._halt = True
+
         return critique, external_tool_info
 
     def create_output_dict(self, answer: str, critique: str, external_tool_info: Dict[str, str]) -> Dict[str, str]:
@@ -62,11 +78,6 @@ class QAStrategy(CriticBaseStrategy):
         return output_dict
     
     def update_answer_based_on_critique(self, question: str, examples: str, answer: str, critique: str, prompt: str, additional_keys: Dict[str, str], **kwargs) -> str:
-        if "most possible answer: " in critique:
-            _, revised_answer = critique.split("most possible answer: ")
-            revised_answer = revised_answer.strip()
-            return revised_answer
-        
         updated_critique = f"\nLet's give the most possible answer.\n\nQuestion: {question}\nHere's "
         revised_answer = _prompt_critique(
             llm=self.llm,
@@ -81,7 +92,10 @@ class QAStrategy(CriticBaseStrategy):
         return revised_answer
 
     def halting_condition(self, critique: str) -> bool:
-        return "most possible answer: " in critique
+        if self._halt:
+            self._halt = False
+            return True
+        return False
 
     def handle_search_query(self, idx, question, search_query, use_search_tool, max_interactions, **kwargs):
         evidence_length = kwargs.get('evidence_length', self.evidence_length)
@@ -112,3 +126,4 @@ class QAStrategy(CriticBaseStrategy):
     def reset(self):
         self._query_history = []
         self._evidence_history = set()
+        self._halt = False

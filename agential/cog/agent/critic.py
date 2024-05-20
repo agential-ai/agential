@@ -85,14 +85,14 @@ class CriticAgent(BaseAgent):
         # Initial answer generation
         answer = self.strategy.generate(question, examples, prompt, additional_keys)
 
-        criticism = ""
+        critique = ""
         for idx in range(max_interactions):
             critique, external_tool_info = self.strategy.generate_critique(
                 idx=idx,
                 question=question, 
                 examples=critique_examples, 
                 answer=answer, 
-                critique=criticism,
+                critique=critique,
                 prompt=critique_prompt, 
                 additional_keys=critique_additional_keys, 
                 use_search_tool=use_search_tool,
