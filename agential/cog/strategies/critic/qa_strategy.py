@@ -51,21 +51,22 @@ class QAStrategy(CriticBaseStrategy):
             _, revised_answer = critique.split("most possible answer: ")
             revised_answer = revised_answer.strip()
             return revised_answer
-        else:
-            if not critique:
-                return answer
-            
-            updated_critique = f"\nLet's give the most possible answer.\n\nQuestion: {question}\nHere's"
-            revised_answer = _prompt_critique(
-                llm=self.llm,
-                question=question,
-                examples=examples,
-                answer=answer,
-                critique=critique,
-                additional_keys=additional_keys,
-                prompt=prompt,
-            ).strip()
-            return updated_critique
+
+        if not critique:
+            return answer
+        
+        updated_critique = f"\nLet's give the most possible answer.\n\nQuestion: {question}\nHere's"
+        revised_answer = _prompt_critique(
+            llm=self.llm,
+            question=question,
+            examples=examples,
+            answer=answer,
+            critique=critique + updated_critique,
+            additional_keys=additional_keys,
+            prompt=prompt,
+        )
+        revised_answer = revised_answer.split("most possible answer: ")[-1].strip()
+        return revised_answer
 
     def halting_condition(self, critique: str) -> bool:
         return "most possible answer: " in critique
