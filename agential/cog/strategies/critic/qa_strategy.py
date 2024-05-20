@@ -10,6 +10,9 @@ class QAStrategy(CriticBaseStrategy):
         self.evidence_length = evidence_length
         self.num_results = num_results
 
+        self._query_history = []
+        self._evidence_history = set()
+
     def generate(self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]) -> str:
         return _prompt_agent(
             llm=self.llm,
@@ -51,9 +54,6 @@ class QAStrategy(CriticBaseStrategy):
             _, revised_answer = critique.split("most possible answer: ")
             revised_answer = revised_answer.strip()
             return revised_answer
-
-        if not critique:
-            return answer
         
         updated_critique = f"\nLet's give the most possible answer.\n\nQuestion: {question}\nHere's"
         revised_answer = _prompt_critique(
@@ -69,7 +69,7 @@ class QAStrategy(CriticBaseStrategy):
         return revised_answer
 
     def halting_condition(self, critique: str) -> bool:
-        return "most possible answer: " in critique
+        return "most possible answer: " in critique or not critique
 
     def handle_search_query(self, search_query, use_search_tool, **kwargs):
         evidence_length = kwargs.get('evidence_length', self.evidence_length)
@@ -77,9 +77,19 @@ class QAStrategy(CriticBaseStrategy):
         if use_search_tool:
             if not self.search:
                 raise ValueError("Search tool is required but not provided.")
-            search_result = self.search.results(search_query, num_results=num_results)[0]
+            self._query_history.append(search_query)
+            for k in range(self._query_history.count(search_query), num_results):
+                search_result = self.search.results(search_query, num_results=k)[-1]
+                if search_result['snippet'] not in self._evidence_history:
+                    self._evidence_history.add(search_result['snippet'])
+                    break
+
             context = f"""> Evidence: [{search_result['title']}] {search_result['snippet'][:evidence_length]}\n\n"""
         else:
             search_result = ""
             context = """> Evidence: """
         return search_result, context
+
+    def reset(self):
+        self._query_history = []
+        self._evidence_history = set()

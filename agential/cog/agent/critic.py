@@ -49,6 +49,7 @@ class CriticAgent(BaseAgent):
         max_interactions: int = 7,
         use_search_tool: bool = True,
         use_interpreter_tool: bool = True,
+        reset: bool = True,
         **kwargs
     ) -> List[Dict[str, str]]:
         """Generates an answer that is refined with search results.
@@ -76,6 +77,9 @@ class CriticAgent(BaseAgent):
                     the "execution_status" and "code_answer" if use_interpreter_tool is True. If the critic
                     improves the solution, then the dictionary will have an "improved_code" key.
         """
+        if reset:
+            self.reset()
+
         out = []
 
         # Initial answer generation
@@ -110,3 +114,6 @@ class CriticAgent(BaseAgent):
             )
 
         return out
+
+    def reset(self):
+        self.strategy.reset()

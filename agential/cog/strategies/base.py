@@ -6,3 +6,7 @@ class BaseStrategy(ABC):
     @abstractmethod
     def generate(self, llm: BaseChatModel, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]) -> str:
         pass
+
+    @abstractmethod
+    def reset(self) -> None:
+        pass
