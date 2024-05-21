@@ -41,7 +41,7 @@ class MathStrategy(CriticBaseStrategy):
     ):
         external_tool_info = {}
         if use_interpreter_tool:
-            code_answer, execution_status = safe_execute(answer)
+            code_answer, execution_status = safe_execute(answer)[0]
             external_tool_info = {
                 "execution_status": execution_status,
                 "code_answer": code_answer if code_answer is not None else "",

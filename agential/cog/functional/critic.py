@@ -38,7 +38,7 @@ def remove_comment(code: str) -> str:
 def safe_execute(
     code_string: str,
     keys: Optional[List[str]] = None,
-) -> Tuple[Optional[Any], str]:
+) -> Tuple[List[Any], str]:
     """Executes the provided Python code string in a safe manner with a timeout and returns specified variables from the execution.
 
     Args:
@@ -55,17 +55,17 @@ def safe_execute(
         try:
             exec(x, safe_globals)
             if keys is None:
-                an = safe_globals.get("answer", None)
+                an = [safe_globals.get("answer", None)]
             else:
                 an = [safe_globals.get(k, None) for k in keys]
             return an, "Done"
         except BaseException as e:
-            return None, repr(e)
+            return [None], repr(e)
 
     try:
         an, report = func_timeout.func_timeout(3, execute, args=(code_string,))
     except func_timeout.FunctionTimedOut:
-        an = None
+        an = [None]
         report = "TimeoutError: execution timeout"
 
     return an, report
