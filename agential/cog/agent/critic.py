@@ -35,7 +35,7 @@ class CriticAgent(BaseAgent):
         self.llm = llm
         self.mode = mode
 
-        self.strategy = CriticStrategyFactory().get_strategy(self.mode, llm=self.llm, **strategy_kwargs)
+        self.strategy = CriticStrategyFactory().get_strategy(mode=self.mode, llm=self.llm, **strategy_kwargs)
 
     def generate(
         self,

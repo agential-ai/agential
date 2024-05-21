@@ -113,6 +113,11 @@ class QAStrategy(CriticBaseStrategy):
             return True
         return False
 
+    def reset(self):
+        self._query_history = []
+        self._evidence_history = set()
+        self._halt = False
+
     def handle_search_query(self, idx, question, search_query, use_search_tool, max_interactions, **kwargs):
         evidence_length = kwargs.get('evidence_length', self.evidence_length)
         num_results = kwargs.get('num_results', self.num_results)
@@ -141,8 +146,3 @@ class QAStrategy(CriticBaseStrategy):
             search_result = {}
             context = """> Evidence: """
         return search_result, context
-
-    def reset(self):
-        self._query_history = []
-        self._evidence_history = set()
-        self._halt = False
