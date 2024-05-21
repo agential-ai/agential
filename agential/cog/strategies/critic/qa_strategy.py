@@ -59,9 +59,20 @@ class QAStrategy(CriticBaseStrategy):
                 max_interactions, 
                 **kwargs
             )
+            new_critique = f"{critique}\n{new_critique}{context}"
+            if not use_search_tool:
+                search_result = _prompt_critique(
+                    llm=self.llm,
+                    question=question,
+                    examples=examples,
+                    answer=answer,
+                    critique=new_critique,
+                    additional_keys=additional_keys,
+                    prompt=prompt,
+                ).split("> Evidence: ")[0]
+                new_critique = f"{critique}\n{new_critique}{context}{search_result.strip()}"
             external_tool_info['search_query'] = search_query
             external_tool_info['search_result'] = search_result
-            new_critique = f"{critique}\n{new_critique}{context}"
         else:
             if "most possible answer: " not in new_critique:
                 new_critique = f"{critique}\n{new_critique}\nLet's give the most possible answer.\n\nQuestion: {question}\nHere's "
@@ -116,11 +127,14 @@ class QAStrategy(CriticBaseStrategy):
 
             for k in range(start, num_results):
                 search_result = self.search.results(search_query, num_results=k)[-1]
-                if search_result['snippet'] not in self._evidence_history:
+                if "snippet" in search_result and search_result['snippet'] not in self._evidence_history:
                     self._evidence_history.add(search_result['snippet'])
                     break
 
-            context = f"""> Evidence: [{search_result['title']}] {search_result['snippet'][:evidence_length]}\n\n"""
+            if "title" not in search_result and "snippet" not in search_result:
+                context = f"""> Evidence: [] No results found"""
+            else:
+                context = f"""> Evidence: [{search_result['title']}] {search_result['snippet'][:evidence_length]}\n\n"""
             if idx == max_interactions - 2:
                 context += f"Let's give the most possible answer.\n\nQuestion: {question}\nHere's "
         else:
