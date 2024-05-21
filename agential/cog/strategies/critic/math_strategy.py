@@ -26,6 +26,7 @@ class MathStrategy(CriticBaseStrategy):
             code = matches[0]
         except:
             pass
+
         return code
 
     def generate_critique(
@@ -42,13 +43,13 @@ class MathStrategy(CriticBaseStrategy):
         max_interactions: int,
         **kwargs
     ):
-        critique_additional_keys = additional_keys.copy()
+        external_tool_info = {}
         if use_interpreter_tool:
             code_answer, execution_status = safe_execute(answer)
-            critique_additional_keys.update({
+            external_tool_info = {
                 "execution_status": execution_status,
                 "code_answer": code_answer if code_answer else "",
-            })
+            }
 
         critique = _prompt_critique(
             llm=self.llm,
@@ -56,18 +57,14 @@ class MathStrategy(CriticBaseStrategy):
             examples=examples,
             answer=answer,
             critique="",
-            additional_keys=critique_additional_keys,
+            additional_keys=additional_keys if additional_keys else external_tool_info,
             prompt=prompt,
         ).split("Here's")[0]
 
-        return critique, critique_additional_keys
+        return critique, external_tool_info
 
     def create_output_dict(self, answer: str, critique: str, external_tool_info: Dict[str, str]) -> Dict[str, str]:
-        output_dict = {"code": answer, "critique": critique}
-        if "execution_status" in external_tool_info:
-            output_dict["execution_status"] = external_tool_info["execution_status"]
-        if "code_answer" in external_tool_info:
-            output_dict["code_answer"] = external_tool_info["code_answer"]
+        output_dict = {"code": answer, "critique": critique, **external_tool_info}
         return output_dict
 
     def update_answer_based_on_critique(
