@@ -6,6 +6,7 @@ import re
 class MathStrategy(CriticBaseStrategy):
     def __init__(self, llm):
         self.llm = llm
+        self._answer_history = []
 
     def generate(
         self, 
@@ -50,6 +51,19 @@ class MathStrategy(CriticBaseStrategy):
                 "execution_status": execution_status,
                 "code_answer": code_answer if code_answer is not None else "",
             }
+            self._answer_history.append({
+                "answer": answer, 
+                "external_tool_info": external_tool_info
+            })
+
+            last_valid_idx = -1
+            for i in range(len(self._answer_history)-1, -1, -1):
+                if self._answer_history[i]["external_tool_info"]["code_answer"] is not None:
+                    last_valid_idx = i
+                    break
+
+            external_tool_info = self._answer_history[last_valid_idx]["external_tool_info"]
+            answer = self._answer_history[last_valid_idx]["answer"]
 
         new_critique = _prompt_critique(
             llm=self.llm,
@@ -89,7 +103,7 @@ class MathStrategy(CriticBaseStrategy):
         ).split("```")[0]
 
     def halting_condition(self, critique: str) -> bool:
-        return "<CORRECT>" in critique
+        return "<CORRECT>" in critique.replace(" ", "").upper().strip()
 
     def reset(self) -> bool:
-        pass
+        self._answer_history = []
