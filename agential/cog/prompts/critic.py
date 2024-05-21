@@ -2045,7 +2045,7 @@ CRITIC_POT_INSTRUCTION_TABMWP = """{examples}
 (END OF EXAMPLES)
 
 {question}
-# Python code, return answer"""
+# Python Code, return answer"""
 
 
 TABMWP_FEWSHOT_EXAMPLES_POT = """Read the following table regarding "Coin collections" and then write Python code to answer a question:
