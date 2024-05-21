@@ -48,7 +48,7 @@ class MathStrategy(CriticBaseStrategy):
             code_answer, execution_status = safe_execute(answer)
             external_tool_info = {
                 "execution_status": execution_status,
-                "code_answer": code_answer if code_answer else "",
+                "code_answer": code_answer if code_answer is not None else "",
             }
 
         new_critique = _prompt_critique(
@@ -89,7 +89,9 @@ class MathStrategy(CriticBaseStrategy):
         ).split("```")[0]
 
     def halting_condition(self, critique: str) -> bool:
-        return "is correct." in critique.lower()
+        pattern_correct = re.compile(r"\bis correct\.", re.IGNORECASE)
+        pattern_incorrect = re.compile(r"\bincorrect\b", re.IGNORECASE)
+        return bool(pattern_correct.search(critique)) and not bool(pattern_incorrect.search(critique))
 
     def reset(self) -> bool:
         pass
