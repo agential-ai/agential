@@ -103,6 +103,7 @@ class QAStrategy(CriticBaseStrategy):
         critique: str, 
         prompt: str, 
         additional_keys: Dict[str, str], 
+        external_tool_info: Dict[str, str],
         **kwargs
     ) -> str:
         return answer
