@@ -1,7 +1,6 @@
 from typing import Dict
 from agential.cog.functional.critic import _prompt_agent, _prompt_critique, safe_execute
 from agential.cog.strategies.critic.base import CriticBaseStrategy
-import re
 
 class MathStrategy(CriticBaseStrategy):
     def __init__(self, llm):
@@ -22,11 +21,7 @@ class MathStrategy(CriticBaseStrategy):
             additional_keys=additional_keys,
             prompt=prompt,
         )
-        try:
-            matches = re.findall(r"`python\s+(.*?)\s+`", answer, re.DOTALL)
-            answer = matches[0]
-        except:
-            pass
+        answer = answer.split("```python")[-1].split("```")[0].strip()
 
         return answer
 
@@ -101,11 +96,7 @@ class MathStrategy(CriticBaseStrategy):
             additional_keys=external_tool_info if external_tool_info else additional_keys,
             prompt=prompt,
         )
-        try:
-            matches = re.findall(r"`python\s+(.*?)\s+`", new_answer, re.DOTALL)
-            new_answer = matches[0]
-        except:
-            pass
+        new_answer = new_answer.split("```python")[-1].split("```")[0].strip()
 
         return new_answer
 
