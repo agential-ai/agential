@@ -15,7 +15,7 @@ class MathStrategy(CriticBaseStrategy):
         prompt: str, 
         additional_keys: Dict[str, str]
     ) -> str:
-        code = _prompt_agent(
+        answer = _prompt_agent(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -23,12 +23,12 @@ class MathStrategy(CriticBaseStrategy):
             prompt=prompt,
         )
         try:
-            matches = re.findall(r"`python\s+(.*?)\s+`", code, re.DOTALL)
-            code = matches[0]
+            matches = re.findall(r"`python\s+(.*?)\s+`", answer, re.DOTALL)
+            answer = matches[0]
         except:
             pass
 
-        return code
+        return answer
 
     def generate_critique(
         self, 
@@ -92,7 +92,7 @@ class MathStrategy(CriticBaseStrategy):
         external_tool_info: Dict[str, str],
         **kwargs
     ) -> str:
-        return _prompt_critique(
+        new_answer = _prompt_critique(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -100,7 +100,14 @@ class MathStrategy(CriticBaseStrategy):
             critique=f"{critique}\n\nHere's a better solution:\n```python\n",
             additional_keys=external_tool_info if external_tool_info else additional_keys,
             prompt=prompt,
-        ).split("```")[0]
+        )
+        try:
+            matches = re.findall(r"`python\s+(.*?)\s+`", new_answer, re.DOTALL)
+            new_answer = matches[0]
+        except:
+            pass
+
+        return new_answer
 
     def halting_condition(self, critique: str) -> bool:
         return "<CORRECT>" in critique.replace(" ", "").upper().strip()
