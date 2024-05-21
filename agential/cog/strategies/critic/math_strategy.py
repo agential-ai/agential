@@ -89,9 +89,7 @@ class MathStrategy(CriticBaseStrategy):
         ).split("```")[0]
 
     def halting_condition(self, critique: str) -> bool:
-        pattern_correct = re.compile(r"\bis correct", re.IGNORECASE)
-        pattern_incorrect = re.compile(r"\bincorrect\b", re.IGNORECASE)
-        return bool(pattern_correct.search(critique)) and not bool(pattern_incorrect.search(critique))
+        return "<CORRECT>" in critique
 
     def reset(self) -> bool:
         pass

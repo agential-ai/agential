@@ -1207,7 +1207,7 @@ Question: {question}
 Execution: {execution_status} 
 Output: answer = {code_answer}
 
-What's the problem with the above code? If nothing is wrong, output 'It is correct.'
+What's the problem with the above code? If nothing is wrong, output <CORRECT>.
 
 {critique}"""
 
@@ -1458,7 +1458,7 @@ Question: {question}
 {answer}
 ```
 
-What's the problem with the above code? If nothing is wrong, output 'It is correct.'
+What's the problem with the above code? If nothing is wrong, output <CORRECT>.
 
 {critique}"""
 
@@ -1762,7 +1762,7 @@ Question: {question}
 Execution: {execution_status} 
 Output: answer = {code_answer}
 
-What's the problem with the above code? If nothing is wrong, output 'It is correct.'
+What's the problem with the above code? If nothing is wrong, output <CORRECT>.
 
 {critique}"""
 
@@ -1908,7 +1908,7 @@ Question: {question}
 {answer}
 ```
 
-What's the problem with the above code? If nothing is wrong, output 'It is correct.'
+What's the problem with the above code? If nothing is wrong, output <CORRECT>.
 
 {critique}"""
 
@@ -2137,7 +2137,7 @@ CRITIC_CRITIQUE_INSTRUCTION_TABMWP = """{examples}
 Execution: {execution_status} 
 Output: answer = {code_answer}
 
-What's the problem with the above code? If nothing is wrong, output 'It is correct.'
+What's the problem with the above code? If nothing is wrong, output <CORRECT>.
 
 {critique}"""
 
@@ -2325,7 +2325,7 @@ CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_TABMWP = """{examples}
 {answer}
 ```
 
-What's the problem with the above code? If nothing is wrong, output 'It is correct.'
+What's the problem with the above code? If nothing is wrong, output <CORRECT>.
 
 {critique}"""
 
@@ -2789,7 +2789,7 @@ CRITIC_CRITIQUE_INSTRUCTION_HUMANEVAL = """{examples}
 Execution: {execution_status} 
 Output: answer = {code_answer}
 
-What's the problem with the above code? If nothing is wrong, output 'It is correct.'
+What's the problem with the above code? If nothing is wrong, output <CORRECT>.
 
 {critique}"""
 
@@ -3091,7 +3091,7 @@ CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_HUMANEVAL = """{examples}
 {answer}
 ```
 
-What's the problem with the above code? If nothing is wrong, output 'It is correct.'
+What's the problem with the above code? If nothing is wrong, output <CORRECT>.
 
 {critique}"""
 
@@ -3462,7 +3462,7 @@ CRITIC_CRITIQUE_INSTRUCTION_MBPP = """{examples}
 Execution: {execution_status} 
 Output: answer = {code_answer}
 
-What's the problem with the above code? If nothing is wrong, output 'It is correct.'
+What's the problem with the above code? If nothing is wrong, output <CORRECT>.
 
 {critique}"""
 
@@ -3679,7 +3679,7 @@ CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_MBPP = """{examples}
 {answer}
 ```
 
-What's the problem with the above code? If nothing is wrong, output 'It is correct.'
+What's the problem with the above code? If nothing is wrong, output <CORRECT>.
 
 {critique}"""
 

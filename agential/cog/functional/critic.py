@@ -2,6 +2,7 @@
 
 import builtins
 import sys
+import copy
 
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -37,18 +38,17 @@ def remove_comment(code: str) -> str:
 def safe_execute(
     code_string: str,
     keys: Optional[List[str]] = None,
-    safe_globals: Dict[str, Any] = {"__builtins__": builtins, "sys": sys},
 ) -> Tuple[Optional[Any], str]:
     """Executes the provided Python code string in a safe manner with a timeout and returns specified variables from the execution.
 
     Args:
         code_string (str): Python code to execute.
         keys (Optional[List[str]]): A list of variable names whose values are to be returned after execution. If None, the function tries to return a variable named 'answer'.
-        safe_globals (Dict[str, Any]): A dictionary of safe global names. Defaults to `{'__builtins__': builtins, 'sys': sys}`.
 
     Returns:
         tuple: A tuple containing the result(s) of the specified variable(s) and a status message. If an exception occurs or timeout happens, it returns None for the result.
     """
+    safe_globals: Dict[str, Any] = {"__builtins__": builtins, "sys": sys}
 
     def execute(x: str) -> Tuple[Optional[Any], str]:
         """Executes the code string with python exec()."""
