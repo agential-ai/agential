@@ -30,7 +30,7 @@ from agential.cog.modules.reflect.reflexion import (
 )
 from agential.cog.prompts.react import HOTPOTQA_FEWSHOT_EXAMPLES
 from agential.cog.prompts.reflexion import (
-    REFLEXION_COT_FEWSHOT_EXAMPLES,
+    REFLEXION_COT_FEWSHOT_EXAMPLES_HOTPOTQA,
     REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
     REFLEXION_COT_INSTRUCTION,
     REFLEXION_COT_INSTRUCTION_NO_CONTEXT,
@@ -141,7 +141,7 @@ class ReflexionCoTAgent(BaseAgent):
         """
         # If there's context and examples/prompt is unchanged, then use the fewshot examples/prompt with context.
         if context and examples == REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT:
-            examples = REFLEXION_COT_FEWSHOT_EXAMPLES
+            examples = REFLEXION_COT_FEWSHOT_EXAMPLES_HOTPOTQA
 
         if context and prompt == REFLEXION_COT_INSTRUCTION_NO_CONTEXT:
             prompt = REFLEXION_COT_INSTRUCTION

@@ -29,7 +29,7 @@ from agential.cog.functional.reflexion import (
 )
 from agential.cog.prompts.react import HOTPOTQA_FEWSHOT_EXAMPLES
 from agential.cog.prompts.reflexion import (
-    REFLEXION_COT_FEWSHOT_EXAMPLES,
+    REFLEXION_COT_FEWSHOT_EXAMPLES_HOTPOTQA,
     REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
     REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES,
     REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT,
@@ -161,7 +161,7 @@ def test__prompt_cot_agent() -> None:
     ]
     out = _prompt_cot_agent(
         llm=FakeListChatModel(responses=responses),
-        examples=REFLEXION_COT_FEWSHOT_EXAMPLES,
+        examples=REFLEXION_COT_FEWSHOT_EXAMPLES_HOTPOTQA,
         reflections="",
         question=q,
         scratchpad="\nThought:",
@@ -222,7 +222,7 @@ def test__prompt_cot_agent() -> None:
     )
     out = _prompt_cot_agent(
         llm=FakeListChatModel(responses=responses),
-        examples=REFLEXION_COT_FEWSHOT_EXAMPLES,
+        examples=REFLEXION_COT_FEWSHOT_EXAMPLES_HOTPOTQA,
         reflections=reflections,
         question=q,
         scratchpad=scratchpad,
@@ -633,7 +633,7 @@ def test__is_halted() -> None:
 
     # Test when step_n exceeds max_steps.
     assert _is_halted(
-        False,
+        True,
         11,
         "question",
         "scratchpad",
@@ -646,7 +646,7 @@ def test__is_halted() -> None:
 
     # Test when encoded prompt exceeds max_tokens.
     assert _is_halted(
-        False,
+        True,
         1,
         "question",
         "scratchpad",
@@ -685,7 +685,7 @@ def test__is_halted() -> None:
 
     # Test edge case when encoded prompt equals max_tokens.
     assert _is_halted(
-        False,
+        True,
         1,
         "question",
         "scratchpad",

@@ -15,60 +15,57 @@ Here are some examples:
 
 Question: {question}{scratchpad}"""
 
-HOTPOTQA_FEWSHOT_EXAMPLES = """Question: Serianna is a band of what genre that combines elements of heavy metal and hardcore punk?
-Thought 1: Let's search the question in google
-Action 1: Search[Serianna is a band of what genre that combines elements of heavy metal and hardcore punk? site: wikipedia.org]
-Observation 1: [Metalcore - Wikipedia] Metalcore is a fusion music genre that combines elements of extreme metal and hardcore punk.
-Thought 2: The evidence suggests that metalcore is a genre that combines elements of extreme metal and hardcore punk.
-Action 2: Search[Serianna is a band of metalcore genre. site: wikipedia.org
-Observation 2: [Serianna - Wikipedia] Serianna was a metalcore band from Madison, Wisconsin. The band formed in 2006...
-Thought 3: The evidence suggests Serianna is a metalcore band.
-Action 3: Finish[Metalcore]
-Question: Which band was formed first, Helium or Jack's Mannequin?
-Thought 1: Let's search the question in google
-Action 1: Search[Which band was formed first, Helium or Jack's Mannequin?]
-Observation 1: [Jack's Mannequin - Wikipedia] Jack's Mannequin was an American rock band formed in 2004, hailing from Orange County, California.
-Thought 2: The evidence shows that Jack's Mannequin is a band formed in 2004. We then find out when the band Helium was formed.
-Action 2: Search[When was the band 'Helium' formed?]
-Observation 2: [] Helium / Active from 1992
-Thought 3: The evidence shows that Helium was formed in 1992. Jack's Mannequin was formed in 2004. 1992 (Helium) < 2004 (Jack's Mannequin), so Helium was formed first.
-Action 3: Finish[Helium]
-Question: What year did Maurice win the award given to the 'player judged most valuable to his team' in the NHL?
-Thought 1: Let's search the question in google:
-Action 1: Search[What year did Maurice win the award given to the 'player judged most valuable to his team' in the NHL? site: wikipedia.org]
-Observation 1: [List of National Hockey League awards - Wikipedia] Awarded to the 'player judged most valuable to his team'. The original trophy was donated to the league by Dr. David A. Hart, father of coach Cecil Hart.
-Thought 2: The evidence does not provide information about what the award is and Maurice won the award in which year. We can change the search query.
-Action 2: Search[What year did Maurice win the award of most valuable player in the NHL?]
-Observation 2: [NHL Maurice Richard Trophy Winners] Award presented to top goal-scorer annually since 1999. It honors Richard, the first player in League history to score 50 goals in 50 games, 50 goals in a...
-Thought 3: The evidence mention Richard won NHL Trophy, but does not mention if it is for most valuable players.
-Action 3: Search[When Maurice Richard win the NHL's most valuable player?]
-Observation 3: [Maurice Richard - Wikipedia] He won the Hart Trophy as the NHL's most valuable player in 1947, played in 13 All-Star Games and was named to 14 post-season NHL All-Star teams, eight on the first team.
-Thought 4: The evidence shows that Maurice Richard won the Hart Trophy as the NHL's most valuable player in 1947.
-Action 4: Finish[1947]
-Question: Are John H. Auer and Jerome Robbins both directors?
-Thought 1: Let's search the question in google
-Action 1: Search[Are John H. Auer and Jerome Robbins both directors?]
-Observation 1: [A history of Jerome Robbins at PNB - Pacific Northwest Ballet] Robbins retained the title of associate artistic director until approximately 1963, ... Ballets: USA, from the late 1950s to the late 1960s.
-Thought 2: The evidence suggests Jerome Robbins is a director. We then need to verify if John H. Auer is a director.
-Action 2: Search[Is John H. Auer a director? site: wikipedia.org]
-Observation 2: [John H. Auer - Wikipedia] Auer was a Hungarian-born child actor who, on coming to the Americas in 1928, became a movie director and producer, initially in Mexico but, from the early 1930s, in Hollywood.
-Thought 3: The evidence suggests that John H. Auer is an actor, director and producer. Therefore, both John H. Auer and Jerome Robbins are directors.
-Action 3: Finish[Yes]
-Question: Which artist did Anthony Toby 'Tony' Hiller appear with that liked showering himself (and others) with confetti?
-Thought 1: Let's search the question in google
-Action 1: Search[Which artist did Anthony Toby Tony Hiller appear with that liked showering himself (and others) with confetti?]
-Observation 1: [Untitled] Without you: The tragic story of Badfinger|Dan Matovina, The Military Orchid and Other Novels|Jocelyn Brooke, Looking at Lisp (Micro computer books)|Tony...
-Thought 2: The evidence does not provide any useful information about the question. We need to find out who is the artist that liked showering himself (and others) with confetti.
-Action 2: Search[Which artist liked showering himself (and others) with confetti?]
-Observation 2: [Rip Taylor - Wikipedia] Charles Elmer 'Rip' Taylor Jr. was an American actor and comedian, known for his exuberance and flamboyant personality, including his wild moustache, toupee, and his habit of showering himself (and others)
-Thought 3: The evidence suggests that the artist that liked showering himself is Charles Elmer 'Rip' Taylor Jr. We can further check if Rip Taylor appeared with Anthony Toby 'Tony' Hiller.
-Action 3: Search[Which artist appeared with Anthony Toby 'Tony' Hiller?]
-Observation 3: [Tony Hiller - Wikipedia] He was best known for writing and/or producing hits for Brotherhood of Man, including 'United We Stand' (1970) and 'Save Your Kisses for Me' (1976). Biography [edit]
-Thought 4: The evidence does not mention the artist.
-Action 4: Search[Did Tony Hiller appear with Rip Taylor?]
-Observation 4: [Tony Hiller - Wikipedia] The Hiller Brothers appeared with many performers of the time including Alma Cogan, Tommy Cooper, Val Doonican, Matt Monro, The Shadows, Bernard Manning, Kathy Kirby, Roger Whittaker, Rip Taylor, Gene Vincent, Lance Percival, Tessie O'Shea...
-Thought 5: The evidence shows that Tony Hiller appeared with Rip Taylor.
-Action 5: Finish[Rip Taylor]"""
+HOTPOTQA_FEWSHOT_EXAMPLES = """Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+Thought 1: I need to search Colorado orogeny, find the area that the eastern sector of the Colorado orogeny extends into, then find the elevation range of the area.
+Action 1: Search[Colorado orogeny]
+Observation 1: The Colorado orogeny was an episode of mountain building (an orogeny) in Colorado and surrounding areas.
+Thought 2: It does not mention the eastern sector. So I need to look up eastern sector.
+Action 2: Lookup[eastern sector]
+Observation 2: (Result 1 / 1) The eastern sector extends into the High Plains and is called the Central Plains orogeny.
+Thought 3: The eastern sector of Colorado orogeny extends into the High Plains. So I need to search High Plains and find its elevation range.
+Action 3: Search[High Plains]
+Observation 3: High Plains refers to one of two distinct land regions:
+Thought 4: I need to instead search High Plains (United States).
+Action 4: Search[High Plains (United States)]
+Observation 4: The High Plains are a subregion of the Great Plains. From east to west, the High Plains rise in elevation from around 1,800 to 7,000 ft (550 to 2,130 m).[3]
+Thought 5: High Plains rise in elevation from around 1,800 to 7,000 ft, so the answer is 1,800 to 7,000 ft.
+Action 5: Finish[1,800 to 7,000 ft]
+Question: Musician and satirist Allie Goertz wrote a song about the 'The Simpsons' character Milhouse, who Matt Groening named after who?
+Thought 1: The question simplifies to 'The Simpsons' character Milhouse is named after who. I only need to search Milhouse and find who it is named after.
+Action 1: Search[Milhouse]
+Observation 1: Milhouse Mussolini Van Houten is a recurring character in the Fox animated television series The Simpsons voiced by Pamela Hayden and created by Matt Groening.
+Thought 2: The paragraph does not tell who Milhouse is named after, maybe I can look up 'named after'.
+Action 2: Lookup[named after]
+Observation 2: (Result 1 / 1) Milhouse was named after U.S. president Richard Nixon whose middle name was Milhous.
+Thought 3: Milhouse was named after U.S. president Richard Nixon, so the answer is Richard Nixon.
+Action 3: Finish[Richard Nixon]
+Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
+Thought 1: I need to search Adam Clayton Powell and The Saimaa Gesture, and find which documentary is about Finnish rock groups.
+Action 1: Search[Adam Clayton Powell]
+Observation 1: Could not find [Adam Clayton Powell]. Similar: ['Adam Clayton Powell III', 'Seventh Avenue (Manhattan)', 'Adam Clayton Powell Jr. State Office Building', 'Isabel Washington Powell', 'Adam Powell', 'Adam Clayton Powell (film)', 'Giancarlo Esposito'].
+Thought 2: To find the documentary, I can search Adam Clayton Powell (film).
+Action 2: Search[Adam Clayton Powell (film)]
+Observation 2: Adam Clayton Powell is a 1989 American documentary film directed by Richard Kilberg. The film is about the rise and fall of influential African-American politician Adam Clayton Powell Jr.[3][4] It was later aired as part of the PBS series The American Experience.
+Thought 3: Adam Clayton Powell (film) is a documentary about an African-American politician, not Finnish rock groups. So the documentary about Finnish rock groups must instead be The Saimaa Gesture.
+Action 3: Finish[The Saimaa Gesture]
+Question: What profession does Nicholas Ray and Elia Kazan have in common?
+Thought 1: I need to search Nicholas Ray and Elia Kazan, find their professions, then find the profession they have in common.
+Action 1: Search[Nicholas Ray]
+Observation 1: Nicholas Ray (born Raymond Nicholas Kienzle Jr., August 7, 1911 - June 16, 1979) was an American film director, screenwriter, and actor best known for the 1955 film Rebel Without a Cause.
+Thought 2: Professions of Nicholas Ray are director, screenwriter, and actor. I need to search Elia Kazan next and find his professions.
+Action 2: Search[Elia Kazan]
+Observation 2: Elia Kazan was an American film and theatre director, producer, screenwriter and actor.
+Thought 3: Professions of Elia Kazan are director, producer, screenwriter, and actor. So profession Nicholas Ray and Elia Kazan have in common is director, screenwriter, and actor.
+Action 3: Finish[director, screenwriter, actor]
+Question: Which magazine was started first Arthur's Magazine or First for Women?
+Thought 1: I need to search Arthur's Magazine and First for Women, and find which was started first.
+Action 1: Search[Arthur's Magazine]
+Observation 1: Arthur's Magazine (1844-1846) was an American literary periodical published in Philadelphia in the 19th century.
+Thought 2: Arthur's Magazine was started in 1844. I need to search First for Women next.
+Action 2: Search[First for Women]
+Observation 2: First for Women is a woman's magazine published by Bauer Media Group in the USA.[1] The magazine was started in 1989.
+Thought 3: First for Women was started in 1989. 1844 (Arthur's Magazine) < 1989 (First for Women), so Arthur's Magazine was started first.
+Action 3: Finish[Arthur's Magazine]"""
 
 
 # ======================================================================== FEVER ======================================================================== #
@@ -223,7 +220,7 @@ Action 2: Search[Who was the first person to feature on the reverse of the £5 n
 Observation 2: [Bank of England £5 note - Wikipedia] The old paper note, first issued in 2002 and bearing the image of prison reformer Elizabeth Fry on the reverse, was phased out and ceased to be legal tender after 5 May 2017. 
 Thought 3: The evidence only mentions Elizabeth Fry, and from the question, we know that she was not the first person to feature on the reverse of the £5 note. 
 Action 3: Search[People have featured on the reverse of the £5 note: George Stephenson and Elizabeth Fry and?]
-Observation 3: [Historical British figures featured on banknotes (1970-2017)] £5 – The Duke of Wellington, George Stephenson, Elizabeth Fry, Sir Winston Churchill £10 – Florence Nightingale, Charles Dickens, Charles Darwin £20 – William Shakespeare, ...
+Observation 3: [Historical British figures featured on banknotes (1970-2017)] £5 - The Duke of Wellington, George Stephenson, Elizabeth Fry, Sir Winston Churchill £10 – Florence Nightingale, Charles Dickens, Charles Darwin £20 – William Shakespeare, ...
 Thought 4: The evidence shows that the Duke of Wellington and Sir Winston Churchill were also featured on £5.
 Action 4: Finish[Duke of Wellington]
 

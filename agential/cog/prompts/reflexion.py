@@ -4,7 +4,7 @@
 
 
 # Fewshot CoT examples for prompting ReflexionCoT agent (think/act).
-REFLEXION_COT_FEWSHOT_EXAMPLES = """Relevant Context: The eastern sector of the Colorado orogeny extends into the High Plains, which is characterized by its relatively flat terrain with elevations ranging from around 1,800 to 7,000 feet.
+REFLEXION_COT_FEWSHOT_EXAMPLES_HOTPOTQA = """Relevant Context: The eastern sector of the Colorado orogeny extends into the High Plains, which is characterized by its relatively flat terrain with elevations ranging from around 1,800 to 7,000 feet.
 Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
 Thought: The question asks about the elevation range of the area where the eastern sector of the Colorado orogeny extends into. From the context, I know that the High Plains cover this area and their elevation ranges from around 1,800 to 7,000 feet.
 Action: Finish[1,800 to 7,000 feet]

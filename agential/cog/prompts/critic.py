@@ -572,80 +572,61 @@ Q: What profession does Nicholas Ray and Elia Kazan have in common?
 A: director, screenwriter, actor
 
 Q: Which magazine was started first Arthur's Magazine or First for Women?
-A: Arthur's Magazine
-
-Q: Were Pavel Urysohn and Leonid Levin known for the same type of work?
-A: Yes"""
+A: Arthur's Magazine"""
 
 
-HOTPOTQA_FEWSHOT_EXAMPLES_REACT = """Question: Serianna is a band of what genre that combines elements of heavy metal and hardcore punk?
-Thought 1: Let's search the question in google
-Action 1: Search[Serianna is a band of what genre that combines elements of heavy metal and hardcore punk? site: wikipedia.org]
-Observation 1: [Metalcore - Wikipedia] Metalcore is a fusion music genre that combines elements of extreme metal and hardcore punk.
-Thought 2: The evidence suggests that metalcore is a genre that combines elements of extreme metal and hardcore punk.
-Action 2: Search[Serianna is a band of metalcore genre. site: wikipedia.org
-Observation 2: [Serianna - Wikipedia] Serianna was a metalcore band from Madison, Wisconsin. The band formed in 2006...
-Thought 3: The evidence suggests Serianna is a metalcore band.
-Action 3: Finish[Metalcore]
-
----
-
-Question: Which band was formed first, Helium or Jack's Mannequin?
-Thought 1: Let's search the question in google
-Action 1: Search[Which band was formed first, Helium or Jack's Mannequin?]
-Observation 1: [Jack's Mannequin - Wikipedia] Jack's Mannequin was an American rock band formed in 2004, hailing from Orange County, California.
-Thought 2: The evidence shows that Jack's Mannequin is a band formed in 2004. We then find out when the band Helium was formed.
-Action 2: Search[When was the band "Helium" formed?]
-Observation 2: [] Helium / Active from 1992
-Thought 3: The evidence shows that Helium was formed in 1992. Jack's Mannequin was formed in 2004. 1992 (Helium) < 2004 (Jack's Mannequin), so Helium was formed first.
-Action 3: Finish[Helium]
-
----
-
-Question: What year did Maurice win the award given to the  "player judged most valuable to his team" in the NHL?
-Thought 1: Let's search the question in google:
-Action 1: Search[What year did Maurice win the award given to the  "player judged most valuable to his team" in the NHL? site: wikipedia.org]
-Observation 1: [List of National Hockey League awards - Wikipedia] Awarded to the "player judged most valuable to his team". The original trophy was donated to the league by Dr. David A. Hart, father of coach Cecil Hart.
-Thought 2: The evidence does not provide information about what the award is and Maurice won the award in which year. We can change the search query.
-Action 2: Search[What year did Maurice win the award of most valuable player in the NHL?]
-Observation 2: [NHL Maurice Richard Trophy Winners] Award presented to top goal-scorer annually since 1999​​ It honors Richard, the first player in League history to score 50 goals in 50 games, 50 goals in a ...
-Thought 3: The evidence mention Richard won NHL Trophy, but does not mention if it is for most valuable players.
-Action 3: Search[When Maurice Richard win the most NHL's most valuable player?]
-Observation 3: [Maurice Richard - Wikipedia] He won the Hart Trophy as the NHL's most valuable player in 1947, played in 13 All-Star Games and was named to 14 post-season NHL All-Star teams, eight on the first team.
-Thought 4: The evidence shows that Maurice Richard won the Hart Trophy as the NHL's most valuable player in 1947.
-Action 4: Finish[1947]
-
----
-
-Question: Are John H. Auer and Jerome Robbins both directors?
-Thought 1: Let's search the question in google
-Action 1: Search[Are John H. Auer and Jerome Robbins both directors?]
-Observation 1: [A history of Jerome Robbins at PNB - Pacific Northwest Ballet] Robbins retained the title of associate artistic director until approximately 1963, ... Ballets: USA, from the late 1950s to the late 1960s.
-Thought 2: The evidence suggests Jerome Robbins is a director. We then need to verify if John H. Auer is a director.
-Action 2: Search[Is John H. Auer a director? site: wikipedia.org]
-Observation 2: [John H. Auer - Wikipedia] Auer was a Hungarian-born child actor who, on coming to the Americas in 1928, became a movie director and producer, initially in Mexico but, from the early 1930s, in Hollywood.
-Thought 3: The evidence suggests that John H. Auer is an actor, director and producer. Therefore, both John H. Auer and Jerome Robbins are directors.
-Action 3: Finish[Yes]
-
----
-
-Question: Which artist did Anthony Toby "Tony" Hiller appear with that liked showering himself (and others) with confetti?
-Thought 1: Let's search the question in google
-Action 1: Search[Which artist did Anthony Toby Tony Hiller appear with that liked showering himself (and others) with confetti?]
-Observation 1: [Untitled] Without you: The tragic story of Badfinger|Dan Matovina, The Military Orchid and Other Novels|Jocelyn Brooke, Looking at Lisp (Micro computer books)|Tony ...
-Thought 2: The evidence does not provide any useful information about the question. We need to find out who is the artist that liked showering himself (and others) with confetti.
-Action 2: Search[Which artist liked showering himself (and others) with confetti?]
-Observation 2: [Rip Taylor - Wikipedia] Charles Elmer " Rip " Taylor Jr. was an American actor and comedian, known for his exuberance and flamboyant personality, including his wild moustache, toupee, and his habit of showering himself (and others)
-Thought 3: The evidence suggests that the artist that liked showering himself is Charles Elmer "Rip" Taylor Jr. We can further check if Rip Taylor appeared with Anthony Toby "Tony" Hiller.
-Action 3: Search[Which artist appeared with Anthony Toby "Tony" Hiller?]
-Observation 3: [Tony Hiller - Wikipedia] He was best known for writing and/or producing hits for Brotherhood of Man , including " United We Stand " (1970) and " Save Your Kisses for Me " (1976). Biography [ edit ]
-Thought 4: The evidence does not mention the artist.
-Action 4: Search[Did Tony Hiller appear with Rip Taylor?]
-Observation 4: [Tony Hiller - Wikipedia] The Hiller Brothers appeared with many performers of the time including Alma Cogan , Tommy Cooper , Val Doonican , Matt Monro , The Shadows , Bernard Manning , Kathy Kirby , Roger Whittaker , Rip Taylor , Gene Vincent , Lance Percival , Tessie O'Shea...
-Thought 5: The evidence shows that Tony Hiller appeared with Rip Taylor.
-Action 5: Finish[Rip Taylor]
-
----"""
+HOTPOTQA_FEWSHOT_EXAMPLES_REACT = """Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+Thought 1: I need to search Colorado orogeny, find the area that the eastern sector of the Colorado orogeny extends into, then find the elevation range of the area.
+Action 1: Search[Colorado orogeny]
+Observation 1: The Colorado orogeny was an episode of mountain building (an orogeny) in Colorado and surrounding areas.
+Thought 2: It does not mention the eastern sector. So I need to look up eastern sector.
+Action 2: Lookup[eastern sector]
+Observation 2: (Result 1 / 1) The eastern sector extends into the High Plains and is called the Central Plains orogeny.
+Thought 3: The eastern sector of Colorado orogeny extends into the High Plains. So I need to search High Plains and find its elevation range.
+Action 3: Search[High Plains]
+Observation 3: High Plains refers to one of two distinct land regions:
+Thought 4: I need to instead search High Plains (United States).
+Action 4: Search[High Plains (United States)]
+Observation 4: The High Plains are a subregion of the Great Plains. From east to west, the High Plains rise in elevation from around 1,800 to 7,000 ft (550 to 2,130 m).[3]
+Thought 5: High Plains rise in elevation from around 1,800 to 7,000 ft, so the answer is 1,800 to 7,000 ft.
+Action 5: Finish[1,800 to 7,000 ft]
+Question: Musician and satirist Allie Goertz wrote a song about the "The Simpsons" character Milhouse, who Matt Groening named after who?
+Thought 1: The question simplifies to "The Simpsons" character Milhouse is named after who. I only need to search Milhouse and find who it is named after.
+Action 1: Search[Milhouse]
+Observation 1: Milhouse Mussolini Van Houten is a recurring character in the Fox animated television series The Simpsons voiced by Pamela Hayden and created by Matt Groening.
+Thought 2: The paragraph does not tell who Milhouse is named after, maybe I can look up "named after".
+Action 2: Lookup[named after]
+Observation 2: (Result 1 / 1) Milhouse was named after U.S. president Richard Nixon, whose middle name was Milhous. 
+Thought 3: Milhouse was named after U.S. president Richard Nixon, so the answer is Richard Nixon.
+Action 3: Finish[Richard Nixon]
+Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
+Thought 1: I need to search Adam Clayton Powell and The Saimaa Gesture, and find which documentary is about Finnish rock groups.
+Action 1: Search[Adam Clayton Powell]
+Observation 1: Could not find [Adam Clayton Powell]. Similar: ['Adam Clayton Powell III', 'Seventh Avenue (Manhattan)', 'Adam Clayton Powell Jr. State Office Building', 'Isabel Washington Powell', 'Adam Powell', 'Adam Clayton Powell (film)', 'Giancarlo Esposito'].
+Thought 2: To find the documentary, I can search Adam Clayton Powell (film).
+Action 2: Search[Adam Clayton Powell (film)]
+Observation 2: Adam Clayton Powell is a 1989 American documentary film directed by Richard Kilberg.
+The film is about the rise and fall of influential African-American politician Adam Clayton Powell Jr.[3][4] It was later aired as part of the PBS series The American Experience.
+Thought 3: Adam Clayton Powell (film) is a documentary about an African-American politician, not Finnish rock groups. So the documentary about Finnish rock groups must instead be The Saimaa Gesture.
+Action 3: Finish[The Saimaa Gesture]
+Question: What profession does Nicholas Ray and Elia Kazan have in common?
+Thought 1: I need to search Nicholas Ray and Elia Kazan, find their professions, then find the profession they have in common.
+Action 1: Search[Nicholas Ray]
+Observation 1: Nicholas Ray (born Raymond Nicholas Kienzle Jr., August 7, 1911 – June 16, 1979) was an American film director, screenwriter, and actor best known for the 1955 film Rebel Without a Cause.
+Thought 2: Professions of Nicholas Ray are director, screenwriter, and actor. I need to search Elia Kazan next and find his professions.
+Action 2: Search[Elia Kazan]
+Observation 2: Elia Kazan was an American film and theatre director, producer, screenwriter and actor.
+Thought 3: Professions of Elia Kazan are director, producer, screenwriter, and actor. So profession Nicholas Ray and Elia Kazan have in common is director, screenwriter, and actor.
+Action 3: Finish[director, screenwriter, actor]
+Question: Which magazine was started first Arthur's Magazine or First for Women?
+Thought 1: I need to search Arthur's Magazine and First for Women, and find which was started first.
+Action 1: Search[Arthur's Magazine]
+Observation 1: Arthur's Magazine (1844-1846) was an American literary periodical published in Philadelphia in the 19th century. 
+Thought 2: Arthur's Magazine was started in 1844. I need to search First for Women next.
+Action 2: Search[First for Women]
+Observation 2: First for Women is a woman's magazine published by Bauer Media Group in the USA.[1] The magazine was started in 1989. 
+Thought 3: First for Women was started in 1989. 1844 (Arthur's Magazine) < 1989 (First for Women), so Arthur's Magazine was started first.
+Action 3: Finish[Arthur's Magazine]"""
 
 
 CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA = """{examples}
@@ -661,181 +642,142 @@ What's the problem with the above answer?
 {critique}"""
 
 
-HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC = """Question: Serianna is a band of what genre that combines elements of heavy metal and hardcore punk?
-Proposed Answer: Let's think step by step. Serianna is a band of metalcore genre. Metalcore is a subgenre of heavy metal and hardcore punk. So Serianna is a band of heavy metal and hardcore punk. So the answer is: heavy metal and hardcore punk.
+HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC = """Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+Proposed Answer: Let's think step by step. The eastern sector of the Colorado orogeny extends into the High Plains. High Plains rise in elevation from around 1,800 to 7,000 ft. So the answer is: 1,800 to 7,000 ft.
 
 What's the problem with the above answer?
 
 1. Plausibility:
 
-The question asks for the genre that combines elements of heavy metal and hardcore punk, and the answer is "heavy metal and hardcore punk", simply repeat the question. So it's not plausible.
+The question asks for the elevation range for the area that the eastern sector of the Colorado orogeny extends into, and the answer correctly identifies the High Plains and provides the elevation range, so it's plausible.
 
 2. Truthfulness:
 
 Let's search the question in google:
-> Search Query: Serianna is a band of what genre that combines elements of heavy metal and hardcore punk? site: wikipedia.org
-> Evidence: [Metalcore - Wikipedia] Metalcore is a fusion music genre that combines elements of extreme metal and hardcore punk.
 
-The evidence suggests that metalcore is a genre that combines elements of extreme metal and hardcore punk, as stated in the proposed answer.
+> Search Query: elevation range for the area that the eastern sector of the Colorado orogeny extends into
+> Evidence: [High Plains - Wikipedia] The High Plains rise in elevation from around 1,800 feet (550 m) in the east to over 7,000 feet (2,100 m) in the west.
 
-Let's search the proposed answer in google:
-> Search Query: Serianna is a band of metalcore genre. site: wikipedia.org
-> Evidence: [Serianna - Wikipedia] Serianna was a metalcore band from Madison, Wisconsin. The band formed in 2006...
+The evidence suggests that the High Plains have an elevation range from around 1,800 to 7,000 feet, as stated in the proposed answer.
 
-The evidence suggests Serianna is a metalcore band, the proposed answer is correct about this.
+The proposed answer correctly identifies that the High Plains have an elevation range from 1,800 to 7,000 feet. The final answer is plausible and truthful.
 
-Above all, the proposed answer correctly identifies that Serianna is a band of the metalcore genre, which combines elements of heavy metal and hardcore punk. However, the final answer is not plausible since it just lists the genres that metalcore combines.
-
-Question: Serianna is a band of what genre that combines elements of heavy metal and hardcore punk?
-Here's the most possible answer: Let's think step by step. Serianna is a band of metalcore genre, which is a fusion genre that combines elements of heavy metal and hardcore punk. So the answer is: Metalcore.
+Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+Here's the most possible answer: Let's think step by step. The eastern sector of the Colorado orogeny extends into the High Plains. High Plains rise in elevation from around 1,800 to 7,000 ft. So the answer is: 1,800 to 7,000 ft.
 
 ---
 
-Question: Which band was formed first, Helium or Jack's Mannequin?
-Proposed Answer: Let's think step by step. Helium was formed in 1991. Jack's Mannequin was formed in 2004. 1991 (Helium) < 2004 (Jack's Mannequin), so Helium was formed first. So the answer is: Helium.
+Question: Musician and satirist Allie Goertz wrote a song about the "The Simpsons" character Milhouse, who Matt Groening named after who?
+Proposed Answer: Let's think step by step. Milhouse was named after U.S. president Richard Nixon. So the answer is: Richard Nixon.
 
 What's the problem with the above answer?
 
 1. Plausibility:
 
-The answer should be chosen between "Helium" and "Jack's Mannequin", and the answer is "Helium", so it seems good.
+The answer identifies the person Milhouse was named after, and it is plausible as it fits within the context of the character's name origin.
 
 2. Truthfulness:
 
 Let's search the question in google:
 
-> Search Query: Which band was formed first, Helium or Jack's Mannequin?
-> Evidence: [Jack's Mannequin - Wikipedia] Jack's Mannequin was an American rock band formed in 2004, hailing from Orange County, California.
- 
-The evidence shows that Jack's Mannequin is a band formed in 2004.
+> Search Query: Milhouse character named after site: wikipedia.org
+> Evidence: [Milhouse Van Houten - Wikipedia] Milhouse was named after President Richard Nixon, whose middle name was Milhous.
 
-We then find out when the band Helium was formed.
+The evidence suggests that Milhouse was indeed named after U.S. president Richard Nixon, whose middle name was Milhous.
 
-> Search Query: When was the band "Helium" formed?
-> Evidence: [] Helium / Active from 1992
+The proposed answer correctly identifies that Milhouse was named after U.S. president Richard Nixon. The final answer is both plausible and truthful.
 
-The evidence shows that Helium was formed in 1992, not 1991 in the proposed answer.
-
-The proposed answer gives the correct date of formation for Jack's Mannequin, but wrong about Helium, it needs revision. Notably, the final answer "Helium" is still correct since 1992 < 2004.
-
-Question: Which band was formed first, Helium or Jack's Mannequin?
-Here's the most possible answer: Let's think step by step. Helium was formed in 1992. Jack's Mannequin was formed in 2004. 1992 (Helium) < 2004 (Jack's Mannequin), so Helium was formed first. So the answer is: Helium.
+Question: Musician and satirist Allie Goertz wrote a song about the "The Simpsons" character Milhouse, who Matt Groening named after who?
+Here's the most possible answer: Let's think step by step. Milhouse was named after U.S. president Richard Nixon, whose middle name was Milhous. So the answer is: Richard Nixon.
 
 ---
 
-Question: What year did Maurice win the award given to the  "player judged most valuable to his team" in the NHL?
-Proposed Answer: Let's think step by step. Maurice Richard won the Hart Memorial Trophy in 1947. So the answer is: 1947.
+Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
+Proposed Answer: Let's think step by step. Adam Clayton Powell (film) is a documentary about an African-American politician, not Finnish rock groups. So the documentary about Finnish rock groups must instead be The Saimaa Gesture. So the answer is: The Saimaa Gesture.
 
 What's the problem with the above answer?
 
 1. Plausibility:
 
-The question ask for a year, and the answer "1947" is a year. So it's plausible.
+The answer provides a reasonable explanation for why "The Saimaa Gesture" is the correct documentary about Finnish rock groups, and it is plausible based on the information given.
 
 2. Truthfulness:
 
 Let's search the question in google:
 
-> Search Query: What year did Maurice win the award given to the  "player judged most valuable to his team" in the NHL? site: wikipedia.org
-> Evidence: [List of National Hockey League awards - Wikipedia] Awarded to the "player judged most valuable to his team". The original trophy was donated to the league by Dr. David A. Hart, father of coach Cecil Hart.
+> Search Query: documentary about Finnish rock groups Adam Clayton Powell or The Saimaa Gesture
+> Evidence: [The Saimaa Gesture - Wikipedia] The Saimaa Gesture is a 1981 Finnish documentary film about a tour of Finnish rock groups.
 
-The evidence does not provide information about what the award is and Maurice won the award in which year.
+The evidence shows that "The Saimaa Gesture" is indeed a documentary about Finnish rock groups.
 
-Let's search the proposed anwer in google:
-> Search Query: Maurice Richard won the Hart Memorial Trophy in 1947.
-> Evidence: [Maurice Richard - Wikipedia] He won the Hart Trophy as the NHL's most valuable player in 1947...
+Let's search for information about "Adam Clayton Powell (film)":
 
-The evidence shows that Maurice Richard won the Hart Trophy as the NHL's most valuable player in 1947, which supports the answer.
+> Search Query: Adam Clayton Powell documentary
+> Evidence: [Adam Clayton Powell (film) - Wikipedia] Adam Clayton Powell is a documentary film about the African-American politician Adam Clayton Powell Jr.
 
-Above all, the proposed answer is plausible, and the evidence support all its claims.
+The evidence confirms that "Adam Clayton Powell" is a documentary about an African-American politician.
 
-Question: What year did Maurice win the award given to the  "player judged most valuable to his team" in the NHL?
-Here's the most possible answer: Let's think step by step. Maurice Richard won the Hart Memorial Trophy in 1947. So the answer is: 1947.
+The proposed answer correctly identifies that "Adam Clayton Powell" is not about Finnish rock groups and that "The Saimaa Gesture" is. The final answer is both plausible and truthful.
+
+Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
+Here's the most possible answer: Let's think step by step. Adam Clayton Powell (film) is a documentary about an African-American politician, not Finnish rock groups. So the documentary about Finnish rock groups must instead be The Saimaa Gesture. So the answer is: The Saimaa Gesture.
+
 
 ---
 
-Question: Are John H. Auer and Jerome Robbins both directors?
-Proposed Answer: Let's think step by step. John H. Auer is a director, producer, and screenwriter. Jerome Robbins is a director, producer, choreographer, and dancer.  So the answer is: Jerome Robbins.
+Question: What profession does Nicholas Ray and Elia Kazan have in common?
+Proposed Answer: director, screenwriter, actor
 
 What's the problem with the above answer?
 
 1. Plausibility:
 
-This is a yes/no question, the proposed answer is "Jerome Robbins", which does not clearly answer whether they are both directors.
-The answer should be a clear "yes" or "no".
+The answer lists professions, but it doesn't explain the reasoning behind why these professions are relevant to both Nicholas Ray and Elia Kazan. A step-by-step explanation would provide clarity and make the answer more plausible.
 
 2. Truthfulness:
 
 Let's search the question in google:
 
-> Search Query: Are John H. Auer and Jerome Robbins both directors?
-> Evidence: [A history of Jerome Robbins at PNB - Pacific Northwest Ballet] Robbins retained the title of associate artistic director until approximately 1963, ... Ballets: USA, from the late 1950s to the late 1960s.
+> Search Query: Nicholas Ray profession
+> Evidence: [Nicholas Ray - Wikipedia] Nicholas Ray was an American film director and screenwriter best known for the film "Rebel Without a Cause."
 
-The evidence suggests Jerome Robbins is a director.
+> Search Query: Elia Kazan profession
+> Evidence: [Elia Kazan - Wikipedia] Elia Kazan was a Greek-American film and theatre director, producer, screenwriter, and actor.
 
-We then need to verify if John H. Auer is a director.
+The evidence shows that both Nicholas Ray and Elia Kazan were directors and screenwriters. While Elia Kazan was also an actor and producer, there is no evidence that Nicholas Ray was an actor.
 
-> Search Query: Is John H. Auer a director? site: wikipedia.org
-> Evidence: [John H. Auer - Wikipedia] Auer was a Hungarian-born child actor who, on coming to the Americas in 1928, became a movie director and producer, initially in Mexico but, from the early 1930s, in Hollywood.
+The proposed answer lists "actor" inaccurately for Nicholas Ray, making it not entirely truthful.
 
-The evidence suggests that John H. Auer is an actor, director and producer.
-
-Therefore, both John H. Auer and Jerome Robbins are directors.
-
-Question: Are John H. Auer and Jerome Robbins both directors?
-Here's the most possible answer: Let's think step by step. John H. Auer is an actor, director and producer. Jerome Robbins is a director. Therefore, Both John H. Auer and Jerome Robbins are directors. So the answer is: Yes.
+Question: What profession does Nicholas Ray and Elia Kazan have in common?
+Here's the most possible answer: Let's think step by step. Nicholas Ray was an American film director and screenwriter. Elia Kazan was a Greek-American film and theatre director, screenwriter, producer, and actor. Both Nicholas Ray and Elia Kazan were directors and screenwriters. So the answer is: director, screenwriter.
 
 ---
 
-Question: Which artist did Anthony Toby "Tony" Hiller appear with that liked showering himself (and others) with confetti?
-Proposed Answer: Let's think step by step. Anthony Toby "Tony" Hiller is a songwriter and record producer. He appeared with Brotherhood of Man. Brotherhood of Man liked showering himself (and others) with confetti. So the answer is: Brotherhood of Man.
+Question: Which magazine was started first, Arthur's Magazine or First for Women?
+Proposed Answer: Let's think step by step. Arthur's Magazine was started in 1844. First for Women was started in 1989. 1844 (Arthur's Magazine) < 1989 (First for Women), so Arthur's Magazine was started first. So the answer is: Arthur's Magazine.
 
 What's the problem with the above answer?
 
 1. Plausibility:
 
-The question asks for the name of an artist, and the answer "Brotherhood of Man" looks like a name.
+The answer is clear and logical. It explains the reasoning step by step, making it plausible.
 
 2. Truthfulness:
 
 Let's search the question in google:
 
-> Search Query: Which artist did Anthony Toby Tony Hiller appear with that liked showering himself (and others) with confetti?
-> Evidence: [Untitled] Without you: The tragic story of Badfinger|Dan Matovina, The Military Orchid and Other Novels|Jocelyn Brooke, Looking at Lisp (Micro computer books)|Tony ...
+> Search Query: Arthur's Magazine start date
+> Evidence: [Arthur's Magazine - Wikipedia] Arthur's Magazine was first published in 1844.
 
-The evidence does not provide any useful information about the question.
+> Search Query: First for Women start date
+> Evidence: [First for Women - Wikipedia] First for Women is a magazine that was first published in 1989.
 
-Let's search the proposed answer in google:
+The evidence shows that Arthur's Magazine was indeed started in 1844, and First for Women was started in 1989. Therefore, the proposed answer is truthful.
 
-> Search Query: Anthony Toby Tony Hiller appeared with Brotherhood of Man.
-> Evidence: [Tony Hiller - Wikipedia] He was best known for writing and/or producing hits for Brotherhood of Man, including "United We Stand" (1970) and "Save Your Kisses for Me" (1976).
+The proposed answer correctly identifies that Arthur's Magazine was started first and provides a clear and logical explanation.
 
-The evidence suggests Tony Hiller producing hits Brotherhood of Man.
-
-> Search Query: Brotherhood of Man liked showering himself (and others) with confetti.
-> Evidence: [New York showers confetti, love on U.S. women's soccer team] Discover Thomson Reuters By Matthew Lavietes... celebrating its World Cup triumph and hailing the players’ emergence as icons of women’s rights.
-
-The evidence does not mention Brotherhood of Man. We need to check who is the correct artist that liked showering himself (and others) with confetti.
-
-> Search Query: Which artist liked showering himself (and others) with confetti?
-> Evidence: [Rip Taylor - Wikipedia] Charles Elmer " Rip " Taylor Jr. was an American actor and comedian, known for his exuberance and flamboyant personality, including his wild moustache, toupee, and his habit of showering himself (and others)
-
-The evidence suggests that the artist that liked showering himself is Charles Elmer "Rip" Taylor Jr., not "Brotherhood of Man" as in the proposed answer.
-
-We can further check if Rip Taylor appeared with Anthony Toby "Tony" Hiller.
-
-> Search Query: Which artist appeared with Anthony Toby "Tony" Hiller?
-> Evidence: [Tony Hiller - Wikipedia] He was best known for writing and/or producing hits for Brotherhood of Man , including " United We Stand " (1970) and " Save Your Kisses for Me " (1976). Biography [ edit ]
-
-> Search Query: Did Tony Hiller appear with Rip Taylor?
-> Evidence: [Tony Hiller - Wikipedia] The Hiller Brothers appeared with many performers of the time including Alma Cogan , Tommy Cooper , Val Doonican , Matt Monro , The Shadows , Bernard Manning , Kathy Kirby , Roger Whittaker , Rip Taylor , Gene Vincent , Lance Percival , Tessie O'Shea...
-
-The evidence shows that Tony Hiller appeared with Rip Taylor.
-
-The answer needs major revision.
-
-Question: Which artist did Anthony Toby "Tony" Hiller appear with that liked showering himself (and others) with confetti?
-Here's the most possible answer: Let's think step by step. The artist that liked showering himself with confetti is Rip Taylor. Anthony Toby "Tony" Hiller is a songwriter and record producer, he appeared with Rip Taylor. So the answer is: Rip Taylor.
+Question: Which magazine was started first, Arthur's Magazine or First for Women?
+Here's the most possible answer: Let's think step by step. Arthur's Magazine was started in 1844. First for Women was started in 1989. 1844 (Arthur's Magazine) < 1989 (First for Women), so Arthur's Magazine was started first. So the answer is: Arthur's Magazine.
 
 ---"""
 
