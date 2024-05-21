@@ -70,7 +70,7 @@ class QAStrategy(CriticBaseStrategy):
                     additional_keys=additional_keys,
                     prompt=prompt,
                 ).split("> Evidence: ")[0]
-                new_critique = f"{critique}\n{new_critique}{context}{search_result.strip()}"
+                new_critique = f"{critique}\n{new_critique}{search_result.strip()}"
             external_tool_info['search_query'] = search_query
             external_tool_info['search_result'] = search_result
         else:
@@ -132,7 +132,7 @@ class QAStrategy(CriticBaseStrategy):
                     break
 
             if "title" not in search_result and "snippet" not in search_result:
-                context = f"""> Evidence: [] No results found"""
+                context = f"""> Evidence: [] No results found\n\n"""
             else:
                 context = f"""> Evidence: [{search_result['title']}] {search_result['snippet'][:evidence_length]}\n\n"""
             if idx == max_interactions - 2:
