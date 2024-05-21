@@ -51,17 +51,17 @@ class MathStrategy(CriticBaseStrategy):
                 "code_answer": code_answer if code_answer else "",
             }
 
-        critique = _prompt_critique(
+        new_critique = _prompt_critique(
             llm=self.llm,
             question=question,
             examples=examples,
             answer=answer,
             critique="",
-            additional_keys=additional_keys if additional_keys else external_tool_info,
+            additional_keys=external_tool_info if external_tool_info else additional_keys,
             prompt=prompt,
         ).split("Here's")[0]
 
-        return critique, external_tool_info
+        return new_critique, external_tool_info
 
     def create_output_dict(self, answer: str, critique: str, external_tool_info: Dict[str, str]) -> Dict[str, str]:
         output_dict = {"code": answer, "critique": critique, **external_tool_info}
@@ -75,6 +75,7 @@ class MathStrategy(CriticBaseStrategy):
         critique: str, 
         prompt: str, 
         additional_keys: Dict[str, str],
+        external_tool_info: Dict[str, str],
         **kwargs
     ) -> str:
         return _prompt_critique(
@@ -82,8 +83,8 @@ class MathStrategy(CriticBaseStrategy):
             question=question,
             examples=examples,
             answer=answer,
-            critique=critique + "\n\n" + "Here's a better solution:\n```python\n",
-            additional_keys=additional_keys,
+            critique=f"{critique}\n\nHere's a better solution:\n```python\n",
+            additional_keys=external_tool_info if external_tool_info else additional_keys,
             prompt=prompt,
         ).split("```")[0]
 

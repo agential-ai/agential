@@ -95,6 +95,7 @@ class CriticAgent(BaseAgent):
                 critique=critique,
                 prompt=critique_prompt, 
                 additional_keys=critique_additional_keys, 
+                use_interpreter_tool=use_interpreter_tool,
                 use_search_tool=use_search_tool,
                 max_interactions=max_interactions,
                 **kwargs
@@ -113,6 +114,7 @@ class CriticAgent(BaseAgent):
                 critique=critique,
                 prompt=critique_prompt,
                 additional_keys=critique_additional_keys,
+                external_tool_info=external_tool_info,
                 **kwargs
             )
 
