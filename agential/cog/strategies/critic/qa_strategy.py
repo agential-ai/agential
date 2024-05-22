@@ -14,7 +14,13 @@ class QAStrategy(CriticBaseStrategy):
         self._evidence_history = set()
         self._halt = False
 
-    def generate(self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]) -> str:
+    def generate(
+        self, 
+        question: str, 
+        examples: str, 
+        prompt: str, 
+        additional_keys: Dict[str, str],
+    ) -> str:
         return _prompt_agent(
             llm=self.llm,
             question=question,

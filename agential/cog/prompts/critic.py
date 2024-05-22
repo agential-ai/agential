@@ -2578,205 +2578,6 @@ def are_anagrams(s1: str, s2: str) -> bool:
     return Counter(s1.lower()) == Counter(s2.lower())"""
 
 
-CRITIC_POT_INSTRUCTION_WITH_TESTS_HUMANEVAL = """You are an AI that only responds with python code, NOT ENGLISH. You will be given a function signature and its docstring by the user. 
-Write your full implementation (restate the function signature, all imports, and docstring).
-
-{examples}
-(END OF EXAMPLES)
-
-[unit tests]:
-{tests}
-
-[function signature]:
-{question}"""
-
-
-HUMANEVAL_FEWSHOT_EXAMPLES_POT_WITH_TESTS = """[unit tests]:
-assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) == True, "Test failed: has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) should return True"
-assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) == False, "Test failed: has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) should return False"
-
-[function signature]:
-def has_duplicate_names(names_list: List[str]) -> bool:
-    \"\"\"Check if there is any name that appears more than once in the list.
-    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice'])
-    True
-    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) 
-    False
-    \"\"\"
-    return len(names_list) != len(set(names_list))
-
-[unit tests]:
-assert average_positive([1, -1, 2, -2, 3]) == 2.0, "Test failed: average_positive([1, -1, 2, -2, 3]) should return 2.0"
-assert average_positive([-5, 0, 5, 15]) == 10.0, "Test failed: average_positive([-5, 0, 5, 15]) should return 10.0"
-assert average_positive([100, 200, -100, 0]) == 150.0, "Test failed: average_positive([100, 200, -100, 0]) should return 150.0"
-assert average_positive([-1, -2, -3]) == 0, "Test failed: average_positive([-1, -2, -3]) should return 0"
-
-[function signature]:
-def average_positive(numbers: List[int]) -> float:
-    \"\"\"Calculate the average of positive numbers in the list.
-    >>> average_positive([1, -1, 2, -2, 3])
-    2.0
-    >>> average_positive([-5, 0, 5, 15])
-    10.0
-    >>> average_positive([100, 200, -100, 0])
-    150.0
-    >>> average_positive([-1, -2, -3])
-    0
-    \"\"\"
-    positive_numbers = [num for num in numbers if num > 0]
-    return sum(positive_numbers) / len(positive_numbers) if positive_numbers else 0
-
-[unit tests]:
-assert exceeds_threshold([100, 102, 107, 103], 5) == 1, "Test failed: exceeds_threshold([100, 102, 107, 103], 5) should return 1"
-assert exceeds_threshold([100, 101, 102, 103], 2) == 0, "Test failed: exceeds_threshold([100, 101, 102, 103], 2) should return 0"
-
-[function signature]:
-def exceeds_threshold(measurements: List[float], threshold: float) -> int:
-    \"\"\"Return the count of instances where the difference between any two successive measurements exceeds the given threshold.
-    >>> exceeds_threshold([100, 102, 107, 103], 5) 
-    1
-    >>> exceeds_threshold([100, 101, 102, 103], 2) 
-    0
-    \"\"\"
-    count = 0
-    for i in range(1, len(measurements)):
-        if abs(measurements[i] - measurements[i - 1]) > threshold:
-            count += 1
-    return count
-
-[unit tests]:
-assert sum_even_indexed([10, 3, 5, 2, 8]) == 23, "Test failed: sum_even_indexed([10, 3, 5, 2, 8]) should return 23"
-assert sum_even_indexed([1, 2, 3, 4, 5, 6]) == 9, "Test failed: sum_even_indexed([1, 2, 3, 4, 5, 6]) should return 9"
-assert sum_even_indexed([0, 100, 200, 300]) == 200, "Test failed: sum_even_indexed([0, 100, 200, 300]) should return 200"
-assert sum_even_indexed([7]) == 7, "Test failed: sum_even_indexed([7]) should return 7"
-
-[function signature]:
-def sum_even_indexed(numbers: List[int]) -> int:
-    \"\"\"Sum numbers that are located at even indices in the list.
-    >>> sum_even_indexed([10, 3, 5, 2, 8])
-    23
-    >>> sum_even_indexed([1, 2, 3, 4, 5, 6])
-    9
-    >>> sum_even_indexed([0, 100, 200, 300])
-    200
-    >>> sum_even_indexed([7])
-    7
-    \"\"\"
-    return sum(num for i, num in enumerate(numbers) if i % 2 == 0)
-
-[unit tests]:
-assert are_anagrams('Listen', 'silent') == True, "Test failed: are_anagrams('Listen', 'silent') should return True"
-assert are_anagrams('Hello', 'World') == False, "Test failed: are_anagrams('Hello', 'World') should return False"
-assert are_anagrams('Angel', 'Glean') == True, "Test failed: are_anagrams('Angel', 'Glean') should return True"
-
-[function signature]:
-from collections import Counter
-
-def are_anagrams(s1: str, s2: str) -> bool:
-    \"\"\"Check if two strings are anagrams of each other, ignoring case.
-    >>> are_anagrams('Listen', 'silent')
-    True
-    >>> are_anagrams('Hello', 'World')
-    False
-    >>> are_anagrams('Angel', 'Glean')
-    True
-    \"\"\"
-    return Counter(s1.lower()) == Counter(s2.lower())"""
-
-
-CRITIC_POT_INSTRUCTION_TEST_HUMANEVAL = """You are an AI coding assistant that can write unique, diverse, and intuitive unit tests for functions given the signature and docstring.
-
-{examples}
-(END OF EXAMPLES)
-
-[function signature]:
-{question}
-
-[unit tests]:"""
-
-
-HUMANEVAL_FEWSHOT_EXAMPLES_POT_TEST = """[function signature]:
-def has_duplicate_names(names_list: List[str]) -> bool:
-    \"\"\"Check if there is any name that appears more than once in the list.
-    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice'])
-    True
-    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) 
-    False
-    \"\"\"
-
-[unit tests]:
-assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) == True, "Test failed: has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) should return True"
-assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) == False, "Test failed: has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) should return False"
-
-[function signature]:
-def average_positive(numbers: List[int]) -> float:
-    \"\"\"Calculate the average of positive numbers in the list.
-    >>> average_positive([1, -1, 2, -2, 3])
-    2.0
-    >>> average_positive([-5, 0, 5, 15])
-    10.0
-    >>> average_positive([100, 200, -100, 0])
-    150.0
-    >>> average_positive([-1, -2, -3])
-    0
-    \"\"\"
-
-[unit tests]:
-assert average_positive([1, -1, 2, -2, 3]) == 2.0, "Test failed: average_positive([1, -1, 2, -2, 3]) should return 2.0"
-assert average_positive([-5, 0, 5, 15]) == 10.0, "Test failed: average_positive([-5, 0, 5, 15]) should return 10.0"
-assert average_positive([100, 200, -100, 0]) == 150.0, "Test failed: average_positive([100, 200, -100, 0]) should return 150.0"
-assert average_positive([-1, -2, -3]) == 0, "Test failed: average_positive([-1, -2, -3]) should return 0"
-
-[function signature]:
-def exceeds_threshold(measurements: List[float], threshold: float) -> int:
-    \"\"\"Return the count of instances where the difference between any two successive measurements exceeds the given threshold.
-    >>> exceeds_threshold([100, 102, 107, 103], 5) 
-    1
-    >>> exceeds_threshold([100, 101, 102, 103], 2) 
-    0
-    \"\"\"
-
-[unit tests]:
-assert exceeds_threshold([100, 102, 107, 103], 5) == 1, "Test failed: exceeds_threshold([100, 102, 107, 103], 5) should return 1"
-assert exceeds_threshold([100, 101, 102, 103], 2) == 0, "Test failed: exceeds_threshold([100, 101, 102, 103], 2) should return 0"
-
-[function signature]:
-def sum_even_indexed(numbers: List[int]) -> int:
-    \"\"\"Sum numbers that are located at even indices in the list.
-    >>> sum_even_indexed([10, 3, 5, 2, 8])
-    23
-    >>> sum_even_indexed([1, 2, 3, 4, 5, 6])
-    9
-    >>> sum_even_indexed([0, 100, 200, 300])
-    200
-    >>> sum_even_indexed([7])
-    7
-    \"\"\"
-
-[unit tests]:
-assert sum_even_indexed([10, 3, 5, 2, 8]) == 23, "Test failed: sum_even_indexed([10, 3, 5, 2, 8]) should return 23"
-assert sum_even_indexed([1, 2, 3, 4, 5, 6]) == 9, "Test failed: sum_even_indexed([1, 2, 3, 4, 5, 6]) should return 9"
-assert sum_even_indexed([0, 100, 200, 300]) == 200, "Test failed: sum_even_indexed([0, 100, 200, 300]) should return 200"
-assert sum_even_indexed([7]) == 7, "Test failed: sum_even_indexed([7]) should return 7"
-
-[function signature]:
-def are_anagrams(s1: str, s2: str) -> bool:
-    \"\"\"Check if two strings are anagrams of each other, ignoring case.
-    >>> are_anagrams('Listen', 'silent')
-    True
-    >>> are_anagrams('Hello', 'World')
-    False
-    >>> are_anagrams('Angel', 'Glean')
-    True
-    \"\"\"
-
-[unit tests]:
-assert are_anagrams('Listen', 'silent') == True, "Test failed: are_anagrams('Listen', 'silent') should return True"
-assert are_anagrams('Hello', 'World') == False, "Test failed: are_anagrams('Hello', 'World') should return False"
-assert are_anagrams('Angel', 'Glean') == True, "Test failed: are_anagrams('Angel', 'Glean') should return True"
-"""
-
-
 CRITIC_CRITIQUE_INSTRUCTION_HUMANEVAL = """{examples}
 (END OF EXAMPLES)
 
@@ -3372,35 +3173,42 @@ def are_anagrams(s1: str, s2: str) -> bool:
 # ======================================================================== MBPP ======================================================================== #
 
 
-CRITIC_POT_INSTRUCTION_WITH_TESTS_MBPP = """You are an expert Python programmer that only responds with python code, NOT ENGLISH. You will be given a function signature and its docstring by the user. 
-Write your full implementation (restate the function signature, all imports, and docstring).
-
-{examples}
+# Ref: https://arxiv.org/pdf/2405.04434.
+CRITIC_POT_INSTRUCTION_WITH_TESTS_MBPP = """{examples}
 (END OF EXAMPLES)
 
+You are an expert Python programmer, and here is your task: {question}.
 Your code should pass these tests:
+
 {tests}
 
-{question}"""
+```python"""
 
 
-MBPP_FEWSHOT_EXAMPLES_POT_WITH_TESTS = """Your code should pass these tests:
+MBPP_FEWSHOT_EXAMPLES_POT_WITH_TESTS = """You are an expert Python programmer, and here is your task: Write a function to find the shared elements from the given two lists.
+Your code should pass these tests:
+
 assert set(similar_elements((3, 4, 5, 6), (5, 7, 4, 10))) == set((4, 5)), "Test failed for input (3, 4, 5, 6), (5, 7, 4, 10)"
 assert set(similar_elements((1, 2, 3, 4), (5, 4, 3, 7))) == set((3, 4)), "Test failed for input (1, 2, 3, 4), (5, 4, 3, 7)"
 assert set(similar_elements((11, 12, 14, 13), (17, 15, 14, 13))) == set((13, 14)), "Test failed for input (11, 12, 14, 13), (17, 15, 14, 13)"
 
-Write a function to find the shared elements from the given two lists.
+```python
 def similar_elements(test_tup1, test_tup2):
     res = tuple(set(test_tup1) & set(test_tup2))
     return res
+```
 
+---
+
+You are an expert Python programmer, and here is your task: Write a python function to identify non-prime numbers.
 Your code should pass these tests:
+
 assert is_not_prime(2) == False, "Test failed for input 2"
 assert is_not_prime(10) == True, "Test failed for input 10"
 assert is_not_prime(35) == True, "Test failed for input 35"
 assert is_not_prime(37) == False, "Test failed for input 37"
 
-Write a python function to identify non-prime numbers.
+```python
 import math
 
 def is_not_prime(n):
@@ -3410,19 +3218,27 @@ def is_not_prime(n):
             result = True
             break
     return result
+```
 
+---
+
+You are an expert Python programmer, and here is your task: Write a function to find the n largest integers from a given list of numbers, returned in descending order.
 Your code should pass these tests:
 assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 3) == [85, 75, 65], "Test failed for top 3"
 assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 2) == [85, 75], "Test failed for top 2"
 assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 5) == [85, 75, 65, 58, 35], "Test failed for top 5"
 
-Write a function to find the n largest integers from a given list of numbers, returned in descending order.
+```python
 import heapq as hq
 
 def heap_queue_largest(nums, n):
     largest_nums = hq.nlargest(n, nums)
     return largest_nums
+```
 
+---
+
+You are an expert Python programmer, and here is your task: Write a python function to check whether the two numbers differ at one bit position only or not.
 Your code should pass these tests:
 assert differ_at_one_bit_pos(13, 9) == True, "Test failed for input (13, 9)"
 assert differ_at_one_bit_pos(15, 8) == False, "Test failed for input (15, 8)"
@@ -3431,23 +3247,28 @@ assert differ_at_one_bit_pos(2, 3) == True, "Test failed for input (2, 3)"
 assert differ_at_one_bit_pos(5, 1) == True, "Test failed for input (5, 1)"
 assert differ_at_one_bit_pos(1, 5) == True, "Test failed for input (1, 5)"
 
-Write a python function to check whether the two numbers differ at one bit position only or not.
+```python
 def is_power_of_two(x):
     return x and (not(x & (x - 1)))
 
 def differ_at_one_bit_pos(a, b):
     return is_power_of_two(a ^ b)
+```
 
+---
+
+You are an expert Python programmer, and here is your task: Write a function to find all words which are at least 4 characters long in a string.
 Your code should pass these tests:
 assert set(find_char_long('Please move back to stream')) == set(['Please', 'move', 'back', 'stream']), "Test failed for 'Please move back to stream'"
 assert set(find_char_long('Jing Eco and Tech')) == set(['Jing', 'Tech']), "Test failed for 'Jing Eco and Tech'"
 assert set(find_char_long('Jhingai wulu road Zone 3')) == set(['Jhingai', 'wulu', 'road', 'Zone']), "Test failed for 'Jhingai wulu road Zone 3'"
 
-Write a function to find all words which are at least 4 characters long in a string.
+```python
 import re
 
 def find_char_long(text):
-    return re.findall(r"\b\w{4,}\b", text)"""
+    return re.findall(r"\b\w{4,}\b", text)
+```"""
 
 
 CRITIC_CRITIQUE_INSTRUCTION_MBPP = """{examples}

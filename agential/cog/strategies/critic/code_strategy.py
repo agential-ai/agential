@@ -2,10 +2,9 @@ from typing import Dict
 from agential.cog.functional.critic import _prompt_agent, _prompt_critique, safe_execute
 from agential.cog.strategies.critic.base import CriticBaseStrategy
 
-class MathStrategy(CriticBaseStrategy):
+class CodeStrategy(CriticBaseStrategy):
     def __init__(self, llm):
         self.llm = llm
-        self._answer_history = []
 
     def generate(
         self, 
@@ -39,32 +38,23 @@ class MathStrategy(CriticBaseStrategy):
         max_interactions: int,
         **kwargs
     ):
+        if "tests" not in kwargs:
+            raise ValueError("The 'tests' parameter must be specified in the kwargs when use_interpreter_tool is True.")
+        tests = kwargs["tests"]
+
         external_tool_info = {}
         if use_interpreter_tool:
-            code_answer, execution_status = safe_execute(answer)
+            code_answer, execution_status = safe_execute(f"{answer}\n\n{tests}")
             external_tool_info = {
                 "execution_status": execution_status,
                 "code_answer": code_answer[0] if code_answer[0] is not None else "",
             }
-            self._answer_history.append({
-                "answer": answer, 
-                "external_tool_info": external_tool_info
-            })
-
-            last_valid_idx = -1
-            for i in range(len(self._answer_history)-1, -1, -1):
-                if self._answer_history[i]["external_tool_info"]["code_answer"] is not None:
-                    last_valid_idx = i
-                    break
-
-            external_tool_info = self._answer_history[last_valid_idx]["external_tool_info"]
-            answer = self._answer_history[last_valid_idx]["answer"]
 
         new_critique = _prompt_critique(
             llm=self.llm,
-            question=question,
+            question=answer,
             examples=examples,
-            answer=answer,
+            answer=tests,
             critique="",
             additional_keys=external_tool_info if external_tool_info else additional_keys,
             prompt=prompt,
@@ -87,11 +77,15 @@ class MathStrategy(CriticBaseStrategy):
         external_tool_info: Dict[str, str],
         **kwargs
     ) -> str:
+        if "tests" not in kwargs:
+            raise ValueError("The 'tests' parameter must be specified in the kwargs when use_interpreter_tool is True.")
+        tests = kwargs["tests"]
+
         new_answer = _prompt_critique(
             llm=self.llm,
-            question=question,
+            question=answer,
             examples=examples,
-            answer=answer,
+            answer=tests,
             critique=f"{critique}\n\nHere's a better solution:\n```python\n",
             additional_keys=external_tool_info if external_tool_info else additional_keys,
             prompt=prompt,
@@ -104,4 +98,4 @@ class MathStrategy(CriticBaseStrategy):
         return "<CORRECT>" in critique.replace(" ", "").upper().strip() or ("correct" in critique and "incorrect" not in critique)
 
     def reset(self) -> bool:
-        self._answer_history = []
+        pass
