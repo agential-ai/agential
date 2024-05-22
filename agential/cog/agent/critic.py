@@ -8,10 +8,8 @@ from agential.cog.strategies.strategy_factory import CriticStrategyFactory
 from agential.cog.prompts.critic import (
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
     CRITIC_INSTRUCTION_HOTPOTQA,
-    CRITIC_POT_INSTRUCTION_TEST_HUMANEVAL,
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
     HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
-    HUMANEVAL_FEWSHOT_EXAMPLES_POT_TEST,
 )
 
 class CriticAgent(BaseAgent):
