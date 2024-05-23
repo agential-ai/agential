@@ -10,7 +10,10 @@ from agential.cog.strategies.critic.math_strategy import (
     CritSVAMPStrategy,
     CritTabMWPStrategy,
 )
-from agential.cog.strategies.critic.code_strategy import CodeStrategy
+from agential.cog.strategies.critic.code_strategy import (
+    CritMBPPCodeStrategy,
+    CritHEvalCodeStrategy,
+)
 
 
 class CriticStrategyFactory:
@@ -37,6 +40,11 @@ class CriticStrategyFactory:
             else:
                 raise ValueError(f"Unsupported Math benchmark: {mode['math']}")
         elif "code" in mode:
-            return CodeStrategy(**strategy_kwargs)
+            if mode["code"] == "mbpp":
+                return CritMBPPCodeStrategy(**strategy_kwargs)
+            elif mode["code"] == "humaneval":
+                return CritHEvalCodeStrategy(**strategy_kwargs)
+            else:
+                raise ValueError(f"Unsupported Code benchmark: {mode['code']}")
         else:
             raise ValueError(f"Unsupported mode: {mode}")

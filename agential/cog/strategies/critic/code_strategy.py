@@ -4,9 +4,8 @@ from agential.cog.strategies.critic.base import CriticBaseStrategy
 from agential.utils.validation import validate_overlapping_keys
 
 class CodeStrategy(CriticBaseStrategy):
-    def __init__(self, llm, benchmark):
+    def __init__(self, llm):
         self.llm = llm
-        self.benchmark = benchmark
 
     def generate(
         self, 
@@ -84,17 +83,13 @@ class CodeStrategy(CriticBaseStrategy):
     ) -> str:
         validate_overlapping_keys(additional_keys, external_tool_info)
         additional_keys.update(external_tool_info)
-        
-        if self.benchmark == "mbpp":
-            new_critique =f"{critique}\n\nHere's a better solution:\n```python\n"
-        elif self.benchmark == "humaneval":
-            new_critique =f"{critique}\n\nHere's a better solution:\n```python\n{question}"
+                    
         new_answer = _prompt_critique(
             llm=self.llm,
             question=question,
             examples=examples,
             answer=answer,
-            critique=new_critique,
+            critique=f"{critique}\n\nHere's a better solution:\n```python\n",
             additional_keys=additional_keys,
             prompt=prompt,
         )
@@ -107,3 +102,38 @@ class CodeStrategy(CriticBaseStrategy):
 
     def reset(self) -> bool:
         self._answer_history = []
+
+
+class CritMBPPCodeStrategy(CodeStrategy):
+    pass
+
+class CritHumanEvalCodeStrategy(CodeStrategy):
+    def __init__(self, llm):
+        super().__init__(llm)
+
+    def update_answer_based_on_critique(
+        self, 
+        question: str, 
+        examples: str, 
+        answer: str, 
+        critique: str, 
+        prompt: str, 
+        additional_keys: Dict[str, str],
+        external_tool_info: Dict[str, str],
+        **kwargs
+    ) -> str:
+        validate_overlapping_keys(additional_keys, external_tool_info)
+        additional_keys.update(external_tool_info)
+                    
+        new_answer = _prompt_critique(
+            llm=self.llm,
+            question=question,
+            examples=examples,
+            answer=answer,
+            critique=f"{critique}\n\nHere's a better solution:\n```python\n{question}",
+            additional_keys=additional_keys,
+            prompt=prompt,
+        )
+        new_answer = new_answer.split("```python")[-1].split("```")[0].strip()
+
+        return new_answer
