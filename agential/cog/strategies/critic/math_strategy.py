@@ -109,7 +109,7 @@ class MathStrategy(CriticBaseStrategy):
         return new_answer
 
     def halting_condition(self, critique: str) -> bool:
-        return "<CORRECT>" in critique.replace(" ", "").upper().strip() or ("correct" in critique and "incorrect" not in critique)
+        return "<CORRECT>" in critique.replace(" ", "").upper().strip() or ("code is correct" in critique.lower() and "incorrect" not in critique.lower())
 
     def reset(self) -> bool:
         self._answer_history = []
