@@ -3,7 +3,7 @@ from agential.cog.functional.critic import _prompt_agent, _prompt_critique
 from agential.cog.strategies.critic.base import CriticBaseStrategy
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 
-class QAStrategy(CriticBaseStrategy):
+class CriticQAStrategy(CriticBaseStrategy):
     def __init__(self, llm, search: Optional[GoogleSerperAPIWrapper] = None, evidence_length: int = 400, num_results: int = 8):
         self.llm = llm
         self.search = search
@@ -153,3 +153,16 @@ class QAStrategy(CriticBaseStrategy):
             search_result = {}
             context = """> Evidence: """
         return search_result, context
+    
+
+class CritHotQAStrategy(CriticQAStrategy):
+    pass
+
+class CritTriviaQAStrategy(CriticQAStrategy):
+    pass
+
+class CritAmbigNQStrategy(CriticQAStrategy):
+    pass
+
+class CritFEVERStrategy(CriticQAStrategy):
+    pass

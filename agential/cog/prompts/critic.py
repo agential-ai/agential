@@ -2501,16 +2501,15 @@ answer = min_company
 
 
 CRITIC_POT_INSTRUCTION_HUMANEVAL = """You are an AI that only responds with python code, NOT ENGLISH. You will be given a function signature and its docstring by the user. 
-Write your full implementation (restate the function signature, all imports, and docstring).
 
 {examples}
 (END OF EXAMPLES)
 
-[function signature]:
+```python
 {question}"""
 
 
-HUMANEVAL_FEWSHOT_EXAMPLES_POT = """[function signature]:
+HUMANEVAL_FEWSHOT_EXAMPLES_POT = """```python
 def has_duplicate_names(names_list: List[str]) -> bool:
     \"\"\"Check if there is any name that appears more than once in the list.
     >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice'])
@@ -2519,8 +2518,11 @@ def has_duplicate_names(names_list: List[str]) -> bool:
     False
     \"\"\"
     return len(names_list) != len(set(names_list))
+```
 
-[function signature]:
+---
+
+```python
 def average_positive(numbers: List[int]) -> float:
     \"\"\"Calculate the average of positive numbers in the list.
     >>> average_positive([1, -1, 2, -2, 3])
@@ -2534,8 +2536,11 @@ def average_positive(numbers: List[int]) -> float:
     \"\"\"
     positive_numbers = [num for num in numbers if num > 0]
     return sum(positive_numbers) / len(positive_numbers) if positive_numbers else 0
+```
 
-[function signature]:
+---
+
+```python
 def exceeds_threshold(measurements: List[float], threshold: float) -> int:
     \"\"\"Return the count of instances where the difference between any two successive measurements exceeds the given threshold.
     >>> exceeds_threshold([100, 102, 107, 103], 5) 
@@ -2548,8 +2553,11 @@ def exceeds_threshold(measurements: List[float], threshold: float) -> int:
         if abs(measurements[i] - measurements[i - 1]) > threshold:
             count += 1
     return count
+```
 
-[function signature]:
+---
+
+```python
 def sum_even_indexed(numbers: List[int]) -> int:
     \"\"\"Sum numbers that are located at even indices in the list.
     >>> sum_even_indexed([10, 3, 5, 2, 8])
@@ -2562,8 +2570,11 @@ def sum_even_indexed(numbers: List[int]) -> int:
     7
     \"\"\"
     return sum(num for i, num in enumerate(numbers) if i % 2 == 0)
+```
 
-[function signature]:
+---
+
+```python
 from collections import Counter
 
 def are_anagrams(s1: str, s2: str) -> bool:
@@ -2575,7 +2586,8 @@ def are_anagrams(s1: str, s2: str) -> bool:
     >>> are_anagrams('Angel', 'Glean')
     True
     \"\"\"
-    return Counter(s1.lower()) == Counter(s2.lower())"""
+    return Counter(s1.lower()) == Counter(s2.lower())
+```"""
 
 
 CRITIC_CRITIQUE_INSTRUCTION_HUMANEVAL = """{examples}
@@ -2583,12 +2595,12 @@ CRITIC_CRITIQUE_INSTRUCTION_HUMANEVAL = """{examples}
 
 ```python
 {question}
-
 {answer}
+
+{tests}
 ```
 
 Execution: {execution_status} 
-Output: answer = {code_answer}
 
 What's the problem with the above code? If nothing is wrong, output <CORRECT>.
 
@@ -2605,12 +2617,11 @@ def has_duplicate_names(names_list: List[str]) -> bool:
     \"\"\"
     return len(names_list) != len(set(names_list)) - 1
 
-assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) == True, "Test failed: has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) should return True"
-assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) == False, "Test failed: has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) should return False"
+assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) == True
+assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) == False
 ```
 
-Execution: AssertionError("Test failed: has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) should return False")
-Output: answer = None
+Execution: AssertionError()
 
 What's the problem with the above code?
 
@@ -2658,14 +2669,13 @@ def average_positive(numbers: List[int]) -> float:
     count = sum(1 for x in numbers if x > 0)
     return total / count if count else 0
 
-assert average_positive([1, -1, 2, -2, 3]) == 2.0, "Test failed: average_positive([1, -1, 2, -2, 3]) should return 2.0"
-assert average_positive([-5, 0, 5, 15]) == 10.0, "Test failed: average_positive([-5, 0, 5, 15]) should return 10.0"
-assert average_positive([100, 200, -100, 0]) == 150.0, "Test failed: average_positive([100, 200, -100, 0]) should return 150.0"
-assert average_positive([-1, -2, -3]) == 0, "Test failed: average_positive([-1, -2, -3]) should return 0"
+assert average_positive([1, -1, 2, -2, 3]) == 2.0
+assert average_positive([-5, 0, 5, 15]) == 10.0
+assert average_positive([100, 200, -100, 0]) == 150.0
+assert average_positive([-1, -2, -3]) == 0
 ```
 
-Execution: AssertionError('Test failed: average_positive([1, -1, 2, -2, 3]) should return 2.0')
-Output: answer = None
+Execution: AssertionError()
 
 What's the problem with the above code?
 
@@ -2720,12 +2730,11 @@ def exceeds_threshold(measurements: List[float], threshold: float) -> int:
             count += 1
     return count
 
-assert exceeds_threshold([100, 102, 107, 103], 5) == 1, "Test failed: exceeds_threshold([100, 102, 107, 103], 5) should return 1"
-assert exceeds_threshold([100, 101, 102, 103], 2) == 0, "Test failed: exceeds_threshold([100, 101, 102, 103], 2) should return 0"
+assert exceeds_threshold([100, 102, 107, 103], 5) == 1
+assert exceeds_threshold([100, 101, 102, 103], 2) == 0
 ```
 
-Execution: AssertionError('Test failed: exceeds_threshold([100, 102, 107, 103], 5) should return 1')
-Output: answer = None
+Execution: AssertionError()
 
 What's the problem with the above code?
 
@@ -2783,14 +2792,13 @@ def sum_even_indexed(numbers: List[int]) -> int:
     \"\"\"
     return sum(num for i, num in enumerate(numbers) if (i + 1) % 2 == 0)
 
-assert sum_even_indexed([10, 3, 5, 2, 8]) == 23, "Test failed: sum_even_indexed([10, 3, 5, 2, 8]) should return 23"
-assert sum_even_indexed([1, 2, 3, 4, 5, 6]) == 9, "Test failed: sum_even_indexed([1, 2, 3, 4, 5, 6]) should return 9"
-assert sum_even_indexed([0, 100, 200, 300]) == 200, "Test failed: sum_even_indexed([0, 100, 200, 300]) should return 200"
-assert sum_even_indexed([7]) == 7, "Test failed: sum_even_indexed([7]) should return 7"
+assert sum_even_indexed([10, 3, 5, 2, 8]) == 23
+assert sum_even_indexed([1, 2, 3, 4, 5, 6]) == 9
+assert sum_even_indexed([0, 100, 200, 300]) == 200
+assert sum_even_indexed([7]) == 7
 ```
 
-Execution: AssertionError('Test failed: sum_even_indexed([10, 3, 5, 2, 8]) should return 23')
-Output: answer = None
+Execution: AssertionError()
 
 What's the problem with the above code?
 
@@ -2840,13 +2848,12 @@ def are_anagrams(s1: str, s2: str) -> bool:
     \"\"\"
     return Counter(s1) == Counter(s2)
 
-assert are_anagrams('Listen', 'silent') == True, "Test failed: are_anagrams('Listen', 'silent') should return True"
-assert are_anagrams('Hello', 'World') == False, "Test failed: are_anagrams('Hello', 'World') should return False"
-assert are_anagrams('Angel', 'Glean') == True, "Test failed: are_anagrams('Angel', 'Glean') should return True"
+assert are_anagrams('Listen', 'silent') == True
+assert are_anagrams('Hello', 'World') == False
+assert are_anagrams('Angel', 'Glean') == True
 ```
 
-Execution: AssertionError("Test failed: are_anagrams('Listen', 'silent') should return True")
-Output: answer = None
+Execution: AssertionError()
 
 What's the problem with the above code?
 
@@ -2888,8 +2895,9 @@ CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_HUMANEVAL = """{examples}
 
 ```python
 {question}
-
 {answer}
+
+{tests}
 ```
 
 What's the problem with the above code? If nothing is wrong, output <CORRECT>.
@@ -2907,8 +2915,8 @@ def has_duplicate_names(names_list: List[str]) -> bool:
     \"\"\"
     return len(names_list) != len(set(names_list)) - 1
 
-assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) == True, "Test failed: has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) should return True"
-assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) == False, "Test failed: has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) should return False"
+assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) == True
+assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) == False
 ```
 
 What's the problem with the above code?
@@ -2957,10 +2965,10 @@ def average_positive(numbers: List[int]) -> float:
     count = sum(1 for x in numbers if x > 0)
     return total / count if count else 0
 
-assert average_positive([1, -1, 2, -2, 3]) == 2.0, "Test failed: average_positive([1, -1, 2, -2, 3]) should return 2.0"
-assert average_positive([-5, 0, 5, 15]) == 10.0, "Test failed: average_positive([-5, 0, 5, 15]) should return 10.0"
-assert average_positive([100, 200, -100, 0]) == 150.0, "Test failed: average_positive([100, 200, -100, 0]) should return 150.0"
-assert average_positive([-1, -2, -3]) == 0, "Test failed: average_positive([-1, -2, -3]) should return 0"
+assert average_positive([1, -1, 2, -2, 3]) == 2.0
+assert average_positive([-5, 0, 5, 15]) == 10.0
+assert average_positive([100, 200, -100, 0]) == 150.0
+assert average_positive([-1, -2, -3]) == 0
 ```
 
 What's the problem with the above code?
@@ -3016,8 +3024,8 @@ def exceeds_threshold(measurements: List[float], threshold: float) -> int:
             count += 1
     return count
 
-assert exceeds_threshold([100, 102, 107, 103], 5) == 1, "Test failed: exceeds_threshold([100, 102, 107, 103], 5) should return 1"
-assert exceeds_threshold([100, 101, 102, 103], 2) == 0, "Test failed: exceeds_threshold([100, 101, 102, 103], 2) should return 0"
+assert exceeds_threshold([100, 102, 107, 103], 5) == 1
+assert exceeds_threshold([100, 101, 102, 103], 2) == 0
 ```
 
 What's the problem with the above code?
@@ -3076,10 +3084,10 @@ def sum_even_indexed(numbers: List[int]) -> int:
     \"\"\"
     return sum(num for i, num in enumerate(numbers) if (i + 1) % 2 == 0)
 
-assert sum_even_indexed([10, 3, 5, 2, 8]) == 23, "Test failed: sum_even_indexed([10, 3, 5, 2, 8]) should return 23"
-assert sum_even_indexed([1, 2, 3, 4, 5, 6]) == 9, "Test failed: sum_even_indexed([1, 2, 3, 4, 5, 6]) should return 9"
-assert sum_even_indexed([0, 100, 200, 300]) == 200, "Test failed: sum_even_indexed([0, 100, 200, 300]) should return 200"
-assert sum_even_indexed([7]) == 7, "Test failed: sum_even_indexed([7]) should return 7"
+assert sum_even_indexed([10, 3, 5, 2, 8]) == 23
+assert sum_even_indexed([1, 2, 3, 4, 5, 6]) == 9
+assert sum_even_indexed([0, 100, 200, 300]) == 200
+assert sum_even_indexed([7]) == 7
 ```
 
 What's the problem with the above code?
@@ -3130,9 +3138,9 @@ def are_anagrams(s1: str, s2: str) -> bool:
     \"\"\"
     return Counter(s1) == Counter(s2)
 
-assert are_anagrams('Listen', 'silent') == True, "Test failed: are_anagrams('Listen', 'silent') should return True"
-assert are_anagrams('Hello', 'World') == False, "Test failed: are_anagrams('Hello', 'World') should return False"
-assert are_anagrams('Angel', 'Glean') == True, "Test failed: are_anagrams('Angel', 'Glean') should return True"
+assert are_anagrams('Listen', 'silent') == True
+assert are_anagrams('Hello', 'World') == False
+assert are_anagrams('Angel', 'Glean') == True
 ```
 
 What's the problem with the above code?

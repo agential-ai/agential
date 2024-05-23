@@ -4,8 +4,9 @@ from agential.cog.strategies.critic.base import CriticBaseStrategy
 from agential.utils.validation import validate_overlapping_keys
 
 class CodeStrategy(CriticBaseStrategy):
-    def __init__(self, llm):
+    def __init__(self, llm, benchmark):
         self.llm = llm
+        self.benchmark = benchmark
 
     def generate(
         self, 
@@ -21,7 +22,7 @@ class CodeStrategy(CriticBaseStrategy):
             additional_keys=additional_keys,
             prompt=prompt,
         )
-        answer = answer.split("```python")[-1].split("```")[0].strip()
+        answer = answer.split("```python")[-1].split("```")[0].strip("\n")
 
         return answer
 
@@ -84,12 +85,16 @@ class CodeStrategy(CriticBaseStrategy):
         validate_overlapping_keys(additional_keys, external_tool_info)
         additional_keys.update(external_tool_info)
         
+        if self.benchmark == "mbpp":
+            new_critique =f"{critique}\n\nHere's a better solution:\n```python\n"
+        elif self.benchmark == "humaneval":
+            new_critique =f"{critique}\n\nHere's a better solution:\n```python\n{question}"
         new_answer = _prompt_critique(
             llm=self.llm,
             question=question,
             examples=examples,
             answer=answer,
-            critique=f"{critique}\n\nHere's a better solution:\n```python\n",
+            critique=new_critique,
             additional_keys=additional_keys,
             prompt=prompt,
         )
@@ -98,7 +103,7 @@ class CodeStrategy(CriticBaseStrategy):
         return new_answer
 
     def halting_condition(self, critique: str) -> bool:
-        return "<CORRECT>" in critique.replace(" ", "").upper().strip() or ("correct" in critique and "incorrect" not in critique)
+        return "<CORRECT>" in critique.replace(" ", "").upper().strip() or ("code is correct" in critique.lower() and "incorrect" not in critique.lower())
 
     def reset(self) -> bool:
         self._answer_history = []
