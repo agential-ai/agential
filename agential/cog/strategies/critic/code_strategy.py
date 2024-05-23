@@ -1,11 +1,7 @@
 from typing import Dict
 from agential.cog.functional.critic import _prompt_agent, _prompt_critique, safe_execute
 from agential.cog.strategies.critic.base import CriticBaseStrategy
-
-def validate_overlapping_keys(dict_1: Dict[str, str], dict_2: Dict[str, str]) -> bool:
-    overlapping_keys = dict_1.keys() & dict_2.keys()
-    if overlapping_keys:
-        raise ValueError(f"Overlapping keys detected: {overlapping_keys}")
+from agential.utils.validation import validate_overlapping_keys
 
 class CodeStrategy(CriticBaseStrategy):
     def __init__(self, llm):
@@ -46,7 +42,7 @@ class CodeStrategy(CriticBaseStrategy):
         external_tool_info = {}
         if use_interpreter_tool:
             if "tests" not in additional_keys:
-                raise ValueError("The 'tests' parameter must be specified in the `additional_keys`.")
+                raise ValueError("The 'tests' parameter must be specified in `critique_additional_keys`.")
             tests = additional_keys["tests"]
 
             _, execution_status = safe_execute(f"{answer}\n\n{tests}")

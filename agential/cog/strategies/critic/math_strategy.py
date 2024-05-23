@@ -1,6 +1,7 @@
 from typing import Dict
 from agential.cog.functional.critic import _prompt_agent, _prompt_critique, safe_execute
 from agential.cog.strategies.critic.base import CriticBaseStrategy
+from agential.utils.validation import validate_overlapping_keys
 
 class MathStrategy(CriticBaseStrategy):
     def __init__(self, llm):
@@ -60,13 +61,17 @@ class MathStrategy(CriticBaseStrategy):
             external_tool_info = self._answer_history[last_valid_idx]["external_tool_info"]
             answer = self._answer_history[last_valid_idx]["answer"]
 
+            validate_overlapping_keys(additional_keys, external_tool_info)
+
+        additional_keys.update(external_tool_info)
+
         new_critique = _prompt_critique(
             llm=self.llm,
             question=question,
             examples=examples,
             answer=answer,
             critique="",
-            additional_keys=external_tool_info if external_tool_info else additional_keys,
+            additional_keys=additional_keys,
             prompt=prompt,
         ).split("Here's")[0]
 
@@ -87,13 +92,16 @@ class MathStrategy(CriticBaseStrategy):
         external_tool_info: Dict[str, str],
         **kwargs
     ) -> str:
+        validate_overlapping_keys(additional_keys, external_tool_info)
+        additional_keys.update(external_tool_info)
+
         new_answer = _prompt_critique(
             llm=self.llm,
             question=question,
             examples=examples,
             answer=answer,
             critique=f"{critique}\n\nHere's a better solution:\n```python\n",
-            additional_keys=external_tool_info if external_tool_info else additional_keys,
+            additional_keys=additional_keys,
             prompt=prompt,
         )
         new_answer = new_answer.split("```python")[-1].split("```")[0].strip()
