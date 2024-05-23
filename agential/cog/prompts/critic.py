@@ -3174,7 +3174,7 @@ def are_anagrams(s1: str, s2: str) -> bool:
 
 
 # Ref: https://arxiv.org/pdf/2405.04434.
-CRITIC_POT_INSTRUCTION_WITH_TESTS_MBPP = """{examples}
+CRITIC_POT_INSTRUCTION_MBPP = """{examples}
 (END OF EXAMPLES)
 
 You are an expert Python programmer, and here is your task: {question}.
@@ -3185,12 +3185,12 @@ Your code should pass these tests:
 ```python"""
 
 
-MBPP_FEWSHOT_EXAMPLES_POT_WITH_TESTS = """You are an expert Python programmer, and here is your task: Write a function to find the shared elements from the given two lists.
+MBPP_FEWSHOT_EXAMPLES_POT = """You are an expert Python programmer, and here is your task: Write a function to find the shared elements from the given two lists.
 Your code should pass these tests:
 
-assert set(similar_elements((3, 4, 5, 6), (5, 7, 4, 10))) == set((4, 5)), "Test failed for input (3, 4, 5, 6), (5, 7, 4, 10)"
-assert set(similar_elements((1, 2, 3, 4), (5, 4, 3, 7))) == set((3, 4)), "Test failed for input (1, 2, 3, 4), (5, 4, 3, 7)"
-assert set(similar_elements((11, 12, 14, 13), (17, 15, 14, 13))) == set((13, 14)), "Test failed for input (11, 12, 14, 13), (17, 15, 14, 13)"
+assert set(similar_elements((3, 4, 5, 6), (5, 7, 4, 10))) == set((4, 5))
+assert set(similar_elements((1, 2, 3, 4), (5, 4, 3, 7))) == set((3, 4))
+assert set(similar_elements((11, 12, 14, 13), (17, 15, 14, 13))) == set((13, 14))
 
 ```python
 def similar_elements(test_tup1, test_tup2):
@@ -3203,10 +3203,10 @@ def similar_elements(test_tup1, test_tup2):
 You are an expert Python programmer, and here is your task: Write a python function to identify non-prime numbers.
 Your code should pass these tests:
 
-assert is_not_prime(2) == False, "Test failed for input 2"
-assert is_not_prime(10) == True, "Test failed for input 10"
-assert is_not_prime(35) == True, "Test failed for input 35"
-assert is_not_prime(37) == False, "Test failed for input 37"
+assert is_not_prime(2) == False
+assert is_not_prime(10) == True
+assert is_not_prime(35) == True
+assert is_not_prime(37) == False
 
 ```python
 import math
@@ -3224,9 +3224,9 @@ def is_not_prime(n):
 
 You are an expert Python programmer, and here is your task: Write a function to find the n largest integers from a given list of numbers, returned in descending order.
 Your code should pass these tests:
-assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 3) == [85, 75, 65], "Test failed for top 3"
-assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 2) == [85, 75], "Test failed for top 2"
-assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 5) == [85, 75, 65, 58, 35], "Test failed for top 5"
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 3) == [85, 75, 65]
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 2) == [85, 75]
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 5) == [85, 75, 65, 58, 35]
 
 ```python
 import heapq as hq
@@ -3240,12 +3240,12 @@ def heap_queue_largest(nums, n):
 
 You are an expert Python programmer, and here is your task: Write a python function to check whether the two numbers differ at one bit position only or not.
 Your code should pass these tests:
-assert differ_at_one_bit_pos(13, 9) == True, "Test failed for input (13, 9)"
-assert differ_at_one_bit_pos(15, 8) == False, "Test failed for input (15, 8)"
-assert differ_at_one_bit_pos(2, 4) == False, "Test failed for input (2, 4)"
-assert differ_at_one_bit_pos(2, 3) == True, "Test failed for input (2, 3)"
-assert differ_at_one_bit_pos(5, 1) == True, "Test failed for input (5, 1)"
-assert differ_at_one_bit_pos(1, 5) == True, "Test failed for input (1, 5)"
+assert differ_at_one_bit_pos(13, 9) == True
+assert differ_at_one_bit_pos(15, 8) == False
+assert differ_at_one_bit_pos(2, 4) == False
+assert differ_at_one_bit_pos(2, 3) == True
+assert differ_at_one_bit_pos(5, 1) == True
+assert differ_at_one_bit_pos(1, 5) == True
 
 ```python
 def is_power_of_two(x):
@@ -3259,9 +3259,9 @@ def differ_at_one_bit_pos(a, b):
 
 You are an expert Python programmer, and here is your task: Write a function to find all words which are at least 4 characters long in a string.
 Your code should pass these tests:
-assert set(find_char_long('Please move back to stream')) == set(['Please', 'move', 'back', 'stream']), "Test failed for 'Please move back to stream'"
-assert set(find_char_long('Jing Eco and Tech')) == set(['Jing', 'Tech']), "Test failed for 'Jing Eco and Tech'"
-assert set(find_char_long('Jhingai wulu road Zone 3')) == set(['Jhingai', 'wulu', 'road', 'Zone']), "Test failed for 'Jhingai wulu road Zone 3'"
+assert set(find_char_long('Please move back to stream')) == set(['Please', 'move', 'back', 'stream'])
+assert set(find_char_long('Jing Eco and Tech')) == set(['Jing', 'Tech'])
+assert set(find_char_long('Jhingai wulu road Zone 3')) == set(['Jhingai', 'wulu', 'road', 'Zone'])
 
 ```python
 import re
@@ -3274,31 +3274,35 @@ def find_char_long(text):
 CRITIC_CRITIQUE_INSTRUCTION_MBPP = """{examples}
 (END OF EXAMPLES)
 
-```python
-{question}
+You are an expert Python programmer, and here is your task: {question}.
+Your code should pass these tests.
 
+```python
 {answer}
+
+{tests}
 ```
 
-Execution: {execution_status} 
-Output: answer = {code_answer}
+Execution: {execution_status}
 
 What's the problem with the above code? If nothing is wrong, output <CORRECT>.
 
 {critique}"""
 
 
-MBPP_FEWSHOT_EXAMPLES_CRITIC = """```python
+MBPP_FEWSHOT_EXAMPLES_CRITIC = """You are an expert Python programmer, and here is your task: Write a function to find the shared elements from the given two lists.
+Your code should pass these tests.
+
+```python
 def similar_elements(test_tup1, test_tup2):
     return tuple(set(test_tup1) | set(test_tup2))
 
-assert set(similar_elements((3, 4, 5, 6), (5, 7, 4, 10))) == set((4, 5)), "Test failed for input (3, 4, 5, 6), (5, 7, 4, 10)"
-assert set(similar_elements((1, 2, 3, 4), (5, 4, 3, 7))) == set((3, 4)), "Test failed for input (1, 2, 3, 4), (5, 4, 3, 7)"
-assert set(similar_elements((11, 12, 14, 13), (17, 15, 14, 13))) == set((13, 14)), "Test failed for input (11, 12, 14, 13), (17, 15, 14, 13)"
+assert set(similar_elements((3, 4, 5, 6), (5, 7, 4, 10))) == set((4, 5))
+assert set(similar_elements((1, 2, 3, 4), (5, 4, 3, 7))) == set((3, 4))
+assert set(similar_elements((11, 12, 14, 13), (17, 15, 14, 13))) == set((13, 14))
 ```
 
-Execution: AssertionError('Test failed for input (3, 4, 5, 6), (5, 7, 4, 10)')
-Output: answer = None
+Execution: AssertionError()
 
 What's the problem with the above code?
 
@@ -3325,6 +3329,9 @@ def similar_elements(test_tup1, test_tup2):
 
 ---
 
+You are an expert Python programmer, and here is your task: Write a python function to identify non-prime numbers.
+Your code should pass these tests.
+
 ```python
 import math
 
@@ -3336,14 +3343,13 @@ def is_not_prime(n):
             return True
     return False
 
-assert is_not_prime(2) == False, "Test failed for input 2"
-assert is_not_prime(10) == True, "Test passed for input 10"
-assert is_not_prime(35) == True, "Test passed for input 35"
-assert is_not_prime(37) == False, "Test passed for input 37"
+assert is_not_prime(2) == False
+assert is_not_prime(10) == True
+assert is_not_prime(35) == True
+assert is_not_prime(37) == False
 ```
 
-Execution: AssertionError('Test failed for input 2')
-Output: answer = None
+Execution: AssertionError()
 
 What's the problem with the above code?
 
@@ -3369,17 +3375,19 @@ def is_not_prime(n):
 
 ---
 
+You are an expert Python programmer, and here is your task: Write a function to find the n largest integers from a given list of numbers, returned in descending order.
+Your code should pass these tests.
+
 ```python
 def heap_queue_largest(nums, n):
     return sorted(nums)[-n:]
 
-assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 3) == [85, 75, 65], "Test failed for top 3"
-assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 2) == [85, 75], "Test failed for top 2"
-assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 5) == [85, 75, 65, 58, 35], "Test failed for top 5"
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 3) == [85, 75, 65]
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 2) == [85, 75]
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 5) == [85, 75, 65, 58, 35]
 ```
 
-Execution: AssertionError('Test failed for top 3')
-Output: answer = None
+Execution: AssertionError()
 
 What's the problem with the above code?
 
@@ -3409,20 +3417,23 @@ def heap_queue_largest(nums, n):
 
 ---
 
+
+You are an expert Python programmer, and here is your task: Write a python function to check whether the two numbers differ at one bit position only or not.
+Your code should pass these tests.
+
 ```python
 def differ_at_one_bit_pos(a, b):
     return a ^ b == 1
 
-assert differ_at_one_bit_pos(13, 9) == True, "Test failed for input (13, 9)"
-assert differ_at_one_bit_pos(15, 8) == False, "Test failed for input (15, 8)"
-assert differ_at_one_bit_pos(2, 4) == False, "Test failed for input (2, 4)"
-assert differ_at_one_bit_pos(2, 3) == True, "Test failed for input (2, 3)"
-assert differ_at_one_bit_pos(5, 1) == True, "Test failed for input (5, 1)"
-assert differ_at_one_bit_pos(1, 5) == True, "Test failed for input (1, 5)"
+assert differ_at_one_bit_pos(13, 9) == True
+assert differ_at_one_bit_pos(15, 8) == False
+assert differ_at_one_bit_pos(2, 4) == False
+assert differ_at_one_bit_pos(2, 3) == True
+assert differ_at_one_bit_pos(5, 1) == True
+assert differ_at_one_bit_pos(1, 5) == True
 ```
 
-Execution: AssertionError('Test failed for input (13, 9)')
-Output: answer = None
+Execution: AssertionError()
 
 What's the problem with the above code?
 
@@ -3452,17 +3463,19 @@ def differ_at_one_bit_pos(a, b):
 
 ---
 
+You are an expert Python programmer, and here is your task: Write a function to find all words which are at least 4 characters long in a string.
+Your code should pass these tests.
+
 ```python
 def find_char_long(text):
     return text.split()
 
-assert set(find_char_long('Please move back to stream')) == set(['Please', 'move', 'back', 'stream']), "Test failed for 'Please move back to stream'"
-assert set(find_char_long('Jing Eco and Tech')) == set(['Jing', 'Tech']), "Test failed for 'Jing Eco and Tech'"
-assert set(find_char_long('Jhingai wulu road Zone 3')) == set(['Jhingai', 'wulu', 'road', 'Zone']), "Test failed for 'Jhingai wulu road Zone 3'"
+assert set(find_char_long('Please move back to stream')) == set(['Please', 'move', 'back', 'stream'])
+assert set(find_char_long('Jing Eco and Tech')) == set(['Jing', 'Tech'])
+assert set(find_char_long('Jhingai wulu road Zone 3')) == set(['Jhingai', 'wulu', 'road', 'Zone'])
 ```
 
-Execution: AssertionError('Test failed for input 'Please move back to stream'')
-Output: answer = None
+Execution: AssertionError()
 
 What's the problem with the above code?
 
@@ -3494,10 +3507,13 @@ def find_char_long(text):
 CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_MBPP = """{examples}
 (END OF EXAMPLES)
 
-```python
-{question}
+You are an expert Python programmer, and here is your task: {question}.
+Your code should pass these tests.
 
+```python
 {answer}
+
+{tests}
 ```
 
 What's the problem with the above code? If nothing is wrong, output <CORRECT>.
@@ -3505,13 +3521,16 @@ What's the problem with the above code? If nothing is wrong, output <CORRECT>.
 {critique}"""
 
 
-MBPP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL = """```python
+MBPP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL = """You are an expert Python programmer, and here is your task: Write a function to find the shared elements from the given two lists.
+Your code should pass these tests.
+
+```python
 def similar_elements(test_tup1, test_tup2):
     return tuple(set(test_tup1) | set(test_tup2))
 
-assert set(similar_elements((3, 4, 5, 6), (5, 7, 4, 10))) == set((4, 5)), "Test failed for input (3, 4, 5, 6), (5, 7, 4, 10)"
-assert set(similar_elements((1, 2, 3, 4), (5, 4, 3, 7))) == set((3, 4)), "Test failed for input (1, 2, 3, 4), (5, 4, 3, 7)"
-assert set(similar_elements((11, 12, 14, 13), (17, 15, 14, 13))) == set((13, 14)), "Test failed for input (11, 12, 14, 13), (17, 15, 14, 13)"
+assert set(similar_elements((3, 4, 5, 6), (5, 7, 4, 10))) == set((4, 5))
+assert set(similar_elements((1, 2, 3, 4), (5, 4, 3, 7))) == set((3, 4))
+assert set(similar_elements((11, 12, 14, 13), (17, 15, 14, 13))) == set((13, 14))
 ```
 
 What's the problem with the above code?
@@ -3539,6 +3558,9 @@ def similar_elements(test_tup1, test_tup2):
 
 ---
 
+You are an expert Python programmer, and here is your task: Write a python function to identify non-prime numbers.
+Your code should pass these tests.
+
 ```python
 import math
 
@@ -3550,10 +3572,10 @@ def is_not_prime(n):
             return True
     return False
 
-assert is_not_prime(2) == False, "Test failed for input 2"
-assert is_not_prime(10) == True, "Test passed for input 10"
-assert is_not_prime(35) == True, "Test passed for input 35"
-assert is_not_prime(37) == False, "Test passed for input 37"
+assert is_not_prime(2) == False
+assert is_not_prime(10) == True
+assert is_not_prime(35) == True
+assert is_not_prime(37) == False
 ```
 
 What's the problem with the above code?
@@ -3580,13 +3602,16 @@ def is_not_prime(n):
 
 ---
 
+You are an expert Python programmer, and here is your task: Write a function to find the n largest integers from a given list of numbers, returned in descending order.
+Your code should pass these tests.
+
 ```python
 def heap_queue_largest(nums, n):
     return sorted(nums)[-n:]
 
-assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 3) == [85, 75, 65], "Test failed for top 3"
-assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 2) == [85, 75], "Test failed for top 2"
-assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 5) == [85, 75, 65, 58, 35], "Test failed for top 5"
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 3) == [85, 75, 65]
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 2) == [85, 75]
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 5) == [85, 75, 65, 58, 35]
 ```
 
 What's the problem with the above code?
@@ -3617,16 +3642,20 @@ def heap_queue_largest(nums, n):
 
 ---
 
+
+You are an expert Python programmer, and here is your task: Write a python function to check whether the two numbers differ at one bit position only or not.
+Your code should pass these tests.
+
 ```python
 def differ_at_one_bit_pos(a, b):
     return a ^ b == 1
 
-assert differ_at_one_bit_pos(13, 9) == True, "Test failed for input (13, 9)"
-assert differ_at_one_bit_pos(15, 8) == False, "Test failed for input (15, 8)"
-assert differ_at_one_bit_pos(2, 4) == False, "Test failed for input (2, 4)"
-assert differ_at_one_bit_pos(2, 3) == True, "Test failed for input (2, 3)"
-assert differ_at_one_bit_pos(5, 1) == True, "Test failed for input (5, 1)"
-assert differ_at_one_bit_pos(1, 5) == True, "Test failed for input (1, 5)"
+assert differ_at_one_bit_pos(13, 9) == True
+assert differ_at_one_bit_pos(15, 8) == False
+assert differ_at_one_bit_pos(2, 4) == False
+assert differ_at_one_bit_pos(2, 3) == True
+assert differ_at_one_bit_pos(5, 1) == True
+assert differ_at_one_bit_pos(1, 5) == True
 ```
 
 What's the problem with the above code?
@@ -3657,13 +3686,16 @@ def differ_at_one_bit_pos(a, b):
 
 ---
 
+You are an expert Python programmer, and here is your task: Write a function to find all words which are at least 4 characters long in a string.
+Your code should pass these tests.
+
 ```python
 def find_char_long(text):
     return text.split()
 
-assert set(find_char_long('Please move back to stream')) == set(['Please', 'move', 'back', 'stream']), "Test failed for 'Please move back to stream'"
-assert set(find_char_long('Jing Eco and Tech')) == set(['Jing', 'Tech']), "Test failed for 'Jing Eco and Tech'"
-assert set(find_char_long('Jhingai wulu road Zone 3')) == set(['Jhingai', 'wulu', 'road', 'Zone']), "Test failed for 'Jhingai wulu road Zone 3'"
+assert set(find_char_long('Please move back to stream')) == set(['Please', 'move', 'back', 'stream'])
+assert set(find_char_long('Jing Eco and Tech')) == set(['Jing', 'Tech'])
+assert set(find_char_long('Jhingai wulu road Zone 3')) == set(['Jhingai', 'wulu', 'road', 'Zone'])
 ```
 
 What's the problem with the above code?

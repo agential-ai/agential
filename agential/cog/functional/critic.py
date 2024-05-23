@@ -1,5 +1,6 @@
 """Functional module for CRITIC."""
 
+import re
 import builtins
 import sys
 
