@@ -113,3 +113,13 @@ class MathStrategy(CriticBaseStrategy):
 
     def reset(self) -> bool:
         self._answer_history = []
+
+
+class CritGSM8KStrategy(MathStrategy):
+    pass
+
+class CritSVAMPStrategy(MathStrategy):
+    pass
+
+class CritTabMWPStrategy(MathStrategy):
+    pass
