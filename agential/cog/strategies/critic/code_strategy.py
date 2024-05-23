@@ -39,15 +39,14 @@ class CodeStrategy(CriticBaseStrategy):
         **kwargs
     ):
         if "tests" not in kwargs:
-            raise ValueError("The 'tests' parameter must be specified in the kwargs when use_interpreter_tool is True.")
+            raise ValueError("The 'tests' parameter must be specified in the kwargs.")
         tests = kwargs["tests"]
 
         external_tool_info = {}
         if use_interpreter_tool:
-            code_answer, execution_status = safe_execute(f"{answer}\n\n{tests}")
+            _, execution_status = safe_execute(f"{answer}\n\n{tests}")
             external_tool_info = {
                 "execution_status": execution_status,
-                "code_answer": code_answer[0] if code_answer[0] is not None else "",
             }
 
         new_critique = _prompt_critique(
@@ -78,7 +77,7 @@ class CodeStrategy(CriticBaseStrategy):
         **kwargs
     ) -> str:
         if "tests" not in kwargs:
-            raise ValueError("The 'tests' parameter must be specified in the kwargs when use_interpreter_tool is True.")
+            raise ValueError("The 'tests' parameter must be specified in the kwargs.")
         tests = kwargs["tests"]
 
         new_answer = _prompt_critique(
@@ -98,4 +97,4 @@ class CodeStrategy(CriticBaseStrategy):
         return "<CORRECT>" in critique.replace(" ", "").upper().strip() or ("correct" in critique and "incorrect" not in critique)
 
     def reset(self) -> bool:
-        pass
+        self._answer_history = []
