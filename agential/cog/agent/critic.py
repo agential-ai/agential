@@ -18,13 +18,14 @@ class CriticAgent(BaseAgent):
     Attributes:
         llm (BaseChatModel): An instance of a language model used for generating initial answers
             and critiques.
-        mode (str): The CRITIC agent's mode. Can be "qa", "math", or "code".
+        mode (Dict[str, str]): A dictionary specifying the CRITIC agent's mode and the benchmark.
+            For example, {"qa": "hotpotqa"}, {"math": "gsm8k"}, or {"code": "mbpp"}.    
     """
 
     def __init__(
         self,
         llm: BaseChatModel,
-        mode: str,
+        mode: Dict[str, str],
         **strategy_kwargs
     ) -> None:
         """Initialization."""
