@@ -149,8 +149,7 @@ Question: Joseph and Getty went to buy ice creams, they together bought 36 ice c
 Answer: 22"""
 
 
-REACT_SVAMP_INSTRUCTIONS_CRITIC = """
-{examples}
+REACT_SVAMP_INSTRUCTIONS_CRITIC = """{examples}
 (END OF EXAMPLES)
 Question: {question}
 Execution: Done
