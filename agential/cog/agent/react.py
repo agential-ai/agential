@@ -22,11 +22,6 @@ from agential.cog.modules.memory.react import ReActMemory
 from agential.cog.prompts.react import (
     HOTPOTQA_FEWSHOT_EXAMPLES,
     REACT_INSTRUCTION_HOTPOTQA,
-    REACT_SVAMP_EXAMPLES_DIRECT,
-    REACT_SVAMP_EXAMPLES_POT,
-    REACT_SVAMP_INSTRUCTIONS,
-    REACT_SVAMP_EXAMPLES_CRITIQUE,
-    REACT_SVAMP_INSTRUCTIONS_CRITIC,
 )
 from agential.utils.parse import parse_action, remove_newline
 
