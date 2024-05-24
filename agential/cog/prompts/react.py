@@ -151,6 +151,7 @@ Answer: 22"""
 
 REACT_SVAMP_INSTRUCTIONS_CRITIC = """{examples}
 (END OF EXAMPLES)
+
 Question: {question}
 Execution: Done
 Output: {answer}
