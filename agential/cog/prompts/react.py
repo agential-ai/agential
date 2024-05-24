@@ -124,8 +124,7 @@ Action 4: Finish[NOT ENOUGH INFO]"""
 
 #svamp for react instructions
 
-REACT_SVAMP_INSTRUCTIONS = """
-{examples}
+REACT_SVAMP_INSTRUCTIONS = """{examples}
 (END OF EXAMPLES)
 Question: {question}
 Answer: {answer}
