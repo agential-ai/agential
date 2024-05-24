@@ -124,15 +124,15 @@ Action 4: Finish[NOT ENOUGH INFO]"""
 
 #svamp for react instructions
 
-REACT_SVAMP_INSTRUCTIONS = """{examples}
+
+REACT_INSTRUCTION_SVAMP = """{examples}
 (END OF EXAMPLES)
 
 Question: {question}
 Answer: {answer}
 """
 
-
-REACT_SVAMP_EXAMPLES_DIRECT = """
+SVAMP_FEWSHOT_EXAMPLES = """
 Question: James bought 93 red and 10 blue stickers, he used 31 red sticker on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
 Answer: 62
 Question: Allen went to supermarket to buy eggs, each egg costs 80 dollars, if the discount is 29 dollars. How much do you have to pay to buy for each egg?
@@ -149,7 +149,7 @@ Question: Joseph and Getty went to buy ice creams, they together bought 36 ice c
 Answer: 22"""
 
 
-REACT_SVAMP_INSTRUCTIONS_CRITIC = """{examples}
+SVAMP_FEWSHOT_EXAMPLES_REACT = """{examples}
 (END OF EXAMPLES)
 
 Question: {question}
@@ -164,7 +164,8 @@ What's the problem with the above code?
 """
 
 
-REACT_SVAMP_EXAMPLES_CRITIQUE   = """Question: Marco and his dad went strawberry picking. Marco's dad's strawberries weighed 11 pounds. If together their strawberries weighed 30 pounds. How much did Marco's strawberries weigh?
+
+SVAMP_FEWSHOT_EXAMPLES_REACT_NO_TOOL = """Question: Marco and his dad went strawberry picking. Marco's dad's strawberries weighed 11 pounds. If together their strawberries weighed 30 pounds. How much did Marco's strawberries weigh?
 ```python
 num_strawberries_dad_picked = 11
 num_strawberries_marco_picked = 30
@@ -262,7 +263,7 @@ answer = num_emails_sent_in_morning + num_emails_sent_in_afternoon
 ---"""
 
 
-REACT_SVAMP_EXAMPLES_POT = """Read the following passages to answer questions with Python code, store the result as a 'answer' variable:
+REACT_SVAMP_EXAMPLES_CRITIQUE = """Read the following passages to answer questions with Python code, store the result as a 'answer' variable:
 Question: James bought 93 red and 10 blue stickers, he used 31 red sticker on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
 # Python code, return answer
 ``` python
