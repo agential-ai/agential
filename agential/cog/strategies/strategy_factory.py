@@ -1,3 +1,5 @@
+"""Strategy factory classes."""
+
 from typing import Dict
 
 from agential.cog.strategies.critic.code_strategy import (
@@ -18,8 +20,33 @@ from agential.cog.strategies.critic.qa_strategy import (
 
 
 class CriticStrategyFactory:
+    """A factory class for creating instances of different CRITIC strategies based on the specified mode and benchmark.
+
+    Methods:
+        get_strategy(mode: Dict[str, str], **strategy_kwargs) -> Any:
+            Returns an instance of the appropriate Critic strategy based on the provided mode and benchmark.
+    """
+
     @staticmethod
     def get_strategy(mode: Dict[str, str], **strategy_kwargs):
+        """Returns an instance of the appropriate Critic strategy based on the provided mode and benchmark.
+
+        Available modes:
+            - QA: "hotpotqa", "triviaqa", "ambignq", "fever"
+            - Math: "gsm8k", "svamp", "tabmwp"
+            - Code: "mbpp", "humaneval"
+
+        Args:
+            mode (Dict[str, str]): A dictionary specifying the mode and benchmark.
+                Example: {"qa": "hotpotqa"}, {"math": "gsm8k"}, {"code": "mbpp"}.
+            **strategy_kwargs: Additional keyword arguments to pass to the strategy's constructor.
+
+        Returns:
+            Any: An instance of the appropriate Critic strategy.
+
+        Raises:
+            ValueError: If the mode or benchmark is unsupported.
+        """
         if "qa" in mode:
             if mode["qa"] == "hotpotqa":
                 return CritHotQAStrategy(**strategy_kwargs)
