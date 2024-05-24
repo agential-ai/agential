@@ -4,6 +4,7 @@ import pytest
 
 from agential.utils.validation import validate_overlapping_keys
 
+
 def test_validate_overlapping_keys() -> None:
     """Test validate_overlapping_keys function."""
     # Case 1: No overlap.
@@ -11,7 +12,7 @@ def test_validate_overlapping_keys() -> None:
     dict_2 = {"c": "3", "d": "4"}
     # This should not raise any exception.
     validate_overlapping_keys(dict_1, dict_2)
-    
+
     # Case 2: With overlap.
     dict_1 = {"a": "1", "b": "2"}
     dict_2 = {"b": "3", "d": "4"}

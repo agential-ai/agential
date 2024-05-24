@@ -1,18 +1,19 @@
 from typing import Dict
-from agential.cog.strategies.critic.qa_strategy import (
-    CritHotQAStrategy,
-    CritTriviaQAStrategy,
-    CritAmbigNQStrategy,
-    CritFEVERStrategy,
+
+from agential.cog.strategies.critic.code_strategy import (
+    CritHEvalCodeStrategy,
+    CritMBPPCodeStrategy,
 )
 from agential.cog.strategies.critic.math_strategy import (
     CritGSM8KStrategy,
     CritSVAMPStrategy,
     CritTabMWPStrategy,
 )
-from agential.cog.strategies.critic.code_strategy import (
-    CritMBPPCodeStrategy,
-    CritHEvalCodeStrategy,
+from agential.cog.strategies.critic.qa_strategy import (
+    CritAmbigNQStrategy,
+    CritFEVERStrategy,
+    CritHotQAStrategy,
+    CritTriviaQAStrategy,
 )
 
 

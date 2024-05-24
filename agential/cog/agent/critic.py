@@ -3,14 +3,14 @@ from typing import Dict, List
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.agent.base import BaseAgent
-from agential.cog.strategies.strategy_factory import CriticStrategyFactory
-
 from agential.cog.prompts.critic import (
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
     CRITIC_INSTRUCTION_HOTPOTQA,
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
     HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
 )
+from agential.cog.strategies.strategy_factory import CriticStrategyFactory
+
 
 class CriticAgent(BaseAgent):
     """CRITIC Agent.
@@ -19,14 +19,11 @@ class CriticAgent(BaseAgent):
         llm (BaseChatModel): An instance of a language model used for generating initial answers
             and critiques.
         mode (Dict[str, str]): A dictionary specifying the CRITIC agent's mode and the benchmark.
-            For example, {"qa": "hotpotqa"}, {"math": "gsm8k"}, or {"code": "mbpp"}.    
+            For example, {"qa": "hotpotqa"}, {"math": "gsm8k"}, or {"code": "mbpp"}.
     """
 
     def __init__(
-        self,
-        llm: BaseChatModel,
-        mode: Dict[str, str],
-        **strategy_kwargs
+        self, llm: BaseChatModel, mode: Dict[str, str], **strategy_kwargs
     ) -> None:
         """Initialization."""
         super().__init__()
@@ -34,7 +31,9 @@ class CriticAgent(BaseAgent):
         self.llm = llm
         self.mode = mode
 
-        self.strategy = CriticStrategyFactory().get_strategy(mode=self.mode, llm=self.llm, **strategy_kwargs)
+        self.strategy = CriticStrategyFactory().get_strategy(
+            mode=self.mode, llm=self.llm, **strategy_kwargs
+        )
 
     def generate(
         self,
@@ -48,7 +47,7 @@ class CriticAgent(BaseAgent):
         max_interactions: int = 7,
         use_tool: bool = True,
         reset: bool = True,
-        **kwargs
+        **kwargs,
     ) -> List[Dict[str, str]]:
         """Generates an answer that is refined with search results.
 
@@ -63,7 +62,7 @@ class CriticAgent(BaseAgent):
             max_interactions (int): The maximum number of critique cycles. Defaults to 7.
             use_tool (bool): Use the external tool. Flag to decide whether to use the interpreter tool for math/code execution, or search tool for QA. Defaults to True.
             **kwargs: Additional parameters for flexibility.
-            
+
         Returns:
             List[Dict[str, str]]: A list of dictionaries.
                 "qa" mode:
@@ -86,32 +85,34 @@ class CriticAgent(BaseAgent):
         for idx in range(max_interactions):
             critique, external_tool_info = self.strategy.generate_critique(
                 idx=idx,
-                question=question, 
-                examples=critique_examples, 
-                answer=answer, 
+                question=question,
+                examples=critique_examples,
+                answer=answer,
                 critique=critique,
-                prompt=critique_prompt, 
-                additional_keys=critique_additional_keys, 
+                prompt=critique_prompt,
+                additional_keys=critique_additional_keys,
                 use_tool=use_tool,
                 max_interactions=max_interactions,
-                **kwargs
+                **kwargs,
             )
 
-            out.append(self.strategy.create_output_dict(answer, critique, external_tool_info))
+            out.append(
+                self.strategy.create_output_dict(answer, critique, external_tool_info)
+            )
 
             if self.strategy.halting_condition(critique):
                 break
 
             # Update answer for the next iteration.
             answer = self.strategy.update_answer_based_on_critique(
-                question=question, 
-                examples=critique_examples, 
-                answer=answer, 
+                question=question,
+                examples=critique_examples,
+                answer=answer,
                 critique=critique,
                 prompt=critique_prompt,
                 additional_keys=critique_additional_keys,
                 external_tool_info=external_tool_info,
-                **kwargs
+                **kwargs,
             )
 
         return out
