@@ -259,8 +259,7 @@ num_emails_received_in_afternoon = 6
 num_emails_sent_in_afternoon = 8
 answer = num_emails_sent_in_morning + num_emails_sent_in_afternoon
 ```
----
-"""
+---"""
 
 
 REACT_SVAMP_EXAMPLES_POT = """Read the following passages to answer questions with Python code, store the result as a 'answer' variable:
