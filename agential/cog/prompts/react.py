@@ -155,8 +155,11 @@ REACT_SVAMP_INSTRUCTIONS_CRITIC = """{examples}
 Question: {question}
 Execution: Done
 Output: {answer}
+
 What's the problem with the above code?
+
 1. 
+
 {critique}
 """
 
