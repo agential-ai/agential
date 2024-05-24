@@ -163,7 +163,6 @@ What's the problem with the above code?
 {critique}
 """
 
-#svamp for react critic CRITIQUE questions
 
 REACT_SVAMP_EXAMPLES_CRITIQUE   = """Question: Marco and his dad went strawberry picking. Marco's dad's strawberries weighed 11 pounds. If together their strawberries weighed 30 pounds. How much did Marco's strawberries weigh?
 ```python
