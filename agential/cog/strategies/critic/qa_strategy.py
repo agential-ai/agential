@@ -38,7 +38,7 @@ class CriticQAStrategy(CriticBaseStrategy):
         critique: str,
         prompt: str, 
         additional_keys: Dict[str, str], 
-        use_search_tool: bool, 
+        use_tool: bool, 
         max_interactions: int,
         **kwargs
     ):
@@ -61,12 +61,12 @@ class CriticQAStrategy(CriticBaseStrategy):
                 idx, 
                 question, 
                 search_query, 
-                use_search_tool, 
+                use_tool, 
                 max_interactions, 
                 **kwargs
             )
             new_critique = f"{critique}\n{new_critique}{context}"
-            if not use_search_tool:
+            if not use_tool:
                 search_result = _prompt_critique(
                     llm=self.llm,
                     question=question,
@@ -125,11 +125,11 @@ class CriticQAStrategy(CriticBaseStrategy):
         self._evidence_history = set()
         self._halt = False
 
-    def handle_search_query(self, idx, question, search_query, use_search_tool, max_interactions, **kwargs):
+    def handle_search_query(self, idx, question, search_query, use_tool, max_interactions, **kwargs):
         evidence_length = kwargs.get('evidence_length', self.evidence_length)
         num_results = kwargs.get('num_results', self.num_results)
         
-        if use_search_tool:
+        if use_tool:
             if not self.search:
                 raise ValueError("Search tool is required but not provided.")
             

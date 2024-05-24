@@ -46,8 +46,7 @@ class CriticAgent(BaseAgent):
         additional_keys: Dict[str, str] = {},
         critique_additional_keys: Dict[str, str] = {},
         max_interactions: int = 7,
-        use_search_tool: bool = True,
-        use_interpreter_tool: bool = True,
+        use_tool: bool = True,
         reset: bool = True,
         **kwargs
     ) -> List[Dict[str, str]]:
@@ -62,8 +61,7 @@ class CriticAgent(BaseAgent):
             additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
             critique_additional_keys (Dict[str, str]): Additional keys to format the critique_prompt. Defaults to {}.
             max_interactions (int): The maximum number of critique cycles. Defaults to 7.
-            use_search_tool (bool): Only for "qa" mode. Flag to decide whether to use the search tool for evidence gathering. Defaults to True.
-            use_interpreter_tool (bool): Only for "math" or "code" mode. Flag to decide whether to use the interpreter tool for code execution. Defaults to True.
+            use_tool (bool): Use the external tool. Flag to decide whether to use the interpreter tool for math/code execution, or search tool for QA. Defaults to True.
             **kwargs: Additional parameters for flexibility.
             
         Returns:
@@ -94,8 +92,7 @@ class CriticAgent(BaseAgent):
                 critique=critique,
                 prompt=critique_prompt, 
                 additional_keys=critique_additional_keys, 
-                use_interpreter_tool=use_interpreter_tool,
-                use_search_tool=use_search_tool,
+                use_tool=use_tool,
                 max_interactions=max_interactions,
                 **kwargs
             )

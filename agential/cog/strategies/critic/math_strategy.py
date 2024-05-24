@@ -35,13 +35,12 @@ class MathStrategy(CriticBaseStrategy):
         critique: str,
         prompt: str, 
         additional_keys: Dict[str, str], 
-        use_interpreter_tool: bool, 
-        use_search_tool: bool,
+        use_tool: bool,
         max_interactions: int,
         **kwargs
     ):
         external_tool_info = {}
-        if use_interpreter_tool:
+        if use_tool:
             code_answer, execution_status = safe_execute(answer)
             external_tool_info = {
                 "execution_status": execution_status,

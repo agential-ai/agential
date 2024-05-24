@@ -1207,7 +1207,7 @@ Question: {question}
 Execution: {execution_status} 
 Output: answer = {code_answer}
 
-What's the problem with the above code? If nothing is wrong, output <CORRECT>.
+What's the problem with the above code?
 
 {critique}"""
 
@@ -1445,9 +1445,7 @@ cost_of_12_pounds = num_of_12_pounds_bag * cost_of_12_pounds_bag
 total_cost = min(cost_of_10_pounds, cost_of_12_pounds)
 
 answer = total_cost
-```
-
----"""
+```"""
 
 
 CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_GSM8K = """{examples}
@@ -1458,7 +1456,7 @@ Question: {question}
 {answer}
 ```
 
-What's the problem with the above code? If nothing is wrong, output <CORRECT>.
+What's the problem with the above code?
 
 {critique}"""
 
@@ -1688,9 +1686,7 @@ cost_of_12_pounds = num_of_12_pounds_bag * cost_of_12_pounds_bag
 total_cost = min(cost_of_10_pounds, cost_of_12_pounds)
 
 answer = total_cost
-```
-
----"""
+```"""
 
 
 # ======================================================================== SVAMP ======================================================================== #
@@ -1762,14 +1758,12 @@ Question: {question}
 Execution: {execution_status} 
 Output: answer = {code_answer}
 
-What's the problem with the above code? If nothing is wrong, output <CORRECT>.
+What's the problem with the above code?
 
 {critique}"""
 
 
-SVAMP_FEWSHOT_EXAMPLES_CRITIC = """---
-
-Question: Marco and his dad went strawberry picking. Marco's dad's strawberries weighed 11 pounds. If together their strawberries weighed 30 pounds. How much did Marco's strawberries weigh?
+SVAMP_FEWSHOT_EXAMPLES_CRITIC = """Question: Marco and his dad went strawberry picking. Marco's dad's strawberries weighed 11 pounds. If together their strawberries weighed 30 pounds. How much did Marco's strawberries weigh?
 ```python
 num_strawberries_dad_picked = 11
 num_strawberries_marco_picked = 30
@@ -1895,9 +1889,7 @@ num_emails_sent_in_morning = 2
 num_emails_received_in_afternoon = 6
 num_emails_sent_in_afternoon = 8
 answer = num_emails_sent_in_morning + num_emails_sent_in_afternoon
-```
-
----"""
+```"""
 
 
 CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_SVAMP = """{examples}
@@ -1908,14 +1900,12 @@ Question: {question}
 {answer}
 ```
 
-What's the problem with the above code? If nothing is wrong, output <CORRECT>.
+What's the problem with the above code?
 
 {critique}"""
 
 
-SVAMP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL = """---
-
-Question: Marco and his dad went strawberry picking. Marco's dad's strawberries weighed 11 pounds. If together their strawberries weighed 30 pounds. How much did Marco's strawberries weigh?
+SVAMP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL = """Question: Marco and his dad went strawberry picking. Marco's dad's strawberries weighed 11 pounds. If together their strawberries weighed 30 pounds. How much did Marco's strawberries weigh?
 ```python
 num_strawberries_dad_picked = 11
 num_strawberries_marco_picked = 30
@@ -2033,9 +2023,7 @@ num_emails_sent_in_morning = 2
 num_emails_received_in_afternoon = 6
 num_emails_sent_in_afternoon = 8
 answer = num_emails_sent_in_morning + num_emails_sent_in_afternoon
-```
-
----"""
+```"""
 
 
 # ======================================================================== TABMWP ======================================================================== #
@@ -2123,8 +2111,7 @@ if total_money > juggling_balls + guitar_price:
     answer = "yes"
 else:
     answer = "no"
-
----"""
+"""
 
 
 CRITIC_CRITIQUE_INSTRUCTION_TABMWP = """{examples}
@@ -2137,14 +2124,12 @@ CRITIC_CRITIQUE_INSTRUCTION_TABMWP = """{examples}
 Execution: {execution_status} 
 Output: answer = {code_answer}
 
-What's the problem with the above code? If nothing is wrong, output <CORRECT>.
+What's the problem with the above code?
 
 {critique}"""
 
 
-TABMWP_FEWSHOT_EXAMPLES_CRITIC = """---
-
-Read the following table and then write Python code to answer a question:
+TABMWP_FEWSHOT_EXAMPLES_CRITIC = """Read the following table and then write Python code to answer a question:
 
 llama | $2,860.00
 macaw | $8,897.00
@@ -2313,8 +2298,7 @@ for company, num_employees in companies.items():
         min_company = company  
   
 answer = min_company  
-```
----"""
+```"""
 
 
 CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_TABMWP = """{examples}
@@ -2325,14 +2309,11 @@ CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_TABMWP = """{examples}
 {answer}
 ```
 
-What's the problem with the above code? If nothing is wrong, output <CORRECT>.
-
+What's the problem with the above code?
 {critique}"""
 
 
-TABMWP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL = """---
-
-Read the following table and then write Python code to answer a question:
+TABMWP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL = """Read the following table and then write Python code to answer a question:
 
 llama | $2,860.00
 macaw | $8,897.00
@@ -2493,8 +2474,7 @@ for company, num_employees in companies.items():
         min_company = company  
   
 answer = min_company  
-```
----"""
+```"""
 
 
 # ======================================================================== HUMANEVAL ======================================================================== #

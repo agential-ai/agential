@@ -35,13 +35,12 @@ class CodeStrategy(CriticBaseStrategy):
         critique: str,
         prompt: str, 
         additional_keys: Dict[str, str], 
-        use_interpreter_tool: bool, 
-        use_search_tool: bool,
+        use_tool: bool, 
         max_interactions: int,
         **kwargs
     ):
         external_tool_info = {}
-        if use_interpreter_tool:
+        if use_tool:
             if "tests" not in additional_keys:
                 raise ValueError("The 'tests' parameter must be specified in `critique_additional_keys`.")
             tests = additional_keys["tests"]
@@ -126,13 +125,12 @@ class CritHEvalCodeStrategy(CodeStrategy):
         critique: str,
         prompt: str, 
         additional_keys: Dict[str, str], 
-        use_interpreter_tool: bool, 
-        use_search_tool: bool,
+        use_tool: bool,
         max_interactions: int,
         **kwargs
     ):
         external_tool_info = {}
-        if use_interpreter_tool:
+        if use_tool:
             if "tests" not in additional_keys:
                 raise ValueError("The 'tests' parameter must be specified in `critique_additional_keys`.")
             tests = additional_keys["tests"]
