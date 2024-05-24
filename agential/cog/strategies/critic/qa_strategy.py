@@ -1,8 +1,9 @@
 """CRITIC Agent strategies for QA."""
+
 from typing import Dict, Optional, Tuple
 
-from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
+from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.functional.critic import _prompt_agent, _prompt_critique
 from agential.cog.strategies.critic.base import CriticBaseStrategy
@@ -17,6 +18,7 @@ class CriticQAStrategy(CriticBaseStrategy):
         evidence_length (int): The maximum length of the evidence snippet to be included in the context. Defaults to 400.
         num_results (int): The number of search results to retrieve. Defaults to 8.
     """
+
     def __init__(
         self,
         llm: BaseChatModel,
@@ -24,7 +26,7 @@ class CriticQAStrategy(CriticBaseStrategy):
         evidence_length: int = 400,
         num_results: int = 8,
     ) -> None:
-        """Initialization"""
+        """Initialization."""
         self.llm = llm
         self.search = search
         self.evidence_length = evidence_length
@@ -153,7 +155,7 @@ class CriticQAStrategy(CriticBaseStrategy):
         This function compiles the final output dictionary which includes the original answer,
         the generated critique, and any information gathered from external tools. If the halting
         condition is met, the critique is used in place of the answer.
-        
+
         Args:
             answer (str): The original answer.
             critique (str): The generated critique.
@@ -182,7 +184,7 @@ class CriticQAStrategy(CriticBaseStrategy):
     ) -> str:
         """Updates the answer based on the provided critique using the given language model and question.
 
-        The QA strategy for CRITIC simply returns the answer. 
+        The QA strategy for CRITIC simply returns the answer.
 
         Args:
             question (str): The question that was answered by the language model.
@@ -223,14 +225,20 @@ class CriticQAStrategy(CriticBaseStrategy):
         self._halt = False
 
     def handle_search_query(
-        self, idx: int, question: str, search_query: str, use_tool: bool, max_interactions: int, **kwargs
+        self,
+        idx: int,
+        question: str,
+        search_query: str,
+        use_tool: bool,
+        max_interactions: int,
+        **kwargs,
     ) -> Tuple[Dict[str, str], str]:
         """Handles a search query and returns the search result and context.
 
         This function processes a search query to gather evidence. If the use_tool flag is set,
         it performs the search using the provided search tool and compiles the search result
         and context to be used in the critique process. Attempts up to num_results if using search tool.
-        If search tool is not used, a string is returned. 
+        If search tool is not used, a string is returned.
 
         Args:
             idx (int): The index of the current interaction.
@@ -277,19 +285,23 @@ class CriticQAStrategy(CriticBaseStrategy):
 
 class CritHotQAStrategy(CriticQAStrategy):
     """A strategy class for the HotpotQA benchmark using the CRITIC agent."""
+
     pass
 
 
 class CritTriviaQAStrategy(CriticQAStrategy):
     """A strategy class for the TriviaQA benchmark using the CRITIC agent."""
+
     pass
 
 
 class CritAmbigNQStrategy(CriticQAStrategy):
     """A strategy class for the AmbigNQ benchmark using the CRITIC agent."""
+
     pass
 
 
 class CritFEVERStrategy(CriticQAStrategy):
     """A strategy class for the FEVER benchmark using the CRITIC agent."""
+
     pass
