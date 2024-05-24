@@ -1,7 +1,7 @@
 """Functional module for CRITIC."""
 
-import re
 import builtins
+import re
 import sys
 
 from typing import Any, Dict, List, Optional, Tuple

@@ -1,7 +1,9 @@
 from typing import Dict
+
 from agential.cog.functional.critic import _prompt_agent, _prompt_critique, safe_execute
 from agential.cog.strategies.critic.base import CriticBaseStrategy
 from agential.utils.validation import validate_overlapping_keys
+
 
 class MathStrategy(CriticBaseStrategy):
     def __init__(self, llm):
@@ -9,10 +11,10 @@ class MathStrategy(CriticBaseStrategy):
         self._answer_history = []
 
     def generate(
-        self, 
-        question: str, 
-        examples: str, 
-        prompt: str, 
+        self,
+        question: str,
+        examples: str,
+        prompt: str,
         additional_keys: Dict[str, str],
     ) -> str:
         answer = _prompt_agent(
@@ -27,17 +29,17 @@ class MathStrategy(CriticBaseStrategy):
         return answer
 
     def generate_critique(
-        self, 
-        idx: int, 
-        question: str, 
-        examples: str, 
-        answer: str, 
+        self,
+        idx: int,
+        question: str,
+        examples: str,
+        answer: str,
         critique: str,
-        prompt: str, 
-        additional_keys: Dict[str, str], 
+        prompt: str,
+        additional_keys: Dict[str, str],
         use_tool: bool,
         max_interactions: int,
-        **kwargs
+        **kwargs,
     ):
         external_tool_info = {}
         if use_tool:
@@ -46,18 +48,22 @@ class MathStrategy(CriticBaseStrategy):
                 "execution_status": execution_status,
                 "code_answer": code_answer[0] if code_answer[0] is not None else "",
             }
-            self._answer_history.append({
-                "answer": answer, 
-                "external_tool_info": external_tool_info
-            })
+            self._answer_history.append(
+                {"answer": answer, "external_tool_info": external_tool_info}
+            )
 
             last_valid_idx = -1
-            for i in range(len(self._answer_history)-1, -1, -1):
-                if self._answer_history[i]["external_tool_info"]["code_answer"] is not None:
+            for i in range(len(self._answer_history) - 1, -1, -1):
+                if (
+                    self._answer_history[i]["external_tool_info"]["code_answer"]
+                    is not None
+                ):
                     last_valid_idx = i
                     break
 
-            external_tool_info = self._answer_history[last_valid_idx]["external_tool_info"]
+            external_tool_info = self._answer_history[last_valid_idx][
+                "external_tool_info"
+            ]
             answer = self._answer_history[last_valid_idx]["answer"]
 
             validate_overlapping_keys(additional_keys, external_tool_info)
@@ -77,20 +83,22 @@ class MathStrategy(CriticBaseStrategy):
 
         return new_critique, external_tool_info
 
-    def create_output_dict(self, answer: str, critique: str, external_tool_info: Dict[str, str]) -> Dict[str, str]:
+    def create_output_dict(
+        self, answer: str, critique: str, external_tool_info: Dict[str, str]
+    ) -> Dict[str, str]:
         output_dict = {"code": answer, "critique": critique, **external_tool_info}
         return output_dict
 
     def update_answer_based_on_critique(
-        self, 
-        question: str, 
-        examples: str, 
-        answer: str, 
-        critique: str, 
-        prompt: str, 
+        self,
+        question: str,
+        examples: str,
+        answer: str,
+        critique: str,
+        prompt: str,
         additional_keys: Dict[str, str],
         external_tool_info: Dict[str, str],
-        **kwargs
+        **kwargs,
     ) -> str:
         validate_overlapping_keys(additional_keys, external_tool_info)
         additional_keys = additional_keys.copy()
@@ -110,7 +118,10 @@ class MathStrategy(CriticBaseStrategy):
         return new_answer
 
     def halting_condition(self, critique: str) -> bool:
-        return "<CORRECT>" in critique.replace(" ", "").upper().strip() or ("code is correct" in critique.lower() and "incorrect" not in critique.lower())
+        return "<CORRECT>" in critique.replace(" ", "").upper().strip() or (
+            "code is correct" in critique.lower()
+            and "incorrect" not in critique.lower()
+        )
 
     def reset(self) -> bool:
         self._answer_history = []
@@ -119,8 +130,10 @@ class MathStrategy(CriticBaseStrategy):
 class CritGSM8KStrategy(MathStrategy):
     pass
 
+
 class CritSVAMPStrategy(MathStrategy):
     pass
+
 
 class CritTabMWPStrategy(MathStrategy):
     pass
