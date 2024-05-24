@@ -2602,7 +2602,7 @@ CRITIC_CRITIQUE_INSTRUCTION_HUMANEVAL = """{examples}
 
 Execution: {execution_status} 
 
-What's the problem with the above code? If nothing is wrong, output <CORRECT>.
+What's the problem with the above code?
 
 {critique}"""
 
@@ -2639,7 +2639,7 @@ This line is designed to check for duplicates by comparing the length of the lis
 
 Overall, the function does not perform as expected due to a critical error in this line. The incorrect manipulation of the set's length by subtracting one introduces a logical fallacy, causing the function to misidentify non-duplicate scenarios as having duplicates. This is a conceptual error in understanding how to handle the detection of a single allowed duplicate in the context of set and list length comparison.
 
-Here's a better solution:
+Here's a better solution (include only function implementation):
 ```python
 def has_duplicate_names(names_list: List[str]) -> bool:
     \"\"\"Check if there is any name that appears more than once in the list.
@@ -2697,7 +2697,7 @@ While this line correctly counts the number of positive numbers, the previous ca
 
 Overall, the function does not perform as expected due to a critical oversight in the initial summing process. The inclusion of all numbers in the total, regardless of their sign, leads to an incorrect average calculation for positive numbers only. This error could be easily overlooked as it merges the concepts of filtering and summing but applies them incorrectly by not aligning the filtering of positives in both the sum and count operations.
 
-Here's a better solution:
+Here's a better solution (include only function implementation):
 ```python
 def average_positive(numbers: List[int]) -> float:
     \"\"\"Calculate the average of positive numbers in the list.
@@ -2760,7 +2760,7 @@ This line is the crux of the problem. It increases the threshold by 1, thereby r
 
 Overall, the function fails to perform as expected because it incorrectly manipulates the threshold condition. The increase in the threshold by 1 leads to the function not recognizing valid exceedances that meet the original criteria set by the threshold. The logical error is a straightforward misunderstanding of how to apply the threshold in comparing measurement differences.
 
-Here's a better solution:
+Here's a better solution (include only function implementation):
 ```python
 def exceeds_threshold(measurements: List[float], threshold: float) -> int:
     \"\"\"Return the count of instances where the difference between any two successive measurements exceeds the given threshold.
@@ -2816,7 +2816,7 @@ This line contains the core functionality but introduces a logical error. The co
 
 Overall, the function does not perform as expected because of a subtle logical error in handling index values. It miscounts the indices, summing the wrong set of numbers.
 
-Here's a better solution:
+Here's a better solution (include only function implementation):
 ```python
 def sum_even_indexed(numbers: List[int]) -> int:
     \"\"\"Sum numbers that are located at even indices in the list.
@@ -2871,7 +2871,7 @@ The function returns `False` for `Counter('Listen') == Counter('silent')` becaus
 
 Overall, the primary issue is that the function does not perform a case conversion before counting the characters, which is essential for a correct case-insensitive anagram comparison. This oversight leads to the function incorrectly determining that strings like 'Listen' and 'silent' are not anagrams due to case differences. The correct approach should involve converting both input strings to the same case (either all uppercase or all lowercase) before applying the `Counter`.
 
-Here's a better solution:
+Here's a better solution (include only function implementation):
 ```python
 from collections import Counter
 
@@ -2900,7 +2900,7 @@ CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_HUMANEVAL = """{examples}
 {tests}
 ```
 
-What's the problem with the above code? If nothing is wrong, output <CORRECT>.
+What's the problem with the above code?
 
 {critique}"""
 
@@ -2935,7 +2935,7 @@ This line is designed to check for duplicates by comparing the length of the lis
 
 Overall, the function does not perform as expected due to a critical error in this line. The incorrect manipulation of the set's length by subtracting one introduces a logical fallacy, causing the function to misidentify non-duplicate scenarios as having duplicates. This is a conceptual error in understanding how to handle the detection of a single allowed duplicate in the context of set and list length comparison.
 
-Here's a better solution:
+Here's a better solution (include only function implementation):
 ```python
 def has_duplicate_names(names_list: List[str]) -> bool:
     \"\"\"Check if there is any name that appears more than once in the list.
@@ -2991,7 +2991,7 @@ While this line correctly counts the number of positive numbers, the previous ca
 
 Overall, the function does not perform as expected due to a critical oversight in the initial summing process. The inclusion of all numbers in the total, regardless of their sign, leads to an incorrect average calculation for positive numbers only. This error could be easily overlooked as it merges the concepts of filtering and summing but applies them incorrectly by not aligning the filtering of positives in both the sum and count operations.
 
-Here's a better solution:
+Here's a better solution (include only function implementation):
 ```python
 def average_positive(numbers: List[int]) -> float:
     \"\"\"Calculate the average of positive numbers in the list.
@@ -3052,7 +3052,7 @@ This line is the crux of the problem. It increases the threshold by 1, thereby r
 
 Overall, the function fails to perform as expected because it incorrectly manipulates the threshold condition. The increase in the threshold by 1 leads to the function not recognizing valid exceedances that meet the original criteria set by the threshold. The logical error is a straightforward misunderstanding of how to apply the threshold in comparing measurement differences.
 
-Here's a better solution:
+Here's a better solution (include only function implementation):
 ```python
 def exceeds_threshold(measurements: List[float], threshold: float) -> int:
     \"\"\"Return the count of instances where the difference between any two successive measurements exceeds the given threshold.
@@ -3106,7 +3106,7 @@ This line contains the core functionality but introduces a logical error. The co
 
 Overall, the function does not perform as expected because of a subtle logical error in handling index values. It miscounts the indices, summing the wrong set of numbers.
 
-Here's a better solution:
+Here's a better solution (include only function implementation):
 ```python
 def sum_even_indexed(numbers: List[int]) -> int:
     \"\"\"Sum numbers that are located at even indices in the list.
@@ -3159,7 +3159,7 @@ The function returns `False` for `Counter('Listen') == Counter('silent')` becaus
 
 Overall, the primary issue is that the function does not perform a case conversion before counting the characters, which is essential for a correct case-insensitive anagram comparison. This oversight leads to the function incorrectly determining that strings like 'Listen' and 'silent' are not anagrams due to case differences. The correct approach should involve converting both input strings to the same case (either all uppercase or all lowercase) before applying the `Counter`.
 
-Here's a better solution:
+Here's a better solution (include only function implementation):
 ```python
 from collections import Counter
 
