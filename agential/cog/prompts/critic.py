@@ -3293,7 +3293,7 @@ Your code should pass these tests.
 
 Execution: {execution_status}
 
-What's the problem with the above code? If nothing is wrong, output <CORRECT>.
+What's the problem with the above code?
 
 {critique}"""
 
@@ -3524,7 +3524,7 @@ Your code should pass these tests.
 {tests}
 ```
 
-What's the problem with the above code? If nothing is wrong, output <CORRECT>.
+What's the problem with the above code?
 
 {critique}"""
 
