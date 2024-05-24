@@ -146,8 +146,7 @@ Answer: 11
 Question: There are 5 girls and 4 boys in the Masquerade, 12 more girls and 7 more boys joined.  How many more girls than boys are in the Masquerade?
 Answer: 6
 Question: Joseph and Getty went to buy ice creams, they together bought 36 ice creams. On the way back, Joseph ate 12 of the ice creasm, and he has 2 ice creams left now.  How much ice creasm did Getty purchase?
-Answer: 22
-"""
+Answer: 22"""
 
 
 REACT_SVAMP_INSTRUCTIONS_CRITIC = """
