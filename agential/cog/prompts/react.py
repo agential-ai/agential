@@ -262,7 +262,6 @@ answer = num_emails_sent_in_morning + num_emails_sent_in_afternoon
 ---
 """
 
-#svamp for react pot questions
 
 REACT_SVAMP_EXAMPLES_POT = """Read the following passages to answer questions with Python code, store the result as a 'answer' variable:
 Question: James bought 93 red and 10 blue stickers, he used 31 red sticker on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
