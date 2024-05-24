@@ -126,6 +126,7 @@ Action 4: Finish[NOT ENOUGH INFO]"""
 
 REACT_SVAMP_INSTRUCTIONS = """{examples}
 (END OF EXAMPLES)
+
 Question: {question}
 Answer: {answer}
 """
