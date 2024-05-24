@@ -6,6 +6,7 @@ from agential.utils.validation import validate_overlapping_keys
 class CodeStrategy(CriticBaseStrategy):
     def __init__(self, llm):
         self.llm = llm
+        self._halt = False
 
     def generate(
         self, 
@@ -46,12 +47,14 @@ class CodeStrategy(CriticBaseStrategy):
             tests = additional_keys["tests"]
 
             _, execution_status = safe_execute(f"{answer}\n\n{tests}")
+            if execution_status == "Done": self._halt = True
             external_tool_info = {
                 "execution_status": execution_status,
             }
 
             validate_overlapping_keys(additional_keys, external_tool_info)
             
+        additional_keys = additional_keys.copy()
         additional_keys.update(external_tool_info)
 
         new_critique = _prompt_critique(
@@ -82,6 +85,7 @@ class CodeStrategy(CriticBaseStrategy):
         **kwargs
     ) -> str:
         validate_overlapping_keys(additional_keys, external_tool_info)
+        additional_keys = additional_keys.copy()
         additional_keys.update(external_tool_info)
                     
         new_answer = _prompt_critique(
@@ -98,18 +102,62 @@ class CodeStrategy(CriticBaseStrategy):
         return new_answer
 
     def halting_condition(self, critique: str) -> bool:
-        return "<CORRECT>" in critique.replace(" ", "").upper().strip() or ("code is correct" in critique.lower() and "incorrect" not in critique.lower())
-
+        return self._halt
+    
     def reset(self) -> bool:
         self._answer_history = []
+        self._halt = False
 
 
 class CritMBPPCodeStrategy(CodeStrategy):
     pass
 
-class CritHumanEvalCodeStrategy(CodeStrategy):
+
+class CritHEvalCodeStrategy(CodeStrategy):
     def __init__(self, llm):
         super().__init__(llm)
+
+    def generate_critique(
+        self, 
+        idx: int, 
+        question: str, 
+        examples: str, 
+        answer: str, 
+        critique: str,
+        prompt: str, 
+        additional_keys: Dict[str, str], 
+        use_interpreter_tool: bool, 
+        use_search_tool: bool,
+        max_interactions: int,
+        **kwargs
+    ):
+        external_tool_info = {}
+        if use_interpreter_tool:
+            if "tests" not in additional_keys:
+                raise ValueError("The 'tests' parameter must be specified in `critique_additional_keys`.")
+            tests = additional_keys["tests"]
+
+            _, execution_status = safe_execute(f"{question}{answer}\n\n{tests}")
+            if execution_status == "Done": self._halt = True
+            external_tool_info = {
+                "execution_status": execution_status,
+            }
+            validate_overlapping_keys(additional_keys, external_tool_info)
+            
+        additional_keys = additional_keys.copy()
+        additional_keys.update(external_tool_info)
+
+        new_critique = _prompt_critique(
+            llm=self.llm,
+            question=question,
+            examples=examples,
+            answer=answer,
+            critique="",
+            additional_keys=additional_keys,
+            prompt=prompt,
+        ).split("Here's")[0].split("Here is")[0].split("```python")[0].strip("\n")
+
+        return new_critique, external_tool_info
 
     def update_answer_based_on_critique(
         self, 
@@ -123,17 +171,21 @@ class CritHumanEvalCodeStrategy(CodeStrategy):
         **kwargs
     ) -> str:
         validate_overlapping_keys(additional_keys, external_tool_info)
+        additional_keys = additional_keys.copy()
         additional_keys.update(external_tool_info)
-                    
+
         new_answer = _prompt_critique(
             llm=self.llm,
             question=question,
             examples=examples,
             answer=answer,
-            critique=f"{critique}\n\nHere's a better solution:\n```python\n{question}",
+            critique=f"{critique}\n\nHere's a better solution (include only function implementation):\n```python\n{question}",
             additional_keys=additional_keys,
             prompt=prompt,
         )
-        new_answer = new_answer.split("```python")[-1].split("```")[0].strip()
+        new_answer = new_answer.split("```python")[-1].split("```")[0].strip("\n")
 
         return new_answer
+
+    def reset(self):
+        self._halt = False

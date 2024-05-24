@@ -63,6 +63,7 @@ class MathStrategy(CriticBaseStrategy):
 
             validate_overlapping_keys(additional_keys, external_tool_info)
 
+        additional_keys = additional_keys.copy()
         additional_keys.update(external_tool_info)
 
         new_critique = _prompt_critique(
@@ -93,6 +94,7 @@ class MathStrategy(CriticBaseStrategy):
         **kwargs
     ) -> str:
         validate_overlapping_keys(additional_keys, external_tool_info)
+        additional_keys = additional_keys.copy()
         additional_keys.update(external_tool_info)
 
         new_answer = _prompt_critique(
