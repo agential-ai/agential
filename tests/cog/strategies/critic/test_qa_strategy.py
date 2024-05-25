@@ -12,18 +12,22 @@ from agential.cog.strategies.critic.qa_strategy import (
     CriticQAStrategy,
     CritTriviaQAStrategy,
 )
-
+from agential.cog.prompts.critic import (
+    HOTPOTQA_FEWSHOT_EXAMPLES_COT,
+    CRITIC_INSTRUCTION_HOTPOTQA,
+)
 
 def test_generate() -> None:
     """Tests CriticQAStrategy generate."""
     llm = FakeListChatModel(responses=["Generated answer"])
     strategy = CriticQAStrategy(llm=llm)
     question = "What is the capital of France?"
-    examples = "Example question-answer pairs"
-    prompt = "Prompt template"
-    additional_keys = {}
-
-    result = strategy.generate(question, examples, prompt, additional_keys)
+    
+    result = strategy.generate(
+        question=question, 
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT, 
+        prompt=CRITIC_INSTRUCTION_HOTPOTQA, 
+        additional_keys={})
 
     assert result == "Generated answer"
 
