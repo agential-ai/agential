@@ -1,8 +1,10 @@
 """Unit tests for strategy factory classes."""
 
 import pytest
+from unittest.mock import MagicMock
 
 from langchain_community.chat_models.fake import FakeListChatModel
+from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 
 from agential.cog.strategies.critic.code_strategy import (
     CritHEvalCodeStrategy,
@@ -24,6 +26,8 @@ from agential.cog.strategies.strategy_factory import CriticStrategyFactory
 
 def test_critic_strategy_factory_get_strategy() -> None:
     """Tests CriticStrategyFactory get_strategy method."""
+    search = MagicMock(spec=GoogleSerperAPIWrapper)
+
     llm = FakeListChatModel(responses=[])
 
     # QA benchmarks.
@@ -45,10 +49,11 @@ def test_critic_strategy_factory_get_strategy() -> None:
 
     # Test kwargs for QA strategy.
     strategy = CriticStrategyFactory.get_strategy(
-        {"qa": "fever"}, llm=llm, evidence_length=500, num_results=10
+        {"qa": "fever"}, llm=llm, search=search, evidence_length=500, num_results=10
     )
     assert isinstance(strategy, CritFEVERStrategy)
     assert strategy.llm == llm
+    assert isinstance(strategy.search, GoogleSerperAPIWrapper)
     assert strategy.evidence_length == 500
     assert strategy.num_results == 10
 
@@ -67,10 +72,10 @@ def test_critic_strategy_factory_get_strategy() -> None:
     )
 
     # Test kwargs for Math strategy.
-    strategy = CriticStrategyFactory.get_strategy({"math": "gsm8k"}, llm=llm)
+    strategy = CriticStrategyFactory.get_strategy({"math": "gsm8k"}, llm=llm, patience=3)
     assert isinstance(strategy, CritGSM8KStrategy)
     assert strategy.llm == llm
-    assert strategy._answer_history == []
+    assert strategy.patience == 3
 
     # Code benchmarks.
     assert isinstance(
@@ -81,12 +86,6 @@ def test_critic_strategy_factory_get_strategy() -> None:
         CriticStrategyFactory.get_strategy({"code": "humaneval"}, llm=llm),
         CritHEvalCodeStrategy,
     )
-
-    # Test kwargs for Code strategy.
-    strategy = CriticStrategyFactory.get_strategy({"code": "mbpp"}, llm=llm)
-    assert isinstance(strategy, CritMBPPCodeStrategy)
-    assert strategy.llm == llm
-    assert not strategy._halt
 
     # Unsupported benchmarks.
     with pytest.raises(ValueError, match="Unsupported QA benchmark: unknown"):
