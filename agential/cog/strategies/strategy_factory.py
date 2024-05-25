@@ -32,9 +32,9 @@ class CriticStrategyFactory:
         """Returns an instance of the appropriate Critic strategy based on the provided mode and benchmark.
 
         Available modes:
-            - QA: "hotpotqa", "triviaqa", "ambignq", "fever"
-            - Math: "gsm8k", "svamp", "tabmwp"
-            - Code: "mbpp", "humaneval"
+            - qa: "hotpotqa", "triviaqa", "ambignq", "fever"
+            - math: "gsm8k", "svamp", "tabmwp"
+            - code: "mbpp", "humaneval"
 
         Args:
             mode (Dict[str, str]): A dictionary specifying the mode and benchmark.

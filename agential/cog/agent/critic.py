@@ -78,7 +78,7 @@ class CriticAgent(BaseAgent):
 
         out = []
 
-        # Initial answer generation
+        # Initial answer generation.
         answer = self.strategy.generate(question, examples, prompt, additional_keys)
 
         critique = ""
