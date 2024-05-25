@@ -6,9 +6,13 @@ from agential.utils.validation import validate_overlapping_keys
 
 
 class MathStrategy(CriticBaseStrategy):
-    def __init__(self, llm):
+    def __init__(self, llm, patience=2):
         self.llm = llm
+        self.patience = patience
         self._answer_history = []
+        self._prev_code_answer = None
+        self.patience_counter = 0
+        self._halt = False
 
     def generate(
         self,
@@ -51,6 +55,13 @@ class MathStrategy(CriticBaseStrategy):
             self._answer_history.append(
                 {"answer": answer, "external_tool_info": external_tool_info}
             )
+
+            if code_answer == self._prev_code_answer:
+                self.patience_counter += 1
+                if self.patience_counter == self.patience:
+                    self._halt = True
+            else:
+                self._prev_code_answer = code_answer
 
             last_valid_idx = -1
             for i in range(len(self._answer_history) - 1, -1, -1):
@@ -118,13 +129,13 @@ class MathStrategy(CriticBaseStrategy):
         return new_answer
 
     def halting_condition(self, critique: str) -> bool:
-        return "<CORRECT>" in critique.replace(" ", "").upper().strip() or (
-            "code is correct" in critique.lower()
-            and "incorrect" not in critique.lower()
-        )
+        return self._halt
 
     def reset(self) -> bool:
         self._answer_history = []
+        self._prev_code_answer = None
+        self.patience_counter = 0
+        self._halt = False
 
 
 class CritGSM8KStrategy(MathStrategy):
