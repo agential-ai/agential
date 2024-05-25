@@ -1,5 +1,6 @@
 """Unit tests for CRITIC QA strategies."""
 
+import pytest
 from unittest.mock import MagicMock
 
 from langchain_community.chat_models.fake import FakeListChatModel
@@ -236,6 +237,7 @@ def test_handle_search_query() -> None:
         return_value=[{"title": "Paris", "snippet": "The capital of France is Paris."}]
     )
     strategy = CriticQAStrategy(llm=llm, search=mock_search)
+
     idx = 0
     question = "What is the capital of France?"
     search_query = "capital of France"
@@ -243,6 +245,23 @@ def test_handle_search_query() -> None:
     max_interactions = 5
     kwargs = {"evidence_length": 100, "num_results": 3}
 
+    # Test when use_tool is False.
+    search_result, context = strategy.handle_search_query(
+        idx, question, search_query, False, max_interactions, **kwargs
+    )
+
+    assert search_result == {}
+    assert context == "> Evidence: "
+
+    # Test correctly throws error when search tool is used when not defined.
+    with pytest.raises(ValueError):
+        strategy = CriticQAStrategy(llm=llm)
+        search_result, context = strategy.handle_search_query(
+            idx, question, search_query, use_tool, max_interactions, **kwargs
+        )
+
+    # Test valid search query.
+    strategy = CriticQAStrategy(llm=llm, search=mock_search)
     search_result, context = strategy.handle_search_query(
         idx, question, search_query, use_tool, max_interactions, **kwargs
     )
@@ -252,6 +271,59 @@ def test_handle_search_query() -> None:
         "snippet": "The capital of France is Paris.",
     }
     assert "> Evidence: [Paris] The capital of France is Paris." in context
+
+    # Test correctly throws error when search tool is used when not defined.
+    with pytest.raises(ValueError):
+        strategy_without_search = CriticQAStrategy(llm=llm)
+        strategy_without_search.handle_search_query(
+            idx, question, search_query, use_tool, max_interactions, **kwargs
+        )
+
+    # Test when search result has no snippet.
+    mock_search.results = MagicMock(
+        return_value=[{"title": "Paris", "link": "<a_link>", "snippet": "a snippet."}]
+    )
+    strategy = CriticQAStrategy(llm=llm, search=mock_search)
+    search_result, context = strategy.handle_search_query(
+        idx, question, search_query, use_tool, max_interactions, **kwargs
+    )
+
+    assert search_result['title'] == "Paris"
+    assert search_result['link'] == "<a_link>"
+    assert search_result['snippet'] == "a snippet."
+    assert context == '> Evidence: [Paris] a snippet.\n\n'
+
+    # Test when search result snippet is already in evidence history.
+    mock_search.results = MagicMock(
+        return_value=[{"title": "Paris", "snippet": "The capital of France is Paris."}]
+    )
+    strategy._evidence_history.add("The capital of France is Paris.")
+    search_result, context = strategy.handle_search_query(
+        idx, question, search_query, use_tool, max_interactions, **kwargs
+    )
+
+    assert search_result == {"title": "Paris", "snippet": "The capital of France is Paris."}
+    assert context == '> Evidence: [Paris] The capital of France is Paris.\n\n'
+
+    # Test when num_results is exhausted.
+    mock_search.results = MagicMock(
+        return_value=[{"title": "Paris", "snippet": "The capital of France is Paris."}]
+    )
+    strategy._query_history = [search_query] * 3
+    search_result, context = strategy.handle_search_query(
+        idx, question, search_query, use_tool, max_interactions, **kwargs
+    )
+
+    assert search_result == {"title": "Paris", "snippet": "The capital of France is Paris."}
+    assert context == '> Evidence: [Paris] The capital of France is Paris.\n\n'
+
+    # Test when max_interactions is reached.
+    idx = max_interactions - 2
+    search_result, context = strategy.handle_search_query(
+        idx, question, search_query, use_tool, max_interactions, **kwargs
+    )
+
+    assert "Let's give the most possible answer.\n\nQuestion: What is the capital of France?\nHere's " in context
 
 
 def test_instantiate_strategies() -> None:
