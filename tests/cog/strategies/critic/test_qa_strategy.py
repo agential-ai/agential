@@ -167,27 +167,34 @@ def test_create_output_dict() -> None:
     assert result["search_query"] == "capital of France"
     assert result["search_result"] == "Paris"
 
+    strategy._halt = True
+    result = strategy.create_output_dict(answer, critique, external_tool_info)
+    assert "answer" in result
+    assert "critique" in result
+    assert "search_query" in result
+    assert "search_result" in result
+    assert result['answer'] == "The answer is correct."
+    assert result['critique'] == "The answer is correct."
+    assert result['search_query'] == "capital of France"
+    assert result['search_result'] == "Paris"
+    
 
 def test_update_answer_based_on_critique() -> None:
     """Tests CriticQAStrategy update_answer_based_on_critique."""
     llm = FakeListChatModel(responses=[])
     strategy = CriticQAStrategy(llm=llm)
     question = "What is the capital of France?"
-    examples = "Example question-answer pairs"
     answer = "The capital of France is Berlin."
     critique = "The answer is incorrect. The correct answer is Paris."
-    prompt = "Prompt template"
-    additional_keys = {}
-    external_tool_info = {}
 
     result = strategy.update_answer_based_on_critique(
-        question,
-        examples,
-        answer,
-        critique,
-        prompt,
-        additional_keys,
-        external_tool_info,
+        question=question,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
+        answer=answer,
+        critique=critique,
+        prompt=CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
+        external_tool_info={},
     )
 
     assert result == answer
