@@ -157,7 +157,13 @@ def test_update_answer_based_on_critique() -> None:
     external_tool_info = {}
 
     result = strategy.update_answer_based_on_critique(
-        question, examples, answer, critique, prompt, additional_keys, external_tool_info
+        question,
+        examples,
+        answer,
+        critique,
+        prompt,
+        additional_keys,
+        external_tool_info,
     )
 
     assert result == answer
@@ -193,7 +199,9 @@ def test_reset() -> None:
 def test_handle_search_query() -> None:
     """Test CriticQAStrategy handle_search_query."""
     llm = FakeListChatModel(responses=[])
-    mock_search.results = MagicMock(return_value=[{"title": "Paris", "snippet": "The capital of France is Paris."}])
+    mock_search.results = MagicMock(
+        return_value=[{"title": "Paris", "snippet": "The capital of France is Paris."}]
+    )
     strategy = CriticQAStrategy(llm=llm, search=mock_search)
     idx = 0
     question = "What is the capital of France?"
@@ -202,12 +210,14 @@ def test_handle_search_query() -> None:
     max_interactions = 5
     kwargs = {"evidence_length": 100, "num_results": 3}
 
-
     search_result, context = strategy.handle_search_query(
         idx, question, search_query, use_tool, max_interactions, **kwargs
     )
 
-    assert search_result == {"title": "Paris", "snippet": "The capital of France is Paris."}
+    assert search_result == {
+        "title": "Paris",
+        "snippet": "The capital of France is Paris.",
+    }
     assert "> Evidence: [Paris] The capital of France is Paris." in context
 
 
