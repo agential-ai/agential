@@ -1,7 +1,8 @@
 """Unit tests for strategy factory classes."""
 
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
@@ -72,7 +73,9 @@ def test_critic_strategy_factory_get_strategy() -> None:
     )
 
     # Test kwargs for Math strategy.
-    strategy = CriticStrategyFactory.get_strategy({"math": "gsm8k"}, llm=llm, patience=3)
+    strategy = CriticStrategyFactory.get_strategy(
+        {"math": "gsm8k"}, llm=llm, patience=3
+    )
     assert isinstance(strategy, CritGSM8KStrategy)
     assert strategy.llm == llm
     assert strategy.patience == 3
