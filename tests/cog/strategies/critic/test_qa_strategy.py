@@ -1,20 +1,23 @@
 """Unit tests for CRITIC QA strategies."""
 
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
+
 from agential.cog.strategies.critic.qa_strategy import (
-    CriticQAStrategy, 
     CritAmbigNQStrategy,
     CritFEVERStrategy,
     CritHotQAStrategy,
-    CritTriviaQAStrategy
+    CriticQAStrategy,
+    CritTriviaQAStrategy,
 )
 
 # Mock objects for testing
 mock_search = MagicMock(spec=GoogleSerperAPIWrapper)
+
 
 def test_generate() -> None:
     """Tests CriticQAStrategy generate."""
@@ -26,11 +29,12 @@ def test_generate() -> None:
     additional_keys = {}
 
     result = strategy.generate(question, examples, prompt, additional_keys)
-    
+
     assert result == "Generated answer"
 
 
-def test_generate_critique():
+def test_generate_critique() -> None:
+    """Tests CriticQAStrategy generate_critique."""
     llm = FakeListChatModel(responses=["Generated critique"])
     strategy = CriticQAStrategy(llm=llm)
     idx = 0
@@ -44,16 +48,28 @@ def test_generate_critique():
     max_interactions = 5
 
     result, external_tool_info = strategy.generate_critique(
-        idx, question, examples, answer, critique, prompt, additional_keys, use_tool, max_interactions
+        idx,
+        question,
+        examples,
+        answer,
+        critique,
+        prompt,
+        additional_keys,
+        use_tool,
+        max_interactions,
     )
-    
+
     assert result == "Generated critique"
     assert external_tool_info == {}
 
-
-    llm = FakeListChatModel(responses=["The answer is incorrect. > Search Query: capital of France"])
+    # Test with tool.
+    llm = FakeListChatModel(
+        responses=["The answer is incorrect. > Search Query: capital of France"]
+    )
     search_mock = MagicMock()
-    search_mock.results.return_value = [{"title": "France - Wikipedia", "snippet": "The capital of France is Paris."}]
+    search_mock.results.return_value = [
+        {"title": "France - Wikipedia", "snippet": "The capital of France is Paris."}
+    ]
     strategy = CriticQAStrategy(llm=llm, search=search_mock)
     idx = 0
     question = "What is the capital of France?"
@@ -66,25 +82,67 @@ def test_generate_critique():
     max_interactions = 5
 
     result, external_tool_info = strategy.generate_critique(
-        idx, question, examples, answer, critique, prompt, additional_keys, use_tool, max_interactions
+        idx,
+        question,
+        examples,
+        answer,
+        critique,
+        prompt,
+        additional_keys,
+        use_tool,
+        max_interactions,
     )
 
     assert "The answer is incorrect." in result
     assert "Paris" in result
     assert external_tool_info["search_query"] == "capital of France"
 
+    # Test most possible answer.
+    llm = FakeListChatModel(responses=["The most possible answer is Paris."])
+    strategy = CriticQAStrategy(llm=llm)
+    idx = 0
+    question = "What is the capital of France?"
+    examples = "Example question-answer pairs"
+    answer = "The capital of France is Berlin."
+    critique = "The initial answer was incorrect."
+    prompt = "Prompt template"
+    additional_keys = {}
+    use_tool = False
+    max_interactions = 5
 
-# def test_create_output_dict(critic_qa_strategy):
-#     answer = "The capital of France is Paris."
-#     critique = "The answer is correct."
-#     external_tool_info = {"search_query": "capital of France", "search_result": "Paris"}
+    result, external_tool_info = strategy.generate_critique(
+        idx,
+        question,
+        examples,
+        answer,
+        critique,
+        prompt,
+        additional_keys,
+        use_tool,
+        max_interactions,
+    )
 
-#     result = critic_qa_strategy.create_output_dict(answer, critique, external_tool_info)
-    
-#     assert result["answer"] == "The capital of France is Paris."
-#     assert result["critique"] == "The answer is correct."
-#     assert result["search_query"] == "capital of France"
-#     assert result["search_result"] == "Paris"
+    assert result == "The most possible answer is Paris."
+    assert external_tool_info == {}
+    assert strategy.halting_condition(result) is True
+
+
+def test_create_output_dict() -> None:
+    """Tests CriticQAStrategy create_output_dict."""
+    llm = FakeListChatModel(responses=[])
+    strategy = CriticQAStrategy(llm=llm)
+
+    answer = "The capital of France is Paris."
+    critique = "The answer is correct."
+    external_tool_info = {"search_query": "capital of France", "search_result": "Paris"}
+
+    result = strategy.create_output_dict(answer, critique, external_tool_info)
+
+    assert result["answer"] == "The capital of France is Paris."
+    assert result["critique"] == "The answer is correct."
+    assert result["search_query"] == "capital of France"
+    assert result["search_result"] == "Paris"
+
 
 # def test_update_answer_based_on_critique():
 #     question = "What is the capital of France?"
@@ -98,7 +156,7 @@ def test_generate_critique():
 #     result = critic_qa_strategy.update_answer_based_on_critique(
 #         question, examples, answer, critique, prompt, additional_keys, external_tool_info
 #     )
-    
+
 #     assert result == answer
 
 # def test_halting_condition(critic_qa_strategy):
@@ -106,7 +164,7 @@ def test_generate_critique():
 
 #     critic_qa_strategy._halt = True
 #     result = critic_qa_strategy.halting_condition(critique)
-    
+
 #     assert result is True
 
 # def test_reset():
@@ -136,7 +194,7 @@ def test_generate_critique():
 #     search_result, context = critic_qa_strategy.handle_search_query(
 #         idx, question, search_query, use_tool, max_interactions, **kwargs
 #     )
-    
+
 #     assert search_result == {"title": "Paris", "snippet": "The capital of France is Paris."}
 #     assert "> Evidence: [Paris] The capital of France is Paris." in context
 
