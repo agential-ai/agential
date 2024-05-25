@@ -2,8 +2,6 @@
 
 from unittest.mock import MagicMock
 
-import pytest
-
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 
@@ -14,9 +12,6 @@ from agential.cog.strategies.critic.qa_strategy import (
     CriticQAStrategy,
     CritTriviaQAStrategy,
 )
-
-# Mock objects for testing
-mock_search = MagicMock(spec=GoogleSerperAPIWrapper)
 
 
 def test_generate() -> None:
@@ -199,6 +194,8 @@ def test_reset() -> None:
 def test_handle_search_query() -> None:
     """Test CriticQAStrategy handle_search_query."""
     llm = FakeListChatModel(responses=[])
+    mock_search = MagicMock(spec=GoogleSerperAPIWrapper)
+
     mock_search.results = MagicMock(
         return_value=[{"title": "Paris", "snippet": "The capital of France is Paris."}]
     )
