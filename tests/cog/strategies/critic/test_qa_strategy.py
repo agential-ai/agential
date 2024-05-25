@@ -144,39 +144,51 @@ def test_create_output_dict() -> None:
     assert result["search_result"] == "Paris"
 
 
-# def test_update_answer_based_on_critique():
-#     question = "What is the capital of France?"
-#     examples = "Example question-answer pairs"
-#     answer = "The capital of France is Berlin."
-#     critique = "The answer is incorrect. The correct answer is Paris."
-#     prompt = "Prompt template"
-#     additional_keys = {}
-#     external_tool_info = {}
+def test_update_answer_based_on_critique() -> None:
+    """Tests CriticQAStrategy update_answer_based_on_critique."""
+    llm = FakeListChatModel(responses=[])
+    strategy = CriticQAStrategy(llm=llm)
+    question = "What is the capital of France?"
+    examples = "Example question-answer pairs"
+    answer = "The capital of France is Berlin."
+    critique = "The answer is incorrect. The correct answer is Paris."
+    prompt = "Prompt template"
+    additional_keys = {}
+    external_tool_info = {}
 
-#     result = critic_qa_strategy.update_answer_based_on_critique(
-#         question, examples, answer, critique, prompt, additional_keys, external_tool_info
-#     )
+    result = strategy.update_answer_based_on_critique(
+        question, examples, answer, critique, prompt, additional_keys, external_tool_info
+    )
 
-#     assert result == answer
+    assert result == answer
 
-# def test_halting_condition(critic_qa_strategy):
-#     critique = "The answer is correct."
 
-#     critic_qa_strategy._halt = True
-#     result = critic_qa_strategy.halting_condition(critique)
+def test_halting_condition() -> None:
+    """Tests CriticQAStrategy halting_condition."""
+    llm = FakeListChatModel(responses=[])
+    strategy = CriticQAStrategy(llm=llm)
+    critique = "The answer is correct."
 
-#     assert result is True
+    strategy._halt = True
+    result = strategy.halting_condition(critique)
 
-# def test_reset():
-#     critic_qa_strategy._query_history = ["query1"]
-#     critic_qa_strategy._evidence_history = {"evidence1"}
-#     critic_qa_strategy._halt = True
+    assert result is True
 
-#     critic_qa_strategy.reset()
 
-#     assert critic_qa_strategy._query_history == []
-#     assert critic_qa_strategy._evidence_history == set()
-#     assert critic_qa_strategy._halt is False
+def test_reset() -> None:
+    """Tests CriticQAStrategy reset."""
+    llm = FakeListChatModel(responses=[])
+    strategy = CriticQAStrategy(llm=llm)
+    strategy._query_history = ["query1"]
+    strategy._evidence_history = {"evidence1"}
+    strategy._halt = True
+
+    strategy.reset()
+
+    assert strategy._query_history == []
+    assert strategy._evidence_history == set()
+    assert strategy._halt is False
+
 
 # def test_handle_search_query() -> None:
 #     """Test CriticQAStrategy handle_search_query."""
