@@ -43,6 +43,15 @@ def test_critic_strategy_factory_get_strategy() -> None:
         CriticStrategyFactory.get_strategy({"qa": "fever"}, llm=llm), CritFEVERStrategy
     )
 
+    # Test kwargs for QA strategy.
+    strategy = CriticStrategyFactory.get_strategy(
+        {"qa": "fever"}, llm=llm, evidence_length=500, num_results=10
+    )
+    assert isinstance(strategy, CritFEVERStrategy)
+    assert strategy.llm == llm
+    assert strategy.evidence_length == 500
+    assert strategy.num_results == 10
+
     # Math benchmarks.
     assert isinstance(
         CriticStrategyFactory.get_strategy({"math": "gsm8k"}, llm=llm),
@@ -57,6 +66,12 @@ def test_critic_strategy_factory_get_strategy() -> None:
         CritTabMWPStrategy,
     )
 
+    # Test kwargs for Math strategy.
+    strategy = CriticStrategyFactory.get_strategy({"math": "gsm8k"}, llm=llm)
+    assert isinstance(strategy, CritGSM8KStrategy)
+    assert strategy.llm == llm
+    assert strategy._answer_history == []
+
     # Code benchmarks.
     assert isinstance(
         CriticStrategyFactory.get_strategy({"code": "mbpp"}, llm=llm),
@@ -66,6 +81,12 @@ def test_critic_strategy_factory_get_strategy() -> None:
         CriticStrategyFactory.get_strategy({"code": "humaneval"}, llm=llm),
         CritHEvalCodeStrategy,
     )
+
+    # Test kwargs for Code strategy.
+    strategy = CriticStrategyFactory.get_strategy({"code": "mbpp"}, llm=llm)
+    assert isinstance(strategy, CritMBPPCodeStrategy)
+    assert strategy.llm == llm
+    assert not strategy._halt
 
     # Unsupported benchmarks.
     with pytest.raises(ValueError, match="Unsupported QA benchmark: unknown"):
