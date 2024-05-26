@@ -2,11 +2,31 @@
 
 # Welcome to Agential!
 
+## Benchmark Few-shot Examples
+
+| **Benchmarks** | Number of few-shot examples |
+| -------------- | --------------------------- |
+| **HotpotQA**   |  6                          |
+| **FEVER**      |  3                          |
+| **TriviaQA**   |  4                          |
+| **AmbigNQ**    |  5                          |
+| **GSM8k**      |                             |
+| **SVAMP**      |                             |
+| **TabMWP**     |                             |
+| **MBPP**       |                             |
+| **HumanEval**  |                             |
+| **ALFWorld**   |                             |
+| **WebShop**    |                             |
+| **AgentBench** |                             |
+
+
 ## Implementing...
 
-:octicons-check-16: **:** not tested in the original paper
 
-:material-check-all: **:** tested in the original paper
+
+- :octicons-check-16: **:** not tested in the original paper
+
+- :material-check-all: **:** tested in the original paper
 
 | **Methods / Benchmarks** |       HotpotQA       |        FEVER         |       TriviaQA       |       AmbigNQ        |
 | ------------------------ | :------------------: | :------------------: | :------------------: | :------------------: |
