@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, Any
+from typing import Any, Dict, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -13,6 +13,7 @@ class CriticCodeStrategy(CriticBaseStrategy):
     Attributes:
         llm (BaseChatModel): The language model used for generating answers and critiques.
     """
+
     def __init__(self, llm: BaseChatModel) -> None:
         """Initialization."""
         self.llm = llm
