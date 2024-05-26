@@ -1,6 +1,7 @@
 """Unit tests for CRITIC math strategies."""
 
 from langchain_community.chat_models.fake import FakeListChatModel
+from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.strategies.critic.math_strategy import (
     CritGSM8KStrategy,
@@ -16,6 +17,17 @@ from agential.cog.prompts.critic import (
     CRITIC_CRITIQUE_INSTRUCTION_GSM8K,
     CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_GSM8K,
 )
+
+def test_init() -> None:
+    """Test CriticQAStrategy initialization."""
+    llm = FakeListChatModel(responses=[])
+    strategy = CriticMathStrategy(llm=llm, patience=3)
+    assert isinstance(strategy.llm, BaseChatModel)
+    assert strategy.patience == 3
+    assert strategy._answer_history == []
+    assert strategy._prev_code_answer is None
+    assert strategy.patience_counter == 0
+    assert strategy._halt is False
 
 
 def test_generate() -> None:
@@ -221,7 +233,7 @@ def test_reset() -> None:
     assert strategy._prev_code_answer is None
     assert strategy.patience_counter == 0
     assert strategy._halt is False
-    
+
 
 def test_instantiate_strategies() -> None:
     """Test instantiate all Math strategies."""
