@@ -166,10 +166,28 @@ assert first_repeated_char("123123") == "1\""""
 
 def test_halting_condition() -> None:
     """Tests CriticCodeStrategy halting_condition."""
+    strategy = CriticCodeStrategy(llm=None)
+
+    assert strategy.halting_condition("") is False
+
+    strategy._halt = True
+    assert strategy.halting_condition("") is True
 
 
 def test_reset() -> None:
     """Tests CriticCodeStrategy reset."""
+    strategy = CriticCodeStrategy(llm=None)
+
+    # Simulate some state
+    strategy._answer_history = [{"answer": "some_answer", "external_tool_info": {}}]
+    strategy._halt = True
+
+    # Reset the strategy
+    strategy.reset()
+
+    # Assert that all states are reset
+    assert strategy._answer_history == []
+    assert strategy._halt is False
 
 
 def test_instantiate_strategies() -> None:
