@@ -62,8 +62,8 @@ def test_generate_critique() -> None:
     
     question = "Write a python function to find the first repeated character in a given string."
     tests = """assert first_repeated_char("abcabc") == "a"
-    assert first_repeated_char("abc") == None
-    assert first_repeated_char("123123") == "1\""""
+assert first_repeated_char("abc") == None
+assert first_repeated_char("123123") == "1\""""
 
     # Test with no tool.
     gt_critique = 'There is no problem with the code provided. The function `first_repeated_char` correctly iterates over the characters in the string and keeps track of seen characters using a set. If a character is already in the set, it returns that character as the first repeated character. Otherwise, it adds the character to the set and continues. The function passes the given test cases without any issues.'
@@ -88,7 +88,43 @@ def test_generate_critique() -> None:
     assert critique == gt_critique
     assert external_tool_info == {}
 
+    # Test no tests error.
+    with pytest.raises(ValueError):
+        critique, external_tool_info = strategy.generate_critique(
+            idx=0,
+            question=question,
+            examples=MBPP_FEWSHOT_EXAMPLES_CRITIC,
+            answer=answer,
+            critique="",
+            prompt=CRITIC_CRITIQUE_INSTRUCTION_MBPP,
+            additional_keys={},
+            use_tool=True,
+            max_interactions=7
+        )
+
     # Test with tool.
+    gt_critique = "There doesn't seem to be any issue with the provided code for finding the first repeated character in a given string. The function correctly uses a set to keep track of seen characters and returns the first repeated character encountered.\n\nThe function passes the provided test cases and seems to be implemented correctly."
+    responses = [
+        "There doesn't seem to be any issue with the provided code for finding the first repeated character in a given string. The function correctly uses a set to keep track of seen characters and returns the first repeated character encountered.\n\nThe function passes the provided test cases and seems to be implemented correctly."
+    ]
+    llm = FakeListChatModel(responses=responses)
+    strategy = CriticCodeStrategy(llm=llm)
+    answer = 'def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\n# Testing the function with the given test cases\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"'
+    critique, external_tool_info = strategy.generate_critique(
+        idx=0,
+        question=question,
+        examples=MBPP_FEWSHOT_EXAMPLES_CRITIC,
+        answer=answer,
+        critique="",
+        prompt=CRITIC_CRITIQUE_INSTRUCTION_MBPP,
+        additional_keys={"tests": tests},
+        use_tool=True,
+        max_interactions=7
+    )
+
+    assert critique == gt_critique
+    assert external_tool_info == {'execution_status': 'Done'}
+    assert strategy._halt
 
 
 def test_create_output_dict() -> None:
