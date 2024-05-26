@@ -5,7 +5,7 @@ from agential.cog.strategies.critic.base import CriticBaseStrategy
 from agential.utils.validation import validate_overlapping_keys
 
 
-class CodeStrategy(CriticBaseStrategy):
+class CriticCodeStrategy(CriticBaseStrategy):
     def __init__(self, llm):
         self.llm = llm
         self._halt = False
@@ -115,11 +115,11 @@ class CodeStrategy(CriticBaseStrategy):
         self._halt = False
 
 
-class CritMBPPCodeStrategy(CodeStrategy):
+class CritMBPPCodeStrategy(CriticCodeStrategy):
     pass
 
 
-class CritHEvalCodeStrategy(CodeStrategy):
+class CritHEvalCodeStrategy(CriticCodeStrategy):
     def __init__(self, llm):
         super().__init__(llm)
 
