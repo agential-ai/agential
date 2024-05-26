@@ -11,10 +11,10 @@
 | **TriviaQA**   |  4                          |
 | **AmbigNQ**    |  5                          |
 | **GSM8k**      |  8                          |
-| **SVAMP**      |                             |
-| **TabMWP**     |                             |
-| **MBPP**       |                             |
-| **HumanEval**  |                             |
+| **SVAMP**      |  7                          |
+| **TabMWP**     |  4                          |
+| **MBPP**       |  3                          |
+| **HumanEval**  |  1                          |
 | **ALFWorld**   |                             |
 | **WebShop**    |                             |
 | **AgentBench** |                             |
