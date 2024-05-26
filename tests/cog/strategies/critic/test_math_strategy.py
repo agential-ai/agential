@@ -237,3 +237,11 @@ def test_reset() -> None:
 
 def test_instantiate_strategies() -> None:
     """Test instantiate all Math strategies."""
+    llm = FakeListChatModel(responses=[])
+    gsm8k_strategy = CritGSM8KStrategy(llm=llm)
+    svamp_strategy = CritSVAMPStrategy(llm=llm)
+    tabmwp_strategy = CritTabMWPStrategy(llm=llm)
+
+    assert isinstance(gsm8k_strategy, CritGSM8KStrategy)
+    assert isinstance(svamp_strategy, CritSVAMPStrategy)
+    assert isinstance(tabmwp_strategy, CritTabMWPStrategy)
