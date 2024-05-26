@@ -10,7 +10,7 @@
 | **FEVER**      |  3                          |
 | **TriviaQA**   |  4                          |
 | **AmbigNQ**    |  5                          |
-| **GSM8k**      |                             |
+| **GSM8k**      |  8                          |
 | **SVAMP**      |                             |
 | **TabMWP**     |                             |
 | **MBPP**       |                             |
