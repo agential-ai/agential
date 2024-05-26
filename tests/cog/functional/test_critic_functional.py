@@ -26,7 +26,7 @@ def test_safe_execute() -> None:
     """Test safe_execute function."""
     code_string = """budget = 1000\nfood = 0.3\naccommodation = 0.15\nentertainment = 0.25\ncoursework_materials = 1 - food - accommodation - entertainment\nanswer = budget * coursework_materials"""
     answer, report = safe_execute(code_string)
-    assert int(answer) == 299
+    assert int(answer[0]) == 299
     assert report == "Done"
 
 
