@@ -191,7 +191,13 @@ def test_reset() -> None:
 
 
 def test_instantiate_strategies() -> None:
-    """Test instantiate all code strategies."""
+    """Test instantiate all Code strategies."""
+    llm = FakeListChatModel(responses=[])
+    heval_strategy = CritHEvalCodeStrategy(llm=llm)
+    mbpp_strategy = CritMBPPCodeStrategy(llm=llm)
+
+    assert isinstance(heval_strategy, CritHEvalCodeStrategy)
+    assert isinstance(mbpp_strategy, CritMBPPCodeStrategy)
 
 
 def test_heval_generate_critique() -> None:
