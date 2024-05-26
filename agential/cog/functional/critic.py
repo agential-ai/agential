@@ -126,8 +126,6 @@ def _prompt_agent(
             )
         ]
     ).content
-    print("ANSWER")
-    print(repr(out))
     assert isinstance(out, str)
     return out
 
