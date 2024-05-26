@@ -1,6 +1,7 @@
 """CRITIC Agent strategies for Math."""
 
-from typing import Dict, Tuple, Any
+from typing import Any, Dict, Tuple
+
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.functional.critic import _prompt_agent, _prompt_critique, safe_execute
@@ -16,6 +17,7 @@ class CriticMathStrategy(CriticBaseStrategy):
         patience (int): The number of interactions to tolerate the same incorrect answer
             before halting further attempts. Defaults to 2.
     """
+
     def __init__(self, llm: BaseChatModel, patience: int = 2) -> None:
         """Initialization."""
         self.llm = llm
@@ -68,7 +70,7 @@ class CriticMathStrategy(CriticBaseStrategy):
         **kwargs,
     ) -> Tuple[str, Dict[str, Any]]:
         """Generates a critique for the provided answer using the given prompt and examples.
-        
+
         This method does the following:
             1. If `use_tool` is True, execute the answer as code and store the result.
             2. Update the answer history with the current answer and external tool info.
@@ -80,7 +82,7 @@ class CriticMathStrategy(CriticBaseStrategy):
             5. Validate and merge additional keys with external tool info.
             6. Generate a new critique using the updated answer and keys.
             7. Return the new critique and external tool info.
-        
+
         Args:
             idx (int): The index of the current interaction.
             question (str): The math question that was answered.
@@ -207,7 +209,7 @@ class CriticMathStrategy(CriticBaseStrategy):
         """Checks if the halting condition has been met.
 
         Returns True if the CRITIC Agent's generated answer remains the same for `patience` number of steps.
-        
+
         Args:
             critique: The current critique of the answer.
 
