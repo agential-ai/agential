@@ -129,6 +129,10 @@ assert first_repeated_char("123123") == "1\""""
 
 def test_create_output_dict() -> None:
     """Tests CriticCodeStrategy create_output_dict."""
+    llm = FakeListChatModel(responses=[])
+    strategy = CriticCodeStrategy(llm=llm)
+    result = strategy.create_output_dict(answer="", critique="", external_tool_info={"a": "b"})
+    assert result == {'code': "", "critique": "", "a": "b"} 
 
 
 def test_update_answer_based_on_critique() -> None:
