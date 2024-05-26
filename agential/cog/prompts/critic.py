@@ -15,8 +15,12 @@ A: """
 FEVER_FEWSHOT_EXAMPLES_COT = """Claim: Did Nikolaj Coster-Waldau work with the Fox Broadcasting Company?
 A: Yes, he appeared in the 2009 Fox television film Virtuality. So the answer is: SUPPORTS.
 
+---
+
 Claim: Is Stranger Things set in Bloomington, Indiana?
 A: No, it is set in the fictional town of Hawkins, Indiana. So the answer is: REFUTES.
+
+---
 
 Claim: Did the song "Beautiful" by Christina Aguilera reach number two on the Billboard Hot 100 in 2003?
 A: The song peaked at number two on the Billboard Hot 100, but it does not specify that it was in 2003. So the answer is: NOT ENOUGH INFO."""
@@ -25,8 +29,12 @@ A: The song peaked at number two on the Billboard Hot 100, but it does not speci
 FEVER_FEWSHOT_EXAMPLES_DIRECT = """Claim: Did Nikolaj Coster-Waldau work with the Fox Broadcasting Company?
 A: SUPPORTS
 
+---
+
 Claim: Is Stranger Things set in Bloomington, Indiana?
 A: REFUTES
+
+---
 
 Claim: Did the song "Beautiful" by Christina Aguilera reach number two on the Billboard Hot 100 in 2003?
 A: NOT ENOUGH INFO"""
@@ -39,12 +47,16 @@ Observation 1: Nikolaj William Coster-Waldau (born 27 July 1970) is a Danish act
 Thought 2: Because he "appeared in the 2009 Fox television film Virtuality", he should have worked with the Fox Broadcasting Company.
 Action 2: Finish[SUPPORTS]
 
+---
+
 Claim: Stranger Things is set in Bloomington, Indiana.
 Thought 1: I should search for Stranger Things, and see if it is set in Bloomington, Indiana.
 Action 1: Search[Stranger Things]
 Observation 1: Stranger Things is an American science fiction horror drama television series created by the Duffer Brothers. Set in the 1980s, primarily in the fictional town of Hawkins, Indiana, the series centers on a number of mysteries and supernatural events occurring around the town and their impact on an ensemble of child and adult characters. 
 Thought 2: The observation says that it is set in a "fictional town of Hawkins, Indiana", so it is not set in Bloomington.
 Action 2: Finish[REFUTES]
+
+---
 
 Claim: Beautiful reached number two on the Billboard Hot 100 in 2003.?
 Thought 1: I need to search the song Beautiful and find if it reached number two on the Billboard Hot 100 in 2003.
@@ -147,14 +159,22 @@ A: """
 AMBIGNQ_FEWSHOT_EXAMPLES_COT = """Q: When did men's figure skating become a summer Olympic sport?
 A: Figure skating was first contested in the Olympic Games at the 1908 Summer Olympics. So the answer is: 1908
 
+---
+
 Q: When was the last time the USA men's national soccer team missed the World Cup?
 A: The USA men's national soccer team did not qualify for the World Cup in 2018. So the answer is: 2018
+
+---
 
 Q: What does barium do in a ct scan?
 A: Barium is used to improve visualization of the gastrointestinal tract during a CT scan. So the answer is: to improve visualization of the gastrointestinal tract
 
+---
+
 Q: Where was the fort located at which the first shot of the civil war was fired?
 A: The first shot of the Civil War was fired at Fort Sumter, which is located in Charleston Harbor, South Carolina. So the answer is: Charleston Harbor, South Carolina
+
+---
 
 Q: When did nando's come to the uk?
 A: Nando's opened its first restaurants in the United Kingdom in 1992. So the answer is: 1992"""
@@ -163,14 +183,22 @@ A: Nando's opened its first restaurants in the United Kingdom in 1992. So the an
 AMBIGNQ_FEWSHOT_EXAMPLES_DIRECT = """Q: When did men's figure skating become a summer Olympic sport?
 A: 1908
 
+---
+
 Q: When was the last time the USA men's national soccer team missed the World Cup?
 A: 2018
+
+---
 
 Q: What does barium do in a ct scan?
 A: to improve visualization of the gastrointestinal tract
 
+---
+
 Q: Where was the fort located at which the first shot of the civil war was fired?
 A: Charleston Harbor, South Carolina
+
+---
 
 Q: When did nando's come to the uk?
 A: 1992"""
@@ -455,17 +483,27 @@ A: """
 HOTPOTQA_FEWSHOT_EXAMPLES_COT = """Q: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
 A: Let's think step by step. The eastern sector of Colorado orogeny extends into the High Plains. High Plains rise in elevation from around 1,800 to 7,000 ft. So the answer is: 1,800 to 7,000 ft.
 
+---
+
 Q: Musician and satirist Allie Goertz wrote a song about the "The Simpsons" character Milhouse, who Matt Groening named after who?
 A: Let's think step by step. Milhouse was named after U.S. president Richard Nixon. So the answer is: Richard Nixon.
+
+---
 
 Q: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
 A: Let's think step by step. Adam Clayton Powell (film) is a documentary about an African-American politician, not Finnish rock groups. So the documentary about Finnish rock groups must instead be The Saimaa Gesture. So the answer is: The Saimaa Gesture.
 
+---
+
 Q: What profession does Nicholas Ray and Elia Kazan have in common?
 A: Let's think step by step. Professions of Nicholas Ray are director, screenwriter, and actor. Professions of Elia Kazan are director, producer, screenwriter, and actor. So profession Nicholas Ray and Elia Kazan have in common is director, screenwriter, and actor. So the answer is: director, screenwriter, actor.
 
+---
+
 Q: Which magazine was started first Arthur's Magazine or First for Women?
 A: Let's think step by step. Arthur's Magazine was started in 1844. First for Women was started in 1989. 1844 (Arthur's Magazine) < 1989 (First for Women), so Arthur's Magazine was started first. So the answer is: Arthur's Magazine.
+
+---
 
 Q: Were Pavel Urysohn and Leonid Levin known for the same type of work?
 A: Let's think step by step. Pavel Urysohn is a mathematician. Leonid Levin is a mathematician and computer scientist. So Pavel Urysohn and Leonid Levin have the same type of work. So the answer is: Yes."""
@@ -474,102 +512,108 @@ A: Let's think step by step. Pavel Urysohn is a mathematician. Leonid Levin is a
 HOTPOTQA_FEWSHOT_EXAMPLES_DIRECT = """Q: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
 A: 1,800 to 7,000 ft
 
+---
+
 Q: Musician and satirist Allie Goertz wrote a song about the \"The Simpsons\" character Milhouse, who Matt Groening named after who?
 A: Richard Nixon
+
+---
 
 Q: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
 A: The Saimaa Gesture
 
+---
+
 Q: What profession does Nicholas Ray and Elia Kazan have in common?
 A: director, screenwriter, actor
 
+---
+
 Q: Which magazine was started first Arthur's Magazine or First for Women?
 A: Arthur's Magazine
+
+---
 
 Q: Were Pavel Urysohn and Leonid Levin known for the same type of work?
 A: Yes"""
 
 
-HOTPOTQA_FEWSHOT_EXAMPLES_REACT = """Question: Serianna is a band of what genre that combines elements of heavy metal and hardcore punk?
-Thought 1: Let's search the question in google
-Action 1: Search[Serianna is a band of what genre that combines elements of heavy metal and hardcore punk? site: wikipedia.org]
-Observation 1: [Metalcore - Wikipedia] Metalcore is a fusion music genre that combines elements of extreme metal and hardcore punk.
-Thought 2: The evidence suggests that metalcore is a genre that combines elements of extreme metal and hardcore punk.
-Action 2: Search[Serianna is a band of metalcore genre. site: wikipedia.org
-Observation 2: [Serianna - Wikipedia] Serianna was a metalcore band from Madison, Wisconsin. The band formed in 2006...
-Thought 3: The evidence suggests Serianna is a metalcore band.
-Action 3: Finish[Metalcore]
+HOTPOTQA_FEWSHOT_EXAMPLES_REACT = """Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+Thought 1: I need to search Colorado orogeny, find the area that the eastern sector of the Colorado orogeny extends into, then find the elevation range of the area.
+Action 1: Search[Colorado orogeny]
+Observation 1: The Colorado orogeny was an episode of mountain building (an orogeny) in Colorado and surrounding areas.
+Thought 2: It does not mention the eastern sector. So I need to look up eastern sector.
+Action 2: Lookup[eastern sector]
+Observation 2: (Result 1 / 1) The eastern sector extends into the High Plains and is called the Central Plains orogeny.
+Thought 3: The eastern sector of Colorado orogeny extends into the High Plains. So I need to search High Plains and find its elevation range.
+Action 3: Search[High Plains]
+Observation 3: High Plains refers to one of two distinct land regions:
+Thought 4: I need to instead search High Plains (United States).
+Action 4: Search[High Plains (United States)]
+Observation 4: The High Plains are a subregion of the Great Plains. From east to west, the High Plains rise in elevation from around 1,800 to 7,000 ft (550 to 2,130 m).[3]
+Thought 5: High Plains rise in elevation from around 1,800 to 7,000 ft, so the answer is 1,800 to 7,000 ft.
+Action 5: Finish[1,800 to 7,000 ft]
 
 ---
 
-Question: Which band was formed first, Helium or Jack's Mannequin?
-Thought 1: Let's search the question in google
-Action 1: Search[Which band was formed first, Helium or Jack's Mannequin?]
-Observation 1: [Jack's Mannequin - Wikipedia] Jack's Mannequin was an American rock band formed in 2004, hailing from Orange County, California.
-Thought 2: The evidence shows that Jack's Mannequin is a band formed in 2004. We then find out when the band Helium was formed.
-Action 2: Search[When was the band "Helium" formed?]
-Observation 2: [] Helium / Active from 1992
-Thought 3: The evidence shows that Helium was formed in 1992. Jack's Mannequin was formed in 2004. 1992 (Helium) < 2004 (Jack's Mannequin), so Helium was formed first.
-Action 3: Finish[Helium]
+Question: Musician and satirist Allie Goertz wrote a song about the "The Simpsons" character Milhouse, who Matt Groening named after who?
+Thought 1: The question simplifies to "The Simpsons" character Milhouse is named after who. I only need to search Milhouse and find who it is named after.
+Action 1: Search[Milhouse]
+Observation 1: Milhouse Mussolini Van Houten is a recurring character in the Fox animated television series The Simpsons voiced by Pamela Hayden and created by Matt Groening.
+Thought 2: The paragraph does not tell who Milhouse is named after, maybe I can look up "named after".
+Action 2: Lookup[named after]
+Observation 2: (Result 1 / 1) Milhouse was named after U.S. president Richard Nixon, whose middle name was Milhous. 
+Thought 3: Milhouse was named after U.S. president Richard Nixon, so the answer is Richard Nixon.
+Action 3: Finish[Richard Nixon]
 
 ---
 
-Question: What year did Maurice win the award given to the  "player judged most valuable to his team" in the NHL?
-Thought 1: Let's search the question in google:
-Action 1: Search[What year did Maurice win the award given to the  "player judged most valuable to his team" in the NHL? site: wikipedia.org]
-Observation 1: [List of National Hockey League awards - Wikipedia] Awarded to the "player judged most valuable to his team". The original trophy was donated to the league by Dr. David A. Hart, father of coach Cecil Hart.
-Thought 2: The evidence does not provide information about what the award is and Maurice won the award in which year. We can change the search query.
-Action 2: Search[What year did Maurice win the award of most valuable player in the NHL?]
-Observation 2: [NHL Maurice Richard Trophy Winners] Award presented to top goal-scorer annually since 1999​​ It honors Richard, the first player in League history to score 50 goals in 50 games, 50 goals in a ...
-Thought 3: The evidence mention Richard won NHL Trophy, but does not mention if it is for most valuable players.
-Action 3: Search[When Maurice Richard win the most NHL's most valuable player?]
-Observation 3: [Maurice Richard - Wikipedia] He won the Hart Trophy as the NHL's most valuable player in 1947, played in 13 All-Star Games and was named to 14 post-season NHL All-Star teams, eight on the first team.
-Thought 4: The evidence shows that Maurice Richard won the Hart Trophy as the NHL's most valuable player in 1947.
-Action 4: Finish[1947]
+Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
+Thought 1: I need to search Adam Clayton Powell and The Saimaa Gesture, and find which documentary is about Finnish rock groups.
+Action 1: Search[Adam Clayton Powell]
+Observation 1: Could not find [Adam Clayton Powell]. Similar: ['Adam Clayton Powell III', 'Seventh Avenue (Manhattan)', 'Adam Clayton Powell Jr. State Office Building', 'Isabel Washington Powell', 'Adam Powell', 'Adam Clayton Powell (film)', 'Giancarlo Esposito'].
+Thought 2: To find the documentary, I can search Adam Clayton Powell (film).
+Action 2: Search[Adam Clayton Powell (film)]
+Observation 2: Adam Clayton Powell is a 1989 American documentary film directed by Richard Kilberg.
+The film is about the rise and fall of influential African-American politician Adam Clayton Powell Jr.[3][4] It was later aired as part of the PBS series The American Experience.
+Thought 3: Adam Clayton Powell (film) is a documentary about an African-American politician, not Finnish rock groups. So the documentary about Finnish rock groups must instead be The Saimaa Gesture.
+Action 3: Finish[The Saimaa Gesture]
 
 ---
 
-Question: Are John H. Auer and Jerome Robbins both directors?
-Thought 1: Let's search the question in google
-Action 1: Search[Are John H. Auer and Jerome Robbins both directors?]
-Observation 1: [A history of Jerome Robbins at PNB - Pacific Northwest Ballet] Robbins retained the title of associate artistic director until approximately 1963, ... Ballets: USA, from the late 1950s to the late 1960s.
-Thought 2: The evidence suggests Jerome Robbins is a director. We then need to verify if John H. Auer is a director.
-Action 2: Search[Is John H. Auer a director? site: wikipedia.org]
-Observation 2: [John H. Auer - Wikipedia] Auer was a Hungarian-born child actor who, on coming to the Americas in 1928, became a movie director and producer, initially in Mexico but, from the early 1930s, in Hollywood.
-Thought 3: The evidence suggests that John H. Auer is an actor, director and producer. Therefore, both John H. Auer and Jerome Robbins are directors.
-Action 3: Finish[Yes]
+Question: What profession does Nicholas Ray and Elia Kazan have in common?
+Thought 1: I need to search Nicholas Ray and Elia Kazan, find their professions, then find the profession they have in common.
+Action 1: Search[Nicholas Ray]
+Observation 1: Nicholas Ray (born Raymond Nicholas Kienzle Jr., August 7, 1911 – June 16, 1979) was an American film director, screenwriter, and actor best known for the 1955 film Rebel Without a Cause.
+Thought 2: Professions of Nicholas Ray are director, screenwriter, and actor. I need to search Elia Kazan next and find his professions.
+Action 2: Search[Elia Kazan]
+Observation 2: Elia Kazan was an American film and theatre director, producer, screenwriter and actor.
+Thought 3: Professions of Elia Kazan are director, producer, screenwriter, and actor. So profession Nicholas Ray and Elia Kazan have in common is director, screenwriter, and actor.
+Action 3: Finish[director, screenwriter, actor]
 
 ---
 
-Question: Which artist did Anthony Toby "Tony" Hiller appear with that liked showering himself (and others) with confetti?
-Thought 1: Let's search the question in google
-Action 1: Search[Which artist did Anthony Toby Tony Hiller appear with that liked showering himself (and others) with confetti?]
-Observation 1: [Untitled] Without you: The tragic story of Badfinger|Dan Matovina, The Military Orchid and Other Novels|Jocelyn Brooke, Looking at Lisp (Micro computer books)|Tony ...
-Thought 2: The evidence does not provide any useful information about the question. We need to find out who is the artist that liked showering himself (and others) with confetti.
-Action 2: Search[Which artist liked showering himself (and others) with confetti?]
-Observation 2: [Rip Taylor - Wikipedia] Charles Elmer " Rip " Taylor Jr. was an American actor and comedian, known for his exuberance and flamboyant personality, including his wild moustache, toupee, and his habit of showering himself (and others)
-Thought 3: The evidence suggests that the artist that liked showering himself is Charles Elmer "Rip" Taylor Jr. We can further check if Rip Taylor appeared with Anthony Toby "Tony" Hiller.
-Action 3: Search[Which artist appeared with Anthony Toby "Tony" Hiller?]
-Observation 3: [Tony Hiller - Wikipedia] He was best known for writing and/or producing hits for Brotherhood of Man , including " United We Stand " (1970) and " Save Your Kisses for Me " (1976). Biography [ edit ]
-Thought 4: The evidence does not mention the artist.
-Action 4: Search[Did Tony Hiller appear with Rip Taylor?]
-Observation 4: [Tony Hiller - Wikipedia] The Hiller Brothers appeared with many performers of the time including Alma Cogan , Tommy Cooper , Val Doonican , Matt Monro , The Shadows , Bernard Manning , Kathy Kirby , Roger Whittaker , Rip Taylor , Gene Vincent , Lance Percival , Tessie O'Shea...
-Thought 5: The evidence shows that Tony Hiller appeared with Rip Taylor.
-Action 5: Finish[Rip Taylor]
+Question: Which magazine was started first Arthur's Magazine or First for Women?
+Thought 1: I need to search Arthur's Magazine and First for Women, and find which was started first.
+Action 1: Search[Arthur's Magazine]
+Observation 1: Arthur's Magazine (1844-1846) was an American literary periodical published in Philadelphia in the 19th century. 
+Thought 2: Arthur's Magazine was started in 1844. I need to search First for Women next.
+Action 2: Search[First for Women]
+Observation 2: First for Women is a woman's magazine published by Bauer Media Group in the USA.[1] The magazine was started in 1989. 
+Thought 3: First for Women was started in 1989. 1844 (Arthur's Magazine) < 1989 (First for Women), so Arthur's Magazine was started first.
+Action 3: Finish[Arthur's Magazine]
 
 ---
 
-Question: Who won the 2016 Russian national silver medal with another Russian ice dancer born 29 April 1995?
-Thought 1: Let's search the question in google:
-Action 1: Search[Who won the 2016 Russian national silver medal with another Russian ice dancer born 29 April 1995? site: wikipedia.org]
-Observation 1: [Victoria Sinitsina - Wikipedia] Victoria Alexandrovna Sinitsina is a Russian ice dancer .
-Thought 2: The evidence suggests that Victoria Sinitsina is a Russian ice dancer born 29 April 1995. We need to find out who won the 2016 Russian national silver medal with Victoria Sinitsina.
-Action 2: Search[Who won the 2016 Russian national silver medal with Victoria Sinitsina?]
-Observation 2: [Nikita Katsalapov - Wikipedia] In December, Sinitsina/Katsalapov won the silver medal behind Bobrova/Soloviev at the 2016 Russian Championships in Yekaterinburg.
-Thought 3: The evidence suggests that Nikita Katsalapov won the 2016 Russian national silver medal with Victoria Sinitsina.
-Action 3: Finish[Nikita Katsalapov]
-
----"""
+Question: Were Pavel Urysohn and Leonid Levin known for the same type of work?
+Thought 1: I need to search Pavel Urysohn and Leonid Levin, find their types of work, then find if they are the same.
+Action 1: Search[Pavel Urysohn]
+Observation 1: Pavel Samuilovich Urysohn (February 3, 1898 â August 17, 1924) was a Soviet mathematician who is best known for his contributions in dimension theory.
+Thought 2: Pavel Urysohn is a mathematician. I need to search Leonid Levin next and find its type of work.
+Action 2: Search[Leonid Levin]
+Observation 2: Leonid Anatolievich Levin is a Soviet-American mathematician and computer scientist. 
+Thought 3: Leonid Levin is a mathematician and computer scientist. So Pavel Urysohn and Leonid Levin have the same type of work. 
+Action 3: Finish[yes]"""
 
 
 CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA = """{examples}
@@ -796,9 +840,7 @@ We need to find out who won the 2016 Russian national silver medal with Victoria
 The evidence suggests that Nikita Katsalapov won the 2016 Russian national silver medal with Victoria Sinitsina, not Alexandra Stepanova and Ivan Bukin. The answer provided in the proposed answer is incorrect.
 
 Question: Who won the 2016 Russian national silver medal with another Russian ice dancer born 29 April 1995?
-Here's the most possible answer: Let's think step by step. The 2016 Russian national silver medal in ice dancing was won by Victoria Sinitsina and Nikita Katsalapov. Victoria Sinitsina was born on April 29, 1995. So the answer is: Nikita Katsalapov.
-
----"""
+Here's the most possible answer: Let's think step by step. The 2016 Russian national silver medal in ice dancing was won by Victoria Sinitsina and Nikita Katsalapov. Victoria Sinitsina was born on April 29, 1995. So the answer is: Nikita Katsalapov."""
 
 
 # ======================================================================== TRIVIAQA ======================================================================== #
@@ -814,98 +856,74 @@ A: """
 TRIVIAQA_FEWSHOT_EXAMPLES_COT = """Q: Mendelssohn's 'Wedding March' was. originally written as incidental music for which Shakespeare play in 1842? 
 A: Mendelssohn's 'Wedding March' was originally written as incidental music for A Midsummer Night's Dream in 1842. So the answer is: A Midsummer Night's Dream.
 
+---
+
 Q: Christ in the House of his Parents"" is one of the best known paintings of which artist?" 
 A: "Christ in the House of his Parents" is a painting by John Everett Millais. So the answer is: John Everett Millais.
+
+---
 
 Q: Who designed the National Theatre building on the South Bank in London ? 
 A: The National Theatre building on the South Bank in London was designed by Denys Lasdun. So the answer is: Denys Lasdun.
 
+---
+
 Q: Also a two-time World Champion, which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics? 
-A: The only American skier who won the gold medal in the Men's Combined at the 2010 Winter Olympics is Bode Miller. So the answer is: Bode Miller.
-
-Q: Famous composer, Handel, originally studied what? 
-A: George Frideric Handel initially studied law at the University of Halle. So the answer is: Law.
-
-Q: Which great philosopher corresponded with Queen Christina of Sweden in his final years and died in 1650 in Stockholm where he had been invited as a teacher for her? 
-A: René Descartes is a great philosopher who corresponded with Queen Christina of Sweden in his final years and died in 1650 in Stockholm where he had been invited as a teacher for her. So the answer is: René Descartes."""
+A: The only American skier who won the gold medal in the Men's Combined at the 2010 Winter Olympics is Bode Miller. So the answer is: Bode Miller."""
 
 
 TRIVIAQA_FEWSHOT_EXAMPLES_DIRECT = """Q: Mendelssohn's 'Wedding March' was. originally written as incidental music for which Shakespeare play in 1842?
 A: A Midsummer Night's Dream
 
+---
+
 Q: \"\"\"Christ in the House of his Parents\"\" is one of the best known paintings of which artist?"
 A: John Millais
+
+---
 
 Q: Who designed the National Theatre building on the South Bank in London ?
 A: Sir Denys Lasdun
 
+---
+
 Q: Also a two-time World Champion, which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics?
-A: Bodie Miller
-
-Q: Famous composer, Handel, originally studied what?
-A: Law 
-
-Q: Which great philosopher corresponded with Queen Christina of Sweden in his final years and died in 1650 in Stockholm where he had been invited as a teacher for her?
-A: René Decartes
-
-Q: Who was the female member of Britain's gang of four?
-A: Baroness Williams
-
-Q: An icosahedron has how many faces?
-A: twenty
-
-Q: What chemical makes hot peppers hot?
-A: Capscaicin
-
-Q: What term applies to an engine comprising two banks of four cylinders inclined towards each other, with a common crankshaft?
-A: V8 engine"""
+A: Bodie Miller"""
 
 
-TRIVIAQA_FEWSHOT_EXAMPLES_REACT = """Question: Which innovation for the car was developed by Prince Henry of Prussia in 1911? 
+TRIVIAQA_FEWSHOT_EXAMPLES_REACT = """Question: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842?
 Thought 1: Let's search the question in google
-Action 1: Search[Which innovation for the car was developed by Prince Henry of Prussia in 1911? site: wikipedia.org]
-Observation 1: [Prince Henry of Prussia (1862–1929) - Wikipedia] Henry was interested in motor cars as well and supposedly invented a windshield wiper and, according to other sources, the car horn.
-Thought 2: The evidence suggests that Prince Henry of Prussia invented a windshield wiper and the car horn. 
-Action 2: Search[When did Prince Henry of Prussia invented a windshield wiper and the car horn?]
-Observation 2: [110 years ago: windscreen wiper patent for Prince Henry of Prussia] Quite apart from a member of the German aristocracy: it was Prince Henry of Prussia (1862-1929) who was granted the first German patent about the windscreen wiper on 24. March 1908. 
-Thought 3: According to the evidence, Prince Henry of Prussia was granted the first German patent for the windshield wiper.
-Action 3: Finish[windshield wiper]
+Action 1: Search[Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842? site:wikipedia.org]
+Observation 1: [Wedding March (Mendelssohn) - Wikipedia] Mendelssohn's 'Wedding March' was originally written as incidental music for A Midsummer Night's Dream in 1842.
+Thought 2: The evidence suggests that Mendelssohn's 'Wedding March' was originally written as incidental music for A Midsummer Night's Dream in 1842.
+Action 2: Finish[A Midsummer Night's Dream]
 
------
-Question: When did the founder of Jehovah's Witnesses say the world would end?
+---
+
+Question: "Christ in the House of his Parents" is one of the best known paintings of which artist?
 Thought 1: Let's search the question in google
-Action 1: Search[When did the founder of Jehovah's Witnesses say the world would end? site: wikipedia.org]
-Observation 1: [Eschatology of Jehovah's Witnesses - Wikipedia] In 1911, Russell wrote that October 1914 would witness the "full end" of Babylon, or nominal Christianity, "utterly destroyed as a system". At first, the hopes ... 
-Thought 2: The evidence shows that the founder of Jehovah's Witnesses predicted the world would end in October 1914
-Action 2: Finish[1914]
+Action 1: Search["Christ in the House of his Parents" is one of the best known paintings of which artist? site:wikipedia.org]
+Observation 1: [Christ in the House of His Parents - Wikipedia] "Christ in the House of His Parents" is a painting by John Everett Millais.
+Thought 2: The evidence suggests that "Christ in the House of His Parents" is a painting by John Everett Millais.
+Action 2: Finish[John Everett Millais]
 
-------
-Question: Three people have featured on the reverse of the £5 note, the two most recent are George Stephenson and Elizabeth Fry, who was the first?
+---
+
+Question: Who designed the National Theatre building on the South Bank in London?
 Thought 1: Let's search the question in google
-Action 1: Search[Three people have featured on the reverse of the £5 note, the two most recent are George Stephenson and Elizabeth Fry, who was the first?]
-Observation 1: [Bank of England £5 note - Wikipedia] The Bank of England £5 note, also known as a fiver, is a sterling banknote . It is the smallest denomination of banknote currently issued by the Bank of England.
-Thought 2: The evidence is about £5 note, it has no information about the featured people we want to find out. 
-Action 2: Search[Who was the first person to feature on the reverse of the £5 note? site: wikipedia.org] 
-Observation 2: [Bank of England £5 note - Wikipedia] The old paper note, first issued in 2002 and bearing the image of prison reformer Elizabeth Fry on the reverse, was phased out and ceased to be legal tender after 5 May 2017. 
-Thought 3: The evidence only mentions Elizabeth Fry, and from the question, we know that she was not the first person to feature on the reverse of the £5 note. 
-Action 3: Search[People have featured on the reverse of the £5 note: George Stephenson and Elizabeth Fry and?]
-Observation 3: [Historical British figures featured on banknotes (1970-2017)] £5 – The Duke of Wellington, George Stephenson, Elizabeth Fry, Sir Winston Churchill £10 – Florence Nightingale, Charles Dickens, Charles Darwin £20 – William Shakespeare, ...
-Thought 4: The evidence shows that the Duke of Wellington and Sir Winston Churchill were also featured on £5.
-Action 4: Finish[Duke of Wellington]
+Action 1: Search[Who designed the National Theatre building on the South Bank in London? site:wikipedia.org]
+Observation 1: [National Theatre (London) - Wikipedia] The National Theatre building on the South Bank in London was designed by Denys Lasdun.
+Thought 2: The evidence suggests that the National Theatre building on the South Bank in London was designed by Denys Lasdun.
+Action 2: Finish[Denys Lasdun]
 
-------
-Question: What state had its bi-centenary of joining the Union a year after North Carolina? 
-Thought 1: Let's search the question in google 
-Action 1: Search[What state had its bi-centenary of joining the Union a year after North Carolina? site: wikipedia.org] 
-Observation 1: [List of U.S. states by date of admission to the Union - Wikipedia] 24. Missouri, August 10, 1821 · (admitted) ; 25. Arkansas, June 15, 1836 · (admitted) ... 
-Thought 2: The evidence does not provide information about the state had its bi-centenary of joining the Union a year after North Carolina. To answer the question, we need to find the state joining the Union a year after North Carolina. 
-Action 2: Search[Which state joined the Union a year after North Carolina? site: wikipedia.org] 
-Observation 2: [List of U.S. states by date of admission to the Union - Wikipedia...] ^ This list does not account for the secession of 11 states (Virginia, North Carolina, South Carolina, Georgia, Florida, Alabama, Mississippi, Tennessee, ... 
-Thought 3: Not enough evidence, we need further search. 
-Action 3: Search[What state joined the Union a year after North Carolina?] 
-Observation 3: [States by Order of Entry into Union - Infoplease] Joining the Union | State | Entered Union | Year Settled | | North Carolina | Nov. 21, 1789 | 1660 | | Rhode Island | May 29, 1790 | 1636 | | Vermont | Mar. 4, 1791 | 1724 | 
-Thought 4: The evidence shows North Carolina entered Union in 1789, and Rhode Island entered Union in 1790, which is a year after North Carolina. 
-Action 4: Finish[Rhode Island]"""
+---
+
+Question: Also a two-time World Champion, which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics?
+Thought 1: Let's search the question in google
+Action 1: Search[Which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics? site:wikipedia.org]
+Observation 1: [Bode Miller - Wikipedia] The only American skier who won the gold medal in the Men's Combined at the 2010 Winter Olympics is Bode Miller.
+Thought 2: The evidence suggests that Bode Miller is the only American skier who won the gold medal in the Men's Combined at the 2010 Winter Olympics.
+Action 2: Finish[Bode Miller]"""
 
 
 CRITIC_CRITIQUE_INSTRUCTION_TRIVIAQA = """{examples}
@@ -961,7 +979,7 @@ Question: Which innovation for the car was developed by Prince Henry of Prussia 
 
 Here's the most possible answer: Prince Henry of Prussia invented a windshield wiper. So the answer is: windshield wiper.
 
-------
+---
 
 Question: When did the founder of Jehovah's Witnesses say the world would end? 
 Proposed Answer: The founder of Jehovah's Witnesses said the world would end in 1914. So the answer is: 1914.
@@ -1028,7 +1046,8 @@ In summary, our collected evidence suggest that Sir Isaac Newton was not the fir
 
 Question: Three people have featured on the reverse of the £5 note, the two most recent are George Stephenson and Elizabeth Fry, who was the first? 
 Here's the most possible answer: The first person to feature on the reverse of the £5 note was Duke of Wellington. So the answer is: Duke of Wellington
--------
+
+---
 
 Question: What state had its bi-centenary of joining the Union a year after North Carolina? 
 Proposed Answer: Rhode Island had its bi-centenary of joining the Union a year after North Carolina. So the answer is: Rhode Island.
