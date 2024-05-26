@@ -137,6 +137,31 @@ def test_create_output_dict() -> None:
 
 def test_update_answer_based_on_critique() -> None:
     """Tests CriticCodeStrategy update_answer_based_on_critique."""
+    question = "Write a python function to find the first repeated character in a given string."
+    tests = """assert first_repeated_char("abcabc") == "a"
+assert first_repeated_char("abc") == None
+assert first_repeated_char("123123") == "1\""""
+
+    gt_new_answer = 'The provided code for finding the first repeated character in a given string is correct and passes the test cases. No issues were identified with the implementation.'
+    critique = "There doesn't seem to be any issue with the provided code for finding the first repeated character in a given string. The function correctly uses a set to keep track of seen characters and returns the first repeated character encountered.\n\nThe function passes the provided test cases and seems to be implemented correctly."
+    answer = 'def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\n# Testing the function with the given test cases\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"'
+    responses = [
+        'The provided code for finding the first repeated character in a given string is correct and passes the test cases. No issues were identified with the implementation.'
+    ]
+    llm = FakeListChatModel(responses=responses)
+    strategy = CriticCodeStrategy(llm=llm)
+    new_answer = strategy.update_answer_based_on_critique(
+        question=question,
+        examples=MBPP_FEWSHOT_EXAMPLES_CRITIC,
+        answer=answer,
+        critique=critique,
+        prompt=CRITIC_CRITIQUE_INSTRUCTION_MBPP,
+        additional_keys={"tests": tests},
+        external_tool_info={'execution_status': 'Done'}
+    )
+
+    assert new_answer == gt_new_answer
+    assert not strategy._halt
 
 
 def test_halting_condition() -> None:
