@@ -1,4 +1,7 @@
+"""CRITIC Agent strategies for Math."""
+
 from typing import Dict
+from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.functional.critic import _prompt_agent, _prompt_critique, safe_execute
 from agential.cog.strategies.critic.base import CriticBaseStrategy
@@ -6,7 +9,15 @@ from agential.utils.validation import validate_overlapping_keys
 
 
 class CriticMathStrategy(CriticBaseStrategy):
-    def __init__(self, llm, patience=2):
+    """A strategy class for Math benchmarks using the CRITIC agent.
+
+    Attributes:
+        llm (BaseChatModel): The language model used for generating answers and critiques.
+        patience (int): The number of interactions to tolerate the same incorrect answer
+            before halting further attempts. Defaults to 2.
+    """
+    def __init__(self, llm: BaseChatModel, patience: int = 2) -> None:
+        """Initialization."""
         self.llm = llm
         self.patience = patience
         self._answer_history = []
@@ -21,6 +32,17 @@ class CriticMathStrategy(CriticBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> str:
+        """Generates an answer for the given question using the provided prompt and examples.
+
+        Args:
+            question (str): The math question to generate an answer for.
+            examples (str): Few-shot examples to guide the language model.
+            prompt (str): The prompt to generate an answer.
+            additional_keys (Dict[str, str]): Additional keys for the prompt.
+
+        Returns:
+            str: The generated answer.
+        """
         answer = _prompt_agent(
             llm=self.llm,
             question=question,
@@ -44,7 +66,24 @@ class CriticMathStrategy(CriticBaseStrategy):
         use_tool: bool,
         max_interactions: int,
         **kwargs,
-    ):
+    ) -> str:
+        """Generates a critique for the provided answer using the given prompt and examples.
+
+        Args:
+            idx (int): The index of the current interaction.
+            question (str): The math question that was answered.
+            examples (str): Few-shot examples to guide the critique.
+            answer (str): The answer to critique.
+            critique (str): Existing critique to build upon.
+            prompt (str): The prompt to generate a critique.
+            additional_keys (Dict[str, str]): Additional keys for the prompt.
+            use_tool (bool): Whether to use an external tool during critique.
+            max_interactions (int): The maximum number of interactions allowed.
+            **kwargs: Additional arguments for specific implementations.
+
+        Returns:
+            Tuple[str, Dict[str, str]]: The generated critique and external tool information.
+        """
         external_tool_info = {}
         if use_tool:
             code_answer, execution_status = safe_execute(answer)
