@@ -111,12 +111,6 @@ class CriticMathStrategy(CriticBaseStrategy):
         external_tool_info: Dict[str, str],
         **kwargs,
     ) -> str:
-        # print("--------------------------------------")
-        # print(repr(answer))
-        # print(repr(critique))
-        # print(external_tool_info)
-        # print("--------------------------------------")
-
         validate_overlapping_keys(additional_keys, external_tool_info)
         additional_keys = additional_keys.copy()
         additional_keys.update(external_tool_info)

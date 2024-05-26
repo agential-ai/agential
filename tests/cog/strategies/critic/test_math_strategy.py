@@ -170,6 +170,25 @@ def test_update_answer_based_on_critique() -> None:
 
     assert new_answer == gt_new_answer
 
+    # Test with tool.
+    gt_new_answer = 'total_eggs_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = total_eggs_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\nprice_per_egg = 2\n\ntotal_earnings_per_day = eggs_sold * price_per_egg\nanswer = total_earnings_per_day'
+    answer = 'total_eggs = 16\neaten_eggs = 3\nbaked_eggs = 4933828\nsold_eggs = total_eggs - eaten_eggs - baked_eggs\ndollars_per_egg = 2\nanswer = sold_eggs * dollars_per_egg'
+    critique = "The problem with the above code is that the calculation for `baked_eggs` seems incorrect. It is stated that Janet bakes muffins for her friends every day with 4933828 eggs, which seems like an excessive amount. This is likely causing the negative result in the final calculation.\n\nTo fix this issue and provide a more reasonable calculation, we need to adjust the amount of eggs used for baking muffins to a more realistic number. Let's assume she bakes 12 muffins each day, which would require 12 eggs. \n\n"
+    external_tool_info = {'execution_status': 'Done', 'code_answer': -9867630}
+
+    new_answer = strategy.update_answer_based_on_critique(
+        question=question,
+        examples=GSM8K_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
+        answer=answer,
+        critique=critique,
+        prompt=CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_GSM8K,
+        additional_keys={},
+        external_tool_info=external_tool_info,
+    )
+
+    assert new_answer == gt_new_answer
+
+
 def test_halting_condition() -> None:
     """Tests CriticMathStrategy halting_condition."""
 
