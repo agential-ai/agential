@@ -191,11 +191,37 @@ def test_update_answer_based_on_critique() -> None:
 
 def test_halting_condition() -> None:
     """Tests CriticMathStrategy halting_condition."""
+    llm = FakeListChatModel(responses=[])
+    strategy = CriticMathStrategy(llm=llm, patience=2)
+
+    # Initially, halting condition should be False.
+    assert strategy.halting_condition("") is False
+
+    # Simulate the halting condition being met.
+    strategy._halt = True
+    assert strategy.halting_condition("") is True
 
 
 def test_reset() -> None:
     """Tests CriticMathStrategy reset."""
+    llm = FakeListChatModel(responses=[])
+    strategy = CriticMathStrategy(llm=llm, patience=2)
 
+    # Simulate some state
+    strategy._answer_history = [{"answer": "some_answer", "external_tool_info": {}}]
+    strategy._prev_code_answer = "42"
+    strategy.patience_counter = 1
+    strategy._halt = True
+
+    # Reset the strategy
+    strategy.reset()
+
+    # Assert that all states are reset
+    assert strategy._answer_history == []
+    assert strategy._prev_code_answer is None
+    assert strategy.patience_counter == 0
+    assert strategy._halt is False
+    
 
 def test_instantiate_strategies() -> None:
     """Test instantiate all Math strategies."""
