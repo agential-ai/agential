@@ -182,3 +182,8 @@ def test_heval_update_answer_based_on_critique() -> None:
 
 def test_heval_reset() -> None:
     """Tests CritHEvalCodeStrategy reset."""
+    llm = FakeListChatModel(responses=[])
+    strategy = CritHEvalCodeStrategy(llm=llm)
+    assert not strategy._halt
+    strategy._halt = True
+    assert strategy._halt
