@@ -4,9 +4,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
+from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.prompts.critic import (
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
