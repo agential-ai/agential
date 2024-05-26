@@ -6,7 +6,7 @@ from agential.cog.strategies.critic.math_strategy import (
     CritGSM8KStrategy,
     CritSVAMPStrategy,
     CritTabMWPStrategy,
-    MathStrategy,
+    CriticMathStrategy,
 )
 from agential.cog.prompts.critic import (
     GSM8K_FEWSHOT_EXAMPLES_POT,
@@ -19,9 +19,9 @@ from agential.cog.prompts.critic import (
 
 
 def test_generate() -> None:
-    """Tests MathStrategy generate."""
+    """Tests CriticMathStrategy generate."""
     llm = FakeListChatModel(responses=["Generated answer\n```python\n42\n```"])
-    strategy = MathStrategy(llm=llm)
+    strategy = CriticMathStrategy(llm=llm)
     question = "What is 6 multiplied by 7?"
 
     result = strategy.generate(
@@ -35,13 +35,13 @@ def test_generate() -> None:
 
 
 def test_generate_critique() -> None:
-    """Tests MathStrategy generate_critique."""
+    """Tests CriticMathStrategy generate_critique."""
     gt_result = 'The answer provided (40) is incorrect. The correct answer to the question "What is 6 multiplied by 7?" is 42, not 40. \n\n'
     responses = [
         'The answer provided (40) is incorrect. The correct answer to the question "What is 6 multiplied by 7?" is 42, not 40. \n\nHere\'s the corrected code:\n```python\nresult = 6 * 7\nanswer = result\n```'
     ]
     llm = FakeListChatModel(responses=responses)
-    strategy = MathStrategy(llm=llm)
+    strategy = CriticMathStrategy(llm=llm)
 
     question = "What is 6 multiplied by 7?"
     answer = "40"
@@ -69,7 +69,7 @@ def test_generate_critique() -> None:
     llm = FakeListChatModel(
         responses=responses
     )
-    strategy = MathStrategy(llm=llm)
+    strategy = CriticMathStrategy(llm=llm)
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
     answer = 'total_eggs = 16\neaten_eggs = 3\nbaked_eggs = 4933828\nsold_eggs = total_eggs - eaten_eggs - baked_eggs\ndollars_per_egg = 2\nanswer = sold_eggs * dollars_per_egg'
 
@@ -97,7 +97,7 @@ def test_generate_critique() -> None:
     llm = FakeListChatModel(
         responses=responses
     )
-    strategy = MathStrategy(llm=llm)
+    strategy = CriticMathStrategy(llm=llm)
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
     answer = 'total_eggs = 16\neaten_eggs = 3\nbaked_eggs = 4933828\nsold_eggs = total_eggs - eaten_eggs - baked_eggs\ndollars_per_egg = 2\nanswer = sold_eggs * dollars_per_egg'
 
@@ -122,3 +122,37 @@ def test_generate_critique() -> None:
     assert strategy._prev_code_answer == -9867630
     assert strategy.patience_counter == 2
     assert strategy._halt is True
+
+
+
+def test_create_output_dict() -> None:
+    """Tests CriticMathStrategy create_output_dict."""
+    llm = FakeListChatModel(responses=[])
+    strategy = CriticMathStrategy(llm=llm)
+
+    answer = -9867630
+    critique = "The answer is correct."
+    external_tool_info = {"execution_status": "Done", "code_answer": -9867630}
+
+    result = strategy.create_output_dict(answer, critique, external_tool_info)
+
+    assert result["code"] == answer
+    assert result["critique"] == critique
+    assert result["execution_status"] == external_tool_info['execution_status']
+    assert result["code_answer"] ==external_tool_info['code_answer']
+
+
+def test_update_answer_based_on_critique() -> None:
+    """Tests CriticMathStrategy update_answer_based_on_critique."""
+
+
+def test_halting_condition() -> None:
+    """Tests CriticMathStrategy halting_condition."""
+
+
+def test_reset() -> None:
+    """Tests CriticMathStrategy reset."""
+
+
+def test_instantiate_strategies() -> None:
+    """Test instantiate all Math strategies."""

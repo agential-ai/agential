@@ -5,7 +5,7 @@ from agential.cog.strategies.critic.base import CriticBaseStrategy
 from agential.utils.validation import validate_overlapping_keys
 
 
-class MathStrategy(CriticBaseStrategy):
+class CriticMathStrategy(CriticBaseStrategy):
     def __init__(self, llm, patience=2):
         self.llm = llm
         self.patience = patience
@@ -138,13 +138,13 @@ class MathStrategy(CriticBaseStrategy):
         self._halt = False
 
 
-class CritGSM8KStrategy(MathStrategy):
+class CritGSM8KStrategy(CriticMathStrategy):
     pass
 
 
-class CritSVAMPStrategy(MathStrategy):
+class CritSVAMPStrategy(CriticMathStrategy):
     pass
 
 
-class CritTabMWPStrategy(MathStrategy):
+class CritTabMWPStrategy(CriticMathStrategy):
     pass
