@@ -1,6 +1,6 @@
 """CRITIC Agent strategies for QA."""
 
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional, Tuple, Any
 
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 from langchain_core.language_models.chat_models import BaseChatModel
@@ -74,7 +74,7 @@ class CriticQAStrategy(CriticBaseStrategy):
         use_tool: bool,
         max_interactions: int,
         **kwargs,
-    ):
+    ) -> Tuple[str, Dict[str, Any]]:
         """Generates a critique of the provided answer using the given language model, question, examples, and prompt.
 
         This function generates a critique for the given answer. It uses the language model to
@@ -95,7 +95,7 @@ class CriticQAStrategy(CriticBaseStrategy):
             **kwargs: Additional arguments that might be needed for specific implementations.
 
         Returns:
-            Tuple[str, Dict[str, str]]: The generated critique and any external tool information.
+            Tuple[str, Dict[str, Any]]: The generated critique and any external tool information.
         """
         external_tool_info = {}
         new_critique = _prompt_critique(
