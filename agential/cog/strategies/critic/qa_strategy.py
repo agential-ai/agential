@@ -77,10 +77,17 @@ class CriticQAStrategy(CriticBaseStrategy):
     ) -> Tuple[str, Dict[str, Any]]:
         """Generates a critique of the provided answer using the given language model, question, examples, and prompt.
 
-        This function generates a critique for the given answer. It uses the language model to
-        create the critique and may utilize an external search tool to gather evidence if specified.
-        The critique process continues until the halting condition is met or the maximum number of
-        interactions is reached.
+        This method does the following:
+            1. Use the language model to generate an initial critique based on the provided question, examples, answer, and prompt.
+            2. Check if the generated critique suggests a search query:
+                - If yes, execute the search query using the search tool if `use_tool` is True.
+                - Append the search result and context to the critique.
+                - If `use_tool` is False, re-prompt the language model to generate a critique including the search result.
+            3. If no search query is suggested:
+                - Add a prompt for providing the most possible answer to the critique.
+                - Use the language model to generate the final critique based on this new prompt.
+                - Set the halt flag to True.
+            4. Return the final critique and any external tool information.
 
         Args:
             idx (int): The index of the current interaction.

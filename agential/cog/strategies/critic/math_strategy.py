@@ -68,7 +68,19 @@ class CriticMathStrategy(CriticBaseStrategy):
         **kwargs,
     ) -> Tuple[str, Dict[str, Any]]:
         """Generates a critique for the provided answer using the given prompt and examples.
-
+        
+        This method does the following:
+            1. If `use_tool` is True, execute the answer as code and store the result.
+            2. Update the answer history with the current answer and external tool info.
+            3. Check if the current code answer is the same as the previous one:
+               - If yes, increment the patience counter.
+               - If the patience counter reaches the patience limit, set the halt flag.
+               - Otherwise, update the previous code answer.
+            4. Find the last valid answer from the history that includes external tool info.
+            5. Validate and merge additional keys with external tool info.
+            6. Generate a new critique using the updated answer and keys.
+            7. Return the new critique and external tool info.
+        
         Args:
             idx (int): The index of the current interaction.
             question (str): The math question that was answered.
