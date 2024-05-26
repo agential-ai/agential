@@ -19,4 +19,30 @@ from agential.cog.strategies.critic.code_strategy import (
 
 
 def test_init() -> None:
-    """Test CriticQAStrategy initialization."""
+    """Test CriticCodeStrategy initialization."""
+    llm = FakeListChatModel(responses=[])
+    strategy = CriticCodeStrategy(llm=llm)
+    assert strategy.llm == llm
+    assert not strategy._halt
+
+    
+def test_generate() -> None:
+    """Tests CriticCodeStrategy generate."""
+
+def test_generate_critique() -> None:
+    """Tests CriticCodeStrategy generate_critique."""
+
+def test_create_output_dict() -> None:
+    """Tests CriticCodeStrategy create_output_dict."""
+
+def test_update_answer_based_on_critique() -> None:
+    """Tests CriticCodeStrategy update_answer_based_on_critique."""
+
+def test_halting_condition() -> None:
+    """Tests CriticCodeStrategy halting_condition."""
+
+def test_reset() -> None:
+    """Tests CriticCodeStrategy reset."""
+
+def test_instantiate_strategies() -> None:
+    """Test instantiate all code strategies."""
