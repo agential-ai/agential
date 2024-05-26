@@ -1676,20 +1676,22 @@ answer = total_cost
 # ======================================================================== SVAMP ======================================================================== #
 
 
-CRITIC_POT_INSTRUCTION_SVAMP = """{examples}
+CRITIC_POT_INSTRUCTION_SVAMP = """Read the following passages to answer questions with Python code, store the result as a 'answer' variable:
+
+{examples}
 (END OF EXAMPLES)
 
 Question: {question}
 # Python code, return answer"""
 
 
-SVAMP_FEWSHOT_EXAMPLES_POT = """Read the following passages to answer questions with Python code, store the result as a 'answer' variable:
-
-Question: James bought 93 red and 10 blue stickers, he used 31 red sticker on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
+SVAMP_FEWSHOT_EXAMPLES_POT = """Question: James bought 93 red and 10 blue stickers, he used 31 red sticker on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
 # Python code, return answer
 original_red_stickers = 93
 used_red_stickers = 31
 answer = original_red_stickers - used_red_stickers
+
+---
 
 Question: Allen went to supermarket to buy eggs, each egg costs 80 dollars, if the discount is 29 dollars. How much do you have to pay to buy for each egg?
 # Python code, return answer
@@ -1697,11 +1699,15 @@ original_egg_price_in_dollars = 80
 discount_dollars = 29
 answer = original_egg_price_in_dollars - discount_dollars
 
+---
+
 Question: Dianna collects both cases and books. He bought 22 cases and 5 books from the store. Now he has 57 cases and 25 books. How many books did danny have at first?
 # Python code, return answer
 num_books_bought_at_store = 5
 num_books_now = 25
 answer = num_books_now - num_books_bought_at_store
+
+---
 
 Question: There were 108 chickens and 20 sheeps at the farm, some of chickens and sheeps were sold. There are 87 chickens and 18 sheeps left now. How many chickens were sold?
 # Python code, return answer
@@ -1709,11 +1715,15 @@ num_chicken_before = 108
 num_chicken_now = 87
 answer = num_chicken_before - num_chicken_now
 
+---
+
 Question: Katty scored 2 goals on monday, 8 goals on tuesday and 9 goals on wednesday. How many did Katty score on monday and wednesday?
 # Python code, return answer
 num_goals_on_monday = 2
 num_goals_on_wednesday = 9
 answer = num_goals_on_monday + num_goals_on_wednesday
+
+---
 
 Question: There are 5 girls and 4 boys in the Masquerade, 12 more girls and 7 more boys joined.  How many more girls than boys are in the Masquerade?
 # Python code, return answer
@@ -1724,6 +1734,8 @@ num_boys_joined = 7
 total_girls = num_girls_before + num_girls_joined
 total_boys = num_boys_before + num_boys_joined
 answer = total_girls - total_boys
+
+---
 
 Question: Joseph and Getty went to buy ice creams, they together bought 36 ice creams. On the way back, Joseph ate 12 of the ice creasm, and he has 2 ice creams left now.  How much ice creasm did Getty purchase?
 # Python code, return answer
@@ -2094,8 +2106,7 @@ total_money = 13.5
 if total_money > juggling_balls + guitar_price:
     answer = "yes"
 else:
-    answer = "no"
-"""
+    answer = "no\""""
 
 
 CRITIC_CRITIQUE_INSTRUCTION_TABMWP = """{examples}
@@ -2482,75 +2493,6 @@ def has_duplicate_names(names_list: List[str]) -> bool:
     False
     \"\"\"
     return len(names_list) != len(set(names_list))
-```
-
----
-
-```python
-def average_positive(numbers: List[int]) -> float:
-    \"\"\"Calculate the average of positive numbers in the list.
-    >>> average_positive([1, -1, 2, -2, 3])
-    2.0
-    >>> average_positive([-5, 0, 5, 15])
-    10.0
-    >>> average_positive([100, 200, -100, 0])
-    150.0
-    >>> average_positive([-1, -2, -3])
-    0
-    \"\"\"
-    positive_numbers = [num for num in numbers if num > 0]
-    return sum(positive_numbers) / len(positive_numbers) if positive_numbers else 0
-```
-
----
-
-```python
-def exceeds_threshold(measurements: List[float], threshold: float) -> int:
-    \"\"\"Return the count of instances where the difference between any two successive measurements exceeds the given threshold.
-    >>> exceeds_threshold([100, 102, 107, 103], 5) 
-    1
-    >>> exceeds_threshold([100, 101, 102, 103], 2) 
-    0
-    \"\"\"
-    count = 0
-    for i in range(1, len(measurements)):
-        if abs(measurements[i] - measurements[i - 1]) > threshold:
-            count += 1
-    return count
-```
-
----
-
-```python
-def sum_even_indexed(numbers: List[int]) -> int:
-    \"\"\"Sum numbers that are located at even indices in the list.
-    >>> sum_even_indexed([10, 3, 5, 2, 8])
-    23
-    >>> sum_even_indexed([1, 2, 3, 4, 5, 6])
-    9
-    >>> sum_even_indexed([0, 100, 200, 300])
-    200
-    >>> sum_even_indexed([7])
-    7
-    \"\"\"
-    return sum(num for i, num in enumerate(numbers) if i % 2 == 0)
-```
-
----
-
-```python
-from collections import Counter
-
-def are_anagrams(s1: str, s2: str) -> bool:
-    \"\"\"Check if two strings are anagrams of each other, ignoring case.
-    >>> are_anagrams('Listen', 'silent')
-    True
-    >>> are_anagrams('Hello', 'World')
-    False
-    >>> are_anagrams('Angel', 'Glean')
-    True
-    \"\"\"
-    return Counter(s1.lower()) == Counter(s2.lower())
 ```"""
 
 
@@ -2849,9 +2791,7 @@ def are_anagrams(s1: str, s2: str) -> bool:
     True
     \"\"\"
     return Counter(s1.lower()) == Counter(s2.lower())
-```
-
----"""
+```"""
 
 
 CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_HUMANEVAL = """{examples}
@@ -3137,9 +3077,7 @@ def are_anagrams(s1: str, s2: str) -> bool:
     True
     \"\"\"
     return Counter(s1.lower()) == Counter(s2.lower())
-```
-
----"""
+```"""
 
 
 # ======================================================================== MBPP ======================================================================== #
@@ -3206,40 +3144,6 @@ import heapq as hq
 def heap_queue_largest(nums, n):
     largest_nums = hq.nlargest(n, nums)
     return largest_nums
-```
-
----
-
-You are an expert Python programmer, and here is your task: Write a python function to check whether the two numbers differ at one bit position only or not.
-Your code should pass these tests:
-assert differ_at_one_bit_pos(13, 9) == True
-assert differ_at_one_bit_pos(15, 8) == False
-assert differ_at_one_bit_pos(2, 4) == False
-assert differ_at_one_bit_pos(2, 3) == True
-assert differ_at_one_bit_pos(5, 1) == True
-assert differ_at_one_bit_pos(1, 5) == True
-
-```python
-def is_power_of_two(x):
-    return x and (not(x & (x - 1)))
-
-def differ_at_one_bit_pos(a, b):
-    return is_power_of_two(a ^ b)
-```
-
----
-
-You are an expert Python programmer, and here is your task: Write a function to find all words which are at least 4 characters long in a string.
-Your code should pass these tests:
-assert set(find_char_long('Please move back to stream')) == set(['Please', 'move', 'back', 'stream'])
-assert set(find_char_long('Jing Eco and Tech')) == set(['Jing', 'Tech'])
-assert set(find_char_long('Jhingai wulu road Zone 3')) == set(['Jhingai', 'wulu', 'road', 'Zone'])
-
-```python
-import re
-
-def find_char_long(text):
-    return re.findall(r"\b\w{4,}\b", text)
 ```"""
 
 
@@ -3471,9 +3375,7 @@ import re
 
 def find_char_long(text):
     return re.findall(r"\b\w{4,}\b", text)
-```
-
----"""
+```"""
 
 
 CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_MBPP = """{examples}
@@ -3692,6 +3594,4 @@ import re
 
 def find_char_long(text):
     return re.findall(r"\b\w{4,}\b", text)
-```
-
----"""
+```"""
