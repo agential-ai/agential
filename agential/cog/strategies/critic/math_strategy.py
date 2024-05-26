@@ -47,7 +47,6 @@ class MathStrategy(CriticBaseStrategy):
     ):
         external_tool_info = {}
         if use_tool:
-            print("A")
             code_answer, execution_status = safe_execute(answer)
             external_tool_info = {
                 "execution_status": execution_status,
@@ -57,15 +56,12 @@ class MathStrategy(CriticBaseStrategy):
                 {"answer": answer, "external_tool_info": external_tool_info}
             )
 
-            if code_answer == self._prev_code_answer:
-                print("B")
+            if code_answer[0] == self._prev_code_answer:
                 self.patience_counter += 1
                 if self.patience_counter == self.patience:
                     self._halt = True
-                    print("C")
             else:
-                print("D")
-                self._prev_code_answer = code_answer
+                self._prev_code_answer = code_answer[0]
 
             last_valid_idx = -1
             for i in range(len(self._answer_history) - 1, -1, -1):
@@ -73,7 +69,6 @@ class MathStrategy(CriticBaseStrategy):
                     self._answer_history[i]["external_tool_info"]["code_answer"]
                     is not None
                 ):
-                    print("E")
                     last_valid_idx = i
                     break
 
