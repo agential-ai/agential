@@ -2,6 +2,7 @@
 
 from typing import Dict
 
+from agential.cog.strategies.critic.base import CriticBaseStrategy
 from agential.cog.strategies.critic.code_strategy import (
     CritHEvalCodeStrategy,
     CritMBPPCodeStrategy,
@@ -23,12 +24,12 @@ class CriticStrategyFactory:
     """A factory class for creating instances of different CRITIC strategies based on the specified mode and benchmark.
 
     Methods:
-        get_strategy(mode: Dict[str, str], **strategy_kwargs) -> Any:
+        get_strategy(mode: Dict[str, str], **strategy_kwargs) -> CriticBaseStrategy:
             Returns an instance of the appropriate Critic strategy based on the provided mode and benchmark.
     """
 
     @staticmethod
-    def get_strategy(mode: Dict[str, str], **strategy_kwargs):
+    def get_strategy(mode: Dict[str, str], **strategy_kwargs) -> CriticBaseStrategy:
         """Returns an instance of the appropriate Critic strategy based on the provided mode and benchmark.
 
         Available modes:
@@ -42,7 +43,7 @@ class CriticStrategyFactory:
             **strategy_kwargs: Additional keyword arguments to pass to the strategy's constructor.
 
         Returns:
-            Any: An instance of the appropriate Critic strategy.
+            CriticBaseStrategy: An instance of the appropriate Critic strategy.
 
         Raises:
             ValueError: If the mode or benchmark is unsupported.
