@@ -32,6 +32,9 @@ def test_init() -> None:
     assert isinstance(strategy.search, GoogleSerperAPIWrapper)
     assert strategy.evidence_length == 400
     assert strategy.num_results == 8
+    assert strategy._query_history == []
+    assert strategy._evidence_history == set()
+    assert strategy._halt == False
 
 
 def test_generate() -> None:
