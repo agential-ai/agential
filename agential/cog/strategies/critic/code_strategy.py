@@ -73,7 +73,7 @@ class CriticCodeStrategy(CriticBaseStrategy):
             3. Copies the additional keys and updates them with external tool information.
             4. Generates a new critique using the updated answer and keys.
             5. Returns the new critique and external tool information.
-            
+
         Args:
             idx (int): The index of the current interaction.
             question (str): The math question that was answered.
@@ -200,7 +200,6 @@ class CriticCodeStrategy(CriticBaseStrategy):
         Returns:
             bool: True if the reset was successful, False otherwise.
         """
-        self._answer_history = []
         self._halt = False
 
 
@@ -211,7 +210,10 @@ class CritMBPPCodeStrategy(CriticCodeStrategy):
 
 
 class CritHEvalCodeStrategy(CriticCodeStrategy):
-    def __init__(self, llm):
+    """A strategy class for the HumanEval benchmark using the CRITIC agent."""
+
+    def __init__(self, llm: BaseChatModel):
+        """Initialization."""
         super().__init__(llm)
 
     def generate_critique(
@@ -226,7 +228,36 @@ class CritHEvalCodeStrategy(CriticCodeStrategy):
         use_tool: bool,
         max_interactions: int,
         **kwargs,
-    ):
+    ) -> Tuple[str, Dict[str, Any]]:
+        """Generates a critique for the provided answer using the given prompt and examples.
+
+        This method does the following:
+            1. Initializes an empty dictionary for external tool information.
+            2. If `use_tool` is True:
+                a. Checks if "tests" is in `additional_keys` and raises a ValueError if not.
+                b. Executes the answer as code along with the provided tests.
+                c. If the execution status is "Done", sets the `_halt` flag to True.
+                d. Updates the external tool information with the execution status.
+                e. Validates and merges additional keys with external tool information.
+            3. Copies the additional keys and updates them with external tool information.
+            4. Generates a new critique using the updated answer and keys.
+            5. Returns the new critique and external tool information.
+
+        Args:
+            idx (int): The index of the current interaction.
+            question (str): The math question that was answered.
+            examples (str): Few-shot examples to guide the critique.
+            answer (str): The answer to critique.
+            critique (str): Existing critique to build upon.
+            prompt (str): The prompt to generate a critique.
+            additional_keys (Dict[str, str]): Additional keys for the prompt.
+            use_tool (bool): Whether to use an external tool during critique.
+            max_interactions (int): The maximum number of interactions allowed.
+            **kwargs: Additional arguments for specific implementations.
+
+        Returns:
+            Tuple[str, Dict[str, Any]]: The generated critique and external tool information.
+        """
         external_tool_info = {}
         if use_tool:
             if "tests" not in additional_keys:
@@ -275,6 +306,20 @@ class CritHEvalCodeStrategy(CriticCodeStrategy):
         external_tool_info: Dict[str, str],
         **kwargs,
     ) -> str:
+        """Updates the answer based on the given critique.
+
+        Args:
+            question: The question that was answered by the language model.
+            examples: Few-shot examples to guide the language model.
+            answer: The answer provided by the language model.
+            critique: The critique of the answer.
+            prompt: The prompt to be used for generating the updated answer.
+            additional_keys: Additional context or parameters to include in the critique prompt.
+            external_tool_info: Information from any external tool used.
+
+        Returns:
+            str: The updated answer.
+        """
         validate_overlapping_keys(additional_keys, external_tool_info)
         additional_keys = additional_keys.copy()
         additional_keys.update(external_tool_info)
@@ -291,6 +336,3 @@ class CritHEvalCodeStrategy(CriticCodeStrategy):
         new_answer = new_answer.split("```python")[-1].split("```")[0].strip("\n")
 
         return new_answer
-
-    def reset(self):
-        self._halt = False
