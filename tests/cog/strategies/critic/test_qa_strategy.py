@@ -4,6 +4,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 
@@ -20,6 +21,17 @@ from agential.cog.strategies.critic.qa_strategy import (
     CriticQAStrategy,
     CritTriviaQAStrategy,
 )
+
+
+def test_init() -> None:
+    """Test CriticQAStrategy initialization."""
+    llm = FakeListChatModel(responses=[])
+    mock_search = MagicMock(spec=GoogleSerperAPIWrapper)
+    strategy = CriticQAStrategy(llm=llm, search=mock_search)
+    assert isinstance(strategy.llm, BaseChatModel)
+    assert isinstance(strategy.search, GoogleSerperAPIWrapper)
+    assert strategy.evidence_length == 400
+    assert strategy.num_results == 8
 
 
 def test_generate() -> None:
