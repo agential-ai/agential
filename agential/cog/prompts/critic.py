@@ -132,9 +132,7 @@ The answer "NOT ENOUGH INFO" is appropriate as it reflects the uncertainty due t
 Given that the year 2003 is not verified in the available evidence, the proposed answer correctly reflects the uncertainty regarding the exact year of the chart position.
 
 Claim: Did the song "Beautiful" by Christina Aguilera reach number two on the Billboard Hot 100 in 2003?
-Here's the most possible answer: The song "Beautiful" by Christina Aguilera peaked at number two on the Billboard Hot 100, but there is no specific evidence confirming this occurred in 2003. So the answer is: NOT ENOUGH INFO.
-
----"""
+Here's the most possible answer: The song "Beautiful" by Christina Aguilera peaked at number two on the Billboard Hot 100, but there is no specific evidence confirming this occurred in 2003. So the answer is: NOT ENOUGH INFO."""
 
 
 # ======================================================================== AMBIGNQ ======================================================================== #
@@ -146,51 +144,36 @@ Q: {question}
 A: """
 
 
-AMBIGNQ_FEWSHOT_EXAMPLES_COT = """Q: What airport is closest to Palm Springs?
-A: The nearest airport to Palm Springs is Indio/Palm Springs (PSP) Airport which is 2.1 miles away. So the answer is: Palm Springs International Airport
+AMBIGNQ_FEWSHOT_EXAMPLES_COT = """Q: When did men's figure skating become a summer Olympic sport?
+A: Figure skating was first contested in the Olympic Games at the 1908 Summer Olympics. So the answer is: 1908
 
-Q: What degree did Martin Luther King get?
-A: Martin Luther King earned his Bachelor of Divinity degree from Crozer Theological Seminary, followed by a doctorate in Systematic Theology from Boston University. So the answer is: Bachelor of Divinity
+Q: When was the last time the USA men's national soccer team missed the World Cup?
+A: The USA men's national soccer team did not qualify for the World Cup in 2018. So the answer is: 2018
 
-Q: What countries does the Niger river flow through?
-A: The Niger river runs in a crescent through Libya, Mali, Niger, on the border with Benin and then through Nigeria. So the answer is: Libya
+Q: What does barium do in a ct scan?
+A: Barium is used to improve visualization of the gastrointestinal tract during a CT scan. So the answer is: to improve visualization of the gastrointestinal tract
 
-Q: What type of currency is used in Puerto Rico?
-A: Puerto Rico is a territory of the United States and uses the U.S. dollar. So the answer is: United States dollar
+Q: Where was the fort located at which the first shot of the civil war was fired?
+A: The first shot of the Civil War was fired at Fort Sumter, which is located in Charleston Harbor, South Carolina. So the answer is: Charleston Harbor, South Carolina
 
-Q: Who played kitt in knight rider?
-A: kitt was voice most often by William Daniels. So the answer is: William Daniels"""
+Q: When did nando's come to the uk?
+A: Nando's opened its first restaurants in the United Kingdom in 1992. So the answer is: 1992"""
 
 
 AMBIGNQ_FEWSHOT_EXAMPLES_DIRECT = """Q: When did men's figure skating become a summer Olympic sport?
 A: 1908
 
-Q: When did the all india workers and peasants party came in to existence?
-A: November 1925
+Q: When was the last time the USA men's national soccer team missed the World Cup?
+A: 2018
 
-Q: Flight that went down in the hudson river?
-A: US Airways Flight 1549
+Q: What does barium do in a ct scan?
+A: to improve visualization of the gastrointestinal tract
 
-Q: Where are most of the world's earthquakes located?
-A: Rim of Fire
+Q: Where was the fort located at which the first shot of the civil war was fired?
+A: Charleston Harbor, South Carolina
 
-Q: Csi when do grissom and sara reunite?
-A: series finale
-
-Q: Who did rizzo go to the dance with?
-A: Kenickie Murdoch
-
-Q: What country won the womens curling winter olympics 2018?
-A: Sweden
-
-Q: Who plays barnaby's wife in midsomer murders series 1-13?
-A: Jane Wymark
-
-Q: Who plays 7-9 year old Nelson Mandela in the movie Mandela: Long Walk to Freedom?
-A: Siza Pini
-
-Q: When did the movie coyote ugly come out?
-A: August 4, 2000"""
+Q: When did nando's come to the uk?
+A: 1992"""
 
 
 AMBIGNQ_FEWSHOT_EXAMPLES_REACT = """Question: When did men's figure skating become a summer Olympic sport?
@@ -237,21 +220,7 @@ Thought 1: Let's search the question in google
 Action 1: Search[When did nando's come to the uk? site: wikipedia.org]
 Observation 1: [Nando's - Wikipedia] Nando's opened its first restaurants within the United Kingdom, in 1992, in the west London suburbs of Ealing and Earls Court, initially focusing on takeaway food.
 Thougth 2: The evidence suggests that Nando's first opened in the UK in 1992.
-Action 2: Finish[1992]
-
----
-
-Question: Who plays wilmas mom in the flintstones movie?
-Thought 1: Let's search the question in google
-Action 1: Search[Who played Wilma's mom in the flintstones movie? site: wikipedia.org]
-Observation 1: [Elizabeth Perkins - Wikipedia] Elizabeth Ann Perkins (born November 18, 1960 ) is an American actress.
-Thought 2: The evidence does not mention Wilma's mom in the flintstones movie.
-Action 2: Search[Who played Wilma's mom in the flintstones movie?]
-Observation 2: [] The Flintstones / Wilma Flintstone / Mother / Played by Elizabeth Taylor
-Thought 3: The evidence shows that Elizabeth Taylor played the role of Wilma's mother.
-Action 3: Finish[Elizabeth Taylor]
-
----"""
+Action 2: Finish[1992]"""
 
 
 CRITIC_CRITIQUE_INSTRUCTION_AMBIGNQ = """{examples}
@@ -470,9 +439,7 @@ The evidence shows that Elizabeth Taylor played the role of Wilma's mother, whic
 Considering all above evidence, we need to correct the answer.
 
 Question: Who plays wilmas mom in the flintstones movie?
-Here's the most possible answer: Elizabeth Taylor played the role of Wilma's mother (ie., Pearl Slaghoople) in the 1994 live-action film The Flintstones. So the answer is: Elizabeth Taylor.
-
----"""
+Here's the most possible answer: Elizabeth Taylor played the role of Wilma's mother (ie., Pearl Slaghoople) in the 1994 live-action film The Flintstones. So the answer is: Elizabeth Taylor."""
 
 
 # ======================================================================== HOTPOTQA ======================================================================== #
