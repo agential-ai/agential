@@ -1,6 +1,6 @@
 """CRITIC Agent strategies for Math."""
 
-from typing import Dict
+from typing import Dict, Tuple, Any
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.functional.critic import _prompt_agent, _prompt_critique, safe_execute
@@ -66,7 +66,7 @@ class CriticMathStrategy(CriticBaseStrategy):
         use_tool: bool,
         max_interactions: int,
         **kwargs,
-    ) -> str:
+    ) -> Tuple[str, Dict[str, Any]]:
         """Generates a critique for the provided answer using the given prompt and examples.
 
         Args:
@@ -82,7 +82,7 @@ class CriticMathStrategy(CriticBaseStrategy):
             **kwargs: Additional arguments for specific implementations.
 
         Returns:
-            Tuple[str, Dict[str, str]]: The generated critique and external tool information.
+            Tuple[str, Dict[str, Any]]: The generated critique and external tool information.
         """
         external_tool_info = {}
         if use_tool:
@@ -136,6 +136,16 @@ class CriticMathStrategy(CriticBaseStrategy):
     def create_output_dict(
         self, answer: str, critique: str, external_tool_info: Dict[str, str]
     ) -> Dict[str, str]:
+        """Creates an output dictionary containing the answer, critique, and external tool information.
+
+        Args:
+            answer (str): The generated answer.
+            critique (str): The generated critique.
+            external_tool_info (Dict[str, str]): Information from external tool execution.
+
+        Returns:
+            Dict[str, str]: The output dictionary.
+        """
         output_dict = {"code": answer, "critique": critique, **external_tool_info}
         return output_dict
 
@@ -150,6 +160,20 @@ class CriticMathStrategy(CriticBaseStrategy):
         external_tool_info: Dict[str, str],
         **kwargs,
     ) -> str:
+        """Updates the answer based on the given critique.
+
+        Args:
+            question: The question that was answered by the language model.
+            examples: Few-shot examples to guide the language model.
+            answer: The answer provided by the language model.
+            critique: The critique of the answer.
+            prompt: The prompt to be used for generating the updated answer.
+            additional_keys: Additional context or parameters to include in the critique prompt.
+            external_tool_info: Information from any external tool used.
+
+        Returns:
+            str: The updated answer.
+        """
         validate_overlapping_keys(additional_keys, external_tool_info)
         additional_keys = additional_keys.copy()
         additional_keys.update(external_tool_info)
@@ -168,9 +192,26 @@ class CriticMathStrategy(CriticBaseStrategy):
         return new_answer
 
     def halting_condition(self, critique: str) -> bool:
+        """Checks if the halting condition has been met.
+
+        Returns True if the CRITIC Agent's generated answer remains the same for `patience` number of steps.
+        
+        Args:
+            critique: The current critique of the answer.
+
+        Returns:
+            bool: True if the halting condition has been met, False otherwise.
+        """
         return self._halt
 
-    def reset(self) -> bool:
+    def reset(self) -> None:
+        """Resets the strategy to its initial state.
+
+        Resets internal variables keeping track of halting and answer history.
+
+        Returns:
+            bool: True if the reset was successful, False otherwise.
+        """
         self._answer_history = []
         self._prev_code_answer = None
         self.patience_counter = 0
@@ -178,12 +219,18 @@ class CriticMathStrategy(CriticBaseStrategy):
 
 
 class CritGSM8KStrategy(CriticMathStrategy):
+    """A strategy class for the GSM8K benchmark using the CRITIC agent."""
+
     pass
 
 
 class CritSVAMPStrategy(CriticMathStrategy):
+    """A strategy class for the SVAMP benchmark using the CRITIC agent."""
+
     pass
 
 
 class CritTabMWPStrategy(CriticMathStrategy):
+    """A strategy class for the TabMWP benchmark using the CRITIC agent."""
+
     pass
