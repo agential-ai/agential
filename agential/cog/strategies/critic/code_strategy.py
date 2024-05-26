@@ -1,3 +1,4 @@
+"""CRITIC Agent strategies for Code."""
 from typing import Any, Dict, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
