@@ -134,7 +134,15 @@ def test_generate() -> None:
         llm=FakeListChatModel(responses=responses), 
         mode={"math": "gsm8k"},
     )
-    out = agent.generate(question=question, use_tool=True)
+    out = agent.generate(
+        question=question, 
+        examples=GSM8K_FEWSHOT_EXAMPLES_POT,
+        prompt=CRITIC_POT_INSTRUCTION_GSM8K,
+        critique_examples=GSM8K_FEWSHOT_EXAMPLES_CRITIC,
+        critique_prompt=CRITIC_CRITIQUE_INSTRUCTION_GSM8K,
+        max_interactions=7,
+        use_tool=True
+    )
     assert isinstance(out, list)
     assert len(out) == 7
 
@@ -170,5 +178,6 @@ def test_generate() -> None:
     )
     assert isinstance(out, list)
     assert len(out) == 3
+    
     # Test "code" mode with code interpreter tool.
 
