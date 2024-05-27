@@ -1,6 +1,5 @@
 """Few-shot examples for TabMWP."""
 
-
 TABMWP_FEWSHOT_EXAMPLES_POT = """Read the following table regarding "Coin collections" and then write Python code to answer a question:
 
 Name | Number of coins

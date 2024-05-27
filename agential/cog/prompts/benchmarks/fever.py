@@ -1,6 +1,5 @@
 """Few-shot examples for FEVER."""
 
-
 FEVER_FEWSHOT_EXAMPLES_COT = """Claim: Did Nikolaj Coster-Waldau work with the Fox Broadcasting Company?
 A: Yes, he appeared in the 2009 Fox television film Virtuality. So the answer is: SUPPORTS.
 

@@ -10,10 +10,11 @@ from agential.cog.agent.react import (
     ReActOutput,
 )
 from agential.cog.modules.memory.react import ReActMemory
+from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.prompts.react import (
     REACT_INSTRUCTION_HOTPOTQA,
 )
-from agential.cog.prompts.benchmarks.hotpotqa import (HOTPOTQA_FEWSHOT_EXAMPLES_REACT)
+
 
 def test_init() -> None:
     """Test initialization."""

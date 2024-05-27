@@ -1,34 +1,24 @@
 """Main file for managing benchmark prompts/few-shot examples."""
+
 from typing import Dict
 
-from agential.cog.prompts.benchmarks.hotpotqa import (
-    HOTPOTQA_FEWSHOT_EXAMPLES_COT,
-    HOTPOTQA_FEWSHOT_EXAMPLES_DIRECT,
-    HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+from agential.cog.prompts.benchmarks.ambignq import (
+    AMBIGNQ_FEWSHOT_EXAMPLES_COT,
+    AMBIGNQ_FEWSHOT_EXAMPLES_DIRECT,
+    AMBIGNQ_FEWSHOT_EXAMPLES_REACT,
 )
 from agential.cog.prompts.benchmarks.fever import (
     FEVER_FEWSHOT_EXAMPLES_COT,
     FEVER_FEWSHOT_EXAMPLES_DIRECT,
     FEVER_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.cog.prompts.benchmarks.triviaqa import (
-    TRIVIAQA_FEWSHOT_EXAMPLES_COT,
-    TRIVIAQA_FEWSHOT_EXAMPLES_DIRECT,
-    TRIVIAQA_FEWSHOT_EXAMPLES_REACT,
-)
-from agential.cog.prompts.benchmarks.ambignq import (
-    AMBIGNQ_FEWSHOT_EXAMPLES_COT,
-    AMBIGNQ_FEWSHOT_EXAMPLES_DIRECT,
-    AMBIGNQ_FEWSHOT_EXAMPLES_REACT,
-)
 from agential.cog.prompts.benchmarks.gsm8k import (
     GSM8K_FEWSHOT_EXAMPLES_POT,
 )
-from agential.cog.prompts.benchmarks.svamp import (
-    SVAMP_FEWSHOT_EXAMPLES_POT,
-)
-from agential.cog.prompts.benchmarks.tabmwp import (
-    TABMWP_FEWSHOT_EXAMPLES_POT,
+from agential.cog.prompts.benchmarks.hotpotqa import (
+    HOTPOTQA_FEWSHOT_EXAMPLES_COT,
+    HOTPOTQA_FEWSHOT_EXAMPLES_DIRECT,
+    HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
 )
 from agential.cog.prompts.benchmarks.humaneval import (
     HUMANEVAL_FEWSHOT_EXAMPLES_POT,
@@ -36,28 +26,52 @@ from agential.cog.prompts.benchmarks.humaneval import (
 from agential.cog.prompts.benchmarks.mbpp import (
     MBPP_FEWSHOT_EXAMPLES_POT,
 )
+from agential.cog.prompts.benchmarks.svamp import (
+    SVAMP_FEWSHOT_EXAMPLES_POT,
+)
+from agential.cog.prompts.benchmarks.tabmwp import (
+    TABMWP_FEWSHOT_EXAMPLES_POT,
+)
+from agential.cog.prompts.benchmarks.triviaqa import (
+    TRIVIAQA_FEWSHOT_EXAMPLES_COT,
+    TRIVIAQA_FEWSHOT_EXAMPLES_DIRECT,
+    TRIVIAQA_FEWSHOT_EXAMPLES_REACT,
+)
+
 
 class Benchmarks:
+    """Supported benchmarks."""
+
     class QA:
+        """QA benchmarks."""
+
         HOTPOTQA = "hotpotqa"
         FEVER = "fever"
         TRIVIAQA = "triviaqa"
         AMBIGNQ = "ambignq"
 
     class Math:
+        """Math benchmarks."""
+
         GSM8K = "gsm8k"
         SVAMP = "svamp"
         TABMWP = "tabmwp"
 
     class Code:
+        """Code benchmarks."""
+
         HUMANEVAL = "humaneval"
         MBPP = "mbpp"
 
+
 class FewShotType:
+    """Few-shot types."""
+
     COT = "cot"
     DIRECT = "direct"
     REACT = "react"
     POT = "pot"
+
 
 BENCHMARK_STRINGS = {
     Benchmarks.QA.HOTPOTQA: {
@@ -94,23 +108,24 @@ BENCHMARK_STRINGS = {
     },
     Benchmarks.Code.MBPP: {
         FewShotType.POT: MBPP_FEWSHOT_EXAMPLES_POT,
-    }
+    },
 }
+
 
 def get_fewshot_examples(mode: Dict[str, str], fewshot_type: str) -> str:
     """Retrieve few-shot examples for a given benchmark type and benchmark name.
 
     Available Benchmark Types and Names:
-        - QA: 
+        - QA:
             - Benchmarks.QA.HOTPOTQA: Supports FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT
             - Benchmarks.QA.FEVER: Supports FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT
             - Benchmarks.QA.TRIVIAQA: Supports FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT
             - Benchmarks.QA.AMBIGNQ: Supports FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT
-        - Math: 
+        - Math:
             - Benchmarks.Math.GSM8K: Supports FewShotType.POT
             - Benchmarks.Math.SVAMP: Supports FewShotType.POT
             - Benchmarks.Math.TABMWP: Supports FewShotType.POT
-        - Code: 
+        - Code:
             - Benchmarks.Code.HUMANEVAL: Supports FewShotType.POT
             - Benchmarks.Code.MBPP: Supports FewShotType.POT
 
@@ -132,14 +147,18 @@ def get_fewshot_examples(mode: Dict[str, str], fewshot_type: str) -> str:
         benchmark_type, benchmark_name = list(mode.items())[0]
         if benchmark_type not in Benchmarks.__dict__:
             raise ValueError(f"Benchmark type '{benchmark_type}' not found.")
-        
+
         if benchmark_name not in BENCHMARK_STRINGS:
-            raise ValueError(f"Benchmark '{benchmark_name}' not found in benchmark type '{benchmark_type}'.")
-        
+            raise ValueError(
+                f"Benchmark '{benchmark_name}' not found in benchmark type '{benchmark_type}'."
+            )
+
         examples = BENCHMARK_STRINGS[benchmark_name].get(fewshot_type)
         if examples is None:
-            raise ValueError(f"Few-shot type '{fewshot_type}' not found for benchmark '{benchmark_name}'.")
-        
+            raise ValueError(
+                f"Few-shot type '{fewshot_type}' not found for benchmark '{benchmark_name}'."
+            )
+
         return examples
     except Exception as e:
         return str(e)

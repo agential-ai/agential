@@ -5,6 +5,9 @@ import pytest
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 
+from agential.cog.prompts.benchmarks.humaneval import (
+    HUMANEVAL_FEWSHOT_EXAMPLES_POT,
+)
 from agential.cog.prompts.critic import (
     CRITIC_CRITIQUE_INSTRUCTION_HUMANEVAL,
     CRITIC_CRITIQUE_INSTRUCTION_MBPP,
@@ -17,9 +20,6 @@ from agential.cog.prompts.critic import (
     MBPP_FEWSHOT_EXAMPLES_CRITIC,
     MBPP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
     MBPP_FEWSHOT_EXAMPLES_POT,
-)
-from agential.cog.prompts.benchmarks.humaneval import (
-    HUMANEVAL_FEWSHOT_EXAMPLES_POT,
 )
 from agential.cog.strategies.critic.code_strategy import (
     CritHEvalCodeStrategy,
