@@ -19,12 +19,14 @@ from agential.cog.functional.self_refine import (
 from agential.cog.modules.memory.self_refine import SelfRefineMemory
 from agential.cog.prompts.self_refine import (
     GSM8K_FEEDBACK_FEWSHOT_EXAMPLES,
-    GSM8K_FEWSHOT_EXAMPLES,
     GSM8K_REFINE_FEWSHOT_EXAMPLES,
     SELF_REFINE_FEEDBACK_EXAMPLE_FORMAT_GSM8K,
     SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K,
     SELF_REFINE_INSTRUCTION_GSM8K,
     SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
+)
+from agential.cog.prompts.benchmarks.gsm8k import (
+    GSM8K_FEWSHOT_EXAMPLES_POT,
 )
 
 
@@ -56,7 +58,7 @@ class SelfRefineAgent(BaseAgent):
     def generate(
         self,
         question: str,
-        examples: str = GSM8K_FEWSHOT_EXAMPLES,
+        examples: str = GSM8K_FEWSHOT_EXAMPLES_POT,
         prompt: str = SELF_REFINE_INSTRUCTION_GSM8K,
         feedback_examples: str = GSM8K_FEEDBACK_FEWSHOT_EXAMPLES,
         feedback_prompt: str = SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K,
@@ -73,7 +75,7 @@ class SelfRefineAgent(BaseAgent):
 
         Args:
             question (str): The question or problem to solve.
-            examples (str): Precedent examples to guide initial solution generation. Defaults to GSM8K_FEWSHOT_EXAMPLES.
+            examples (str): Precedent examples to guide initial solution generation. Defaults to GSM8K_FEWSHOT_EXAMPLES_POT.
             prompt (str): Instructional prompt for initial solution generation. Defaults to SELF_REFINE_INSTRUCTION_GSM8K.
             feedback_examples (str): Precedent examples to guide feedback generation. Defaults to GSM8K_FEEDBACK_FEWSHOT_EXAMPLES.
             feedback_prompt (str): Instructional prompt for feedback generation. Defaults to SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K.
