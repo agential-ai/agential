@@ -132,6 +132,19 @@ def test_halting_condition() -> None:
 
 def test_reset() -> None:
     """Tests SelfRefineMathStrategy reset."""
+    llm = FakeListChatModel(responses=[])
+    strategy = SelfRefineMathStrategy(llm=llm, patience=2)
+
+    strategy._prev_code_answer = "result = 42"
+    strategy.patience_counter = 1
+    strategy._halt = True
+    strategy.reset()
+    assert strategy._prev_code_answer is None
+    assert strategy.patience_counter == 0
+    assert not strategy._halt
+
 
 def test_instantiate_strategies() -> None:
     """Test instantiate all Math strategies."""
+    llm = FakeListChatModel(responses=[])
+    assert isinstance(SelfRefineGSM8KStrategy(llm=llm), SelfRefineGSM8KStrategy)
