@@ -11,7 +11,7 @@ Question: {question}
 # Python code, return answer"""
 
 
-GSM8K_FEEDBACK_FEWSHOT_EXAMPLES = """Question: Kelly is grocery shopping at a supermarket and is making sure she has enough in her budget for the items in her cart. Her 5 packs of bacon cost $10 in total and she has 6 packets of chicken which each cost twice as much as a pack of bacon. She also has 3 packs of strawberries, priced at $4 each, and 7 packs of apples, each priced at half the price of a pack of strawberries. If Kelly’s budget is $65 then how much money, in dollars, does she have left in her budget?
+GSM8K_CRITIQUE_FEWSHOT_EXAMPLES = """Question: Kelly is grocery shopping at a supermarket and is making sure she has enough in her budget for the items in her cart. Her 5 packs of bacon cost $10 in total and she has 6 packets of chicken which each cost twice as much as a pack of bacon. She also has 3 packs of strawberries, priced at $4 each, and 7 packs of apples, each priced at half the price of a pack of strawberries. If Kelly’s budget is $65 then how much money, in dollars, does she have left in her budget?
 ```python
 budget = 65
 bacon = 5
@@ -161,7 +161,7 @@ chips_available = bags * chips_per_bag
 # wrong! 12 chips per *sqare inch*, not per inch. Need to calculate square inches he can build with chips_available. Then, divide that by the desired height to get the length. That will be chips_needed, not chips_available. The rest of the code is incorrect as a result."""
 
 
-SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K = """{examples}
+SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K = """{examples}
 (END OF EXAMPLES)
 
 Question: {question}
