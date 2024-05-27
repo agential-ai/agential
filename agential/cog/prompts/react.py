@@ -28,7 +28,7 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Question: {question}{scratchpad}"""
+Claim: {question}{scratchpad}"""
 
 
 # ======================================================================== AMBIGNQ ======================================================================== #
