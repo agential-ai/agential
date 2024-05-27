@@ -88,6 +88,7 @@ def _prompt_agent(
 
 
 def _build_feedback_prompt(
+    question: str,
     examples: str,
     solution: str,
     additional_keys: Dict[str, str] = {},
@@ -109,6 +110,7 @@ def _build_feedback_prompt(
         str: The language model's response to the question, trimmed of extraneous whitespace.
     """
     prompt = PromptTemplate.from_template(prompt).format(
+        question=question,
         examples=examples,
         solution=solution,
         **additional_keys,
@@ -118,6 +120,7 @@ def _build_feedback_prompt(
 
 def _prompt_feedback(
     llm: BaseChatModel,
+    question: str,
     examples: str,
     solution: str,
     additional_keys: Dict[str, str] = {},
@@ -129,6 +132,7 @@ def _prompt_feedback(
 
     Parameters:
         llm (BaseChatModel): The language model to prompt for feedback.
+        question (str): The question to be answered by the language model.
         examples (str): Contextual examples related to the solution.
         solution (str): The solution for which feedback is being sought.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
@@ -138,6 +142,7 @@ def _prompt_feedback(
         str: The language model's feedback, with no leading or trailing whitespace.
     """
     prompt = _build_feedback_prompt(
+        question=question,
         examples=examples,
         solution=solution,
         additional_keys=additional_keys,
@@ -161,6 +166,7 @@ def _prompt_feedback(
 
 
 def _build_refine_prompt(
+    question: str,
     examples: str,
     solution: str,
     feedback: str,
@@ -181,13 +187,18 @@ def _build_refine_prompt(
         str: The language model's response to the question, trimmed of extraneous whitespace.
     """
     prompt = PromptTemplate.from_template(prompt).format(
-        examples=examples, solution=solution, feedback=feedback, **additional_keys
+        question=question, 
+        examples=examples, 
+        solution=solution, 
+        feedback=feedback, 
+        **additional_keys
     )
     return prompt
 
 
 def _prompt_refine(
     llm: BaseChatModel,
+    question: str,
     examples: str,
     solution: str,
     feedback: str,
@@ -200,6 +211,7 @@ def _prompt_refine(
 
     Parameters:
         llm (BaseChatModel): The language model to prompt for feedback.
+        question (str): The question to be answered by the language model.
         examples (str): Contextual examples related to the solution.
         solution (str): The solution for which feedback is being sought.
         feedback (str): The feedback on the solution.
@@ -210,6 +222,7 @@ def _prompt_refine(
         str: The language model's feedback, with no leading or trailing whitespace.
     """
     prompt = _build_refine_prompt(
+        question=question,
         examples=examples,
         solution=solution,
         feedback=feedback,
