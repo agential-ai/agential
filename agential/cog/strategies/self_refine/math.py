@@ -74,13 +74,13 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
             additional_keys=additional_keys,
             prompt=prompt,
         )
-    
-        if answer == self._prev_code_answer:
+
+        if answer.strip() == self._prev_code_answer:
             self.patience_counter += 1
             if self.patience_counter == self.patience:
                 self._halt = True
         else:
-            self._prev_code_answer = answer
+            self._prev_code_answer = answer.strip()
 
         return critique
 

@@ -22,12 +22,10 @@ from agential.cog.strategies.critic.qa import (
     CritHotQAStrategy,
     CritTriviaQAStrategy,
 )
+from agential.cog.strategies.self_refine.math import SelfRefineGSM8KStrategy
 from agential.cog.strategies.strategy_factory import (
-    CriticStrategyFactory, 
-    SelfRefineStrategyFactory
-)
-from agential.cog.strategies.self_refine.math import (
-    SelfRefineGSM8KStrategy
+    CriticStrategyFactory,
+    SelfRefineStrategyFactory,
 )
 
 
@@ -127,7 +125,7 @@ def test_self_refine_strategy_factory_get_strategy() -> None:
     assert isinstance(strategy, SelfRefineGSM8KStrategy)
     assert strategy.llm == llm
     assert strategy.patience == 3
-    
+
     # Unsupported benchmarks.
     with pytest.raises(ValueError, match="Unsupported QA benchmark: unknown"):
         SelfRefineStrategyFactory.get_strategy({"qa": "unknown"})
