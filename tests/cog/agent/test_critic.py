@@ -12,23 +12,21 @@ from agential.cog.prompts.critic import (
     HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
     CRITIC_CRITIQUE_INSTRUCTION_GSM8K,
-    CRITIC_CRITIQUE_INSTRUCTION_HUMANEVAL,
     CRITIC_CRITIQUE_INSTRUCTION_MBPP,
     CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_GSM8K,
     CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_HUMANEVAL,
-    CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_MBPP,
     CRITIC_POT_INSTRUCTION_GSM8K,
     CRITIC_POT_INSTRUCTION_HUMANEVAL,
     GSM8K_FEWSHOT_EXAMPLES_CRITIC,
     GSM8K_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
-    HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC,
     HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
     MBPP_FEWSHOT_EXAMPLES_CRITIC,
-    MBPP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
+    CRITIC_POT_INSTRUCTION_MBPP
 )
 from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
 from agential.cog.prompts.benchmarks.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
 from agential.cog.prompts.benchmarks.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_POT
+from agential.cog.prompts.benchmarks.mbpp import MBPP_FEWSHOT_EXAMPLES_POT
 
 
 def test_init() -> None:
@@ -178,6 +176,31 @@ def test_generate() -> None:
     )
     assert isinstance(out, list)
     assert len(out) == 3
-    
-    # Test "code" mode with code interpreter tool.
 
+    # Test "code" mode with code interpreter tool.
+    question = "Write a python function to find the first repeated character in a given string."
+    tests = """assert first_repeated_char("abcabc") == "a"
+    assert first_repeated_char("abc") == None
+    assert first_repeated_char("123123") == "1\""""
+
+    responses = [
+        'def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        char_set.add(char)\n    return None\n\n# Testing the function with the provided test cases\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"',
+        'There is no problem with the above code. The function `first_repeated_char` correctly iterates through the characters of the input string, keeping track of seen characters in a set. If a character is encountered that is already in the set, it is returned as the first repeated character. Otherwise, if no repeated characters are found, the function returns None. The function passes the provided test cases successfully.',
+    ]
+    agent = CriticAgent(
+        llm=FakeListChatModel(responses=responses),  
+        mode={"code": "mbpp"}
+    )
+    out = agent.generate(
+        question=question,
+        additional_keys={"tests": tests},
+        critique_additional_keys={"tests": tests},
+        examples=MBPP_FEWSHOT_EXAMPLES_POT,
+        prompt=CRITIC_POT_INSTRUCTION_MBPP,
+        critique_examples=MBPP_FEWSHOT_EXAMPLES_CRITIC,
+        critique_prompt=CRITIC_CRITIQUE_INSTRUCTION_MBPP,
+        use_tool=True,
+        max_interactions=3
+    )
+    assert isinstance(out, list)
+    assert len(out) == 3
