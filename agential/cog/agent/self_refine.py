@@ -94,6 +94,7 @@ class SelfRefineAgent(BaseAgent):
         answer = self.strategy.generate(question, examples, prompt, additional_keys)
 
         for _ in range(max_interactions):
+            # Generate critique.
             critique = self.strategy.generate_critique(
                 question=question,
                 examples=critique_examples,
@@ -107,6 +108,7 @@ class SelfRefineAgent(BaseAgent):
             if self.strategy.halting_condition():
                 break
 
+            # Improve answer based on critique.
             answer = self.strategy.update_answer_based_on_critique(
                 question=question,
                 examples=refine_examples,
