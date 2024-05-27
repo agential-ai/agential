@@ -25,7 +25,6 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
         """Initialization."""
         self.llm = llm
         self.patience = patience
-        self._answer_history = []
         self._prev_code_answer = None
         self.patience_counter = 0
         self._halt = False
@@ -75,6 +74,13 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
             additional_keys=additional_keys,
             prompt=prompt,
         )
+    
+        if answer == self._prev_code_answer:
+            self.patience_counter += 1
+            if self.patience_counter == self.patience:
+                self._halt = True
+        else:
+            self._prev_code_answer = answer
 
         return critique
 
@@ -109,12 +115,11 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
     def reset(self) -> None:
         """Resets the strategy to its initial state.
 
-        Resets internal variables keeping track of halting and answer history.
+        Resets internal variables keeping track of halting.
 
         Returns:
             bool: True if the reset was successful, False otherwise.
         """
-        self._answer_history = []
         self._prev_code_answer = None
         self.patience_counter = 0
         self._halt = False
