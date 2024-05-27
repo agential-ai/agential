@@ -55,7 +55,7 @@ def test_generate() -> None:
     agent = CriticAgent(
         llm=FakeListChatModel(responses=responses), mode="qa", search=search
     )
-    out = agent.generate(question=question, use_search_tool=False)
+    out = agent.generate(question=question, use_tool=False)
     assert isinstance(out, list)
     assert len(out) == 2
 
@@ -85,7 +85,7 @@ def test_generate() -> None:
     agent = CriticAgent(llm=FakeListChatModel(responses=responses), mode="math")
     out = agent.generate(
         question=question,
-        use_interpreter_tool=False,
+        use_tool=False,
         examples=GSM8K_FEWSHOT_EXAMPLES_POT,
         prompt=CRITIC_POT_INSTRUCTION_GSM8K,
         critique_examples=GSM8K_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
@@ -134,9 +134,9 @@ def test_generate() -> None:
         prompt=CRITIC_POT_INSTRUCTION_HUMANEVAL,
         critique_examples=HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
         critique_prompt=CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_HUMANEVAL,
-        use_interpreter_tool=False,
-        test_prompt=CRITIC_POT_INSTRUCTION_TEST_HUMANEVAL,
-        test_examples=HUMANEVAL_FEWSHOT_EXAMPLES_POT_TEST,
+        use_tool=False,
+        
+        
     )
     assert isinstance(out, list)
     assert len(out) == 1
@@ -154,9 +154,9 @@ def test_generate() -> None:
         prompt=CRITIC_POT_INSTRUCTION_HUMANEVAL,
         critique_examples=HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC,
         critique_prompt=CRITIC_CRITIQUE_INSTRUCTION_HUMANEVAL,
-        use_interpreter_tool=True,
-        test_prompt=CRITIC_POT_INSTRUCTION_TEST_HUMANEVAL,
-        test_examples=HUMANEVAL_FEWSHOT_EXAMPLES_POT_TEST,
+        use_tool=True,
+        
+        
     )
     assert isinstance(out, list)
     assert len(out) == 1
@@ -168,92 +168,3 @@ def test_generate() -> None:
     assert has_close_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.0], 0.1) == True
     assert has_close_elements([1.1, 2.2, 3.1, 4.1, 5.1], 1.0) == True
     assert has_close_elements([1.1, 2.2, 3.1, 4.1, 5.1], 0.5) == False"""
-
-    # Test "code" mode for HumanEval with interpreter tool and passing in fixed tests.
-    responses = [
-        'from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool: \n    """Check if in given list of numbers, are any two numbers closer to each other than given threshold. \n    >>> has_close_elements([1.0, 2.0, 3.0], 0.5) False \n    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) True\n    """\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False',
-        "It is correct.",
-    ]
-    agent = CriticAgent(llm=FakeListChatModel(responses=responses), mode="code")
-    out = agent.generate(
-        question=question,
-        examples=HUMANEVAL_FEWSHOT_EXAMPLES_POT,
-        prompt=CRITIC_POT_INSTRUCTION_HUMANEVAL,
-        critique_examples=HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC,
-        critique_prompt=CRITIC_CRITIQUE_INSTRUCTION_HUMANEVAL,
-        use_interpreter_tool=True,
-        tests=tests,
-        test_prompt="",
-        test_examples="",
-    )
-    assert isinstance(out, list)
-    assert len(out) == 1
-
-    # Test "code" mode for HumanEval without interpreter tool and passing in fixed tests.
-    responses = [
-        'from typing import List \n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool: \n    """Check if in given list of numbers, are any two numbers closer to each other than given threshold. \n    >>> has_close_elements([1.0, 2.0, 3.0], 0.5) False \n    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) True\n    """\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False',
-        "It is correct.",
-    ]
-    agent = CriticAgent(llm=FakeListChatModel(responses=responses), mode="code")
-    out = agent.generate(
-        question=question,
-        examples=HUMANEVAL_FEWSHOT_EXAMPLES_POT,
-        prompt=CRITIC_POT_INSTRUCTION_HUMANEVAL,
-        critique_examples=HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
-        critique_prompt=CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_HUMANEVAL,
-        use_interpreter_tool=False,
-        tests=tests,
-        test_prompt="",
-        test_examples="",
-    )
-    assert isinstance(out, list)
-    assert len(out) == 1
-
-    question = """Write a python function to find the first repeated character in a given string."""
-
-    tests = """assert first_repeated_char("abcabc") == "a", "Test failed for input 'abcabc'"
-    assert first_repeated_char("abc") == None, "Test failed for input 'abc'"
-    assert first_repeated_char("123123") == "1", "Test failed for input '123123'"
-    """
-
-    # Test "code" mode for MBPP with interpreter tool.
-    responses = [
-        "def first_repeated_char(text):\n    seen = set()\n    for char in text:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None",
-        "It is correct.",
-    ]
-    agent = CriticAgent(llm=FakeListChatModel(responses=responses), mode="code")
-    out = agent.generate(
-        question=question,
-        examples=MBPP_FEWSHOT_EXAMPLES_POT_WITH_TESTS,
-        prompt=CRITIC_POT_INSTRUCTION_WITH_TESTS_MBPP,
-        additional_keys={"tests": tests},
-        critique_examples=MBPP_FEWSHOT_EXAMPLES_CRITIC,
-        critique_prompt=CRITIC_CRITIQUE_INSTRUCTION_MBPP,
-        use_interpreter_tool=True,
-        tests=tests,
-        test_examples="",
-        test_prompt="",
-    )
-    assert isinstance(out, list)
-    assert len(out) == 1
-
-    # Test "code" mode for MBPP without interpreter tool.
-    responses = [
-        "def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None",
-        "It is correct.",
-    ]
-    agent = CriticAgent(llm=FakeListChatModel(responses=responses), mode="code")
-    out = agent.generate(
-        question=question,
-        examples=MBPP_FEWSHOT_EXAMPLES_POT_WITH_TESTS,
-        prompt=CRITIC_POT_INSTRUCTION_WITH_TESTS_MBPP,
-        additional_keys={"tests": tests},
-        critique_examples=MBPP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
-        critique_prompt=CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_MBPP,
-        use_interpreter_tool=False,
-        tests=tests,
-        test_examples="",
-        test_prompt="",
-    )
-    assert isinstance(out, list)
-    assert len(out) == 1
