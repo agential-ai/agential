@@ -22,7 +22,6 @@ from agential.cog.modules.memory.expel import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
-from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.prompts.agents.expel import (
     END_OF_EXAMPLES_DELIMITER,
     EXPEL_REFLEXION_REACT_INSTRUCTION,
@@ -33,6 +32,7 @@ from agential.cog.prompts.agents.reflexion import (
     REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
     REFLEXION_REACT_REFLECT_INSTRUCTION,
 )
+from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.utils.general import shuffle_chunk_list
 
 

@@ -27,7 +27,6 @@ from agential.cog.functional.reflexion import (
     react_reflect_last_attempt_and_reflexion,
     react_reflect_reflexion,
 )
-from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.prompts.agents.reflexion import (
     REFLEXION_COT_FEWSHOT_EXAMPLES,
     REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
@@ -35,6 +34,7 @@ from agential.cog.prompts.agents.reflexion import (
     REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT,
     REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
 )
+from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 
 
 def test__truncate_scratchpad() -> None:
