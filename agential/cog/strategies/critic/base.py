@@ -1,7 +1,7 @@
 """Base CRITIC Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Dict
+from typing import Dict, Tuple, Any
 
 from agential.cog.strategies.base import BaseStrategy
 
@@ -22,7 +22,7 @@ class CriticBaseStrategy(BaseStrategy):
         use_tool: bool,
         max_interactions: int,
         **kwargs,
-    ) -> str:
+    ) -> Tuple[str, Dict[str, Any]]:
         """Generates a critique of the provided answer using the given language model, question, examples, and prompt.
 
         Args:
@@ -38,7 +38,7 @@ class CriticBaseStrategy(BaseStrategy):
             **kwargs: Additional arguments that might be needed for specific implementations.
 
         Returns:
-            str: The generated critique.
+            Tuple[str, Dict[str, Any]]: The generated critique and external tool information.
         """
         pass
 
