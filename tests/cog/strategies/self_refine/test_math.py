@@ -9,7 +9,9 @@ from agential.cog.prompts.benchmarks.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
 from agential.cog.prompts.self_refine import (
     SELF_REFINE_INSTRUCTION_GSM8K,
     SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
-    GSM8K_CRITIQUE_FEWSHOT_EXAMPLES
+    GSM8K_CRITIQUE_FEWSHOT_EXAMPLES,
+    SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
+    GSM8K_REFINE_FEWSHOT_EXAMPLES
 )
 
 
@@ -94,6 +96,25 @@ def test_create_output_dict() -> None:
 
 def test_update_answer_based_on_critique() -> None:
     """Tests SelfRefineMathStrategy update_answer_based_on_critique."""
+    responses = [
+        "```python\nresult = 43\n```"
+    ]
+    llm = FakeListChatModel(responses=responses)
+    strategy = SelfRefineMathStrategy(llm=llm)
+    question = "Sample question"
+    answer = "result = 42"
+    critique = "Critique: Your solution is incorrect."
+    
+    new_answer = strategy.update_answer_based_on_critique(
+        question=question, 
+        examples=GSM8K_REFINE_FEWSHOT_EXAMPLES,
+        answer=answer, 
+        critique=critique, 
+        prompt=SELF_REFINE_REFINE_INSTRUCTION_GSM8K, 
+        additional_keys={}
+    )
+    assert new_answer == "result = 43"
+
 
 def test_halting_condition() -> None:
     """Tests SelfRefineMathStrategy halting_condition."""
