@@ -1,6 +1,6 @@
 """Self-Refine Agent strategies for Math."""
 
-from typing import Any, Dict, Tuple
+from typing import Dict
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -65,7 +65,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
         answer: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, Dict[str, Any]]:
+    ) -> str:
         critique = _prompt_critique(
             llm=self.llm,
             question=question,
