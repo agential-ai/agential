@@ -13,7 +13,7 @@ from agential.cog.prompts.critic import (
     GSM8K_FEWSHOT_EXAMPLES_CRITIC,
     GSM8K_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
 )
-from agential.cog.strategies.critic.math_strategy import (
+from agential.cog.strategies.critic.math import (
     CritGSM8KStrategy,
     CriticMathStrategy,
     CritSVAMPStrategy,

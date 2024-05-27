@@ -21,7 +21,7 @@ from agential.cog.prompts.critic import (
     MBPP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
     MBPP_FEWSHOT_EXAMPLES_POT,
 )
-from agential.cog.strategies.critic.code_strategy import (
+from agential.cog.strategies.critic.code import (
     CritHEvalCodeStrategy,
     CriticCodeStrategy,
     CritMBPPCodeStrategy,
