@@ -87,7 +87,7 @@ def _prompt_agent(
     return out.strip()
 
 
-def _build_feedback_prompt(
+def _build_critique_prompt(
     question: str,
     examples: str,
     answer: str,
@@ -119,7 +119,7 @@ def _build_feedback_prompt(
     return prompt
 
 
-def _prompt_feedback(
+def _prompt_critique(
     llm: BaseChatModel,
     question: str,
     examples: str,
@@ -142,7 +142,7 @@ def _prompt_feedback(
     Returns:
         str: The language model's critique, with no leading or trailing whitespace.
     """
-    prompt = _build_feedback_prompt(
+    prompt = _build_critique_prompt(
         question=question,
         examples=examples,
         answer=answer,
