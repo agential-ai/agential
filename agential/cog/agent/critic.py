@@ -21,6 +21,7 @@ class CriticAgent(BaseAgent):
             and critiques.
         mode (Dict[str, str]): A dictionary specifying the CRITIC agent's mode and the benchmark.
             For example, {"qa": "hotpotqa"}, {"math": "gsm8k"}, or {"code": "mbpp"}.
+        **strategy_kwargs: Additional strategy-specific arguments.
     """
 
     def __init__(
@@ -66,13 +67,9 @@ class CriticAgent(BaseAgent):
 
         Returns:
             List[Dict[str, str]]: A list of dictionaries.
-                "qa" mode:
-                    - Each dictionary contains an "answer" and "critique". Optionally, a
-                    dictionary may include the search "query" and "search_result", and the final dictionary includes the final "revised_answer".
-                "math" mode:
-                    - Each dictionary contains "code" and "critique". Optionally, a dictionary may include
-                    the "execution_status" and "code_answer" if use_interpreter_tool is True. If the critic
-                    improves the solution, then the dictionary will have an "improved_code" key.
+                - For "qa" mode: Each dictionary contains an "answer" and "critique". Optionally, a dictionary may include the search "query" and "search_result", and the final dictionary includes the final "revised_answer".
+                - For "math" mode: Each dictionary contains "code" and "critique". Optionally, a dictionary may include the "execution_status" and "code_answer" if use_interpreter_tool is True. If the critic improves the solution, then the dictionary will have an "improved_code" key.
+                - For "code" mode: Each dictionary contains "code" and "critique". Optionally, a dictionary may include the "execution_status" if use_interpreter_tool is True. If the critic improves the solution, then the dictionary will have an "improved_code" key.
         """
         if reset:
             self.reset()

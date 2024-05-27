@@ -34,6 +34,7 @@ class SelfRefineAgent(BaseAgent):
             and critiques.
         mode (Dict[str, str]): A dictionary specifying the CRITIC agent's mode and the benchmark.
             For example, {"qa": "hotpotqa"}, {"math": "gsm8k"}, or {"code": "mbpp"}.
+        **strategy_kwargs: Additional strategy-specific arguments.
     """
 
     def __init__(

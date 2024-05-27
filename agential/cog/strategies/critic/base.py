@@ -45,7 +45,7 @@ class CriticBaseStrategy(BaseStrategy):
     @abstractmethod
     def create_output_dict(
         self, answer: str, critique: str, external_tool_info: Dict[str, str]
-    ) -> Dict[str, str]:
+    ) -> Dict[str, Any]:
         """Creates a dictionary containing the answer and critique, along with any additional key updates.
 
         Args:
@@ -54,7 +54,7 @@ class CriticBaseStrategy(BaseStrategy):
             external_tool_info (Dict[str, str]): Information from any external tools used during the critique.
 
         Returns:
-            Dict[str, str]: A dictionary containing the answer, critique, and additional key updates.
+            Dict[str, Any]: A dictionary containing the answer, critique, and additional key updates.
         """
         pass
 
