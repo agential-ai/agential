@@ -66,6 +66,21 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> str:
+        """Generates a critique for the provided answer using the given prompt and examples.
+
+        Stops early if patience is reached and answer remains the same.
+
+        Args:
+            question (str): The math question that was answered.
+            examples (str): Few-shot examples to guide the language model in generating the critique.
+            answer (str): The answer to be critiqued.
+            prompt (str): The prompt to generate a critique.
+            additional_keys (Dict[str, str]): Additional keys for the prompt.
+
+        Returns:
+            str: The generated critique. If the same incorrect answer is repeated for the number of
+                 interactions specified by patience, the halting condition is triggered.
+        """
         critique = _prompt_critique(
             llm=self.llm,
             question=question,
@@ -85,6 +100,15 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
         return critique
 
     def create_output_dict(self, answer: str, critique: str) -> Dict[str, str]:
+        """Creates an output dictionary containing the answer and critique.
+
+        Args:
+            answer (str): The generated answer.
+            critique (str): The generated critique.
+
+        Returns:
+            Dict[str, str]: The output dictionary.
+        """
         return {"code": answer, "critique": critique}
 
     def update_answer_based_on_critique(
@@ -96,6 +120,19 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> str:
+        """Updates the answer based on the given critique.
+
+        Args:
+            question: The question that was answered by the language model.
+            examples: Few-shot examples to guide the language model.
+            answer: The answer provided by the language model.
+            critique: The critique of the answer.
+            prompt: The prompt to be used for generating the updated answer.
+            additional_keys: Additional context or parameters to include in the critique prompt.
+
+        Returns:
+            str: The updated answer.
+        """
         new_answer = _prompt_refine(
             llm=self.llm,
             question=question,
@@ -110,6 +147,13 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
         return new_answer
 
     def halting_condition(self) -> bool:
+        """Checks if the halting condition has been met.
+
+        Returns True if the Self-Refine Agent's generated answer remains the same for `patience` number of steps.
+
+        Returns:
+            bool: True if the halting condition has been met, False otherwise.
+        """
         return self._halt
 
     def reset(self) -> None:
