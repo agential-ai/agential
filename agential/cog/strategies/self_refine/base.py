@@ -12,7 +12,6 @@ class SelfRefineBaseStrategy(BaseStrategy):
     @abstractmethod
     def generate_critique(
         self,
-        idx: int,
         question: str,
         examples: str,
         answer: str,
@@ -22,7 +21,6 @@ class SelfRefineBaseStrategy(BaseStrategy):
         """Generates a critique of the provided answer using the given language model, question, examples, and prompt.
 
         Args:
-            idx (int): The index of the current interaction.
             question (str): The question that was answered by the language model.
             examples (str): Few-shot examples to guide the language model in generating the critique.
             answer (str): The answer to be critiqued.

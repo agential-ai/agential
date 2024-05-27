@@ -61,7 +61,6 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
 
     def generate_critique(
         self,
-        idx: int,
         question: str,
         examples: str,
         answer: str,
@@ -73,8 +72,8 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
             question=question,
             examples=examples,
             solution=answer,
+            additional_keys=additional_keys,
             prompt=prompt,
-            additional_keys=additional_keys
         )
 
         return critique
@@ -93,14 +92,18 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> str:
-        solution = _prompt_refine(
+        new_answer = _prompt_refine(
             llm=self.llm,
             question=question,
             examples=examples,
-            solution=solution,
+            answer=answer,
             feedback=critique,
+            additional_keys=additional_keys,
             prompt=prompt,
         )
+        new_answer = new_answer.split("```python")[-1].split("```")[0].strip()
+
+        return new_answer
 
     def halting_condition(self) -> bool:
         return self._halt
@@ -117,3 +120,9 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
         self._prev_code_answer = None
         self.patience_counter = 0
         self._halt = False
+
+
+class SelfRefineGSM8KStrategy(SelfRefineMathStrategy):
+    """A strategy class for the GSM8K benchmark using the Self-Refine agent."""
+
+    pass
