@@ -79,12 +79,12 @@ def test__prompt_feedback() -> None:
 def test__build_refine_prompt() -> None:
     """Test _build_refine_prompt."""
     gt_out = "\n\n\n\n\n\n# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good. Provide the improved solution. If there is no error, write out the entire solution again."
-    out = _build_refine_prompt(examples="", solution="", feedback="")
+    out = _build_refine_prompt(examples="", solution="", critique="")
     assert out == gt_out
 
     # Test custom prompt.
     out = _build_refine_prompt(
-        examples="", solution="", feedback="", prompt="{examples}{solution}{feedback}"
+        examples="", solution="", critique="", prompt="{examples}{solution}{critique}"
     )
     assert out == ""
 
@@ -92,7 +92,7 @@ def test__build_refine_prompt() -> None:
 def test__prompt_refine() -> None:
     """Test _prompt_refine."""
     out = _prompt_refine(
-        llm=FakeListChatModel(responses=["1"]), examples="", solution="", feedback=""
+        llm=FakeListChatModel(responses=["1"]), examples="", solution="", critique=""
     )
     assert out == "1"
 
@@ -101,7 +101,7 @@ def test__prompt_refine() -> None:
         llm=FakeListChatModel(responses=["1"]),
         examples="",
         solution="",
-        feedback="",
-        prompt="{examples}{solution}{feedback}",
+        critique="",
+        prompt="{examples}{solution}{critique}",
     )
     assert out == "1"

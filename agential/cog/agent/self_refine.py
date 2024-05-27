@@ -15,7 +15,6 @@ from agential.cog.functional.self_refine import (
     _prompt_feedback,
     _prompt_refine,
 )
-from agential.cog.modules.memory.self_refine import SelfRefineMemory
 from agential.cog.prompts.self_refine import (
     GSM8K_FEEDBACK_FEWSHOT_EXAMPLES,
     GSM8K_REFINE_FEWSHOT_EXAMPLES,
@@ -26,6 +25,7 @@ from agential.cog.prompts.self_refine import (
 from agential.cog.prompts.benchmarks.gsm8k import (
     GSM8K_FEWSHOT_EXAMPLES_POT,
 )
+from agential.cog.strategies.strategy_factory import SelfRefineStrategyFactory
 
 
 class SelfRefineAgent(BaseAgent):
@@ -36,23 +36,24 @@ class SelfRefineAgent(BaseAgent):
     of times or until the feedback indicates that no further improvements are needed.
 
     Attributes:
-        llm (BaseChatModel): The language model used for generating solutions, feedback, and refinements.
-        memory (SelfRefineMemory): A memory module for storing solutions and feedback across refinement iterations.
+        llm (BaseChatModel): An instance of a language model used for generating initial answers
+            and critiques.
+        mode (Dict[str, str]): A dictionary specifying the CRITIC agent's mode and the benchmark.
+            For example, {"qa": "hotpotqa"}, {"math": "gsm8k"}, or {"code": "mbpp"}.
     """
 
     def __init__(
-        self, llm: BaseChatModel, mode: Dict[str, str],
-        **strategy_kwargs
+        self, llm: BaseChatModel, mode: Dict[str, str], **strategy_kwargs
     ) -> None:
         """Initialization."""
         super().__init__()
 
         self.llm = llm
+        self.mode = mode
 
-        if not memory:
-            self.memory = SelfRefineMemory()
-        else:
-            self.memory = memory
+        self.strategy = SelfRefineStrategyFactory().get_strategy(
+            mode=self.mode, llm=self.llm, **strategy_kwargs
+        )
 
     def generate(
         self,
@@ -63,6 +64,8 @@ class SelfRefineAgent(BaseAgent):
         feedback_prompt: str = SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K,
         refine_examples: str = GSM8K_REFINE_FEWSHOT_EXAMPLES,
         refine_prompt: str = SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
+        additional_keys: str ={},
+        feedback
         max_attempts: int = 3,
         reset: bool = True,
     ) -> List[str]:
@@ -87,6 +90,11 @@ class SelfRefineAgent(BaseAgent):
         """
         if reset:
             self.reset()
+
+        out = []
+
+        # Initial answer generation.
+        answer = self.strategy.generate(question, examples, prompt, additional_keys)
 
         solution = _prompt_agent(
             llm=self.llm, question=question, examples=examples, prompt=prompt
@@ -118,53 +126,6 @@ class SelfRefineAgent(BaseAgent):
             step_n += 1
 
         return
-
-        # step_n = 0
-        # while step_n < max_attempts:
-        #     if not step_n:
-        #         solution = _prompt_agent(
-        #             llm=self.llm, question=question, examples=examples, prompt=prompt
-        #         )
-
-        #     feedback = _prompt_feedback(
-        #         llm=self.llm,
-        #         examples=feedback_examples,
-        #         solution=solution,
-        #         prompt=feedback_prompt,
-        #     )
-
-        #     # Update memory with solution, feedback pair (tracks all previous solutions and feedbacks).
-        #     self.memory.add_memories(solution, feedback)
-
-        #     # Halt condition.
-        #     if _is_halted(feedback):
-        #         break
-        #     else:
-        #         improved_solution = _prompt_refine(
-        #             llm=self.llm,
-        #             examples=refine_examples,
-        #             solution=solution,
-        #             feedback=feedback,
-        #             prompt=refine_prompt,
-        #         )
-
-        #         # Continuously update solution & feedback examples.
-        #         feedback_examples = PromptTemplate.from_template(
-        #             feedback_format
-        #         ).format(
-        #             examples=feedback_examples,
-        #             solution=solution,
-        #             feedback=feedback,
-        #             improved_solution=improved_solution,
-        #         )
-        #         solution = improved_solution
-
-        #         # Add the new solution (no feedback) to the memory, if applicable.
-        #         self.memory.add_memories(solution, "")
-
-        #     step_n += 1
-
-        # return self.memory.load_memories()["solution"]
 
     def reset(self) -> None:
         """Resets the agent's memory."""
