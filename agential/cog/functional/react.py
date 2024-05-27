@@ -1,6 +1,6 @@
 """Functional module for ReAct."""
 
-from typing import Dict, List, Optional, Tuple
+from typing import Dict
 
 from langchain.prompts import PromptTemplate
 from langchain_core.language_models.chat_models import BaseChatModel
