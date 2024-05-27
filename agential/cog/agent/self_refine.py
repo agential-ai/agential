@@ -41,7 +41,8 @@ class SelfRefineAgent(BaseAgent):
     """
 
     def __init__(
-        self, llm: BaseChatModel, memory: Optional[SelfRefineMemory] = None
+        self, llm: BaseChatModel, mode: Dict[str, str],
+        **strategy_kwargs
     ) -> None:
         """Initialization."""
         super().__init__()
