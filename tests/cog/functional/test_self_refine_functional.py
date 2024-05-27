@@ -14,7 +14,7 @@ from agential.cog.functional.self_refine import (
 
 def test__build_agent_prompt() -> None:
     """Test _build_agent_prompt."""
-    gt_out = "\n\n\n# Q: \n# solution using Python:"
+    gt_out = '\n(END OF EXAMPLES)\n\nQuestion: \n# Python code, return answer'
     out = _build_agent_prompt(
         question="",
         examples="",
@@ -45,16 +45,20 @@ def test__prompt_agent() -> None:
 
 def test__build_critique_prompt() -> None:
     """Test _build_critique_prompt."""
-    gt_out = "\n\n\n\n# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good. If there is no error, simply output 'It is correct.'"
+    gt_out = '\n(END OF EXAMPLES)\n\nQuestion: \n```python\n\n```\n\n# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.'
     out = _build_critique_prompt(
+        question="",
         examples="",
-        solution="",
+        answer="",
     )
     assert out == gt_out
 
     # Test custom prompt.
     out = _build_critique_prompt(
-        examples="", solution="", prompt="{examples}{solution}"
+        question="",
+        examples="", 
+        answer="", 
+        prompt="{examples}{answer}"
     )
     assert out == ""
 
@@ -62,29 +66,30 @@ def test__build_critique_prompt() -> None:
 def test__prompt_critique() -> None:
     """Test _prompt_critique."""
     out = _prompt_critique(
-        llm=FakeListChatModel(responses=["1"]), examples="", solution=""
+        llm=FakeListChatModel(responses=["1"]), question="", examples="", answer=""
     )
     assert out == "1"
 
     # Test custom prompt.
     out = _prompt_critique(
         llm=FakeListChatModel(responses=["1"]),
+        question="",
         examples="",
-        solution="",
-        prompt="{examples}{solution}",
+        answer="",
+        prompt="{examples}{answer}",
     )
     assert out == "1"
 
 
 def test__build_refine_prompt() -> None:
     """Test _build_refine_prompt."""
-    gt_out = "\n\n\n\n\n\n# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good. Provide the improved solution. If there is no error, write out the entire solution again."
-    out = _build_refine_prompt(examples="", solution="", critique="")
+    gt_out = '\n(END OF EXAMPLES)\n\nQuestion: \n```python\n\n```\n\n# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good. Provide the improved solution. If there is no error, write out the entire solution again.\n\n\n\nOkay! Here is the rewrite:'
+    out = _build_refine_prompt(question="", examples="", answer="", critique="")
     assert out == gt_out
 
     # Test custom prompt.
     out = _build_refine_prompt(
-        examples="", solution="", critique="", prompt="{examples}{solution}{critique}"
+        question="", examples="", answer="", critique="", prompt="{examples}{answer}{critique}"
     )
     assert out == ""
 
@@ -92,16 +97,17 @@ def test__build_refine_prompt() -> None:
 def test__prompt_refine() -> None:
     """Test _prompt_refine."""
     out = _prompt_refine(
-        llm=FakeListChatModel(responses=["1"]), examples="", solution="", critique=""
+        llm=FakeListChatModel(responses=["1"]), question="", examples="", answer="", critique=""
     )
     assert out == "1"
 
     # Test custom prompt.
     out = _prompt_refine(
         llm=FakeListChatModel(responses=["1"]),
+        question="",
         examples="",
-        solution="",
+        answer="",
         critique="",
-        prompt="{examples}{solution}{critique}",
+        prompt="{examples}{answer}{critique}",
     )
     assert out == "1"
