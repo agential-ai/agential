@@ -63,7 +63,7 @@ class SelfRefineAgent(BaseAgent):
         refine_additional_keys: Dict[str, str] = {},
         max_interactions: int = 3,
         reset: bool = True,
-    ) -> List[str]:
+    ) -> List[Dict[str, str]]:
         """Generates a refined solution for a given question through an iterative self-refinement process.
 
         The process includes generating initial solutions, soliciting critique, and refining the solution
