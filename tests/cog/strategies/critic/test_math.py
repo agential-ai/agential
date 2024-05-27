@@ -6,7 +6,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from agential.cog.prompts.benchmarks.gsm8k import (
     GSM8K_FEWSHOT_EXAMPLES_POT,
 )
-from agential.cog.prompts.critic import (
+from agential.cog.prompts.agents.critic import (
     CRITIC_CRITIQUE_INSTRUCTION_GSM8K,
     CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_GSM8K,
     CRITIC_POT_INSTRUCTION_GSM8K,

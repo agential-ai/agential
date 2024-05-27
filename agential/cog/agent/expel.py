@@ -23,12 +23,12 @@ from agential.cog.modules.memory.expel import (
     ExpeLInsightMemory,
 )
 from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.cog.prompts.expel import (
+from agential.cog.prompts.agents.expel import (
     END_OF_EXAMPLES_DELIMITER,
     EXPEL_REFLEXION_REACT_INSTRUCTION,
     RULE_PREFIX,
 )
-from agential.cog.prompts.reflexion import (
+from agential.cog.prompts.agents.reflexion import (
     REFLEXION_REACT_INSTRUCTION,
     REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
     REFLEXION_REACT_REFLECT_INSTRUCTION,

@@ -29,7 +29,7 @@ from agential.cog.modules.reflect.reflexion import (
     ReflexionReActReflector,
 )
 from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.cog.prompts.reflexion import (
+from agential.cog.prompts.agents.reflexion import (
     REFLEXION_COT_FEWSHOT_EXAMPLES,
     REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
     REFLEXION_COT_INSTRUCTION,

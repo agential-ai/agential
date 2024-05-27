@@ -9,7 +9,7 @@ from agential.cog.prompts.benchmarks.humaneval import (
     HUMANEVAL_FEWSHOT_EXAMPLES_POT,
 )
 from agential.cog.prompts.benchmarks.mbpp import MBPP_FEWSHOT_EXAMPLES_POT
-from agential.cog.prompts.critic import (
+from agential.cog.prompts.agents.critic import (
     CRITIC_CRITIQUE_INSTRUCTION_HUMANEVAL,
     CRITIC_CRITIQUE_INSTRUCTION_MBPP,
     CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_HUMANEVAL,
