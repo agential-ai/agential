@@ -1,4 +1,5 @@
 """Main file for managing benchmark prompts/few-shot examples."""
+from typing import Dict
 
 from agential.cog.prompts.benchmarks.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
@@ -96,7 +97,7 @@ BENCHMARK_STRINGS = {
     }
 }
 
-def get_fewshot_examples(mode: dict, fewshot_type: str) -> str:
+def get_fewshot_examples(mode: Dict[str, str], fewshot_type: str) -> str:
     """Retrieve few-shot examples for a given benchmark type and benchmark name.
 
     Available Benchmark Types and Names:
