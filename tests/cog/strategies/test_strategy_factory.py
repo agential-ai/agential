@@ -22,7 +22,13 @@ from agential.cog.strategies.critic.qa import (
     CritHotQAStrategy,
     CritTriviaQAStrategy,
 )
-from agential.cog.strategies.strategy_factory import CriticStrategyFactory
+from agential.cog.strategies.strategy_factory import (
+    CriticStrategyFactory, 
+    SelfRefineStrategyFactory
+)
+from agential.cog.strategies.self_refine.math import (
+    SelfRefineGSM8KStrategy
+)
 
 
 def test_critic_strategy_factory_get_strategy() -> None:
@@ -102,3 +108,35 @@ def test_critic_strategy_factory_get_strategy() -> None:
 
     with pytest.raises(ValueError, match="Unsupported mode: {}"):
         CriticStrategyFactory.get_strategy({})
+
+
+def test_self_refine_strategy_factory_get_strategy() -> None:
+    """Tests SelfRefineStrategyFactory get_strategy method."""
+    llm = FakeListChatModel(responses=[])
+
+    # Math benchmarks.
+    assert isinstance(
+        SelfRefineStrategyFactory.get_strategy({"math": "gsm8k"}, llm=llm),
+        SelfRefineGSM8KStrategy,
+    )
+
+    # Test kwargs for Math strategy.
+    strategy = SelfRefineStrategyFactory.get_strategy(
+        {"math": "gsm8k"}, llm=llm, patience=3
+    )
+    assert isinstance(strategy, SelfRefineGSM8KStrategy)
+    assert strategy.llm == llm
+    assert strategy.patience == 3
+    
+    # Unsupported benchmarks.
+    with pytest.raises(ValueError, match="Unsupported QA benchmark: unknown"):
+        SelfRefineStrategyFactory.get_strategy({"qa": "unknown"})
+
+    with pytest.raises(ValueError, match="Unsupported Math benchmark: unknown"):
+        SelfRefineStrategyFactory.get_strategy({"math": "unknown"})
+
+    with pytest.raises(ValueError, match="Unsupported Code benchmark: unknown"):
+        SelfRefineStrategyFactory.get_strategy({"code": "unknown"})
+
+    with pytest.raises(ValueError, match="Unsupported mode: {}"):
+        SelfRefineStrategyFactory.get_strategy({})
