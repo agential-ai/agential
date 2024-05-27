@@ -42,23 +42,23 @@ from agential.cog.prompts.benchmarks.triviaqa import (
 class Benchmarks:
     """Supported benchmarks."""
 
-    class QA:
-        """QA benchmarks."""
+    class qa:
+        """qa benchmarks."""
 
         HOTPOTQA = "hotpotqa"
         FEVER = "fever"
         TRIVIAQA = "triviaqa"
         AMBIGNQ = "ambignq"
 
-    class Math:
-        """Math benchmarks."""
+    class math:
+        """math benchmarks."""
 
         GSM8K = "gsm8k"
         SVAMP = "svamp"
         TABMWP = "tabmwp"
 
-    class Code:
-        """Code benchmarks."""
+    class code:
+        """code benchmarks."""
 
         HUMANEVAL = "humaneval"
         MBPP = "mbpp"
@@ -74,39 +74,39 @@ class FewShotType:
 
 
 BENCHMARK_STRINGS = {
-    Benchmarks.QA.HOTPOTQA: {
+    Benchmarks.qa.HOTPOTQA: {
         FewShotType.COT: HOTPOTQA_FEWSHOT_EXAMPLES_COT,
         FewShotType.DIRECT: HOTPOTQA_FEWSHOT_EXAMPLES_DIRECT,
         FewShotType.REACT: HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
     },
-    Benchmarks.QA.FEVER: {
+    Benchmarks.qa.FEVER: {
         FewShotType.COT: FEVER_FEWSHOT_EXAMPLES_COT,
         FewShotType.DIRECT: FEVER_FEWSHOT_EXAMPLES_DIRECT,
         FewShotType.REACT: FEVER_FEWSHOT_EXAMPLES_REACT,
     },
-    Benchmarks.QA.TRIVIAQA: {
+    Benchmarks.qa.TRIVIAQA: {
         FewShotType.COT: TRIVIAQA_FEWSHOT_EXAMPLES_COT,
         FewShotType.DIRECT: TRIVIAQA_FEWSHOT_EXAMPLES_DIRECT,
         FewShotType.REACT: TRIVIAQA_FEWSHOT_EXAMPLES_REACT,
     },
-    Benchmarks.QA.AMBIGNQ: {
+    Benchmarks.qa.AMBIGNQ: {
         FewShotType.COT: AMBIGNQ_FEWSHOT_EXAMPLES_COT,
         FewShotType.DIRECT: AMBIGNQ_FEWSHOT_EXAMPLES_DIRECT,
         FewShotType.REACT: AMBIGNQ_FEWSHOT_EXAMPLES_REACT,
     },
-    Benchmarks.Math.GSM8K: {
+    Benchmarks.math.GSM8K: {
         FewShotType.POT: GSM8K_FEWSHOT_EXAMPLES_POT,
     },
-    Benchmarks.Math.SVAMP: {
+    Benchmarks.math.SVAMP: {
         FewShotType.POT: SVAMP_FEWSHOT_EXAMPLES_POT,
     },
-    Benchmarks.Math.TABMWP: {
+    Benchmarks.math.TABMWP: {
         FewShotType.POT: TABMWP_FEWSHOT_EXAMPLES_POT,
     },
-    Benchmarks.Code.HUMANEVAL: {
+    Benchmarks.code.HUMANEVAL: {
         FewShotType.POT: HUMANEVAL_FEWSHOT_EXAMPLES_POT,
     },
-    Benchmarks.Code.MBPP: {
+    Benchmarks.code.MBPP: {
         FewShotType.POT: MBPP_FEWSHOT_EXAMPLES_POT,
     },
 }
@@ -116,18 +116,18 @@ def get_fewshot_examples(mode: Dict[str, str], fewshot_type: str) -> str:
     """Retrieve few-shot examples for a given benchmark type and benchmark name.
 
     Available Benchmark Types and Names:
-        - QA:
-            - Benchmarks.QA.HOTPOTQA: Supports FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT
-            - Benchmarks.QA.FEVER: Supports FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT
-            - Benchmarks.QA.TRIVIAQA: Supports FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT
-            - Benchmarks.QA.AMBIGNQ: Supports FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT
-        - Math:
-            - Benchmarks.Math.GSM8K: Supports FewShotType.POT
-            - Benchmarks.Math.SVAMP: Supports FewShotType.POT
-            - Benchmarks.Math.TABMWP: Supports FewShotType.POT
-        - Code:
-            - Benchmarks.Code.HUMANEVAL: Supports FewShotType.POT
-            - Benchmarks.Code.MBPP: Supports FewShotType.POT
+        - qa:
+            - Benchmarks.qa.HOTPOTQA: Supports FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT
+            - Benchmarks.qa.FEVER: Supports FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT
+            - Benchmarks.qa.TRIVIAQA: Supports FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT
+            - Benchmarks.qa.AMBIGNQ: Supports FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT
+        - math:
+            - Benchmarks.math.GSM8K: Supports FewShotType.POT
+            - Benchmarks.math.SVAMP: Supports FewShotType.POT
+            - Benchmarks.math.TABMWP: Supports FewShotType.POT
+        - code:
+            - Benchmarks.code.HUMANEVAL: Supports FewShotType.POT
+            - Benchmarks.code.MBPP: Supports FewShotType.POT
 
     Available Few-Shot Types:
         - FewShotType.COT: "cot"
@@ -143,22 +143,19 @@ def get_fewshot_examples(mode: Dict[str, str], fewshot_type: str) -> str:
         str: The few-shot examples corresponding to the given benchmark and type.
         If the benchmark or few-shot type is not found, returns a detailed error message.
     """
-    try:
-        benchmark_type, benchmark_name = list(mode.items())[0]
-        if benchmark_type not in Benchmarks.__dict__:
-            raise ValueError(f"Benchmark type '{benchmark_type}' not found.")
+    benchmark_type, benchmark_name = list(mode.items())[0]
+    if benchmark_type not in Benchmarks.__dict__:
+        raise ValueError(f"Benchmark type '{benchmark_type}' not found.")
 
-        if benchmark_name not in BENCHMARK_STRINGS:
-            raise ValueError(
-                f"Benchmark '{benchmark_name}' not found in benchmark type '{benchmark_type}'."
-            )
+    if benchmark_name not in BENCHMARK_STRINGS:
+        raise ValueError(
+            f"Benchmark '{benchmark_name}' not found in benchmark type '{benchmark_type}'."
+        )
 
-        examples = BENCHMARK_STRINGS[benchmark_name].get(fewshot_type)
-        if examples is None:
-            raise ValueError(
-                f"Few-shot type '{fewshot_type}' not found for benchmark '{benchmark_name}'."
-            )
+    examples = BENCHMARK_STRINGS[benchmark_name].get(fewshot_type)
+    if examples is None:
+        raise ValueError(
+            f"Few-shot type '{fewshot_type}' not found for benchmark '{benchmark_name}'."
+        )
 
-        return examples
-    except Exception as e:
-        return str(e)
+    return examples
