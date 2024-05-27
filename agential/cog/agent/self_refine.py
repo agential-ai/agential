@@ -20,7 +20,6 @@ from agential.cog.modules.memory.self_refine import SelfRefineMemory
 from agential.cog.prompts.self_refine import (
     GSM8K_FEEDBACK_FEWSHOT_EXAMPLES,
     GSM8K_REFINE_FEWSHOT_EXAMPLES,
-    SELF_REFINE_FEEDBACK_EXAMPLE_FORMAT_GSM8K,
     SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K,
     SELF_REFINE_INSTRUCTION_GSM8K,
     SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
@@ -62,7 +61,6 @@ class SelfRefineAgent(BaseAgent):
         prompt: str = SELF_REFINE_INSTRUCTION_GSM8K,
         feedback_examples: str = GSM8K_FEEDBACK_FEWSHOT_EXAMPLES,
         feedback_prompt: str = SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K,
-        feedback_format: str = SELF_REFINE_FEEDBACK_EXAMPLE_FORMAT_GSM8K,
         refine_examples: str = GSM8K_REFINE_FEWSHOT_EXAMPLES,
         refine_prompt: str = SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
         max_attempts: int = 3,
@@ -79,7 +77,6 @@ class SelfRefineAgent(BaseAgent):
             prompt (str): Instructional prompt for initial solution generation. Defaults to SELF_REFINE_INSTRUCTION_GSM8K.
             feedback_examples (str): Precedent examples to guide feedback generation. Defaults to GSM8K_FEEDBACK_FEWSHOT_EXAMPLES.
             feedback_prompt (str): Instructional prompt for feedback generation. Defaults to SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K.
-            feedback_format (str): Format for continuously updating the feedback fewshot examples. Defaults to SELF_REFINE_FEEDBACK_EXAMPLE_FORMAT_GSM8K.
             refine_examples (str): Precedent examples to guide solution refinement. Defaults to GSM8K_REFINE_FEWSHOT_EXAMPLES.
             refine_prompt (str): Instructional prompt for refining the solution. Defaults to SELF_REFINE_REFINE_INSTRUCTION_GSM8K.
             max_attempts (int): Maximum number of refinement iterations.
@@ -91,13 +88,13 @@ class SelfRefineAgent(BaseAgent):
         if reset:
             self.reset()
 
+        solution = _prompt_agent(
+            llm=self.llm, question=question, examples=examples, prompt=prompt
+        )
+
         step_n = 0
         while step_n < max_attempts:
-            if not step_n:
-                solution = _prompt_agent(
-                    llm=self.llm, question=question, examples=examples, prompt=prompt
-                )
-
+            # Generate feedback.
             feedback = _prompt_feedback(
                 llm=self.llm,
                 examples=feedback_examples,
@@ -105,38 +102,67 @@ class SelfRefineAgent(BaseAgent):
                 prompt=feedback_prompt,
             )
 
-            # Update memory with solution, feedback pair (tracks all previous solutions and feedbacks).
-            self.memory.add_memories(solution, feedback)
-
-            # Halt condition.
             if _is_halted(feedback):
                 break
-            else:
-                improved_solution = _prompt_refine(
-                    llm=self.llm,
-                    examples=refine_examples,
-                    solution=solution,
-                    feedback=feedback,
-                    prompt=refine_prompt,
-                )
 
-                # Continuously update solution & feedback examples.
-                feedback_examples = PromptTemplate.from_template(
-                    feedback_format
-                ).format(
-                    examples=feedback_examples,
-                    solution=solution,
-                    feedback=feedback,
-                    improved_solution=improved_solution,
-                )
-                solution = improved_solution
-
-                # Add the new solution (no feedback) to the memory, if applicable.
-                self.memory.add_memories(solution, "")
+            solution = _prompt_refine(
+                llm=self.llm,
+                examples=refine_examples,
+                solution=solution,
+                feedback=feedback,
+                prompt=refine_prompt,
+            )
 
             step_n += 1
 
-        return self.memory.load_memories()["solution"]
+        return
+
+        # step_n = 0
+        # while step_n < max_attempts:
+        #     if not step_n:
+        #         solution = _prompt_agent(
+        #             llm=self.llm, question=question, examples=examples, prompt=prompt
+        #         )
+
+        #     feedback = _prompt_feedback(
+        #         llm=self.llm,
+        #         examples=feedback_examples,
+        #         solution=solution,
+        #         prompt=feedback_prompt,
+        #     )
+
+        #     # Update memory with solution, feedback pair (tracks all previous solutions and feedbacks).
+        #     self.memory.add_memories(solution, feedback)
+
+        #     # Halt condition.
+        #     if _is_halted(feedback):
+        #         break
+        #     else:
+        #         improved_solution = _prompt_refine(
+        #             llm=self.llm,
+        #             examples=refine_examples,
+        #             solution=solution,
+        #             feedback=feedback,
+        #             prompt=refine_prompt,
+        #         )
+
+        #         # Continuously update solution & feedback examples.
+        #         feedback_examples = PromptTemplate.from_template(
+        #             feedback_format
+        #         ).format(
+        #             examples=feedback_examples,
+        #             solution=solution,
+        #             feedback=feedback,
+        #             improved_solution=improved_solution,
+        #         )
+        #         solution = improved_solution
+
+        #         # Add the new solution (no feedback) to the memory, if applicable.
+        #         self.memory.add_memories(solution, "")
+
+        #     step_n += 1
+
+        # return self.memory.load_memories()["solution"]
 
     def reset(self) -> None:
         """Resets the agent's memory."""

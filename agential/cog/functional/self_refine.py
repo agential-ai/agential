@@ -70,6 +70,9 @@ def _prompt_agent(
         additional_keys=additional_keys,
         prompt=prompt,
     )
+    print("<PROMPT AGENT=======================================================>")
+    print(prompt)
+    print("<PROMPT AGENT=======================================================>")
     out = llm(
         [
             HumanMessage(
@@ -77,6 +80,9 @@ def _prompt_agent(
             )
         ]
     ).content
+    print("<OUT AGENT=======================================================>")
+    print(repr(out))
+    print("<OUT AGENT=======================================================>")
     assert isinstance(out, str)
     return out.strip()
 
@@ -137,6 +143,9 @@ def _prompt_feedback(
         additional_keys=additional_keys,
         prompt=prompt,
     )
+    print("<PROMPT FEEDBACK=======================================================>")
+    print(prompt)
+    print("<PROMPT FEEDBACK=======================================================>")
     out = llm(
         [
             HumanMessage(
@@ -144,6 +153,9 @@ def _prompt_feedback(
             )
         ]
     ).content
+    print("<OUT FEEDBACK=======================================================>")
+    print(repr(out))
+    print("<OUT FEEDBACK=======================================================>")
     assert isinstance(out, str)
     return out.strip()
 
@@ -204,6 +216,9 @@ def _prompt_refine(
         additional_keys=additional_keys,
         prompt=prompt,
     )
+    print("<PROMPT REFINE=======================================================>")
+    print(prompt)
+    print("<PROMPT REFINE=======================================================>")
     out = llm(
         [
             HumanMessage(
@@ -211,6 +226,9 @@ def _prompt_refine(
             )
         ]
     ).content
+    print("<OUT REFINE=======================================================>")
+    print(repr(out))
+    print("<OUT REFINE=======================================================>")
     assert isinstance(out, str)
     return out.strip()
 
