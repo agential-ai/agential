@@ -6,7 +6,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.functional.self_refine import (
     _prompt_agent,
-    _prompt_feedback,
+    _prompt_critique,
     _prompt_refine,
 )
 from agential.cog.strategies.self_refine.base import SelfRefineBaseStrategy
@@ -66,7 +66,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str, Dict[str, Any]]:
-        critique = _prompt_feedback(
+        critique = _prompt_critique(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -101,7 +101,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
             question=question,
             examples=examples,
             answer=answer,
-            feedback=critique,
+            critique=critique,
             additional_keys=additional_keys,
             prompt=prompt,
         )
