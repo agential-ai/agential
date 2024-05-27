@@ -1,17 +1,18 @@
 """Unit tests for Self-Refine math strategies."""
+
 from langchain_community.chat_models.fake import FakeListChatModel
 
-from agential.cog.strategies.self_refine.math import (
-    SelfRefineGSM8KStrategy,
-    SelfRefineMathStrategy
-)
 from agential.cog.prompts.benchmarks.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
 from agential.cog.prompts.self_refine import (
-    SELF_REFINE_INSTRUCTION_GSM8K,
-    SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
     GSM8K_CRITIQUE_FEWSHOT_EXAMPLES,
+    GSM8K_REFINE_FEWSHOT_EXAMPLES,
+    SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
+    SELF_REFINE_INSTRUCTION_GSM8K,
     SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
-    GSM8K_REFINE_FEWSHOT_EXAMPLES
+)
+from agential.cog.strategies.self_refine.math import (
+    SelfRefineGSM8KStrategy,
+    SelfRefineMathStrategy,
 )
 
 
@@ -33,10 +34,10 @@ def test_generate() -> None:
     question = "A robe takes 2 bolts of blue fiber and half that much white fiber.  How many bolts in total does it take?"
 
     answer = strategy.generate(
-        question=question, 
-        examples=GSM8K_FEWSHOT_EXAMPLES_POT, 
-        prompt=SELF_REFINE_INSTRUCTION_GSM8K, 
-        additional_keys={}
+        question=question,
+        examples=GSM8K_FEWSHOT_EXAMPLES_POT,
+        prompt=SELF_REFINE_INSTRUCTION_GSM8K,
+        additional_keys={},
     )
     assert answer == "result = 42"
 
@@ -51,13 +52,13 @@ def test_generate_critique() -> None:
     strategy = SelfRefineMathStrategy(llm=llm)
     question = "A robe takes 2 bolts of blue fiber and half that much white fiber.  How many bolts in total does it take?"
     answer = "result = 42"
-    
+
     critique = strategy.generate_critique(
-        question=question, 
-        examples=GSM8K_CRITIQUE_FEWSHOT_EXAMPLES, 
-        answer=answer, 
-        prompt=SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K, 
-        additional_keys={}
+        question=question,
+        examples=GSM8K_CRITIQUE_FEWSHOT_EXAMPLES,
+        answer=answer,
+        prompt=SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
+        additional_keys={},
     )
     assert critique == gt_critique
     assert not strategy._halt
@@ -74,16 +75,17 @@ def test_generate_critique() -> None:
     strategy = SelfRefineMathStrategy(llm=llm, patience=1)
     strategy._prev_code_answer = "result = 42"
     critique = strategy.generate_critique(
-        question=question, 
-        examples=GSM8K_CRITIQUE_FEWSHOT_EXAMPLES, 
-        answer=answer1, 
-        prompt=SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K, 
-        additional_keys={})
+        question=question,
+        examples=GSM8K_CRITIQUE_FEWSHOT_EXAMPLES,
+        answer=answer1,
+        prompt=SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
+        additional_keys={},
+    )
     assert critique == gt_critique
     assert strategy.patience_counter == 1
     assert strategy._halt is True
     assert strategy._prev_code_answer == "result = 42"
-    
+
 
 def test_create_output_dict() -> None:
     """Tests SelfRefineMathStrategy create_output_dict."""
@@ -96,29 +98,26 @@ def test_create_output_dict() -> None:
 
 def test_update_answer_based_on_critique() -> None:
     """Tests SelfRefineMathStrategy update_answer_based_on_critique."""
-    responses = [
-        "```python\nresult = 43\n```"
-    ]
+    responses = ["```python\nresult = 43\n```"]
     llm = FakeListChatModel(responses=responses)
     strategy = SelfRefineMathStrategy(llm=llm)
     question = "Sample question"
     answer = "result = 42"
     critique = "Critique: Your solution is incorrect."
-    
+
     new_answer = strategy.update_answer_based_on_critique(
-        question=question, 
+        question=question,
         examples=GSM8K_REFINE_FEWSHOT_EXAMPLES,
-        answer=answer, 
-        critique=critique, 
-        prompt=SELF_REFINE_REFINE_INSTRUCTION_GSM8K, 
-        additional_keys={}
+        answer=answer,
+        critique=critique,
+        prompt=SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
+        additional_keys={},
     )
     assert new_answer == "result = 43"
 
 
 def test_halting_condition() -> None:
     """Tests SelfRefineMathStrategy halting_condition."""
-
     llm = FakeListChatModel(responses=[])
     strategy = SelfRefineMathStrategy(llm=llm, patience=2)
 
