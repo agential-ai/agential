@@ -20,8 +20,10 @@ from agential.cog.agent.base import BaseAgent
 from agential.cog.functional.react import _is_halted, _prompt_agent
 from agential.cog.modules.memory.react import ReActMemory
 from agential.cog.prompts.react import (
-    HOTPOTQA_FEWSHOT_EXAMPLES,
     REACT_INSTRUCTION_HOTPOTQA,
+)
+from agential.cog.prompts.benchmarks.hotpotqa import (
+    HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 )
 from agential.utils.parse import parse_action, remove_newline
 
@@ -89,7 +91,7 @@ class ReActAgent(BaseAgent):
         self,
         question: str,
         reset: bool = True,
-        examples: str = HOTPOTQA_FEWSHOT_EXAMPLES,
+        examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         prompt: str = REACT_INSTRUCTION_HOTPOTQA,
     ) -> List[ReActOutput]:
         """Processes a given question through ReAct.
@@ -100,7 +102,7 @@ class ReActAgent(BaseAgent):
         Args:
             question (str): The question to be processed.
             reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
-            examples (str, optional): Fewshot examples. Defaults to HOTPOTQA_FEWSHOT_EXAMPLES.
+            examples (str, optional): Fewshot examples. Defaults to HOTPOTQA_FEWSHOT_EXAMPLES_REACT.
             prompt (str, optional): Prompt template string. Defaults to REACT_INSTRUCTION_HOTPOTQA. Must include question,
                 scratchpad, examples, and max_steps.
 
