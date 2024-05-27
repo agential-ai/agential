@@ -6,7 +6,6 @@ from agential.cog.functional.self_refine import (
     _build_agent_prompt,
     _build_feedback_prompt,
     _build_refine_prompt,
-    _is_halted,
     _prompt_agent,
     _prompt_feedback,
     _prompt_refine,
@@ -106,9 +105,3 @@ def test__prompt_refine() -> None:
         prompt="{examples}{solution}{feedback}",
     )
     assert out == "1"
-
-
-def test__is_halted() -> None:
-    """Test _is_halted."""
-    assert _is_halted("It is correct.")
-    assert not _is_halted("some text")

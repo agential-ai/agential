@@ -6,7 +6,6 @@ from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.strategies.self_refine.base import SelfRefineBaseStrategy
 from agential.cog.functional.self_refine import (
-    _is_halted,
     _prompt_agent,
     _prompt_feedback,
     _prompt_refine,
