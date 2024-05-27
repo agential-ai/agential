@@ -1,7 +1,7 @@
 """Base CRITIC Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Dict, Tuple, Any
+from typing import Any, Dict, Tuple
 
 from agential.cog.strategies.base import BaseStrategy
 

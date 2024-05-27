@@ -195,7 +195,7 @@ class CriticCodeStrategy(CriticBaseStrategy):
     def reset(self) -> None:
         """Resets the strategy to its initial state.
 
-        Resets internal variables keeping track of halting and answer history.            
+        Resets internal variables keeping track of halting and answer history.
         """
         self._halt = False
 
