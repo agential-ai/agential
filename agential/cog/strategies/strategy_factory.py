@@ -3,7 +3,6 @@
 from typing import Dict
 
 from agential.cog.strategies.critic.base import CriticBaseStrategy
-from agential.cog.strategies.self_refine.base import SelfRefineBaseStrategy
 from agential.cog.strategies.critic.code import (
     CritHEvalCodeStrategy,
     CritMBPPCodeStrategy,
@@ -19,9 +18,8 @@ from agential.cog.strategies.critic.qa import (
     CritHotQAStrategy,
     CritTriviaQAStrategy,
 )
-from agential.cog.strategies.self_refine.math import (
-    SelfRefineGSM8KStrategy
-)
+from agential.cog.strategies.self_refine.base import SelfRefineBaseStrategy
+from agential.cog.strategies.self_refine.math import SelfRefineGSM8KStrategy
 
 
 class CriticStrategyFactory:

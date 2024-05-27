@@ -188,11 +188,11 @@ def _build_refine_prompt(
         str: The language model's response to the question, trimmed of extraneous whitespace.
     """
     prompt = PromptTemplate.from_template(prompt).format(
-        question=question, 
-        examples=examples, 
-        answer=answer, 
-        critique=critique, 
-        **additional_keys
+        question=question,
+        examples=examples,
+        answer=answer,
+        critique=critique,
+        **additional_keys,
     )
     return prompt
 

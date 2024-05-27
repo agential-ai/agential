@@ -90,7 +90,7 @@ class CriticBaseStrategy(BaseStrategy):
     @abstractmethod
     def halting_condition(self) -> bool:
         """Determines whether the critique meets the halting condition for stopping further updates.
-        
+
         Returns:
             bool: True if the halting condition is met, False otherwise.
         """
