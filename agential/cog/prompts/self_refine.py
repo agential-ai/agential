@@ -165,7 +165,7 @@ SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K = """{examples}
 
 Question: {question}
 ```python
-{solution}
+{answer}
 ```
 
 # There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good."""
@@ -381,7 +381,7 @@ SELF_REFINE_REFINE_INSTRUCTION_GSM8K = """{examples}
 
 Question: {question}
 ```python
-{solution}
+{answer}
 ```
 
 # There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good. Provide the improved solution. If there is no error, write out the entire solution again.

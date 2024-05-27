@@ -70,7 +70,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
             llm=self.llm,
             question=question,
             examples=examples,
-            solution=answer,
+            answer=answer,
             additional_keys=additional_keys,
             prompt=prompt,
         )
