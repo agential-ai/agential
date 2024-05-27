@@ -156,7 +156,7 @@ class CriticQAStrategy(CriticBaseStrategy):
 
     def create_output_dict(
         self, answer: str, critique: str, external_tool_info: Dict[str, str]
-    ) -> Dict[str, str]:
+    ) -> Dict[str, Any]:
         """Creates a dictionary containing the answer and critique, along with any additional key updates.
 
         This function compiles the final output dictionary which includes the original answer,
@@ -169,7 +169,7 @@ class CriticQAStrategy(CriticBaseStrategy):
             external_tool_info (Dict[str, str]): Information from any external tools used during the critique.
 
         Returns:
-            Dict[str, str]: A dictionary containing the answer, critique, and additional key updates.
+            Dict[str, Any]: A dictionary containing the answer, critique, and additional key updates.
         """
         output_dict = {
             "answer": answer if not self._halt else critique,
