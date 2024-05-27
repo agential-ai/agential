@@ -14,7 +14,7 @@ from agential.cog.prompts.critic import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
     HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
 )
-from agential.cog.strategies.critic.qa_strategy import (
+from agential.cog.strategies.critic.qa import (
     CritAmbigNQStrategy,
     CritFEVERStrategy,
     CritHotQAStrategy,
