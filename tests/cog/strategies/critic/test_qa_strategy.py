@@ -226,10 +226,9 @@ def test_halting_condition() -> None:
     """Tests CriticQAStrategy halting_condition."""
     llm = FakeListChatModel(responses=[])
     strategy = CriticQAStrategy(llm=llm)
-    critique = "The answer is correct."
 
     strategy._halt = True
-    result = strategy.halting_condition(critique)
+    result = strategy.halting_condition()
 
     assert result is True
 

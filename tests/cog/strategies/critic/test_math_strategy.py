@@ -210,11 +210,11 @@ def test_halting_condition() -> None:
     strategy = CriticMathStrategy(llm=llm, patience=2)
 
     # Initially, halting condition should be False.
-    assert strategy.halting_condition("") is False
+    assert strategy.halting_condition() is False
 
     # Simulate the halting condition being met.
     strategy._halt = True
-    assert strategy.halting_condition("") is True
+    assert strategy.halting_condition() is True
 
 
 def test_reset() -> None:

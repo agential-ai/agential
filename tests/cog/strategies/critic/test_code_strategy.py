@@ -176,10 +176,10 @@ def test_halting_condition() -> None:
     """Tests CriticCodeStrategy halting_condition."""
     strategy = CriticCodeStrategy(llm=None)
 
-    assert strategy.halting_condition("") is False
+    assert strategy.halting_condition() is False
 
     strategy._halt = True
-    assert strategy.halting_condition("") is True
+    assert strategy.halting_condition() is True
 
 
 def test_reset() -> None:

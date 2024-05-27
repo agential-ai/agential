@@ -182,13 +182,10 @@ class CriticCodeStrategy(CriticBaseStrategy):
 
         return new_answer
 
-    def halting_condition(self, critique: str) -> bool:
+    def halting_condition(self) -> bool:
         """Checks if the halting condition has been met.
 
         Returns True if the CRITIC Agent's generated answer has an `execution_status="Done"`.
-
-        Args:
-            critique: The current critique of the answer.
 
         Returns:
             bool: True if the halting condition has been met, False otherwise.

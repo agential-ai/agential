@@ -6,7 +6,6 @@ Paper Repository: https://github.com/madaan/self-refine
 
 from typing import Any, Dict, List, Optional
 
-from langchain.prompts import PromptTemplate
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.agent.base import BaseAgent
