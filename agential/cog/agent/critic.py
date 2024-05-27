@@ -6,9 +6,10 @@ from agential.cog.agent.base import BaseAgent
 from agential.cog.prompts.critic import (
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
     CRITIC_INSTRUCTION_HOTPOTQA,
-    HOTPOTQA_FEWSHOT_EXAMPLES_COT,
     HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
 )
+from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
+
 from agential.cog.strategies.strategy_factory import CriticStrategyFactory
 
 
