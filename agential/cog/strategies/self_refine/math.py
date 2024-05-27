@@ -93,7 +93,14 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> str:
-        pass
+        solution = _prompt_refine(
+            llm=self.llm,
+            question=question,
+            examples=examples,
+            solution=solution,
+            feedback=critique,
+            prompt=prompt,
+        )
 
     def halting_condition(self) -> bool:
         return self._halt

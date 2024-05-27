@@ -169,7 +169,7 @@ def _prompt_feedback(
 def _build_refine_prompt(
     question: str,
     examples: str,
-    solution: str,
+    answer: str,
     feedback: str,
     additional_keys: Dict[str, str] = {},
     prompt: str = SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
@@ -180,7 +180,7 @@ def _build_refine_prompt(
         llm (BaseChatModel): The language model to prompt for a response.
         question (str): The question to be answered by the language model.
         examples (str): Pre-formatted examples that provide context to the question.
-        feedback (str): The feedback on the solution.
+        feedback (str): The feedback on the answer.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
         prompt (str): Prompt template string. Defaults to SELF_REFINE_REFINE_INSTRUCTION_GSM8K.
 
@@ -190,7 +190,7 @@ def _build_refine_prompt(
     prompt = PromptTemplate.from_template(prompt).format(
         question=question, 
         examples=examples, 
-        solution=solution, 
+        answer=answer, 
         feedback=feedback, 
         **additional_keys
     )
@@ -201,21 +201,21 @@ def _prompt_refine(
     llm: BaseChatModel,
     question: str,
     examples: str,
-    solution: str,
+    answer: str,
     feedback: str,
     additional_keys: Dict[str, str] = {},
     prompt: str = SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
 ) -> str:
-    """Refines solution based on feedback from the language model.
+    """Refines answer based on feedback from the language model.
 
-    A refine prompt is constructed using the provided solution, examples, and feedback.
+    A refine prompt is constructed using the provided answer, examples, and feedback.
 
     Parameters:
         llm (BaseChatModel): The language model to prompt for feedback.
         question (str): The question to be answered by the language model.
-        examples (str): Contextual examples related to the solution.
-        solution (str): The solution for which feedback is being sought.
-        feedback (str): The feedback on the solution.
+        examples (str): Contextual examples related to the answer.
+        answer (str): The answer for which feedback is being sought.
+        feedback (str): The feedback on the answer.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
         prompt (str): Prompt template string. Defaults to SELF_REFINE_REFINE_INSTRUCTION_GSM8K.
 
@@ -225,7 +225,7 @@ def _prompt_refine(
     prompt = _build_refine_prompt(
         question=question,
         examples=examples,
-        solution=solution,
+        answer=answer,
         feedback=feedback,
         additional_keys=additional_keys,
         prompt=prompt,
