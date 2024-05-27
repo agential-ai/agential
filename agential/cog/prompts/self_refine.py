@@ -23,7 +23,7 @@ apples = 7
 apple_cost = strawberry_cost / 2
 total_cost = bacon_cost + chicken_cost + strawberry_cost + apple_cost
 money_left = budget - total_cost
-result = money_left
+answer = money_left
 ```
 
 # There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
@@ -68,7 +68,7 @@ plates = 6
 plate_cost = 6000
 cups = 12 * 20
 cup_cost = plate_cost
-result = cup_cost
+answer = cup_cost
 ```
 
 # There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
@@ -94,7 +94,7 @@ cards_b = cards_left * 1 / 2
 cards_left = cards_left - cards_b
 cards_c = cards_left * 5 / 8
 cards_d = cards_left * 3 / 8
-result = cards_d
+answer = cards_d
 ```
 
 # There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
@@ -119,7 +119,7 @@ cards_d = cards_left * 3 / 8
 # looks good
 
 # Let's check the other parts
-result = cards_d
+answer = cards_d
 # looks good
 
 There is no error in the code! It is correct!
@@ -136,7 +136,7 @@ chips_needed = height * chips_per_inch
 chips_available = bags * chips_per_bag
 chips_left = chips_available - chips_needed
 length = chips_left / chips_per_inch
-result = length
+answer = length
 ```
 
 # There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
@@ -184,7 +184,7 @@ apples = 7
 apple_cost = strawberry_cost / 2
 total_cost = bacon_cost + chicken_cost + strawberry_cost + apple_cost
 money_left = budget - total_cost
-result = money_left
+answer = money_left
 ```
     
 # There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
@@ -236,7 +236,7 @@ num_apple_packs = 7
 apple_cost = strawberry_cost / 2
 total_cost = bacon_total_cost + (chicken_cost * num_chicken_packs) + (strawberry_cost * num_strawberry_packs) + (apple_cost * num_apple_packs)
 money_left = budget - total_cost
-result = money_left
+answer = money_left
 ```
 
 ---
@@ -247,7 +247,7 @@ plates = 6
 plate_cost = 6000
 cups = 12 * 20
 cup_cost = plate_cost
-result = cup_cost
+answer = cup_cost
 ```
 
 # There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
@@ -270,7 +270,7 @@ plate_cost = 6000
 cups = 12 * 20
 total_cup_cost = (plate_cost * plates) - 1200
 cost_per_cup = total_cup_cost / cups
-result = cost_per_cup
+answer = cost_per_cup
 ```
 
 ---
@@ -284,7 +284,7 @@ cards_b = cards_left * 1 / 2
 cards_left = cards_left - cards_b
 cards_c = cards_left * 5 / 8
 cards_d = cards_left * 3 / 8
-result = cards_d
+answer = cards_d
 ```
 
 # There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
@@ -309,7 +309,7 @@ cards_d = cards_left * 3 / 8
 # looks good
 
 # Let's check the other parts
-result = cards_d
+answer = cards_d
 # looks good
 
 There is no error in the code! It is correct! 
@@ -324,7 +324,7 @@ cards_b = cards_left * 1 / 2
 cards_left = cards_left - cards_b
 cards_c = cards_left * 5 / 8
 cards_d = cards_left * 3 / 8
-result = cards_d
+answer = cards_d
 ```
 
 ---
@@ -339,7 +339,7 @@ chips_needed = height * chips_per_inch
 chips_available = bags * chips_per_bag
 chips_left = chips_available - chips_needed
 length = chips_left / chips_per_inch
-result = length
+answer = length
 ```
 
 # There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
@@ -372,7 +372,7 @@ height = 3
 chips_available = bags * chips_per_bag
 square_inches_available = chips_available / chips_per_inch
 length = square_inches_available / height
-result = length
+answer = length
 ```"""
 
 
