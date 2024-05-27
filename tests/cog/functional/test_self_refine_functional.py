@@ -14,7 +14,7 @@ from agential.cog.functional.self_refine import (
 
 def test__build_agent_prompt() -> None:
     """Test _build_agent_prompt."""
-    gt_out = '\n(END OF EXAMPLES)\n\nQuestion: \n# Python code, return answer'
+    gt_out = "\n(END OF EXAMPLES)\n\nQuestion: \n# Python code, return answer"
     out = _build_agent_prompt(
         question="",
         examples="",
@@ -45,7 +45,7 @@ def test__prompt_agent() -> None:
 
 def test__build_critique_prompt() -> None:
     """Test _build_critique_prompt."""
-    gt_out = '\n(END OF EXAMPLES)\n\nQuestion: \n```python\n\n```\n\n# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.'
+    gt_out = "\n(END OF EXAMPLES)\n\nQuestion: \n```python\n\n```\n\n# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good."
     out = _build_critique_prompt(
         question="",
         examples="",
@@ -55,10 +55,7 @@ def test__build_critique_prompt() -> None:
 
     # Test custom prompt.
     out = _build_critique_prompt(
-        question="",
-        examples="", 
-        answer="", 
-        prompt="{examples}{answer}"
+        question="", examples="", answer="", prompt="{examples}{answer}"
     )
     assert out == ""
 
@@ -83,13 +80,17 @@ def test__prompt_critique() -> None:
 
 def test__build_refine_prompt() -> None:
     """Test _build_refine_prompt."""
-    gt_out = '\n(END OF EXAMPLES)\n\nQuestion: \n```python\n\n```\n\n# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good. Provide the improved solution. If there is no error, write out the entire solution again.\n\n\n\nOkay! Here is the rewrite:'
+    gt_out = "\n(END OF EXAMPLES)\n\nQuestion: \n```python\n\n```\n\n# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good. Provide the improved solution. If there is no error, write out the entire solution again.\n\n\n\nOkay! Here is the rewrite:"
     out = _build_refine_prompt(question="", examples="", answer="", critique="")
     assert out == gt_out
 
     # Test custom prompt.
     out = _build_refine_prompt(
-        question="", examples="", answer="", critique="", prompt="{examples}{answer}{critique}"
+        question="",
+        examples="",
+        answer="",
+        critique="",
+        prompt="{examples}{answer}{critique}",
     )
     assert out == ""
 
@@ -97,7 +98,11 @@ def test__build_refine_prompt() -> None:
 def test__prompt_refine() -> None:
     """Test _prompt_refine."""
     out = _prompt_refine(
-        llm=FakeListChatModel(responses=["1"]), question="", examples="", answer="", critique=""
+        llm=FakeListChatModel(responses=["1"]),
+        question="",
+        examples="",
+        answer="",
+        critique="",
     )
     assert out == "1"
 
