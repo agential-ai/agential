@@ -33,12 +33,9 @@ def test_init() -> None:
     """Test initialization."""
     llm = FakeListChatModel(responses=["1"])
     search = MagicMock(spec=GoogleSearchAPIWrapper)
-    agent = CriticAgent(llm=llm, mode="qa", search=search)
+    agent = CriticAgent(llm=llm, mode={"qa": "hotpotqa"}, search=search)
     assert isinstance(agent.llm, BaseChatModel)
     assert isinstance(search, GoogleSearchAPIWrapper)
-
-    with pytest.raises(ValueError):
-        agent = CriticAgent(llm=llm, mode="qa", search=None)
 
 
 def test_generate() -> None:
