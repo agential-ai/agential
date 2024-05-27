@@ -11,7 +11,7 @@ from agential.cog.agent.react import (
 )
 from agential.cog.modules.memory.react import ReActMemory
 from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.cog.prompts.react import (
+from agential.cog.prompts.agents.react import (
     REACT_INSTRUCTION_HOTPOTQA,
 )
 
