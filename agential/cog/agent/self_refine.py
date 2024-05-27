@@ -97,6 +97,7 @@ class SelfRefineAgent(BaseAgent):
             # Generate feedback.
             feedback = _prompt_feedback(
                 llm=self.llm,
+                question=question,
                 examples=feedback_examples,
                 solution=solution,
                 prompt=feedback_prompt,
@@ -107,6 +108,7 @@ class SelfRefineAgent(BaseAgent):
 
             solution = _prompt_refine(
                 llm=self.llm,
+                question=question,
                 examples=refine_examples,
                 solution=solution,
                 feedback=feedback,
