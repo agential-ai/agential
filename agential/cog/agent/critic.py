@@ -98,7 +98,7 @@ class CriticAgent(BaseAgent):
                 self.strategy.create_output_dict(answer, critique, external_tool_info)
             )
 
-            if self.strategy.halting_condition(critique):
+            if self.strategy.halting_condition():
                 break
 
             # Update answer for the next iteration.
