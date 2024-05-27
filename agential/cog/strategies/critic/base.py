@@ -88,12 +88,9 @@ class CriticBaseStrategy(BaseStrategy):
         pass
 
     @abstractmethod
-    def halting_condition(self, critique: str) -> bool:
+    def halting_condition(self) -> bool:
         """Determines whether the critique meets the halting condition for stopping further updates.
-
-        Args:
-            critique (str): The generated critique.
-
+        
         Returns:
             bool: True if the halting condition is met, False otherwise.
         """

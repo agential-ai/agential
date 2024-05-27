@@ -90,7 +90,7 @@ def _prompt_agent(
 def _build_feedback_prompt(
     question: str,
     examples: str,
-    solution: str,
+    answer: str,
     additional_keys: Dict[str, str] = {},
     prompt: str = SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K,
 ) -> str:
@@ -103,6 +103,7 @@ def _build_feedback_prompt(
         llm (BaseChatModel): The language model to prompt for a response.
         question (str): The question to be answered by the language model.
         examples (str): Pre-formatted examples that provide context to the question.
+        answer (str): The answer to the question.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
         prompt (str): Prompt template string. Defaults to SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K.
 
@@ -112,7 +113,7 @@ def _build_feedback_prompt(
     prompt = PromptTemplate.from_template(prompt).format(
         question=question,
         examples=examples,
-        solution=solution,
+        answer=answer,
         **additional_keys,
     )
     return prompt
@@ -122,19 +123,19 @@ def _prompt_feedback(
     llm: BaseChatModel,
     question: str,
     examples: str,
-    solution: str,
+    answer: str,
     additional_keys: Dict[str, str] = {},
     prompt: str = SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K,
 ) -> str:
-    """Requests feedback from the language model based on a provided solution and contextual examples.
+    """Requests feedback from the language model based on a provided answer and contextual examples.
 
-    A feedback prompt is constructed using the provided examples and solution.
+    A feedback prompt is constructed using the provided examples and answer.
 
     Parameters:
         llm (BaseChatModel): The language model to prompt for feedback.
         question (str): The question to be answered by the language model.
-        examples (str): Contextual examples related to the solution.
-        solution (str): The solution for which feedback is being sought.
+        examples (str): Contextual examples related to the answer.
+        answer (str): The answer for which feedback is being sought.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
         prompt (str): Prompt template string. Defaults to SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K.
 
@@ -144,7 +145,7 @@ def _prompt_feedback(
     prompt = _build_feedback_prompt(
         question=question,
         examples=examples,
-        solution=solution,
+        answer=answer,
         additional_keys=additional_keys,
         prompt=prompt,
     )
