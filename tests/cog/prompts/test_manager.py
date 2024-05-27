@@ -1,15 +1,15 @@
 """Unit tests for prompt manager logic."""
 
 import pytest
+
 from agential.cog.prompts.benchmarks.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
 )
-from agential.cog.prompts.manager import get_fewshot_examples, Benchmarks, FewShotType
+from agential.cog.prompts.manager import FewShotType, get_fewshot_examples
 
 
 def test_get_fewshot_examples() -> None:
     """Test get_fewshot_examples."""
-
     # Test valid input.
     mode = {"qa": "hotpotqa"}
     fewshot_type = FewShotType.COT
