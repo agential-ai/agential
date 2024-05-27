@@ -8,18 +8,19 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from agential.cog.prompts.benchmarks.humaneval import (
     HUMANEVAL_FEWSHOT_EXAMPLES_POT,
 )
+from agential.cog.prompts.benchmarks.mbpp import (
+    MBPP_FEWSHOT_EXAMPLES_POT
+)
 from agential.cog.prompts.critic import (
     CRITIC_CRITIQUE_INSTRUCTION_HUMANEVAL,
     CRITIC_CRITIQUE_INSTRUCTION_MBPP,
     CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_HUMANEVAL,
     CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_MBPP,
     CRITIC_POT_INSTRUCTION_HUMANEVAL,
-    CRITIC_POT_INSTRUCTION_MBPP,
     HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC,
     HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
     MBPP_FEWSHOT_EXAMPLES_CRITIC,
     MBPP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
-    MBPP_FEWSHOT_EXAMPLES_POT,
 )
 from agential.cog.strategies.critic.code import (
     CritHEvalCodeStrategy,
@@ -193,7 +194,6 @@ def test_reset() -> None:
     strategy.reset()
 
     # Assert that all states are reset
-    assert strategy._answer_history == []
     assert strategy._halt is False
 
 
