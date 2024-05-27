@@ -119,4 +119,5 @@ class SelfRefineAgent(BaseAgent):
         return out
 
     def reset(self) -> None:
+        """Resets the agent's internal state."""
         self.strategy.reset()
