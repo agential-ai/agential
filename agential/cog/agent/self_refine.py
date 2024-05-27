@@ -10,15 +10,14 @@ from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.agent.base import BaseAgent
 from agential.cog.functional.self_refine import (
-    _is_halted,
     _prompt_agent,
-    _prompt_feedback,
+    _prompt_critique,
     _prompt_refine,
 )
 from agential.cog.prompts.self_refine import (
-    GSM8K_FEEDBACK_FEWSHOT_EXAMPLES,
+    GSM8K_CRITIQUE_FEWSHOT_EXAMPLES,
     GSM8K_REFINE_FEWSHOT_EXAMPLES,
-    SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K,
+    SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
     SELF_REFINE_INSTRUCTION_GSM8K,
     SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
 )
@@ -29,11 +28,11 @@ from agential.cog.strategies.strategy_factory import SelfRefineStrategyFactory
 
 
 class SelfRefineAgent(BaseAgent):
-    """The Self-Refine agent that utilizes the self-refinement process to iteratively improve solutions based on feedback.
+    """The Self-Refine agent that utilizes the self-refinement process to iteratively improve solutions based on critique.
 
-    The agent prompts a language model to generate solutions to a given problem, obtains feedback on the generated
-    solutions, and then refines the solutions based on this feedback. This process can be repeated a specified number
-    of times or until the feedback indicates that no further improvements are needed.
+    The agent prompts a language model to generate solutions to a given problem, obtains critique on the generated
+    solutions, and then refines the solutions based on this critique. This process can be repeated a specified number
+    of times or until the critique indicates that no further improvements are needed.
 
     Attributes:
         llm (BaseChatModel): An instance of a language model used for generating initial answers
@@ -60,29 +59,32 @@ class SelfRefineAgent(BaseAgent):
         question: str,
         examples: str = GSM8K_FEWSHOT_EXAMPLES_POT,
         prompt: str = SELF_REFINE_INSTRUCTION_GSM8K,
-        feedback_examples: str = GSM8K_FEEDBACK_FEWSHOT_EXAMPLES,
-        feedback_prompt: str = SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K,
+        critique_examples: str = GSM8K_CRITIQUE_FEWSHOT_EXAMPLES,
+        critique_prompt: str = SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
         refine_examples: str = GSM8K_REFINE_FEWSHOT_EXAMPLES,
         refine_prompt: str = SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
         additional_keys: str ={},
-        feedback
-        max_attempts: int = 3,
+        critique_additional_keys: Dict[str, str] = {},
+        refine_additional_keys: Dict[str, str] = {},
+        max_interactions: int = 3,
         reset: bool = True,
     ) -> List[str]:
         """Generates a refined solution for a given question through an iterative self-refinement process.
 
-        The process includes generating initial solutions, soliciting feedback, and refining the solution
-        based on feedback, repeated for a maximum number of attempts or until feedback indicates satisfaction.
+        The process includes generating initial solutions, soliciting critique, and refining the solution
+        based on critique, repeated for a maximum number of attempts or until critique indicates satisfaction.
 
         Args:
             question (str): The question or problem to solve.
             examples (str): Precedent examples to guide initial solution generation. Defaults to GSM8K_FEWSHOT_EXAMPLES_POT.
             prompt (str): Instructional prompt for initial solution generation. Defaults to SELF_REFINE_INSTRUCTION_GSM8K.
-            feedback_examples (str): Precedent examples to guide feedback generation. Defaults to GSM8K_FEEDBACK_FEWSHOT_EXAMPLES.
-            feedback_prompt (str): Instructional prompt for feedback generation. Defaults to SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K.
+            critique_examples (str): Precedent examples to guide critique generation. Defaults to GSM8K_CRITIQUE_FEWSHOT_EXAMPLES.
+            critique_prompt (str): Instructional prompt for critique generation. Defaults to SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K.
             refine_examples (str): Precedent examples to guide solution refinement. Defaults to GSM8K_REFINE_FEWSHOT_EXAMPLES.
             refine_prompt (str): Instructional prompt for refining the solution. Defaults to SELF_REFINE_REFINE_INSTRUCTION_GSM8K.
-            max_attempts (int): Maximum number of refinement iterations.
+            critique_additional_keys (Dict[str, str]): Additional keys to format the critique_prompt. Defaults to {}.
+            refine_additional_keys (Dict[str, str]): Additional keys to format the refine_prompt. Defaults to {}.
+            max_interactions (int): Maximum number of refinement iterations.
             reset (bool): Resets the agent's state. Defaults to True.
 
         Returns:
@@ -96,45 +98,31 @@ class SelfRefineAgent(BaseAgent):
         # Initial answer generation.
         answer = self.strategy.generate(question, examples, prompt, additional_keys)
 
-        solution = _prompt_agent(
-            llm=self.llm, question=question, examples=examples, prompt=prompt
-        )
-
-        step_n = 0
-        while step_n < max_attempts:
-            # Generate feedback.
-            feedback = _prompt_feedback(
-                llm=self.llm,
+        for _ in range(max_interactions):
+            critique = self.strategy.generate_critique(
                 question=question,
-                examples=feedback_examples,
-                solution=solution,
-                prompt=feedback_prompt,
+                examples=critique_examples,
+                answer=answer,
+                prompt=critique_prompt,
+                additional_keys=critique_additional_keys
             )
 
-            if _is_halted(feedback):
+            out.append(
+                self.strategy.create_output_dict(answer, critique)
+            )
+
+            if self.strategy.halting_condition():
                 break
 
-            solution = _prompt_refine(
-                llm=self.llm,
+            answer = self.strategy.update_answer_based_on_critique(
                 question=question,
                 examples=refine_examples,
-                solution=solution,
-                feedback=feedback,
+                answer=answer,
+                critique=critique,
                 prompt=refine_prompt,
+                additional_keys=refine_additional_keys
             )
-
-            step_n += 1
-
-        return
 
     def reset(self) -> None:
         """Resets the agent's memory."""
-        self.memory.clear()
-
-    def retrieve(self) -> Dict[str, Any]:
-        """Retrieves the current state of the agent's memory.
-
-        Returns:
-            Dict[str, Any]: The current state of the agent's memory.
-        """
-        return self.memory.load_memories()
+        self.strategy.reset()
