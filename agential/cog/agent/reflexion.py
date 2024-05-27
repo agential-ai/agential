@@ -1,4 +1,4 @@
-"""Reflexion Agent implementation.
+"""Reflexion Agent.
 
 Original Paper: https://arxiv.org/abs/2303.11366
 Paper Repositories:

@@ -1,3 +1,9 @@
+"""CRITIC Agent.
+
+Original Paper: https://arxiv.org/pdf/2305.11738
+Paper Repository: https://github.com/microsoft/ProphetNet/tree/master/CRITIC
+"""
+
 from typing import Dict, List
 
 from langchain_core.language_models.chat_models import BaseChatModel
@@ -114,5 +120,6 @@ class CriticAgent(BaseAgent):
 
         return out
 
-    def reset(self):
+    def reset(self) -> None:
+        """Resets the CRITIC Agent's internal state."""
         self.strategy.reset()

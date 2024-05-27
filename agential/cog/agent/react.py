@@ -1,6 +1,4 @@
-"""ReAct Agent implementation.
-
-This includes the original ReAct agent implementation
+"""ReAct Agent.
 
 Original Paper: https://arxiv.org/abs/2210.03629
 Paper Repository: https://github.com/ysymyth/ReAct
