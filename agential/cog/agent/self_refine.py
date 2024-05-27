@@ -14,15 +14,15 @@ from agential.cog.functional.self_refine import (
     _prompt_critique,
     _prompt_refine,
 )
+from agential.cog.prompts.benchmarks.gsm8k import (
+    GSM8K_FEWSHOT_EXAMPLES_POT,
+)
 from agential.cog.prompts.self_refine import (
     GSM8K_CRITIQUE_FEWSHOT_EXAMPLES,
     GSM8K_REFINE_FEWSHOT_EXAMPLES,
     SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
     SELF_REFINE_INSTRUCTION_GSM8K,
     SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
-)
-from agential.cog.prompts.benchmarks.gsm8k import (
-    GSM8K_FEWSHOT_EXAMPLES_POT,
 )
 from agential.cog.strategies.strategy_factory import SelfRefineStrategyFactory
 
@@ -63,7 +63,7 @@ class SelfRefineAgent(BaseAgent):
         critique_prompt: str = SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
         refine_examples: str = GSM8K_REFINE_FEWSHOT_EXAMPLES,
         refine_prompt: str = SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
-        additional_keys: str ={},
+        additional_keys: str = {},
         critique_additional_keys: Dict[str, str] = {},
         refine_additional_keys: Dict[str, str] = {},
         max_interactions: int = 3,
@@ -104,12 +104,10 @@ class SelfRefineAgent(BaseAgent):
                 examples=critique_examples,
                 answer=answer,
                 prompt=critique_prompt,
-                additional_keys=critique_additional_keys
+                additional_keys=critique_additional_keys,
             )
 
-            out.append(
-                self.strategy.create_output_dict(answer, critique)
-            )
+            out.append(self.strategy.create_output_dict(answer, critique))
 
             if self.strategy.halting_condition():
                 break
@@ -120,9 +118,10 @@ class SelfRefineAgent(BaseAgent):
                 answer=answer,
                 critique=critique,
                 prompt=refine_prompt,
-                additional_keys=refine_additional_keys
+                additional_keys=refine_additional_keys,
             )
 
+        return out
+
     def reset(self) -> None:
-        """Resets the agent's memory."""
         self.strategy.reset()

@@ -1,15 +1,15 @@
 """Self-Refine Agent strategies for Math."""
 
-from typing import Dict, Tuple, Any
+from typing import Any, Dict, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
-from agential.cog.strategies.self_refine.base import SelfRefineBaseStrategy
 from agential.cog.functional.self_refine import (
     _prompt_agent,
     _prompt_feedback,
     _prompt_refine,
 )
+from agential.cog.strategies.self_refine.base import SelfRefineBaseStrategy
 
 
 class SelfRefineMathStrategy(SelfRefineBaseStrategy):
@@ -20,6 +20,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
         patience (int): The number of interactions to tolerate the same incorrect answer
             before halting further attempts. Defaults to 2.
     """
+
     def __init__(self, llm: BaseChatModel, patience: int = 2) -> None:
         """Initialization."""
         self.llm = llm
@@ -77,9 +78,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
 
         return critique
 
-    def create_output_dict(
-        self, answer: str, critique: str
-    ) -> Dict[str, str]:
+    def create_output_dict(self, answer: str, critique: str) -> Dict[str, str]:
         return {"code": answer, "critique": critique}
 
     def update_answer_based_on_critique(
@@ -106,7 +105,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
 
     def halting_condition(self) -> bool:
         return self._halt
-    
+
     def reset(self) -> None:
         """Resets the strategy to its initial state.
 

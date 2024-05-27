@@ -8,9 +8,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from agential.cog.prompts.benchmarks.humaneval import (
     HUMANEVAL_FEWSHOT_EXAMPLES_POT,
 )
-from agential.cog.prompts.benchmarks.mbpp import (
-    MBPP_FEWSHOT_EXAMPLES_POT
-)
+from agential.cog.prompts.benchmarks.mbpp import MBPP_FEWSHOT_EXAMPLES_POT
 from agential.cog.prompts.critic import (
     CRITIC_CRITIQUE_INSTRUCTION_HUMANEVAL,
     CRITIC_CRITIQUE_INSTRUCTION_MBPP,
