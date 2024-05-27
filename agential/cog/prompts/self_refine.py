@@ -380,7 +380,10 @@ result = length
 SELF_REFINE_REFINE_INSTRUCTION_GSM8K = """{examples}
 (END OF EXAMPLES)
 
+Question: {question}
+```python
 {solution}
+```
 
 {feedback}
 
@@ -397,8 +400,4 @@ SELF_REFINE_FEEDBACK_EXAMPLE_FORMAT_GSM8K = """{examples}
 
 Okay! Here is the rewrite:
 
-{improved_solution}
-
-### END ###
-
-"""
+{improved_solution}"""
