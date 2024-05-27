@@ -245,15 +245,3 @@ def _prompt_refine(
     print("<OUT REFINE=======================================================>")
     assert isinstance(out, str)
     return out.strip()
-
-
-def _is_halted(feedback: str) -> bool:
-    """Returns True if 'it is correct' is in feedback.lower().
-
-    Parameters:
-        feedback (str): The feedback string.
-
-    Returns:
-        bool: True if 'it is correct' in feedback.lower() else False.
-    """
-    return "it is correct" in feedback.lower()
