@@ -1,6 +1,5 @@
 """Few-shot examples for GSM8K."""
 
-
 GSM8K_FEWSHOT_EXAMPLES_POT = """Question: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops did Jason give to Denny?
 # Python code, return answer
 jason_lollipops_initial = 20
