@@ -58,7 +58,30 @@ def test_generate_critique() -> None:
         additional_keys={}
     )
     assert critique == gt_critique
+    assert not strategy._halt
+    assert strategy._prev_code_answer == answer
+    assert strategy.patience_counter == 0
 
+    # Test early stopping.
+    gt_critique = "The error in the code is that the result is hardcoded as 42 without actually calculating the total number of bolts needed for the robe. The code should calculate the total number of bolts required based on the information given in the question. Let's correct this:\n\n```python\nblue_bolts = 2\nwhite_bolts = blue_bolts / 2\ntotal_bolts = blue_bolts + white_bolts\nresult = total_bolts\n``` \n\nThis code snippet will correctly calculate the total number of bolts needed for the robe."
+    answer1 = "result = 42"
+    responses = [
+        "The error in the code is that the result is hardcoded as 42 without actually calculating the total number of bolts needed for the robe. The code should calculate the total number of bolts required based on the information given in the question. Let's correct this:\n\n```python\nblue_bolts = 2\nwhite_bolts = blue_bolts / 2\ntotal_bolts = blue_bolts + white_bolts\nresult = total_bolts\n``` \n\nThis code snippet will correctly calculate the total number of bolts needed for the robe."
+    ]
+    llm = FakeListChatModel(responses=responses)
+    strategy = SelfRefineMathStrategy(llm=llm, patience=1)
+    strategy._prev_code_answer = "result = 42"
+    critique = strategy.generate_critique(
+        question=question, 
+        examples=GSM8K_CRITIQUE_FEWSHOT_EXAMPLES, 
+        answer=answer1, 
+        prompt=SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K, 
+        additional_keys={})
+    assert critique == gt_critique
+    assert strategy.patience_counter == 1
+    assert strategy._halt is True
+    assert strategy._prev_code_answer == "result = 42"
+    
 
 def test_create_output_dict() -> None:
     """Tests SelfRefineMathStrategy create_output_dict."""
