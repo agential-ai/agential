@@ -4,16 +4,11 @@ Original Webpage: https://selfrefine.info/
 Paper Repository: https://github.com/madaan/self-refine
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Dict, List
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.agent.base import BaseAgent
-from agential.cog.functional.self_refine import (
-    _prompt_agent,
-    _prompt_critique,
-    _prompt_refine,
-)
 from agential.cog.prompts.benchmarks.gsm8k import (
     GSM8K_FEWSHOT_EXAMPLES_POT,
 )

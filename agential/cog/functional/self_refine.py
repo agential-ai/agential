@@ -7,7 +7,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
 
 from agential.cog.prompts.self_refine import (
-    SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K,
+    SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
     SELF_REFINE_INSTRUCTION_GSM8K,
     SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
 )
@@ -92,7 +92,7 @@ def _build_feedback_prompt(
     examples: str,
     answer: str,
     additional_keys: Dict[str, str] = {},
-    prompt: str = SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K,
+    prompt: str = SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
 ) -> str:
     """Builds critique prompt.
 
@@ -105,7 +105,7 @@ def _build_feedback_prompt(
         examples (str): Pre-formatted examples that provide context to the question.
         answer (str): The answer to the question.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
-        prompt (str): Prompt template string. Defaults to SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K.
+        prompt (str): Prompt template string. Defaults to SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K.
 
     Returns:
         str: The language model's response to the question, trimmed of extraneous whitespace.
@@ -125,7 +125,7 @@ def _prompt_feedback(
     examples: str,
     answer: str,
     additional_keys: Dict[str, str] = {},
-    prompt: str = SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K,
+    prompt: str = SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
 ) -> str:
     """Requests critique from the language model based on a provided answer and contextual examples.
 
@@ -137,7 +137,7 @@ def _prompt_feedback(
         examples (str): Contextual examples related to the answer.
         answer (str): The answer for which critique is being sought.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
-        prompt (str): Prompt template string. Defaults to SELF_REFINE_FEEDBACK_INSTRUCTION_GSM8K.
+        prompt (str): Prompt template string. Defaults to SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K.
 
     Returns:
         str: The language model's critique, with no leading or trailing whitespace.
