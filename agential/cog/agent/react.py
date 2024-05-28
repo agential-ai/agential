@@ -21,6 +21,7 @@ from agential.cog.prompts.agents.react import (
 )
 from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.utils.parse import parse_action, remove_newline
+from agential.cog.strategies.strategy_factory import ReActStrategyFactory
 
 
 class ReActOutput(BaseModel):
@@ -72,9 +73,12 @@ class ReActAgent(BaseAgent):
         self.docstore = docstore
         self.enc = enc
 
-        # Internal variables.
-        self._step_n = 1  #: :meta private:
-        self._finished = False  #: :meta private:
+        self.strategy = SelfRefineStrategyFactory().get_strategy(
+            mode=self.mode, llm=self.llm, **strategy_kwargs
+        )
+
+        self._step_n = 1
+        self._finished = False
 
     def generate(
         self,
