@@ -5,7 +5,13 @@ from langchain.agents.react.base import DocstoreExplorer
 
 from langchain_community.chat_models.fake import FakeListChatModel
 
-from agential.cog.strategies.react.qa import ReActQAStrategy
+from agential.cog.strategies.react.qa import (
+    ReActQAStrategy,
+    ReActHotQAStrategy,
+    ReActTriviaQAStrategy,
+    ReActAmbigNQStrategy,
+    ReActFEVERStrategy,
+)
 from agential.cog.prompts.agents.react import (
     REACT_INSTRUCTION_HOTPOTQA,
 )
@@ -219,12 +225,57 @@ def test_generate_observation() -> None:
 
 def test_create_output_dict() -> None:
     """Tests ReActQAStrategy create_output_dict."""
+    llm = FakeListChatModel(responses=[])
+    strategy = ReActQAStrategy(llm=llm)
+    thought = "This is a thought."
+    action_type = "search"
+    query = "query"
+    obs = "observation"
+    
+    expected_output = {
+        "thought": thought,
+        "action_type": action_type,
+        "query": query,
+        "observation": obs,
+    }
+
+    assert strategy.create_output_dict(thought, action_type, query, obs) == expected_output
+
 
 def test_halting_condition() -> None:
     """Tests ReActQAStrategy halting_condition."""
+    llm = FakeListChatModel(responses=[])
+    strategy = ReActQAStrategy(llm=llm)
+    idx = 0
+    question = "What is the capital of France?"
+    examples = ""
+    prompt = "Answer the question."
+
+    assert not strategy.halting_condition(idx, question, examples, prompt)
+
 
 def test_reset() -> None:
     """Tests ReActQAStrategy reset."""
+    llm = FakeListChatModel(responses=[])
+    strategy = ReActQAStrategy(llm=llm)
+    strategy._scratchpad = "Some previous state"
+    strategy._finished = True
+    
+    strategy.reset()
+
+    assert strategy._scratchpad == ""
+    assert not strategy._finished
+
 
 def test_instantiate_strategies() -> None:
     """Test instantiate all QA strategies."""
+    llm = FakeListChatModel(responses=[])
+    hotqa_strategy = ReActHotQAStrategy(llm=llm)
+    triviaqa_strategy = ReActTriviaQAStrategy(llm=llm)
+    ambignq_strategy = ReActAmbigNQStrategy(llm=llm)
+    fever_strategy = ReActFEVERStrategy(llm=llm)
+
+    assert isinstance(hotqa_strategy, ReActHotQAStrategy)
+    assert isinstance(triviaqa_strategy, ReActTriviaQAStrategy)
+    assert isinstance(ambignq_strategy, ReActAmbigNQStrategy)
+    assert isinstance(fever_strategy, ReActFEVERStrategy)
