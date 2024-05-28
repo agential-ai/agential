@@ -134,8 +134,8 @@ class CriticQAStrategy(CriticBaseStrategy):
                     prompt=prompt,
                 ).split("> Evidence: ")[0]  # type: ignore
                 new_critique = (
-                    f"{critique}\n{new_critique}{search_result.strip()}"
-                )  # type: ignore
+                    f"{critique}\n{new_critique}{search_result.strip()}"  # type: ignore
+                )
             external_tool_info["search_query"] = search_query
             external_tool_info["search_result"] = search_result  # type: ignore
         else:
