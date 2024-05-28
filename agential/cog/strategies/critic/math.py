@@ -1,6 +1,6 @@
 """CRITIC Agent strategies for Math."""
 
-from typing import Any, Dict, Tuple, List
+from typing import Any, Dict, List, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 

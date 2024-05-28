@@ -133,7 +133,9 @@ class CriticQAStrategy(CriticBaseStrategy):
                     additional_keys=additional_keys,
                     prompt=prompt,
                 ).split("> Evidence: ")[0]
-                new_critique = f"{critique}\n{new_critique}{intrinsic_search_result.strip()}"
+                new_critique = (
+                    f"{critique}\n{new_critique}{intrinsic_search_result.strip()}"
+                )
             external_tool_info["search_query"] = search_query
             external_tool_info["search_result"] = intrinsic_search_result
         else:

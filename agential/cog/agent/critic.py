@@ -30,7 +30,10 @@ class CriticAgent(BaseAgent):
     """
 
     def __init__(
-        self, llm: BaseChatModel, mode: Dict[str, str], **strategy_kwargs: Dict[str, Any]
+        self,
+        llm: BaseChatModel,
+        mode: Dict[str, str],
+        **strategy_kwargs: Dict[str, Any],
     ) -> None:
         """Initialization."""
         super().__init__()
