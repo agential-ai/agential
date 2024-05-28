@@ -4,7 +4,7 @@ Original Paper: https://arxiv.org/pdf/2305.11738
 Paper Repository: https://github.com/microsoft/ProphetNet/tree/master/CRITIC
 """
 
-from typing import Dict, List
+from typing import Dict, List, Any
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -55,7 +55,7 @@ class CriticAgent(BaseAgent):
         use_tool: bool = True,
         reset: bool = True,
         **kwargs,
-    ) -> List[Dict[str, str]]:
+    ) -> List[Dict[str, Any]]:
         """Generates an answer that is refined with search results.
 
         Args:
@@ -68,10 +68,11 @@ class CriticAgent(BaseAgent):
             critique_additional_keys (Dict[str, str]): Additional keys to format the critique_prompt. Defaults to {}.
             max_interactions (int): The maximum number of critique cycles. Defaults to 7.
             use_tool (bool): Use the external tool. Flag to decide whether to use the interpreter tool for math/code execution, or search tool for QA. Defaults to True.
+            reset (bool): Resets the agent's state. Defaults to True.
             **kwargs: Additional parameters for flexibility.
 
         Returns:
-            List[Dict[str, str]]: A list of dictionaries.
+            List[Dict[str, Any]]: A list of dictionaries.
                 - For "qa" mode: Each dictionary contains an "answer" and "critique". Optionally, a dictionary may include the search "query" and "search_result", and the final dictionary includes the final "revised_answer".
                 - For "math" mode: Each dictionary contains "code" and "critique". Optionally, a dictionary may include the "execution_status" and "code_answer" if use_interpreter_tool is True. If the critic improves the solution, then the dictionary will have an "improved_code" key.
                 - For "code" mode: Each dictionary contains "code" and "critique". Optionally, a dictionary may include the "execution_status" if use_interpreter_tool is True. If the critic improves the solution, then the dictionary will have an "improved_code" key.

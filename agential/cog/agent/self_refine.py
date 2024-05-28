@@ -78,6 +78,7 @@ class SelfRefineAgent(BaseAgent):
             critique_prompt (str): Instructional prompt for critique generation. Defaults to SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K.
             refine_examples (str): Precedent examples to guide solution refinement. Defaults to GSM8K_REFINE_FEWSHOT_EXAMPLES.
             refine_prompt (str): Instructional prompt for refining the solution. Defaults to SELF_REFINE_REFINE_INSTRUCTION_GSM8K.
+            additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
             critique_additional_keys (Dict[str, str]): Additional keys to format the critique_prompt. Defaults to {}.
             refine_additional_keys (Dict[str, str]): Additional keys to format the refine_prompt. Defaults to {}.
             max_interactions (int): Maximum number of refinement iterations.
