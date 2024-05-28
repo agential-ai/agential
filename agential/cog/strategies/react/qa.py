@@ -13,25 +13,25 @@ class ReActQAStrategy(ReActBaseStrategy):
 
 
 
-class ReActHotQAStrategy(ReActBaseStrategy):
+class ReActHotQAStrategy(ReActQAStrategy):
     """A strategy class for the HotpotQA benchmark using the ReAct agent."""
 
     pass
 
 
-class ReActTriviaQAStrategy(ReActBaseStrategy):
+class ReActTriviaQAStrategy(ReActQAStrategy):
     """A strategy class for the TriviaQA benchmark using the ReAct agent."""
 
     pass
 
 
-class ReActAmbigNQStrategy(ReActBaseStrategy):
+class ReActAmbigNQStrategy(ReActQAStrategy):
     """A strategy class for the AmbigNQ benchmark using the ReAct agent."""
 
     pass
 
 
-class ReActFEVERStrategy(ReActBaseStrategy):
+class ReActFEVERStrategy(ReActQAStrategy):
     """A strategy class for the FEVER benchmark using the ReAct agent."""
 
     pass
