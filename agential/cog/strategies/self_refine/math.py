@@ -25,7 +25,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
         """Initialization."""
         super().__init__(llm)
         self.patience = patience
-        self._prev_code_answer = ""  
+        self._prev_code_answer = ""
         self.patience_counter = 0
         self._halt = False
 
