@@ -22,7 +22,7 @@ def test_init() -> None:
     strategy = SelfRefineMathStrategy(llm=llm, patience=3)
     assert strategy.llm == llm
     assert strategy.patience == 3
-    assert strategy._prev_code_answer is None
+    assert strategy._prev_code_answer == ""
     assert strategy.patience_counter == 0
     assert not strategy._halt
 
@@ -138,7 +138,7 @@ def test_reset() -> None:
     strategy.patience_counter = 1
     strategy._halt = True
     strategy.reset()
-    assert strategy._prev_code_answer is None
+    assert strategy._prev_code_answer == ""
     assert strategy.patience_counter == 0
     assert not strategy._halt
 

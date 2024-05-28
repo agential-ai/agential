@@ -28,7 +28,7 @@ def test_init() -> None:
     assert isinstance(strategy.llm, BaseChatModel)
     assert strategy.patience == 3
     assert strategy._answer_history == []
-    assert strategy._prev_code_answer is None
+    assert strategy._prev_code_answer == ""
     assert strategy.patience_counter == 0
     assert strategy._halt is False
 
@@ -233,7 +233,7 @@ def test_reset() -> None:
 
     # Assert that all states are reset
     assert strategy._answer_history == []
-    assert strategy._prev_code_answer is None
+    assert strategy._prev_code_answer == ""
     assert strategy.patience_counter == 0
     assert strategy._halt is False
 
