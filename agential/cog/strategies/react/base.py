@@ -1,7 +1,7 @@
 """Base ReAct Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Dict
+from typing import Dict, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -20,28 +20,24 @@ class ReActBaseStrategy(BaseStrategy):
         self,
         question: str,
         examples: str,
-        answer: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> str:
+    ) -> Tuple[str, str]:
         pass
 
     @abstractmethod
     def generate_observation(
         self,
-        question: str,
-        examples: str,
-        answer: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
+        action_type: str, 
+        query: str
     ) -> str:
         pass
 
 
     @abstractmethod
-    def create_output_dict(self, answer: str, critique: str) -> Dict[str, str]:
+    def create_output_dict(self, thought: str, action: str, obs: str) -> Dict[str, str]:
         pass
 
     @abstractmethod
-    def halting_condition(self) -> bool:
+    def halting_condition(self, action_type: str) -> bool:
         pass
