@@ -22,7 +22,7 @@ class CriticMathStrategy(CriticBaseStrategy):
         """Initialization."""
         super().__init__(llm)
         self.patience = patience
-        self._answer_history: List[str] = []
+        self._answer_history: List[Dict[str, Any]] = []
         self._prev_code_answer = ""
         self.patience_counter = 0
         self._halt = False
@@ -121,7 +121,7 @@ class CriticMathStrategy(CriticBaseStrategy):
                 if (
                     self._answer_history[i]["external_tool_info"]["code_answer"]
                     is not None
-                ):
+                ):  # type: ignore
                     last_valid_idx = i
                     break
 

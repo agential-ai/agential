@@ -31,7 +31,7 @@ class CriticStrategyFactory:
     """
 
     @staticmethod
-    def get_strategy(mode: Dict[str, str], **strategy_kwargs) -> CriticBaseStrategy:
+    def get_strategy(mode: Dict[str, str], **strategy_kwargs: Any) -> CriticBaseStrategy:
         """Returns an instance of the appropriate Critic strategy based on the provided mode and benchmark.
 
         Available modes:
@@ -90,7 +90,7 @@ class SelfRefineStrategyFactory:
     """
 
     @staticmethod
-    def get_strategy(mode: Dict[str, str], **strategy_kwargs) -> SelfRefineBaseStrategy:
+    def get_strategy(mode: Dict[str, str], **strategy_kwargs: Any) -> SelfRefineBaseStrategy:
         """Returns an instance of the appropriate Self-Refine strategy based on the provided mode and benchmark.
 
         Available modes:
@@ -138,3 +138,5 @@ class SelfRefineStrategyFactory:
                 raise ValueError(f"Unsupported Code benchmark: {mode['code']}")
         else:
             raise ValueError(f"Unsupported mode: {mode}")
+
+        return  # type: ignore
