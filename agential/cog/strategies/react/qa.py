@@ -91,8 +91,8 @@ class ReActQAStrategy(ReActBaseStrategy):
 
         return obs
 
-    def create_output_dict(self, thought: str, action: str, obs: str) -> Dict[str, str]:
-        return {}
+    def create_output_dict(self, thought: str, action_type: str, query: str, obs: str) -> Dict[str, str]:
+        return {"thought": thought, "action_type": action_type, "query": query, "observation": obs}
 
     def halting_condition(self, action_type: str) -> bool:
         return self._finished
