@@ -4,7 +4,7 @@ Original Paper: https://arxiv.org/abs/2210.03629
 Paper Repository: https://github.com/ysymyth/ReAct
 """
 
-from typing import Any, Dict, List, Optional
+from typing import List
 
 import tiktoken
 
