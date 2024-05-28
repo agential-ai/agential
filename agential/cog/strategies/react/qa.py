@@ -1,6 +1,6 @@
 """ReAct Agent strategies for QA."""
 
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Any
 
 import tiktoken
 
@@ -40,15 +40,22 @@ class ReActQAStrategy(ReActBaseStrategy):
         self._finished = False
 
     def generate(
-        self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]
+        self, 
+        question: str, 
+        examples: str, 
+        prompt: str, 
+        additional_keys: Dict[str, str],
+        **kwargs: Dict[str, Any],
     ) -> str:
+        max_steps = kwargs.get("max_steps", self.max_steps)
+
         self._scratchpad += "\nThought:"
         thought = _prompt_agent(
             llm=self.llm,
             question=question,
             scratchpad=self._scratchpad,
             examples=examples,
-            max_steps=self.max_steps,
+            max_steps=max_steps,
             additional_keys=additional_keys,
             prompt=prompt,
         ).split("Action")[0]
@@ -57,15 +64,21 @@ class ReActQAStrategy(ReActBaseStrategy):
         return thought
 
     def generate_action(
-        self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]
+        self, 
+        question: str, 
+        examples: str, 
+        prompt: str, 
+        additional_keys: Dict[str, str],
+        **kwargs: Dict[str, Any],
     ) -> Tuple[str, str]:
+        max_steps = kwargs.get("max_steps", self.max_steps)
         self._scratchpad += "\nAction:"
         action = _prompt_agent(
             llm=self.llm,
             question=question,
             scratchpad=self._scratchpad,
             examples=examples,
-            max_steps=self.max_steps,
+            max_steps=max_steps,
             additional_keys=additional_keys,
             prompt=prompt,
         ).split("Observation")[0]
@@ -107,15 +120,22 @@ class ReActQAStrategy(ReActBaseStrategy):
         }
 
     def halting_condition(
-        self, idx: int, question: str, examples: str, prompt: str, action_type: str
+        self, 
+        idx: int, 
+        question: str, 
+        examples: str, 
+        prompt: str,
+        **kwargs: Dict[str, Any]
     ) -> bool:
+        max_steps = kwargs.get("max_steps", self.max_steps)
+
         return _is_halted(
             finished=self._finished,
             idx=idx,
             question=question,
             scratchpad=self._scratchpad,
             examples=examples,
-            max_steps=self.max_steps,
+            max_steps=max_steps,
             max_tokens=self.max_tokens,
             enc=self.enc,
             prompt=prompt,

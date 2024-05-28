@@ -37,6 +37,6 @@ class ReActBaseStrategy(BaseStrategy):
 
     @abstractmethod
     def halting_condition(
-        self, idx: int, question: str, examples: str, prompt: str, action_type: str
+        self, idx: int, question: str, examples: str, prompt: str
     ) -> bool:
         pass
