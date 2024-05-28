@@ -4,7 +4,7 @@ Original Webpage: https://selfrefine.info/
 Paper Repository: https://github.com/madaan/self-refine
 """
 
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -38,7 +38,10 @@ class SelfRefineAgent(BaseAgent):
     """
 
     def __init__(
-        self, llm: BaseChatModel, mode: Dict[str, str], **strategy_kwargs: Dict[str, Any]
+        self,
+        llm: BaseChatModel,
+        mode: Dict[str, str],
+        **strategy_kwargs: Dict[str, Any],
     ) -> None:
         """Initialization."""
         super().__init__()

@@ -1,6 +1,6 @@
 """Strategy factory classes."""
 
-from typing import Dict, Any
+from typing import Any, Dict
 
 from agential.cog.strategies.critic.base import CriticBaseStrategy
 from agential.cog.strategies.critic.code import (
@@ -31,7 +31,9 @@ class CriticStrategyFactory:
     """
 
     @staticmethod
-    def get_strategy(mode: Dict[str, str], **strategy_kwargs: Any) -> CriticBaseStrategy:
+    def get_strategy(
+        mode: Dict[str, str], **strategy_kwargs: Any
+    ) -> CriticBaseStrategy:
         """Returns an instance of the appropriate Critic strategy based on the provided mode and benchmark.
 
         Available modes:
@@ -90,7 +92,9 @@ class SelfRefineStrategyFactory:
     """
 
     @staticmethod
-    def get_strategy(mode: Dict[str, str], **strategy_kwargs: Any) -> SelfRefineBaseStrategy:
+    def get_strategy(
+        mode: Dict[str, str], **strategy_kwargs: Any
+    ) -> SelfRefineBaseStrategy:
         """Returns an instance of the appropriate Self-Refine strategy based on the provided mode and benchmark.
 
         Available modes:
