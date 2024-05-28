@@ -14,7 +14,7 @@
 | **SVAMP**      |  7                          |
 | **TabMWP**     |  4                          |
 | **MBPP**       |  3                          |
-| **HumanEval**  |  1                          |
+| **HumanEval**  |  0                          |
 | **ALFWorld**   |                             |
 | **WebShop**    |                             |
 | **AgentBench** |                             |
