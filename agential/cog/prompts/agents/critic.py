@@ -1896,9 +1896,6 @@ answer = min_company
 
 CRITIC_POT_INSTRUCTION_HUMANEVAL = """You are an AI that only responds with python code, NOT ENGLISH. You will be given a function signature and its docstring by the user. 
 
-{examples}
-(END OF EXAMPLES)
-
 ```python
 {question}"""
 
