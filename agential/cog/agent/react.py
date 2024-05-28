@@ -16,7 +16,6 @@ from tiktoken.core import Encoding
 
 from agential.cog.agent.base import BaseAgent
 from agential.cog.functional.react import _is_halted, _prompt_agent
-from agential.cog.modules.memory.react import ReActMemory
 from agential.cog.prompts.agents.react import (
     REACT_INSTRUCTION_HOTPOTQA,
 )
@@ -59,7 +58,6 @@ class ReActAgent(BaseAgent):
     def __init__(
         self,
         llm: BaseChatModel,
-        memory: Optional[ReActMemory] = None,
         max_steps: int = 6,
         max_tokens: int = 3896,
         docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
@@ -68,11 +66,6 @@ class ReActAgent(BaseAgent):
         """Initialization."""
         super().__init__()
         self.llm = llm
-
-        if not memory:
-            self.memory = ReActMemory()
-        else:
-            self.memory = memory
 
         self.max_steps = max_steps
         self.max_tokens = max_tokens
@@ -109,12 +102,13 @@ class ReActAgent(BaseAgent):
         if reset:
             self.reset()
 
+        scratchpad = ""
         out = []
         while not _is_halted(
             finished=self._finished,
             step_n=self._step_n,
             question=question,
-            scratchpad=self.memory.load_memories()["scratchpad"],
+            scratchpad=scratchpad,
             examples=examples,
             max_steps=self.max_steps,
             max_tokens=self.max_tokens,
@@ -122,32 +116,32 @@ class ReActAgent(BaseAgent):
             prompt=prompt,
         ):
             # Think.
-            self.memory.add_memories("\nThought:")
+            scratchpad += "\nThought:"
             thought = _prompt_agent(
                 llm=self.llm,
                 question=question,
-                scratchpad=self.memory.load_memories()["scratchpad"],
+                scratchpad=scratchpad,
                 examples=examples,
                 max_steps=self.max_steps,
                 prompt=prompt,
             ).split("Action")[0]
-            self.memory.add_memories(" " + thought)
+            scratchpad += " " + thought
 
             # Act.
-            self.memory.add_memories("\nAction:")
+            scratchpad += "\nAction:"
             action = _prompt_agent(
                 llm=self.llm,
                 question=question,
-                scratchpad=self.memory.load_memories()["scratchpad"],
+                scratchpad=scratchpad,
                 examples=examples,
                 max_steps=self.max_steps,
                 prompt=prompt,
             ).split("Observation")[0]
-            self.memory.add_memories(" " + action)
+            scratchpad += " " + action
             action_type, query = parse_action(action)
 
             # Observe.
-            self.memory.add_memories(f"\nObservation {self._step_n}: ")
+            scratchpad += f"\nObservation {self._step_n}: "
             if action_type.lower() == "finish":
                 self._answer = query
                 self._finished = True
@@ -164,7 +158,7 @@ class ReActAgent(BaseAgent):
                     obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
             else:
                 obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
-            self.memory.add_memories(obs)
+            scratchpad += obs
 
             out.append(
                 ReActOutput(
@@ -178,14 +172,6 @@ class ReActAgent(BaseAgent):
 
         return out
 
-    def retrieve(self) -> Dict[str, Any]:
-        """Retrieves the current state of the agent's memory.
-
-        Returns:
-            Dict[str, Any]: The current state of the agent's memory.
-        """
-        return self.memory.load_memories()
-
     def reset(self) -> None:
         """Resets the internal state of the ReAct agent.
 
@@ -193,4 +179,3 @@ class ReActAgent(BaseAgent):
         """
         self._step_n = 1
         self._finished = False
-        self.memory.clear()

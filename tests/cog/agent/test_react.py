@@ -9,7 +9,6 @@ from agential.cog.agent.react import (
     ReActAgent,
     ReActOutput,
 )
-from agential.cog.modules.memory.react import ReActMemory
 from agential.cog.prompts.agents.react import (
     REACT_INSTRUCTION_HOTPOTQA,
 )
@@ -22,7 +21,6 @@ def test_init() -> None:
     agent = ReActAgent(llm=llm)
     assert isinstance(agent, ReActAgent)
     assert isinstance(agent.llm, BaseChatModel)
-    assert isinstance(agent.memory, ReActMemory)
     assert agent.max_steps == 6
     assert agent.max_tokens == 3896
     assert isinstance(agent.docstore, DocstoreExplorer)
@@ -30,7 +28,6 @@ def test_init() -> None:
 
     assert agent._step_n == 1
     assert agent._finished == False
-    assert agent.memory.scratchpad == ""
 
 
 def test_generate() -> None:
@@ -126,21 +123,10 @@ def test_generate() -> None:
 
 def test_reset(react_agent: ReActAgent) -> None:
     """Test reset."""
-    assert react_agent.memory.scratchpad == ""
-    react_agent.memory.scratchpad = "abc"
     assert not react_agent._finished
     react_agent._finished = True
     assert react_agent._step_n == 1
     react_agent._step_n = 10
     react_agent.reset()
-    assert react_agent.memory.scratchpad == ""
     assert not react_agent._finished
     assert react_agent._step_n == 1
-
-
-def test_retrieve(react_agent: ReActAgent) -> None:
-    """Test retrieve."""
-    out = react_agent.retrieve()
-    assert isinstance(out, dict)
-    assert "scratchpad" in out
-    assert not out["scratchpad"]
