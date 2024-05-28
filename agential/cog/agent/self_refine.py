@@ -4,7 +4,7 @@ Original Webpage: https://selfrefine.info/
 Paper Repository: https://github.com/madaan/self-refine
 """
 
-from typing import Dict, List
+from typing import Dict, List, Any
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -59,7 +59,7 @@ class SelfRefineAgent(BaseAgent):
         critique_prompt: str = SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
         refine_examples: str = GSM8K_REFINE_FEWSHOT_EXAMPLES,
         refine_prompt: str = SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
-        additional_keys: str = {},
+        additional_keys: Dict[str, str] = {},
         critique_additional_keys: Dict[str, str] = {},
         refine_additional_keys: Dict[str, str] = {},
         max_interactions: int = 3,

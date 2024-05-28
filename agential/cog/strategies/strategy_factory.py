@@ -1,6 +1,6 @@
 """Strategy factory classes."""
 
-from typing import Dict
+from typing import Dict, Any
 
 from agential.cog.strategies.critic.base import CriticBaseStrategy
 from agential.cog.strategies.critic.code import (
@@ -42,7 +42,7 @@ class CriticStrategyFactory:
         Args:
             mode (Dict[str, str]): A dictionary specifying the mode and benchmark.
                 Example: {"qa": "hotpotqa"}, {"math": "gsm8k"}, {"code": "mbpp"}.
-            **strategy_kwargs: Additional keyword arguments to pass to the strategy's constructor.
+            **strategy_kwargs (Dict[str, Any]): Additional keyword arguments to pass to the strategy's constructor.
 
         Returns:
             CriticBaseStrategy: An instance of the appropriate Critic strategy.
@@ -101,7 +101,7 @@ class SelfRefineStrategyFactory:
         Args:
             mode (Dict[str, str]): A dictionary specifying the mode and benchmark.
                 Example: {"qa": "hotpotqa"}, {"math": "gsm8k"}, {"code": "mbpp"}.
-            **strategy_kwargs: Additional keyword arguments to pass to the strategy's constructor.
+            **strategy_kwargs (Dict[str, Any]): Additional keyword arguments to pass to the strategy's constructor.
 
         Returns:
             SelfRefineBaseStrategy: An instance of the appropriate Self-Refine strategy.

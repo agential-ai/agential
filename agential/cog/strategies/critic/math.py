@@ -1,6 +1,6 @@
 """CRITIC Agent strategies for Math."""
 
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Tuple, List
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -22,7 +22,7 @@ class CriticMathStrategy(CriticBaseStrategy):
         """Initialization."""
         super().__init__(llm)
         self.patience = patience
-        self._answer_history = []
+        self._answer_history: List[str] = []
         self._prev_code_answer = ""
         self.patience_counter = 0
         self._halt = False
@@ -127,8 +127,8 @@ class CriticMathStrategy(CriticBaseStrategy):
 
             external_tool_info = self._answer_history[last_valid_idx][
                 "external_tool_info"
-            ]
-            answer = self._answer_history[last_valid_idx]["answer"]
+            ]  # type: ignore
+            answer = self._answer_history[last_valid_idx]["answer"]  # type: ignore
 
             validate_overlapping_keys(additional_keys, external_tool_info)
 
