@@ -4,44 +4,31 @@ from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.agent.self_refine import SelfRefineAgent
-from agential.cog.modules.memory.self_refine import SelfRefineMemory
+from agential.cog.prompts.agents.self_refine import (
+    GSM8K_CRITIQUE_FEWSHOT_EXAMPLES,
+    GSM8K_REFINE_FEWSHOT_EXAMPLES,
+    SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
+    SELF_REFINE_INSTRUCTION_GSM8K,
+    SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
+)
+from agential.cog.prompts.benchmarks.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
+from agential.cog.strategies.self_refine.base import SelfRefineBaseStrategy
 
 
 def test_init() -> None:
     """Test initialization."""
-    agent = SelfRefineAgent(llm=FakeListChatModel(responses=["1"]))
+    agent = SelfRefineAgent(llm=FakeListChatModel(responses=[]), mode={"math": "gsm8k"})
     assert isinstance(agent.llm, BaseChatModel)
-    assert isinstance(agent.memory, SelfRefineMemory)
-
-    agent = SelfRefineAgent(
-        llm=FakeListChatModel(responses=["1"]),
-        memory=SelfRefineMemory(solution=["solution #1"]),
-    )
-    assert isinstance(agent.llm, BaseChatModel)
-    assert isinstance(agent.memory, SelfRefineMemory)
-    assert agent.memory.solution[0] == "solution #1"
+    assert isinstance(agent.strategy, SelfRefineBaseStrategy)
+    assert agent.mode == {"math": "gsm8k"}
 
 
 def test_reset() -> None:
     """Test reset."""
-    agent = SelfRefineAgent(
-        llm=FakeListChatModel(responses=["response"]),
-        memory=SelfRefineMemory(solution=["solution1"], feedback=["feedback1"]),
-    )
-    assert agent.memory.solution != []
-    assert agent.memory.feedback != []
+    agent = SelfRefineAgent(llm=FakeListChatModel(responses=[]), mode={"math": "gsm8k"})
+    agent.strategy._halt = True
     agent.reset()
-    assert agent.memory.solution == []
-    assert agent.memory.feedback == []
-
-
-def test_retrieve() -> None:
-    """Test retrieve."""
-    agent = SelfRefineAgent(llm=FakeListChatModel(responses=["response"]))
-    agent.memory.add_memories("solution1", "feedback1")
-    retrieved_memory = agent.retrieve()
-    assert retrieved_memory["solution"] == ["solution1"]
-    assert retrieved_memory["feedback"] == ["feedback1"]
+    assert not agent.strategy._halt
 
 
 def test_generate() -> None:
@@ -49,30 +36,47 @@ def test_generate() -> None:
     question = "A robe takes 2 bolts of blue fiber and half that much white fiber.  How many bolts in total does it take?"
 
     gt_out = [
-        'def solution():\n    """A robe takes 2 bolts of blue fiber and half that much white fiber. How many bolts in total does it take?"""\n    blue_fiber = 2\n    white_fiber = blue_fiber / 2\n    total_bolts = blue_fiber + white_fiber\n    result = total_bolts\n    return result'
+        {
+            "code": "blue_fiber = 2\nwhite_fiber = blue_fiber / 2\ntotal_bolts = blue_fiber + white_fiber\nanswer = total_bolts",
+            "critique": "The error in the code is in the calculation of the white fiber needed for the robe. Since the robe takes half as much white fiber as blue fiber, the calculation for white fiber should be `white_fiber = blue_fiber / 2`, not `white_fiber = blue_fiber * 2`. This error affects the total number of bolts calculation as well. The correct calculation should be `total_bolts = blue_fiber + white_fiber`.",
+        },
+        {
+            "code": "blue_fiber = 2\nwhite_fiber = blue_fiber / 2\ntotal_bolts = blue_fiber + white_fiber\nanswer = total_bolts",
+            "critique": "The error in the code is in the calculation of the white fiber needed for the robe. The white fiber needed is not half of the blue fiber, but rather half of the blue fiber bolts. Therefore, the calculation for white fiber should be white_fiber = blue_fiber / 2, not white_fiber = blue_fiber / 2.",
+        },
+        {
+            "code": "blue_fiber = 2\nwhite_fiber = blue_fiber / 2\ntotal_bolts = blue_fiber + white_fiber\nanswer = total_bolts",
+            "critique": "The error in the code is that it incorrectly calculates the amount of white fiber needed for the robe. The question states that the robe takes half as much white fiber as blue fiber, so the calculation for white fiber should be `white_fiber = blue_fiber / 2` instead of `white_fiber = blue_fiber * 2`.",
+        },
     ]
     responses = [
-        'def solution():\n    """A robe takes 2 bolts of blue fiber and half that much white fiber. How many bolts in total does it take?"""\n    blue_fiber = 2\n    white_fiber = blue_fiber / 2\n    total_bolts = blue_fiber + white_fiber\n    result = total_bolts\n    return result',
-        "There is no error in the code! It is correct.",
+        "blue_fiber = 2\nwhite_fiber = blue_fiber / 2\ntotal_bolts = blue_fiber + white_fiber\nanswer = total_bolts",
+        "The error in the code is in the calculation of the white fiber needed for the robe. Since the robe takes half as much white fiber as blue fiber, the calculation for white fiber should be `white_fiber = blue_fiber / 2`, not `white_fiber = blue_fiber * 2`. This error affects the total number of bolts calculation as well. The correct calculation should be `total_bolts = blue_fiber + white_fiber`.",
+        "```python\nblue_fiber = 2\nwhite_fiber = blue_fiber / 2\ntotal_bolts = blue_fiber + white_fiber\nanswer = total_bolts\n```",
+        "The error in the code is in the calculation of the white fiber needed for the robe. The white fiber needed is not half of the blue fiber, but rather half of the blue fiber bolts. Therefore, the calculation for white fiber should be white_fiber = blue_fiber / 2, not white_fiber = blue_fiber / 2. ",
+        "```python\nblue_fiber = 2\nwhite_fiber = blue_fiber / 2\ntotal_bolts = blue_fiber + white_fiber\nanswer = total_bolts\n```",
+        "The error in the code is that it incorrectly calculates the amount of white fiber needed for the robe. The question states that the robe takes half as much white fiber as blue fiber, so the calculation for white fiber should be `white_fiber = blue_fiber / 2` instead of `white_fiber = blue_fiber * 2`.",
     ]
-    agent = SelfRefineAgent(llm=FakeListChatModel(responses=responses))
-    out = agent.generate(question=question)
-    assert out == gt_out
+    agent = SelfRefineAgent(
+        llm=FakeListChatModel(responses=responses), mode={"math": "gsm8k"}
+    )
 
-    # Test with refinement.
-    question = "Billy is buying some candy with $10 his father gave him. The candy costs $1.5 a pound. After buying candy, he takes half his change and spends it on gumballs, which cost $.05 each. If he bought 40 gumballs, how many pounds of candy did he buy?"
+    out = agent.generate(
+        question=question,
+        examples=GSM8K_FEWSHOT_EXAMPLES_POT,
+        prompt=SELF_REFINE_INSTRUCTION_GSM8K,
+        critique_examples=GSM8K_CRITIQUE_FEWSHOT_EXAMPLES,
+        critique_prompt=SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
+        refine_examples=GSM8K_REFINE_FEWSHOT_EXAMPLES,
+        refine_prompt=SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
+        additional_keys={},
+        critique_additional_keys={},
+        refine_additional_keys={},
+        max_interactions=3,
+        reset=True,
+    )
 
-    gt_out = [
-        'def solution():\n    """Billy is buying some candy with $10 his father gave him. The candy costs $1.5 a pound. After buying candy, he takes half his change and spends it on gumballs, which cost $.05 each. If he bought 40 gumballs, how many pounds of candy did he buy?"""\n    money_initial = 10\n    candy_cost = 1.5\n    gumball_cost = 0.05\n    gumballs_bought = 40\n\n    candy_weight = (money_initial / 2) / candy_cost\n    return candy_weight\n\nprint(solution())',
-        "The error in the code is in the calculation of the candy_weight. The candy_weight should be calculated based on the remaining money after buying gumballs, not half of the initial money. The correct calculation should be as follows:\n\n```python\ncandy_weight = (money_initial - (gumballs_bought * gumball_cost)) / candy_cost\n```\n\nThe corrected code would be:\n\n```python\ndef solution():\n    money_initial = 10\n    candy_cost = 1.5\n    gumball_cost = 0.05\n    gumballs_bought = 40\n\n    candy_weight = (money_initial - (gumballs_bought * gumball_cost)) / candy_cost\n    return candy_weight\n\nprint(solution())\n```\n\nThank you for pointing out the error!",
-        "The error in the code is in the calculation of the candy_weight. The candy_weight should be calculated based on the remaining money after buying gumballs, not half of the initial money. The correct calculation should be as follows:\n\n```python\ncandy_weight = (money_initial - (gumballs_bought * gumball_cost)) / candy_cost\n```\n\nThe corrected code would be:\n\n```python\ndef solution():\n    money_initial = 10\n    candy_cost = 1.5\n    gumball_cost = 0.05\n    gumballs_bought = 40\n\n    candy_weight = (money_initial - (gumballs_bought * gumball_cost)) / candy_cost\n    return candy_weight\n\nprint(solution())\n```\n\nThank you for pointing out the error!",
-    ]
-    responses = [
-        'def solution():\n    """Billy is buying some candy with $10 his father gave him. The candy costs $1.5 a pound. After buying candy, he takes half his change and spends it on gumballs, which cost $.05 each. If he bought 40 gumballs, how many pounds of candy did he buy?"""\n    money_initial = 10\n    candy_cost = 1.5\n    gumball_cost = 0.05\n    gumballs_bought = 40\n\n    candy_weight = (money_initial / 2) / candy_cost\n    return candy_weight\n\nprint(solution())',
-        "The error in the code is in the calculation of the candy_weight. The candy_weight should be calculated based on the remaining money after buying gumballs, not half of the initial money. The correct calculation should be as follows:\n\n```python\ncandy_weight = (money_initial - (gumballs_bought * gumball_cost)) / candy_cost\n```\n\nThe corrected code would be:\n\n```python\ndef solution():\n    money_initial = 10\n    candy_cost = 1.5\n    gumball_cost = 0.05\n    gumballs_bought = 40\n\n    candy_weight = (money_initial - (gumballs_bought * gumball_cost)) / candy_cost\n    return candy_weight\n\nprint(solution())\n```\n\nThank you for pointing out the error!",
-        "The error in the code is in the calculation of the candy_weight. The candy_weight should be calculated based on the remaining money after buying gumballs, not half of the initial money. The correct calculation should be as follows:\n\n```python\ncandy_weight = (money_initial - (gumballs_bought * gumball_cost)) / candy_cost\n```\n\nThe corrected code would be:\n\n```python\ndef solution():\n    money_initial = 10\n    candy_cost = 1.5\n    gumball_cost = 0.05\n    gumballs_bought = 40\n\n    candy_weight = (money_initial - (gumballs_bought * gumball_cost)) / candy_cost\n    return candy_weight\n\nprint(solution())\n```\n\nThank you for pointing out the error!",
-        "It is correct.",
-    ]
-    agent = SelfRefineAgent(llm=FakeListChatModel(responses=responses))
-    out = agent.generate(question=question)
-    assert out == gt_out
+    assert len(gt_out) == len(out)
+    for gt_i, out_i in zip(gt_out, out):
+        assert gt_i["code"] == out_i["code"]
+        assert gt_i["critique"] == out_i["critique"]

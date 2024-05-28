@@ -27,14 +27,14 @@ from agential.cog.functional.reflexion import (
     react_reflect_last_attempt_and_reflexion,
     react_reflect_reflexion,
 )
-from agential.cog.prompts.react import HOTPOTQA_FEWSHOT_EXAMPLES
-from agential.cog.prompts.reflexion import (
+from agential.cog.prompts.agents.reflexion import (
     REFLEXION_COT_FEWSHOT_EXAMPLES,
     REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
     REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES,
     REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT,
     REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
 )
+from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 
 
 def test__truncate_scratchpad() -> None:
@@ -508,7 +508,7 @@ def test__prompt_react_agent() -> None:
     gt_out = "I need to search for VIVA Media AG and find out what their new acronym stands for.Action: Search[VIVA Media AG]"
     out = _prompt_react_agent(
         llm=FakeListChatModel(responses=responses),
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         reflections="",
         question=q,
         scratchpad="\nThought:",
@@ -605,7 +605,7 @@ def test__prompt_react_agent() -> None:
     )
     out = _prompt_react_agent(
         llm=FakeListChatModel(responses=responses),
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         reflections=reflections,
         question=q,
         scratchpad=scratchpad,
@@ -624,7 +624,7 @@ def test__is_halted() -> None:
         1,
         "question",
         "scratchpad",
-        HOTPOTQA_FEWSHOT_EXAMPLES,
+        HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         "",
         10,
         100,
@@ -637,7 +637,7 @@ def test__is_halted() -> None:
         11,
         "question",
         "scratchpad",
-        HOTPOTQA_FEWSHOT_EXAMPLES,
+        HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         "",
         10,
         100,
@@ -650,7 +650,7 @@ def test__is_halted() -> None:
         1,
         "question",
         "scratchpad",
-        HOTPOTQA_FEWSHOT_EXAMPLES,
+        HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         "",
         10,
         10,
@@ -663,7 +663,7 @@ def test__is_halted() -> None:
         1,
         "question",
         "scratchpad",
-        HOTPOTQA_FEWSHOT_EXAMPLES,
+        HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         "",
         10,
         100000,
@@ -676,7 +676,7 @@ def test__is_halted() -> None:
         10,
         "question",
         "scratchpad",
-        HOTPOTQA_FEWSHOT_EXAMPLES,
+        HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         "",
         10,
         100,
@@ -689,7 +689,7 @@ def test__is_halted() -> None:
         1,
         "question",
         "scratchpad",
-        HOTPOTQA_FEWSHOT_EXAMPLES,
+        HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         "",
         10,
         1603,
@@ -702,7 +702,7 @@ def test__is_halted() -> None:
         1,
         "question",
         "scratchpad",
-        HOTPOTQA_FEWSHOT_EXAMPLES,
+        HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         "",
         10,
         1603,

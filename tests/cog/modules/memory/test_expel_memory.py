@@ -12,11 +12,13 @@ from agential.cog.modules.memory.expel import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
-from agential.cog.prompts.react import HOTPOTQA_FEWSHOT_EXAMPLES
+from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 
-fewshot_questions = re.findall(r"Question: (.+?)\n", HOTPOTQA_FEWSHOT_EXAMPLES)
-fewshot_keys = re.findall(r"Action \d+: Finish\[(.+?)\]", HOTPOTQA_FEWSHOT_EXAMPLES)
-blocks = re.split(r"(?=Question: )", HOTPOTQA_FEWSHOT_EXAMPLES)[
+fewshot_questions = re.findall(r"Question: (.+?)\n", HOTPOTQA_FEWSHOT_EXAMPLES_REACT)
+fewshot_keys = re.findall(
+    r"Action \d+: Finish\[(.+?)\]", HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+)
+blocks = re.split(r"(?=Question: )", HOTPOTQA_FEWSHOT_EXAMPLES_REACT)[
     1:
 ]  # Split and ignore the first empty result
 

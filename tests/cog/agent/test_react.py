@@ -10,10 +10,10 @@ from agential.cog.agent.react import (
     ReActOutput,
 )
 from agential.cog.modules.memory.react import ReActMemory
-from agential.cog.prompts.react import (
-    HOTPOTQA_FEWSHOT_EXAMPLES,
+from agential.cog.prompts.agents.react import (
     REACT_INSTRUCTION_HOTPOTQA,
 )
+from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 
 
 def test_init() -> None:
@@ -54,7 +54,7 @@ def test_generate() -> None:
     agent = ReActAgent(llm=llm, max_steps=1)
     out = agent.generate(
         question=q,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         prompt=REACT_INSTRUCTION_HOTPOTQA,
     )
     assert out

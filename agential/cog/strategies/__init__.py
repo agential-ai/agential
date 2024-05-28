@@ -1,1 +1,1 @@
-"""Strategies modules."""
+"""Strategies module."""

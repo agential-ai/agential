@@ -11,7 +11,7 @@ from langchain.prompts import PromptTemplate
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
 
-from agential.cog.prompts.critic import (
+from agential.cog.prompts.agents.critic import (
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
     CRITIC_INSTRUCTION_HOTPOTQA,
 )
@@ -37,35 +37,34 @@ def remove_comment(code: str) -> str:
 def safe_execute(
     code_string: str,
     keys: Optional[List[str]] = None,
-    safe_globals: Dict[str, Any] = {"__builtins__": builtins, "sys": sys},
-) -> Tuple[Optional[Any], str]:
+) -> Tuple[List[Any], str]:
     """Executes the provided Python code string in a safe manner with a timeout and returns specified variables from the execution.
 
     Args:
         code_string (str): Python code to execute.
         keys (Optional[List[str]]): A list of variable names whose values are to be returned after execution. If None, the function tries to return a variable named 'answer'.
-        safe_globals (Dict[str, Any]): A dictionary of safe global names. Defaults to `{'__builtins__': builtins, 'sys': sys}`.
 
     Returns:
         tuple: A tuple containing the result(s) of the specified variable(s) and a status message. If an exception occurs or timeout happens, it returns None for the result.
     """
+    safe_globals: Dict[str, Any] = {"__builtins__": builtins, "sys": sys}
 
     def execute(x: str) -> Tuple[Optional[Any], str]:
         """Executes the code string with python exec()."""
         try:
             exec(x, safe_globals)
             if keys is None:
-                an = safe_globals.get("answer", None)
+                an = [safe_globals.get("answer", None)]
             else:
                 an = [safe_globals.get(k, None) for k in keys]
             return an, "Done"
         except BaseException as e:
-            return None, repr(e)
+            return [None], repr(e)
 
     try:
         an, report = func_timeout.func_timeout(3, execute, args=(code_string,))
     except func_timeout.FunctionTimedOut:
-        an = None
+        an = [None]
         report = "TimeoutError: execution timeout"
 
     return an, report

@@ -10,7 +10,7 @@ from langchain_core.messages.human import HumanMessage
 from langchain_core.prompts.prompt import PromptTemplate
 
 from agential.cog.agent.reflexion import ReflexionReActAgent
-from agential.cog.prompts.expel import (
+from agential.cog.prompts.agents.expel import (
     CRITIQUE_SUMMARY_SUFFIX_FULL,
     CRITIQUE_SUMMARY_SUFFIX_NOT_FULL,
     EXISTING_INSIGHTS_AI_NAME,
@@ -21,12 +21,12 @@ from agential.cog.prompts.expel import (
     SYSTEM_CRITIQUE_EXISTING_INSIGHTS_INSTRUCTION,
     SYSTEM_TEMPLATE,
 )
-from agential.cog.prompts.react import HOTPOTQA_FEWSHOT_EXAMPLES
-from agential.cog.prompts.reflexion import (
+from agential.cog.prompts.agents.reflexion import (
     REFLEXION_REACT_INSTRUCTION,
     REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
     REFLEXION_REACT_REFLECT_INSTRUCTION,
 )
+from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 
 # ============================================== Experience Gathering ==============================================
 
@@ -37,7 +37,7 @@ def gather_experience(
     keys: List[str],
     strategy: str = "reflexion",
     prompt: str = REFLEXION_REACT_INSTRUCTION,
-    examples: str = HOTPOTQA_FEWSHOT_EXAMPLES,
+    examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
     reflect_examples: str = REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
     reflect_prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION,
 ) -> Dict[str, List]:
@@ -52,7 +52,7 @@ def gather_experience(
         strategy (str, optional): The strategy used to generate experiences. Defaults to "reflexion" if not specified.
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION.
             Must include examples, reflections, question, scratchpad, and max_steps.
-        examples (str, optional): Fewshot examples. Defaults to HOTPOTQA_FEWSHOT_EXAMPLES.
+        examples (str, optional): Fewshot examples. Defaults to HOTPOTQA_FEWSHOT_EXAMPLES_REACT.
         reflect_examples (str, optional): Reflection fewshot examples. Defaults to REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES.
         reflect_prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION.
             Must include examples, question, and scratchpad.
