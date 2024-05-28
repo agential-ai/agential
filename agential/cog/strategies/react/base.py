@@ -36,7 +36,7 @@ class ReActBaseStrategy(BaseStrategy):
 
 
     @abstractmethod
-    def create_output_dict(self, thought: str, action: str, obs: str) -> Dict[str, str]:
+    def create_output_dict(self, thought: str, action_type: str, query: str, obs: str) -> Dict[str, str]:
         pass
 
     @abstractmethod
