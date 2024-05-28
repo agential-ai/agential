@@ -266,7 +266,7 @@ class CriticQAStrategy(CriticBaseStrategy):
             count = self._query_history.count(search_query)
             start = count if count < num_results else num_results - 1  # type: ignore
 
-            for k in range(start, num_results):
+            for k in range(start, num_results):  # type: ignore
                 search_result = self.search.results(search_query, num_results=k)[-1]
                 if (
                     "snippet" in search_result
@@ -278,7 +278,7 @@ class CriticQAStrategy(CriticBaseStrategy):
             if "title" not in search_result and "snippet" not in search_result:
                 context = f"""> Evidence: [] No results found\n\n"""
             else:
-                context = f"""> Evidence: [{search_result['title']}] {search_result['snippet'][:evidence_length]}\n\n"""
+                context = f"""> Evidence: [{search_result['title']}] {search_result['snippet'][:evidence_length]}\n\n"""  # type: ignore
             if idx == max_interactions - 2:
                 context += f"Let's give the most possible answer.\n\nQuestion: {question}\nHere's "
         else:
