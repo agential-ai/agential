@@ -1,6 +1,6 @@
 """CRITIC Agent strategies for QA."""
 
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple, List, Set
 
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 from langchain_core.language_models.chat_models import BaseChatModel
@@ -27,13 +27,13 @@ class CriticQAStrategy(CriticBaseStrategy):
         num_results: int = 8,
     ) -> None:
         """Initialization."""
-        self.llm = llm
+        super().__init__(llm)
         self.search = search
         self.evidence_length = evidence_length
         self.num_results = num_results
 
-        self._query_history = []
-        self._evidence_history = set()
+        self._query_history: List[str] = []
+        self._evidence_history: Set[str] = set()
         self._halt = False
 
     def generate(

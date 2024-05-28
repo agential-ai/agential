@@ -9,10 +9,13 @@ from langchain_core.language_models.chat_models import BaseChatModel
 class BaseStrategy(ABC):
     """An abstract base class for defining strategies for generating responses with LLM-based agents."""
 
+    def __init__(self, llm: BaseChatModel) -> None:
+        """Initialization."""
+        self.llm = llm
+
     @abstractmethod
     def generate(
         self,
-        llm: BaseChatModel,
         question: str,
         examples: str,
         prompt: str,
@@ -21,7 +24,6 @@ class BaseStrategy(ABC):
         """Generates a response using the provided language model, question, examples, and prompt.
 
         Args:
-            llm (BaseChatModel): The language model to be used for generating the response.
             question (str): The question to be answered by the language model.
             examples (str): Few-shot examples to guide the language model in generating the response.
             prompt (str): The instruction template used to prompt the language model.

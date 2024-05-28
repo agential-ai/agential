@@ -4,10 +4,15 @@ from abc import abstractmethod
 from typing import Any, Dict, Tuple
 
 from agential.cog.strategies.base import BaseStrategy
+from langchain_core.language_models.chat_models import BaseChatModel
 
 
 class CriticBaseStrategy(BaseStrategy):
     """An abstract base class for defining strategies for the CRITIC Agent."""
+
+    def __init__(self, llm: BaseChatModel) -> None:
+        """Initialization."""
+        super().__init__(llm)
 
     @abstractmethod
     def generate_critique(

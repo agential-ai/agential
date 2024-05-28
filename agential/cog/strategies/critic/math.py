@@ -20,10 +20,10 @@ class CriticMathStrategy(CriticBaseStrategy):
 
     def __init__(self, llm: BaseChatModel, patience: int = 2) -> None:
         """Initialization."""
-        self.llm = llm
+        super().__init__(llm)
         self.patience = patience
         self._answer_history = []
-        self._prev_code_answer = None
+        self._prev_code_answer = ""
         self.patience_counter = 0
         self._halt = False
 
@@ -225,7 +225,7 @@ class CriticMathStrategy(CriticBaseStrategy):
             bool: True if the reset was successful, False otherwise.
         """
         self._answer_history = []
-        self._prev_code_answer = None
+        self._prev_code_answer = ""
         self.patience_counter = 0
         self._halt = False
 
