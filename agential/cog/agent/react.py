@@ -6,22 +6,15 @@ Paper Repository: https://github.com/ysymyth/ReAct
 
 from typing import Any, Dict, List
 
-import tiktoken
-
-from langchain.agents.react.base import DocstoreExplorer
-from langchain_community.docstore.wikipedia import Wikipedia
 from langchain_core.language_models.chat_models import BaseChatModel
 from pydantic import BaseModel, Field
-from tiktoken.core import Encoding
 
 from agential.cog.agent.base import BaseAgent
-from agential.cog.functional.react import _is_halted, _prompt_agent
 from agential.cog.prompts.agents.react import (
     REACT_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.strategies.strategy_factory import ReActStrategyFactory
-from agential.utils.parse import parse_action, remove_newline
 
 
 class ReActOutput(BaseModel):
