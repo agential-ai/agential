@@ -63,7 +63,7 @@ class ReActQAStrategy(ReActBaseStrategy):
         Returns:
             str: The generated thought.
         """
-        max_steps = kwargs.get("max_steps", self.max_steps)
+        max_steps = kwargs.get("max_steps", self.max_steps)  # type: ignore
 
         self._scratchpad += "\nThought:"
         thought = _prompt_agent(
@@ -71,7 +71,7 @@ class ReActQAStrategy(ReActBaseStrategy):
             question=question,
             scratchpad=self._scratchpad,
             examples=examples,
-            max_steps=max_steps,
+            max_steps=max_steps,  # type: ignore
             additional_keys=additional_keys,
             prompt=prompt,
         ).split("Action")[0]
@@ -106,7 +106,7 @@ class ReActQAStrategy(ReActBaseStrategy):
             question=question,
             scratchpad=self._scratchpad,
             examples=examples,
-            max_steps=max_steps,
+            max_steps=max_steps,  # type: ignore
             additional_keys=additional_keys,
             prompt=prompt,
         ).split("Observation")[0]
@@ -196,7 +196,7 @@ class ReActQAStrategy(ReActBaseStrategy):
             question=question,
             scratchpad=self._scratchpad,
             examples=examples,
-            max_steps=max_steps,
+            max_steps=max_steps,  # type: ignore
             max_tokens=self.max_tokens,
             enc=self.enc,
             prompt=prompt,
