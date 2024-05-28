@@ -88,6 +88,16 @@ class ReActQAStrategy(ReActBaseStrategy):
         return action_type, query
 
     def generate_observation(self, idx: int, action_type: str, query: str) -> str:
+        """Generates an observation based on the action type and query.
+
+        Args:
+            idx (int): The index of the observation.
+            action_type (str): The type of action to be performed.
+            query (str): The query for the action.
+
+        Returns:
+            str: The generated observation.
+        """
         self._scratchpad += f"\nObservation {idx}: "
         if action_type.lower() == "finish":
             self._answer = query
@@ -112,6 +122,17 @@ class ReActQAStrategy(ReActBaseStrategy):
     def create_output_dict(
         self, thought: str, action_type: str, query: str, obs: str
     ) -> Dict[str, str]:
+        """Creates a dictionary of the output components.
+
+        Args:
+            thought (str): The generated thought.
+            action_type (str): The type of action performed.
+            query (str): The query for the action.
+            obs (str): The generated observation.
+
+        Returns:
+            Dict[str, str]: A dictionary containing the thought, action type, query, and observation.
+        """
         return {
             "thought": thought,
             "action_type": action_type,
@@ -127,6 +148,18 @@ class ReActQAStrategy(ReActBaseStrategy):
         prompt: str,
         **kwargs: Dict[str, Any],
     ) -> bool:
+        """Determines whether the halting condition has been met.
+
+        Args:
+            idx (int): The current step index.
+            question (str): The question being answered.
+            examples (str): Examples to guide the generation process.
+            prompt (str): The prompt used for generating the thought and action.
+            **kwargs (Dict[str, Any]): Additional arguments.
+
+        Returns:
+            bool: True if the halting condition is met, False otherwise.
+        """
         max_steps = kwargs.get("max_steps", self.max_steps)
 
         return _is_halted(
@@ -142,6 +175,10 @@ class ReActQAStrategy(ReActBaseStrategy):
         )
 
     def reset(self) -> None:
+        """Resets the internal state of the strategy.
+
+        Resets the scratchpad and the finished flag.
+        """
         self._scratchpad = ""
         self._finished = False
 
