@@ -73,7 +73,7 @@ def test_generate_action() -> None:
 
 def test_generate_observation() -> None:
     """Tests ReActQAStrategy generate_observation."""
-    
+
     action_type = "Search"
     query = 'best kick boxer in the world controversies crimes'
     init_scratchpad = '\nThought: I need to search for the best kickboxer in the world who has been involved in controversies and crimes.\nAction: Search[best kick boxer in the world controversies crimes]'
@@ -91,6 +91,131 @@ def test_generate_observation() -> None:
     assert isinstance(obs, str)
     assert strategy._finished == False
     assert strategy._scratchpad != init_scratchpad
+
+    # Test finish.
+    action_type = "Finish"
+    query = 'The best kickboxer is Buakaw Banchamek.'
+    init_scratchpad = '\nThought: I need to provide the final answer.\nAction: Finish[The best kickboxer is Buakaw Banchamek.]'
+    responses = [
+    ]
+    llm = FakeListChatModel(responses=responses)
+    strategy = ReActQAStrategy(llm=llm)
+    strategy._scratchpad = init_scratchpad
+    strategy._finished = False
+    obs = strategy.generate_observation(
+        idx=2,
+        action_type=action_type,
+        query=query
+    )
+    assert isinstance(obs, str)
+    assert obs == 'The best kickboxer is Buakaw Banchamek.'
+    assert strategy._finished == True
+    assert strategy._scratchpad != init_scratchpad
+
+    # Test search success.
+    action_type = "Search"
+    query = 'best kick boxer in the world controversies crimes'
+    init_scratchpad = '\nThought: I need to search for the best kickboxer in the world who has been involved in controversies and crimes.\nAction: Search[best kick boxer in the world controversies crimes]'
+    responses = [
+        "Buakaw Banchamek has faced several controversies and legal issues."
+    ]
+    llm = FakeListChatModel(responses=responses)
+    strategy = ReActQAStrategy(llm=llm)
+    strategy._scratchpad = init_scratchpad
+    strategy._finished = False
+    strategy.docstore.search = lambda x: "Buakaw Banchamek has faced several controversies and legal issues."
+    obs = strategy.generate_observation(
+        idx=3,
+        action_type=action_type,
+        query=query
+    )
+    assert isinstance(obs, str)
+    assert obs == "Buakaw Banchamek has faced several controversies and legal issues."
+    assert strategy._finished == False
+    assert strategy._scratchpad != init_scratchpad
+
+    # Test search failure.
+    action_type = "Search"
+    query = 'best kick boxer in the world controversies crimes'
+    init_scratchpad = '\nThought: I need to search for the best kickboxer in the world who has been involved in controversies and crimes.\nAction: Search[best kick boxer in the world controversies crimes]'
+    responses = [
+    ]
+    llm = FakeListChatModel(responses=responses)
+    strategy = ReActQAStrategy(llm=llm)
+    strategy._scratchpad = init_scratchpad
+    strategy._finished = False
+    strategy.docstore.search = lambda x: (_ for _ in ()).throw(Exception("Search failed"))
+    obs = strategy.generate_observation(
+        idx=4,
+        action_type=action_type,
+        query=query
+    )
+    assert isinstance(obs, str)
+    assert obs == "Could not find that page, please try again."
+    assert strategy._finished == False
+    assert strategy._scratchpad != init_scratchpad
+
+    # Test lookup success.
+    action_type = "Lookup"
+    query = 'controversies'
+    init_scratchpad = '\nThought: I need to lookup controversies related to the best kickboxer in the world.\nAction: Lookup[controversies]'
+    responses = [
+        "Buakaw Banchamek has faced several controversies and legal issues."
+    ]
+    llm = FakeListChatModel(responses=responses)
+    strategy = ReActQAStrategy(llm=llm)
+    strategy._scratchpad = init_scratchpad
+    strategy._finished = False
+    strategy.docstore.lookup = lambda x: "Several controversies and legal issues related to Buakaw Banchamek."
+    obs = strategy.generate_observation(
+        idx=5,
+        action_type=action_type,
+        query=query
+    )
+    assert isinstance(obs, str)
+    assert obs == "Several controversies and legal issues related to Buakaw Banchamek."
+    assert strategy._finished == False
+    assert strategy._scratchpad != init_scratchpad
+
+    # Test lookup failure.
+    action_type = "Lookup"
+    query = 'controversies'
+    init_scratchpad = '\nThought: I need to lookup controversies related to the best kickboxer in the world.\nAction: Lookup[controversies]'
+    responses = [
+    ]
+    llm = FakeListChatModel(responses=responses)
+    strategy = ReActQAStrategy(llm=llm)
+    strategy._scratchpad = init_scratchpad
+    strategy._finished = False
+    strategy.docstore.lookup = lambda x: (_ for _ in ()).throw(ValueError("Lookup failed"))
+    obs = strategy.generate_observation(
+        idx=6,
+        action_type=action_type,
+        query=query
+    )
+    assert isinstance(obs, str)
+    assert obs == "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
+    assert strategy._finished == False
+    assert strategy._scratchpad != init_scratchpad
+
+    # Test invalid action.
+    action_type = "Invalid"
+    query = 'invalid action'
+    init_scratchpad = '\nThought: I need to perform an invalid action.\nAction: Invalid[invalid action]'
+    responses = [
+    ]
+    llm = FakeListChatModel(responses=responses)
+    strategy = ReActQAStrategy(llm=llm)
+    strategy._scratchpad = init_scratchpad
+    strategy._finished = False
+    obs = strategy.generate_observation(
+        idx=7,
+        action_type=action_type,
+        query=query
+    )
+    assert isinstance(obs, str)
+    assert obs == "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
+   
 
 def test_create_output_dict() -> None:
     """Tests ReActQAStrategy create_output_dict."""
