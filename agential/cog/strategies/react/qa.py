@@ -1,6 +1,6 @@
 """ReAct Agent strategies for QA."""
 
-from typing import Dict, Tuple, Any
+from typing import Any, Dict, Tuple
 
 import tiktoken
 
@@ -40,10 +40,10 @@ class ReActQAStrategy(ReActBaseStrategy):
         self._finished = False
 
     def generate(
-        self, 
-        question: str, 
-        examples: str, 
-        prompt: str, 
+        self,
+        question: str,
+        examples: str,
+        prompt: str,
         additional_keys: Dict[str, str],
         **kwargs: Dict[str, Any],
     ) -> str:
@@ -64,10 +64,10 @@ class ReActQAStrategy(ReActBaseStrategy):
         return thought
 
     def generate_action(
-        self, 
-        question: str, 
-        examples: str, 
-        prompt: str, 
+        self,
+        question: str,
+        examples: str,
+        prompt: str,
         additional_keys: Dict[str, str],
         **kwargs: Dict[str, Any],
     ) -> Tuple[str, str]:
@@ -120,12 +120,12 @@ class ReActQAStrategy(ReActBaseStrategy):
         }
 
     def halting_condition(
-        self, 
-        idx: int, 
-        question: str, 
-        examples: str, 
+        self,
+        idx: int,
+        question: str,
+        examples: str,
         prompt: str,
-        **kwargs: Dict[str, Any]
+        **kwargs: Dict[str, Any],
     ) -> bool:
         max_steps = kwargs.get("max_steps", self.max_steps)
 

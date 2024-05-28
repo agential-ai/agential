@@ -81,11 +81,7 @@ class ReActAgent(BaseAgent):
         idx = 1
         out = []
         while not self.strategy.halting_condition(
-            idx=idx,
-            question=question,
-            examples=examples,
-            prompt=prompt,
-            **kwargs
+            idx=idx, question=question, examples=examples, prompt=prompt, **kwargs
         ):
             # Think.
             thought = self.strategy.generate(
@@ -93,7 +89,7 @@ class ReActAgent(BaseAgent):
                 examples=examples,
                 prompt=prompt,
                 additional_keys=additional_keys,
-                **kwargs
+                **kwargs,
             )
 
             # Act.
@@ -102,17 +98,19 @@ class ReActAgent(BaseAgent):
                 examples=examples,
                 prompt=prompt,
                 additional_keys=additional_keys,
-                **kwargs
+                **kwargs,
             )
 
             # Observe.
             obs = self.strategy.generate_observation(
-                idx=idx,
-                action_type=action_type,
-                query=query
+                idx=idx, action_type=action_type, query=query
             )
 
-            out.append(self.strategy.create_output_dict(thought=thought, action_type=action_type, query=query, obs=obs))
+            out.append(
+                self.strategy.create_output_dict(
+                    thought=thought, action_type=action_type, query=query, obs=obs
+                )
+            )
 
         return out
 
