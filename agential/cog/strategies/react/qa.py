@@ -19,6 +19,10 @@ class ReActQAStrategy(ReActBaseStrategy):
 
     Attributes:
         llm (BaseChatModel): The language model used for generating answers and critiques.
+        max_steps (int): The maximum number of steps the agent can take.
+        max_tokens (int): The maximum number of tokens allowed for a response.
+        docstore (DocstoreExplorer): The document store used for searching and looking up information.
+        enc (Encoding): The encoding used for the language model.
     """
 
     def __init__(
@@ -47,6 +51,18 @@ class ReActQAStrategy(ReActBaseStrategy):
         additional_keys: Dict[str, str],
         **kwargs: Dict[str, Any],
     ) -> str:
+        """Generates a thought based on the question, examples, and prompt.
+
+        Args:
+            question (str): The question to be answered.
+            examples (str): Examples to guide the generation process.
+            prompt (str): The prompt used for generating the thought.
+            additional_keys (Dict[str, str]): Additional keys for the generation process.
+            **kwargs (Dict[str, Any]): Additional arguments.
+
+        Returns:
+            str: The generated thought.
+        """
         max_steps = kwargs.get("max_steps", self.max_steps)
 
         self._scratchpad += "\nThought:"
@@ -71,6 +87,18 @@ class ReActQAStrategy(ReActBaseStrategy):
         additional_keys: Dict[str, str],
         **kwargs: Dict[str, Any],
     ) -> Tuple[str, str]:
+        """Generates an action based on the question, examples, and prompt.
+
+        Args:
+            question (str): The question to be answered.
+            examples (str): Examples to guide the generation process.
+            prompt (str): The prompt used for generating the action.
+            additional_keys (Dict[str, str]): Additional keys for the generation process.
+            **kwargs (Dict[str, Any]): Additional arguments.
+
+        Returns:
+            Tuple[str, str]: The generated action type and query.
+        """
         max_steps = kwargs.get("max_steps", self.max_steps)
         self._scratchpad += "\nAction:"
         action = _prompt_agent(
