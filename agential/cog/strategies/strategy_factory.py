@@ -91,6 +91,24 @@ class SelfRefineStrategyFactory:
 
     @staticmethod
     def get_strategy(mode: Dict[str, str], **strategy_kwargs) -> SelfRefineBaseStrategy:
+        """Returns an instance of the appropriate Self-Refine strategy based on the provided mode and benchmark.
+
+        Available modes:
+            - qa: "hotpotqa", "triviaqa", "ambignq", "fever"
+            - math: "gsm8k", "svamp", "tabmwp"
+            - code: "mbpp", "humaneval"
+
+        Args:
+            mode (Dict[str, str]): A dictionary specifying the mode and benchmark.
+                Example: {"qa": "hotpotqa"}, {"math": "gsm8k"}, {"code": "mbpp"}.
+            **strategy_kwargs: Additional keyword arguments to pass to the strategy's constructor.
+
+        Returns:
+            SelfRefineBaseStrategy: An instance of the appropriate Self-Refine strategy.
+
+        Raises:
+            ValueError: If the mode or benchmark is unsupported.
+        """
         if "qa" in mode:
             if mode["qa"] == "hotpotqa":
                 pass

@@ -184,6 +184,7 @@ class CriticMathStrategy(CriticBaseStrategy):
             prompt: The prompt to be used for generating the updated answer.
             additional_keys: Additional context or parameters to include in the critique prompt.
             external_tool_info: Information from any external tool used.
+            **kwargs: Additional parameters for flexibility.
 
         Returns:
             str: The updated answer.
