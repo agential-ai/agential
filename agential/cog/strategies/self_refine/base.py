@@ -3,8 +3,9 @@
 from abc import abstractmethod
 from typing import Dict
 
-from agential.cog.strategies.base import BaseStrategy
 from langchain_core.language_models.chat_models import BaseChatModel
+
+from agential.cog.strategies.base import BaseStrategy
 
 
 class SelfRefineBaseStrategy(BaseStrategy):

@@ -1,6 +1,6 @@
 """CRITIC Agent strategies for QA."""
 
-from typing import Any, Dict, Optional, Tuple, List, Set
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 from langchain_core.language_models.chat_models import BaseChatModel
