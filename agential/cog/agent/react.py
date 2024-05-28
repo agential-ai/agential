@@ -4,7 +4,7 @@ Original Paper: https://arxiv.org/abs/2210.03629
 Paper Repository: https://github.com/ysymyth/ReAct
 """
 
-from typing import List
+from typing import List, Dict, Any
 
 import tiktoken
 
@@ -52,28 +52,20 @@ class ReActAgent(BaseAgent):
         max_tokens (int): Maximum token limit for the language model.
         docstore (DocstoreExplorer): Document store for information retrieval.
         enc (Encoding): Encoder for calculating token lengths.
-
-    See: https://github.com/ysymyth/ReAct
     """
 
     def __init__(
         self,
         llm: BaseChatModel,
-        max_steps: int = 6,
-        max_tokens: int = 3896,
-        docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
-        enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
+        mode: Dict[str, str],
+        **strategy_kwargs: Dict[str, Any],
     ) -> None:
         """Initialization."""
         super().__init__()
         self.llm = llm
+        self.mode = mode
 
-        self.max_steps = max_steps
-        self.max_tokens = max_tokens
-        self.docstore = docstore
-        self.enc = enc
-
-        self.strategy = SelfRefineStrategyFactory().get_strategy(
+        self.strategy = ReActStrategyFactory().get_strategy(
             mode=self.mode, llm=self.llm, **strategy_kwargs
         )
 
