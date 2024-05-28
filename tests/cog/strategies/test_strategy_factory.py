@@ -22,10 +22,17 @@ from agential.cog.strategies.critic.qa import (
     CritHotQAStrategy,
     CritTriviaQAStrategy,
 )
+from agential.cog.strategies.react.qa import (
+    ReActAmbigNQStrategy,
+    ReActFEVERStrategy,
+    ReActHotQAStrategy,
+    ReActTriviaQAStrategy
+)
 from agential.cog.strategies.self_refine.math import SelfRefineGSM8KStrategy
 from agential.cog.strategies.strategy_factory import (
     CriticStrategyFactory,
     SelfRefineStrategyFactory,
+    ReActStrategyFactory
 )
 
 
@@ -138,3 +145,46 @@ def test_self_refine_strategy_factory_get_strategy() -> None:
 
     with pytest.raises(ValueError, match="Unsupported mode: {}"):
         SelfRefineStrategyFactory.get_strategy({})
+
+
+def test_react_strategy_factory_get_strategy() -> None:
+    """Tests ReActStrategyFactory get_strategy method."""
+    llm = FakeListChatModel(responses=[])
+
+    # QA benchmarks.
+    assert isinstance(
+        ReActStrategyFactory.get_strategy({"qa": "hotpotqa"}, llm=llm),
+        ReActHotQAStrategy,
+    )
+    assert isinstance(
+        ReActStrategyFactory.get_strategy({"qa": "triviaqa"}, llm=llm),
+        ReActTriviaQAStrategy,
+    )
+    assert isinstance(
+        ReActStrategyFactory.get_strategy({"qa": "ambignq"}, llm=llm),
+        ReActAmbigNQStrategy,
+    )
+    assert isinstance(
+        ReActStrategyFactory.get_strategy({"qa": "fever"}, llm=llm),
+        ReActFEVERStrategy,
+    )
+
+    # Test kwargs for QA strategy.
+    strategy = ReActStrategyFactory.get_strategy(
+        {"qa": "hotpotqa"}, llm=llm
+    )
+    assert isinstance(strategy, ReActHotQAStrategy)
+    assert strategy.llm == llm
+
+    # Unsupported benchmarks.
+    with pytest.raises(ValueError, match="Unsupported QA benchmark: unknown"):
+        ReActStrategyFactory.get_strategy({"qa": "unknown"})
+
+    with pytest.raises(ValueError, match="Unsupported Math benchmark: unknown"):
+        ReActStrategyFactory.get_strategy({"math": "unknown"})
+
+    with pytest.raises(ValueError, match="Unsupported Code benchmark: unknown"):
+        ReActStrategyFactory.get_strategy({"code": "unknown"})
+
+    with pytest.raises(ValueError, match="Unsupported mode: {}"):
+        ReActStrategyFactory.get_strategy({})
