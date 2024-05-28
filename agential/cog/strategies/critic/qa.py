@@ -132,7 +132,9 @@ class CriticQAStrategy(CriticBaseStrategy):
                     critique=new_critique,
                     additional_keys=additional_keys,
                     prompt=prompt,
-                ).split("> Evidence: ")[0]  # type: ignore
+                ).split("> Evidence: ")[
+                    0
+                ]  # type: ignore
                 new_critique = (
                     f"{critique}\n{new_critique}{search_result.strip()}"  # type: ignore
                 )
