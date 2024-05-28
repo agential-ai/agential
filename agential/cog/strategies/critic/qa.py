@@ -124,7 +124,7 @@ class CriticQAStrategy(CriticBaseStrategy):
             )
             new_critique = f"{critique}\n{new_critique}{context}"
             if not use_tool:
-                search_result = _prompt_critique(
+                intrinsic_search_result = _prompt_critique(
                     llm=self.llm,
                     question=question,
                     examples=examples,
@@ -133,9 +133,9 @@ class CriticQAStrategy(CriticBaseStrategy):
                     additional_keys=additional_keys,
                     prompt=prompt,
                 ).split("> Evidence: ")[0]
-                new_critique = f"{critique}\n{new_critique}{search_result.strip()}"
+                new_critique = f"{critique}\n{new_critique}{intrinsic_search_result.strip()}"
             external_tool_info["search_query"] = search_query
-            external_tool_info["search_result"] = search_result
+            external_tool_info["search_result"] = intrinsic_search_result
         else:
             if "most possible answer: " not in new_critique:
                 new_critique = f"{critique}\n{new_critique}\nLet's give the most possible answer.\n\nQuestion: {question}\nHere's "
@@ -264,7 +264,7 @@ class CriticQAStrategy(CriticBaseStrategy):
 
             self._query_history.append(search_query)
             count = self._query_history.count(search_query)
-            start = count if count < num_results else num_results - 1
+            start = count if count < num_results else num_results - 1  # type: ignore
 
             for k in range(start, num_results):
                 search_result = self.search.results(search_query, num_results=k)[-1]
