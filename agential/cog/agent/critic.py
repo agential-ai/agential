@@ -54,7 +54,7 @@ class CriticAgent(BaseAgent):
         max_interactions: int = 7,
         use_tool: bool = True,
         reset: bool = True,
-        **kwargs,
+        **kwargs: Dict[str, Any],
     ) -> List[Dict[str, Any]]:
         """Generates an answer that is refined with search results.
 
@@ -69,7 +69,7 @@ class CriticAgent(BaseAgent):
             max_interactions (int): The maximum number of critique cycles. Defaults to 7.
             use_tool (bool): Use the external tool. Flag to decide whether to use the interpreter tool for math/code execution, or search tool for QA. Defaults to True.
             reset (bool): Resets the agent's state. Defaults to True.
-            **kwargs: Additional parameters for flexibility.
+            **kwargs (Dict[str, Any]): Additional parameters for flexibility.
 
         Returns:
             List[Dict[str, Any]]: A list of dictionaries.

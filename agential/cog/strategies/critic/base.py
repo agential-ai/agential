@@ -21,7 +21,7 @@ class CriticBaseStrategy(BaseStrategy):
         additional_keys: Dict[str, str],
         use_tool: bool,
         max_interactions: int,
-        **kwargs,
+        **kwargs: Dict[str, Any],
     ) -> Tuple[str, Dict[str, Any]]:
         """Generates a critique of the provided answer using the given language model, question, examples, and prompt.
 
@@ -35,7 +35,7 @@ class CriticBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys to format the critique prompt.
             use_tool (bool): Whether to use an external tool (e.g., code interpreter, search tool) during critique.
             max_interactions (int): The maximum number of critique interactions.
-            **kwargs: Additional arguments that might be needed for specific implementations.
+            **kwargs (Dict[str, Any]): Additional arguments that might be needed for specific implementations.
 
         Returns:
             Tuple[str, Dict[str, Any]]: The generated critique and external tool information.
@@ -68,7 +68,7 @@ class CriticBaseStrategy(BaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
         external_tool_info: Dict[str, str],
-        **kwargs,
+        **kwargs: Dict[str, Any],
     ) -> str:
         """Updates the answer based on the provided critique using the given language model and question.
 
@@ -80,7 +80,7 @@ class CriticBaseStrategy(BaseStrategy):
             prompt (str): The instruction template used to prompt the language model for the update.
             additional_keys (Dict[str, str]): Additional keys to format the update prompt.
             external_tool_info (Dict[str, str]): Information from any external tools used during the critique.
-            **kwargs: Additional arguments that might be needed for specific implementations.
+            **kwargs (Dict[str, Any]): Additional arguments that might be needed for specific implementations.
 
         Returns:
             str: The updated answer.

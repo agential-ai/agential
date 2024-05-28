@@ -67,7 +67,7 @@ class CriticMathStrategy(CriticBaseStrategy):
         additional_keys: Dict[str, str],
         use_tool: bool,
         max_interactions: int,
-        **kwargs,
+        **kwargs: Dict[str, Any],
     ) -> Tuple[str, Dict[str, Any]]:
         """Generates a critique for the provided answer using the given prompt and examples.
 
@@ -93,7 +93,7 @@ class CriticMathStrategy(CriticBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the prompt.
             use_tool (bool): Whether to use an external tool during critique.
             max_interactions (int): The maximum number of interactions allowed.
-            **kwargs: Additional arguments for specific implementations.
+            **kwargs (Dict[str, Any]): Additional arguments for specific implementations.
 
         Returns:
             Tuple[str, Dict[str, Any]]: The generated critique and external tool information.
@@ -172,7 +172,7 @@ class CriticMathStrategy(CriticBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
         external_tool_info: Dict[str, str],
-        **kwargs,
+        **kwargs: Dict[str, Any],
     ) -> str:
         """Updates the answer based on the given critique.
 
@@ -184,7 +184,7 @@ class CriticMathStrategy(CriticBaseStrategy):
             prompt: The prompt to be used for generating the updated answer.
             additional_keys: Additional context or parameters to include in the critique prompt.
             external_tool_info: Information from any external tool used.
-            **kwargs: Additional parameters for flexibility.
+            **kwargs (Dict[str, Any]): Additional parameters for flexibility.
 
         Returns:
             str: The updated answer.
