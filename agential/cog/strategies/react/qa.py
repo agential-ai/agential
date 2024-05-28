@@ -36,7 +36,6 @@ class ReActQAStrategy(ReActBaseStrategy):
         self.enc = enc
 
         self._scratchpad = ""
-        self._step_n = 1
         self._finished = False
 
     def generate(self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]) -> str:
@@ -70,8 +69,8 @@ class ReActQAStrategy(ReActBaseStrategy):
 
         return action_type, query
 
-    def generate_observation(self, action_type: str, query: str) -> str:
-        self._scratchpad += f"\nObservation {self._step_n}: "
+    def generate_observation(self, idx: int, action_type: str, query: str) -> str:
+        self._scratchpad += f"\nObservation {idx}: "
         if action_type.lower() == "finish":
             self._answer = query
             self._finished = True
@@ -96,13 +95,12 @@ class ReActQAStrategy(ReActBaseStrategy):
         return {}
 
     def halting_condition(self, action_type: str) -> bool:
-        return super().halting_condition()
+        return self._finished
 
     def reset(self) -> None:
         self._scratchpad = ""
-        self._step_n = 1
         self._finished = False
-        
+
 
 class ReActHotQAStrategy(ReActQAStrategy):
     """A strategy class for the HotpotQA benchmark using the ReAct agent."""

@@ -28,6 +28,7 @@ class ReActBaseStrategy(BaseStrategy):
     @abstractmethod
     def generate_observation(
         self,
+        idx: int,
         action_type: str, 
         query: str
     ) -> str:
