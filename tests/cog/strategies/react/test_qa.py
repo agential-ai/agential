@@ -12,14 +12,12 @@ def test_init() -> None:
     """Test ReActQAStrategy initialization."""
     llm = FakeListChatModel(responses=["1"])
     strategy = ReActQAStrategy(llm=llm)
-    assert isinstance(strategy, ReActQAStrategy)
     assert isinstance(strategy.llm, BaseChatModel)
     assert strategy.max_steps == 6
     assert strategy.max_tokens == 3896
     assert isinstance(strategy.docstore, DocstoreExplorer)
     assert isinstance(strategy.enc, Encoding)
-
-    assert strategy._step_n == 1
+    assert strategy._scratchpad == ""
     assert strategy._finished == False
 
 
