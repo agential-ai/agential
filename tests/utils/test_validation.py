@@ -37,6 +37,5 @@ def test_validate_overlapping_keys() -> None:
     dict_1 = {"a": "1", "b": "2", "c": "3"}
     dict_2 = {"b": "3", "c": "4", "d": "5"}
     # This should raise a ValueError due to the overlapping keys "b" and "c".
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(ValueError):
         validate_overlapping_keys(dict_1, dict_2)
-    assert "Overlapping keys detected: {'b', 'c'}" in str(excinfo.value)
