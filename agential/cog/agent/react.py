@@ -112,6 +112,8 @@ class ReActAgent(BaseAgent):
                 )
             )
 
+            idx += 1
+
         return out
 
     def reset(self) -> None:
