@@ -18,7 +18,7 @@ class CriticCodeStrategy(CriticBaseStrategy):
 
     def __init__(self, llm: BaseChatModel) -> None:
         """Initialization."""
-        self.llm = llm
+        super().__init__(llm)
         self._halt = False
 
     def generate(
@@ -209,10 +209,6 @@ class CritMBPPCodeStrategy(CriticCodeStrategy):
 
 class CritHEvalCodeStrategy(CriticCodeStrategy):
     """A strategy class for the HumanEval benchmark using the CRITIC agent."""
-
-    def __init__(self, llm: BaseChatModel):
-        """Initialization."""
-        super().__init__(llm)
 
     def generate_critique(
         self,

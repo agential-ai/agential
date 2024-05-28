@@ -4,10 +4,15 @@ from abc import abstractmethod
 from typing import Dict
 
 from agential.cog.strategies.base import BaseStrategy
+from langchain_core.language_models.chat_models import BaseChatModel
 
 
 class SelfRefineBaseStrategy(BaseStrategy):
     """An abstract base class for defining strategies for the Self-Refine Agent."""
+
+    def __init__(self, llm: BaseChatModel) -> None:
+        """Initialization."""
+        super().__init__(llm)
 
     @abstractmethod
     def generate_critique(
