@@ -72,10 +72,10 @@ class ReActAgent(BaseAgent):
     def generate(
         self,
         question: str,
-        reset: bool = True,
         examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         prompt: str = REACT_INSTRUCTION_HOTPOTQA,
         additional_keys: Dict[str, str] = {},
+        reset: bool = True,
         **kwargs: Dict[str, Any],
     ) -> List[ReActOutput]:
         """Processes a given question through ReAct.
@@ -85,11 +85,11 @@ class ReActAgent(BaseAgent):
 
         Args:
             question (str): The question to be processed.
-            reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
             examples (str, optional): Fewshot examples. Defaults to HOTPOTQA_FEWSHOT_EXAMPLES_REACT.
             prompt (str, optional): Prompt template string. Defaults to REACT_INSTRUCTION_HOTPOTQA. Must include question,
                 scratchpad, examples, and max_steps.
             additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
+            reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
             **kwargs (Dict[str, Any]): Additional parameters for flexibility.
 
         Returns:
