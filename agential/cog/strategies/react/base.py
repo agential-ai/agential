@@ -26,19 +26,17 @@ class ReActBaseStrategy(BaseStrategy):
         pass
 
     @abstractmethod
-    def generate_observation(
-        self,
-        idx: int,
-        action_type: str, 
-        query: str
-    ) -> str:
-        pass
-
-
-    @abstractmethod
-    def create_output_dict(self, thought: str, action_type: str, query: str, obs: str) -> Dict[str, str]:
+    def generate_observation(self, idx: int, action_type: str, query: str) -> str:
         pass
 
     @abstractmethod
-    def halting_condition(self, action_type: str) -> bool:
+    def create_output_dict(
+        self, thought: str, action_type: str, query: str, obs: str
+    ) -> Dict[str, str]:
+        pass
+
+    @abstractmethod
+    def halting_condition(
+        self, idx: int, question: str, examples: str, prompt: str, action_type: str
+    ) -> bool:
         pass

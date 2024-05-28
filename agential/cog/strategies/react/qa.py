@@ -1,17 +1,18 @@
 """ReAct Agent strategies for QA."""
 
 from typing import Dict, Tuple
+
 import tiktoken
-from tiktoken.core import Encoding
 
 from langchain.agents.react.base import DocstoreExplorer
 from langchain_community.docstore.wikipedia import Wikipedia
 from langchain_core.language_models.chat_models import BaseChatModel
-from agential.cog.strategies.react.base import ReActBaseStrategy
+from tiktoken.core import Encoding
+
 from agential.cog.functional.react import _is_halted, _prompt_agent
+from agential.cog.strategies.react.base import ReActBaseStrategy
 from agential.utils.parse import parse_action, remove_newline
 
-# max_steps: int = 6,
 
 class ReActQAStrategy(ReActBaseStrategy):
     """A strategy class for QA benchmarks using the ReAct agent.
@@ -38,22 +39,26 @@ class ReActQAStrategy(ReActBaseStrategy):
         self._scratchpad = ""
         self._finished = False
 
-    def generate(self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]) -> str:
+    def generate(
+        self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]
+    ) -> str:
         self._scratchpad += "\nThought:"
         thought = _prompt_agent(
-                llm=self.llm,
-                question=question,
-                scratchpad=self._scratchpad,
-                examples=examples,
-                max_steps=self.max_steps,
-                additional_keys=additional_keys,
-                prompt=prompt,
+            llm=self.llm,
+            question=question,
+            scratchpad=self._scratchpad,
+            examples=examples,
+            max_steps=self.max_steps,
+            additional_keys=additional_keys,
+            prompt=prompt,
         ).split("Action")[0]
         self._scratchpad += " " + thought
 
         return thought
 
-    def generate_action(self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]) -> Tuple[str, str]:
+    def generate_action(
+        self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]
+    ) -> Tuple[str, str]:
         self._scratchpad += "\nAction:"
         action = _prompt_agent(
             llm=self.llm,
@@ -91,11 +96,30 @@ class ReActQAStrategy(ReActBaseStrategy):
 
         return obs
 
-    def create_output_dict(self, thought: str, action_type: str, query: str, obs: str) -> Dict[str, str]:
-        return {"thought": thought, "action_type": action_type, "query": query, "observation": obs}
+    def create_output_dict(
+        self, thought: str, action_type: str, query: str, obs: str
+    ) -> Dict[str, str]:
+        return {
+            "thought": thought,
+            "action_type": action_type,
+            "query": query,
+            "observation": obs,
+        }
 
-    def halting_condition(self, action_type: str) -> bool:
-        return self._finished
+    def halting_condition(
+        self, idx: int, question: str, examples: str, prompt: str, action_type: str
+    ) -> bool:
+        return _is_halted(
+            finished=self._finished,
+            idx=idx,
+            question=question,
+            scratchpad=self._scratchpad,
+            examples=examples,
+            max_steps=self.max_steps,
+            max_tokens=self.max_tokens,
+            enc=self.enc,
+            prompt=prompt,
+        )
 
     def reset(self) -> None:
         self._scratchpad = ""

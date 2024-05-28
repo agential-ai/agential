@@ -18,15 +18,16 @@ from agential.cog.strategies.critic.qa import (
     CritHotQAStrategy,
     CritTriviaQAStrategy,
 )
+from agential.cog.strategies.react.base import ReActBaseStrategy
 from agential.cog.strategies.react.qa import (
-    ReActHotQAStrategy,
-    ReActTriviaQAStrategy,
     ReActAmbigNQStrategy,
     ReActFEVERStrategy,
+    ReActHotQAStrategy,
+    ReActTriviaQAStrategy,
 )
 from agential.cog.strategies.self_refine.base import SelfRefineBaseStrategy
 from agential.cog.strategies.self_refine.math import SelfRefineGSM8KStrategy
-from agential.cog.strategies.react.base import ReActBaseStrategy
+
 
 class CriticStrategyFactory:
     """A factory class for creating instances of different CRITIC strategies based on the specified mode and benchmark.
@@ -161,9 +162,7 @@ class ReActStrategyFactory:
     """
 
     @staticmethod
-    def get_strategy(
-        mode: Dict[str, str], **strategy_kwargs: Any
-    ) -> ReActBaseStrategy:
+    def get_strategy(mode: Dict[str, str], **strategy_kwargs: Any) -> ReActBaseStrategy:
         """Returns an instance of the appropriate ReAct strategy based on the provided mode and benchmark.
 
         Available modes:
