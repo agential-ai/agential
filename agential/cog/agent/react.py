@@ -69,15 +69,14 @@ class ReActAgent(BaseAgent):
             mode=self.mode, llm=self.llm, **strategy_kwargs
         )
 
-        self._step_n = 1
-        self._finished = False
-
     def generate(
         self,
         question: str,
         reset: bool = True,
         examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         prompt: str = REACT_INSTRUCTION_HOTPOTQA,
+        additional_keys: Dict[str, str] = {},
+        **kwargs: Dict[str, Any],
     ) -> List[ReActOutput]:
         """Processes a given question through ReAct.
 
@@ -90,6 +89,8 @@ class ReActAgent(BaseAgent):
             examples (str, optional): Fewshot examples. Defaults to HOTPOTQA_FEWSHOT_EXAMPLES_REACT.
             prompt (str, optional): Prompt template string. Defaults to REACT_INSTRUCTION_HOTPOTQA. Must include question,
                 scratchpad, examples, and max_steps.
+            additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
+            **kwargs (Dict[str, Any]): Additional parameters for flexibility.
 
         Returns:
             List[Tuple[str, str, str]]: The list of accumulated output from the ReAct process,
@@ -98,73 +99,41 @@ class ReActAgent(BaseAgent):
         if reset:
             self.reset()
 
-        scratchpad = ""
+        idx = 1
         out = []
-        while not _is_halted(
-            finished=self._finished,
-            step_n=self._step_n,
+        while not self.strategy.halting_condition(
+            idx=idx,
             question=question,
-            scratchpad=scratchpad,
             examples=examples,
-            max_steps=self.max_steps,
-            max_tokens=self.max_tokens,
-            enc=self.enc,
             prompt=prompt,
+            **kwargs
         ):
             # Think.
-            scratchpad += "\nThought:"
-            thought = _prompt_agent(
-                llm=self.llm,
+            thought = self.strategy.generate(
                 question=question,
-                scratchpad=scratchpad,
                 examples=examples,
-                max_steps=self.max_steps,
                 prompt=prompt,
-            ).split("Action")[0]
-            scratchpad += " " + thought
-
-            # Act.
-            scratchpad += "\nAction:"
-            action = _prompt_agent(
-                llm=self.llm,
-                question=question,
-                scratchpad=scratchpad,
-                examples=examples,
-                max_steps=self.max_steps,
-                prompt=prompt,
-            ).split("Observation")[0]
-            scratchpad += " " + action
-            action_type, query = parse_action(action)
-
-            # Observe.
-            scratchpad += f"\nObservation {self._step_n}: "
-            if action_type.lower() == "finish":
-                self._answer = query
-                self._finished = True
-                obs = query
-            elif action_type.lower() == "search":
-                try:
-                    obs = remove_newline(self.docstore.search(query))
-                except Exception:
-                    obs = "Could not find that page, please try again."
-            elif action_type.lower() == "lookup":
-                try:
-                    obs = remove_newline(self.docstore.lookup(query))
-                except ValueError:
-                    obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
-            else:
-                obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
-            scratchpad += obs
-
-            out.append(
-                ReActOutput(
-                    thought=f"Thought: {thought}",
-                    action=f"Action: {action}",
-                    observation=f"Observation {self._step_n}: {obs}",
-                )
+                additional_keys=additional_keys,
+                **kwargs
             )
 
-            self._step_n += 1
+            # Act.
+            action_type, query = self.strategy.generate_action(
+                question=question,
+                examples=examples,
+                prompt=prompt,
+                additional_keys=additional_keys,
+                **kwargs
+            )
+
+            # Observe.
+            obs = self.strategy.generate_observation(
+                idx=idx,
+                action_type=action_type,
+                query=query
+            )
+
+            out.append(self.strategy.create_output_dict(thought=thought, action_type=action_type, query=query, obs=obs))
 
         return out
 
@@ -173,5 +142,4 @@ class ReActAgent(BaseAgent):
 
         Sets the step number, finished flag, and scratchpad to their initial values.
         """
-        self._step_n = 1
-        self._finished = False
+        self.strategy.reset()
