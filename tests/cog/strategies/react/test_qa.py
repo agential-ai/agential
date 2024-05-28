@@ -73,6 +73,24 @@ def test_generate_action() -> None:
 
 def test_generate_observation() -> None:
     """Tests ReActQAStrategy generate_observation."""
+    
+    action_type = "Search"
+    query = 'best kick boxer in the world controversies crimes'
+    init_scratchpad = '\nThought: I need to search for the best kickboxer in the world who has been involved in controversies and crimes.\nAction: Search[best kick boxer in the world controversies crimes]'
+    responses = [
+    ]
+    llm = FakeListChatModel(responses=responses)
+    strategy = ReActQAStrategy(llm=llm)
+    strategy._scratchpad = init_scratchpad
+    strategy._finished = False
+    obs = strategy.generate_observation(
+        idx=1,
+        action_type=action_type,
+        query=query
+    )
+    assert isinstance(obs, str)
+    assert strategy._finished == False
+    assert strategy._scratchpad != init_scratchpad
 
 def test_create_output_dict() -> None:
     """Tests ReActQAStrategy create_output_dict."""
