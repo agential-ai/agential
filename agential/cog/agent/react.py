@@ -4,7 +4,7 @@ Original Paper: https://arxiv.org/abs/2210.03629
 Paper Repository: https://github.com/ysymyth/ReAct
 """
 
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 import tiktoken
 
@@ -20,8 +20,8 @@ from agential.cog.prompts.agents.react import (
     REACT_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.utils.parse import parse_action, remove_newline
 from agential.cog.strategies.strategy_factory import ReActStrategyFactory
+from agential.utils.parse import parse_action, remove_newline
 
 
 class ReActOutput(BaseModel):

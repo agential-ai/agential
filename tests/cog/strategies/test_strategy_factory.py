@@ -26,13 +26,13 @@ from agential.cog.strategies.react.qa import (
     ReActAmbigNQStrategy,
     ReActFEVERStrategy,
     ReActHotQAStrategy,
-    ReActTriviaQAStrategy
+    ReActTriviaQAStrategy,
 )
 from agential.cog.strategies.self_refine.math import SelfRefineGSM8KStrategy
 from agential.cog.strategies.strategy_factory import (
     CriticStrategyFactory,
+    ReActStrategyFactory,
     SelfRefineStrategyFactory,
-    ReActStrategyFactory
 )
 
 
@@ -170,9 +170,7 @@ def test_react_strategy_factory_get_strategy() -> None:
     )
 
     # Test kwargs for QA strategy.
-    strategy = ReActStrategyFactory.get_strategy(
-        {"qa": "hotpotqa"}, llm=llm
-    )
+    strategy = ReActStrategyFactory.get_strategy({"qa": "hotpotqa"}, llm=llm)
     assert isinstance(strategy, ReActHotQAStrategy)
     assert strategy.llm == llm
 
