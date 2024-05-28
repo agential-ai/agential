@@ -7,7 +7,6 @@ Paper Repository: https://github.com/ysymyth/ReAct
 from typing import Any, Dict, List
 
 from langchain_core.language_models.chat_models import BaseChatModel
-from pydantic import BaseModel, Field
 
 from agential.cog.agent.base import BaseAgent
 from agential.cog.prompts.agents.react import (
