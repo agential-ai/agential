@@ -47,8 +47,8 @@ class ReActQAStrategy(ReActBaseStrategy):
         self,
         question: str,
         examples: str,
-        prompt: str,
         additional_keys: Dict[str, str],
+        prompt: str,
         **kwargs: Dict[str, Any],
     ) -> str:
         """Generates a thought based on the question, examples, and prompt.
@@ -56,8 +56,8 @@ class ReActQAStrategy(ReActBaseStrategy):
         Args:
             question (str): The question to be answered.
             examples (str): Examples to guide the generation process.
-            prompt (str): The prompt used for generating the thought.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
+            prompt (str): The prompt used for generating the thought.
             **kwargs (Dict[str, Any]): Additional arguments.
 
         Returns:
@@ -84,8 +84,8 @@ class ReActQAStrategy(ReActBaseStrategy):
         self,
         question: str,
         examples: str,
-        prompt: str,
         additional_keys: Dict[str, str],
+        prompt: str,
         **kwargs: Dict[str, Any],
     ) -> Tuple[str, str]:
         """Generates an action based on the question, examples, and prompt.
@@ -93,8 +93,8 @@ class ReActQAStrategy(ReActBaseStrategy):
         Args:
             question (str): The question to be answered.
             examples (str): Examples to guide the generation process.
-            prompt (str): The prompt used for generating the action.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
+            prompt (str): The prompt used for generating the action.
             **kwargs (Dict[str, Any]): Additional arguments.
 
         Returns:
@@ -175,8 +175,8 @@ class ReActQAStrategy(ReActBaseStrategy):
         idx: int,
         question: str,
         examples: str,
-        prompt: str,
         additional_keys: Dict[str, str],
+        prompt: str,
         **kwargs: Dict[str, Any],
     ) -> bool:
         """Determines whether the halting condition has been met.
