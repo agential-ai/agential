@@ -107,6 +107,7 @@ def _is_halted(
     max_steps: int,
     max_tokens: int,
     enc: Encoding,
+    additional_keys: Dict[str, str] = {},
     prompt: str = REACT_INSTRUCTION_HOTPOTQA,
 ) -> bool:
     """Determines whether the agent's operation should be halted.
@@ -124,6 +125,7 @@ def _is_halted(
         max_steps (int): Maximum allowed steps.
         max_tokens (int): Maximum allowed token count.
         enc (Encoding): The encoder to calculate token length.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
         prompt (str, optional): Prompt template string. Defaults to REACT_INSTRUCTION_HOTPOTQA. Must include question,
             scratchpad, examples, and max_steps.
 
@@ -139,6 +141,7 @@ def _is_halted(
                     scratchpad=scratchpad,
                     examples=examples,
                     max_steps=max_steps,
+                    additional_keys=additional_keys,
                     prompt=prompt,
                 )
             )

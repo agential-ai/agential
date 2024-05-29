@@ -145,5 +145,5 @@ def test__is_halted() -> None:
         10,
         1603,
         gpt3_5_turbo_enc,
-        "{question} {scratchpad} {examples} {max_steps}",
+        prompt="{question} {scratchpad} {examples} {max_steps}",
     )
