@@ -4,9 +4,10 @@ from typing import Any, Dict, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
-from agential.cog.functional.critic import _prompt_agent, _prompt_critique, safe_execute
+from agential.cog.functional.critic import _prompt_agent, _prompt_critique
 from agential.cog.strategies.critic.base import CriticBaseStrategy
 from agential.utils.validation import validate_overlapping_keys
+from agential.utils.general import safe_execute
 
 
 class CriticCodeStrategy(CriticBaseStrategy):
