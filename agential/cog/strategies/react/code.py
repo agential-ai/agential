@@ -211,13 +211,13 @@ class ReActCodeStrategy(ReActBaseStrategy):
         self._finished = False
 
 
-class ReActMBPPStrategy(ReActQAStrategy):
+class ReActMBPPStrategy(ReActCodeStrategy):
     """A strategy class for the MBPP benchmark using the ReAct agent."""
 
     pass
 
 
-class ReActHEvalStrategy(ReActQAStrategy):
+class ReActHEvalStrategy(ReActCodeStrategy):
     """A strategy class for the HumanEval benchmark using the ReAct agent."""
 
     pass
