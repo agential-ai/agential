@@ -1,8 +1,9 @@
 """ReAct Agent strategies for Code."""
 
+import re
+
 from typing import Any, Dict, Tuple
 
-import re
 import tiktoken
 
 from langchain_core.language_models.chat_models import BaseChatModel
@@ -10,12 +11,15 @@ from tiktoken.core import Encoding
 
 from agential.cog.functional.react import _is_halted, _prompt_agent
 from agential.cog.strategies.react.base import ReActBaseStrategy
-from agential.utils.parse import remove_newline
 from agential.utils.general import safe_execute
+from agential.utils.parse import remove_newline
 
 
 def parse_code_action(action: str) -> Tuple[str, str]:
-    pattern = re.compile(r"(Finish|Implement|Test)\[\s*```python\s*(.*?)\s*```\s*\]", re.DOTALL | re.IGNORECASE)
+    pattern = re.compile(
+        r"(Finish|Implement|Test)\[\s*```python\s*(.*?)\s*```\s*\]",
+        re.DOTALL | re.IGNORECASE,
+    )
 
     try:
         match = pattern.findall(action)[0]
@@ -35,7 +39,7 @@ class ReActCodeStrategy(ReActBaseStrategy):
         llm (BaseChatModel): The language model used for generating answers and critiques.
         max_steps (int): The maximum number of steps the agent can take.
         max_tokens (int): The maximum number of tokens allowed for a response.
-        
+
         enc (Encoding): The encoding used for the language model.
     """
 
