@@ -124,17 +124,33 @@ def test_generate_observation() -> None:
     assert strategy._scratchpad == gt_scratchpad
 
     # Test error case.
+    gt_scratchpad = '\nObservation 0: Invalid Action. Valid Actions are Implement[<code>] Test[<code>] and Finish[<code>].'     
+    action_type = "Unknown"
+    query = 'def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None'
+    llm = FakeListChatModel(responses=[])
+    strategy = ReActCodeStrategy(llm=llm)
+    obs = strategy.generate_observation(
+        idx=0,
+        action_type=action_type,
+        query=query
+    )
+    assert obs == "Invalid Action. Valid Actions are Implement[<code>] Test[<code>] and Finish[<code>]."
+    assert strategy._current_answer == ""
+    assert strategy._finished is False
+    assert strategy._scratchpad == gt_scratchpad
 
 
 def test_create_output_dict() -> None:
-
     """Tests ReActCodeStrategy create_output_dict."""
+
 
 def test_halting_condition() -> None:
     """Tests ReActCodeStrategy halting_condition."""
 
+
 def test_reset() -> None:
     """Tests ReActCodeStrategy reset."""
+
 
 def test_instantiate_strategies() -> None:
     """Test instantiate all Code strategies."""
