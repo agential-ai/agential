@@ -176,6 +176,7 @@ class ReActQAStrategy(ReActBaseStrategy):
         question: str,
         examples: str,
         prompt: str,
+        additional_keys: Dict[str, str],
         **kwargs: Dict[str, Any],
     ) -> bool:
         """Determines whether the halting condition has been met.
@@ -184,6 +185,7 @@ class ReActQAStrategy(ReActBaseStrategy):
             idx (int): The current step index.
             question (str): The question being answered.
             examples (str): Examples to guide the generation process.
+            additional_keys (Dict[str, str]): Additional keys for the generation process.
             prompt (str): The prompt used for generating the thought and action.
             **kwargs (Dict[str, Any]): Additional arguments.
 
@@ -201,6 +203,7 @@ class ReActQAStrategy(ReActBaseStrategy):
             max_steps=max_steps,  # type: ignore
             max_tokens=self.max_tokens,
             enc=self.enc,
+            additional_keys=additional_keys,
             prompt=prompt,
         )
 
