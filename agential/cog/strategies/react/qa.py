@@ -74,7 +74,8 @@ class ReActQAStrategy(ReActBaseStrategy):
             max_steps=max_steps,  # type: ignore
             additional_keys=additional_keys,
             prompt=prompt,
-        ).split("Action")[0]
+        )
+        thought = remove_newline(thought).split("Action")[0]
         self._scratchpad += " " + thought
 
         return thought
@@ -109,7 +110,8 @@ class ReActQAStrategy(ReActBaseStrategy):
             max_steps=max_steps,  # type: ignore
             additional_keys=additional_keys,
             prompt=prompt,
-        ).split("Observation")[0]
+        )
+        action = remove_newline(action).split("Observation")[0]
         self._scratchpad += " " + action
         action_type, query = parse_action(action)
 

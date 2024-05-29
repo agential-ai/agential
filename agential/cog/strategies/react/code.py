@@ -125,7 +125,6 @@ class ReActCodeStrategy(ReActBaseStrategy):
             additional_keys=additional_keys,
             prompt=prompt,
         )
-        print(repr(action))
         action = action.split("Observation")[0]
 
         self._scratchpad += " " + action
