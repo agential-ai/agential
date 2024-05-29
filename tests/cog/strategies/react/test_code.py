@@ -1,15 +1,15 @@
 """Unit tests for ReAct Code strategies."""
 
-from tiktoken import Encoding
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
+from tiktoken import Encoding
 
 from agential.cog.prompts.agents.react import REACT_INSTRUCTION_MBPP
 from agential.cog.prompts.benchmarks.mbpp import MBPP_FEWSHOT_EXAMPLES_REACT
 from agential.cog.strategies.react.code import (
     ReActCodeStrategy,
     ReActHEvalStrategy,
-    ReActMBPPStrategy
+    ReActMBPPStrategy,
 )
 
 
@@ -33,7 +33,7 @@ def test_generate() -> None:
     assert first_repeated_char("abc") == None
     assert first_repeated_char("123123") == "1\""""
 
-    gt_out = 'I need to find a way to identify the first repeated character in a given string.\n'
+    gt_out = "I need to find a way to identify the first repeated character in a given string.\n"
     responses = [
         'I need to find a way to identify the first repeated character in a given string.\nAction: Implement[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]\nObservation: The function `first_repeated_char` is implemented to iterate through the string and return the first repeated character encountered.\nThought: I need to test the function to ensure it works correctly with different test cases.\nAction: Test[\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n]\nObservation: All tests passed successfully.\nThought: The function correctly identifies the first repeated character in the given string.\nFinish:[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]'
     ]
@@ -55,9 +55,9 @@ def test_generate_action() -> None:
     assert first_repeated_char("abc") == None
     assert first_repeated_char("123123") == "1\""""
 
-    gt_query = 'def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None'
+    gt_query = "def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None"
     responses = [
-        'Implement[\n```python\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```\n]'
+        "Implement[\n```python\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```\n]"
     ]
     llm = FakeListChatModel(responses=responses)
     strategy = ReActCodeStrategy(llm=llm)
@@ -65,76 +65,62 @@ def test_generate_action() -> None:
         question=question,
         examples=MBPP_FEWSHOT_EXAMPLES_REACT,
         prompt=REACT_INSTRUCTION_MBPP,
-        additional_keys={"tests": tests}
+        additional_keys={"tests": tests},
     )
-    assert action_type == 'Implement'
+    assert action_type == "Implement"
     assert query == gt_query
 
 
 def test_generate_observation() -> None:
     """Tests ReActCodeStrategy generate_observation."""
-
     # Test Implement.
-    gt_scratchpad = '\nObservation 0: Done'
+    gt_scratchpad = "\nObservation 0: Done"
     action_type = "Implement"
-    query = 'def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None'
+    query = "def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None"
     llm = FakeListChatModel(responses=[])
     strategy = ReActCodeStrategy(llm=llm)
-    obs = strategy.generate_observation(
-        idx=0,
-        action_type=action_type,
-        query=query
-    )
+    obs = strategy.generate_observation(idx=0, action_type=action_type, query=query)
     assert obs == "Done"
     assert strategy._current_answer == query
     assert strategy._finished is False
     assert strategy._scratchpad == gt_scratchpad
 
     # Test test.
-    gt_scratchpad = '\nObservation 0: Done'
+    gt_scratchpad = "\nObservation 0: Done"
     action_type = "Test"
-    query = 'def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None'
+    query = "def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None"
     llm = FakeListChatModel(responses=[])
     strategy = ReActCodeStrategy(llm=llm)
     strategy._current_answer = "print('Hello World')"
-    obs = strategy.generate_observation(
-        idx=0,
-        action_type=action_type,
-        query=query
-    )
+    obs = strategy.generate_observation(idx=0, action_type=action_type, query=query)
     assert obs == "Done"
     assert strategy._current_answer == "print('Hello World')"
     assert strategy._finished is False
     assert strategy._scratchpad == gt_scratchpad
 
     # Test finish.
-    gt_scratchpad = '\nObservation 0: def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None'
+    gt_scratchpad = "\nObservation 0: def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None"
     action_type = "Finish"
-    query = 'def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None'
+    query = "def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None"
     llm = FakeListChatModel(responses=[])
     strategy = ReActCodeStrategy(llm=llm)
-    obs = strategy.generate_observation(
-        idx=0,
-        action_type=action_type,
-        query=query
-    )
+    obs = strategy.generate_observation(idx=0, action_type=action_type, query=query)
     assert obs == query
     assert strategy._current_answer == query
     assert strategy._finished is True
     assert strategy._scratchpad == gt_scratchpad
 
     # Test error case.
-    gt_scratchpad = '\nObservation 0: Invalid Action. Valid Actions are Implement[<code>] Test[<code>] and Finish[<code>].'     
+    gt_scratchpad = "\nObservation 0: Invalid Action. Valid Actions are Implement[<code>] Test[<code>] and Finish[<code>]."
     action_type = "Unknown"
-    query = 'def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None'
+    query = "def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None"
     llm = FakeListChatModel(responses=[])
     strategy = ReActCodeStrategy(llm=llm)
-    obs = strategy.generate_observation(
-        idx=0,
-        action_type=action_type,
-        query=query
+    obs = strategy.generate_observation(idx=0, action_type=action_type, query=query)
+    assert (
+        obs
+        == "Invalid Action. Valid Actions are Implement[<code>] Test[<code>] and Finish[<code>]."
     )
-    assert obs == "Invalid Action. Valid Actions are Implement[<code>] Test[<code>] and Finish[<code>]."
     assert strategy._current_answer == ""
     assert strategy._finished is False
     assert strategy._scratchpad == gt_scratchpad
@@ -142,7 +128,6 @@ def test_generate_observation() -> None:
 
 def test_create_output_dict() -> None:
     """Tests ReActCodeStrategy create_output_dict."""
-
     llm = FakeListChatModel(responses=[])
     strategy = ReActCodeStrategy(llm=llm)
     thought = "Sample thought"
@@ -150,15 +135,15 @@ def test_create_output_dict() -> None:
     query = "def add(a, b): return a + b"
     obs = "Execution succeeded"
     strategy._current_answer = "def add(a, b): return a + b"
-    
+
     expected_output = {
         "thought": thought,
         "action_type": action_type,
         "query": query,
         "observation": obs,
-        "answer": strategy._current_answer
+        "answer": strategy._current_answer,
     }
-    
+
     output = strategy.create_output_dict(thought, action_type, query, obs)
     assert output == expected_output
 
@@ -173,8 +158,10 @@ def test_halting_condition() -> None:
     examples = ""
     prompt = "Answer the question."
     additional_keys = {}
-    
-    result = strategy.halting_condition(idx, question, examples, prompt, additional_keys)
+
+    result = strategy.halting_condition(
+        idx, question, examples, prompt, additional_keys
+    )
     assert result
 
 
@@ -185,9 +172,9 @@ def test_reset() -> None:
     strategy._current_answer = "def add(a, b): return a + b"
     strategy._scratchpad = "Some scratchpad content"
     strategy._finished = True
-    
+
     strategy.reset()
-    
+
     assert strategy._current_answer == ""
     assert strategy._scratchpad == ""
     assert not strategy._finished
