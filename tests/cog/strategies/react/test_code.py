@@ -85,21 +85,37 @@ def test_generate_observation() -> None:
         query=query
     )
     assert obs == "Done"
+    assert strategy._current_answer == query
+    assert strategy._finished is False
 
     # Test test.
     action_type = "Test"
     query = 'def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None'
     llm = FakeListChatModel(responses=[])
-    strategy._current_answer = "print('Hello World')"
     strategy = ReActCodeStrategy(llm=llm)
+    strategy._current_answer = "print('Hello World')"
     obs = strategy.generate_observation(
         idx=0,
         action_type=action_type,
         query=query
     )
     assert obs == "Done"
+    assert strategy._current_answer == "print('Hello World')"
+    assert strategy._finished is False
 
     # Test finish.
+    action_type = "Finish"
+    query = 'def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None'
+    llm = FakeListChatModel(responses=[])
+    strategy = ReActCodeStrategy(llm=llm)
+    obs = strategy.generate_observation(
+        idx=0,
+        action_type=action_type,
+        query=query
+    )
+    assert obs == query
+    assert strategy._current_answer == query
+    assert strategy._finished is True
 
     # Test error case.
 

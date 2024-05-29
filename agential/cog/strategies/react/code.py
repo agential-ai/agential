@@ -147,7 +147,7 @@ class ReActCodeStrategy(ReActBaseStrategy):
         """
         self._scratchpad += f"\nObservation {idx}: "
         if action_type.lower() == "finish":
-            self._answer = query
+            self._current_answer = query
             self._finished = True
             obs = query
         elif action_type.lower() == "implement":
@@ -175,13 +175,14 @@ class ReActCodeStrategy(ReActBaseStrategy):
             obs (str): The generated observation.
 
         Returns:
-            Dict[str, str]: A dictionary containing the thought, action type, query, and observation.
+            Dict[str, str]: A dictionary containing the thought, action type, query, observation, and answer.
         """
         return {
             "thought": thought,
             "action_type": action_type,
             "query": query,
             "observation": obs,
+            "answer": self._current_answer
         }
 
     def halting_condition(
