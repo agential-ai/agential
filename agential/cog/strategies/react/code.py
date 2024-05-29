@@ -114,7 +114,7 @@ class ReActCodeStrategy(ReActBaseStrategy):
             **kwargs (Dict[str, Any]): Additional arguments.
 
         Returns:
-            Tuple[str, str]: The generated action type and query.
+            Tuple[str, str]: The generated action type and code.
         """
         max_steps = kwargs.get("max_steps", self.max_steps)
         self._scratchpad += "\nAction:"
