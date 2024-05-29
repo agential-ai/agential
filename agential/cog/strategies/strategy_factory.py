@@ -25,6 +25,10 @@ from agential.cog.strategies.react.qa import (
     ReActHotQAStrategy,
     ReActTriviaQAStrategy,
 )
+from agential.cog.strategies.react.code import (
+    ReActHEvalStrategy,
+    ReActMBPPStrategy
+)
 from agential.cog.strategies.self_refine.base import SelfRefineBaseStrategy
 from agential.cog.strategies.self_refine.math import SelfRefineGSM8KStrategy
 
@@ -203,9 +207,9 @@ class ReActStrategyFactory:
                 raise ValueError(f"Unsupported Math benchmark: {mode['math']}")
         elif "code" in mode:
             if mode["code"] == "mbpp":
-                pass
+                return ReActMBPPStrategy(**strategy_kwargs)
             elif mode["code"] == "humaneval":
-                pass
+                return ReActHEvalStrategy(**strategy_kwargs)
             else:
                 raise ValueError(f"Unsupported Code benchmark: {mode['code']}")
         else:
