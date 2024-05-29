@@ -57,6 +57,7 @@ class ReActCodeStrategy(ReActBaseStrategy):
         self.enc = enc
 
         self._scratchpad = ""
+        self._current_answer = ""
         self._finished = False
 
     def generate(
@@ -151,9 +152,10 @@ class ReActCodeStrategy(ReActBaseStrategy):
             obs = query
         elif action_type.lower() == "implement":
             _, execution_status = safe_execute(query)
+            self._current_answer = query
             obs = execution_status
         elif action_type.lower() == "test":
-            _, execution_status = safe_execute(query)
+            _, execution_status = safe_execute(f"{self._current_answer}\n\n{query}")
             obs = execution_status
         else:
             obs = "Invalid Action. Valid Actions are Implement[<code>] Test[<code>] and Finish[<code>]."
