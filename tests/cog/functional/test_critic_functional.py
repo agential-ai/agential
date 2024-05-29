@@ -8,7 +8,6 @@ from agential.cog.functional.critic import (
     _prompt_agent,
     _prompt_critique,
     remove_comment,
-    safe_execute,
 )
 
 
@@ -19,15 +18,6 @@ def test_remove_comments() -> None:
     expected = "int x = 1"
     result = remove_comment(code)
     assert result == expected
-
-
-# Ref: https://github.com/microsoft/ProphetNet/blob/master/CRITIC/src/tools/interpreter_api.py.
-def test_safe_execute() -> None:
-    """Test safe_execute function."""
-    code_string = """budget = 1000\nfood = 0.3\naccommodation = 0.15\nentertainment = 0.25\ncoursework_materials = 1 - food - accommodation - entertainment\nanswer = budget * coursework_materials"""
-    answer, report = safe_execute(code_string)
-    assert int(answer[0]) == 299
-    assert report == "Done"
 
 
 def test__build_agent_prompt() -> None:

@@ -13,6 +13,7 @@ from tiktoken.core import Encoding
 from agential.cog.functional.react import _is_halted, _prompt_agent
 from agential.cog.strategies.react.base import ReActBaseStrategy
 from agential.utils.parse import remove_newline
+from agential.utils.general import safe_execute
 
 
 def parse_code_action(action: str) -> Tuple[str, str]:
@@ -149,10 +150,7 @@ class ReActCodeStrategy(ReActBaseStrategy):
             self._finished = True
             obs = query
         elif action_type.lower() == "implement":
-            try:
-                obs = remove_newline(self.docstore.search(query))
-            except Exception:
-                obs = "Could not find that page, please try again."
+            safe_execute()
         elif action_type.lower() == "test":
             try:
                 obs = remove_newline(self.docstore.lookup(query))
