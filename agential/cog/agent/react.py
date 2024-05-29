@@ -80,7 +80,12 @@ class ReActAgent(BaseAgent):
         idx = 1
         out = []
         while not self.strategy.halting_condition(
-            idx=idx, question=question, examples=examples, additional_keys=additional_keys, prompt=prompt, **kwargs
+            idx=idx, 
+            question=question, 
+            examples=examples, 
+            additional_keys=additional_keys, 
+            prompt=prompt, 
+            **kwargs
         ):
             # Think.
             thought = self.strategy.generate(
