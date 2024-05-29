@@ -224,8 +224,9 @@ class ReActCodeStrategy(ReActBaseStrategy):
     def reset(self) -> None:
         """Resets the internal state of the strategy.
 
-        Resets the scratchpad and the finished flag.
+        Resets the current answer, scratchpad, and the finished flag.
         """
+        self._current_answer = ""
         self._scratchpad = ""
         self._finished = False
 
