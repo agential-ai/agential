@@ -81,4 +81,3 @@ Your code should pass these tests:
 {tests}
 
 {scratchpad}"""
-

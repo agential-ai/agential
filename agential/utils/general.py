@@ -1,11 +1,13 @@
 """General utility functions."""
-import sys
+
 import builtins
 import math
 import random
-import func_timeout
+import sys
 
-from typing import Any, List, Tuple, Optional, Dict
+from typing import Any, Dict, List, Optional, Tuple
+
+import func_timeout
 
 
 def shuffle_chunk_list(lst: List[Any], k: int, seed: int = 42) -> List[List[Any]]:
