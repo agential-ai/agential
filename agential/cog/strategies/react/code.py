@@ -2,6 +2,7 @@
 
 from typing import Any, Dict, Tuple
 
+import re
 import tiktoken
 
 from langchain.agents.react.base import DocstoreExplorer
@@ -11,7 +12,21 @@ from tiktoken.core import Encoding
 
 from agential.cog.functional.react import _is_halted, _prompt_agent
 from agential.cog.strategies.react.base import ReActBaseStrategy
-from agential.utils.parse import parse_action, remove_newline
+from agential.utils.parse import remove_newline
+
+
+def parse_code_action(action: str) -> Tuple[str, str]:
+    pattern = re.compile(r"(Finish|Implement|Test)\[\s*```python\s*(.*?)\s*```\s*\]", re.DOTALL | re.IGNORECASE)
+
+    try:
+        match = pattern.findall(action)[0]
+        action_type = match[0].capitalize()
+        content = match[1].strip()
+    except IndexError:
+        action_type = ""
+        content = ""
+
+    return action_type, content
 
 
 class ReActCodeStrategy(ReActBaseStrategy):
@@ -109,9 +124,12 @@ class ReActCodeStrategy(ReActBaseStrategy):
             max_steps=max_steps,  # type: ignore
             additional_keys=additional_keys,
             prompt=prompt,
-        ).split("Observation")[0]
+        )
+        print(repr(action))
+        action = action.split("Observation")[0]
+
         self._scratchpad += " " + action
-        action_type, query = parse_action(action)
+        action_type, query = parse_code_action(action)
 
         return action_type, query
 
@@ -131,18 +149,18 @@ class ReActCodeStrategy(ReActBaseStrategy):
             self._answer = query
             self._finished = True
             obs = query
-        elif action_type.lower() == "search":
+        elif action_type.lower() == "implement":
             try:
                 obs = remove_newline(self.docstore.search(query))
             except Exception:
                 obs = "Could not find that page, please try again."
-        elif action_type.lower() == "lookup":
+        elif action_type.lower() == "test":
             try:
                 obs = remove_newline(self.docstore.lookup(query))
             except ValueError:
                 obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
         else:
-            obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
+            obs = "Invalid Action. Valid Actions are Implement[<code>] Test[<topic>] and Finish[<answer>]."
         self._scratchpad += obs
 
         return obs
