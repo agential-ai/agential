@@ -143,13 +143,54 @@ def test_generate_observation() -> None:
 def test_create_output_dict() -> None:
     """Tests ReActCodeStrategy create_output_dict."""
 
+    llm = FakeListChatModel(responses=[])
+    strategy = ReActCodeStrategy(llm=llm)
+    thought = "Sample thought"
+    action_type = "implement"
+    query = "def add(a, b): return a + b"
+    obs = "Execution succeeded"
+    strategy._current_answer = "def add(a, b): return a + b"
+    
+    expected_output = {
+        "thought": thought,
+        "action_type": action_type,
+        "query": query,
+        "observation": obs,
+        "answer": strategy._current_answer
+    }
+    
+    output = strategy.create_output_dict(thought, action_type, query, obs)
+    assert output == expected_output
+
 
 def test_halting_condition() -> None:
     """Tests ReActCodeStrategy halting_condition."""
+    llm = FakeListChatModel(responses=[])
+    strategy = ReActCodeStrategy(llm=llm)
+    strategy._finished = True
+    idx = 5
+    question = "What is the sum of 2 and 3?"
+    examples = ""
+    prompt = "Answer the question."
+    additional_keys = {}
+    
+    result = strategy.halting_condition(idx, question, examples, prompt, additional_keys)
+    assert result
 
 
 def test_reset() -> None:
     """Tests ReActCodeStrategy reset."""
+    llm = FakeListChatModel(responses=[])
+    strategy = ReActCodeStrategy(llm=llm)
+    strategy._current_answer = "def add(a, b): return a + b"
+    strategy._scratchpad = "Some scratchpad content"
+    strategy._finished = True
+    
+    strategy.reset()
+    
+    assert strategy._current_answer == ""
+    assert strategy._scratchpad == ""
+    assert not strategy._finished
 
 
 def test_instantiate_strategies() -> None:
