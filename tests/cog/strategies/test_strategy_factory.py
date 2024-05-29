@@ -34,7 +34,10 @@ from agential.cog.strategies.strategy_factory import (
     ReActStrategyFactory,
     SelfRefineStrategyFactory,
 )
-
+from agential.cog.strategies.react.code import (
+    ReActHEvalStrategy,
+    ReActMBPPStrategy
+)
 
 def test_critic_strategy_factory_get_strategy() -> None:
     """Tests CriticStrategyFactory get_strategy method."""
@@ -173,6 +176,22 @@ def test_react_strategy_factory_get_strategy() -> None:
     strategy = ReActStrategyFactory.get_strategy({"qa": "hotpotqa"}, llm=llm)
     assert isinstance(strategy, ReActHotQAStrategy)
     assert strategy.llm == llm
+
+    assert isinstance(
+        ReActStrategyFactory.get_strategy({"code": "humaneval"}, llm=llm),
+        ReActHEvalStrategy,
+    )
+
+    assert isinstance(
+        ReActStrategyFactory.get_strategy({"code": "mbpp"}, llm=llm),
+        ReActMBPPStrategy,
+    )
+
+    # Test kwargs for Code strategy.
+    strategy = ReActStrategyFactory.get_strategy({"code": "mbpp"}, llm=llm, max_tokens=123)
+    assert isinstance(strategy, ReActMBPPStrategy)
+    assert strategy.llm == llm
+    assert strategy.max_tokens == 123
 
     # Unsupported benchmarks.
     with pytest.raises(ValueError, match="Unsupported QA benchmark: unknown"):

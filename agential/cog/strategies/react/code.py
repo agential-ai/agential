@@ -5,8 +5,6 @@ from typing import Any, Dict, Tuple
 import re
 import tiktoken
 
-from langchain.agents.react.base import DocstoreExplorer
-from langchain_community.docstore.wikipedia import Wikipedia
 from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken.core import Encoding
 
@@ -23,7 +21,7 @@ def parse_code_action(action: str) -> Tuple[str, str]:
         match = pattern.findall(action)[0]
         action_type = match[0].capitalize()
         content = match[1].strip()
-    except IndexError:
+    except:
         action_type = ""
         content = ""
 
@@ -46,14 +44,12 @@ class ReActCodeStrategy(ReActBaseStrategy):
         llm: BaseChatModel,
         max_steps: int = 6,
         max_tokens: int = 3896,
-        docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
     ) -> None:
         """Initialization."""
         super().__init__(llm)
         self.max_steps = max_steps
         self.max_tokens = max_tokens
-        self.docstore = docstore
         self.enc = enc
 
         self._scratchpad = ""
@@ -150,14 +146,13 @@ class ReActCodeStrategy(ReActBaseStrategy):
             self._finished = True
             obs = query
         elif action_type.lower() == "implement":
-            safe_execute()
+            _, execution_status = safe_execute(query)
+            obs = execution_status
         elif action_type.lower() == "test":
-            try:
-                obs = remove_newline(self.docstore.lookup(query))
-            except ValueError:
-                obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
+            _, execution_status = safe_execute(query)
+            obs = execution_status
         else:
-            obs = "Invalid Action. Valid Actions are Implement[<code>] Test[<topic>] and Finish[<answer>]."
+            obs = "Invalid Action. Valid Actions are Implement[<code>] Test[<code>] and Finish[<code>]."
         self._scratchpad += obs
 
         return obs
