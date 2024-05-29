@@ -10,7 +10,6 @@ from tiktoken import Encoding
 from agential.cog.prompts.agents.react import (
     REACT_INSTRUCTION_HOTPOTQA,
 )
-from agential.utils.parse import remove_newline
 
 
 def _build_agent_prompt(
