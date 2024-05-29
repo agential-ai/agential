@@ -39,7 +39,7 @@ def shuffle_chunk_list(lst: List[Any], k: int, seed: int = 42) -> List[List[Any]
 def safe_execute(
     code_string: str,
     keys: Optional[List[str]] = None,
-    default_exec_status: str = "Done"
+    default_exec_status: str = "Done",
 ) -> Tuple[List[Any], str]:
     """Executes the provided Python code string in a safe manner with a timeout and returns specified variables from the execution.
 
@@ -47,7 +47,7 @@ def safe_execute(
         code_string (str): Python code to execute.
         keys (Optional[List[str]]): A list of variable names whose values are to be returned after execution. If None, the function tries to return a variable named 'answer'.
         default_exec_status (str): Default execution status string to output. Defaults to "Done".
-        
+
     Returns:
         tuple: A tuple containing the result(s) of the specified variable(s) and a status message. If an exception occurs or timeout happens, it returns None for the result.
     """

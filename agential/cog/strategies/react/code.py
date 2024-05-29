@@ -182,7 +182,7 @@ class ReActCodeStrategy(ReActBaseStrategy):
             "action_type": action_type,
             "query": query,
             "observation": obs,
-            "answer": self._current_answer
+            "answer": self._current_answer,
         }
 
     def halting_condition(
