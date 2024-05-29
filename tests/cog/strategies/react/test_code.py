@@ -7,10 +7,45 @@ from tiktoken import Encoding
 from agential.cog.prompts.agents.react import REACT_INSTRUCTION_MBPP
 from agential.cog.prompts.benchmarks.mbpp import MBPP_FEWSHOT_EXAMPLES_REACT
 from agential.cog.strategies.react.code import (
+    parse_code_action,
     ReActCodeStrategy,
     ReActHEvalStrategy,
     ReActMBPPStrategy,
 )
+
+
+def test_parse_code_action() -> None:
+    """Test parse_code_action."""
+    test_cases = [
+        {
+            "input": 'Implement[```python\ndef add(a, b): return a + b\n```]',
+            "expected": ("Implement", "def add(a, b): return a + b")
+        },
+        {
+            "input": 'Test[```python\nassert add(2, 3) == 5\n```]',
+            "expected": ("Test", "assert add(2, 3) == 5")
+        },
+        {
+            "input": 'Finish[```python\nThe function is complete.\n```]',
+            "expected": ("Finish", "The function is complete.")
+        },
+        {
+            "input": 'implement[```python\ndef subtract(a, b): return a - b\n```]',
+            "expected": ("Implement", "def subtract(a, b): return a - b")
+        },
+        {
+            "input": 'Invalid[```python\nThis should not match\n```]',
+            "expected": ("", "")
+        },
+        {
+            "input": 'Test[```python\nassert subtract(5, 3) == 2\n```]',
+            "expected": ("Test", "assert subtract(5, 3) == 2")
+        }
+    ]
+    
+    for case in test_cases:
+        result = parse_code_action(case["input"])
+        assert result == case["expected"]
 
 
 def test_init() -> None:
