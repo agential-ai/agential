@@ -53,7 +53,13 @@ def heap_queue_largest(nums, n):
 ```"""
 
 
-MBPP_FEWSHOT_EXAMPLES_REACT = """Question: Write a function to find the shared elements from the given two lists.
+MBPP_FEWSHOT_EXAMPLES_REACT = """You are an expert Python programmer, and here is your task: Write a function to find the shared elements from the given two lists.
+Your code should pass these tests:
+
+assert set(similar_elements((3, 4, 5, 6), (5, 7, 4, 10))) == set((4, 5))
+assert set(similar_elements((1, 2, 3, 4), (5, 4, 3, 7))) == set((3, 4))
+assert set(similar_elements((11, 12, 14, 13), (17, 15, 14, 13))) == set((13, 14))
+
 Thought 1: I need to write a function that accepts two tuples and finds the common elements between them.
 Action 1: Implement[
 ```python
@@ -83,7 +89,14 @@ def similar_elements(test_tup1, test_tup2):
 
 ---
 
-Question: Write a python function to identify non-prime numbers.
+You are an expert Python programmer, and here is your task: Write a python function to identify non-prime numbers.
+Your code should pass these tests:
+
+assert is_not_prime(2) == False
+assert is_not_prime(10) == True
+assert is_not_prime(35) == True
+assert is_not_prime(37) == False
+
 Thought 1: I need to write a function that can determine if a number is not a prime by checking its divisibility by any number up to its square root.
 Action 1: Implement[
 ```python
@@ -126,7 +139,13 @@ def is_not_prime(n):
 
 ---
 
-Question: Write a function to find the n largest integers from a given list of numbers, returned in descending order.
+You are an expert Python programmer, and here is your task: Write a function to find the n largest integers from a given list of numbers, returned in descending order.
+Your code should pass these tests:
+
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 3) == [85, 75, 65]
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 2) == [85, 75]
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 5) == [85, 75, 65, 58, 35]
+
 Thought 1: I need to write a function that finds the n largest integers in a list and returns them in descending order.
 Action 1: Implement[
 ```python
@@ -156,5 +175,4 @@ def heap_queue_largest(nums, n):
     largest_nums = hq.nlargest(n, nums)
     return largest_nums
 ```
-]
-"""
+]"""
