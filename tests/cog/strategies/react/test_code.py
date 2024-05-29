@@ -74,6 +74,36 @@ def test_generate_action() -> None:
 def test_generate_observation() -> None:
     """Tests ReActCodeStrategy generate_observation."""
 
+    # Test Implement.
+    action_type = "Implement"
+    query = 'def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None'
+    llm = FakeListChatModel(responses=[])
+    strategy = ReActCodeStrategy(llm=llm)
+    obs = strategy.generate_observation(
+        idx=0,
+        action_type=action_type,
+        query=query
+    )
+    assert obs == "Done"
+
+    # Test test.
+    action_type = "Test"
+    query = 'def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None'
+    llm = FakeListChatModel(responses=[])
+    strategy._current_answer = "print('Hello World')"
+    strategy = ReActCodeStrategy(llm=llm)
+    obs = strategy.generate_observation(
+        idx=0,
+        action_type=action_type,
+        query=query
+    )
+    assert obs == "Done"
+
+    # Test finish.
+
+    # Test error case.
+
+
 def test_create_output_dict() -> None:
 
     """Tests ReActCodeStrategy create_output_dict."""
