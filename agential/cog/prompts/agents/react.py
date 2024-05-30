@@ -73,6 +73,7 @@ You have a maximum of {max_steps} steps.
 
 ```python
 {question}
+    pass
 ```
 
 {scratchpad}"""
