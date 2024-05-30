@@ -30,7 +30,7 @@ def parse_code_action(action: str) -> Tuple[str, str]:
         and the extracted code content.
     """
     action_split = action.split("```python", maxsplit=1)
-    match = re.search(r'\b(Finish|Test|Implement)\b', action_split[0], re.IGNORECASE)
+    match = re.search(r"\b(Finish|Test|Implement)\b", action_split[0], re.IGNORECASE)
 
     action_type = match.group(0).lower().capitalize() if match else ""
     try:
