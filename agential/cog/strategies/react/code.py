@@ -100,7 +100,7 @@ class ReActCodeStrategy(ReActBaseStrategy):
             max_steps=max_steps,  # type: ignore
             additional_keys=additional_keys,
             prompt=prompt,
-        ).split("Action")[0].strip()
+        ).split("Action")[0].strip().split("\n")[0]
         self._scratchpad += " " + thought
 
         return thought
@@ -138,8 +138,8 @@ class ReActCodeStrategy(ReActBaseStrategy):
         )
         action = action.split("Observation")[0].strip()
 
-        self._scratchpad += " " + action
         action_type, query = parse_code_action(action)
+        self._scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
 
         return action_type, query
 
