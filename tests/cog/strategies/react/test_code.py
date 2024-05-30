@@ -109,38 +109,41 @@ def test_generate_action() -> None:
 def test_generate_observation() -> None:
     """Tests ReActCodeStrategy generate_observation."""
     # Test Implement.
-    gt_scratchpad = "\nObservation 0: Done"
+    gt_obs = '\n```python\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```\nExecution Status: Done'
+    gt_scratchpad = '\nObservation 0: \n```python\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```\nExecution Status: Done'
     action_type = "Implement"
     query = "def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None"
     llm = FakeListChatModel(responses=[])
     strategy = ReActCodeStrategy(llm=llm)
     obs = strategy.generate_observation(idx=0, action_type=action_type, query=query)
-    assert obs == "Done"
+    assert obs == gt_obs
     assert strategy._current_answer == query
     assert strategy._finished is False
     assert strategy._scratchpad == gt_scratchpad
 
     # Test test.
-    gt_scratchpad = "\nObservation 0: Done"
+    gt_obs = "\n```python\nprint('Hello World')\n\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```\nExecution Status: Done"
+    gt_scratchpad = "\nObservation 0: \n```python\nprint('Hello World')\n\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```\nExecution Status: Done"
     action_type = "Test"
     query = "def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None"
     llm = FakeListChatModel(responses=[])
     strategy = ReActCodeStrategy(llm=llm)
     strategy._current_answer = "print('Hello World')"
     obs = strategy.generate_observation(idx=0, action_type=action_type, query=query)
-    assert obs == "Done"
+    assert obs == gt_obs
     assert strategy._current_answer == "print('Hello World')"
     assert strategy._finished is False
     assert strategy._scratchpad == gt_scratchpad
 
     # Test finish.
-    gt_scratchpad = "\nObservation 0: def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None"
+    gt_obs = '\n```python\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```'        
+    gt_scratchpad = '\nObservation 0: \n```python\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```'
     action_type = "Finish"
     query = "def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None"
     llm = FakeListChatModel(responses=[])
     strategy = ReActCodeStrategy(llm=llm)
     obs = strategy.generate_observation(idx=0, action_type=action_type, query=query)
-    assert obs == query
+    assert obs == gt_obs
     assert strategy._current_answer == query
     assert strategy._finished is True
     assert strategy._scratchpad == gt_scratchpad
