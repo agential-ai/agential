@@ -158,14 +158,15 @@ class ReActCodeStrategy(ReActBaseStrategy):
         if action_type.lower() == "finish":
             self._current_answer = query
             self._finished = True
-            obs = query
+            obs = f"\n```python\n{self._current_answer}\n```"
         elif action_type.lower() == "implement":
             _, execution_status = safe_execute(query)
             self._current_answer = query
-            obs = execution_status
+            obs = f"\n```python\n{self._current_answer}\n```\nExecution Status: {execution_status}" 
         elif action_type.lower() == "test":
-            _, execution_status = safe_execute(f"{self._current_answer}\n\n{query}")
-            obs = execution_status
+            obs = f"{self._current_answer}\n\n{query}"
+            _, execution_status = safe_execute(obs)
+            obs = f"\n```python\n{obs}\n```\nExecution Status: {execution_status}"
         else:
             obs = "Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer]."
         self._scratchpad += obs
