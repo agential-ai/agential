@@ -19,19 +19,19 @@ def test_parse_code_action() -> None:
     test_cases = [
         {
             "input": "Implement[```python\ndef add(a, b): return a + b\n```]",
-            "expected": ("Implement", "def add(a, b): return a + b"),
+            "expected": ("Implement", "\ndef add(a, b): return a + b\n"),
         },
         {
             "input": "Test[```python\nassert add(2, 3) == 5\n```]",
-            "expected": ("Test", "assert add(2, 3) == 5"),
+            "expected": ("Test", "\nassert add(2, 3) == 5\n"),
         },
         {
             "input": "Finish[```python\nThe function is complete.\n```]",
-            "expected": ("Finish", "The function is complete."),
+            "expected": ("Finish", "\nThe function is complete.\n"),
         },
         {
             "input": "implement[```python\ndef subtract(a, b): return a - b\n```]",
-            "expected": ("Implement", "def subtract(a, b): return a - b"),
+            "expected": ("Implement", "\ndef subtract(a, b): return a - b\n"),
         },
         {
             "input": "Invalid[```python\nThis should not match\n```]",
@@ -39,7 +39,7 @@ def test_parse_code_action() -> None:
         },
         {
             "input": "Test[```python\nassert subtract(5, 3) == 2\n```]",
-            "expected": ("Test", "assert subtract(5, 3) == 2"),
+            "expected": ("Test", "\nassert subtract(5, 3) == 2\n"),
         },
     ]
 

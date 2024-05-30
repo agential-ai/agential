@@ -34,7 +34,7 @@ def parse_code_action(action: str) -> Tuple[str, str]:
 
     action_type = match.group(0).lower().capitalize() if match else ""
     try:
-        query = action_split[1].split("```")[0]
+        query = action_split[1].split("```")[0] if action_type else ""
     except:
         action_type = ""
         query = ""
