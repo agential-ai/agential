@@ -34,7 +34,7 @@ def parse_code_action(action: str) -> Tuple[str, str]:
 
     action_type = match.group(0).lower().capitalize() if match else ""
     try:
-        query = action_split[1].split("```")[0] if action_type else ""
+        query = action_split[1].split("```")[0].strip() if action_type else ""
     except:
         action_type = ""
         query = ""
@@ -100,7 +100,7 @@ class ReActCodeStrategy(ReActBaseStrategy):
             max_steps=max_steps,  # type: ignore
             additional_keys=additional_keys,
             prompt=prompt,
-        ).split("Action")[0]
+        ).split("Action")[0].strip()
         self._scratchpad += " " + thought
 
         return thought
@@ -136,7 +136,7 @@ class ReActCodeStrategy(ReActBaseStrategy):
             additional_keys=additional_keys,
             prompt=prompt,
         )
-        action = action.split("Observation")[0]
+        action = action.split("Observation")[0].strip()
 
         self._scratchpad += " " + action
         action_type, query = parse_code_action(action)
@@ -167,7 +167,7 @@ class ReActCodeStrategy(ReActBaseStrategy):
             _, execution_status = safe_execute(f"{self._current_answer}\n\n{query}")
             obs = execution_status
         else:
-            obs = "Invalid Action. Valid Actions are Implement[<code>] Test[<code>] and Finish[<code>]."
+            obs = "Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer]."
         self._scratchpad += obs
 
         return obs

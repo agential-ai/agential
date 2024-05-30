@@ -19,19 +19,19 @@ def test_parse_code_action() -> None:
     test_cases = [
         {
             "input": "Implement[```python\ndef add(a, b): return a + b\n```]",
-            "expected": ("Implement", "\ndef add(a, b): return a + b\n"),
+            "expected": ("Implement", "def add(a, b): return a + b"),
         },
         {
             "input": "Test[```python\nassert add(2, 3) == 5\n```]",
-            "expected": ("Test", "\nassert add(2, 3) == 5\n"),
+            "expected": ("Test", "assert add(2, 3) == 5"),
         },
         {
             "input": "Finish[```python\nThe function is complete.\n```]",
-            "expected": ("Finish", "\nThe function is complete.\n"),
+            "expected": ("Finish", "The function is complete."),
         },
         {
             "input": "implement[```python\ndef subtract(a, b): return a - b\n```]",
-            "expected": ("Implement", "\ndef subtract(a, b): return a - b\n"),
+            "expected": ("Implement", "def subtract(a, b): return a - b"),
         },
         {
             "input": "Invalid[```python\nThis should not match\n```]",
@@ -39,7 +39,7 @@ def test_parse_code_action() -> None:
         },
         {
             "input": "Test[```python\nassert subtract(5, 3) == 2\n```]",
-            "expected": ("Test", "\nassert subtract(5, 3) == 2\n"),
+            "expected": ("Test", "assert subtract(5, 3) == 2"),
         },
     ]
 
@@ -68,7 +68,7 @@ def test_generate() -> None:
     assert first_repeated_char("abc") == None
     assert first_repeated_char("123123") == "1\""""
 
-    gt_out = "I need to find a way to identify the first repeated character in a given string.\n"
+    gt_out = "I need to find a way to identify the first repeated character in a given string."
     responses = [
         'I need to find a way to identify the first repeated character in a given string.\nAction: Implement[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]\nObservation: The function `first_repeated_char` is implemented to iterate through the string and return the first repeated character encountered.\nThought: I need to test the function to ensure it works correctly with different test cases.\nAction: Test[\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n]\nObservation: All tests passed successfully.\nThought: The function correctly identifies the first repeated character in the given string.\nFinish:[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]'
     ]
@@ -146,7 +146,7 @@ def test_generate_observation() -> None:
     assert strategy._scratchpad == gt_scratchpad
 
     # Test error case.
-    gt_scratchpad = "\nObservation 0: Invalid Action. Valid Actions are Implement[<code>] Test[<code>] and Finish[<code>]."
+    gt_scratchpad = "\nObservation 0: Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer]."
     action_type = "Unknown"
     query = "def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None"
     llm = FakeListChatModel(responses=[])
@@ -154,7 +154,7 @@ def test_generate_observation() -> None:
     obs = strategy.generate_observation(idx=0, action_type=action_type, query=query)
     assert (
         obs
-        == "Invalid Action. Valid Actions are Implement[<code>] Test[<code>] and Finish[<code>]."
+        == "Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer]."
     )
     assert strategy._current_answer == ""
     assert strategy._finished is False
