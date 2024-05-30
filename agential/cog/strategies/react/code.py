@@ -29,20 +29,17 @@ def parse_code_action(action: str) -> Tuple[str, str]:
         Tuple[str, str]: A tuple containing the extracted action type (capitalized)
         and the extracted code content.
     """
-    pattern = re.compile(
-        r"(Finish|Implement|Test)\[\s*```python\s*(.*?)\s*```\s*\]",
-        re.DOTALL | re.IGNORECASE,
-    )
+    action_split = action.split("```python", maxsplit=1)
+    match = re.search(r'\b(Finish|Test|Implement)\b', action_split[0], re.IGNORECASE)
 
+    action_type = match.group(0).lower().capitalize() if match else ""
     try:
-        match = pattern.findall(action)[0]
-        action_type = match[0].capitalize()
-        content = match[1].strip()
+        query = action_split[1].split("```")[0]
     except:
         action_type = ""
-        content = ""
+        query = ""
 
-    return action_type, content
+    return action_type, query
 
 
 class ReActCodeStrategy(ReActBaseStrategy):

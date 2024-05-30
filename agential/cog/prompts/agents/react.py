@@ -71,10 +71,11 @@ REACT_INSTRUCTION_HUMANEVAL = """Answer a coding question with interleaving Thou
 (3) Finish[answer], which returns the code implementation and finishes the task.
 You have a maximum of {max_steps} steps.
 
-You are an AI that only responds with python code, NOT ENGLISH. You will be given a function signature and its docstring by the user. 
-
 ```python
-{question}"""
+{question}
+```
+
+{scratchpad}"""
 
 
 
