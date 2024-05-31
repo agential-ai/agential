@@ -1,6 +1,5 @@
 """Unit tests for ReAct QA strategies."""
 
-from langchain.agents.react.base import DocstoreExplorer
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
@@ -8,6 +7,7 @@ from tiktoken import Encoding
 from agential.cog.prompts.agents.react import (
     REACT_INSTRUCTION_HOTPOTQA,
 )
+from agential.utils.docstore import DocstoreExplorer
 from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.strategies.react.qa import (
     ReActAmbigNQStrategy,

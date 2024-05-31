@@ -12,7 +12,6 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import tiktoken
 
-from langchain.agents.react.base import DocstoreExplorer
 from langchain_community.docstore.wikipedia import Wikipedia
 from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
@@ -25,6 +24,7 @@ from agential.cog.functional.reflexion import (
     _prompt_react_agent,
     _truncate_scratchpad,
 )
+from agential.utils.docstore import DocstoreExplorer
 from agential.cog.modules.memory.reflexion import ReflexionMemory
 from agential.cog.modules.reflect.reflexion import (
     ReflexionCoTReflector,
