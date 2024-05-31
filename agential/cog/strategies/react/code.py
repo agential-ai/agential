@@ -92,15 +92,20 @@ class ReActCodeStrategy(ReActBaseStrategy):
         max_steps = kwargs.get("max_steps", self.max_steps)  # type: ignore
 
         self._scratchpad += "\nThought:"
-        thought = _prompt_agent(
-            llm=self.llm,
-            question=question,
-            scratchpad=self._scratchpad,
-            examples=examples,
-            max_steps=max_steps,  # type: ignore
-            additional_keys=additional_keys,
-            prompt=prompt,
-        ).split("Action")[0].strip().split("\n")[0]
+        thought = (
+            _prompt_agent(
+                llm=self.llm,
+                question=question,
+                scratchpad=self._scratchpad,
+                examples=examples,
+                max_steps=max_steps,  # type: ignore
+                additional_keys=additional_keys,
+                prompt=prompt,
+            )
+            .split("Action")[0]
+            .strip()
+            .split("\n")[0]
+        )
         self._scratchpad += " " + thought
 
         return thought
@@ -162,7 +167,7 @@ class ReActCodeStrategy(ReActBaseStrategy):
         elif action_type.lower() == "implement":
             _, execution_status = safe_execute(query)
             self._current_answer = query
-            obs = f"\n```python\n{self._current_answer}\n```\nExecution Status: {execution_status}" 
+            obs = f"\n```python\n{self._current_answer}\n```\nExecution Status: {execution_status}"
         elif action_type.lower() == "test":
             obs = f"{self._current_answer}\n\n{query}"
             _, execution_status = safe_execute(obs)
