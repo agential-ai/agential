@@ -19,7 +19,6 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.11"
 faiss-cpu = "^1.7.4"
-chardet = "^5.2.0"
 wikipedia = "^1.4.0"
 func-timeout = "^4.3.5"
 langchain = "^0.2.1"
