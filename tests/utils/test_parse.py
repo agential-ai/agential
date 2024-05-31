@@ -2,7 +2,6 @@
 
 from agential.utils.parse import (
     normalize_answer,
-    parse_action,
     parse_list,
     parse_numbered_list,
     remove_articles,
@@ -45,25 +44,6 @@ def test_remove_name() -> None:
     out = remove_name(x, "John")
 
     assert out == gt
-
-
-def test_parse_action() -> None:
-    """Test parse_action function."""
-    # Test with a valid action string.
-    valid_string = "ActionType[Argument]"
-    assert parse_action(valid_string) == ("ActionType", "Argument")
-
-    # Test with an invalid action string (missing brackets).
-    invalid_string = "ActionType Argument"
-    assert parse_action(invalid_string) == ("", "")
-
-    # Test with an invalid action string (no action type).
-    invalid_string = "[Argument]"
-    assert parse_action(invalid_string) == ("", "")
-
-    # Test with an invalid action string (no argument).
-    invalid_string = "ActionType[]"
-    assert parse_action(invalid_string) == ("", "")
 
 
 def test_remove_newline() -> None:
