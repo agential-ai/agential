@@ -3,52 +3,6 @@
 import re
 import string
 
-from typing import List
-
-
-def parse_numbered_list(text: str) -> List[str]:
-    r"""Parse a numbered list from a given text and return a list of list items.
-
-    This function extracts the content following the last ")" character, removes any trailing
-    commas or periods, and trims leading/trailing spaces from each line in the input text.
-
-    Args:
-        text (str): The input text containing a numbered list.
-
-    Returns:
-        List[str]: A list of strings from the numbered list.
-
-    Example:
-        input_text = "1) Item One.\n2) Item Two.\n3) Item Three,\n"
-        parsed_list = parse_numbered_list(input_text)
-        # Result: ["Item One", "Item Two", "Item Three"]
-    """
-    lines = parse_list(text)
-    lines = [s.split(")")[-1].rstrip(",.").strip() for s in lines]
-    return lines
-
-
-def remove_name(text: str, name: str) -> str:
-    """Remove a specified name prefix from the beginning of each line in the text.
-
-    This function removes the specified 'name' prefix followed by a space from the
-    beginning of each line in the input text.
-
-    Args:
-        text (str): The input text containing lines with name prefixes.
-        name (str): The name prefix to remove from each line.
-
-    Returns:
-        str: The text with the specified name prefix removed from each line.
-
-    Example:
-        input_text = "John Smith"
-        clean_text = remove_name(input_text, "John")
-        # Result: "Smith"
-    """
-    lines = re.sub(f"^{name} ", "", text.strip()).strip()
-    return lines
-
 
 def remove_newline(step: str) -> str:
     """Formats a step string by stripping leading/trailing newlines and spaces, and replacing internal newlines with empty space.
