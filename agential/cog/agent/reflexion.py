@@ -24,7 +24,6 @@ from agential.cog.functional.reflexion import (
     _prompt_react_agent,
     _truncate_scratchpad,
 )
-from agential.utils.docstore import DocstoreExplorer
 from agential.cog.modules.memory.reflexion import ReflexionMemory
 from agential.cog.modules.reflect.reflexion import (
     ReflexionCoTReflector,
@@ -44,6 +43,7 @@ from agential.cog.prompts.agents.reflexion import (
     REFLEXION_REACT_REFLECT_INSTRUCTION,
 )
 from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
 
 

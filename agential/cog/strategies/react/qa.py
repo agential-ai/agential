@@ -10,9 +10,9 @@ from langchain_community.docstore.wikipedia import Wikipedia
 from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken.core import Encoding
 
-from agential.utils.docstore import DocstoreExplorer
 from agential.cog.functional.react import _is_halted, _prompt_agent
 from agential.cog.strategies.react.base import ReActBaseStrategy
+from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
 
 
