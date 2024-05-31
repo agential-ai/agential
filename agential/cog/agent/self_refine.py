@@ -9,16 +9,6 @@ from typing import Any, Dict, List
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.agent.base import BaseAgent
-from agential.cog.prompts.agents.self_refine import (
-    GSM8K_CRITIQUE_FEWSHOT_EXAMPLES,
-    GSM8K_REFINE_FEWSHOT_EXAMPLES,
-    SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
-    SELF_REFINE_INSTRUCTION_GSM8K,
-    SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
-)
-from agential.cog.prompts.benchmarks.gsm8k import (
-    GSM8K_FEWSHOT_EXAMPLES_POT,
-)
 from agential.cog.strategies.strategy_factory import SelfRefineStrategyFactory
 
 
