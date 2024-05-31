@@ -1,6 +1,5 @@
 """Unit tests for Reflexion."""
 
-from langchain.agents.react.base import DocstoreExplorer
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken.core import Encoding
@@ -11,6 +10,7 @@ from agential.cog.modules.reflect.reflexion import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )
+from agential.utils.docstore import DocstoreExplorer
 
 
 def test_reflexion_cot_init() -> None:
