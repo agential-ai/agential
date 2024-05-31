@@ -74,7 +74,7 @@ Make sure to add poetry to path by adding `C:\Users\<username>\.local\bin` to pa
 To ensure that pipx has been successfully installed, type in the command:
 
 ```
-pipx -- version
+pipx --version
 ``` 
 
 This should output the version if it has been installed properly. Then, to verify the poetry installation, type in the command:
