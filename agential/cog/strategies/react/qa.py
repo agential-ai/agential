@@ -1,8 +1,9 @@
 """ReAct Agent strategies for QA."""
 
+import re
+
 from typing import Any, Dict, Tuple
 
-import re
 import tiktoken
 
 from langchain.agents.react.base import DocstoreExplorer

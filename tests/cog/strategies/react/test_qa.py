@@ -10,14 +10,13 @@ from agential.cog.prompts.agents.react import (
 )
 from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.strategies.react.qa import (
-    parse_qa_action,
     ReActAmbigNQStrategy,
     ReActFEVERStrategy,
     ReActHotQAStrategy,
     ReActQAStrategy,
     ReActTriviaQAStrategy,
+    parse_qa_action,
 )
-
 
 
 def test_parse_qa_action() -> None:
