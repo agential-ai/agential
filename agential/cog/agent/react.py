@@ -19,17 +19,12 @@ from agential.cog.strategies.strategy_factory import ReActStrategyFactory
 class ReActAgent(BaseAgent):
     """ReAct agent from the original paper.
 
-    Implements the ReAct algorithm as described in the original paper.
-    This agent uses a language model to iteratively process a question
-    through a sequence of think-act-observe steps, utilizing a document
-    store for information retrieval.
-
     Attributes:
-        llm (BaseChatModel): The language model used by the agent.
-        max_steps (int): Maximum number of steps to process the question.
-        max_tokens (int): Maximum token limit for the language model.
-        docstore (DocstoreExplorer): Document store for information retrieval.
-        enc (Encoding): Encoder for calculating token lengths.
+        llm (BaseChatModel): An instance of a language model used for generating initial answers
+            and critiques.
+        mode (Dict[str, str]): A dictionary specifying the ReAct agent's mode and the benchmark.
+            For example, {"qa": "hotpotqa"}, {"math": "gsm8k"}, or {"code": "mbpp"}.
+        **strategy_kwargs (Dict[str, Any]): Additional strategy-specific arguments.
     """
 
     def __init__(
@@ -72,7 +67,7 @@ class ReActAgent(BaseAgent):
 
         Returns:
             List[Dict[str, str]]: The list of accumulated output from the ReAct process,
-                each dictionary consists of a thought, action type/query, and observation.
+                each dictionary consists of a thought, action type/query, observation, and answer.
         """
         if reset:
             self.reset()
