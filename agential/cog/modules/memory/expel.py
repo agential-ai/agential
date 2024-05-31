@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import tiktoken
 
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.embeddings.huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores.faiss import FAISS
 from langchain_core.documents.base import Document
 from langchain_core.embeddings import Embeddings
