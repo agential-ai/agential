@@ -55,7 +55,7 @@ class ReActAgent(BaseAgent):
         Args:
             question (str): The question to be processed.
             examples (str, optional): Fewshot examples.
-            prompt (str, optional): Prompt template string. 
+            prompt (str, optional): Prompt template string.
             additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
             reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
             **kwargs (Dict[str, Any]): Additional parameters for flexibility.
