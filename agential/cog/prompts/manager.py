@@ -118,7 +118,7 @@ BENCHMARK_STRINGS = {
         Benchmarks.code.MBPP: {
             FewShotType.POT: MBPP_FEWSHOT_EXAMPLES_POT,
         },
-    }
+    },
 }
 
 
