@@ -2,35 +2,11 @@
 
 from agential.utils.parse import (
     normalize_answer,
-    parse_numbered_list,
     remove_articles,
-    remove_name,
     remove_newline,
     remove_punc,
     white_space_fix,
 )
-
-
-def test_parse_numbered_list() -> None:
-    """Test parse_numbered_list function."""
-    gt = ["Item One", "Item Two", "Item Three"]
-
-    input_text = "1) Item One.\n2) Item Two.\n3) Item Three,\n"
-    out = parse_numbered_list(input_text)
-
-    assert len(gt) == len(out)
-    for i, j in zip(gt, out):
-        assert i == j
-
-
-def test_remove_name() -> None:
-    """Test remove_name function."""
-    gt = "Smith"
-
-    x = "John Smith"
-    out = remove_name(x, "John")
-
-    assert out == gt
 
 
 def test_remove_newline() -> None:
