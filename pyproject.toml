@@ -39,7 +39,7 @@ pytest = "^7.4.2"
 pytest-cov = "^4.1.0"
 cookiecutter = "^2.5.0"
 langchain-openai = "^0.1.8"
-pandas = "^2.2.2"
+pandas = "<2.0.0"
 
 [tool.pytest.ini_options]
 markers = [
