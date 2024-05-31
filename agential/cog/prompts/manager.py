@@ -25,7 +25,7 @@ from agential.cog.prompts.benchmarks.humaneval import (
 )
 from agential.cog.prompts.benchmarks.mbpp import (
     MBPP_FEWSHOT_EXAMPLES_POT,
-    MBPP_FEWSHOT_EXAMPLES_REACT
+    MBPP_FEWSHOT_EXAMPLES_REACT,
 )
 from agential.cog.prompts.benchmarks.svamp import (
     SVAMP_FEWSHOT_EXAMPLES_POT,
