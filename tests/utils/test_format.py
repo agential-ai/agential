@@ -4,7 +4,7 @@ from datetime import datetime
 
 import pytest
 
-from langchain.schema.document import Document
+from langchain_core.documents.base import Document
 
 from agential.utils.format import (
     format_memories_detail,
