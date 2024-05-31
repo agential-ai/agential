@@ -2,7 +2,6 @@
 
 from agential.utils.parse import (
     normalize_answer,
-    parse_list,
     parse_numbered_list,
     remove_articles,
     remove_name,
@@ -10,18 +9,6 @@ from agential.utils.parse import (
     remove_punc,
     white_space_fix,
 )
-
-
-def test_parse_list() -> None:
-    """Test parse list function."""
-    gt = ["Item 1", "Item 2", "Item 3", "Item 4"]
-
-    x = "1. Item 1\n2. Item 2\n3. Item 3\n\n4. Item 4"
-    out = parse_list(x)
-
-    assert len(gt) == len(out)
-    for i, j in zip(gt, out):
-        assert i == j
 
 
 def test_parse_numbered_list() -> None:

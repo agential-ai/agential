@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from langchain.retrievers import TimeWeightedVectorStoreRetriever
+from langchain.retrievers.time_weighted_retriever import TimeWeightedVectorStoreRetriever
 
 from agential.utils.fetch import fetch_memories
 
