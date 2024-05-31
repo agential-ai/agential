@@ -9,12 +9,6 @@ from typing import Any, Dict, List
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.agent.base import BaseAgent
-from agential.cog.prompts.agents.critic import (
-    CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
-    CRITIC_INSTRUCTION_HOTPOTQA,
-    HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
-)
-from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
 from agential.cog.strategies.strategy_factory import CriticStrategyFactory
 
 
