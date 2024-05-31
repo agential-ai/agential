@@ -10,7 +10,7 @@ from langchain_core.documents.base import Document
 class DocstoreExplorer:
     """Class to assist with exploration of a document store."""
 
-    def __init__(self, docstore: Docstore):
+    def __init__(self, docstore: Docstore) -> None:
         """Initialize with a docstore, and set initial document to None."""
         self.docstore = docstore
         self.document: Optional[Document] = None
