@@ -10,12 +10,33 @@ from agential.cog.prompts.agents.react import (
 )
 from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.strategies.react.qa import (
+    parse_qa_action,
     ReActAmbigNQStrategy,
     ReActFEVERStrategy,
     ReActHotQAStrategy,
     ReActQAStrategy,
     ReActTriviaQAStrategy,
 )
+
+
+
+def test_parse_qa_action() -> None:
+    """Test parse_qa_action function."""
+    # Test with a valid action string.
+    valid_string = "ActionType[Argument]"
+    assert parse_qa_action(valid_string) == ("ActionType", "Argument")
+
+    # Test with an invalid action string (missing brackets).
+    invalid_string = "ActionType Argument"
+    assert parse_qa_action(invalid_string) == ("", "")
+
+    # Test with an invalid action string (no action type).
+    invalid_string = "[Argument]"
+    assert parse_qa_action(invalid_string) == ("", "")
+
+    # Test with an invalid action string (no argument).
+    invalid_string = "ActionType[]"
+    assert parse_qa_action(invalid_string) == ("", "")
 
 
 def test_init() -> None:
