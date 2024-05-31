@@ -1,8 +1,10 @@
 """Docstore-related logic."""
 
-from typing import Optional, List
-from langchain_core.documents.base import Document
+from typing import List, Optional
+
 from langchain_community.docstore.base import Docstore
+from langchain_core.documents.base import Document
+
 
 # Ref: https://github.com/langchain-ai/langchain/blob/0214246dc69dd2d4e11fd567308f666c220cfb0d/libs/langchain/langchain/agents/react/base.py#L72
 class DocstoreExplorer:
