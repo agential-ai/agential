@@ -25,6 +25,7 @@ from agential.cog.prompts.benchmarks.humaneval import (
 )
 from agential.cog.prompts.benchmarks.mbpp import (
     MBPP_FEWSHOT_EXAMPLES_POT,
+    MBPP_FEWSHOT_EXAMPLES_REACT
 )
 from agential.cog.prompts.benchmarks.svamp import (
     SVAMP_FEWSHOT_EXAMPLES_POT,
@@ -117,6 +118,7 @@ BENCHMARK_STRINGS = {
         },
         Benchmarks.code.MBPP: {
             FewShotType.POT: MBPP_FEWSHOT_EXAMPLES_POT,
+            FewShotType.REACT: MBPP_FEWSHOT_EXAMPLES_REACT,
         },
     },
 }
@@ -137,7 +139,7 @@ def get_fewshot_examples(mode: Dict[str, str], fewshot_type: str) -> str:
             - tabmwp: Supports "pot"
         - code:
             - humaneval: Supports "pot"
-            - mbpp: Supports "pot"
+            - mbpp: Supports "pot", "react"
 
     Available Few-Shot Types:
         - "cot"
