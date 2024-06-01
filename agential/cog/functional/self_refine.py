@@ -6,17 +6,11 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
 from langchain_core.prompts.prompt import PromptTemplate
 
-from agential.cog.prompts.agent.self_refine import (
-    SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
-    SELF_REFINE_INSTRUCTION_GSM8K,
-    SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
-)
-
 
 def _build_agent_prompt(
     question: str,
     examples: str,
-    prompt: str = SELF_REFINE_INSTRUCTION_GSM8K,
+    prompt: str,
     additional_keys: Dict[str, str] = {},
 ) -> str:
     """Constructs a formatted prompt for the agent based on the question and provided fewshot examples.
@@ -24,7 +18,7 @@ def _build_agent_prompt(
     Parameters:
         question (str): The main question for which the agent is to generate an answer.
         examples (str): Pre-formatted few-shot examples that provide context for the question.
-        prompt (str): The base template string into which all other components will be inserted. Defaults to SELF_REFINE_INSTRUCTION_GSM8K.
+        prompt (str): The base template string into which all other components will be inserted.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
@@ -42,7 +36,7 @@ def _prompt_agent(
     llm: BaseChatModel,
     question: str,
     examples: str,
-    prompt: str = SELF_REFINE_INSTRUCTION_GSM8K,
+    prompt: str,
     additional_keys: Dict[str, str] = {},
 ) -> str:
     """Generates a response from the LLM based on a given question with fewshot examples.
@@ -54,7 +48,7 @@ def _prompt_agent(
         llm (BaseChatModel): The language model to be prompted.
         question (str): The main question for which the agent is to generate an answer.
         examples (str): Pre-formatted few-shot examples that provide context for the question.
-        prompt (str): The base template string into which all other components will be inserted. Defaults to SELF_REFINE_INSTRUCTION_GSM8K.
+        prompt (str): The base template string into which all other components will be inserted.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
@@ -81,7 +75,7 @@ def _build_critique_prompt(
     question: str,
     examples: str,
     answer: str,
-    prompt: str = SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
+    prompt: str,
     additional_keys: Dict[str, str] = {},
 ) -> str:
     """Builds critique prompt.
@@ -94,7 +88,7 @@ def _build_critique_prompt(
         question (str): The question to be answered by the language model.
         examples (str): Pre-formatted examples that provide context to the question.
         answer (str): The answer to the question.
-        prompt (str): Prompt template string. Defaults to SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K.
+        prompt (str): Prompt template string.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
@@ -114,7 +108,7 @@ def _prompt_critique(
     question: str,
     examples: str,
     answer: str,
-    prompt: str = SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
+    prompt: str,
     additional_keys: Dict[str, str] = {},
 ) -> str:
     """Requests critique from the language model based on a provided answer and contextual examples.
@@ -126,7 +120,7 @@ def _prompt_critique(
         question (str): The question to be answered by the language model.
         examples (str): Contextual examples related to the answer.
         answer (str): The answer for which critique is being sought.
-        prompt (str): Prompt template string. Defaults to SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K.
+        prompt (str): Prompt template string.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
@@ -155,7 +149,7 @@ def _build_refine_prompt(
     examples: str,
     answer: str,
     critique: str,
-    prompt: str = SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
+    prompt: str,
     additional_keys: Dict[str, str] = {},
 ) -> str:
     """Builds a refinement prompt.
@@ -165,7 +159,7 @@ def _build_refine_prompt(
         question (str): The question to be answered by the language model.
         examples (str): Pre-formatted examples that provide context to the question.
         critique (str): The critique on the answer.
-        prompt (str): Prompt template string. Defaults to SELF_REFINE_REFINE_INSTRUCTION_GSM8K.
+        prompt (str): Prompt template string.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
@@ -187,7 +181,7 @@ def _prompt_refine(
     examples: str,
     answer: str,
     critique: str,
-    prompt: str = SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
+    prompt: str,
     additional_keys: Dict[str, str] = {},
 ) -> str:
     """Refines answer based on critique from the language model.
@@ -200,7 +194,7 @@ def _prompt_refine(
         examples (str): Contextual examples related to the answer.
         answer (str): The answer for which critique is being sought.
         critique (str): The critique on the answer.
-        prompt (str): Prompt template string. Defaults to SELF_REFINE_REFINE_INSTRUCTION_GSM8K.
+        prompt (str): Prompt template string.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
