@@ -62,6 +62,22 @@ Here are some examples:
 Question: {question}{scratchpad}"""
 
 
+# ======================================================================== GSM8K ======================================================================== #
+
+
+REACT_INSTRUCTION_GSM8K = """Answer a math question with interleaving Thought, Action, Observation steps. Thought can reason about the current question and plan the retrieval steps, and Action can be two types:
+(1) Calculate[<insert your code here>], which implements code to answer the math question.
+(2) Finish[<insert your answer here>], which returns the code to answer the math question and finishes the task.
+You have a maximum of {max_steps} steps.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Question: {question}
+{scratchpad}"""
+
+
 # ======================================================================== HUMANEVAL ======================================================================== #
 
 

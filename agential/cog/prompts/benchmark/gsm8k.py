@@ -106,6 +106,7 @@ Observation 2:
 ```python
 answer = 8
 ```
+]
 
 ---
 
