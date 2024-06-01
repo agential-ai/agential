@@ -20,16 +20,16 @@ from agential.cog.strategies.critic.qa import (
 )
 from agential.cog.strategies.react.base import ReActBaseStrategy
 from agential.cog.strategies.react.code import ReActHEvalStrategy, ReActMBPPStrategy
+from agential.cog.strategies.react.math import (
+    ReActGSM8KStrategy,
+    ReActSVAMPStrategy,
+    ReActTabMWPStrategy,
+)
 from agential.cog.strategies.react.qa import (
     ReActAmbigNQStrategy,
     ReActFEVERStrategy,
     ReActHotQAStrategy,
     ReActTriviaQAStrategy,
-)
-from agential.cog.strategies.react.math import (
-    ReActGSM8KStrategy,
-    ReActSVAMPStrategy,
-    ReActTabMWPStrategy,
 )
 from agential.cog.strategies.self_refine.base import SelfRefineBaseStrategy
 from agential.cog.strategies.self_refine.math import SelfRefineGSM8KStrategy
