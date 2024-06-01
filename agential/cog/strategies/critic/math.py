@@ -34,7 +34,7 @@ class CriticMathStrategy(CriticBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Dict[str, Any]
+        **kwargs: Dict[str, Any],
     ) -> str:
         """Generates an answer for the given question using the provided prompt and examples.
 
