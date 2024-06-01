@@ -26,6 +26,11 @@ from agential.cog.strategies.react.qa import (
     ReActHotQAStrategy,
     ReActTriviaQAStrategy,
 )
+from agential.cog.strategies.react.math import (
+    ReActGSM8KStrategy,
+    ReActSVAMPStrategy,
+    ReActTabMWPStrategy,
+)
 from agential.cog.strategies.self_refine.base import SelfRefineBaseStrategy
 from agential.cog.strategies.self_refine.math import SelfRefineGSM8KStrategy
 
@@ -195,11 +200,11 @@ class ReActStrategyFactory:
                 raise ValueError(f"Unsupported QA benchmark: {mode['qa']}")
         elif "math" in mode:
             if mode["math"] == "gsm8k":
-                pass
+                return ReActGSM8KStrategy(**strategy_kwargs)
             elif mode["math"] == "svamp":
-                pass
+                return ReActSVAMPStrategy(**strategy_kwargs)
             elif mode["math"] == "tabmwp":
-                pass
+                return ReActTabMWPStrategy(**strategy_kwargs)
             else:
                 raise ValueError(f"Unsupported Math benchmark: {mode['math']}")
         elif "code" in mode:
