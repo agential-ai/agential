@@ -152,13 +152,11 @@ class ReflexionCoTAgent(BaseAgent):
             strategy (Optional[str]): The strategy to use for reflection. Defaults to None.
             reset (bool): Resets the agent's memory. Defaults to True.
             prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_INSTRUCTION_NO_CONTEXT and
-                REFLEXION_COT_INSTRUCTION if context is provided. Must include examples, reflections,
-                question, scratchpad, and context.
+                REFLEXION_COT_INSTRUCTION if context is provided. 
             reflect_examples (str, optional): Reflection fewshot examples. Defaults to REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT
                 or REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES if context is provided.
             reflect_prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
-                REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. Must include examples,
-                question, scratchpad, and context.
+                REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. 
 
         Returns:
             result (List[Tuple[bool, str, List[str, str, str]]]): A list of tuples containing (is_correct, answer, output)
@@ -279,8 +277,7 @@ class ReflexionCoTAgent(BaseAgent):
             examples (str, optional): Fewshot examples. Defaults to REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT
                 or REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES if context is provided.
             prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
-                REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. Must include examples,
-                question, scratchpad, and context.
+                REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. 
 
         Returns:
             str: Generated reflections based on the strategy.
@@ -419,10 +416,8 @@ class ReflexionReActAgent(BaseAgent):
                 - "last_attempt_and_reflexion": This strategy combines the 'last_attempt' and 'reflexion' strategies.
             reset (bool): Whether to reset the internal state before processing. Defaults to True.
             prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION.
-                Must include examples, reflections, question, scratchpad, and max_steps.
             reflect_examples (str, optional): Reflection fewshot examples. Defaults to REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES.
             reflect_prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION.
-                Must include examples, question, and scratchpad.
 
         Returns:
             result (List[Tuple[bool, str, List[Tuple[str, str, str]]]]): List of trials where each trial is
@@ -567,7 +562,6 @@ class ReflexionReActAgent(BaseAgent):
             question (str): The question to answer.
             examples (str, optional): Fewshot examples. Defaults to REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES.
             prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION.
-                Must include examples, question, and scratchpad.
 
         Returns:
             str: Generated reflections based on the strategy.

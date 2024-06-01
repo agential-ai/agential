@@ -46,8 +46,8 @@ class CriticCodeStrategy(CriticBaseStrategy):
             llm=self.llm,
             question=question,
             examples=examples,
-            additional_keys=additional_keys,
             prompt=prompt,
+            additional_keys=additional_keys,
         )
         answer = answer.split("```python")[-1].split("```")[0].strip("\n")
 
@@ -121,8 +121,8 @@ class CriticCodeStrategy(CriticBaseStrategy):
             examples=examples,
             answer=answer,
             critique="",
-            additional_keys=additional_keys,
             prompt=prompt,
+            additional_keys=additional_keys,
         ).split("Here's")[0]
 
         return new_critique, external_tool_info
@@ -179,8 +179,8 @@ class CriticCodeStrategy(CriticBaseStrategy):
             examples=examples,
             answer=answer,
             critique=f"{critique}\n\nHere's a better solution:\n```python\n",
-            additional_keys=additional_keys,
             prompt=prompt,
+            additional_keys=additional_keys,
         )
         new_answer = new_answer.split("```python")[-1].split("```")[0].strip()
 
@@ -281,8 +281,8 @@ class CritHEvalCodeStrategy(CriticCodeStrategy):
                 examples=examples,
                 answer=answer,
                 critique="",
-                additional_keys=additional_keys,
                 prompt=prompt,
+                additional_keys=additional_keys,
             )
             .split("Here's")[0]
             .split("Here is")[0]
@@ -328,8 +328,8 @@ class CritHEvalCodeStrategy(CriticCodeStrategy):
             examples=examples,
             answer=answer,
             critique=f"{critique}\n\nHere's a better solution (include only function implementation):\n```python\n{question}",
-            additional_keys=additional_keys,
             prompt=prompt,
+            additional_keys=additional_keys,
         )
         new_answer = new_answer.split("```python")[-1].split("```")[0].strip("\n")
 

@@ -60,8 +60,8 @@ class CriticQAStrategy(CriticBaseStrategy):
             llm=self.llm,
             question=question,
             examples=examples,
-            additional_keys=additional_keys,
             prompt=prompt,
+            additional_keys=additional_keys,
         )
 
     def generate_critique(
@@ -113,8 +113,8 @@ class CriticQAStrategy(CriticBaseStrategy):
             examples=examples,
             answer=answer,
             critique=critique,
-            additional_keys=additional_keys,
             prompt=prompt,
+            additional_keys=additional_keys,
         ).split("> Evidence: ")[0]
 
         if "> Search Query: " in new_critique:
@@ -132,8 +132,8 @@ class CriticQAStrategy(CriticBaseStrategy):
                     examples=examples,
                     answer=answer,
                     critique=new_critique,
-                    additional_keys=additional_keys,
                     prompt=prompt,
+                    additional_keys=additional_keys,
                 ).split("> Evidence: ")[
                     0
                 ]  # type: ignore
@@ -151,8 +151,8 @@ class CriticQAStrategy(CriticBaseStrategy):
                     examples=examples,
                     answer=answer,
                     critique=new_critique,
-                    additional_keys=additional_keys,
                     prompt=prompt,
+                    additional_keys=additional_keys,
                 ).split("> Evidence: ")[0]
 
             new_critique = new_critique.split("most possible answer: ")[-1].strip()

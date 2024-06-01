@@ -369,8 +369,7 @@ def cot_reflect_reflexion(
         scratchpad (str): The scratchpad content related to the question.
         context (Optional[str]): The context of the conversation or query. Defaults to None.
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
-            REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. Must include examples,
-            question, scratchpad, and context.
+            REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. 
 
     Returns:
         List[str]: An updated list of reflections.
@@ -409,8 +408,7 @@ def cot_reflect_last_attempt_and_reflexion(
         scratchpad (str): The scratchpad content related to the question.
         context (Optional[str]): The context of the conversation or query. Defaults to None.
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
-            REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. Must include examples,
-            question, scratchpad, and context.
+            REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. 
 
     Returns:
         List[str]: A list with the new reflections.
@@ -456,8 +454,7 @@ def cot_reflect(
         scratchpad (str): The scratchpad content related to the question.
         context (Optional[str]): The context of the conversation or query. Defaults to None.
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
-            REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. Must include examples,
-            question, scratchpad, and context.
+            REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. 
 
     Returns:
         List[str]: A list of reflections.
@@ -619,7 +616,6 @@ def _is_halted(
         max_tokens (int): Maximum allowed token count.
         enc (Encoding): The encoder to calculate token length.
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION.
-            Must include examples, reflections, question, scratchpad, and max_steps.
 
     Returns:
         bool: True if the operation should be halted, False otherwise.
@@ -754,7 +750,6 @@ def react_reflect_reflexion(
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION.
-            Must include examples, question, and scratchpad.
 
     Returns:
         List[str]: An updated list of reflections.
@@ -787,7 +782,6 @@ def react_reflect_last_attempt_and_reflexion(
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION.
-            Must include examples, question, and scratchpad.
 
     Returns:
         List[str]: A list with the new reflections.
@@ -827,7 +821,6 @@ def react_reflect(
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION.
-            Must include examples, question, and scratchpad.
 
     Returns:
         List[str]: A tuple containing the updated list of reflections.
