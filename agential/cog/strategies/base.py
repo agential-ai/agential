@@ -1,7 +1,7 @@
 """Generic base strategy class."""
 
 from abc import ABC, abstractmethod
-from typing import Dict
+from typing import Dict, Any
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -20,6 +20,7 @@ class BaseStrategy(ABC):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
+        **kwargs: Dict[str, Any],
     ) -> str:
         """Generates a response using the provided language model, question, examples, and prompt.
 
@@ -28,6 +29,7 @@ class BaseStrategy(ABC):
             examples (str): Few-shot examples to guide the language model in generating the response.
             prompt (str): The instruction template used to prompt the language model.
             additional_keys (Dict[str, str]): Additional keys to format the prompt.
+            **kwargs (Dict[str, Any]): Additional arguments.
 
         Returns:
             str: The generated response.

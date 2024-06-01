@@ -1,6 +1,6 @@
 """Self-Refine Agent strategies for Math."""
 
-from typing import Dict
+from typing import Dict, Any
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -35,6 +35,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
+        **kwargs: Dict[str, Any]
     ) -> str:
         """Generates an answer for the given question using the provided prompt and examples.
 
@@ -43,6 +44,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
             examples (str): Few-shot examples to guide the language model.
             prompt (str): The prompt to generate an answer.
             additional_keys (Dict[str, str]): Additional keys for the prompt.
+            **kwargs (Dict[str, Any]): Additional arguments.
 
         Returns:
             str: The generated answer.
