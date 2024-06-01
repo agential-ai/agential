@@ -172,11 +172,11 @@ def test_generate() -> None:
     )
     out = agent.generate(
         question=question,
-        critique_additional_keys={"tests": tests},
         examples=HUMANEVAL_FEWSHOT_EXAMPLES_POT,
         prompt=CRITIC_POT_INSTRUCTION_HUMANEVAL,
         critique_examples=HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
         critique_prompt=CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_HUMANEVAL,
+        critique_additional_keys={"tests": tests},
         use_tool=False,
         max_interactions=3,
     )
@@ -198,12 +198,12 @@ def test_generate() -> None:
     )
     out = agent.generate(
         question=question,
-        additional_keys={"tests": tests},
-        critique_additional_keys={"tests": tests},
         examples=MBPP_FEWSHOT_EXAMPLES_POT,
         prompt=CRITIC_POT_INSTRUCTION_MBPP,
         critique_examples=MBPP_FEWSHOT_EXAMPLES_CRITIC,
         critique_prompt=CRITIC_CRITIQUE_INSTRUCTION_MBPP,
+        additional_keys={"tests": tests},
+        critique_additional_keys={"tests": tests},
         use_tool=True,
         max_interactions=3,
     )
