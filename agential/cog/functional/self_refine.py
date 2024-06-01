@@ -6,7 +6,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
 from langchain_core.prompts.prompt import PromptTemplate
 
-from agential.cog.prompts.agents.self_refine import (
+from agential.cog.prompts.agent.self_refine import (
     SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
     SELF_REFINE_INSTRUCTION_GSM8K,
     SELF_REFINE_REFINE_INSTRUCTION_GSM8K,

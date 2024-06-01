@@ -27,7 +27,7 @@ from agential.cog.functional.reflexion import (
     react_reflect_last_attempt_and_reflexion,
     react_reflect_reflexion,
 )
-from agential.cog.prompts.agents.reflexion import (
+from agential.cog.prompts.agent.reflexion import (
     REFLEXION_COT_FEWSHOT_EXAMPLES,
     REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
     REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES,

@@ -22,12 +22,12 @@ from agential.cog.modules.memory.expel import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
-from agential.cog.prompts.agents.expel import (
+from agential.cog.prompts.agent.expel import (
     END_OF_EXAMPLES_DELIMITER,
     EXPEL_REFLEXION_REACT_INSTRUCTION,
     RULE_PREFIX,
 )
-from agential.cog.prompts.agents.reflexion import (
+from agential.cog.prompts.agent.reflexion import (
     REFLEXION_REACT_INSTRUCTION,
     REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
     REFLEXION_REACT_REFLECT_INSTRUCTION,
