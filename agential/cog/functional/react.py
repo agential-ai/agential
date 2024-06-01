@@ -7,7 +7,7 @@ from langchain_core.messages.human import HumanMessage
 from langchain_core.prompts.prompt import PromptTemplate
 from tiktoken import Encoding
 
-from agential.cog.prompts.agents.react import (
+from agential.cog.prompts.agent.react import (
     REACT_INSTRUCTION_HOTPOTQA,
 )
 

@@ -10,7 +10,7 @@ from langchain_core.messages.human import HumanMessage
 from langchain_core.prompts.prompt import PromptTemplate
 
 from agential.cog.agent.reflexion import ReflexionReActAgent
-from agential.cog.prompts.agents.expel import (
+from agential.cog.prompts.agent.expel import (
     CRITIQUE_SUMMARY_SUFFIX_FULL,
     CRITIQUE_SUMMARY_SUFFIX_NOT_FULL,
     EXISTING_INSIGHTS_AI_NAME,
@@ -21,7 +21,7 @@ from agential.cog.prompts.agents.expel import (
     SYSTEM_CRITIQUE_EXISTING_INSIGHTS_INSTRUCTION,
     SYSTEM_TEMPLATE,
 )
-from agential.cog.prompts.agents.reflexion import (
+from agential.cog.prompts.agent.reflexion import (
     REFLEXION_REACT_INSTRUCTION,
     REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
     REFLEXION_REACT_REFLECT_INSTRUCTION,
