@@ -76,6 +76,9 @@ def _prompt_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
+    print("<===================================================================>")
+    print(prompt)
+    print("<===================================================================>")
     out = llm(
         [
             HumanMessage(
@@ -83,6 +86,7 @@ def _prompt_agent(
             )
         ]
     ).content
+    print(repr(out))
     assert isinstance(out, str)
     return out
 
