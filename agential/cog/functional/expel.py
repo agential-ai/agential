@@ -10,7 +10,7 @@ from langchain_core.messages.human import HumanMessage
 from langchain_core.prompts.prompt import PromptTemplate
 
 from agential.cog.agent.reflexion import ReflexionReActAgent
-from agential.cog.prompts.expel import (
+from agential.cog.prompts.agents.expel import (
     CRITIQUE_SUMMARY_SUFFIX_FULL,
     CRITIQUE_SUMMARY_SUFFIX_NOT_FULL,
     EXISTING_INSIGHTS_AI_NAME,
@@ -21,12 +21,12 @@ from agential.cog.prompts.expel import (
     SYSTEM_CRITIQUE_EXISTING_INSIGHTS_INSTRUCTION,
     SYSTEM_TEMPLATE,
 )
-from agential.cog.prompts.react import HOTPOTQA_FEWSHOT_EXAMPLES
-from agential.cog.prompts.reflexion import (
+from agential.cog.prompts.agents.reflexion import (
     REFLEXION_REACT_INSTRUCTION,
     REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
     REFLEXION_REACT_REFLECT_INSTRUCTION,
 )
+from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 
 # ============================================== Experience Gathering ==============================================
 
@@ -37,7 +37,7 @@ def gather_experience(
     keys: List[str],
     strategy: str = "reflexion",
     prompt: str = REFLEXION_REACT_INSTRUCTION,
-    examples: str = HOTPOTQA_FEWSHOT_EXAMPLES,
+    examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
     reflect_examples: str = REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
     reflect_prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION,
 ) -> Dict[str, List]:
@@ -52,7 +52,7 @@ def gather_experience(
         strategy (str, optional): The strategy used to generate experiences. Defaults to "reflexion" if not specified.
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION.
             Must include examples, reflections, question, scratchpad, and max_steps.
-        examples (str, optional): Fewshot examples. Defaults to HOTPOTQA_FEWSHOT_EXAMPLES.
+        examples (str, optional): Fewshot examples. Defaults to HOTPOTQA_FEWSHOT_EXAMPLES_REACT.
         reflect_examples (str, optional): Reflection fewshot examples. Defaults to REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES.
         reflect_prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION.
             Must include examples, question, and scratchpad.
@@ -178,6 +178,7 @@ def _build_compare_prompt(
     success_trial: str,
     failed_trial: str,
     is_full: bool,
+    additional_keys: Dict[str, str] = {},
 ) -> str:
     """Constructs a comparison prompt for an AI by combining system instructions, task details, and a list of existing insights.
 
@@ -189,6 +190,7 @@ def _build_compare_prompt(
         success_trial (str): A description or example of a successful trial for the task.
         failed_trial (str): A description or example of a failed trial for the task.
         is_full (bool): A flag indicating whether the prompt should be in its full form or not. This affects the suffix of the critique summary.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
         str: A fully constructed prompt ready to be presented to the AI. The prompt includes a prefixed system instruction, task details formatted according to human critique template,
@@ -214,6 +216,7 @@ def _build_compare_prompt(
             if insights
             else ""
         ),
+        **additional_keys,
     }
 
     human_critique_summary_message = PromptTemplate.from_template(
@@ -232,6 +235,7 @@ def _build_all_success_prompt(
     insights: List[Dict[str, Any]],
     success_trajs_str: str,
     is_full: bool,
+    additional_keys: Dict[str, str] = {},
 ) -> str:
     """Constructs a prompt focused on critiquing and enhancing existing insights based on successful task trials.
 
@@ -241,6 +245,7 @@ def _build_all_success_prompt(
         insights (List[Dict[str, Any]]): A list of strings where each string represents an existing insight with a score. If the list is empty, it is treated as if there are no existing insights.
         success_trajs_str (str): A string containing descriptions of successful trials related to the task. These descriptions are meant to provide context for the AI's critique of the existing insights.
         is_full (bool): A boolean flag that determines the verbosity of the critique summary's suffix. If `True`, a more comprehensive suffix is used.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
         str: A string that combines the system's instruction, the task context with successful trials, and the existing insights into a coherent prompt.
@@ -267,7 +272,7 @@ def _build_all_success_prompt(
 
     human_critique_summary_message = PromptTemplate.from_template(
         HUMAN_CRITIQUE_EXISTING_INSIGHTS_ALL_SUCCESS_TEMPLATE
-    ).format(**human_format_dict)
+    ).format(**human_format_dict, **additional_keys)
     critique_summary_suffix = (
         CRITIQUE_SUMMARY_SUFFIX_FULL if is_full else CRITIQUE_SUMMARY_SUFFIX_NOT_FULL
     )
@@ -285,6 +290,7 @@ def _prompt_compare_critique(
     failed_trial: str,
     is_full: bool,
     replace_newline: bool = False,
+    additional_keys: Dict[str, str] = {},
 ) -> str:
     """Generates a critique from an LLM based on a comparison between successful and failed task trials, within the context of existing insights.
 
@@ -298,6 +304,7 @@ def _prompt_compare_critique(
         failed_trial (str): A description of a failed trial for the task.
         is_full (bool): A flag indicating if the full version of the critique summary should be used.
         replace_newline (bool, optional): If `True`, newline characters in the LLM's output will be replaced with empty strings, defaulting to `False`.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
         str: The critique generated by the LLM, potentially with newline characters removed, based on the `replace_newline` parameter.
@@ -308,6 +315,7 @@ def _prompt_compare_critique(
         success_trial=success_trial,
         failed_trial=failed_trial,
         is_full=is_full,
+        additional_keys=additional_keys,
     )
     out = llm(
         [
@@ -329,6 +337,7 @@ def _prompt_all_success_critique(
     success_trajs_str: str,
     is_full: bool,
     replace_newline: bool = False,
+    additional_keys: Dict[str, str] = {},
 ) -> str:
     """Generates a critique from an LLM based on a compilation of successful task trials in the context of existing insights.
 
@@ -340,12 +349,16 @@ def _prompt_all_success_critique(
         success_trajs_str (str): A string concatenating descriptions of successful trials related to the task.
         is_full (bool): Indicates whether the full critique summary is to be used in the prompt.
         replace_newline (bool, optional): If set to `True`, newline characters in the LLM output will be replaced with empty strings. The default is `False`.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
         str: The generated critique from the LLM, optionally with newline characters removed depending on the `replace_newline` parameter.
     """
     prompt = _build_all_success_prompt(
-        insights=insights, success_trajs_str=success_trajs_str, is_full=is_full
+        insights=insights,
+        success_trajs_str=success_trajs_str,
+        is_full=is_full,
+        additional_keys=additional_keys,
     )
     out = llm(
         [

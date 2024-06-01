@@ -2,35 +2,55 @@
 
 # Welcome to Agential!
 
+## Benchmark Few-shot Examples
+
+| **Benchmarks** | Number of few-shot examples |
+| -------------- | --------------------------- |
+| **HotpotQA**   |  6                          |
+| **FEVER**      |  3                          |
+| **TriviaQA**   |  4                          |
+| **AmbigNQ**    |  5                          |
+| **GSM8k**      |  8                          |
+| **SVAMP**      |  7                          |
+| **TabMWP**     |  4                          |
+| **MBPP**       |  3                          |
+| **HumanEval**  |  0                          |
+| **ALFWorld**   |                             |
+| **WebShop**    |                             |
+| **AgentBench** |                             |
+
+
 ## Implementing...
 
-:octicons-check-16: **:** not tested in the original paper
 
-:material-check-all: **:** tested in the original paper
+
+- :octicons-check-16: **:** not tested in the original paper
+
+- :material-check-all: **:** tested in the original paper
 
 | **Methods / Benchmarks** |       HotpotQA       |        FEVER         |       TriviaQA       |       AmbigNQ        |
 | ------------------------ | :------------------: | :------------------: | :------------------: | :------------------: |
 | ReAct                    | :material-check-all: | :material-check-all: | :octicons-check-16:  | :octicons-check-16:  |
 | Reflexion                | :material-check-all: |                      |                      |                      |
-| CRITIC                   | :material-check-all: |                      | :material-check-all: | :material-check-all: |
+| CRITIC                   | :material-check-all: | :octicons-check-16:  | :material-check-all: | :material-check-all: |
 | Self-Refine              |                      |                      |                      |                      |
 | LATS                     |                      |                      |                      |                      |
 
-| **Methods / Benchmarks** |        GSM8k         | SVAMP | TabMWP |
-| ------------------------ | :------------------: | :---: | :----: |
-| ReAct                    |                      |       |        |
-| Reflexion                |                      |       |        |
-| CRITIC                   |                      |       |        |
-| Self-Refine              | :material-check-all: |       |        |
-| LATS                     |                      |       |        |
+| **Methods / Benchmarks** |        GSM8k         |        SVAMP         |        TabMWP        |
+| ------------------------ | :------------------: | :------------------: | :------------------: |
+| ReAct                    |                      |                      |                      |
+| Reflexion                |                      |                      |                      |
+| CRITIC                   | :material-check-all: | :material-check-all: | :material-check-all: |
+| Self-Refine              | :material-check-all: |                      |                      |
+| LATS                     |                      |                      |                      |
 
-| **Methods / Benchmarks** | MBPP  | HumanEval |
-| ------------------------ | :---: | :-------: |
-| ReAct                    |       |           |
-| Reflexion                |       |           |
-| CRITIC                   |       |           |
-| Self-Refine              |       |           |
-| LATS                     |       |           |
+| **Methods / Benchmarks** |         MBPP         |      HumanEval       |
+| ------------------------ | :------------------: | :------------------: |
+| ReAct                    |                      |                      |
+| Reflexion                |                      |                      |
+| CRITIC                   | :octicons-check-16:  | :octicons-check-16:  |
+| Self-Refine              |                      |                      |
+| LATS                     |                      |                      |
 
 | **Methods / Benchmarks** | ALFWorld | WebShop | AgentBench |
 | ------------------------ | :------: | :-----: | :--------: |
