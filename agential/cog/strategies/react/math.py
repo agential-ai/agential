@@ -164,16 +164,12 @@ class ReActMathStrategy(ReActBaseStrategy):
             self._current_answer = query
             self._finished = True
             obs = f"\n```python\n{self._current_answer}\n```"
-        elif action_type.lower() == "implement":
-            _, execution_status = safe_execute(query)
+        elif action_type.lower() == "calculate":
+            answer, execution_status = safe_execute(query)
             self._current_answer = query
-            obs = f"\n```python\n{self._current_answer}\n```\nExecution Status: {execution_status}"
-        elif action_type.lower() == "test":
-            obs = f"{self._current_answer}\n\n{query}"
-            _, execution_status = safe_execute(obs)
-            obs = f"\n```python\n{obs}\n```\nExecution Status: {execution_status}"
+            obs = f"\n```python\n{self._current_answer}\n```\nExecution Status: {execution_status}\nOutput: answer = {answer}"
         else:
-            obs = "Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer]."
+            obs = "Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
         self._scratchpad += obs
 
         return obs
