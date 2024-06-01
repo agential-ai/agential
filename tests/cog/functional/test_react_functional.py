@@ -9,7 +9,7 @@ from agential.cog.functional.react import (
     _is_halted,
     _prompt_agent,
 )
-from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 
 
 def test__build_agent_prompt() -> None:

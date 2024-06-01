@@ -16,10 +16,10 @@ from agential.cog.prompts.agents.critic import (
     MBPP_FEWSHOT_EXAMPLES_CRITIC,
     MBPP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
 )
-from agential.cog.prompts.benchmarks.humaneval import (
+from agential.cog.prompts.benchmark.humaneval import (
     HUMANEVAL_FEWSHOT_EXAMPLES_POT,
 )
-from agential.cog.prompts.benchmarks.mbpp import MBPP_FEWSHOT_EXAMPLES_POT
+from agential.cog.prompts.benchmark.mbpp import MBPP_FEWSHOT_EXAMPLES_POT
 from agential.cog.strategies.critic.code import (
     CritHEvalCodeStrategy,
     CriticCodeStrategy,
