@@ -5,7 +5,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
 
 from agential.cog.prompts.agents.react import REACT_INSTRUCTION_MBPP
-from agential.cog.prompts.benchmarks.mbpp import MBPP_FEWSHOT_EXAMPLES_REACT
+from agential.cog.prompts.benchmark.mbpp import MBPP_FEWSHOT_EXAMPLES_REACT
 from agential.cog.strategies.react.code import (
     ReActCodeStrategy,
     ReActHEvalStrategy,

@@ -2,38 +2,38 @@
 
 from typing import Dict
 
-from agential.cog.prompts.benchmarks.ambignq import (
+from agential.cog.prompts.benchmark.ambignq import (
     AMBIGNQ_FEWSHOT_EXAMPLES_COT,
     AMBIGNQ_FEWSHOT_EXAMPLES_DIRECT,
     AMBIGNQ_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.cog.prompts.benchmarks.fever import (
+from agential.cog.prompts.benchmark.fever import (
     FEVER_FEWSHOT_EXAMPLES_COT,
     FEVER_FEWSHOT_EXAMPLES_DIRECT,
     FEVER_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.cog.prompts.benchmarks.gsm8k import (
+from agential.cog.prompts.benchmark.gsm8k import (
     GSM8K_FEWSHOT_EXAMPLES_POT,
 )
-from agential.cog.prompts.benchmarks.hotpotqa import (
+from agential.cog.prompts.benchmark.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
     HOTPOTQA_FEWSHOT_EXAMPLES_DIRECT,
     HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.cog.prompts.benchmarks.humaneval import (
+from agential.cog.prompts.benchmark.humaneval import (
     HUMANEVAL_FEWSHOT_EXAMPLES_POT,
 )
-from agential.cog.prompts.benchmarks.mbpp import (
+from agential.cog.prompts.benchmark.mbpp import (
     MBPP_FEWSHOT_EXAMPLES_POT,
     MBPP_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.cog.prompts.benchmarks.svamp import (
+from agential.cog.prompts.benchmark.svamp import (
     SVAMP_FEWSHOT_EXAMPLES_POT,
 )
-from agential.cog.prompts.benchmarks.tabmwp import (
+from agential.cog.prompts.benchmark.tabmwp import (
     TABMWP_FEWSHOT_EXAMPLES_POT,
 )
-from agential.cog.prompts.benchmarks.triviaqa import (
+from agential.cog.prompts.benchmark.triviaqa import (
     TRIVIAQA_FEWSHOT_EXAMPLES_COT,
     TRIVIAQA_FEWSHOT_EXAMPLES_DIRECT,
     TRIVIAQA_FEWSHOT_EXAMPLES_REACT,
