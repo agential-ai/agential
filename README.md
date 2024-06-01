@@ -1,6 +1,8 @@
 
 # Agential
 
+[![codecov](https://codecov.io/gh/agential-ai/agential/branch/main/graph/badge.svg)](https://codecov.io/gh/agential-ai/agential)
+
 
 ## Features
 
