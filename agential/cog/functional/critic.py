@@ -1,15 +1,10 @@
 """Functional module for CRITIC."""
 
-import builtins
-import sys
+from typing import Dict
 
-from typing import Any, Dict, List, Optional, Tuple
-
-import func_timeout
-
-from langchain.prompts import PromptTemplate
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
+from langchain_core.prompts.prompt import PromptTemplate
 
 from agential.cog.prompts.agents.critic import (
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
@@ -31,43 +26,6 @@ def remove_comment(code: str) -> str:
     code_lines = [line for line in code_lines if not line.startswith("#")]
     code_lines = [line for line in code_lines if line.strip() != ""]
     return "\n".join(code_lines)
-
-
-# Ref: https://github.com/microsoft/ProphetNet/blob/master/CRITIC/src/tools/interpreter_api.py.
-def safe_execute(
-    code_string: str,
-    keys: Optional[List[str]] = None,
-) -> Tuple[List[Any], str]:
-    """Executes the provided Python code string in a safe manner with a timeout and returns specified variables from the execution.
-
-    Args:
-        code_string (str): Python code to execute.
-        keys (Optional[List[str]]): A list of variable names whose values are to be returned after execution. If None, the function tries to return a variable named 'answer'.
-
-    Returns:
-        tuple: A tuple containing the result(s) of the specified variable(s) and a status message. If an exception occurs or timeout happens, it returns None for the result.
-    """
-    safe_globals: Dict[str, Any] = {"__builtins__": builtins, "sys": sys}
-
-    def execute(x: str) -> Tuple[Optional[Any], str]:
-        """Executes the code string with python exec()."""
-        try:
-            exec(x, safe_globals)
-            if keys is None:
-                an = [safe_globals.get("answer", None)]
-            else:
-                an = [safe_globals.get(k, None) for k in keys]
-            return an, "Done"
-        except BaseException as e:
-            return [None], repr(e)
-
-    try:
-        an, report = func_timeout.func_timeout(3, execute, args=(code_string,))
-    except func_timeout.FunctionTimedOut:
-        an = [None]
-        report = "TimeoutError: execution timeout"
-
-    return an, report
 
 
 def _build_agent_prompt(

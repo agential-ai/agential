@@ -9,16 +9,6 @@ from typing import Any, Dict, List
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.agent.base import BaseAgent
-from agential.cog.prompts.agents.self_refine import (
-    GSM8K_CRITIQUE_FEWSHOT_EXAMPLES,
-    GSM8K_REFINE_FEWSHOT_EXAMPLES,
-    SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
-    SELF_REFINE_INSTRUCTION_GSM8K,
-    SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
-)
-from agential.cog.prompts.benchmarks.gsm8k import (
-    GSM8K_FEWSHOT_EXAMPLES_POT,
-)
 from agential.cog.strategies.strategy_factory import SelfRefineStrategyFactory
 
 
@@ -56,12 +46,12 @@ class SelfRefineAgent(BaseAgent):
     def generate(
         self,
         question: str,
-        examples: str = GSM8K_FEWSHOT_EXAMPLES_POT,
-        prompt: str = SELF_REFINE_INSTRUCTION_GSM8K,
-        critique_examples: str = GSM8K_CRITIQUE_FEWSHOT_EXAMPLES,
-        critique_prompt: str = SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
-        refine_examples: str = GSM8K_REFINE_FEWSHOT_EXAMPLES,
-        refine_prompt: str = SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
+        examples: str,
+        prompt: str,
+        critique_examples: str,
+        critique_prompt: str,
+        refine_examples: str,
+        refine_prompt: str,
         additional_keys: Dict[str, str] = {},
         critique_additional_keys: Dict[str, str] = {},
         refine_additional_keys: Dict[str, str] = {},
@@ -75,12 +65,12 @@ class SelfRefineAgent(BaseAgent):
 
         Args:
             question (str): The question or problem to solve.
-            examples (str): Precedent examples to guide initial solution generation. Defaults to GSM8K_FEWSHOT_EXAMPLES_POT.
-            prompt (str): Instructional prompt for initial solution generation. Defaults to SELF_REFINE_INSTRUCTION_GSM8K.
-            critique_examples (str): Precedent examples to guide critique generation. Defaults to GSM8K_CRITIQUE_FEWSHOT_EXAMPLES.
-            critique_prompt (str): Instructional prompt for critique generation. Defaults to SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K.
-            refine_examples (str): Precedent examples to guide solution refinement. Defaults to GSM8K_REFINE_FEWSHOT_EXAMPLES.
-            refine_prompt (str): Instructional prompt for refining the solution. Defaults to SELF_REFINE_REFINE_INSTRUCTION_GSM8K.
+            examples (str): Precedent examples to guide initial solution generation.
+            prompt (str): Instructional prompt for initial solution generation.
+            critique_examples (str): Precedent examples to guide critique generation.
+            critique_prompt (str): Instructional prompt for critique generation.
+            refine_examples (str): Precedent examples to guide solution refinement.
+            refine_prompt (str): Instructional prompt for refining the solution.
             additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
             critique_additional_keys (Dict[str, str]): Additional keys to format the critique_prompt. Defaults to {}.
             refine_additional_keys (Dict[str, str]): Additional keys to format the refine_prompt. Defaults to {}.

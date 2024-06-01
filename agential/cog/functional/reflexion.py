@@ -4,9 +4,9 @@ from typing import Dict, List, Optional
 
 import tiktoken
 
-from langchain.prompts import PromptTemplate
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
+from langchain_core.prompts.prompt import PromptTemplate
 from tiktoken.core import Encoding
 
 from agential.cog.prompts.agents.reflexion import (

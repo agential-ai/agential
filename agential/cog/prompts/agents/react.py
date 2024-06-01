@@ -60,3 +60,41 @@ Here are some examples:
 (END OF EXAMPLES)
 
 Question: {question}{scratchpad}"""
+
+
+# ======================================================================== HUMANEVAL ======================================================================== #
+
+
+REACT_INSTRUCTION_HUMANEVAL = """Answer a coding question with interleaving Thought, Action, Observation steps. Thought can reason about the current question and plan the retrieval steps, and Action can be three types:
+(1) Implement[<insert your code here>], which implements the function to answer the question.
+(2) Test[<insert your code here>], which implements assert statement test cases to test the implemented code.
+(3) Finish[<insert your answer here>], which returns the code implementation and finishes the task.
+You have a maximum of {max_steps} steps.
+
+```python
+{question}
+    pass
+```
+
+{scratchpad}"""
+
+
+# ======================================================================== MBPP ======================================================================== #
+
+
+REACT_INSTRUCTION_MBPP = """Answer a coding question with interleaving Thought, Action, Observation steps. Thought can reason about the current question and plan the retrieval steps, and Action can be three types:
+(1) Implement[code], which implements the function to answer the question.
+(2) Test[code], which implements assert statement test cases to test the implemented code.
+(3) Finish[answer], which returns the code implementation and finishes the task.
+You have a maximum of {max_steps} steps.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+You are an expert Python programmer, and here is your task: {question}.
+Your code should pass these tests:
+
+{tests}
+
+{scratchpad}"""

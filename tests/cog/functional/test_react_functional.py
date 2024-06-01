@@ -75,7 +75,7 @@ def test__is_halted() -> None:
         gpt3_5_turbo_enc,
     )
 
-    # Test when step_n exceeds max_steps.
+    # Test when idx exceeds max_steps.
     assert _is_halted(
         False,
         11,
@@ -111,7 +111,7 @@ def test__is_halted() -> None:
         gpt3_5_turbo_enc,
     )
 
-    # Test edge case when step_n equals max_steps.
+    # Test edge case when idx equals max_steps.
     assert _is_halted(
         False,
         10,
@@ -145,5 +145,5 @@ def test__is_halted() -> None:
         10,
         1603,
         gpt3_5_turbo_enc,
-        "{question} {scratchpad} {examples} {max_steps}",
+        prompt="{question} {scratchpad} {examples} {max_steps}",
     )

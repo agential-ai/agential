@@ -2,68 +2,11 @@
 
 from agential.utils.parse import (
     normalize_answer,
-    parse_action,
-    parse_list,
-    parse_numbered_list,
     remove_articles,
-    remove_name,
     remove_newline,
     remove_punc,
     white_space_fix,
 )
-
-
-def test_parse_list() -> None:
-    """Test parse list function."""
-    gt = ["Item 1", "Item 2", "Item 3", "Item 4"]
-
-    x = "1. Item 1\n2. Item 2\n3. Item 3\n\n4. Item 4"
-    out = parse_list(x)
-
-    assert len(gt) == len(out)
-    for i, j in zip(gt, out):
-        assert i == j
-
-
-def test_parse_numbered_list() -> None:
-    """Test parse_numbered_list function."""
-    gt = ["Item One", "Item Two", "Item Three"]
-
-    input_text = "1) Item One.\n2) Item Two.\n3) Item Three,\n"
-    out = parse_numbered_list(input_text)
-
-    assert len(gt) == len(out)
-    for i, j in zip(gt, out):
-        assert i == j
-
-
-def test_remove_name() -> None:
-    """Test remove_name function."""
-    gt = "Smith"
-
-    x = "John Smith"
-    out = remove_name(x, "John")
-
-    assert out == gt
-
-
-def test_parse_action() -> None:
-    """Test parse_action function."""
-    # Test with a valid action string.
-    valid_string = "ActionType[Argument]"
-    assert parse_action(valid_string) == ("ActionType", "Argument")
-
-    # Test with an invalid action string (missing brackets).
-    invalid_string = "ActionType Argument"
-    assert parse_action(invalid_string) == ("", "")
-
-    # Test with an invalid action string (no action type).
-    invalid_string = "[Argument]"
-    assert parse_action(invalid_string) == ("", "")
-
-    # Test with an invalid action string (no argument).
-    invalid_string = "ActionType[]"
-    assert parse_action(invalid_string) == ("", "")
 
 
 def test_remove_newline() -> None:

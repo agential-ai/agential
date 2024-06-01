@@ -25,6 +25,7 @@ from agential.cog.prompts.benchmarks.humaneval import (
 )
 from agential.cog.prompts.benchmarks.mbpp import (
     MBPP_FEWSHOT_EXAMPLES_POT,
+    MBPP_FEWSHOT_EXAMPLES_REACT,
 )
 from agential.cog.prompts.benchmarks.svamp import (
     SVAMP_FEWSHOT_EXAMPLES_POT,
@@ -41,6 +42,10 @@ from agential.cog.prompts.benchmarks.triviaqa import (
 
 class Benchmarks:
     """Supported benchmarks."""
+
+    QA = "qa"
+    MATH = "math"
+    CODE = "code"
 
     class qa:
         """qa benchmarks."""
@@ -74,40 +79,47 @@ class FewShotType:
 
 
 BENCHMARK_STRINGS = {
-    Benchmarks.qa.HOTPOTQA: {
-        FewShotType.COT: HOTPOTQA_FEWSHOT_EXAMPLES_COT,
-        FewShotType.DIRECT: HOTPOTQA_FEWSHOT_EXAMPLES_DIRECT,
-        FewShotType.REACT: HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+    Benchmarks.QA: {
+        Benchmarks.qa.HOTPOTQA: {
+            FewShotType.COT: HOTPOTQA_FEWSHOT_EXAMPLES_COT,
+            FewShotType.DIRECT: HOTPOTQA_FEWSHOT_EXAMPLES_DIRECT,
+            FewShotType.REACT: HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        },
+        Benchmarks.qa.FEVER: {
+            FewShotType.COT: FEVER_FEWSHOT_EXAMPLES_COT,
+            FewShotType.DIRECT: FEVER_FEWSHOT_EXAMPLES_DIRECT,
+            FewShotType.REACT: FEVER_FEWSHOT_EXAMPLES_REACT,
+        },
+        Benchmarks.qa.TRIVIAQA: {
+            FewShotType.COT: TRIVIAQA_FEWSHOT_EXAMPLES_COT,
+            FewShotType.DIRECT: TRIVIAQA_FEWSHOT_EXAMPLES_DIRECT,
+            FewShotType.REACT: TRIVIAQA_FEWSHOT_EXAMPLES_REACT,
+        },
+        Benchmarks.qa.AMBIGNQ: {
+            FewShotType.COT: AMBIGNQ_FEWSHOT_EXAMPLES_COT,
+            FewShotType.DIRECT: AMBIGNQ_FEWSHOT_EXAMPLES_DIRECT,
+            FewShotType.REACT: AMBIGNQ_FEWSHOT_EXAMPLES_REACT,
+        },
     },
-    Benchmarks.qa.FEVER: {
-        FewShotType.COT: FEVER_FEWSHOT_EXAMPLES_COT,
-        FewShotType.DIRECT: FEVER_FEWSHOT_EXAMPLES_DIRECT,
-        FewShotType.REACT: FEVER_FEWSHOT_EXAMPLES_REACT,
+    Benchmarks.MATH: {
+        Benchmarks.math.GSM8K: {
+            FewShotType.POT: GSM8K_FEWSHOT_EXAMPLES_POT,
+        },
+        Benchmarks.math.SVAMP: {
+            FewShotType.POT: SVAMP_FEWSHOT_EXAMPLES_POT,
+        },
+        Benchmarks.math.TABMWP: {
+            FewShotType.POT: TABMWP_FEWSHOT_EXAMPLES_POT,
+        },
     },
-    Benchmarks.qa.TRIVIAQA: {
-        FewShotType.COT: TRIVIAQA_FEWSHOT_EXAMPLES_COT,
-        FewShotType.DIRECT: TRIVIAQA_FEWSHOT_EXAMPLES_DIRECT,
-        FewShotType.REACT: TRIVIAQA_FEWSHOT_EXAMPLES_REACT,
-    },
-    Benchmarks.qa.AMBIGNQ: {
-        FewShotType.COT: AMBIGNQ_FEWSHOT_EXAMPLES_COT,
-        FewShotType.DIRECT: AMBIGNQ_FEWSHOT_EXAMPLES_DIRECT,
-        FewShotType.REACT: AMBIGNQ_FEWSHOT_EXAMPLES_REACT,
-    },
-    Benchmarks.math.GSM8K: {
-        FewShotType.POT: GSM8K_FEWSHOT_EXAMPLES_POT,
-    },
-    Benchmarks.math.SVAMP: {
-        FewShotType.POT: SVAMP_FEWSHOT_EXAMPLES_POT,
-    },
-    Benchmarks.math.TABMWP: {
-        FewShotType.POT: TABMWP_FEWSHOT_EXAMPLES_POT,
-    },
-    Benchmarks.code.HUMANEVAL: {
-        FewShotType.POT: HUMANEVAL_FEWSHOT_EXAMPLES_POT,
-    },
-    Benchmarks.code.MBPP: {
-        FewShotType.POT: MBPP_FEWSHOT_EXAMPLES_POT,
+    Benchmarks.CODE: {
+        Benchmarks.code.HUMANEVAL: {
+            FewShotType.POT: HUMANEVAL_FEWSHOT_EXAMPLES_POT,
+        },
+        Benchmarks.code.MBPP: {
+            FewShotType.POT: MBPP_FEWSHOT_EXAMPLES_POT,
+            FewShotType.REACT: MBPP_FEWSHOT_EXAMPLES_REACT,
+        },
     },
 }
 
@@ -117,23 +129,23 @@ def get_fewshot_examples(mode: Dict[str, str], fewshot_type: str) -> str:
 
     Available Benchmark Types and Names:
         - qa:
-            - Benchmarks.qa.HOTPOTQA: Supports FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT
-            - Benchmarks.qa.FEVER: Supports FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT
-            - Benchmarks.qa.TRIVIAQA: Supports FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT
-            - Benchmarks.qa.AMBIGNQ: Supports FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT
+            - hotpotqa: Supports "cot", "direct", "react"
+            - fever: Supports "cot", "direct", "react"
+            - triviaqa: Supports "cot", "direct", "react"
+            - ambignq: Supports "cot", "direct", "react"
         - math:
-            - Benchmarks.math.GSM8K: Supports FewShotType.POT
-            - Benchmarks.math.SVAMP: Supports FewShotType.POT
-            - Benchmarks.math.TABMWP: Supports FewShotType.POT
+            - gsm8k: Supports "pot"
+            - svamp: Supports "pot"
+            - tabmwp: Supports "pot"
         - code:
-            - Benchmarks.code.HUMANEVAL: Supports FewShotType.POT
-            - Benchmarks.code.MBPP: Supports FewShotType.POT
+            - humaneval: Supports "pot"
+            - mbpp: Supports "pot", "react"
 
     Available Few-Shot Types:
-        - FewShotType.COT: "cot"
-        - FewShotType.DIRECT: "direct"
-        - FewShotType.REACT: "react"
-        - FewShotType.POT: "pot"
+        - "cot"
+        - "direct"
+        - "react"
+        - "pot"
 
     Args:
         mode (dict): A dictionary with "benchmark type" as the key and "benchmark name" as the value.
@@ -147,15 +159,15 @@ def get_fewshot_examples(mode: Dict[str, str], fewshot_type: str) -> str:
     if benchmark_type not in Benchmarks.__dict__:
         raise ValueError(f"Benchmark type '{benchmark_type}' not found.")
 
-    if benchmark_name not in BENCHMARK_STRINGS:
+    if benchmark_name not in BENCHMARK_STRINGS[benchmark_type]:
         raise ValueError(
             f"Benchmark '{benchmark_name}' not found in benchmark type '{benchmark_type}'."
         )
 
-    examples = BENCHMARK_STRINGS[benchmark_name].get(fewshot_type)
+    examples = BENCHMARK_STRINGS[benchmark_type][benchmark_name].get(fewshot_type)
     if examples is None:
         raise ValueError(
-            f"Few-shot type '{fewshot_type}' not found for benchmark '{benchmark_name}'."
+            f"Few-shot type '{fewshot_type}' not found for benchmark '{benchmark_name}' of benchmark type '{benchmark_type}'."
         )
 
     return examples

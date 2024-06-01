@@ -4,8 +4,9 @@ from typing import Any, Dict, List, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
-from agential.cog.functional.critic import _prompt_agent, _prompt_critique, safe_execute
+from agential.cog.functional.critic import _prompt_agent, _prompt_critique
 from agential.cog.strategies.critic.base import CriticBaseStrategy
+from agential.utils.general import safe_execute
 from agential.utils.validation import validate_overlapping_keys
 
 
@@ -33,6 +34,7 @@ class CriticMathStrategy(CriticBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
+        **kwargs: Dict[str, Any],
     ) -> str:
         """Generates an answer for the given question using the provided prompt and examples.
 
@@ -41,6 +43,7 @@ class CriticMathStrategy(CriticBaseStrategy):
             examples (str): Few-shot examples to guide the language model.
             prompt (str): The prompt to generate an answer.
             additional_keys (Dict[str, str]): Additional keys for the prompt.
+            **kwargs (Dict[str, Any]): Additional arguments.
 
         Returns:
             str: The generated answer.

@@ -6,11 +6,12 @@ Paper Repositories:
     - https://github.com/noahshinn/reflexion
 """
 
+import re
+
 from typing import Any, Dict, List, Optional, Tuple
 
 import tiktoken
 
-from langchain.agents.react.base import DocstoreExplorer
 from langchain_community.docstore.wikipedia import Wikipedia
 from langchain_core.language_models.chat_models import BaseChatModel
 from pydantic import BaseModel, Field
@@ -43,7 +44,31 @@ from agential.cog.prompts.agents.reflexion import (
     REFLEXION_REACT_REFLECT_INSTRUCTION,
 )
 from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.utils.parse import parse_action, remove_newline
+from agential.utils.docstore import DocstoreExplorer
+from agential.utils.parse import remove_newline
+
+
+def parse_action(string: str) -> Tuple[str, str]:
+    """Parses an action string into an action type and its argument.
+
+    This method is used in ReAct and Reflexion.
+
+    Args:
+        string (str): The action string to be parsed.
+
+    Returns:
+        Tuple[str, str]: A tuple containing the action type and argument.
+    """
+    pattern = r"^(\w+)\[(.+)\]$"
+    match = re.match(pattern, string)
+
+    if match:
+        action_type = match.group(1)
+        argument = match.group(2)
+    else:  # TODO: Handle parsing/data validation.
+        action_type = ""
+        argument = ""
+    return action_type, argument
 
 
 class ReflexionCoTOutput(BaseModel):

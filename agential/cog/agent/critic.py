@@ -9,12 +9,6 @@ from typing import Any, Dict, List
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.agent.base import BaseAgent
-from agential.cog.prompts.agents.critic import (
-    CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
-    CRITIC_INSTRUCTION_HOTPOTQA,
-    HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
-)
-from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
 from agential.cog.strategies.strategy_factory import CriticStrategyFactory
 
 
@@ -48,10 +42,10 @@ class CriticAgent(BaseAgent):
     def generate(
         self,
         question: str,
-        examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_COT,
-        prompt: str = CRITIC_INSTRUCTION_HOTPOTQA,
-        critique_examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
-        critique_prompt: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
+        examples: str,
+        prompt: str,
+        critique_examples: str,
+        critique_prompt: str,
         additional_keys: Dict[str, str] = {},
         critique_additional_keys: Dict[str, str] = {},
         max_interactions: int = 7,
@@ -63,10 +57,10 @@ class CriticAgent(BaseAgent):
 
         Args:
             question (str): The question to be answered.
-            examples (str): Few-shot examples to guide the language model in generating the initial answer. Defaults to HOTPOTQA_FEWSHOT_EXAMPLES_COT.
-            prompt (str): The instruction template used to prompt the language model for the initial answer. Defaults to CRITIC_INSTRUCTION_HOTPOTQA.
-            critique_examples (str): Few-shot examples to guide the language model in generating critiques. Defaults to HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC.
-            critique_prompt (str): The instruction template for generating critiques. Defaults to CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA.
+            examples (str): Few-shot examples to guide the language model in generating the initial answer.
+            prompt (str): The instruction template used to prompt the language model for the initial answer.
+            critique_examples (str): Few-shot examples to guide the language model in generating critiques.
+            critique_prompt (str): The instruction template for generating critiques.
             additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
             critique_additional_keys (Dict[str, str]): Additional keys to format the critique_prompt. Defaults to {}.
             max_interactions (int): The maximum number of critique cycles. Defaults to 7.

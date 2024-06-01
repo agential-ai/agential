@@ -1,0 +1,16 @@
+coverage:
+  ignore: 
+    - "tests"
+    - "**/__init__.py"
+    - "**/base.py"
+    - "agential/cog/prompts/benchmarks"
+    - "agential/cog/prompts/agents"
+  status:
+    project:  # Measures overall project coverage.
+      default:
+        target: 95%
+        threshold: 3%
+    patch:  #  Only measures lines adjusted in the pull request.
+      default:
+        target: 95%
+        threshold: 3%

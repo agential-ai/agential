@@ -1,6 +1,6 @@
 """Unit tests for general util functions."""
 
-from agential.utils.general import shuffle_chunk_list
+from agential.utils.general import safe_execute, shuffle_chunk_list
 
 
 def test_shuffle_chunk_list() -> None:
@@ -22,3 +22,12 @@ def test_shuffle_chunk_list() -> None:
         [5, "C", 9],
     ]
     assert chunked_lst == gt_chunked_lst
+
+
+# Ref: https://github.com/microsoft/ProphetNet/blob/master/CRITIC/src/tools/interpreter_api.py.
+def test_safe_execute() -> None:
+    """Test safe_execute function."""
+    code_string = """budget = 1000\nfood = 0.3\naccommodation = 0.15\nentertainment = 0.25\ncoursework_materials = 1 - food - accommodation - entertainment\nanswer = budget * coursework_materials"""
+    answer, report = safe_execute(code_string)
+    assert int(answer[0]) == 299
+    assert report == "Done"
