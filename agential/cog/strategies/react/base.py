@@ -73,7 +73,7 @@ class ReActBaseStrategy(BaseStrategy):
 
     @abstractmethod
     def halting_condition(
-        self, idx: int, question: str, examples: str, prompt: str
+        self, idx: int, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]
     ) -> bool:
         """Determines whether the halting condition has been met.
 
@@ -82,7 +82,8 @@ class ReActBaseStrategy(BaseStrategy):
             question (str): The question being answered.
             examples (str): Examples to guide the generation process.
             prompt (str): The prompt used for generating the thought and action.
-
+            additional_keys (Dict[str, str]): Additional keys for the generation process.
+            
         Returns:
             bool: True if the halting condition is met, False otherwise.
         """

@@ -73,8 +73,8 @@ class ReActCodeStrategy(ReActBaseStrategy):
         self,
         question: str,
         examples: str,
-        prompt: str,
         additional_keys: Dict[str, str],
+        prompt: str,
         **kwargs: Dict[str, Any],
     ) -> str:
         """Generates a thought based on the question, examples, and prompt.
@@ -82,8 +82,8 @@ class ReActCodeStrategy(ReActBaseStrategy):
         Args:
             question (str): The question to be answered.
             examples (str): Examples to guide the generation process.
-            prompt (str): The prompt used for generating the thought.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
+            prompt (str): The prompt used for generating the thought.
             **kwargs (Dict[str, Any]): Additional arguments.
 
         Returns:

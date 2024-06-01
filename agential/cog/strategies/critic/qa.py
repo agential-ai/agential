@@ -42,6 +42,7 @@ class CriticQAStrategy(CriticBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
+        **kwargs: Dict[str, Any]
     ) -> str:
         """Generates an answer using the provided language model, question, examples, and prompt.
 
@@ -50,6 +51,7 @@ class CriticQAStrategy(CriticBaseStrategy):
             examples (str): Few-shot examples to guide the language model in generating the answer.
             prompt (str): The instruction template used to prompt the language model.
             additional_keys (Dict[str, str]): Additional keys to format the prompt.
+            **kwargs (Dict[str, Any]): Additional arguments.
 
         Returns:
             str: The generated answer.
