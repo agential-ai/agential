@@ -14,10 +14,10 @@ from agential.cog.strategies.react.base import ReActBaseStrategy
 from agential.utils.general import safe_execute
 
 
-def parse_code_action(action: str) -> Tuple[str, str]:
+def parse_math_action(action: str) -> Tuple[str, str]:
     """Parses an action string to extract the action type and code content.
 
-    Identifies action types (`Finish`, `Implement`, or `Test`) and extracts the
+    Identifies action types (`Finish`, `Calculate`) and extracts the
     corresponding code content enclosed within Markdown-style code blocks.
     The action type is case-insensitive and the code content is trimmed of
     leading and trailing whitespace.
@@ -30,7 +30,7 @@ def parse_code_action(action: str) -> Tuple[str, str]:
         and the extracted code content.
     """
     action_split = action.split("```python", maxsplit=1)
-    match = re.search(r"\b(Finish|Test|Implement)\b", action_split[0], re.IGNORECASE)
+    match = re.search(r"\b(Finish|Calculate)\b", action_split[0], re.IGNORECASE)
 
     action_type = match.group(0).lower().capitalize() if match else ""
     try:
@@ -143,7 +143,7 @@ class ReActMathStrategy(ReActBaseStrategy):
         )
         action = action.split("Observation")[0].strip()
 
-        action_type, query = parse_code_action(action)
+        action_type, query = parse_math_action(action)
         self._scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
 
         return action_type, query
