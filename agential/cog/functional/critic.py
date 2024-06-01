@@ -31,16 +31,16 @@ def remove_comment(code: str) -> str:
 def _build_agent_prompt(
     question: str,
     examples: str,
-    additional_keys: Dict[str, str] = {},
     prompt: str = CRITIC_INSTRUCTION_HOTPOTQA,
+    additional_keys: Dict[str, str] = {},
 ) -> str:
     """Builds a prompt for questioning the agent using a template.
 
     Parameters:
         question (str): The question to be answered by the agent.
         examples (str): Contextual examples related to the question.
-        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
         prompt (str): Prompt template string. Defaults to CRITIC_INSTRUCTION_HOTPOTQA.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
         str: A formatted prompt ready for use with the language model.
@@ -55,8 +55,8 @@ def _prompt_agent(
     llm: BaseChatModel,
     question: str,
     examples: str,
-    additional_keys: Dict[str, str] = {},
     prompt: str = CRITIC_INSTRUCTION_HOTPOTQA,
+    additional_keys: Dict[str, str] = {},
 ) -> str:
     """Prompts the agent to answer a question using the language model.
 
@@ -64,8 +64,8 @@ def _prompt_agent(
         llm (BaseChatModel): The language model to use for generating the answer.
         question (str): The question to be answered.
         examples (str): Contextual examples relevant to the question.
-        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
         prompt (str): Prompt template string. Defaults to CRITIC_INSTRUCTION_HOTPOTQA.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
         str: The answer from the language model, with no leading or trailing whitespace.
@@ -73,8 +73,8 @@ def _prompt_agent(
     prompt = _build_agent_prompt(
         question=question,
         examples=examples,
-        additional_keys=additional_keys,
         prompt=prompt,
+        additional_keys=additional_keys,
     )
     out = llm(
         [
@@ -92,8 +92,8 @@ def _build_critique_prompt(
     examples: str,
     answer: str,
     critique: str = "",
-    additional_keys: Dict[str, str] = {},
     prompt: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
+    additional_keys: Dict[str, str] = {},
 ) -> str:
     """Builds a critique prompt for the agent using a template.
 
@@ -102,8 +102,8 @@ def _build_critique_prompt(
         examples (str): Contextual examples used in the question.
         answer (str): The agent's answer to the question.
         critique (str, optional): Additional critique information.
-        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
         prompt (str): Prompt template string. Defaults to CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
         str: A formatted critique prompt ready for use with the language model.
@@ -124,8 +124,8 @@ def _prompt_critique(
     examples: str,
     answer: str,
     critique: str = "",
-    additional_keys: Dict[str, str] = {},
     prompt: str = CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
+    additional_keys: Dict[str, str] = {},
 ) -> str:
     """Prompts the agent for a critique of an answer using the language model.
 
@@ -135,8 +135,8 @@ def _prompt_critique(
         examples (str): Contextual examples related to the question.
         answer (str): The answer to critique.
         critique (str, optional): Initial critique to refine the response.
-        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
         prompt (str): Prompt template string. Defaults to CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
         str: The critique from the language model, with no leading or trailing whitespace.
@@ -146,8 +146,8 @@ def _prompt_critique(
         examples=examples,
         answer=answer,
         critique=critique,
-        additional_keys=additional_keys,
         prompt=prompt,
+        additional_keys=additional_keys,
     )
     out = llm(
         [
