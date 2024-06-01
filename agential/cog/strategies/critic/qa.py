@@ -42,7 +42,7 @@ class CriticQAStrategy(CriticBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Dict[str, Any]
+        **kwargs: Dict[str, Any],
     ) -> str:
         """Generates an answer using the provided language model, question, examples, and prompt.
 

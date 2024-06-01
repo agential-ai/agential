@@ -1,7 +1,7 @@
 """Generic base strategy class."""
 
 from abc import ABC, abstractmethod
-from typing import Dict, Any
+from typing import Any, Dict
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
