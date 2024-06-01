@@ -65,8 +65,8 @@ def test_generate() -> None:
     result = strategy.generate(
         question=question,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        additional_keys={},
         prompt=REACT_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
     )
     assert result == gt_result
     assert not strategy._finished
@@ -88,8 +88,8 @@ def test_generate_action() -> None:
     action_type, query = strategy.generate_action(
         question=question,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        additional_keys={},
         prompt=REACT_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
     )
     assert action_type == gt_action_type
     assert query == gt_query
