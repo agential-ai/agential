@@ -89,7 +89,14 @@ jason_lollipops_after = 12
 answer = jason_lollipops_initial - jason_lollipops_after
 ```
 ]
-Observation 1: answer = 8
+Observation 1: 
+```python
+jason_lollipops_initial = 20
+jason_lollipops_after = 12
+answer = jason_lollipops_initial - jason_lollipops_after
+```
+Execution Status: Done
+Output: answer = 8
 Thought 2: Jason gave 8 lollipops to Denny.
 Action 2: Finish[
 ```python
@@ -111,7 +118,14 @@ trees_after = 21
 answer = trees_after - trees_initial
 ```
 ]
-Observation 1: answer = 6
+Observation 1: 
+```python
+trees_initial = 15
+trees_after = 21
+answer = trees_after - trees_initial
+```
+Execution Status: Done
+Output: answer = 6
 Thought 2: The workers planted 6 trees today.
 Action 2: Finish[
 ```python
@@ -136,7 +150,16 @@ total_received = mom_toys + dad_toys
 answer = toys_initial + total_received
 ```
 ]
-Observation 1: answer = 9
+Observation 1: 
+```python
+toys_initial = 5
+mom_toys = 2
+dad_toys = 2
+total_received = mom_toys + dad_toys
+answer = toys_initial + total_received
+```
+Execution Status: Done
+Output: answer = 9
 Thought 2: Shawn now has 9 toys.
 Action 2: Finish[
 ```python
@@ -161,7 +184,16 @@ computers_added = computers_per_day * num_days
 answer = computers_initial + computers_added
 ```
 ]
-Observation 1: answer = 29
+Observation 1: 
+```python
+computers_initial = 9
+computers_per_day = 5
+num_days = 4  # 4 days between Monday and Thursday
+computers_added = computers_per_day * num_days
+answer = computers_initial + computers_added
+```
+Execution Status: Done
+Output: answer = 29
 Thought 2: There are now 29 computers in the server room.
 Action 2: Finish[
 ```python
@@ -185,7 +217,15 @@ golf_balls_lost_wednesday = 2
 answer = golf_balls_initial - golf_balls_lost_tuesday - golf_balls_lost_wednesday
 ```
 ]
-Observation 1: answer = 33
+Observation 1: 
+```python
+golf_balls_initial = 58
+golf_balls_lost_tuesday = 23
+golf_balls_lost_wednesday = 2
+answer = golf_balls_initial - golf_balls_lost_tuesday - golf_balls_lost_wednesday
+```
+Execution Status: Done
+Output: answer = 33
 Thought 2: Michael has 33 golf balls left at the end of Wednesday.
 Action 2: Finish[
 ```python
@@ -208,7 +248,14 @@ cars_arrived = 2
 answer = cars_initial + cars_arrived
 ```
 ]
-Observation 1: answer = 5
+Observation 1: 
+```python
+cars_initial = 3
+cars_arrived = 2
+answer = cars_initial + cars_arrived
+```
+Execution Status: Done
+Output: answer = 5
 Thought 2: There are 5 cars in the parking lot now.
 Action 2: Finish[
 ```python
@@ -233,7 +280,16 @@ money_spent = bagels * bagel_cost
 answer = money_initial - money_spent
 ```
 ]
-Observation 1: answer = 8
+Observation 1: 
+```python
+money_initial = 23
+bagels = 5
+bagel_cost = 3
+money_spent = bagels * bagel_cost
+answer = money_initial - money_spent
+```
+Execution Status: Done
+Output: answer = 8
 Thought 2: Olivia has $8 left.
 Action 2: Finish[
 ```python
@@ -258,7 +314,16 @@ chocolates_eaten = 35
 answer = total_chocolates - chocolates_eaten
 ```
 ]
-Observation 1: answer = 39
+Observation 1: 
+```python
+leah_chocolates = 32
+sister_chocolates = 42
+total_chocolates = leah_chocolates + sister_chocolates
+chocolates_eaten = 35
+answer = total_chocolates - chocolates_eaten
+```
+Execution Status: Done
+Output: answer = 39
 Thought 2: They have 39 chocolates left.
 Action 2: Finish[
 ```python
