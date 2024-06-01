@@ -247,7 +247,7 @@ def test_halting_condition() -> None:
     examples = ""
     prompt = "Answer the question."
 
-    assert not strategy.halting_condition(idx, question, examples, {}, prompt)
+    assert not strategy.halting_condition(idx, question, examples, prompt, {})
 
 
 def test_reset() -> None:
