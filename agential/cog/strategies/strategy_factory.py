@@ -216,5 +216,3 @@ class ReActStrategyFactory:
                 raise ValueError(f"Unsupported Code benchmark: {mode['code']}")
         else:
             raise ValueError(f"Unsupported mode: {mode}")
-
-        return  # type: ignore
