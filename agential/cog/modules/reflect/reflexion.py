@@ -68,7 +68,7 @@ class ReflexionCoTReflector(BaseReflector):
             scratchpad (str): The scratchpad content related to the question.
             context (Optional[str]): The context of the conversation or query. Defaults to None.
             prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
-                REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. 
+                REFLEXION_COT_REFLECT_INSTRUCTION if context is provided.
 
         Returns:
             Tuple[List[str], str]: A tuple of the updated list of reflections based on the selected strategy and the formatted

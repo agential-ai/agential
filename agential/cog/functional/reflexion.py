@@ -128,7 +128,7 @@ def _build_cot_agent_prompt(
         scratchpad (str): The scratchpad content related to the question.
         context (Optional[str]): The context of the conversation or query. Defaults to None.
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_INSTRUCTION_NO_CONTEXT and
-            REFLEXION_COT_INSTRUCTION if context is provided. 
+            REFLEXION_COT_INSTRUCTION if context is provided.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
@@ -199,7 +199,7 @@ def _prompt_cot_agent(
         scratchpad (str): The scratchpad content related to the question.
         context (Optional[str]): The context of the conversation or query. Defaults to None.
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_INSTRUCTION_NO_CONTEXT and
-            REFLEXION_COT_INSTRUCTION if context is provided. 
+            REFLEXION_COT_INSTRUCTION if context is provided.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
@@ -248,7 +248,7 @@ def _build_cot_reflection_prompt(
         scratchpad (str): The scratchpad content related to the question.
         context (Optional[str]): The context of the conversation or query. Defaults to None.
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
-            REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. 
+            REFLEXION_COT_REFLECT_INSTRUCTION if context is provided.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
@@ -304,7 +304,7 @@ def _prompt_cot_reflection(
         scratchpad (str): The scratchpad content related to the question.
         context (Optional[str]): The context of the conversation or query. Defaults to None.
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
-            REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. 
+            REFLEXION_COT_REFLECT_INSTRUCTION if context is provided.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
@@ -369,7 +369,7 @@ def cot_reflect_reflexion(
         scratchpad (str): The scratchpad content related to the question.
         context (Optional[str]): The context of the conversation or query. Defaults to None.
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
-            REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. 
+            REFLEXION_COT_REFLECT_INSTRUCTION if context is provided.
 
     Returns:
         List[str]: An updated list of reflections.
@@ -408,7 +408,7 @@ def cot_reflect_last_attempt_and_reflexion(
         scratchpad (str): The scratchpad content related to the question.
         context (Optional[str]): The context of the conversation or query. Defaults to None.
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
-            REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. 
+            REFLEXION_COT_REFLECT_INSTRUCTION if context is provided.
 
     Returns:
         List[str]: A list with the new reflections.
@@ -454,7 +454,7 @@ def cot_reflect(
         scratchpad (str): The scratchpad content related to the question.
         context (Optional[str]): The context of the conversation or query. Defaults to None.
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
-            REFLEXION_COT_REFLECT_INSTRUCTION if context is provided. 
+            REFLEXION_COT_REFLECT_INSTRUCTION if context is provided.
 
     Returns:
         List[str]: A list of reflections.
