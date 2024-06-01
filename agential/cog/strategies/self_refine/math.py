@@ -53,8 +53,8 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
             llm=self.llm,
             question=question,
             examples=examples,
-            additional_keys=additional_keys,
             prompt=prompt,
+            additional_keys=additional_keys,
         )
         answer = answer.split("```python")[-1].split("```")[0].strip()
 
@@ -88,8 +88,8 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
             question=question,
             examples=examples,
             answer=answer,
-            additional_keys=additional_keys,
             prompt=prompt,
+            additional_keys=additional_keys,
         )
 
         if answer.strip() == self._prev_code_answer:
@@ -141,8 +141,8 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
             examples=examples,
             answer=answer,
             critique=critique,
-            additional_keys=additional_keys,
             prompt=prompt,
+            additional_keys=additional_keys,
         )
         new_answer = new_answer.split("```python")[-1].split("```")[0].strip()
 

@@ -52,8 +52,8 @@ class CriticMathStrategy(CriticBaseStrategy):
             llm=self.llm,
             question=question,
             examples=examples,
-            additional_keys=additional_keys,
             prompt=prompt,
+            additional_keys=additional_keys,
         )
         answer = answer.split("```python")[-1].split("```")[0].strip()
 
@@ -144,8 +144,8 @@ class CriticMathStrategy(CriticBaseStrategy):
             examples=examples,
             answer=answer,
             critique="",
-            additional_keys=additional_keys,
             prompt=prompt,
+            additional_keys=additional_keys,
         ).split("Here's")[0]
 
         return new_critique, external_tool_info
@@ -202,8 +202,8 @@ class CriticMathStrategy(CriticBaseStrategy):
             examples=examples,
             answer=answer,
             critique=f"{critique}\n\nHere's a better solution:\n```python\n",
-            additional_keys=additional_keys,
             prompt=prompt,
+            additional_keys=additional_keys,
         )
         new_answer = new_answer.split("```python")[-1].split("```")[0].strip()
 

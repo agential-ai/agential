@@ -69,8 +69,8 @@ class ReActMathStrategy(ReActBaseStrategy):
                 scratchpad=self._scratchpad,
                 examples=examples,
                 max_steps=max_steps,  # type: ignore
-                additional_keys=additional_keys,
                 prompt=prompt,
+                additional_keys=additional_keys,
             )
             .split("Action")[0]
             .strip()
@@ -108,8 +108,8 @@ class ReActMathStrategy(ReActBaseStrategy):
             scratchpad=self._scratchpad,
             examples=examples,
             max_steps=max_steps,  # type: ignore
-            additional_keys=additional_keys,
             prompt=prompt,
+            additional_keys=additional_keys,
         )
         action = action.split("Observation")[0].strip()
 
@@ -203,8 +203,8 @@ class ReActMathStrategy(ReActBaseStrategy):
             max_steps=max_steps,  # type: ignore
             max_tokens=self.max_tokens,
             enc=self.enc,
-            additional_keys=additional_keys,
             prompt=prompt,
+            additional_keys=additional_keys,
         )
 
     def reset(self) -> None:
