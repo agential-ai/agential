@@ -1,4 +1,8 @@
 coverage:
+  ignore: 
+    - "tests"
+    - "**/__init__.py"
+    - "**/base.py"
   status:
     project:
       default:
