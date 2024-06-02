@@ -53,18 +53,6 @@ def heap_queue_largest(nums, n):
 ```"""
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 MBPP_FEWSHOT_EXAMPLES_REACT = """You are an expert Python programmer, and here is your task: Write a function to find the shared elements from the given two lists.
 Your code should pass these tests:
 
