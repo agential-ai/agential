@@ -305,5 +305,4 @@ answer = 22
 Observation 2: 
 ```python
 answer = 22
-```
-]"""
+```"""
