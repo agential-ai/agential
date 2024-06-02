@@ -1,11 +1,10 @@
 """Unit tests for ReAct math strategies."""
 
-
 from agential.cog.strategies.react.math import (
     parse_math_action,
     ReActGSM8KStrategy,
     ReActSVAMPStrategy,
-    ReActTabMWPStrategy
+    ReActTabMWPStrategy,
 )
 
 

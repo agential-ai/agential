@@ -59,7 +59,7 @@ def _prompt_agent(
         llm (BaseChatModel): The language model to use for generating the answer.
         question (str): The question to be answered.
         examples (str): Contextual examples relevant to the question.
-        prompt (str): Prompt template string. 
+        prompt (str): Prompt template string.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
