@@ -106,7 +106,7 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Question: {question}
+{question}
 {scratchpad}"""
 
 
