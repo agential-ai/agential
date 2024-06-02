@@ -5,6 +5,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.agent.react import (
     ReActAgent,
+    ReActOutput,
 )
 from agential.cog.prompts.agents.react import (
     REACT_INSTRUCTION_HOTPOTQA,
@@ -51,6 +52,7 @@ def test_generate() -> None:
     )
     assert isinstance(out, list)
     assert len(out) == 3
+    assert all(isinstance(step, ReActOutput) for step in out)
 
     # Test Code.
     inst = {
@@ -80,3 +82,4 @@ def test_generate() -> None:
     )
     assert isinstance(out, list)
     assert len(out) == 3
+    assert all(isinstance(step, ReActOutput) for step in out)
