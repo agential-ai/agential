@@ -1,6 +1,11 @@
 """Unit tests for ReAct math strategies."""
 
+from langchain_community.chat_models.fake import FakeListChatModel
+from langchain_core.language_models.chat_models import BaseChatModel
+from tiktoken import Encoding
+
 from agential.cog.strategies.react.math import (
+    ReActMathStrategy,
     ReActGSM8KStrategy,
     ReActSVAMPStrategy,
     ReActTabMWPStrategy,
@@ -52,3 +57,16 @@ def test_parse_math_action() -> None:
     for case in test_cases:
         result = parse_math_action(case["input"])
         assert result == case["expected"]
+
+
+def test_init() -> None:
+    """Test ReActMathStrategy initialization."""
+    llm = FakeListChatModel(responses=[])
+    strategy = ReActMathStrategy(llm=llm)
+    assert isinstance(strategy.llm, BaseChatModel)
+    assert strategy.max_steps == 6
+    assert strategy.max_tokens == 3896
+    assert isinstance(strategy.enc, Encoding)
+    assert strategy._current_answer == ""
+    assert strategy._scratchpad == ""
+    assert strategy._finished == False
