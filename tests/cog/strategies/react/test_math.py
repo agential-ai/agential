@@ -163,14 +163,59 @@ def test_generate_observation() -> None:
 
 def test_create_output_dict() -> None:
     """Tests ReActMathStrategy create_output_dict."""
-
+    strategy = ReActMathStrategy(llm=FakeListChatModel(responses=[]))
+    
+    thought = "I need to calculate the total number of toys Shawn has after receiving gifts from his parents."
+    action_type = "Calculate"
+    query = "toys_initial = 5\ntoys_received = 2 + 2\nanswer = toys_initial + toys_received"
+    obs = "\n```python\ntoys_initial = 5\ntoys_received = 2 + 2\nanswer = toys_initial + toys_received\n```\nExecution Status: Done\nOutput: answer = 9"
+    
+    strategy._current_answer = "answer = 9"
+    expected_output = {
+        "thought": thought,
+        "action_type": action_type,
+        "query": query,
+        "observation": obs,
+        "answer": "answer = 9",
+    }
+    
+    result = strategy.create_output_dict(thought, action_type, query, obs)
+    assert result == expected_output
 
 def test_halting_condition() -> None:
     """Tests ReActMathStrategy halting_condition."""
+    strategy = ReActMathStrategy(llm=FakeListChatModel(responses=[]))
+
+    question = "How many toys does Shawn have now?"
+    examples = GSM8K_FEWSHOT_EXAMPLES_REACT
+    prompt = "Solve the following math problem step-by-step."
+    additional_keys = {}
+    
+    strategy._finished = True
+    result = strategy.halting_condition(1, question, examples, prompt, additional_keys)
+    assert result == True
+    
+    strategy._finished = False
+    result = strategy.halting_condition(6, question, examples, prompt, additional_keys, max_steps=6)
+    assert result == False   
+
+    result = strategy.halting_condition(5, question, examples, prompt, additional_keys, max_steps=6)
+    assert result == False
 
 
 def test_reset() -> None:
     """Tests ReActMathStrategy reset."""
+    strategy = ReActMathStrategy(llm=FakeListChatModel(responses=[]))
+    
+    strategy._current_answer = "answer = 9"
+    strategy._scratchpad = "Some scratchpad content"
+    strategy._finished = True
+    
+    strategy.reset()
+    
+    assert strategy._current_answer == "", f"Expected: '', but got: {strategy._current_answer}"
+    assert strategy._scratchpad == "", f"Expected: '', but got: {strategy._scratchpad}"
+    assert strategy._finished == False, f"Expected: False, but got: {strategy._finished}"
 
 
 def test_instantiate_strategies() -> None:
