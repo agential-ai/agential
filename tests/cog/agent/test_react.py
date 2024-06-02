@@ -16,6 +16,29 @@ from agential.cog.prompts.benchmarks.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES
 from agential.cog.strategies.react.base import ReActBaseStrategy
 
 
+def test_react_output() -> None:
+    """Test ReActOutput initialization and attribute handling."""
+    # Expected values
+    thought = "test_thought."
+    action_type = "test_action"
+    query = "test_query"
+    observation = "tset_obs"
+
+    # ReActOutput instance
+    out = ReActOutput(
+        thought=thought,
+        action_type=action_type,
+        query=query,
+        observation=observation,
+    )
+
+    # Check that the attributes match the expected values
+    assert out.thought == thought
+    assert out.action_type == action_type
+    assert out.query == query
+    assert out.observation == observation
+
+
 def test_init() -> None:
     """Test initialization."""
     llm = FakeListChatModel(responses=[])
