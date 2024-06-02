@@ -86,10 +86,26 @@ Action 1: Calculate[
 ```python
 jason_lollipops_initial = 20
 jason_lollipops_after = 12
-answer = jason_lollipops_initial - jason_lollipops_after
+answer = jason_lollipops_after - jason_lollipops_initial
 ```
 ]
 Observation 1: 
+```python
+jason_lollipops_initial = 20
+jason_lollipops_after = 12
+answer = jason_lollipops_after - jason_lollipops_initial
+```
+Execution Status: Done
+Output: answer = -8
+Thought 2: The answer should be positive because Jason gave lollipops to Denny. I need to reverse the subtraction.
+Action 2: Calculate[
+```python
+jason_lollipops_initial = 20
+jason_lollipops_after = 12
+answer = jason_lollipops_initial - jason_lollipops_after
+```
+]
+Observation 2: 
 ```python
 jason_lollipops_initial = 20
 jason_lollipops_after = 12
@@ -97,29 +113,45 @@ answer = jason_lollipops_initial - jason_lollipops_after
 ```
 Execution Status: Done
 Output: answer = 8
-Thought 2: Jason gave 8 lollipops to Denny.
-Action 2: Finish[
-```python
-answer = 8
-```
-Observation 2: 
+Thought 3: Jason gave 8 lollipops to Denny.
+Action 3: Finish[
 ```python
 answer = 8
 ```
 ]
+Observation 3: 
+```python
+answer = 8
+```
 
 ---
 
 Question: There are 15 trees in the grove. Grove workers will plant trees in the grove today. After they are done, there will be 21 trees. How many trees did the grove workers plant today?
-Thought 1: I need to determine the number of trees planted by the workers.
+Thought 1: I need to determine how many trees were planted.
 Action 1: Calculate[
+```python
+trees_initial = 15
+trees_after = 21
+answer = trees_initial - trees_after
+```
+]
+Observation 1: 
+```python
+trees_initial = 15
+trees_after = 21
+answer = trees_initial - trees_after
+```
+Execution Status: Done
+Output: answer = -6
+Thought 2: The answer should be positive because trees are being added, not removed. I need to reverse the subtraction.
+Action 2: Calculate[
 ```python
 trees_initial = 15
 trees_after = 21
 answer = trees_after - trees_initial
 ```
 ]
-Observation 1: 
+Observation 2: 
 ```python
 trees_initial = 15
 trees_after = 21
@@ -127,13 +159,13 @@ answer = trees_after - trees_initial
 ```
 Execution Status: Done
 Output: answer = 6
-Thought 2: The workers planted 6 trees today.
-Action 2: Finish[
+Thought 3: The workers planted 6 trees today.
+Action 3: Finish[
 ```python
 answer = 6
 ```
 ]
-Observation 2:
+Observation 3: 
 ```python
 answer = 6
 ```
@@ -145,29 +177,41 @@ Thought 1: I need to calculate the total number of toys Shawn has after receivin
 Action 1: Calculate[
 ```python
 toys_initial = 5
-mom_toys = 2
-dad_toys = 2
-total_received = mom_toys + dad_toys
-answer = toys_initial + total_received
+toys_received = 2 * 3
+answer = toys_initial + toys_received
 ```
 ]
 Observation 1: 
 ```python
 toys_initial = 5
-mom_toys = 2
-dad_toys = 2
-total_received = mom_toys + dad_toys
-answer = toys_initial + total_received
+toys_received = 2 * 3
+answer = toys_initial + toys_received
+```
+Execution Status: Done
+Output: answer = 11
+Thought 2: I incorrectly calculated the total toys received. Shawn got 2 toys each from his mom and dad, so the correct total received should be 2 + 2.
+Action 2: Calculate[
+```python
+toys_initial = 5
+toys_received = 2 + 2
+answer = toys_initial + toys_received
+```
+]
+Observation 2: 
+```python
+toys_initial = 5
+toys_received = 2 + 2
+answer = toys_initial + toys_received
 ```
 Execution Status: Done
 Output: answer = 9
-Thought 2: Shawn now has 9 toys.
-Action 2: Finish[
+Thought 3: Shawn now has 9 toys.
+Action 3: Finish[
 ```python
 answer = 9
 ```
 ]
-Observation 2:
+Observation 3: 
 ```python
 answer = 9
 ```
