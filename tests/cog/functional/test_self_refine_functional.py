@@ -11,9 +11,9 @@ from agential.cog.functional.self_refine import (
     _prompt_refine,
 )
 from agential.cog.prompts.agent.self_refine import (
-    SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
     SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
     SELF_REFINE_INSTRUCTION_GSM8K,
+    SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
 )
 
 
