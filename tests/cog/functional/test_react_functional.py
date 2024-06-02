@@ -20,7 +20,7 @@ def test__build_agent_prompt() -> None:
         scratchpad="",
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         max_steps=1,
-        prompt=REACT_INSTRUCTION_HOTPOTQA
+        prompt=REACT_INSTRUCTION_HOTPOTQA,
     )
 
     assert isinstance(prompt, str)
@@ -76,7 +76,7 @@ def test__is_halted() -> None:
         10,
         100,
         gpt3_5_turbo_enc,
-        REACT_INSTRUCTION_HOTPOTQA
+        REACT_INSTRUCTION_HOTPOTQA,
     )
 
     # Test when idx exceeds max_steps.
@@ -89,7 +89,7 @@ def test__is_halted() -> None:
         10,
         100,
         gpt3_5_turbo_enc,
-        REACT_INSTRUCTION_HOTPOTQA
+        REACT_INSTRUCTION_HOTPOTQA,
     )
 
     # Test when encoded prompt exceeds max_tokens.
@@ -102,7 +102,7 @@ def test__is_halted() -> None:
         10,
         10,
         gpt3_5_turbo_enc,
-        REACT_INSTRUCTION_HOTPOTQA
+        REACT_INSTRUCTION_HOTPOTQA,
     )
 
     # Test when none of the conditions for halting are met.
@@ -115,7 +115,7 @@ def test__is_halted() -> None:
         10,
         100000,
         gpt3_5_turbo_enc,
-        REACT_INSTRUCTION_HOTPOTQA
+        REACT_INSTRUCTION_HOTPOTQA,
     )
 
     # Test edge case when idx equals max_steps.
@@ -128,7 +128,7 @@ def test__is_halted() -> None:
         10,
         100,
         gpt3_5_turbo_enc,
-        REACT_INSTRUCTION_HOTPOTQA
+        REACT_INSTRUCTION_HOTPOTQA,
     )
 
     # Test edge case when encoded prompt equals max_tokens.
@@ -141,7 +141,7 @@ def test__is_halted() -> None:
         10,
         1603,
         gpt3_5_turbo_enc,
-        REACT_INSTRUCTION_HOTPOTQA
+        REACT_INSTRUCTION_HOTPOTQA,
     )
 
     # Test with custom prompt template string.

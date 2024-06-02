@@ -14,7 +14,7 @@ from agential.cog.prompts.benchmark.fever import (
 )
 from agential.cog.prompts.benchmark.gsm8k import (
     GSM8K_FEWSHOT_EXAMPLES_POT,
-    GSM8K_FEWSHOT_EXAMPLES_REACT
+    GSM8K_FEWSHOT_EXAMPLES_REACT,
 )
 from agential.cog.prompts.benchmark.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,

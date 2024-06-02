@@ -169,7 +169,9 @@ class ReActMathStrategy(ReActBaseStrategy):
             self._current_answer = query
             obs = f"\n```python\n{self._current_answer}\n```\nExecution Status: {execution_status}\nOutput: answer = {answer[0]}"
         else:
-            obs = "Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
+            obs = (
+                "Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
+            )
         self._scratchpad += obs
 
         return obs
