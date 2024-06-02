@@ -10,8 +10,8 @@ from agential.cog.functional.critic import (
     remove_comment,
 )
 from agential.cog.prompts.agent.critic import (
-    CRITIC_INSTRUCTION_HOTPOTQA,
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
+    CRITIC_INSTRUCTION_HOTPOTQA,
 )
 
 
