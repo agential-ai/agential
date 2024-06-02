@@ -3,7 +3,8 @@
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
-
+from agential.cog.prompts.agent.react import REACT_INSTRUCTION_GSM8K
+from agential.cog.prompts.benchmark.gsm8k import GSM8K_FEWSHOT_EXAMPLES_REACT
 from agential.cog.strategies.react.math import (
     ReActMathStrategy,
     ReActGSM8KStrategy,
@@ -70,3 +71,53 @@ def test_init() -> None:
     assert strategy._current_answer == ""
     assert strategy._scratchpad == ""
     assert strategy._finished == False
+
+
+def test_generate() -> None:
+    """Tests ReActMathStrategy generate."""
+    question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
+    
+    gt_out = "First, I need to calculate how many eggs Janet has left after eating three for breakfast and using the rest for muffins. Then, I can find out how much money she makes selling the remaining eggs at the market. Let's break this down step by step."
+    responses = [
+        "First, I need to calculate how many eggs Janet has left after eating three for breakfast and using the rest for muffins. Then, I can find out how much money she makes selling the remaining eggs at the market. Let's break this down step by step. \n\nAction 1: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\nremaining_eggs = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\n```\n]\nObservation 1: \n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\nremaining_eggs = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\n```\nExecution Status: Done\nOutput: remaining_eggs = -4933815\n\nThought 2: The number of remaining eggs is negative, which doesn't make sense. I need to adjust the calculation to correctly determine the number of eggs remaining for sale.\n\nAction 2: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\nremaining_eggs = eggs_laid_per_day - eggs_for_breakfast\nmoney_made_per_day = remaining_eggs * 2\n```\n]\nObservation 2: \n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\nremaining_eggs = eggs_laid_per_day - eggs_for_breakfast\nmoney_made_per_day = remaining_eggs * 2\n```\nExecution Status: Done\nOutput: money_made_per_day = 26\n\nThought 3: Janet makes $26 every day selling fresh duck eggs at the farmers' market.\nAction 3: Finish[\n```python\nanswer = 26\n```\n]\nObservation 3: \n```python\nanswer = 26\n```"
+    ]
+    strategy = ReActMathStrategy(llm=FakeListChatModel(responses=responses))
+    out = strategy.generate(
+        question=question,
+        examples=GSM8K_FEWSHOT_EXAMPLES_REACT,
+        prompt=REACT_INSTRUCTION_GSM8K,
+        additional_keys={},
+    )
+    assert out == gt_out
+
+
+def test_generate_action() -> None:
+    """Tests ReActMathStrategy generate_action."""
+
+
+def test_generate_observation() -> None:
+    """Tests ReActMathStrategy generate_observation."""
+
+
+def test_create_output_dict() -> None:
+    """Tests ReActMathStrategy create_output_dict."""
+
+
+def test_halting_condition() -> None:
+    """Tests ReActMathStrategy halting_condition."""
+
+
+def test_reset() -> None:
+    """Tests ReActMathStrategy reset."""
+
+
+def test_instantiate_strategies() -> None:
+    """Test instantiate all Math strategies."""
+    llm = FakeListChatModel(responses=[])
+    gsm8k_strategy = ReActGSM8KStrategy(llm=llm)
+    svamp_strategy = ReActSVAMPStrategy(llm=llm)
+    tabmwp_strategy = ReActTabMWPStrategy(llm=llm)
+
+    assert isinstance(gsm8k_strategy, ReActGSM8KStrategy)
+    assert isinstance(svamp_strategy, ReActSVAMPStrategy)
+    assert isinstance(tabmwp_strategy, ReActTabMWPStrategy)
