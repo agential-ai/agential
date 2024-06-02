@@ -122,6 +122,17 @@ def test_generate_observation() -> None:
     # Test Calculate.
 
     # Test Finish.
+    gt_obs = '\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_used = eggs_for_breakfast + eggs_for_muffins\neggs_remaining = eggs_laid_per_day - eggs_used\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day\n```'
+    gt_scratchpad = '\nObservation 0: \n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_used = eggs_for_breakfast + eggs_for_muffins\neggs_remaining = eggs_laid_per_day - eggs_used\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day\n```'    
+    action_type = "Finish"
+    query = 'eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_used = eggs_for_breakfast + eggs_for_muffins\neggs_remaining = eggs_laid_per_day - eggs_used\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day'
+    llm = FakeListChatModel(responses=[])
+    strategy = ReActMathStrategy(llm=llm)
+    obs = strategy.generate_observation(idx=0, action_type=action_type, query=query)
+    assert obs == gt_obs
+    assert strategy._current_answer == query
+    assert strategy._finished is True
+    assert strategy._scratchpad == gt_scratchpad
 
     # Test error case.
     gt_scratchpad = '\nObservation 0: Invalid Action. Valid Actions are Calculate[code] and Finish[answer].'
