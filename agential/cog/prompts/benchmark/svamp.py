@@ -72,7 +72,7 @@ Observation 1:
 ```python
 original_red_stickers = 93
 used_red_stickers = 31
-answer = original_red_stickers - used_red_stickers
+answer = original_red_stickers + used_red_stickers
 ```
 Execution Status: Done
 Output: answer = 124
