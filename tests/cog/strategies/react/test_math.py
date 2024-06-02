@@ -213,9 +213,9 @@ def test_reset() -> None:
     
     strategy.reset()
     
-    assert strategy._current_answer == "", f"Expected: '', but got: {strategy._current_answer}"
-    assert strategy._scratchpad == "", f"Expected: '', but got: {strategy._scratchpad}"
-    assert strategy._finished == False, f"Expected: False, but got: {strategy._finished}"
+    assert strategy._current_answer == ""
+    assert strategy._scratchpad == ""
+    assert strategy._finished == False
 
 
 def test_instantiate_strategies() -> None:
