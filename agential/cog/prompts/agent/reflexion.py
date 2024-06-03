@@ -28,7 +28,7 @@ Thought: Let's think step by step. Pavel Urysohn is a mathematician. Leonid Levi
 Action: Finish[Yes]"""
 
 
-REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT = """Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES = """Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
 Thought: Let's think step by step. The eastern sector of Colorado orogeny extends into the Rocky Mountains. The Rocky Mountains rise in elevation from around 1,800 to 14,000 ft, so the answer is 1,800 to 14,000 ft.
 Action: Finish[1,800 to 14,000 ft]
 
