@@ -52,8 +52,7 @@ class ReflexionCoTReflector(BaseReflector):
         examples: str,
         question: str,
         scratchpad: str,
-        context: Optional[str] = None,
-        prompt: str = REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT,
+        prompt: str,
     ) -> Tuple[List[str], str]:
         """Wrapper around ReflexionCoT's `cot_reflect` method in functional.
 
@@ -66,9 +65,7 @@ class ReflexionCoTReflector(BaseReflector):
             examples (str): Example inputs for the prompt template.
             question (str): The question being addressed.
             scratchpad (str): The scratchpad content related to the question.
-            context (Optional[str]): The context of the conversation or query. Defaults to None.
-            prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
-                REFLEXION_COT_REFLECT_INSTRUCTION if context is provided.
+            prompt (str, optional): Reflect prompt template string.
 
         Returns:
             Tuple[List[str], str]: A tuple of the updated list of reflections based on the selected strategy and the formatted
@@ -77,9 +74,6 @@ class ReflexionCoTReflector(BaseReflector):
         Raises:
             NotImplementedError: If an unknown reflection strategy is specified.
         """
-        if context and prompt == REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT:
-            prompt = REFLEXION_COT_REFLECT_INSTRUCTION
-
         reflections = cot_reflect(
             reflection_strategy=reflection_strategy,
             llm=self.llm,
@@ -87,7 +81,6 @@ class ReflexionCoTReflector(BaseReflector):
             examples=examples,
             question=question,
             scratchpad=scratchpad,
-            context=context,
             prompt=prompt,
         )[-self.max_reflections :]
 
