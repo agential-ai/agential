@@ -31,6 +31,12 @@ from agential.cog.strategies.react.qa import (
     ReActHotQAStrategy,
     ReActTriviaQAStrategy,
 )
+from agential.cog.strategies.reflexion.qa import (
+    ReflexionCoTAmbigNQStrategy,
+    ReflexionCoTFEVERStrategy,
+    ReflexionCoTHotQAStrategy,
+    ReflexionCoTTriviaQAStrategy,
+)
 from agential.cog.strategies.reflexion.base import ReflexionCoTBaseStrategy
 from agential.cog.strategies.self_refine.base import SelfRefineBaseStrategy
 from agential.cog.strategies.self_refine.math import SelfRefineGSM8KStrategy
@@ -249,13 +255,13 @@ class ReflexionCoTStrategyFactory:
         """
         if "qa" in mode:
             if mode["qa"] == "hotpotqa":
-                pass
+                return ReflexionCoTHotQAStrategy(**strategy_kwargs)
             elif mode["qa"] == "triviaqa":
-                pass
+                return ReflexionCoTTriviaQAStrategy(**strategy_kwargs)
             elif mode["qa"] == "ambignq":
-                pass
+                return ReflexionCoTAmbigNQStrategy(**strategy_kwargs)
             elif mode["qa"] == "fever":
-                pass
+                return ReflexionCoTFEVERStrategy(**strategy_kwargs)
             else:
                 raise ValueError(f"Unsupported QA benchmark: {mode['qa']}")
         elif "math" in mode:
