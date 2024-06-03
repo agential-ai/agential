@@ -12,8 +12,6 @@ from tiktoken.core import Encoding
 from agential.cog.prompts.agent.reflexion import (
     LAST_TRIAL_HEADER,
     REFLECTION_HEADER,
-    REFLEXION_COT_INSTRUCTION,
-    REFLEXION_COT_REFLECT_INSTRUCTION,
     REFLEXION_REACT_INSTRUCTION,
     REFLEXION_REACT_REFLECT_INSTRUCTION,
 )
@@ -190,7 +188,7 @@ def _prompt_cot_agent(
         ]
     ).content
     assert isinstance(out, str)
-    return remove_newline(out)
+    return out
 
 
 def _build_cot_reflection_prompt(
@@ -268,7 +266,7 @@ def _prompt_cot_reflection(
         ]
     ).content
     assert isinstance(out, str)
-    return remove_newline(out)
+    return out
 
 
 def cot_reflect_last_attempt(scratchpad: str) -> List[str]:
@@ -320,6 +318,7 @@ def cot_reflect_reflexion(
         prompt=prompt,
         additional_keys=additional_keys
     )
+    new_reflection = remove_newline(new_reflection)
     reflections += [new_reflection]
     return reflections
 
@@ -349,13 +348,15 @@ def cot_reflect_last_attempt_and_reflexion(
         List[str]: A list with the new reflections.
     """
     reflections = [
-        _prompt_cot_reflection(
-            llm=llm,
-            examples=examples,
-            question=question,
-            scratchpad=scratchpad,
-            prompt=prompt,
-            additional_keys=additional_keys
+        remove_newline(
+            _prompt_cot_reflection(
+                llm=llm,
+                examples=examples,
+                question=question,
+                scratchpad=scratchpad,
+                prompt=prompt,
+                additional_keys=additional_keys
+            )
         )
     ]
     return reflections
