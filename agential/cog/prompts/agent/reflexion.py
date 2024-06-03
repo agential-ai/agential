@@ -87,6 +87,7 @@ Here are some examples:
 
 Question: {question}{scratchpad}"""
 
+
 REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
 Here are some examples:
 {examples}
@@ -97,7 +98,7 @@ Question: {question}{scratchpad}
 
 Reflection:"""
 
-REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES = """Previous Trial:
+REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES_HOTPOTQA = """Previous Trial:
 Question: The Rome Protocols were signed by three Prime Ministers one of which was assassinated as part of what?
 Thought 1: I need to search Rome Protocols, find the three Prime Ministers, then find what they were assassinated as part of.
 Action 1: Search[Rome Protocols]
