@@ -72,7 +72,6 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         question: str,
         examples: str,
         reflections: str,
-        context: str,
         prompt: str,
         additional_keys: Dict[str, str],
         **kwargs: Dict[str, Any],
@@ -83,7 +82,6 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             question (str): The question to be answered.
             examples (str): Examples to guide the generation process.
             reflections (str): Reflections to consider during generation.
-            context (str): The context for the generation process.
             prompt (str): The prompt used for generating the thought.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
             **kwargs (Dict[str, Any]): Additional arguments.
@@ -98,7 +96,6 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             reflections=reflections,
             question=question,
             scratchpad=self._scratchpad,
-            context=context,
             prompt=prompt,
             additional_keys=additional_keys,
         )
@@ -112,7 +109,6 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         question: str,
         examples: str,
         reflections: str,
-        context: str,
         prompt: str,
         additional_keys: Dict[str, str],
         **kwargs: Dict[str, Any],
@@ -123,7 +119,6 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             question (str): The question to be answered.
             examples (str): Examples to guide the generation process.
             reflections (str): Reflections to consider during generation.
-            context (str): The context for the generation process.
             prompt (str): The prompt used for generating the action.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
             **kwargs (Dict[str, Any]): Additional arguments.
@@ -138,7 +133,6 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             reflections=reflections,
             question=question,
             scratchpad=self._scratchpad,
-            context=context,
             prompt=prompt,
         )
         action = remove_newline(action).strip().split("\n")[0]
@@ -246,7 +240,6 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         self,
         reflection_strategy: str,
         question: str,
-        context: str,
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
@@ -256,7 +249,6 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         Args:
             reflection_strategy (str): The strategy to use for reflection.
             question (str): The question to be reflected upon.
-            context (str): The context in which the question is being asked.
             examples (str): Examples to guide the reflection process.
             prompt (str): The prompt or instruction to guide the reflection.
             additional_keys (Dict[str, str]): Additional keys for the reflection process.
@@ -267,7 +259,6 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         reflection = self.reflector.reflect(
             reflection_strategy=reflection_strategy,
             question=question,
-            context=context,
             examples=examples,
             prompt=prompt,
             additional_keys=additional_keys,
