@@ -1,8 +1,7 @@
 """Base Reflexion Agent strategy class."""
 
-
 from abc import abstractmethod
-from typing import Dict, Tuple, Any
+from typing import Any, Dict, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -67,7 +66,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
             query (str): The query for the action.
             obs (str): The generated observation.
             key (str): The key for the observation.
-            
+
         Returns:
             Dict[str, str]: A dictionary containing the thought, action type, query, and observation.
         """
@@ -121,20 +120,14 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         """
         pass
 
-    def should_reflect(
-        self,
-        idx: int,
-        reflection_strategy: str,
-        key: str
-    ) -> bool:
-        """
-        Determines whether the reflection condition has been met.
+    def should_reflect(self, idx: int, reflection_strategy: str, key: str) -> bool:
+        """Determines whether the reflection condition has been met.
 
         Args:
             idx (int): The current step.
             reflection_strategy (str): The strategy to use for reflection.
             key (str): The key for the observation.
-            
+
         Returns:
             bool: True if the reflection condition is met, False otherwise.
         """

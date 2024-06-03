@@ -42,9 +42,9 @@ from agential.cog.prompts.agent.reflexion import (
     REFLEXION_REACT_REFLECT_INSTRUCTION,
 )
 from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+from agential.cog.strategies.strategy_factory import ReflexionCoTStrategyFactory
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
-from agential.cog.strategies.strategy_factory import ReflexionCoTStrategyFactory
 
 
 def parse_action(string: str) -> Tuple[str, str]:
@@ -152,11 +152,7 @@ class ReflexionCoTAgent(BaseAgent):
         idx = 0
         patience_cnt = 0
         out = []
-        while self.strategy.halting_condition(
-            idx=idx,
-            key=key,
-            **kwargs
-        ):
+        while self.strategy.halting_condition(idx=idx, key=key, **kwargs):
             self.strategy._scratchpad = ""
 
             # Reflect if possible.
@@ -183,7 +179,7 @@ class ReflexionCoTAgent(BaseAgent):
                 context=context,
                 prompt=prompt,
                 additional_keys=additional_keys,
-                **kwargs
+                **kwargs,
             )
 
             # Act.
@@ -194,7 +190,7 @@ class ReflexionCoTAgent(BaseAgent):
                 context=context,
                 prompt=prompt,
                 additional_keys=additional_keys,
-                **kwargs
+                **kwargs,
             )
 
             # Observe.
@@ -205,7 +201,11 @@ class ReflexionCoTAgent(BaseAgent):
             idx += 1
             out.append(
                 self.strategy.create_output_dict(
-                    thought=thought, action_type=action_type, query=query, obs=obs, key=key
+                    thought=thought,
+                    action_type=action_type,
+                    query=query,
+                    obs=obs,
+                    key=key,
                 )
             )
 
@@ -222,53 +222,6 @@ class ReflexionCoTAgent(BaseAgent):
         self.strategy.reset()
         self._finished = False
         self._answer = ""
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # class ReflexionReActAgent(BaseAgent):
