@@ -221,15 +221,26 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         max_trials = kwargs.get("max_trials", self.max_trials)
         return not EM(self._answer, key) and idx < max_trials
 
-    def reset(self) -> None:
+    def reset(self, **kwargs: Dict[str, Any]) -> None:
         """Resets the internal state of the strategy.
 
         Resets the scratchpad and the finished flag.
+        Resets only the scratchpad if specified with 'only_scratchpad'.
+
+        Args:
+            **kwargs (Dict[str, Any]): Additional arguments.
+
+        Returns:
+            None
         """
-        self.reflector.clear()
-        self._scratchpad = ""
-        self._finished = False
-        self._answer = ""
+        only_scratchpad = kwargs.get("only_scratchpad", False)
+        if only_scratchpad:
+            self._scratchpad = ""
+        else:
+            self.reflector.clear()
+            self._scratchpad = ""
+            self._finished = False
+            self._answer = ""
 
     def reflect(
         self,

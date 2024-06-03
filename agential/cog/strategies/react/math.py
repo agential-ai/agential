@@ -239,6 +239,12 @@ class ReActMathStrategy(ReActBaseStrategy):
         """Resets the internal state of the strategy.
 
         Resets the current answer, scratchpad, and the finished flag.
+
+        Args:
+            **kwargs (Dict[str, Any]): Additional arguments.
+
+        Returns:
+            None
         """
         self._current_answer = ""
         self._scratchpad = ""

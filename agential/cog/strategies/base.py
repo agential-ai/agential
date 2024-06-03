@@ -37,11 +37,14 @@ class BaseStrategy(ABC):
         pass
 
     @abstractmethod
-    def reset(self) -> None:
+    def reset(self, **kwargs: Dict[str, Any]) -> None:
         """Resets the strategy's internal state, if any.
 
         This method should be implemented to clear any internal state that the strategy maintains
         between generations, preparing it for a new sequence of interactions.
+
+        Args:
+            **kwargs (Dict[str, Any]): Additional arguments.
 
         Returns:
             None
