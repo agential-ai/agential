@@ -1,16 +1,17 @@
 """Reflexion Agent strategies for QA."""
 
 import re
-from typing import Optional, Dict, Any, Tuple
+
+from typing import Any, Dict, Optional, Tuple
+
+from langchain_core.language_models.chat_models import BaseChatModel
+
+from agential.cog.eval.reflexion import EM
+from agential.cog.functional.reflexion import _prompt_cot_agent
 from agential.cog.modules.reflect.reflexion import (
     ReflexionCoTReflector,
 )
 from agential.cog.strategies.reflexion.base import ReflexionCoTBaseStrategy
-from langchain_core.language_models.chat_models import BaseChatModel
-from agential.cog.functional.reflexion import (
-    _prompt_cot_agent
-)
-from agential.cog.eval.reflexion import EM
 from agential.utils.parse import remove_newline
 
 
@@ -44,6 +45,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         llm (BaseChatModel): The language model used for generating answers and critiques.
 
     """
+
     def __init__(
         self,
         llm: BaseChatModel,
@@ -58,9 +60,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         self.max_trials = max_trials
 
         if not reflector:
-            reflector = ReflexionCoTReflector(
-                llm=llm, max_reflections=max_reflections
-            )
+            reflector = ReflexionCoTReflector(llm=llm, max_reflections=max_reflections)
         self.reflector = reflector
 
         self._scratchpad = ""
@@ -100,7 +100,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             scratchpad=self._scratchpad,
             context=context,
             prompt=prompt,
-            additional_keys=additional_keys
+            additional_keys=additional_keys,
         )
         thought = remove_newline(thought).split("Action")[0]
         self._scratchpad += " " + thought
@@ -131,7 +131,6 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         Returns:
             Tuple[str, str]: The generated action type and query.
         """
-
         self._scratchpad += "\nAction:"
         action = _prompt_cot_agent(
             llm=self.llm,
@@ -148,7 +147,9 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
 
         return action_type, query
 
-    def generate_observation(self, action_type: str, query: str, key: str) -> Tuple[bool, str]:
+    def generate_observation(
+        self, action_type: str, query: str, key: str
+    ) -> Tuple[bool, str]:
         """Generates an observation based on the action type and query.
 
         Args:
@@ -184,7 +185,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             query (str): The query for the action.
             obs (str): The generated observation.
             key (str): The key for the observation.
-            
+
         Returns:
             Dict[str, str]: A dictionary containing the thought, action type, query, and observation.
         """
@@ -194,7 +195,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             "query": query,
             "obs": obs,
             "answer": self._answer,
-            "is_correct": EM(self._answer, key)
+            "is_correct": EM(self._answer, key),
         }
 
     def halting_condition(
@@ -231,16 +232,15 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         self._answer = ""
 
     def reflect(
-        self, 
-        reflection_strategy: str, 
-        question: str, 
-        context: str, 
-        examples: str, 
-        prompt: str, 
-        additional_keys: Dict[str, str]
+        self,
+        reflection_strategy: str,
+        question: str,
+        context: str,
+        examples: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
     ) -> str:
-        """
-        Reflects on a given question, context, examples, prompt, and additional keys using the specified reflection strategy.
+        """Reflects on a given question, context, examples, prompt, and additional keys using the specified reflection strategy.
 
         Args:
             reflection_strategy (str): The strategy to use for reflection.
@@ -259,7 +259,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             context=context,
             examples=examples,
             prompt=prompt,
-            additional_keys=additional_keys
+            additional_keys=additional_keys,
         )
         return reflection
 
@@ -269,8 +269,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         reflection_strategy: str,
         key: str,
     ) -> bool:
-        """
-        Determines whether the reflection condition has been met.
+        """Determines whether the reflection condition has been met.
 
         Args:
             idx (int): The current step.

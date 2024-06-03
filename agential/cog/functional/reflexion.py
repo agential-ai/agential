@@ -493,7 +493,9 @@ def cot_reflect(
             prompt=prompt,
         )
     else:
-        raise NotImplementedError(f"Unknown reflection strategy: {reflection_strategy}.")
+        raise NotImplementedError(
+            f"Unknown reflection strategy: {reflection_strategy}."
+        )
 
     return reflections
 

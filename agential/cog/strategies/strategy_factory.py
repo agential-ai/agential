@@ -31,13 +31,13 @@ from agential.cog.strategies.react.qa import (
     ReActHotQAStrategy,
     ReActTriviaQAStrategy,
 )
+from agential.cog.strategies.reflexion.base import ReflexionCoTBaseStrategy
 from agential.cog.strategies.reflexion.qa import (
     ReflexionCoTAmbigNQStrategy,
     ReflexionCoTFEVERStrategy,
     ReflexionCoTHotQAStrategy,
     ReflexionCoTTriviaQAStrategy,
 )
-from agential.cog.strategies.reflexion.base import ReflexionCoTBaseStrategy
 from agential.cog.strategies.self_refine.base import SelfRefineBaseStrategy
 from agential.cog.strategies.self_refine.math import SelfRefineGSM8KStrategy
 
@@ -234,7 +234,9 @@ class ReflexionCoTStrategyFactory:
     """
 
     @staticmethod
-    def get_strategy(mode: Dict[str, str], **strategy_kwargs: Any) -> ReflexionCoTBaseStrategy:
+    def get_strategy(
+        mode: Dict[str, str], **strategy_kwargs: Any
+    ) -> ReflexionCoTBaseStrategy:
         """Returns an instance of the appropriate ReflexionCoT strategy based on the provided mode and benchmark.
 
         Available modes:
@@ -283,4 +285,4 @@ class ReflexionCoTStrategyFactory:
         else:
             raise ValueError(f"Unsupported mode: {mode}")
 
-        return 
+        return
