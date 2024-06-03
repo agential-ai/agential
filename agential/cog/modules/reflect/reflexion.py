@@ -74,7 +74,6 @@ class ReflexionCoTReflector(BaseReflector):
         Raises:
             NotImplementedError: If an unknown reflection strategy is specified.
         """
-
         reflections = cot_reflect(
             reflection_strategy=reflection_strategy,
             llm=self.llm,

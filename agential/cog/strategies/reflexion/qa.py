@@ -211,7 +211,6 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         Returns:
             bool: True if the halting condition is met, False otherwise.
         """
-
         max_trials = kwargs.get("max_trials", self.max_trials)
         return not EM(self._answer, key) and idx < max_trials
 
@@ -282,7 +281,6 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         Returns:
             bool: True if the reflection condition is met, False otherwise.
         """
-
         return idx > 0 and not EM(self._answer, key) and reflection_strategy
 
 
