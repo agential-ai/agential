@@ -119,12 +119,12 @@ class ReflexionCoTAgent(BaseAgent):
         Args:
             question (str): The question to answer.
             key (str): The key to evaluate the correctness of the answer.
-            examples (str, optional): Fewshot examples. 
-            reflection_strategy (str): The strategy to use for reflection. Can be one of "last_attempt", 
+            examples (str, optional): Fewshot examples.
+            reflection_strategy (str): The strategy to use for reflection. Can be one of "last_attempt",
                 "reflexion", or "last_attempt_and_reflexion".
-            prompt (str, optional): Prompt template string. 
-            reflect_examples (str, optional): Reflection fewshot examples. 
-            reflect_prompt (str, optional): Reflect prompt template string. 
+            prompt (str, optional): Prompt template string.
+            reflect_examples (str, optional): Reflection fewshot examples.
+            reflect_prompt (str, optional): Reflect prompt template string.
             reset (bool): Resets the agent's memory. Defaults to True.
 
         Returns:

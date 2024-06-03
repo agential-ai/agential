@@ -1,6 +1,6 @@
 """Reflecting module for Reflexion."""
 
-from typing import List, Optional, Tuple, Dict
+from typing import Dict, List, Optional, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -51,7 +51,7 @@ class ReflexionCoTReflector(BaseReflector):
         question: str,
         scratchpad: str,
         prompt: str,
-        additional_keys: Dict[str, str] = {}
+        additional_keys: Dict[str, str] = {},
     ) -> Tuple[List[str], str]:
         """Wrapper around ReflexionCoT's `cot_reflect` method in functional.
 
@@ -66,7 +66,7 @@ class ReflexionCoTReflector(BaseReflector):
             scratchpad (str): The scratchpad content related to the question.
             prompt (str, optional): Reflect prompt template string.
             additional_keys (Dict[str, str], optional): Additional keys to be passed to the prompt template. Defaults to {}.
-            
+
         Returns:
             Tuple[List[str], str]: A tuple of the updated list of reflections based on the selected strategy and the formatted
                 reflections.
@@ -82,7 +82,7 @@ class ReflexionCoTReflector(BaseReflector):
             question=question,
             scratchpad=scratchpad,
             prompt=prompt,
-            additional_keys=additional_keys
+            additional_keys=additional_keys,
         )[-self.max_reflections :]
 
         self.reflections = reflections
