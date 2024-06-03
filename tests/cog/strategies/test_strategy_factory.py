@@ -39,8 +39,15 @@ from agential.cog.strategies.strategy_factory import (
     CriticStrategyFactory,
     ReActStrategyFactory,
     SelfRefineStrategyFactory,
+    ReflexionCoTStrategyFactory
 )
-
+from agential.cog.strategies.reflexion.base import ReflexionCoTBaseStrategy
+from agential.cog.strategies.reflexion.qa import (
+    ReflexionCoTAmbigNQStrategy,
+    ReflexionCoTFEVERStrategy,
+    ReflexionCoTHotQAStrategy,
+    ReflexionCoTTriviaQAStrategy,
+)
 
 def test_critic_strategy_factory_get_strategy() -> None:
     """Tests CriticStrategyFactory get_strategy method."""
@@ -233,3 +240,46 @@ def test_react_strategy_factory_get_strategy() -> None:
 
     with pytest.raises(ValueError, match="Unsupported mode: {}"):
         ReActStrategyFactory.get_strategy({})
+
+
+def test_reflexioncot_strategy_factory_get_strategy() -> None:
+    """Tests ReflexionCoTStrategyFactory get_strategy method."""
+    llm = FakeListChatModel(responses=[])
+
+    # QA benchmarks.
+    assert isinstance(
+        ReflexionCoTStrategyFactory.get_strategy({"qa": "hotpotqa"}, llm=llm),
+        ReflexionCoTHotQAStrategy,
+    )
+    assert isinstance(
+        ReflexionCoTStrategyFactory.get_strategy({"qa": "triviaqa"}, llm=llm),
+        ReflexionCoTTriviaQAStrategy,
+    )
+    assert isinstance(
+        ReflexionCoTStrategyFactory.get_strategy({"qa": "ambignq"}, llm=llm),
+        ReflexionCoTAmbigNQStrategy,
+    )
+    assert isinstance(
+        ReflexionCoTStrategyFactory.get_strategy({"qa": "fever"}, llm=llm),
+        ReflexionCoTFEVERStrategy,
+    )
+
+    # Test kwargs for QA strategy.
+    strategy = ReflexionCoTStrategyFactory.get_strategy({"qa": "hotpotqa"}, llm=llm, max_reflections=1)
+    assert isinstance(strategy, ReflexionCoTHotQAStrategy)
+    assert strategy.llm == llm
+    assert strategy.max_reflections == 1
+
+    # Unsupported benchmarks.
+    with pytest.raises(ValueError, match="Unsupported QA benchmark: unknown"):
+        ReflexionCoTStrategyFactory.get_strategy({"qa": "unknown"})
+
+    with pytest.raises(ValueError, match="Unsupported Math benchmark: unknown"):
+        ReflexionCoTStrategyFactory.get_strategy({"math": "unknown"})
+
+    with pytest.raises(ValueError, match="Unsupported Code benchmark: unknown"):
+        ReflexionCoTStrategyFactory.get_strategy({"code": "unknown"})
+
+    with pytest.raises(ValueError, match="Unsupported mode: {}"):
+        ReflexionCoTStrategyFactory.get_strategy({})
+
