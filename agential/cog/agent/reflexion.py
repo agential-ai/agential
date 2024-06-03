@@ -29,7 +29,7 @@ from agential.cog.modules.reflect.reflexion import (
 )
 from agential.cog.prompts.agent.reflexion import (
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-    REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES_HOTPOTQA,
+    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
@@ -290,7 +290,7 @@ class ReflexionReActAgent(BaseAgent):
         strategy: Optional[str] = None,
         reset: bool = True,
         prompt: str = REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-        reflect_examples: str = REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES_HOTPOTQA,
+        reflect_examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         reflect_prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     ) -> List[Tuple[bool, str, List[Tuple[str, str, str]]]]:
         """Processes a given question through ReAct and reflects using Reflexion strategies when possible.
@@ -308,7 +308,7 @@ class ReflexionReActAgent(BaseAgent):
                 - "last_attempt_and_reflexion": This strategy combines the 'last_attempt' and 'reflexion' strategies.
             reset (bool): Whether to reset the internal state before processing. Defaults to True.
             prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION_HOTPOTQA.
-            reflect_examples (str, optional): Reflection fewshot examples. Defaults to REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES_HOTPOTQA.
+            reflect_examples (str, optional): Reflection fewshot examples. Defaults to HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT.
             reflect_prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA.
 
         Returns:
@@ -437,7 +437,7 @@ class ReflexionReActAgent(BaseAgent):
         self,
         strategy: str,
         question: str,
-        examples: str = REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES_HOTPOTQA,
+        examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     ) -> str:
         """Reflects on the previous steps to improve the response.
@@ -452,7 +452,7 @@ class ReflexionReActAgent(BaseAgent):
         Args:
             strategy (str): The strategy to use for reflection.
             question (str): The question to answer.
-            examples (str, optional): Fewshot examples. Defaults to REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES_HOTPOTQA.
+            examples (str, optional): Fewshot examples. Defaults to HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT.
             prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA.
 
         Returns:

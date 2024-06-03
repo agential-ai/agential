@@ -39,7 +39,7 @@ Thought: Let's think step by step. Pavel Urysohn is a mathematician. Leonid Levi
 Action: Finish[Yes]"""
 
 
-REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES = """Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
 Thought: Let's think step by step. The eastern sector of Colorado orogeny extends into the Rocky Mountains. The Rocky Mountains rise in elevation from around 1,800 to 14,000 ft, so the answer is 1,800 to 14,000 ft.
 Action: Finish[1,800 to 14,000 ft]
 
@@ -52,7 +52,7 @@ Action: Finish[Mickey Mouse]
 Reflection: My reasoning for the naming of the character Milhouse in "The Simpsons" failed because I incorrectly assumed that the character was named after a prominent cartoon character, Mickey Mouse. In the future, when attempting this question, I should focus on better researching the background of "The Simpsons" and Matt Groening's influences in naming characters to avoid making incorrect assumptions. """
 
 
-REFLEXION_COT_REFLECT_INSTRUCTION = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
+REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
 Here are some examples:
 {examples}
 (END OF EXAMPLES)
@@ -98,7 +98,7 @@ Question: {question}{scratchpad}
 
 Reflection:"""
 
-REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES_HOTPOTQA = """Previous Trial:
+HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """Previous Trial:
 Question: The Rome Protocols were signed by three Prime Ministers one of which was assassinated as part of what?
 Thought 1: I need to search Rome Protocols, find the three Prime Ministers, then find what they were assassinated as part of.
 Action 1: Search[Rome Protocols]
