@@ -198,11 +198,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
     def halting_condition(
         self,
         idx: int,
-        question: str,
-        examples: str,
-        prompt: str,
         key: str,
-        additional_keys: Dict[str, str],
         **kwargs: Dict[str, Any],
     ) -> bool:
         """Determines whether the halting condition has been met.
@@ -265,17 +261,11 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         )
         return reflection
 
-    def reflect_condition(
+    def should_reflect(
         self,
         idx: int,
         reflection_strategy: str,
-        question: str,
-        context: str,
-        examples: str,
-        prompt: str,
         key: str,
-        additional_keys: Dict[str, str],
-        **kwargs: Dict[str, Any],
     ) -> bool:
         """
         Determines whether the reflection condition has been met.

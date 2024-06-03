@@ -111,11 +111,12 @@ class ReflexionCoTAgent(BaseAgent):
         key: str,
         context: Optional[str] = None,
         examples: str = REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
-        strategy: Optional[str] = None,
+        reflection_strategy: Optional[str] = None,
         reset: bool = True,
         prompt: str = REFLEXION_COT_INSTRUCTION_NO_CONTEXT,
         reflect_examples: str = REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT,
         reflect_prompt: str = REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT,
+        **kwargs: Dict[str, Any],
     ) -> List[Tuple[bool, str, Tuple[str, str, str]]]:
         """Generates a response based on the provided context, question, and key.
 
@@ -128,7 +129,7 @@ class ReflexionCoTAgent(BaseAgent):
             context (Optional[str]): The context or background information. Defaults to None.
             examples (str, optional): Fewshot examples. Defaults to REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT and
                 REFLEXION_COT_FEWSHOT_EXAMPLES if context is provided.
-            strategy (Optional[str]): The strategy to use for reflection. Defaults to None.
+            reflection_strategy (Optional[str]): The strategy to use for reflection. Defaults to None.
             reset (bool): Resets the agent's memory. Defaults to True.
             prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_INSTRUCTION_NO_CONTEXT and
                 REFLEXION_COT_INSTRUCTION if context is provided.
@@ -145,7 +146,22 @@ class ReflexionCoTAgent(BaseAgent):
         if reset:
             self.reset()
 
+        idx = 0
+        patience_cnt = 0
+        out = []
+        while self.strategy.halting_condition(
+            idx=idx,
+            key=key,
+            **kwargs
+        ):
+            self.strategy._scratchpad = ""
 
+            # Reflect if possible.
+            if self.strategy.should_reflect(
+                idx=idx,
+                reflection_strategy=reflection_strategy,
+
+            ):
 
 
 
