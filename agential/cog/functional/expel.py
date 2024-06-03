@@ -24,7 +24,7 @@ from agential.cog.prompts.agent.expel import (
 from agential.cog.prompts.agent.reflexion import (
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
-    REFLEXION_REACT_REFLECT_INSTRUCTION,
+    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 
@@ -39,7 +39,7 @@ def gather_experience(
     prompt: str = REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
     reflect_examples: str = REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
-    reflect_prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION,
+    reflect_prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 ) -> Dict[str, List]:
     """Collects and aggregates experiences from a ReflexionReActAgent by generating trajectories and reflections for a set of questions and keys.
 
@@ -53,7 +53,7 @@ def gather_experience(
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION_HOTPOTQA.
         examples (str, optional): Fewshot examples. Defaults to HOTPOTQA_FEWSHOT_EXAMPLES_REACT.
         reflect_examples (str, optional): Reflection fewshot examples. Defaults to REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES.
-        reflect_prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION.
+        reflect_prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA.
 
     Returns:
         Dict[str, List]: A dictionary containing lists of indices ('idxs'), questions ('questions'), keys ('keys'), generated trajectories ('trajectories'), and reflections ('reflections').

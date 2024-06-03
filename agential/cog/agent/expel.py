@@ -30,7 +30,7 @@ from agential.cog.prompts.agent.expel import (
 from agential.cog.prompts.agent.reflexion import (
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
-    REFLEXION_REACT_REFLECT_INSTRUCTION,
+    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.utils.general import shuffle_chunk_list
@@ -111,7 +111,7 @@ class ExpeLAgent(BaseAgent):
         prompt: str = EXPEL_REFLEXION_REACT_INSTRUCTION,
         examples: Optional[str] = None,
         reflect_examples: str = REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
-        reflect_prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION,
+        reflect_prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
         k_docs: int = 24,
         num_fewshots: int = 6,
         max_fewshot_tokens: int = 1500,
@@ -198,7 +198,7 @@ class ExpeLAgent(BaseAgent):
         prompt: str = REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
         examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         reflect_examples: str = REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
-        reflect_prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION,
+        reflect_prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     ) -> Dict[str, Any]:
         """Collects and stores experiences from interactions based on specified questions and keys.
 
@@ -216,7 +216,7 @@ class ExpeLAgent(BaseAgent):
             prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION_HOTPOTQA.
             examples (str, optional): Fewshot examples. Defaults to HOTPOTQA_FEWSHOT_EXAMPLES_REACT.
             reflect_examples (str, optional): Reflection fewshot examples. Defaults to REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES.
-            reflect_prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION.
+            reflect_prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA.
 
         Returns:
             Dict[str, Any]: A dictionary containing the collected experiences, including questions, keys, trajectories,
