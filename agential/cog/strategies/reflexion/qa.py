@@ -37,7 +37,7 @@ def parse_qa_action(string: str) -> Tuple[str, str]:
     return action_type, argument
 
 
-class ReflexioCoTQAStrategy(ReflexionCoTBaseStrategy):
+class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
     """A strategy class for QA benchmarks using the ReflexionCoT agent.
 
     Attributes:
@@ -294,3 +294,27 @@ class ReflexioCoTQAStrategy(ReflexionCoTBaseStrategy):
             bool: True if the reflection condition is met, False otherwise.
         """
         return idx > 0 and not EM(self._answer, key) and reflection_strategy
+    
+
+class ReflexionCoTHotQAStrategy(ReflexionCoTBaseStrategy):
+    """A strategy class for the HotpotQA benchmark using the ReflexionCoT agent."""
+
+    pass
+
+
+class ReflexionCoTTriviaQAStrategy(ReflexionCoTQAStrategy):
+    """A strategy class for the TriviaQA benchmark using the ReflexionCoT agent."""
+
+    pass
+
+
+class ReflexionCoTAmbigNQStrategy(ReflexionCoTQAStrategy):
+    """A strategy class for the AmbigNQ benchmark using the ReflexionCoT agent."""
+
+    pass
+
+
+class ReflexionCoTFEVERStrategy(ReflexionCoTQAStrategy):
+    """A strategy class for the FEVER benchmark using the ReflexionCoT agent."""
+
+    pass
