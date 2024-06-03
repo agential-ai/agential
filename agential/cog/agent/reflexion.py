@@ -93,9 +93,7 @@ class ReflexionCoTAgent(BaseAgent):
         llm: BaseChatModel,
         mode: Dict[str, str],
         reflector: Optional[ReflexionCoTReflector] = None,
-        max_reflections: int = 3,
-        max_trials: int = 1,
-        patience: Optional[int] = None,
+        **strategy_kwargs: Dict[str, Any],
     ) -> None:
         """Initialization with default or provided values."""
         super().__init__()
@@ -104,7 +102,7 @@ class ReflexionCoTAgent(BaseAgent):
         self.mode = mode
 
         self.strategy = ReflexionCoTStrategyFactory().get_strategy(
-            mode=self.mode, llm=self.llm, **strategy_kwargs
+            mode=self.mode, llm=self.llm, reflector=reflector, **strategy_kwargs
         )
 
     def generate(
@@ -143,6 +141,31 @@ class ReflexionCoTAgent(BaseAgent):
             result (List[Tuple[bool, str, List[str, str, str]]]): A list of tuples containing (is_correct, answer, output)
                 where output is a thought-action-observation 3-tuple.
         """
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
         # If there's context and examples/prompt is unchanged, then use the fewshot examples/prompt with context.
         if context and examples == REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT:
             examples = REFLEXION_COT_FEWSHOT_EXAMPLES
