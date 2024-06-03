@@ -43,7 +43,9 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
 
     Attributes:
         llm (BaseChatModel): The language model used for generating answers and critiques.
-
+        reflector (Optional[ReflexionCoTReflector]): The reflector used for generating reflections. Defaults to None.
+        max_reflections (int): The maximum number of reflections allowed. Defaults to 3.
+        max_trials (int): The maximum number of trials allowed. Defaults to 1.
     """
 
     def __init__(
@@ -134,6 +136,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             question=question,
             scratchpad=self._scratchpad,
             prompt=prompt,
+            additional_keys=additional_keys,
         )
         action = remove_newline(action).strip().split("\n")[0]
         self._scratchpad += " " + action
@@ -202,16 +205,13 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
 
         Args:
             idx (int): The current step index.
-            question (str): The question being answered.
-            examples (str): Examples to guide the generation process.
-            prompt (str): The prompt used for generating the thought and action.
             key (str): The key for the observation.
-            additional_keys (Dict[str, str]): Additional keys for the generation process.
             **kwargs (Dict[str, Any]): Additional arguments.
 
         Returns:
             bool: True if the halting condition is met, False otherwise.
         """
+
         max_trials = kwargs.get("max_trials", self.max_trials)
         return not EM(self._answer, key) and idx < max_trials
 
@@ -277,16 +277,12 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         Args:
             idx (int): The current step.
             reflection_strategy (str): The strategy to use for reflection.
-            question (str): The question to be reflected upon.
-            context (str): The context in which the question is being asked.
-            examples (str): Examples to guide the reflection process.
-            prompt (str): The prompt or instruction to guide the reflection.
             key (str): The key for the observation.
-            additional_keys (Dict[str, str]): Additional keys for the reflection process.
 
         Returns:
             bool: True if the reflection condition is met, False otherwise.
         """
+
         return idx > 0 and not EM(self._answer, key) and reflection_strategy
 
 
