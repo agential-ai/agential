@@ -38,12 +38,12 @@ def test_reflexion_cot_reflector() -> None:
             examples="",
             question="",
             scratchpad="",
-            context="",
+            prompt=""
         )
 
     # Test with last attempt.
     out = reflector.reflect(
-        reflection_strategy="last_attempt", examples="", question="", scratchpad="", context=""
+        reflection_strategy="last_attempt", examples="", question="", scratchpad="", prompt=""
     )
     assert isinstance(out, tuple)
     assert len(out) == 2
@@ -60,7 +60,7 @@ def test_reflexion_cot_reflector() -> None:
         llm=FakeListChatModel(responses=["1"]),
     )
     out = reflector.reflect(
-        reflection_strategy="reflexion", examples="", question="", scratchpad="", context=""
+        reflection_strategy="reflexion", examples="", question="", scratchpad="", prompt=""
     )
 
     assert isinstance(out, tuple)
