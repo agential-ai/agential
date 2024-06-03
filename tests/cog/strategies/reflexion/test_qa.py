@@ -9,7 +9,7 @@ from agential.cog.strategies.reflexion.qa import (
 )
 from agential.cog.prompts.agent.reflexion import (
     REFLEXION_COT_FEWSHOT_EXAMPLES,
-    REFLEXION_COT_INSTRUCTION,
+    REFLEXION_COT_INSTRUCTION_HOTPOTQA,
     REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES,
     REFLEXION_COT_REFLECT_INSTRUCTION
 )

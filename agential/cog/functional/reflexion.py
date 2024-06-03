@@ -12,7 +12,7 @@ from tiktoken.core import Encoding
 from agential.cog.prompts.agent.reflexion import (
     LAST_TRIAL_HEADER,
     REFLECTION_HEADER,
-    REFLEXION_REACT_INSTRUCTION,
+    REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION,
 )
 from agential.utils.parse import remove_newline
@@ -443,12 +443,12 @@ def _build_react_agent_prompt(
     question: str,
     scratchpad: str,
     max_steps: int,
-    prompt: str = REFLEXION_REACT_INSTRUCTION,
+    prompt: str = REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     additional_keys: Dict[str, str] = {},
 ) -> str:
     """Constructs a ReflexionReAct prompt template for the agent.
 
-    This function formats a predefined prompt template (REFLEXION_REACT_INSTRUCTION)
+    This function formats a predefined prompt template (REFLEXION_REACT_INSTRUCTION_HOTPOTQA)
     with examples, the provided question, and a scratchpad.
 
     Args:
@@ -457,7 +457,7 @@ def _build_react_agent_prompt(
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         max_steps (int): Maximum number of steps.
-        prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION.
+        prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION_HOTPOTQA.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
@@ -486,7 +486,7 @@ def _prompt_react_agent(
     question: str,
     scratchpad: str,
     max_steps: int,
-    prompt: str = REFLEXION_REACT_INSTRUCTION,
+    prompt: str = REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     additional_keys: Dict[str, str] = {},
 ) -> str:
     """Generates a ReAct prompt for thought and action.
@@ -500,7 +500,7 @@ def _prompt_react_agent(
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         max_steps (int): Maximum number of steps.
-        prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION.
+        prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION_HOTPOTQA.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
@@ -536,7 +536,7 @@ def _is_halted(
     max_steps: int,
     max_tokens: int,
     enc: Encoding,
-    prompt: str = REFLEXION_REACT_INSTRUCTION,
+    prompt: str = REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
 ) -> bool:
     """Determines whether the agent's operation should be halted.
 
@@ -554,7 +554,7 @@ def _is_halted(
         max_steps (int): Maximum allowed steps.
         max_tokens (int): Maximum allowed token count.
         enc (Encoding): The encoder to calculate token length.
-        prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION.
+        prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION_HOTPOTQA.
 
     Returns:
         bool: True if the operation should be halted, False otherwise.

@@ -66,7 +66,7 @@ CRITIQUE_SUMMARY_SUFFIX_NOT_FULL = (
     """Below are the operations you do to the above list of EXISTING RULES:"""
 )
 
-# Task Inference: Similar to REFLEXION_REACT_INSTRUCTION, but formatted as the ExpeL Stage 3 task inference prompt.
+# Task Inference: Similar to REFLEXION_REACT_INSTRUCTION_HOTPOTQA, but formatted as the ExpeL Stage 3 task inference prompt.
 # {examples} now includes: examples, '(END OF EXAMPLES)' delimiter, and the insights.
 END_OF_EXAMPLES_DELIMITER = "(END OF EXAMPLES)"
 EXPEL_REFLEXION_REACT_INSTRUCTION = """
