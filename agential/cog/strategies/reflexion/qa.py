@@ -258,8 +258,9 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         """
         reflection = self.reflector.reflect(
             reflection_strategy=reflection_strategy,
-            question=question,
             examples=examples,
+            question=question,
+            scratchpad=self._scratchpad,
             prompt=prompt,
             additional_keys=additional_keys,
         )
