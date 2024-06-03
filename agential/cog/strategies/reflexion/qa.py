@@ -10,6 +10,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from agential.cog.functional.reflexion import (
     _prompt_cot_agent
 )
+from agential.cog.eval.reflexion import EM
 from agential.utils.parse import remove_newline
 
 
@@ -149,18 +150,30 @@ class ReflexioCoTQAStrategy(ReflexionCoTBaseStrategy):
 
         return action_type, query
 
-    def generate_observation(self, idx: int, action_type: str, query: str) -> str:
+    def generate_observation(self, action_type: str, query: str, key: str) -> str:
         """Generates an observation based on the action type and query.
 
         Args:
-            idx (int): The index of the observation.
             action_type (str): The type of action to be performed.
             query (str): The query for the action.
+            key (str): The key for the observation.
 
         Returns:
             str: The generated observation.
         """
-        pass
+        self._scratchpad += f"\nObservation: "
+        if action_type.lower() == "finish":
+            self._finished = True
+            self._answer = query
+            if EM(self._answer, key):
+                obs = "Answer is CORRECT"
+            else:
+                obs = "Answer is INCORRECT"
+        else:
+            obs = "Invalid action type, please try again."
+        self._scratchpad += obs
+
+        return obs
 
     def create_output_dict(
         self, thought: str, action_type: str, query: str, obs: str
