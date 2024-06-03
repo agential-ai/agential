@@ -104,7 +104,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> bool:
+    ) -> str:
         """An abstract method that defines the behavior for reflecting on a given question, context, examples, prompt, and additional keys.
 
         Args:
@@ -116,5 +116,5 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the reflection process.
 
         Returns:
-            bool: True if the reflection is successful, False otherwise.
+            str: The reflection string.
         """
