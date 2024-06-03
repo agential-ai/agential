@@ -257,15 +257,23 @@ class ReflexioCoTQAStrategy(ReflexionCoTBaseStrategy):
         """
         reflection = self.reflector.reflect(
             reflection_strategy=reflection_strategy,
+            question=question,
+            context=context,
+            examples=examples,
+            prompt=prompt,
+            additional_keys=additional_keys
         )
+        return reflection
 
     def reflect_condition(
         self,
+        idx: int,
         reflection_strategy: str,
         question: str,
         context: str,
         examples: str,
         prompt: str,
+        key: str,
         additional_keys: Dict[str, str],
         **kwargs: Dict[str, Any],
     ) -> bool:
@@ -273,14 +281,16 @@ class ReflexioCoTQAStrategy(ReflexionCoTBaseStrategy):
         Determines whether the reflection condition has been met.
 
         Args:
+            idx (int): The current step.
             reflection_strategy (str): The strategy to use for reflection.
             question (str): The question to be reflected upon.
             context (str): The context in which the question is being asked.
             examples (str): Examples to guide the reflection process.
             prompt (str): The prompt or instruction to guide the reflection.
+            key (str): The key for the observation.
             additional_keys (Dict[str, str]): Additional keys for the reflection process.
 
         Returns:
             bool: True if the reflection condition is met, False otherwise.
         """
-        pass
+        return idx > 0 and not EM(self._answer, key) and reflection_strategy
