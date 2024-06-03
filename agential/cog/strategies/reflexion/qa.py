@@ -256,7 +256,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         Returns:
             str: The reflection string.
         """
-        reflection = self.reflector.reflect(
+        _, reflections_str = self.reflector.reflect(
             reflection_strategy=reflection_strategy,
             examples=examples,
             question=question,
@@ -264,7 +264,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        return reflection
+        return reflections_str
 
     def should_reflect(
         self,
