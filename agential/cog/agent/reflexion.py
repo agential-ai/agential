@@ -44,6 +44,7 @@ from agential.cog.prompts.agent.reflexion import (
 from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
+from agential.cog.strategies.strategy_factory import ReflexionCoTStrategyFactory
 
 
 def parse_action(string: str) -> Tuple[str, str]:
@@ -89,8 +90,8 @@ class ReflexionCoTAgent(BaseAgent):
 
     def __init__(
         self,
-        self_reflect_llm: BaseChatModel,
-        action_llm: BaseChatModel,
+        llm: BaseChatModel,
+        mode: Dict[str, str],
         reflector: Optional[ReflexionCoTReflector] = None,
         max_reflections: int = 3,
         max_trials: int = 1,
@@ -99,25 +100,12 @@ class ReflexionCoTAgent(BaseAgent):
         """Initialization with default or provided values."""
         super().__init__()
 
-        self.self_reflect_llm = self_reflect_llm
-        self.action_llm = action_llm
+        self.llm = llm
+        self.mode = mode
 
-        self.max_reflections = max_reflections
-        if not reflector:
-            reflector = ReflexionCoTReflector(
-                llm=self_reflect_llm, max_reflections=max_reflections
-            )
-        self.reflector = reflector
-
-        self.max_trials = max_trials
-        if not patience:
-            patience = max_trials
-        self.patience = patience
-        assert self.patience >= 1 and self.patience <= max_trials
-
-        self._scratchpad = ""
-        self._finished = False
-        self._answer = ""
+        self.strategy = ReflexionCoTStrategyFactory().get_strategy(
+            mode=self.mode, llm=self.llm, **strategy_kwargs
+        )
 
     def generate(
         self,
@@ -307,6 +295,53 @@ class ReflexionCoTAgent(BaseAgent):
         self.reflector.clear()
         self._finished = False
         self._answer = ""
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class ReflexionReActAgent(BaseAgent):
