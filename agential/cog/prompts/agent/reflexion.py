@@ -1,5 +1,16 @@
 """Reflexion prompts and fewshot examples."""
 
+
+# Header for formatting reflections when reflection strategy is "last_attempt_and_reflexion".
+REFLECTION_AFTER_LAST_TRIAL_HEADER = "The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\n"
+
+# Default header for formatting reflections (_format_reflections).
+REFLECTION_HEADER = "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\n"
+
+# Default header for formatting last attempt (_format_last_attempt).
+LAST_TRIAL_HEADER = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\n"
+
+
 # ======================================================================== HOTPOTQA ======================================================================== #
 
 
@@ -61,16 +72,7 @@ Here are some examples:
 
 Question: {question}{scratchpad}"""
 
-# Header for formatting reflections when reflection strategy is "last_attempt_and_reflexion".
-REFLECTION_AFTER_LAST_TRIAL_HEADER = "The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\n"
 
-# Default header for formatting reflections (_format_reflections).
-REFLECTION_HEADER = "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\n"
-
-# Default header for formatting last attempt (_format_last_attempt).
-LAST_TRIAL_HEADER = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\n"
-
-# Prompt template for ReflexionReAct agent (think/act).
 REFLEXION_REACT_INSTRUCTION = """Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: 
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
@@ -85,7 +87,6 @@ Here are some examples:
 
 Question: {question}{scratchpad}"""
 
-# Prompt template for ReflexionReAct agent reflect.
 REFLEXION_REACT_REFLECT_INSTRUCTION = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
 Here are some examples:
 {examples}
@@ -96,7 +97,6 @@ Question: {question}{scratchpad}
 
 Reflection:"""
 
-# Fewshot examples for ReflexionReAct reflect.
 REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES = """Previous Trial:
 Question: The Rome Protocols were signed by three Prime Ministers one of which was assassinated as part of what?
 Thought 1: I need to search Rome Protocols, find the three Prime Ministers, then find what they were assassinated as part of.
