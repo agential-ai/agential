@@ -6,7 +6,9 @@ from agential.cog.modules.reflect.reflexion import (
 )
 from agential.cog.strategies.reflexion.base import ReflexionCoTBaseStrategy
 from langchain_core.language_models.chat_models import BaseChatModel
-
+from agential.cog.functional.reflexion import (
+    _prompt_cot_agent
+)
 
 class ReflexioCoTQAStrategy(ReflexionCoTBaseStrategy):
     """A strategy class for QA benchmarks using the ReflexionCoT agent.
@@ -45,6 +47,7 @@ class ReflexioCoTQAStrategy(ReflexionCoTBaseStrategy):
         self,
         question: str,
         examples: str,
+        context: str,
         prompt: str,
         additional_keys: Dict[str, str],
         **kwargs: Dict[str, Any],
@@ -61,7 +64,16 @@ class ReflexioCoTQAStrategy(ReflexionCoTBaseStrategy):
         Returns:
             str: The generated thought.
         """
-        pass
+        self._scratchpad += "\nThought:"
+        _prompt_cot_agent(
+            llm=self.llm,
+            examples=examples,
+            reflections=reflections_str,
+            question=question,
+            scratchpad=self._scratchpad,
+            context=context,
+            prompt=prompt,
+        )
 
     def generate_action(
         self,
@@ -166,6 +178,32 @@ class ReflexioCoTQAStrategy(ReflexionCoTBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the reflection process.
 
         Returns:
-            bool: True if the reflection is successful, False otherwise.
+            str: The reflection string.
+        """
+        pass
+
+    def reflect_condition(
+        self,
+        reflection_strategy: str,
+        question: str,
+        context: str,
+        examples: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+        **kwargs: Dict[str, Any],
+    ) -> bool:
+        """
+        Determines whether the reflection condition has been met.
+
+        Args:
+            reflection_strategy (str): The strategy to use for reflection.
+            question (str): The question to be reflected upon.
+            context (str): The context in which the question is being asked.
+            examples (str): Examples to guide the reflection process.
+            prompt (str): The prompt or instruction to guide the reflection.
+            additional_keys (Dict[str, str]): Additional keys for the reflection process.
+
+        Returns:
+            bool: True if the reflection condition is met, False otherwise.
         """
         pass
