@@ -232,10 +232,16 @@ class ReActQAStrategy(ReActBaseStrategy):
             additional_keys=additional_keys,
         )
 
-    def reset(self) -> None:
+    def reset(self, **kwargs: Dict[str, Any]) -> None:
         """Resets the internal state of the strategy.
 
         Resets the scratchpad and the finished flag.
+
+        Args:
+            **kwargs (Dict[str, Any]): Additional arguments.
+
+        Returns:
+            None
         """
         self._scratchpad = ""
         self._finished = False

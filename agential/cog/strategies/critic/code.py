@@ -196,10 +196,16 @@ class CriticCodeStrategy(CriticBaseStrategy):
         """
         return self._halt
 
-    def reset(self) -> None:
+    def reset(self, **kwargs: Dict[str, Any]) -> None:
         """Resets the strategy to its initial state.
 
         Resets internal variables keeping track of halting and answer history.
+        
+        Args:
+            **kwargs (Dict[str, Any]): Additional arguments.
+
+        Returns:
+            None
         """
         self._halt = False
 

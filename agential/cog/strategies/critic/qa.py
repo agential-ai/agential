@@ -224,11 +224,17 @@ class CriticQAStrategy(CriticBaseStrategy):
         """
         return self._halt
 
-    def reset(self) -> None:
+    def reset(self, **kwargs: Dict[str, Any]) -> None:
         """Resets the strategy's internal state.
 
         This function resets the internal state of the strategy, including clearing the query
         history, evidence history, and resetting the halt flag.
+
+        Args:
+            **kwargs (Dict[str, Any]): Additional arguments.
+
+        Returns:
+            None
         """
         self._query_history = []
         self._evidence_history = set()
