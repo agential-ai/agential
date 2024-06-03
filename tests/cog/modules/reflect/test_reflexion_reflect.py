@@ -120,7 +120,6 @@ def test_reflexion_cot_reflect_strat() -> None:
     examples = "Example content"
     question = "What is the capital of France?"
     scratchpad = "Initial scratchpad content"
-    context = "Conversation context"
 
     # Test last attempt followed by reflexion.
     gt_out_reflections = ["Initial scratchpad content"]
@@ -133,7 +132,7 @@ def test_reflexion_cot_reflect_strat() -> None:
         examples=examples,
         question=question,
         scratchpad=scratchpad,
-        
+        prompt=""
     )
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
@@ -144,7 +143,7 @@ def test_reflexion_cot_reflect_strat() -> None:
         examples=examples,
         question=question,
         scratchpad=scratchpad,
-        
+        prompt=""
     )
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
@@ -160,7 +159,7 @@ def test_reflexion_cot_reflect_strat() -> None:
         examples=examples,
         question=question,
         scratchpad=scratchpad,
-        
+        prompt=""
     )
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
@@ -171,7 +170,7 @@ def test_reflexion_cot_reflect_strat() -> None:
         examples=examples,
         question=question,
         scratchpad=scratchpad,
-        
+        prompt=""
     )
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
@@ -187,7 +186,7 @@ def test_reflexion_cot_reflect_strat() -> None:
         examples=examples,
         question=question,
         scratchpad=scratchpad,
-        
+        prompt=""
     )
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
@@ -198,7 +197,7 @@ def test_reflexion_cot_reflect_strat() -> None:
         examples=examples,
         question=question,
         scratchpad=scratchpad,
-        
+        prompt=""
     )
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
@@ -214,7 +213,7 @@ def test_reflexion_cot_reflect_strat() -> None:
         examples=examples,
         question=question,
         scratchpad=scratchpad,
-        
+        prompt=""
     )
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
@@ -225,7 +224,7 @@ def test_reflexion_cot_reflect_strat() -> None:
         examples=examples,
         question=question,
         scratchpad=scratchpad,
-        
+        prompt=""
     )
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
@@ -241,7 +240,7 @@ def test_reflexion_cot_reflect_strat() -> None:
         examples=examples,
         question=question,
         scratchpad=scratchpad,
-        
+        prompt=""
     )
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
@@ -252,7 +251,7 @@ def test_reflexion_cot_reflect_strat() -> None:
         examples=examples,
         question=question,
         scratchpad=scratchpad,
-        
+        prompt=""
     )
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
@@ -268,7 +267,7 @@ def test_reflexion_cot_reflect_strat() -> None:
         examples=examples,
         question=question,
         scratchpad=scratchpad,
-        
+        prompt=""
     )
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
@@ -279,7 +278,7 @@ def test_reflexion_cot_reflect_strat() -> None:
         examples=examples,
         question=question,
         scratchpad=scratchpad,
-        
+        prompt=""
     )
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
