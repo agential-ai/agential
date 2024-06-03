@@ -141,6 +141,9 @@ class ReflexionCoTAgent(BaseAgent):
             result (List[Tuple[bool, str, List[str, str, str]]]): A list of tuples containing (is_correct, answer, output)
                 where output is a thought-action-observation 3-tuple.
         """
+        # Reset.
+        if reset:
+            self.reset()
 
 
 
@@ -165,7 +168,6 @@ class ReflexionCoTAgent(BaseAgent):
 
 
 
-        
         # If there's context and examples/prompt is unchanged, then use the fewshot examples/prompt with context.
         if context and examples == REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT:
             examples = REFLEXION_COT_FEWSHOT_EXAMPLES
