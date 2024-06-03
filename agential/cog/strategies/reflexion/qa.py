@@ -65,7 +65,6 @@ class ReflexioCoTQAStrategy(ReflexionCoTBaseStrategy):
             )
         self.reflector = reflector
 
-        self._trial_n = 0
         self._scratchpad = ""
         self._finished = False
         self._answer = ""
@@ -189,7 +188,12 @@ class ReflexioCoTQAStrategy(ReflexionCoTBaseStrategy):
         Returns:
             Dict[str, str]: A dictionary containing the thought, action type, query, and observation.
         """
-        pass
+        return {
+            "thought": thought,
+            "action_type": action_type,
+            "query": query,
+            "obs": obs,
+        }
 
     def halting_condition(
         self,
@@ -197,6 +201,7 @@ class ReflexioCoTQAStrategy(ReflexionCoTBaseStrategy):
         question: str,
         examples: str,
         prompt: str,
+        key: str,
         additional_keys: Dict[str, str],
         **kwargs: Dict[str, Any],
     ) -> bool:
@@ -207,20 +212,25 @@ class ReflexioCoTQAStrategy(ReflexionCoTBaseStrategy):
             question (str): The question being answered.
             examples (str): Examples to guide the generation process.
             prompt (str): The prompt used for generating the thought and action.
+            key (str): The key for the observation.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
             **kwargs (Dict[str, Any]): Additional arguments.
 
         Returns:
             bool: True if the halting condition is met, False otherwise.
         """
-        pass
+        max_trials = kwargs.get("max_trials", self.max_trials)
+        return not EM(self._answer, key) and idx < max_trials
 
     def reset(self) -> None:
         """Resets the internal state of the strategy.
 
         Resets the scratchpad and the finished flag.
         """
-        pass
+        self.reflector.reset()
+        self._scratchpad = ""
+        self._finished = False
+        self._answer = ""
 
     def reflect(
         self, 
@@ -245,7 +255,9 @@ class ReflexioCoTQAStrategy(ReflexionCoTBaseStrategy):
         Returns:
             str: The reflection string.
         """
-        pass
+        reflection = self.reflector.reflect(
+            reflection_strategy=reflection_strategy,
+        )
 
     def reflect_condition(
         self,

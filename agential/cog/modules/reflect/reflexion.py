@@ -48,7 +48,7 @@ class ReflexionCoTReflector(BaseReflector):
 
     def reflect(
         self,
-        strategy: str,
+        reflection_strategy: str,
         examples: str,
         question: str,
         scratchpad: str,
@@ -62,7 +62,7 @@ class ReflexionCoTReflector(BaseReflector):
         reflections list with the newly generated reflections.
 
         Args:
-            strategy (str): The reflection strategy to be used ('last_attempt', 'reflexion', or 'last_attempt_and_reflexion').
+            reflection_strategy (str): The reflection strategy to be used ('last_attempt', 'reflexion', or 'last_attempt_and_reflexion').
             examples (str): Example inputs for the prompt template.
             question (str): The question being addressed.
             scratchpad (str): The scratchpad content related to the question.
@@ -81,7 +81,7 @@ class ReflexionCoTReflector(BaseReflector):
             prompt = REFLEXION_COT_REFLECT_INSTRUCTION
 
         reflections = cot_reflect(
-            strategy=strategy,
+            reflection_strategy=reflection_strategy,
             llm=self.llm,
             reflections=self.reflections,
             examples=examples,
@@ -93,11 +93,11 @@ class ReflexionCoTReflector(BaseReflector):
 
         self.reflections = reflections
 
-        if strategy == "last_attempt":
+        if reflection_strategy == "last_attempt":
             reflections_str = _format_last_attempt(question, scratchpad)
-        elif strategy == "reflexion":
+        elif reflection_strategy == "reflexion":
             reflections_str = _format_reflections(reflections)
-        elif strategy == "last_attempt_and_reflexion":
+        elif reflection_strategy == "last_attempt_and_reflexion":
             reflections_str = _format_last_attempt(question, scratchpad)
             reflections_str += "\n" + _format_reflections(
                 reflections, REFLECTION_AFTER_LAST_TRIAL_HEADER
