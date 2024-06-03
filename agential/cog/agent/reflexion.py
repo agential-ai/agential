@@ -139,7 +139,6 @@ class ReflexionCoTAgent(BaseAgent):
         patience_cnt = 0
         out = []
         while self.strategy.halting_condition(idx=idx, key=key, **kwargs):
-            self.strategy.reset(only_scratchpad=True)
 
             # Reflect if possible.
             reflections = ""
@@ -155,6 +154,8 @@ class ReflexionCoTAgent(BaseAgent):
                     prompt=reflect_prompt,
                     additional_keys=reflection_additional_keys,
                 )
+
+            self.strategy.reset(only_scratchpad=True)
 
             # Think.
             thought = self.strategy.generate(
