@@ -120,6 +120,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         """
         pass
 
+    @abstractmethod
     def should_reflect(self, idx: int, reflection_strategy: str, key: str) -> bool:
         """Determines whether the reflection condition has been met.
 
