@@ -200,7 +200,7 @@ class CriticCodeStrategy(CriticBaseStrategy):
         """Resets the strategy to its initial state.
 
         Resets internal variables keeping track of halting and answer history.
-        
+
         Args:
             **kwargs (Dict[str, Any]): Additional arguments.
 

@@ -34,13 +34,6 @@ from agential.cog.strategies.react.qa import (
     ReActHotQAStrategy,
     ReActTriviaQAStrategy,
 )
-from agential.cog.strategies.self_refine.math import SelfRefineGSM8KStrategy
-from agential.cog.strategies.strategy_factory import (
-    CriticStrategyFactory,
-    ReActStrategyFactory,
-    SelfRefineStrategyFactory,
-    ReflexionCoTStrategyFactory
-)
 from agential.cog.strategies.reflexion.base import ReflexionCoTBaseStrategy
 from agential.cog.strategies.reflexion.qa import (
     ReflexionCoTAmbigNQStrategy,
@@ -48,6 +41,14 @@ from agential.cog.strategies.reflexion.qa import (
     ReflexionCoTHotQAStrategy,
     ReflexionCoTTriviaQAStrategy,
 )
+from agential.cog.strategies.self_refine.math import SelfRefineGSM8KStrategy
+from agential.cog.strategies.strategy_factory import (
+    CriticStrategyFactory,
+    ReActStrategyFactory,
+    ReflexionCoTStrategyFactory,
+    SelfRefineStrategyFactory,
+)
+
 
 def test_critic_strategy_factory_get_strategy() -> None:
     """Tests CriticStrategyFactory get_strategy method."""
@@ -265,7 +266,9 @@ def test_reflexioncot_strategy_factory_get_strategy() -> None:
     )
 
     # Test kwargs for QA strategy.
-    strategy = ReflexionCoTStrategyFactory.get_strategy({"qa": "hotpotqa"}, llm=llm, max_reflections=1)
+    strategy = ReflexionCoTStrategyFactory.get_strategy(
+        {"qa": "hotpotqa"}, llm=llm, max_reflections=1
+    )
     assert isinstance(strategy, ReflexionCoTHotQAStrategy)
     assert strategy.llm == llm
     assert strategy.max_reflections == 1
@@ -282,4 +285,3 @@ def test_reflexioncot_strategy_factory_get_strategy() -> None:
 
     with pytest.raises(ValueError, match="Unsupported mode: {}"):
         ReflexionCoTStrategyFactory.get_strategy({})
-
