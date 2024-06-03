@@ -64,8 +64,8 @@ class ReflexionCoTReflector(BaseReflector):
             examples (str): Example inputs for the prompt template.
             question (str): The question being addressed.
             scratchpad (str): The scratchpad content related to the question.
-            prompt (str, optional): Reflect prompt template string.
-            additional_keys (Dict[str, str], optional): Additional keys to be passed to the prompt template. Defaults to {}.
+            prompt (str): Reflect prompt template string.
+            additional_keys (Dict[str, str]): Additional keys to be passed to the prompt template.
 
         Returns:
             Tuple[List[str], str]: A tuple of the updated list of reflections based on the selected strategy and the formatted
@@ -74,6 +74,7 @@ class ReflexionCoTReflector(BaseReflector):
         Raises:
             NotImplementedError: If an unknown reflection strategy is specified.
         """
+
         reflections = cot_reflect(
             reflection_strategy=reflection_strategy,
             llm=self.llm,
