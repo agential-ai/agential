@@ -153,7 +153,7 @@ class ReflexionCoTAgent(BaseAgent):
         patience_cnt = 0
         out = []
         while self.strategy.halting_condition(idx=idx, key=key, **kwargs):
-            self.strategy._scratchpad = ""
+            self.strategy.reset(only_scratchpad=True)
 
             # Reflect if possible.
             reflections = ""
