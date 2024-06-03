@@ -20,7 +20,6 @@ from agential.cog.agent.base import BaseAgent
 from agential.cog.eval.reflexion import EM
 from agential.cog.functional.reflexion import (
     _is_halted,
-    _prompt_cot_agent,
     _prompt_react_agent,
     _truncate_scratchpad,
 )
@@ -29,14 +28,6 @@ from agential.cog.modules.reflect.reflexion import (
     ReflexionReActReflector,
 )
 from agential.cog.prompts.agent.reflexion import (
-    REFLEXION_COT_FEWSHOT_EXAMPLES,
-    REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
-    REFLEXION_COT_INSTRUCTION,
-    REFLEXION_COT_INSTRUCTION_NO_CONTEXT,
-    REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES,
-    REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT,
-    REFLEXION_COT_REFLECT_INSTRUCTION,
-    REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT,
     REFLEXION_REACT_INSTRUCTION,
     REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
     REFLEXION_REACT_REFLECT_INSTRUCTION,
@@ -128,17 +119,13 @@ class ReflexionCoTAgent(BaseAgent):
         Args:
             question (str): The question to answer.
             key (str): The key to evaluate the correctness of the answer.
-            context (Optional[str]): The context or background information. Defaults to None.
-            examples (str, optional): Fewshot examples. Defaults to REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT and
-                REFLEXION_COT_FEWSHOT_EXAMPLES if context is provided.
-            reflection_strategy (Optional[str]): The strategy to use for reflection. Defaults to None.
+            examples (str, optional): Fewshot examples. 
+            reflection_strategy (str): The strategy to use for reflection. Can be one of "last_attempt", 
+                "reflexion", or "last_attempt_and_reflexion".
+            prompt (str, optional): Prompt template string. 
+            reflect_examples (str, optional): Reflection fewshot examples. 
+            reflect_prompt (str, optional): Reflect prompt template string. 
             reset (bool): Resets the agent's memory. Defaults to True.
-            prompt (str, optional): Prompt template string. Defaults to REFLEXION_COT_INSTRUCTION_NO_CONTEXT and
-                REFLEXION_COT_INSTRUCTION if context is provided.
-            reflect_examples (str, optional): Reflection fewshot examples. Defaults to REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT
-                or REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES if context is provided.
-            reflect_prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT and
-                REFLEXION_COT_REFLECT_INSTRUCTION if context is provided.
 
         Returns:
             result (List[Tuple[bool, str, List[str, str, str]]]): A list of tuples containing (is_correct, answer, output)
