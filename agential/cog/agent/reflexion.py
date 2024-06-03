@@ -24,7 +24,6 @@ from agential.cog.functional.reflexion import (
     _prompt_react_agent,
     _truncate_scratchpad,
 )
-from agential.cog.modules.memory.reflexion import ReflexionMemory
 from agential.cog.modules.reflect.reflexion import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
@@ -76,7 +75,6 @@ class ReflexionCoTAgent(BaseAgent):
     Attributes:
         self_reflect_llm (BaseChatModel): The language model used for self-reflection.
         action_llm (BaseChatModel): The language model used for generating thoughts/actions.
-        memory (Optional[ReflexionMemory]): An optional memory module to store the agent's internal state.
         reflector (Optional[ReflexionReflector]): An optional reflector module for guided self-reflection.
         max_reflections (int): An int specifying the max number of reflections to use in a subsequent run. Defaults to 3.
         max_trials (int): Max number of answering attempts before stopping generation. Must be greater than 1 for reflection to occur. Defaults to 1.
@@ -93,7 +91,6 @@ class ReflexionCoTAgent(BaseAgent):
         self,
         self_reflect_llm: BaseChatModel,
         action_llm: BaseChatModel,
-        memory: Optional[ReflexionMemory] = None,
         reflector: Optional[ReflexionCoTReflector] = None,
         max_reflections: int = 3,
         max_trials: int = 1,
@@ -104,10 +101,6 @@ class ReflexionCoTAgent(BaseAgent):
 
         self.self_reflect_llm = self_reflect_llm
         self.action_llm = action_llm
-
-        if not memory:
-            memory = ReflexionMemory()
-        self.memory = memory
 
         self.max_reflections = max_reflections
         if not reflector:
@@ -122,7 +115,7 @@ class ReflexionCoTAgent(BaseAgent):
         self.patience = patience
         assert self.patience >= 1 and self.patience <= max_trials
 
-        self._trial_n = 0
+        self._scratchpad = ""
         self._finished = False
         self._answer = ""
 
@@ -182,14 +175,15 @@ class ReflexionCoTAgent(BaseAgent):
         if reset:
             self.reset()
 
+        idx = 0
         patience_cnt = 0
         result = []
-        while not EM(self._answer, key) and self._trial_n < self.max_trials:
+        while not EM(self._answer, key) and idx < self.max_trials:
             self.memory.clear()
 
             # Reflect if possible.
             reflections_str = ""
-            if self._trial_n > 0 and not EM(self._answer, key) and strategy:
+            if idx > 0 and not EM(self._answer, key) and strategy:
                 reflections_str = self.reflect(
                     strategy,
                     question,
@@ -238,7 +232,7 @@ class ReflexionCoTAgent(BaseAgent):
                 obs = "Invalid action type, please try again."
             self.memory.add_memories(obs)
 
-            self._trial_n += 1
+            idx += 1
             is_correct = EM(self._answer, key)
 
             out = (f"Thought: {thought}", f"Action: {action}", f"Observation: {obs}")
@@ -312,7 +306,6 @@ class ReflexionCoTAgent(BaseAgent):
         self.memory.clear()
         self.reflector.clear()
         self._finished = False
-        self._trial_n = 0
         self._answer = ""
 
 
