@@ -293,6 +293,7 @@ def cot_reflect_reflexion(
     question: str,
     scratchpad: str,
     prompt: str,
+    additional_keys: Dict[str, str] = {}
 ) -> List[str]:
     """Perform reflexion-based reflecting.
 
@@ -306,6 +307,7 @@ def cot_reflect_reflexion(
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         prompt (str, optional): Prompt template string.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}
 
     Returns:
         List[str]: An updated list of reflections.
@@ -316,6 +318,7 @@ def cot_reflect_reflexion(
         question=question,
         scratchpad=scratchpad,
         prompt=prompt,
+        additional_keys=additional_keys
     )
     reflections += [new_reflection]
     return reflections
@@ -327,6 +330,7 @@ def cot_reflect_last_attempt_and_reflexion(
     question: str,
     scratchpad: str,
     prompt: str,
+    additional_keys: Dict[str, str] = {}
 ) -> List[str]:
     """Performs reflection with the reflection of the last attempt and reflexion.
 
@@ -339,7 +343,8 @@ def cot_reflect_last_attempt_and_reflexion(
         scratchpad (str): The scratchpad content related to the question.
         context (Optional[str]): The context of the conversation or query. Defaults to None.
         prompt (str, optional): Prompt template string.
-
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}
+        
     Returns:
         List[str]: A list with the new reflections.
     """
@@ -350,6 +355,7 @@ def cot_reflect_last_attempt_and_reflexion(
             question=question,
             scratchpad=scratchpad,
             prompt=prompt,
+            additional_keys=additional_keys
         )
     ]
     return reflections
@@ -363,6 +369,7 @@ def cot_reflect(
     question: str,
     scratchpad: str,
     prompt: str,
+    additional_keys: Dict[str, str] = {}
 ) -> List[str]:
     """Performs reflection based on a specified strategy using provided context, question, and scratchpad.
 
@@ -377,8 +384,9 @@ def cot_reflect(
         examples (str): Example inputs for the prompt template.
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
-        prompt (str, optional): Prompt template string.
-
+        prompt (str): Prompt template string.
+        additional_keys (Dict[str, str], optional): Additional keys to be passed to the prompt template. Defaults to {}
+        
     Returns:
         List[str]: A list of reflections.
 
@@ -401,6 +409,7 @@ def cot_reflect(
             question=question,
             scratchpad=scratchpad,
             prompt=prompt,
+            additional_keys=additional_keys
         )
     elif reflection_strategy == "last_attempt_and_reflexion":
         reflections = cot_reflect_last_attempt_and_reflexion(
@@ -409,6 +418,7 @@ def cot_reflect(
             question=question,
             scratchpad=scratchpad,
             prompt=prompt,
+            additional_keys=additional_keys
         )
     else:
         raise NotImplementedError(
