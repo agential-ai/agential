@@ -120,27 +120,20 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         """
         pass
 
-    def reflect_condition(
+    def should_reflect(
         self,
+        idx: int,
         reflection_strategy: str,
-        question: str,
-        context: str,
-        examples: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
-        **kwargs: Dict[str, Any],
+        key: str
     ) -> bool:
         """
         Determines whether the reflection condition has been met.
 
         Args:
+            idx (int): The current step.
             reflection_strategy (str): The strategy to use for reflection.
-            question (str): The question to be reflected upon.
-            context (str): The context in which the question is being asked.
-            examples (str): Examples to guide the reflection process.
-            prompt (str): The prompt or instruction to guide the reflection.
-            additional_keys (Dict[str, str]): Additional keys for the reflection process.
-
+            key (str): The key for the observation.
+            
         Returns:
             bool: True if the reflection condition is met, False otherwise.
         """
