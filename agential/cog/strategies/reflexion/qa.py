@@ -50,14 +50,12 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         reflector: Optional[ReflexionCoTReflector] = None,
         max_reflections: int = 3,
         max_trials: int = 1,
-        patience: int = 1,
     ) -> None:
         """Initialization."""
         super().__init__(llm)
         self.llm = llm
         self.max_reflections = max_reflections
         self.max_trials = max_trials
-        self.patience = patience
 
         if not reflector:
             reflector = ReflexionCoTReflector(
@@ -102,6 +100,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             scratchpad=self._scratchpad,
             context=context,
             prompt=prompt,
+            additional_keys=additional_keys
         )
         thought = remove_newline(thought).split("Action")[0]
         self._scratchpad += " " + thought
@@ -149,7 +148,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
 
         return action_type, query
 
-    def generate_observation(self, action_type: str, query: str, key: str) -> str:
+    def generate_observation(self, action_type: str, query: str, key: str) -> Tuple[bool, str]:
         """Generates an observation based on the action type and query.
 
         Args:
@@ -158,7 +157,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             key (str): The key for the observation.
 
         Returns:
-            str: The generated observation.
+            Tuple[bool, str]: The generated observation.
         """
         self._scratchpad += f"\nObservation: "
         if action_type.lower() == "finish":
@@ -172,10 +171,10 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             obs = "Invalid action type, please try again."
         self._scratchpad += obs
 
-        return obs
+        return EM(self._answer, key), obs
 
     def create_output_dict(
-        self, thought: str, action_type: str, query: str, obs: str
+        self, thought: str, action_type: str, query: str, obs: str, key: str
     ) -> Dict[str, str]:
         """Creates a dictionary of the output components.
 
@@ -184,7 +183,8 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             action_type (str): The type of action performed.
             query (str): The query for the action.
             obs (str): The generated observation.
-
+            key (str): The key for the observation.
+            
         Returns:
             Dict[str, str]: A dictionary containing the thought, action type, query, and observation.
         """
@@ -193,6 +193,8 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             "action_type": action_type,
             "query": query,
             "obs": obs,
+            "answer": self._answer,
+            "is_correct": EM(self._answer, key)
         }
 
     def halting_condition(
@@ -284,7 +286,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             bool: True if the reflection condition is met, False otherwise.
         """
         return idx > 0 and not EM(self._answer, key) and reflection_strategy
-    
+
 
 class ReflexionCoTHotQAStrategy(ReflexionCoTBaseStrategy):
     """A strategy class for the HotpotQA benchmark using the ReflexionCoT agent."""
