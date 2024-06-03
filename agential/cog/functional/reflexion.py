@@ -430,7 +430,7 @@ def cot_reflect_last_attempt_and_reflexion(
 
 
 def cot_reflect(
-    strategy: str,
+    reflection_strategy: str,
     llm: BaseChatModel,
     reflections: List[str],
     examples: str,
@@ -446,7 +446,7 @@ def cot_reflect(
     the existing reflections, modifies them, or generates new reflections using the provided language model.
 
     Args:
-        strategy (str): The reflection strategy to be used ('last_attempt', 'reflexion', or 'last_attempt_and_reflexion').
+        reflection_strategy (str): The reflection strategy to be used ('last_attempt', 'reflexion', or 'last_attempt_and_reflexion').
         llm (BaseChatModel): The language model used for generating new reflections.
         reflections (List[str]): A list of existing reflections.
         examples (str): Example inputs for the prompt template.
@@ -471,9 +471,9 @@ def cot_reflect(
     if context and prompt == REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT:
         prompt = REFLEXION_COT_REFLECT_INSTRUCTION
 
-    if strategy == "last_attempt":
+    if reflection_strategy == "last_attempt":
         reflections = cot_reflect_last_attempt(scratchpad)
-    elif strategy == "reflexion":
+    elif reflection_strategy == "reflexion":
         reflections = cot_reflect_reflexion(
             llm=llm,
             reflections=reflections,
@@ -483,7 +483,7 @@ def cot_reflect(
             context=context,
             prompt=prompt,
         )
-    elif strategy == "last_attempt_and_reflexion":
+    elif reflection_strategy == "last_attempt_and_reflexion":
         reflections = cot_reflect_last_attempt_and_reflexion(
             llm=llm,
             examples=examples,
@@ -493,7 +493,7 @@ def cot_reflect(
             prompt=prompt,
         )
     else:
-        raise NotImplementedError(f"Unknown reflection strategy: {strategy}.")
+        raise NotImplementedError(f"Unknown reflection strategy: {reflection_strategy}.")
 
     return reflections
 
