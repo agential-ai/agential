@@ -32,7 +32,7 @@ from agential.cog.prompts.agent.reflexion import (
     REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
     REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES,
     REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT,
-    REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
+    REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES_HOTPOTQA,
 )
 from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 
@@ -761,7 +761,7 @@ def test__prompt_react_reflection() -> None:
     )
     out = _prompt_react_reflection(
         llm=FakeListChatModel(responses=responses),
-        examples=REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
+        examples=REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES_HOTPOTQA,
         question=q,
         scratchpad=scratchpad,
     )
