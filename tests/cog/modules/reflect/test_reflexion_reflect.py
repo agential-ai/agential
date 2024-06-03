@@ -82,7 +82,7 @@ def test_reflexion_cot_reflector() -> None:
         examples="",
         question="",
         scratchpad="",
-        context="",
+        prompt="",
     )
     assert isinstance(out, tuple)
     assert len(out) == 2
@@ -109,7 +109,7 @@ def test_reflexion_cot_reflector() -> None:
         examples="",
         question="",
         scratchpad="",
-        context="",
+        prompt="",
     )
     assert len(reflector.reflections) == 2
     assert reflector.reflections_str == _format_reflections(reflections[-2:])
