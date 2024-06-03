@@ -13,7 +13,7 @@ from agential.cog.prompts.agent.reflexion import (
     LAST_TRIAL_HEADER,
     REFLECTION_HEADER,
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-    REFLEXION_REACT_REFLECT_INSTRUCTION,
+    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 from agential.utils.parse import remove_newline
 
@@ -582,19 +582,19 @@ def _build_react_reflection_prompt(
     examples: str,
     question: str,
     scratchpad: str,
-    prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION,
+    prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     additional_keys: Dict[str, str] = {},
 ) -> str:
     """Constructs a ReflexionReAct prompt template for reflection.
 
-    This function formats a predefined prompt template (REFLEXION_REACT_REFLECT_INSTRUCTION)
+    This function formats a predefined prompt template (REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA)
     with examples, the provided question, and a scratchpad.
 
     Args:
         examples (str): Example inputs for the prompt template.
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
-        prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION.
+        prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
@@ -618,7 +618,7 @@ def _prompt_react_reflection(
     examples: str,
     question: str,
     scratchpad: str,
-    prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION,
+    prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     additional_keys: Dict[str, str] = {},
 ) -> str:
     """Generates a reflection prompt.
@@ -630,7 +630,7 @@ def _prompt_react_reflection(
         examples (str): Example inputs for the prompt template.
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
-        prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION.
+        prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
@@ -675,7 +675,7 @@ def react_reflect_reflexion(
     examples: str,
     question: str,
     scratchpad: str,
-    prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION,
+    prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 ) -> List[str]:
     """Perform reflexion-based reflecting.
 
@@ -688,7 +688,7 @@ def react_reflect_reflexion(
         examples (str): Example inputs for the prompt template.
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
-        prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION.
+        prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA.
 
     Returns:
         List[str]: An updated list of reflections.
@@ -709,7 +709,7 @@ def react_reflect_last_attempt_and_reflexion(
     examples: str,
     question: str,
     scratchpad: str,
-    prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION,
+    prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 ) -> List[str]:
     """Performs reflection with the reflection of the last attempt and reflexion.
 
@@ -720,7 +720,7 @@ def react_reflect_last_attempt_and_reflexion(
         examples (str): Example inputs for the prompt template.
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
-        prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION.
+        prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA.
 
     Returns:
         List[str]: A list with the new reflections.
@@ -744,7 +744,7 @@ def react_reflect(
     examples: str,
     question: str,
     scratchpad: str,
-    prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION,
+    prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 ) -> List[str]:
     """Performs reflection based on a specified strategy using the provided question and scratchpad.
 
@@ -759,7 +759,7 @@ def react_reflect(
         examples (str): Example inputs for the prompt template.
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
-        prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION.
+        prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA.
 
     Returns:
         List[str]: A tuple containing the updated list of reflections.
