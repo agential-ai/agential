@@ -1,5 +1,6 @@
 """Reflexion Agent strategies for QA."""
 
+import re
 from typing import Optional, Dict, Any, Tuple
 from agential.cog.modules.reflect.reflexion import (
     ReflexionCoTReflector,
@@ -9,6 +10,31 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from agential.cog.functional.reflexion import (
     _prompt_cot_agent
 )
+from agential.utils.parse import remove_newline
+
+
+def parse_qa_action(string: str) -> Tuple[str, str]:
+    """Parses an action string into an action type and its argument.
+
+    This method is used in ReAct and Reflexion.
+
+    Args:
+        string (str): The action string to be parsed.
+
+    Returns:
+        Tuple[str, str]: A tuple containing the action type and argument.
+    """
+    pattern = r"^(\w+)\[(.+)\]$"
+    match = re.match(pattern, string)
+
+    if match:
+        action_type = match.group(1)
+        argument = match.group(2)
+    else:
+        action_type = ""
+        argument = ""
+    return action_type, argument
+
 
 class ReflexioCoTQAStrategy(ReflexionCoTBaseStrategy):
     """A strategy class for QA benchmarks using the ReflexionCoT agent.
@@ -47,6 +73,7 @@ class ReflexioCoTQAStrategy(ReflexionCoTBaseStrategy):
         self,
         question: str,
         examples: str,
+        reflections: str,
         context: str,
         prompt: str,
         additional_keys: Dict[str, str],
@@ -57,6 +84,8 @@ class ReflexioCoTQAStrategy(ReflexionCoTBaseStrategy):
         Args:
             question (str): The question to be answered.
             examples (str): Examples to guide the generation process.
+            reflections (str): Reflections to consider during generation.
+            context (str): The context for the generation process.
             prompt (str): The prompt used for generating the thought.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
             **kwargs (Dict[str, Any]): Additional arguments.
@@ -65,20 +94,26 @@ class ReflexioCoTQAStrategy(ReflexionCoTBaseStrategy):
             str: The generated thought.
         """
         self._scratchpad += "\nThought:"
-        _prompt_cot_agent(
+        thought = _prompt_cot_agent(
             llm=self.llm,
             examples=examples,
-            reflections=reflections_str,
+            reflections=reflections,
             question=question,
             scratchpad=self._scratchpad,
             context=context,
             prompt=prompt,
         )
+        thought = remove_newline(thought).split("Action")[0]
+        self._scratchpad += " " + thought
+
+        return thought
 
     def generate_action(
         self,
         question: str,
         examples: str,
+        reflections: str,
+        context: str,
         prompt: str,
         additional_keys: Dict[str, str],
         **kwargs: Dict[str, Any],
@@ -88,6 +123,8 @@ class ReflexioCoTQAStrategy(ReflexionCoTBaseStrategy):
         Args:
             question (str): The question to be answered.
             examples (str): Examples to guide the generation process.
+            reflections (str): Reflections to consider during generation.
+            context (str): The context for the generation process.
             prompt (str): The prompt used for generating the action.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
             **kwargs (Dict[str, Any]): Additional arguments.
@@ -95,7 +132,22 @@ class ReflexioCoTQAStrategy(ReflexionCoTBaseStrategy):
         Returns:
             Tuple[str, str]: The generated action type and query.
         """
-        pass
+
+        self._scratchpad += "\nAction:"
+        action = _prompt_cot_agent(
+            llm=self.llm,
+            examples=examples,
+            reflections=reflections,
+            question=question,
+            scratchpad=self._scratchpad,
+            context=context,
+            prompt=prompt,
+        )
+        action = remove_newline(action).strip().split("\n")[0]
+        self._scratchpad += " " + action
+        action_type, query = parse_qa_action(action)
+
+        return action_type, query
 
     def generate_observation(self, idx: int, action_type: str, query: str) -> str:
         """Generates an observation based on the action type and query.
