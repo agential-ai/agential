@@ -180,6 +180,9 @@ def _prompt_cot_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
+    print("<PROMPT AGENT=====================================================>")
+    print(prompt)
+    print("<PROMPT AGENT=====================================================>")
     out = llm(
         [
             HumanMessage(
@@ -187,6 +190,9 @@ def _prompt_cot_agent(
             )
         ]
     ).content
+    print("<OUT AGENT=====================================================>")
+    print(repr(out))
+    print("<OUT AGENT=====================================================>")
     assert isinstance(out, str)
     return out
 
@@ -199,10 +205,6 @@ def _build_cot_reflection_prompt(
     additional_keys: Dict[str, str] = {},
 ) -> str:
     """Constructs a ReflexionCoT prompt template for reflection.
-
-    This function formats a predefined prompt template (REFLEXION_COT_REFLECT_INSTRUCTION or
-    REFLEXION_COT_REFLECT_INSTRUCTION_NO_CONTEXT) with examples,
-    the provided question, and a scratchpad.
 
     Args:
         examples (str): Example inputs for the prompt template.
@@ -258,6 +260,9 @@ def _prompt_cot_reflection(
         prompt=prompt,
         additional_keys=additional_keys,
     )
+    print("<PROMPT REFLECT=====================================================>")
+    print(prompt)
+    print("<PROMPT REFLECT=====================================================>")
     out = llm(
         [
             HumanMessage(
@@ -265,6 +270,9 @@ def _prompt_cot_reflection(
             )
         ]
     ).content
+    print("<OUT REFLECT=====================================================>")
+    print(repr(out))
+    print("<OUT REFLECT=====================================================>")
     assert isinstance(out, str)
     return out
 
