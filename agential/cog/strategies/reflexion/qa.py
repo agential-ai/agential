@@ -225,7 +225,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
 
         Resets the scratchpad and the finished flag.
         """
-        self.reflector.reset()
+        self.reflector.clear()
         self._scratchpad = ""
         self._finished = False
         self._answer = ""
@@ -288,7 +288,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         return idx > 0 and not EM(self._answer, key) and reflection_strategy
 
 
-class ReflexionCoTHotQAStrategy(ReflexionCoTBaseStrategy):
+class ReflexionCoTHotQAStrategy(ReflexionCoTQAStrategy):
     """A strategy class for the HotpotQA benchmark using the ReflexionCoT agent."""
 
     pass
