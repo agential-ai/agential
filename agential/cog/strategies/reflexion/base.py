@@ -1,7 +1,7 @@
 """Base Reflexion Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Any, Dict, Tuple
+from typing import Dict, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
