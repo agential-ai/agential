@@ -20,6 +20,7 @@ from agential.cog.prompts.benchmark.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
     HOTPOTQA_FEWSHOT_EXAMPLES_DIRECT,
     HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+    HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT
 )
 from agential.cog.prompts.benchmark.humaneval import (
     HUMANEVAL_FEWSHOT_EXAMPLES_POT,
@@ -80,6 +81,7 @@ class FewShotType:
     DIRECT = "direct"
     REACT = "react"
     POT = "pot"
+    COT_REACT = "cot_react"
 
 
 BENCHMARK_STRINGS = {
@@ -88,6 +90,7 @@ BENCHMARK_STRINGS = {
             FewShotType.COT: HOTPOTQA_FEWSHOT_EXAMPLES_COT,
             FewShotType.DIRECT: HOTPOTQA_FEWSHOT_EXAMPLES_DIRECT,
             FewShotType.REACT: HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+            FewShotType.COT_REACT: HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
         },
         Benchmarks.qa.FEVER: {
             FewShotType.COT: FEVER_FEWSHOT_EXAMPLES_COT,
@@ -137,7 +140,7 @@ def get_fewshot_examples(mode: Dict[str, str], fewshot_type: str) -> str:
 
     Available Benchmark Types and Names:
         - qa:
-            - hotpotqa: Supports "cot", "direct", "react"
+            - hotpotqa: Supports "cot", "direct", "react", "cot_react"
             - fever: Supports "cot", "direct", "react"
             - triviaqa: Supports "cot", "direct", "react"
             - ambignq: Supports "cot", "direct", "react"
