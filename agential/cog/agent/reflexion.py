@@ -28,8 +28,8 @@ from agential.cog.modules.reflect.reflexion import (
     ReflexionReActReflector,
 )
 from agential.cog.prompts.agent.reflexion import (
-    REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+    REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
