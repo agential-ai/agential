@@ -1,19 +1,20 @@
 """Unit tests for Reflexion QA strategies."""
+
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.modules.reflect.reflexion import ReflexionCoTReflector
-from agential.cog.strategies.reflexion.qa import (
-    parse_qa_action,
-    ReflexionCoTQAStrategy,
-)
 from agential.cog.prompts.agent.reflexion import (
-    REFLEXION_COT_INSTRUCTION_HOTPOTQA,
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA
+    REFLEXION_COT_INSTRUCTION_HOTPOTQA,
+    REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.prompts.benchmark.hotpotqa import (
-    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT
+    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT,
+)
+from agential.cog.strategies.reflexion.qa import (
+    ReflexionCoTQAStrategy,
+    parse_qa_action,
 )
 
 
@@ -42,18 +43,18 @@ def test_reflexion_cot_generate() -> None:
     question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
 
     gt_scratchpad = '\nThought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.'
-    gt_out = 'The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.'  
-    responses=[
+    gt_out = 'The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.'
+    responses = [
         'The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.',
     ]
     llm = FakeListChatModel(responses=responses)
     strategy = ReflexionCoTQAStrategy(llm=llm)
     out = strategy.generate(
         question=question,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT, 
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT,
         reflections="",
-        prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA, 
-        additional_keys={}
+        prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
     )
     assert out == gt_out
     assert strategy._scratchpad == gt_scratchpad
@@ -65,9 +66,7 @@ def test_reflexion_cot_generate_action() -> None:
     """Tests ReflexionCoTQAStrategy generate_action."""
     question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
 
-    responses=[
-        'Finish[Verwaltung von Internet Video und Audio]'
-    ]
+    responses = ["Finish[Verwaltung von Internet Video und Audio]"]
     llm = FakeListChatModel(responses=responses)
     strategy = ReflexionCoTQAStrategy(llm=llm)
     action_type, query = strategy.generate_action(
@@ -81,19 +80,19 @@ def test_reflexion_cot_generate_action() -> None:
     assert query == "Verwaltung von Internet Video und Audio"
     assert strategy._finished == False
     assert strategy._answer == ""
-    assert strategy._scratchpad == '\nAction: Finish[Verwaltung von Internet Video und Audio]'
+    assert (
+        strategy._scratchpad
+        == "\nAction: Finish[Verwaltung von Internet Video und Audio]"
+    )
 
 
 def test_reflexion_cot_generate_observation() -> None:
     """Tests ReflexionCoTQAStrategy generate_observation."""
-
     # Case 1: action_type is "Finish" and answer is correct.
     llm = FakeListChatModel(responses=[])
     strategy = ReflexionCoTQAStrategy(llm=llm)
     is_correct, obs = strategy.generate_observation(
-        action_type="Finish",
-        query="correct_answer",
-        key="correct_answer"
+        action_type="Finish", query="correct_answer", key="correct_answer"
     )
     assert is_correct == True
     assert obs == "Answer is CORRECT"
@@ -102,9 +101,7 @@ def test_reflexion_cot_generate_observation() -> None:
     # Case 2: action_type is "Finish" and answer is incorrect.
     strategy = ReflexionCoTQAStrategy(llm=llm)
     is_correct, obs = strategy.generate_observation(
-        action_type="Finish",
-        query="incorrect_answer",
-        key="correct_answer"
+        action_type="Finish", query="incorrect_answer", key="correct_answer"
     )
     assert is_correct == False
     assert obs == "Answer is INCORRECT"
@@ -113,9 +110,7 @@ def test_reflexion_cot_generate_observation() -> None:
     # Case 3: action_type is not "Finish".
     strategy = ReflexionCoTQAStrategy(llm=llm)
     is_correct, obs = strategy.generate_observation(
-        action_type="Calculate",
-        query="some_query",
-        key="correct_answer"
+        action_type="Calculate", query="some_query", key="correct_answer"
     )
     assert is_correct == False
     assert obs == "Invalid action type, please try again."
@@ -124,19 +119,18 @@ def test_reflexion_cot_generate_observation() -> None:
 
 def test_reflexion_cot_create_output_dict() -> None:
     """Tests ReflexionCoTQAStrategy create_output_dict."""
-
     strategy = ReflexionCoTQAStrategy(llm=FakeListChatModel(responses=[]))
-    
+
     # Setting a dummy answer for testing.
     strategy._answer = "correct_answer"
-    
+
     # Test case 1: Correct answer.
     output = strategy.create_output_dict(
         thought="This is a thought.",
         action_type="Finish",
         query="correct_answer",
         obs="Observation: Answer is CORRECT",
-        key="correct_answer"
+        key="correct_answer",
     )
     expected_output = {
         "thought": "This is a thought.",
@@ -155,7 +149,7 @@ def test_reflexion_cot_create_output_dict() -> None:
         action_type="Finish",
         query="incorrect_answer",
         obs="Observation: Answer is INCORRECT",
-        key="correct_answer"
+        key="correct_answer",
     )
     expected_output = {
         "thought": "This is a thought.",
@@ -174,7 +168,7 @@ def test_reflexion_cot_create_output_dict() -> None:
         action_type="Calculate",
         query="some_query",
         obs="Observation: Invalid action type, please try again.",
-        key="correct_answer"
+        key="correct_answer",
     )
     expected_output = {
         "thought": "This is another thought.",
@@ -191,7 +185,7 @@ def test_reflexion_cot_halting_condition() -> None:
     """Tests ReflexionCoTQAStrategy halting_condition."""
     llm = FakeListChatModel(responses=[])
     strategy = ReflexionCoTQAStrategy(llm=llm, max_trials=3)
-    
+
     strategy._answer = "incorrect_answer"
     assert strategy.halting_condition(3, "correct_answer") == False
 
@@ -204,15 +198,14 @@ def test_reflexion_cot_halting_condition() -> None:
 
 def test_reflexion_cot_reset() -> None:
     """Tests ReflexionCoTQAStrategy reset."""
-
     llm = FakeListChatModel(responses=[])
     strategy = ReflexionCoTQAStrategy(llm=llm, max_trials=3)
-    
+
     # Set some initial states
     strategy._scratchpad = "Initial scratchpad content"
     strategy._finished = True
     strategy._answer = "Some answer"
-    
+
     # Test case 1: Reset everything
     strategy.reset()
     assert strategy._scratchpad == ""
@@ -229,6 +222,8 @@ def test_reflexion_cot_reset() -> None:
     assert strategy._scratchpad == ""
     assert strategy._finished == True
     assert strategy._answer == "Some answer"
+
+
 def test_reflexion_cot_reflect() -> None:
     """Tests ReflexionCoTQAStrategy reflect."""
 

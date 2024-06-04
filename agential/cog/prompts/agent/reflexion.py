@@ -1,6 +1,5 @@
 """Reflexion prompts and fewshot examples."""
 
-
 # Header for formatting reflections when reflection strategy is "last_attempt_and_reflexion".
 REFLECTION_AFTER_LAST_TRIAL_HEADER = "The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\n"
 
