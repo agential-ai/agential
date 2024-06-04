@@ -165,20 +165,21 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         return EM(self._answer, key), obs
 
     def create_output_dict(
-        self, answer: str, is_correct: str, obs: str
+        self, thought: str, is_correct: str, obs: str
     ) -> Dict[str, str]:
         """Creates a dictionary of the output components.
 
         Args:
-            answer (str): The answer.
+            thought (str): The thought.
             is_correct (bool): The key for the observation.
             obs (str): The generated observation.
 
         Returns:
-            Dict[str, str]: A dictionary containing the answer, is_correct, and observation.
+            Dict[str, str]: A dictionary containing the thought, answer, is_correct, and observation.
         """
         return {
-            "answer": answer,
+            "thought": thought,
+            "answer": self._answer,
             "is_correct": is_correct,
             "obs": obs,
         }
