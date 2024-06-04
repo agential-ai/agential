@@ -186,8 +186,8 @@ class ReflexionCoTAgent(BaseAgent):
             out.append(
                 self.strategy.create_output_dict(
                     answer=answer,
+                    is_correct=is_correct,
                     obs=obs,
-                    key=key,
                 )
             )
 
