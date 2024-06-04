@@ -9,7 +9,14 @@ from agential.cog.modules.memory.reflexion import ReflexionMemory
 from agential.cog.modules.reflect.reflexion import (
     ReflexionReActReflector,
 )
-from agential.cog.prompts.agent.reflexion import REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA
+from agential.cog.prompts.agent.reflexion import (
+    REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
+    REFLEXION_COT_INSTRUCTION_HOTPOTQA,
+    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT
+)
+from agential.cog.prompts.benchmark.hotpotqa import (
+    HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
+)
 from agential.utils.docstore import DocstoreExplorer
 
 
@@ -51,27 +58,26 @@ def test_reflexion_cot_generate() -> None:
 
     # Incorrect.
     gt_out_scratchpad = '\nThought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with Limited Liability]\nObservation: Answer is INCORRECT'
-    action_llm = FakeListChatModel(
-        responses=[
-            'The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.',
-            "Finish[Company with Limited Liability]",
-        ]
-    )
+    responses = [
+        'The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.',
+        "Finish[Company with Limited Liability]",
+    ]
     reflexion_cot_agent = ReflexionCoTAgent(
-        self_reflect_llm=FakeListChatModel(responses=["1"]),
-        action_llm=action_llm,
+        llm=FakeListChatModel(responses=responses),
+        mode={"qa": "hotpotqa"},
         max_trials=1,
     )
 
     out = reflexion_cot_agent.generate(
-        question=question, key=key, context=context, strategy=None
+        question=question, 
+        key=key, 
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT, 
+        reflection_strategy=None,
+        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
+        reflect_prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA
     )
-    assert reflexion_cot_agent._trial_n == 1
-    assert reflexion_cot_agent._answer == "Company with Limited Liability"
-    assert reflexion_cot_agent._finished
-    assert reflexion_cot_agent.memory.scratchpad == gt_out_scratchpad
-    assert reflexion_cot_agent.reflector.reflections == []
-    assert reflexion_cot_agent.reflector.reflections_str == ""
+    assert out == ""
+
 
     gt_out_str = 'Thought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with Limited Liability]\nObservation: Answer is INCORRECT'
     assert isinstance(out, list)
