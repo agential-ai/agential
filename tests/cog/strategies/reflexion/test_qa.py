@@ -125,9 +125,81 @@ def test_reflexion_cot_generate_observation() -> None:
 def test_reflexion_cot_create_output_dict() -> None:
     """Tests ReflexionCoTQAStrategy create_output_dict."""
 
+    strategy = ReflexionCoTQAStrategy(llm=FakeListChatModel(responses=[]))
+    
+    # Setting a dummy answer for testing.
+    strategy._answer = "correct_answer"
+    
+    # Test case 1: Correct answer.
+    output = strategy.create_output_dict(
+        thought="This is a thought.",
+        action_type="Finish",
+        query="correct_answer",
+        obs="Observation: Answer is CORRECT",
+        key="correct_answer"
+    )
+    expected_output = {
+        "thought": "This is a thought.",
+        "action_type": "Finish",
+        "query": "correct_answer",
+        "obs": "Observation: Answer is CORRECT",
+        "answer": "correct_answer",
+        "is_correct": True,
+    }
+    assert output == expected_output
+
+    # Test case 2: Incorrect answer.
+    strategy._answer = "incorrect_answer"
+    output = strategy.create_output_dict(
+        thought="This is a thought.",
+        action_type="Finish",
+        query="incorrect_answer",
+        obs="Observation: Answer is INCORRECT",
+        key="correct_answer"
+    )
+    expected_output = {
+        "thought": "This is a thought.",
+        "action_type": "Finish",
+        "query": "incorrect_answer",
+        "obs": "Observation: Answer is INCORRECT",
+        "answer": "incorrect_answer",
+        "is_correct": False,
+    }
+    assert output == expected_output
+
+    # Test case 3: Invalid action type.
+    strategy._answer = "some_answer"
+    output = strategy.create_output_dict(
+        thought="This is another thought.",
+        action_type="Calculate",
+        query="some_query",
+        obs="Observation: Invalid action type, please try again.",
+        key="correct_answer"
+    )
+    expected_output = {
+        "thought": "This is another thought.",
+        "action_type": "Calculate",
+        "query": "some_query",
+        "obs": "Observation: Invalid action type, please try again.",
+        "answer": "some_answer",
+        "is_correct": False,
+    }
+    assert output == expected_output
+
 
 def test_reflexion_cot_halting_condition() -> None:
     """Tests ReflexionCoTQAStrategy halting_condition."""
+    llm = FakeListChatModel(responses=[])
+    strategy = ReflexionCoTQAStrategy(llm=llm, max_trials=3)
+    
+    strategy._answer = "incorrect_answer"
+    assert strategy.halting_condition(3, "correct_answer") == False
+
+    strategy._answer = "correct_answer"
+    assert strategy.halting_condition(2, "correct_answer") == False
+
+    strategy._answer = "incorrect_answer"
+    assert strategy.halting_condition(2, "correct_answer") == True
 
 
 def test_reflexion_cot_reset() -> None:
