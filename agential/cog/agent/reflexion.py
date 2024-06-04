@@ -158,7 +158,7 @@ class ReflexionCoTAgent(BaseAgent):
             self.strategy.reset(only_scratchpad=True)
 
             # Think.
-            thought = self.strategy.generate(
+            answer = self.strategy.generate(
                 question=question,
                 examples=examples,
                 reflections=reflections,
@@ -168,14 +168,14 @@ class ReflexionCoTAgent(BaseAgent):
             )
 
             # Act.
-            query = self.strategy.generate_action(
-                question=question,
-                examples=examples,
-                reflections=reflections,
-                prompt=prompt,
-                additional_keys=additional_keys,
-                **kwargs,
-            )
+            # query = self.strategy.generate_action(
+            #     question=question,
+            #     examples=examples,
+            #     reflections=reflections,
+            #     prompt=prompt,
+            #     additional_keys=additional_keys,
+            #     **kwargs,
+            # )
 
             # Observe.
             is_correct, obs = self.strategy.generate_observation(
