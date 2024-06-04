@@ -198,56 +198,44 @@ def test_reflexion_cot_generate() -> None:
     assert isinstance(out, list)
     assert len(out) == 2
 
-    # # Test patience reset after incorrect answer and subsequent runs.
+    # Test patience reset after incorrect answer and subsequent runs.
 
-    # # Answer incorrectly.
-    # gt_out = [
-    #     'Thought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with Limited Liability]\nObservation: Answer is INCORRECT'
-    # ]
-    # gt_out_scratchpad = '\nThought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with Limited Liability]\nObservation: Answer is INCORRECT'
-    # action_llm_reseponses = [
-    #     'The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.',
-    #     "Finish[Company with Limited Liability]",
-    # ]
-    # self_reflect_llm = FakeListChatModel(responses=["1"])
-    # action_llm = FakeListChatModel(responses=action_llm_reseponses)
-    # reflexion_cot_agent = ReflexionCoTAgent(
-    #     self_reflect_llm=self_reflect_llm,
-    #     action_llm=action_llm,
-    #     max_trials=1,
-    #     patience=1,
-    # )
-    # out = reflexion_cot_agent.generate(
-    #     question=question, key=key, context=context, strategy="reflexion"
-    # )
-    # assert isinstance(out, list)
-    # assert len(out) == 1
-    # assert not out[0][0]
-    # assert out[0][1] == "Company with Limited Liability"
-    # assert ["\n".join(out[0][2])] == gt_out
-    # assert reflexion_cot_agent._trial_n == 1
-    # assert reflexion_cot_agent._answer == "Company with Limited Liability"
-    # assert reflexion_cot_agent._finished
-    # assert reflexion_cot_agent.memory.scratchpad == gt_out_scratchpad
-    # assert reflexion_cot_agent.reflector.reflections == []
-    # assert reflexion_cot_agent.reflector.reflections_str == ""
+    # Answer incorrectly.
+    responses = [
+        'The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.',
+        "Finish[Company with Limited Liability]",
+    ]
+    agent = ReflexionCoTAgent(
+        llm=FakeListChatModel(responses=responses),
+        mode={"qa": "hotpotqa"},
+        max_trials=1,
+    )
+    out = agent.generate(
+        question=question, 
+        key=key, 
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT, 
+        prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA, 
+        reflection_strategy="reflexion",
+        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
+        reflect_prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
+        patience=1
+    )
+    assert isinstance(out, list)
+    assert len(out) == 1
 
-    # # In a subsequent run, answer correctly (reset defaults to True). Output is non-empty if patience is correctly reset.
-    # out = reflexion_cot_agent.generate(
-    #     question=question, key=key, context=context, strategy="reflexion"
-    # )
-    # assert isinstance(out, list)
-    # assert len(out) == 1
-    # assert not out[0][0]
-    # assert out[0][1] == "Company with Limited Liability"
-    # assert ["\n".join(out[0][2])] == gt_out
-    # assert reflexion_cot_agent._trial_n == 1
-    # assert reflexion_cot_agent._answer == "Company with Limited Liability"
-    # assert reflexion_cot_agent._finished
-    # assert reflexion_cot_agent.memory.scratchpad == gt_out_scratchpad
-    # assert reflexion_cot_agent.reflector.reflections == []
-    # assert reflexion_cot_agent.reflector.reflections_str == ""
-
+    # In a subsequent run, answer correctly (reset defaults to True). Output is non-empty if patience is correctly reset.
+    out = agent.generate(
+        question=question, 
+        key=key, 
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT, 
+        prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA, 
+        reflection_strategy="reflexion",
+        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
+        reflect_prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
+        patience=2
+    )
+    assert isinstance(out, list)
+    assert len(out) == 1
 
 def test_reflexion_react_init() -> None:
     """Test ReflexionReActAgent initialization."""
