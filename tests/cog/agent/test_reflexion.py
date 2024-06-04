@@ -7,8 +7,7 @@ from tiktoken.core import Encoding
 from agential.cog.agent.reflexion import ReflexionCoTAgent, ReflexionReActAgent
 from agential.cog.modules.memory.reflexion import ReflexionMemory
 from agential.cog.modules.reflect.reflexion import (
-    ReflexionCoTReflector,
-    ReflexionReActReflector,
+        ReflexionReActReflector,
 )
 from agential.utils.docstore import DocstoreExplorer
 
@@ -16,17 +15,12 @@ from agential.utils.docstore import DocstoreExplorer
 def test_reflexion_cot_init() -> None:
     """Test initialization."""
     agent = ReflexionCoTAgent(
-        self_reflect_llm=FakeListChatModel(responses=["1"]),
-        action_llm=FakeListChatModel(responses=["1"]),
+        llm=FakeListChatModel(responses=["1"]),
+        mode={"qa": "hotpotqa"},
     )
     assert isinstance(agent, ReflexionCoTAgent)
-    assert isinstance(agent.self_reflect_llm, BaseChatModel)
-    assert isinstance(agent.action_llm, BaseChatModel)
-    assert isinstance(agent.memory, ReflexionMemory)
-    assert isinstance(agent.reflector, ReflexionCoTReflector)
-    assert agent.max_reflections == 3
-    assert agent.max_trials == 1
-    assert agent.patience == agent.max_trials
+    assert isinstance(agent.llm, BaseChatModel)
+    assert agent.mode == {"qa": "hotpotqa"}
 
 
 def test_reflexion_cot_reset(reflexion_cot_agent: ReflexionCoTAgent) -> None:
