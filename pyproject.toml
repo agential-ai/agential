@@ -28,6 +28,7 @@ langchain-core = "^0.2.3"
 scipy = "^1.13.1"
 sentence-transformers = "^2.2.2"
 torch = "2.1.2"
+google-api-python-client = ">=2.100.0"
 
 [tool.poetry.group.dev.dependencies]
 python-dotenv = "^1.0.0"
