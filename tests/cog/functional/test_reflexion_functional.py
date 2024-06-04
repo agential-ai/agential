@@ -28,13 +28,13 @@ from agential.cog.functional.reflexion import (
     react_reflect_reflexion,
 )
 from agential.cog.prompts.agent.reflexion import (
-    REFLEXION_COT_FEWSHOT_EXAMPLES,
-    REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT,
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
 )
-from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+from agential.cog.prompts.benchmark.hotpotqa import (
+    HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT,
+)
 
 
 def test__truncate_scratchpad() -> None:
@@ -161,7 +161,7 @@ def test__prompt_cot_agent() -> None:
     ]
     out = _prompt_cot_agent(
         llm=FakeListChatModel(responses=responses),
-        examples=REFLEXION_COT_FEWSHOT_EXAMPLES,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT,
         reflections="",
         question=q,
         scratchpad="\nThought:",
@@ -182,7 +182,7 @@ def test__prompt_cot_agent() -> None:
     ]
     out = _prompt_cot_agent(
         llm=FakeListChatModel(responses=responses),
-        examples=REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_NO_CONTEXT,
         reflections="",
         question=q,
         scratchpad="\nThought:",
@@ -222,7 +222,7 @@ def test__prompt_cot_agent() -> None:
     )
     out = _prompt_cot_agent(
         llm=FakeListChatModel(responses=responses),
-        examples=REFLEXION_COT_FEWSHOT_EXAMPLES,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT,
         reflections=reflections,
         question=q,
         scratchpad=scratchpad,
@@ -260,7 +260,7 @@ def test__prompt_cot_agent() -> None:
     )
     out = _prompt_cot_agent(
         llm=FakeListChatModel(responses=responses),
-        examples=REFLEXION_COT_FEWSHOT_EXAMPLES_NO_CONTEXT,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_NO_CONTEXT,
         reflections=reflections,
         question=q,
         scratchpad=scratchpad,
