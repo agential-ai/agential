@@ -195,7 +195,7 @@ class ReflexionCoTAgent(BaseAgent):
                 patience_cnt += 1
             if patience_cnt == patience:
                 break
-            
+
             idx += 1
 
         return out
