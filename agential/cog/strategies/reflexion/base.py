@@ -1,7 +1,7 @@
 """Base Reflexion Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Dict, Tuple
+from typing import Any, Dict, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -26,7 +26,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> str:
+    ) -> Tuple[str, str]:
         """Generates an action based on the question, examples, and prompt.
 
         Args:
@@ -36,19 +36,62 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the generation process.
 
         Returns:
-            str: The generated query.
+            Tuple[str, str]: The generated action type and query.
         """
         pass
 
     @abstractmethod
-    def generate_observation(self, key: str) -> Tuple[bool, str]:
+    def generate_observation(self, action_type: str, query: str, key: str) -> str:
         """Generates an observation based on the action type and query.
 
         Args:
+            action_type (str): The type of action to be performed.
+            query (str): The query for the action.
             key (str): The key for the observation.
 
         Returns:
-            Tuple[bool, str]: A boolean specifying if the answer is correct and the observation.
+            str: The generated observation.
+        """
+        pass
+
+    @abstractmethod
+    def create_output_dict(
+        self, thought: str, action_type: str, query: str, obs: str, key: str
+    ) -> Dict[str, str]:
+        """Creates a dictionary of the output components.
+
+        Args:
+            thought (str): The generated thought.
+            action_type (str): The type of action performed.
+            query (str): The query for the action.
+            obs (str): The generated observation.
+            key (str): The key for the observation.
+
+        Returns:
+            Dict[str, str]: A dictionary containing the thought, action type, query, and observation.
+        """
+        pass
+
+    @abstractmethod
+    def halting_condition(
+        self,
+        idx: int,
+        question: str,
+        examples: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> bool:
+        """Determines whether the halting condition has been met.
+
+        Args:
+            idx (int): The current step index.
+            question (str): The question being answered.
+            examples (str): Examples to guide the generation process.
+            prompt (str): The prompt used for generating the thought and action.
+            additional_keys (Dict[str, str]): Additional keys for the generation process.
+
+        Returns:
+            bool: True if the halting condition is met, False otherwise.
         """
         pass
 
@@ -88,46 +131,5 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
 
         Returns:
             bool: True if the reflection condition is met, False otherwise.
-        """
-        pass
-
-    @abstractmethod
-    def create_output_dict(
-        self, thought: str, is_correct: bool, obs: str, key: str
-    ) -> Dict[str, str]:
-        """Creates a dictionary of the output components.
-
-        Args:
-            thought (str): The generated thought.
-            is_correct (bool): Indicates whether the generated thought is correct.
-            obs (str): The generated observation.
-            key (str): The key for the observation.
-
-        Returns:
-            Dict[str, str]: A dictionary containing the thought, is_correct, and observation.
-        """
-
-        pass
-
-    @abstractmethod
-    def halting_condition(
-        self,
-        idx: int,
-        question: str,
-        examples: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
-    ) -> bool:
-        """Determines whether the halting condition has been met.
-
-        Args:
-            idx (int): The current step index.
-            question (str): The question being answered.
-            examples (str): Examples to guide the generation process.
-            prompt (str): The prompt used for generating the thought and action.
-            additional_keys (Dict[str, str]): Additional keys for the generation process.
-
-        Returns:
-            bool: True if the halting condition is met, False otherwise.
         """
         pass
