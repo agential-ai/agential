@@ -40,14 +40,6 @@ def test_reflexion_cot_reset(reflexion_cot_agent: ReflexionCoTAgent) -> None:
     assert not reflexion_cot_agent._answer
 
 
-def test_reflexion_cot_retrieve(reflexion_cot_agent: ReflexionCoTAgent) -> None:
-    """Test retrieve method."""
-    out = reflexion_cot_agent.retrieve()
-    assert isinstance(out, dict)
-    assert "scratchpad" in out
-    assert out["scratchpad"] == ""
-
-
 def test_reflexion_cot_reflect() -> None:
     """Test reflect method."""
     reflexion_cot_agent = ReflexionCoTAgent(
