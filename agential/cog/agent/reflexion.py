@@ -204,8 +204,6 @@ class ReflexionCoTAgent(BaseAgent):
     def reset(self) -> None:
         """Resets the agent's memory and state."""
         self.strategy.reset()
-        self._finished = False
-        self._answer = ""
 
 
 class ReflexionReActAgent(BaseAgent):
