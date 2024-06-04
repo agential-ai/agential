@@ -5,25 +5,7 @@ import pytest
 from langchain_community.chat_models.fake import FakeListChatModel
 
 from agential.cog.agent.expel import ExpeLAgent
-from agential.cog.agent.react import ReActAgent
-from agential.cog.agent.reflexion import ReflexionCoTAgent, ReflexionReActAgent
-
-
-@pytest.fixture
-def react_agent() -> ReActAgent:
-    """Creates a ReActAgent."""
-    agent = ReActAgent(llm=FakeListChatModel(responses=["1"]))
-    return agent
-
-
-@pytest.fixture
-def reflexion_cot_agent() -> ReflexionCoTAgent:
-    """Creates a ReflexionCoTAgent."""
-    agent = ReflexionCoTAgent(
-        self_reflect_llm=FakeListChatModel(responses=["1"]),
-        action_llm=FakeListChatModel(responses=["1"]),
-    )
-    return agent
+from agential.cog.agent.reflexion import ReflexionReActAgent
 
 
 @pytest.fixture
