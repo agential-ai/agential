@@ -55,6 +55,45 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         pass
 
     @abstractmethod
+    def reflect(
+        self,
+        reflection_strategy: str,
+        question: str,
+        context: str,
+        examples: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> str:
+        """An abstract method that defines the behavior for reflecting on a given question, context, examples, prompt, and additional keys.
+
+        Args:
+            reflection_strategy (str): The strategy to use for reflection.
+            question (str): The question to be reflected upon.
+            context (str): The context in which the question is being asked.
+            examples (str): Examples to guide the reflection process.
+            prompt (str): The prompt or instruction to guide the reflection.
+            additional_keys (Dict[str, str]): Additional keys for the reflection process.
+
+        Returns:
+            str: The reflection string.
+        """
+        pass
+
+    @abstractmethod
+    def should_reflect(self, idx: int, reflection_strategy: str, key: str) -> bool:
+        """Determines whether the reflection condition has been met.
+
+        Args:
+            idx (int): The current step.
+            reflection_strategy (str): The strategy to use for reflection.
+            key (str): The key for the observation.
+
+        Returns:
+            bool: True if the reflection condition is met, False otherwise.
+        """
+        pass
+
+    @abstractmethod
     def create_output_dict(
         self, thought: str, action_type: str, query: str, obs: str, key: str
     ) -> Dict[str, str]:
@@ -92,44 +131,5 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
 
         Returns:
             bool: True if the halting condition is met, False otherwise.
-        """
-        pass
-
-    @abstractmethod
-    def reflect(
-        self,
-        reflection_strategy: str,
-        question: str,
-        context: str,
-        examples: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
-    ) -> str:
-        """An abstract method that defines the behavior for reflecting on a given question, context, examples, prompt, and additional keys.
-
-        Args:
-            reflection_strategy (str): The strategy to use for reflection.
-            question (str): The question to be reflected upon.
-            context (str): The context in which the question is being asked.
-            examples (str): Examples to guide the reflection process.
-            prompt (str): The prompt or instruction to guide the reflection.
-            additional_keys (Dict[str, str]): Additional keys for the reflection process.
-
-        Returns:
-            str: The reflection string.
-        """
-        pass
-
-    @abstractmethod
-    def should_reflect(self, idx: int, reflection_strategy: str, key: str) -> bool:
-        """Determines whether the reflection condition has been met.
-
-        Args:
-            idx (int): The current step.
-            reflection_strategy (str): The strategy to use for reflection.
-            key (str): The key for the observation.
-
-        Returns:
-            bool: True if the reflection condition is met, False otherwise.
         """
         pass
