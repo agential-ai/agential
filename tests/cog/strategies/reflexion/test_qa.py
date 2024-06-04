@@ -226,7 +226,29 @@ def test_reflexion_cot_reset() -> None:
 
 def test_reflexion_cot_reflect() -> None:
     """Tests ReflexionCoTQAStrategy reflect."""
+    question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
 
+    llm = FakeListChatModel(responses=[])
+    strategy = ReflexionCoTQAStrategy(llm=llm, max_trials=3)
+
+    gt_out = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: VIVA Media AG changed it's name in 2004. What does their new acronym stand for?\n\n(END PREVIOUS TRIAL)\n"
+    out = strategy.reflect(
+        reflection_strategy="last_attempt",
+        question=question,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
+        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
+        additional_keys={}
+    )
+    assert out == gt_out
+    
 
 def test_reflexion_cot_should_reflect() -> None:
-    """Tests ReflexionCoTQAStrategy should_reflect."""
+    """Tests ReflexionCoTQAStrategy should_reflect."""    
+    answer = {'key1': True, 'key2': False}
+    llm = FakeListChatModel(responses=[])
+    strategy = ReflexionCoTQAStrategy(llm, answer)
+
+    assert not strategy.should_reflect(0, 'strategy1', 'key1')
+    assert not strategy.should_reflect(1, 'strategy1', 'key1')
+    assert strategy.should_reflect(1, 'strategy1', 'key2')
+    assert not strategy.should_reflect(1, '', 'key2')
