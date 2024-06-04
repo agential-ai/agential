@@ -205,7 +205,30 @@ def test_reflexion_cot_halting_condition() -> None:
 def test_reflexion_cot_reset() -> None:
     """Tests ReflexionCoTQAStrategy reset."""
 
+    llm = FakeListChatModel(responses=[])
+    strategy = ReflexionCoTQAStrategy(llm=llm, max_trials=3)
+    
+    # Set some initial states
+    strategy._scratchpad = "Initial scratchpad content"
+    strategy._finished = True
+    strategy._answer = "Some answer"
+    
+    # Test case 1: Reset everything
+    strategy.reset()
+    assert strategy._scratchpad == ""
+    assert strategy._finished == False
+    assert strategy._answer == ""
 
+    # Set some initial states
+    strategy._scratchpad = "Initial scratchpad content"
+    strategy._finished = True
+    strategy._answer = "Some answer"
+
+    # Test case 2: Reset only scratchpad
+    strategy.reset(only_scratchpad=True)
+    assert strategy._scratchpad == ""
+    assert strategy._finished == True
+    assert strategy._answer == "Some answer"
 def test_reflexion_cot_reflect() -> None:
     """Tests ReflexionCoTQAStrategy reflect."""
 
