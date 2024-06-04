@@ -1,6 +1,5 @@
 """Few-shot examples for HotpotQA."""
 
-
 HOTPOTQA_FEWSHOT_EXAMPLES_DIRECT = """Q: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
 A: 1,800 to 7,000 ft
 
