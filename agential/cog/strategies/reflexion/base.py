@@ -56,19 +56,18 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
 
     @abstractmethod
     def create_output_dict(
-        self, thought: str, action_type: str, query: str, obs: str, is_correct: bool
+        self, thought: str, action_type: str, obs: str, is_correct: bool
     ) -> Dict[str, str]:
         """Creates a dictionary of the output components.
 
         Args:
             thought (str): The generated thought.
             action_type (str): The type of action performed.
-            query (str): The query for the action.
             obs (str): The generated observation.
             is_correct (bool): Whether the observation is correct.
 
         Returns:
-            Dict[str, str]: A dictionary containing the thought, action type, query, observation, answer, and is_correct.
+            Dict[str, str]: A dictionary containing the thought, action type, observation, answer, and is_correct.
         """
         pass
 
