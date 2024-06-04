@@ -8,10 +8,12 @@ from agential.cog.strategies.reflexion.qa import (
     ReflexionCoTQAStrategy,
 )
 from agential.cog.prompts.agent.reflexion import (
-    REFLEXION_COT_FEWSHOT_EXAMPLES,
     REFLEXION_COT_INSTRUCTION_HOTPOTQA,
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA
+)
+from agential.cog.prompts.benchmark.hotpotqa import (
+    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT
 )
 
 
@@ -51,7 +53,7 @@ def test_reflexion_cot_generate() -> None:
     strategy = ReflexionCoTQAStrategy(llm=llm)
     out = strategy.generate(
         question=question,
-        examples=, 
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT, 
         reflections=,
         prompt=, 
     )
