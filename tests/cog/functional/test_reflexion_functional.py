@@ -28,6 +28,8 @@ from agential.cog.functional.reflexion import (
     react_reflect_reflexion,
 )
 from agential.cog.prompts.agent.reflexion import (
+    REFLEXION_COT_INSTRUCTION_HOTPOTQA,
+    REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
 )
@@ -106,13 +108,7 @@ def test__build_cot_agent_prompt() -> None:
     """Test _build_cot_agent_prompt function."""
     gt_out = "Solve a question answering task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task.\nHere are some examples:\n\n(END OF EXAMPLES)\n\n\n\nQuestion: "
     out = _build_cot_agent_prompt(
-        examples="", reflections="", question="", scratchpad="", context=""
-    )
-    assert out == gt_out
-
-    gt_out = "Solve a question answering task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task.\nHere are some examples:\n\n(END OF EXAMPLES)\n\n\n\nQuestion: "
-    out = _build_cot_agent_prompt(
-        examples="", reflections="", question="", scratchpad="", context=None
+        examples="", reflections="", question="", scratchpad="", prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA
     )
     assert out == gt_out
 
@@ -120,60 +116,21 @@ def test__build_cot_agent_prompt() -> None:
 def test__prompt_cot_agent() -> None:
     """Test _prompt_cot_agent function."""
     q = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
-    context = 'VIVA Media GmbH (until 2004 "VIVA Media AG") is a music television network originating from Germany. It was founded for broadcast of VIVA Germany as VIVA Media AG in 1993 and has been owned by their original concurrent Viacom, the parent company of MTV, since 2004. Viva channels exist in some European countries; the first spin-offs were launched in Poland and Switzerland in 2000.\n\nA Gesellschaft mit beschränkter Haftung (] , abbreviated GmbH ] and also GesmbH in Austria) is a type of legal entity very common in Germany, Austria, Switzerland (where it is equivalent to a S.à r.l.) and Liechtenstein. In the United States, the equivalent type of entity is the limited liability company (LLC). The name of the GmbH form emphasizes the fact that the owners ("Gesellschafter", also known as members) of the entity are not personally liable for the company\'s debts. "GmbH"s are considered legal persons under German and Austrian law. Other variations include mbH (used when the term "Gesellschaft" is part of the company name itself), and gGmbH ("gemeinnützige" GmbH) for non-profit companies.'
 
-    # Test with context.
     out = _prompt_cot_agent(
         llm=FakeListChatModel(responses=["1"]),
-        examples="",
-        reflections="",
-        question="",
-        scratchpad="",
-        context="",
-    )
-    assert isinstance(out, str)
-    assert out == "1"
-
-    # Test with no context.
-    out = _prompt_cot_agent(
-        llm=FakeListChatModel(responses=["1"]),
-        examples="",
-        reflections="",
-        question="",
-        scratchpad="",
-        context=None,
-    )
-    assert isinstance(out, str)
-    assert out == "1"
-
-    # Test simple case (no reflection) with context.
-    gt_out = (
-        "Let's think step by step. VIVA Media AG changed its name to VIVA Media GmbH in 2004. "
-        'GmbH stands for "Gesellschaft mit beschränkter Haftung" which translates to "company with '
-        'limited liability" in English.Action: Finish[company with limited liability]'
-    )
-    responses = [
-        (
-            "Let's think step by step. VIVA Media AG changed its name to VIVA Media GmbH in 2004. "
-            'GmbH stands for "Gesellschaft mit beschränkter Haftung" which translates to "company with limited liability" '
-            "in English.\nAction: Finish[company with limited liability]"
-        )
-    ]
-    out = _prompt_cot_agent(
-        llm=FakeListChatModel(responses=responses),
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT,
         reflections="",
-        question=q,
-        scratchpad="\nThought:",
-        context=context,
+        question="",
+        scratchpad="",
+        prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
     )
-    assert out == gt_out
+    assert isinstance(out, str)
+    assert out == "1"
 
-    # Test simple case (no reflection) with no context.
-    gt_out = (
-        "Thought: Let's think step by step. The new acronym for VIVA Media AG after changing its name in "
-        '2004 is "Vivendi Visual and Interactive." Action: Finish[Vivendi Visual and Interactive]'
-    )
+
+    # Test simple case (no reflection).
+    gt_out = 'Thought: Let\'s think step by step. The new acronym for VIVA Media AG after changing its name in 2004 is "Vivendi Visual and Interactive." \nAction: Finish[Vivendi Visual and Interactive]'
     responses = [
         (
             "Thought: Let's think step by step. The new acronym for VIVA Media AG after changing its name in 2004 "
@@ -182,55 +139,15 @@ def test__prompt_cot_agent() -> None:
     ]
     out = _prompt_cot_agent(
         llm=FakeListChatModel(responses=responses),
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_NO_CONTEXT,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT,
         reflections="",
         question=q,
         scratchpad="\nThought:",
-        context=None,
+        prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
     )
     assert out == gt_out
 
-    # Test simple case (reflection) with context.
-    reflections = (
-        "You have attempted to answer the following question before and failed. "
-        "Below is the last trial you attempted to answer the question.\n"
-        "Question: VIVA Media AG changed it's name in 2004. What does their new acronym stand for?\n"
-        "Thought: The context provided mentions that VIVA Media AG changed its name in 2004 and has been "
-        "owned by Viacom since then. Based on this information, the new acronym for VIVA Media AG is "
-        "likely related to Viacom, the parent company of MTV.Action: Finish[Viacom]\n"
-        "Action: Finish[Viacom]\nObservation: Answer is INCORRECT\n(END PREVIOUS TRIAL)\n"
-    )
-    scratchpad = (
-        "\nThought: The context provided mentions that VIVA Media AG changed its name in 2004 and has "
-        "been owned by Viacom since then. Based on this information, the new acronym for VIVA Media AG is "
-        "likely related to Viacom, the parent company of MTV.Action: Finish[Viacom]\n"
-        "Action: Finish[Viacom]\nObservation: Answer is INCORRECT\nThought:"
-    )
-    responses = [
-        (
-            "The context provided states that VIVA Media AG changed its name to VIVA Media GmbH in 2004. "
-            'Since "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, the new acronym '
-            'for VIVA Media AG is likely VIVA Media GmbH, with "GmbH" representing the legal form of the '
-            "company.\nAction: Finish[VIVA Media GmbH]"
-        )
-    ]
-    gt_out = (
-        "The context provided states that VIVA Media AG changed its name to VIVA Media GmbH in 2004. "
-        'Since "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, the new acronym for '
-        'VIVA Media AG is likely VIVA Media GmbH, with "GmbH" representing the legal form of the company.'
-        "Action: Finish[VIVA Media GmbH]"
-    )
-    out = _prompt_cot_agent(
-        llm=FakeListChatModel(responses=responses),
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT,
-        reflections=reflections,
-        question=q,
-        scratchpad=scratchpad,
-        context=context,
-    )
-    assert out == gt_out
-
-    # Test simple case (reflection) with no context.
+    # Test simple case (reflection).
     reflections = (
         "You have attempted to answer the following question before and failed. Below is the last trial "
         "you attempted to answer the question.\nQuestion: VIVA Media AG changed it's name in 2004. "
@@ -252,20 +169,16 @@ def test__prompt_cot_agent() -> None:
             'change is "Constantin Film Aktiengesellschaft."\nFinish[Constantin Film Aktiengesellschaft]'
         )
     ]
-    gt_out = (
-        'I made a mistake in my previous attempts. Let\'s think more carefully this time. The acronym "AG" '
-        'stands for "Aktiengesellschaft" in German, which translates to "stock corporation" in English. '
-        'So the new acronym for VIVA Media AG after the name change is "Constantin Film Aktiengesellschaft."'
-        "Finish[Constantin Film Aktiengesellschaft]"
-    )
+    gt_out = 'I made a mistake in my previous attempts. Let\'s think more carefully this time. The acronym "AG" stands for "Aktiengesellschaft" in German, which translates to "stock corporation" in English. So the new acronym for VIVA Media AG after the name change is "Constantin Film Aktiengesellschaft."\nFinish[Constantin Film Aktiengesellschaft]'
     out = _prompt_cot_agent(
         llm=FakeListChatModel(responses=responses),
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_NO_CONTEXT,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT,
         reflections=reflections,
         question=q,
         scratchpad=scratchpad,
-        context=None,
+        prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
     )
+    print(repr(out))
     assert out == gt_out
 
 
@@ -273,13 +186,13 @@ def test__build_cot_reflection_prompt() -> None:
     """Test _build_cot_reflection_prompt function."""
     gt_out = "You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.\nHere are some examples:\n\n(END OF EXAMPLES)\n\nPrevious trial:\nQuestion: \n\nReflection:"
     out = _build_cot_reflection_prompt(
-        examples="", question="", scratchpad="", context=""
+        examples="", question="", scratchpad="", prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA
     )
     assert out == gt_out
 
     gt_out = "You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.\nHere are some examples:\n\n(END OF EXAMPLES)\n\nPrevious trial:\nQuestion: \n\nReflection:"
     out = _build_cot_reflection_prompt(
-        examples="", question="", scratchpad="", context=None
+        examples="", question="", scratchpad="", prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA
     )
     assert out == gt_out
 
@@ -289,7 +202,6 @@ def test__build_cot_reflection_prompt() -> None:
         examples="",
         question="",
         scratchpad="",
-        context=None,
         prompt="{examples} {question} {scratchpad}",
     )
     assert out == gt_out
@@ -298,7 +210,6 @@ def test__build_cot_reflection_prompt() -> None:
 def test__prompt_cot_reflection() -> None:
     """Test _prompt_cot_reflection function."""
     q = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
-    context = 'VIVA Media GmbH (until 2004 "VIVA Media AG") is a music television network originating from Germany. It was founded for broadcast of VIVA Germany as VIVA Media AG in 1993 and has been owned by their original concurrent Viacom, the parent company of MTV, since 2004. Viva channels exist in some European countries; the first spin-offs were launched in Poland and Switzerland in 2000.\n\nA Gesellschaft mit beschränkter Haftung (] , abbreviated GmbH ] and also GesmbH in Austria) is a type of legal entity very common in Germany, Austria, Switzerland (where it is equivalent to a S.à r.l.) and Liechtenstein. In the United States, the equivalent type of entity is the limited liability company (LLC). The name of the GmbH form emphasizes the fact that the owners ("Gesellschafter", also known as members) of the entity are not personally liable for the company\'s debts. "GmbH"s are considered legal persons under German and Austrian law. Other variations include mbH (used when the term "Gesellschaft" is part of the company name itself), and gGmbH ("gemeinnützige" GmbH) for non-profit companies.'
 
     # Test with context.
     out = _prompt_cot_reflection(
@@ -306,7 +217,7 @@ def test__prompt_cot_reflection() -> None:
         examples="",
         question="",
         scratchpad="",
-        context="",
+        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, str)
     assert out == "1"
@@ -317,7 +228,7 @@ def test__prompt_cot_reflection() -> None:
         examples="",
         question="",
         scratchpad="",
-        context=None,
+        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, str)
     assert out == "1"
@@ -351,7 +262,7 @@ def test__prompt_cot_reflection() -> None:
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
         question=q,
         scratchpad=scratchpad,
-        context=context,
+        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert out == gt_out
 
@@ -379,10 +290,10 @@ def test__prompt_cot_reflection() -> None:
     )
     out = _prompt_cot_reflection(
         llm=FakeListChatModel(responses=responses),
-        examples=REFLEXION_COT_REFLECT_FEWSHOT_EXAMPLES_NO_CONTEXT,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
         question=q,
         scratchpad=scratchpad,
-        context=None,
+        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA
     )
     assert out == gt_out
 
