@@ -23,21 +23,23 @@ def test_reflexion_cot_init() -> None:
     assert agent.mode == {"qa": "hotpotqa"}
 
 
-def test_reflexion_cot_reset(reflexion_cot_agent: ReflexionCoTAgent) -> None:
+def test_reflexion_cot_reset() -> None:
     """Test reset method."""
-    reflexion_cot_agent._finished = True
-    reflexion_cot_agent._trial_n = 143
-    reflexion_cot_agent._answer = "cat"
-    reflexion_cot_agent.memory.scratchpad = "dog"
-    reflexion_cot_agent.reflector.reflections = ["puppy"]
-    reflexion_cot_agent.reflector.reflections_str = "puppy"
-    reflexion_cot_agent.reset()
-    assert not reflexion_cot_agent._finished
-    assert not reflexion_cot_agent.memory.scratchpad
-    assert not reflexion_cot_agent.reflector.reflections
-    assert not reflexion_cot_agent.reflector.reflections_str
-    assert not reflexion_cot_agent._trial_n
-    assert not reflexion_cot_agent._answer
+    agent = ReflexionCoTAgent(
+        llm=FakeListChatModel(responses=["1"]),
+        mode={"qa": "hotpotqa"},
+    )
+    agent.strategy._scratchpad = "cat"
+    agent.strategy._finished = True
+    agent.strategy._answer = "cat"
+    agent.strategy.reflector.reflections = ["c", "a", "t"]
+    agent.strategy.reflector.reflections_str = "cat"
+    agent.reset()
+    assert not agent.strategy._scratchpad
+    assert not agent.strategy._finished
+    assert not agent.strategy._answer
+    assert not agent.strategy.reflector.reflections
+    assert not agent.strategy.reflector.reflections_str
 
 
 def test_reflexion_cot_reflect() -> None:
