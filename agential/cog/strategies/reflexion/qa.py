@@ -15,27 +15,27 @@ from agential.cog.strategies.reflexion.base import ReflexionCoTBaseStrategy
 from agential.utils.parse import remove_newline
 
 
-# def parse_qa_action(string: str) -> Tuple[str, str]:
-#     """Parses an action string into an action type and its argument.
+def parse_qa_action(string: str) -> Tuple[str, str]:
+    """Parses an action string into an action type and its argument.
 
-#     This method is used in ReAct and Reflexion.
+    This method is used in ReAct and Reflexion.
 
-#     Args:
-#         string (str): The action string to be parsed.
+    Args:
+        string (str): The action string to be parsed.
 
-#     Returns:
-#         Tuple[str, str]: A tuple containing the action type and argument.
-#     """
-#     pattern = r"^(\w+)\[(.+)\]$"
-#     match = re.match(pattern, string)
+    Returns:
+        Tuple[str, str]: A tuple containing the action type and argument.
+    """
+    pattern = r"^(\w+)\[(.+)\]$"
+    match = re.match(pattern, string)
 
-#     if match:
-#         action_type = match.group(1)
-#         argument = match.group(2)
-#     else:
-#         action_type = ""
-#         argument = ""
-#     return action_type, argument
+    if match:
+        action_type = match.group(1)
+        argument = match.group(2)
+    else:
+        action_type = ""
+        argument = ""
+    return action_type, argument
 
 
 class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
@@ -91,7 +91,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         Returns:
             str: The generated thought.
         """
-        self._scratchpad += "\nA:"
+        self._scratchpad += "\nThought:"
         thought = _prompt_cot_agent(
             llm=self.llm,
             examples=examples,
@@ -101,9 +101,9 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        thought = remove_newline(thought)
+        thought = remove_newline(thought).split("Action")[0]
         self._scratchpad += " " + thought
-        
+
         return thought
 
     def generate_action(
@@ -114,7 +114,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
         **kwargs: Dict[str, Any],
-    ) -> str:
+    ) -> Tuple[str, str]:
         """Generates an action based on the question, examples, and prompt.
 
         Args:
@@ -126,7 +126,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             **kwargs (Dict[str, Any]): Additional arguments.
 
         Returns:
-            str: The generated query.
+            Tuple[str, str]: The generated action type and query.
         """
         self._scratchpad += "\nAction:"
         action = _prompt_cot_agent(
@@ -139,48 +139,60 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             additional_keys=additional_keys,
         )
         action = remove_newline(action).strip()
-        query = action.split("So the answer is:")[-1]
-
         self._scratchpad += " " + action
+        action_type, query = parse_qa_action(action)
 
-        return query
+        return action_type, query
 
     def generate_observation(
-        self, key: str
+        self, action_type: str, query: str, key: str
     ) -> Tuple[bool, str]:
-        """Generates an observation based on the action type and answer.
+        """Generates an observation based on the action type and query.
 
         Args:
+            action_type (str): The type of action to be performed.
+            query (str): The query for the action.
             key (str): The key for the observation.
 
         Returns:
             Tuple[bool, str]: The generated observation.
         """
+        self._scratchpad += f"\nObservation: "
+        if action_type.lower() == "finish":
+            self._finished = True
+            self._answer = query
+            if EM(self._answer, key):
+                obs = "Answer is CORRECT"
+            else:
+                obs = "Answer is INCORRECT"
+        else:
+            obs = "Invalid action type, please try again."
+        self._scratchpad += obs
 
-        obs = "Answer is CORRECT" if EM(self._answer, key) else "Answer is INCORRECT"
-        self._scratchpad += f"\nObservation: {obs}"
-        self._finished = True
-        self._answer = answer.split("So the answer is: ")[-1]
         return EM(self._answer, key), obs
 
     def create_output_dict(
-        self, thought: str, is_correct: str, obs: str
+        self, thought: str, action_type: str, query: str, obs: str, key: str
     ) -> Dict[str, str]:
         """Creates a dictionary of the output components.
 
         Args:
-            thought (str): The thought.
-            is_correct (bool): The key for the observation.
+            thought (str): The generated thought.
+            action_type (str): The type of action performed.
+            query (str): The query for the action.
             obs (str): The generated observation.
+            key (str): The key for the observation.
 
         Returns:
-            Dict[str, str]: A dictionary containing the thought, answer, is_correct, and observation.
+            Dict[str, str]: A dictionary containing the thought, action type, query, and observation.
         """
         return {
             "thought": thought,
-            "answer": self._answer,
-            "is_correct": is_correct,
+            "action_type": action_type,
+            "query": query,
             "obs": obs,
+            "answer": self._answer,
+            "is_correct": EM(self._answer, key),
         }
 
     def halting_condition(
