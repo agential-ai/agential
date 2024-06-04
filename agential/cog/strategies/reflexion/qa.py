@@ -146,12 +146,11 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         return query
 
     def generate_observation(
-        self, action_type: str, query: str, key: str
+        self, query: str, key: str
     ) -> Tuple[bool, str]:
         """Generates an observation based on the action type and query.
 
         Args:
-            action_type (str): The type of action to be performed.
             query (str): The query for the action.
             key (str): The key for the observation.
 
@@ -159,27 +158,24 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             Tuple[bool, str]: The generated observation.
         """
         self._scratchpad += f"\nObservation: "
-        if action_type.lower() == "finish":
-            self._finished = True
-            self._answer = query
-            if EM(self._answer, key):
-                obs = "Answer is CORRECT"
-            else:
-                obs = "Answer is INCORRECT"
+        self._finished = True
+        self._answer = query
+        if EM(self._answer, key):
+            obs = "Answer is CORRECT"
         else:
-            obs = "Invalid action type, please try again."
+            obs = "Answer is INCORRECT"
+
         self._scratchpad += obs
 
         return EM(self._answer, key), obs
 
     def create_output_dict(
-        self, thought: str, action_type: str, query: str, obs: str, key: str
+        self, thought: str, query: str, obs: str, key: str
     ) -> Dict[str, str]:
         """Creates a dictionary of the output components.
 
         Args:
             thought (str): The generated thought.
-            action_type (str): The type of action performed.
             query (str): The query for the action.
             obs (str): The generated observation.
             key (str): The key for the observation.
@@ -189,7 +185,6 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         """
         return {
             "thought": thought,
-            "action_type": action_type,
             "query": query,
             "obs": obs,
             "answer": self._answer,

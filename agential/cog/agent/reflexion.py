@@ -168,7 +168,7 @@ class ReflexionCoTAgent(BaseAgent):
             )
 
             # Act.
-            action_type, query = self.strategy.generate_action(
+            query = self.strategy.generate_action(
                 question=question,
                 examples=examples,
                 reflections=reflections,
