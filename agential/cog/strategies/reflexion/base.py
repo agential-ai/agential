@@ -73,18 +73,14 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         pass
 
     @abstractmethod
-    def halting_condition(
-        self,
-        idx: int,
-        key: str,
-        **kwargs: Dict[str, Any]
-    ) -> bool:
+    def halting_condition(self, idx: int, key: str, **kwargs: Dict[str, Any]) -> bool:
         """Determines whether the halting condition has been met.
 
         Args:
             idx (int): The current step index.
             key (str): The key for the observation.
             **kwargs (Dict[str, Any]): Additional arguments.
+
         Returns:
             bool: True if the halting condition is met, False otherwise.
         """
