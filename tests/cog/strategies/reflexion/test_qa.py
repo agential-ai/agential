@@ -48,7 +48,6 @@ def test_reflexion_cot_generate() -> None:
     gt_out = 'The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.'  
     responses=[
         'The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.',
-        "Finish[Company with Limited Liability]",
     ]
     llm = FakeListChatModel(responses=responses)
     strategy = ReflexionCoTQAStrategy(llm=llm)
@@ -61,6 +60,8 @@ def test_reflexion_cot_generate() -> None:
     )
     assert out == gt_out
     assert strategy._scratchpad == gt_scratchpad
+    assert strategy._finished == False
+    assert strategy._answer == ""
 
 
 def test_reflexion_cot_generate_action() -> None:
