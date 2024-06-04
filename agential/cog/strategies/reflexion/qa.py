@@ -15,27 +15,27 @@ from agential.cog.strategies.reflexion.base import ReflexionCoTBaseStrategy
 from agential.utils.parse import remove_newline
 
 
-def parse_qa_action(string: str) -> Tuple[str, str]:
-    """Parses an action string into an action type and its argument.
+# def parse_qa_action(string: str) -> Tuple[str, str]:
+#     """Parses an action string into an action type and its argument.
 
-    This method is used in ReAct and Reflexion.
+#     This method is used in ReAct and Reflexion.
 
-    Args:
-        string (str): The action string to be parsed.
+#     Args:
+#         string (str): The action string to be parsed.
 
-    Returns:
-        Tuple[str, str]: A tuple containing the action type and argument.
-    """
-    pattern = r"^(\w+)\[(.+)\]$"
-    match = re.match(pattern, string)
+#     Returns:
+#         Tuple[str, str]: A tuple containing the action type and argument.
+#     """
+#     pattern = r"^(\w+)\[(.+)\]$"
+#     match = re.match(pattern, string)
 
-    if match:
-        action_type = match.group(1)
-        argument = match.group(2)
-    else:
-        action_type = ""
-        argument = ""
-    return action_type, argument
+#     if match:
+#         action_type = match.group(1)
+#         argument = match.group(2)
+#     else:
+#         action_type = ""
+#         argument = ""
+#     return action_type, argument
 
 
 class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
@@ -114,7 +114,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
         **kwargs: Dict[str, Any],
-    ) -> Tuple[str, str]:
+    ) -> str:
         """Generates an action based on the question, examples, and prompt.
 
         Args:
@@ -126,7 +126,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             **kwargs (Dict[str, Any]): Additional arguments.
 
         Returns:
-            Tuple[str, str]: The generated action type and query.
+            str: The generated query.
         """
         self._scratchpad += "\nAction:"
         action = _prompt_cot_agent(
@@ -138,11 +138,12 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        action = remove_newline(action).strip().split("\n")[0]
-        self._scratchpad += " " + action
-        action_type, query = parse_qa_action(action)
+        action = remove_newline(action).strip()
+        query = action.split("So the answer is:")[-1]
 
-        return action_type, query
+        self._scratchpad += " " + action
+
+        return query
 
     def generate_observation(
         self, action_type: str, query: str, key: str
