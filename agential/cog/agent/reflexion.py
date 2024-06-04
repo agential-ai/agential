@@ -179,14 +179,13 @@ class ReflexionCoTAgent(BaseAgent):
 
             # Observe.
             is_correct, obs = self.strategy.generate_observation(
-                action_type=action_type, query=query, key=key
+                query=query, key=key
             )
 
             idx += 1
             out.append(
                 self.strategy.create_output_dict(
                     thought=thought,
-                    action_type=action_type,
                     query=query,
                     obs=obs,
                     key=key,
