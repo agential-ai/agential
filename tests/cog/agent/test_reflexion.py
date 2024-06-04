@@ -172,47 +172,31 @@ def test_reflexion_cot_generate() -> None:
     assert isinstance(out, list)
     assert len(out) == 2
 
-    # # Test exhaust patience and get incorrect answers for all trials.
-    # gt_out = [
-    #     'Thought: Upon reflecting on the incorrect answer I provided, I realize that the phrasing discrepancy in my response may have been the reason for the error. While I correctly identified that the new acronym for VIVA Media AG was GmbH, I did not provide the full expansion of the acronym as "Gesellschaft mit beschränkter Haftung." This lack of completeness in my answer likely led to it being marked as incorrect. In the future, I will ensure to always provide the complete expansion of acronyms when responding to similar questions to avoid any phrasing discrepancies.\nAction: Finish[VIVA Media GmbH]\nObservation: Answer is INCORRECT',
-    #     'Thought: The reason for the failure in this trial could be the discrepancy in the phrasing of the answer. The question asked for the acronym of the new name, while the provided answer included the full name "VIVA Media GmbH". To avoid this mistake, I should provide only the acronym "GmbH" as the answer, as it directly corresponds to the acronym in the question. This adjustment will ensure a more accurate match between the question and the answer provided.Action: Finish[GmbH]\nAction: Finish[GmbH]\nObservation: Answer is INCORRECT',
-    # ]
-    # gt_out_scratchpad = '\nThought: The reason for the failure in this trial could be the discrepancy in the phrasing of the answer. The question asked for the acronym of the new name, while the provided answer included the full name "VIVA Media GmbH". To avoid this mistake, I should provide only the acronym "GmbH" as the answer, as it directly corresponds to the acronym in the question. This adjustment will ensure a more accurate match between the question and the answer provided.Action: Finish[GmbH]\nAction: Finish[GmbH]\nObservation: Answer is INCORRECT'
-    # gt_reflections = [
-    #     'The reason for the failure in this trial could be the discrepancy in the phrasing of the answer. The question asked for the acronym of the new name, while the provided answer included the full name "VIVA Media GmbH". To mitigate this issue in future trials, a more concise and high-level plan would be to provide only the acronym "GmbH" as the answer, as it directly corresponds to the acronym in the question. This adjustment will ensure a more accurate match between the question and the answer provided.'
-    # ]
-    # gt_reflections_str = 'You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- The reason for the failure in this trial could be the discrepancy in the phrasing of the answer. The question asked for the acronym of the new name, while the provided answer included the full name "VIVA Media GmbH". To mitigate this issue in future trials, a more concise and high-level plan would be to provide only the acronym "GmbH" as the answer, as it directly corresponds to the acronym in the question. This adjustment will ensure a more accurate match between the question and the answer provided.'
-    # self_reflect_llm_responses = [
-    #     'The reason for the failure in this trial could be the discrepancy in the phrasing of the answer. The question asked for the acronym of the new name, while the provided answer included the full name "VIVA Media GmbH". To mitigate this issue in future trials, a more concise and high-level plan would be to provide only the acronym "GmbH" as the answer, as it directly corresponds to the acronym in the question. This adjustment will ensure a more accurate match between the question and the answer provided.'
-    # ]
-    # action_llm_responses = [
-    #     'Upon reflecting on the incorrect answer I provided, I realize that the phrasing discrepancy in my response may have been the reason for the error. While I correctly identified that the new acronym for VIVA Media AG was GmbH, I did not provide the full expansion of the acronym as "Gesellschaft mit beschränkter Haftung." This lack of completeness in my answer likely led to it being marked as incorrect. In the future, I will ensure to always provide the complete expansion of acronyms when responding to similar questions to avoid any phrasing discrepancies.',
-    #     "Finish[VIVA Media GmbH]",
-    #     'The reason for the failure in this trial could be the discrepancy in the phrasing of the answer. The question asked for the acronym of the new name, while the provided answer included the full name "VIVA Media GmbH". To avoid this mistake, I should provide only the acronym "GmbH" as the answer, as it directly corresponds to the acronym in the question. This adjustment will ensure a more accurate match between the question and the answer provided.\nAction: Finish[GmbH]',
-    #     "Finish[GmbH]",
-    # ]
-    # self_reflect_llm = FakeListChatModel(responses=self_reflect_llm_responses)
-    # action_llm = FakeListChatModel(responses=action_llm_responses)
-    # reflexion_cot_agent = ReflexionCoTAgent(
-    #     self_reflect_llm=self_reflect_llm,
-    #     action_llm=action_llm,
-    #     max_trials=3,
-    #     patience=2,
-    # )
-    # out = reflexion_cot_agent.generate(
-    #     question=question, key=key, context=context, strategy="reflexion"
-    # )
-    # assert ["\n".join(i[2]) for i in out] == gt_out
-    # assert not out[0][0]
-    # assert not out[1][0]
-    # assert out[0][1] == "VIVA Media GmbH"
-    # assert out[1][1] == "GmbH"
-    # assert reflexion_cot_agent._trial_n == 2
-    # assert reflexion_cot_agent._answer == "GmbH"
-    # assert reflexion_cot_agent._finished
-    # assert reflexion_cot_agent.memory.scratchpad == gt_out_scratchpad
-    # assert reflexion_cot_agent.reflector.reflections == gt_reflections
-    # assert reflexion_cot_agent.reflector.reflections_str == gt_reflections_str
+    # Test exhaust patience and get incorrect answers for all trials.
+    responses = [
+        'Upon reflecting on the incorrect answer I provided, I realize that the phrasing discrepancy in my response may have been the reason for the error. While I correctly identified that the new acronym for VIVA Media AG was GmbH, I did not provide the full expansion of the acronym as "Gesellschaft mit beschränkter Haftung." This lack of completeness in my answer likely led to it being marked as incorrect. In the future, I will ensure to always provide the complete expansion of acronyms when responding to similar questions to avoid any phrasing discrepancies.',
+        "Finish[VIVA Media GmbH]",
+        'The reason for the failure in this trial could be the discrepancy in the phrasing of the answer. The question asked for the acronym of the new name, while the provided answer included the full name "VIVA Media GmbH". To mitigate this issue in future trials, a more concise and high-level plan would be to provide only the acronym "GmbH" as the answer, as it directly corresponds to the acronym in the question. This adjustment will ensure a more accurate match between the question and the answer provided.',
+        'The reason for the failure in this trial could be the discrepancy in the phrasing of the answer. The question asked for the acronym of the new name, while the provided answer included the full name "VIVA Media GmbH". To avoid this mistake, I should provide only the acronym "GmbH" as the answer, as it directly corresponds to the acronym in the question. This adjustment will ensure a more accurate match between the question and the answer provided.\nAction: Finish[GmbH]',
+        "Finish[GmbH]",
+    ]
+    agent = ReflexionCoTAgent(
+        llm=FakeListChatModel(responses=responses),
+        mode={"qa": "hotpotqa"},
+        max_trials=3,
+    )
+    out = agent.generate(
+        question=question, 
+        key=key, 
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT, 
+        prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA, 
+        reflection_strategy="reflexion",
+        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
+        reflect_prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
+        patience=2
+    )
+    assert isinstance(out, list)
+    assert len(out) == 2
 
     # # Test patience reset after incorrect answer and subsequent runs.
 
