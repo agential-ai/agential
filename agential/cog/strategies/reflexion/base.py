@@ -26,7 +26,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str]:
+    ) -> str:
         """Generates an action based on the question, examples, and prompt.
 
         Args:
@@ -36,7 +36,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the generation process.
 
         Returns:
-            Tuple[str, str]: The generated action type and query.
+            str: The generated query.
         """
         pass
 
