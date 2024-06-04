@@ -15,7 +15,7 @@ from agential.cog.prompts.agent.reflexion import (
     REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.prompts.benchmark.hotpotqa import (
-    HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
+    HOTPOTQA_FEWSHOT_EXAMPLES_COT,
 )
 from agential.utils.docstore import DocstoreExplorer
 
@@ -69,7 +69,7 @@ def test_reflexion_cot_generate() -> None:
     out = agent.generate(
         question=question,
         key=key,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT,
         prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
         reflection_strategy=None,
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
@@ -92,7 +92,7 @@ def test_reflexion_cot_generate() -> None:
     out = agent.generate(
         question=question,
         key=key,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT,
         prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
         reflection_strategy=None,
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
@@ -115,7 +115,7 @@ def test_reflexion_cot_generate() -> None:
     out = agent.generate(
         question=question,
         key=key,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT,
         prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
         reflection_strategy=None,
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
@@ -137,7 +137,7 @@ def test_reflexion_cot_generate() -> None:
     out = agent.generate(
         question=question,
         key=key,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT,
         prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
         reflection_strategy="last_attempt",
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
@@ -162,7 +162,7 @@ def test_reflexion_cot_generate() -> None:
     out = agent.generate(
         question=question,
         key=key,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT,
         prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
         reflection_strategy="reflexion",
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
@@ -188,7 +188,7 @@ def test_reflexion_cot_generate() -> None:
     out = agent.generate(
         question=question,
         key=key,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT,
         prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
         reflection_strategy="reflexion",
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
@@ -213,7 +213,7 @@ def test_reflexion_cot_generate() -> None:
     out = agent.generate(
         question=question,
         key=key,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT,
         prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
         reflection_strategy="reflexion",
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
@@ -227,7 +227,7 @@ def test_reflexion_cot_generate() -> None:
     out = agent.generate(
         question=question,
         key=key,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT,
         prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
         reflection_strategy="reflexion",
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
