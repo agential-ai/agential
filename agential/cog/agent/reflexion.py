@@ -181,7 +181,6 @@ class ReflexionCoTAgent(BaseAgent):
                 action_type=action_type, query=query, key=key
             )
 
-            idx += 1
             out.append(
                 self.strategy.create_output_dict(
                     thought=thought,
@@ -196,6 +195,8 @@ class ReflexionCoTAgent(BaseAgent):
                 patience_cnt += 1
             if patience_cnt == patience:
                 break
+            
+            idx += 1
 
         return out
 
