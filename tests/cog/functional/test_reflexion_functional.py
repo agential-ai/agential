@@ -34,8 +34,8 @@ from agential.cog.prompts.agent.reflexion import (
     REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.prompts.benchmark.hotpotqa import (
-    HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
     HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
+    HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
 )
 
 

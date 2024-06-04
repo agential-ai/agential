@@ -7,8 +7,9 @@ from tiktoken.core import Encoding
 from agential.cog.agent.reflexion import ReflexionCoTAgent, ReflexionReActAgent
 from agential.cog.modules.memory.reflexion import ReflexionMemory
 from agential.cog.modules.reflect.reflexion import (
-        ReflexionReActReflector,
+    ReflexionReActReflector,
 )
+from agential.cog.prompts.agent.reflexion import REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA
 from agential.utils.docstore import DocstoreExplorer
 
 
@@ -51,23 +52,12 @@ def test_reflexion_cot_reflect() -> None:
 
     reflexion_cot_agent.reset()
 
-    # Test last attempt with context.
-    gt_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: \n\n(END PREVIOUS TRIAL)\n"
-    reflections_str = reflexion_cot_agent.reflect(
-        strategy="last_attempt",
-        question="",
-        context="",
-    )
-    assert reflections_str == gt_reflections_str
-
-    reflexion_cot_agent.reset()
-
     # Test last attempt with no context.
     gt_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: \n\n(END PREVIOUS TRIAL)\n"
     reflections_str = reflexion_cot_agent.reflect(
         strategy="last_attempt",
         question="",
-        context=None,
+        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert reflections_str == gt_reflections_str
 
