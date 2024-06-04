@@ -56,7 +56,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
 
     @abstractmethod
     def create_output_dict(
-        self, thought: str, action_type: str, query: str, obs: str, key: str
+        self, thought: str, action_type: str, query: str, obs: str, is_correct: bool
     ) -> Dict[str, str]:
         """Creates a dictionary of the output components.
 
@@ -65,10 +65,10 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
             action_type (str): The type of action performed.
             query (str): The query for the action.
             obs (str): The generated observation.
-            key (str): The key for the observation.
+            is_correct (bool): Whether the observation is correct.
 
         Returns:
-            Dict[str, str]: A dictionary containing the thought, action type, query, and observation.
+            Dict[str, str]: A dictionary containing the thought, action type, query, observation, answer, and is_correct.
         """
         pass
 
@@ -76,20 +76,15 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
     def halting_condition(
         self,
         idx: int,
-        question: str,
-        examples: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
+        key: str,
+        **kwargs: Dict[str, Any]
     ) -> bool:
         """Determines whether the halting condition has been met.
 
         Args:
             idx (int): The current step index.
-            question (str): The question being answered.
-            examples (str): Examples to guide the generation process.
-            prompt (str): The prompt used for generating the thought and action.
-            additional_keys (Dict[str, str]): Additional keys for the generation process.
-
+            key (str): The key for the observation.
+            **kwargs (Dict[str, Any]): Additional arguments.
         Returns:
             bool: True if the halting condition is met, False otherwise.
         """
