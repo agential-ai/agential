@@ -78,21 +78,21 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         additional_keys: Dict[str, str],
         **kwargs: Dict[str, Any],
     ) -> str:
-        """Generates a thought based on the question, examples, and prompt.
+        """Generates an answer based on the question, examples, and prompt.
 
         Args:
             question (str): The question to be answered.
             examples (str): Examples to guide the generation process.
             reflections (str): Reflections to consider during generation.
-            prompt (str): The prompt used for generating the thought.
+            prompt (str): The prompt used for generating the answer.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
             **kwargs (Dict[str, Any]): Additional arguments.
 
         Returns:
-            str: The generated thought.
+            str: The generated answer.
         """
-        self._scratchpad += "\nThought:"
-        thought = _prompt_cot_agent(
+        self._scratchpad += "\nA:"
+        answer = _prompt_cot_agent(
             llm=self.llm,
             examples=examples,
             reflections=reflections,
@@ -101,49 +101,49 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        thought = remove_newline(thought).split("Action")[0]
-        self._scratchpad += " " + thought
+        answer = remove_newline(answer)
+        self._scratchpad += " " + answer
 
-        return thought
+        return answer
 
-    def generate_action(
-        self,
-        question: str,
-        examples: str,
-        reflections: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
-        **kwargs: Dict[str, Any],
-    ) -> str:
-        """Generates an action based on the question, examples, and prompt.
+    # def generate_action(
+    #     self,
+    #     question: str,
+    #     examples: str,
+    #     reflections: str,
+    #     prompt: str,
+    #     additional_keys: Dict[str, str],
+    #     **kwargs: Dict[str, Any],
+    # ) -> str:
+    #     """Generates an action based on the question, examples, and prompt.
 
-        Args:
-            question (str): The question to be answered.
-            examples (str): Examples to guide the generation process.
-            reflections (str): Reflections to consider during generation.
-            prompt (str): The prompt used for generating the action.
-            additional_keys (Dict[str, str]): Additional keys for the generation process.
-            **kwargs (Dict[str, Any]): Additional arguments.
+    #     Args:
+    #         question (str): The question to be answered.
+    #         examples (str): Examples to guide the generation process.
+    #         reflections (str): Reflections to consider during generation.
+    #         prompt (str): The prompt used for generating the action.
+    #         additional_keys (Dict[str, str]): Additional keys for the generation process.
+    #         **kwargs (Dict[str, Any]): Additional arguments.
 
-        Returns:
-            str: The generated query.
-        """
-        self._scratchpad += "\nAction:"
-        action = _prompt_cot_agent(
-            llm=self.llm,
-            examples=examples,
-            reflections=reflections,
-            question=question,
-            scratchpad=self._scratchpad,
-            prompt=prompt,
-            additional_keys=additional_keys,
-        )
-        action = remove_newline(action).strip()
-        query = action.split("So the answer is:")[-1]
+    #     Returns:
+    #         str: The generated query.
+    #     """
+    #     self._scratchpad += "\nAction:"
+    #     action = _prompt_cot_agent(
+    #         llm=self.llm,
+    #         examples=examples,
+    #         reflections=reflections,
+    #         question=question,
+    #         scratchpad=self._scratchpad,
+    #         prompt=prompt,
+    #         additional_keys=additional_keys,
+    #     )
+    #     action = remove_newline(action).strip()
+    #     query = action.split("So the answer is:")[-1]
 
-        self._scratchpad += " " + action
+    #     self._scratchpad += " " + action
 
-        return query
+    #     return query
 
     def generate_observation(
         self, query: str, key: str

@@ -37,9 +37,7 @@ Question: {question}{scratchpad}
 Reflection:"""
 
 
-REFLEXION_COT_INSTRUCTION_HOTPOTQA = """Solve a question answering task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task.
-Here are some examples:
-{examples}
+REFLEXION_COT_INSTRUCTION_HOTPOTQA = """{examples}
 (END OF EXAMPLES)
 
 {reflections}
