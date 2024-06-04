@@ -137,7 +137,7 @@ def get_fewshot_examples(mode: Dict[str, str], fewshot_type: str) -> str:
 
     Available Benchmark Types and Names:
         - qa:
-            - hotpotqa: Supports "cot", "direct", "react",
+            - hotpotqa: Supports "cot", "direct", "react"
             - fever: Supports "cot", "direct", "react"
             - triviaqa: Supports "cot", "direct", "react"
             - ambignq: Supports "cot", "direct", "react"
