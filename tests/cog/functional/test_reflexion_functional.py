@@ -337,7 +337,7 @@ def test_cot_reflect() -> None:
     # Invalid strategy.
     with pytest.raises(NotImplementedError):
         out = cot_reflect(
-            strategy="invalid input",
+            reflection_strategy="invalid input",
             llm=FakeListChatModel(responses=["1"]),
             reflections=[""],
             examples="",
@@ -348,7 +348,7 @@ def test_cot_reflect() -> None:
 
     # Last attempt.
     out = cot_reflect(
-        strategy="last_attempt",
+        reflection_strategy="last_attempt",
         llm=FakeListChatModel(responses=["1"]),
         reflections=[""],
         examples="",
@@ -360,7 +360,7 @@ def test_cot_reflect() -> None:
 
     # Reflexion.
     out = cot_reflect(
-        strategy="reflexion",
+        reflection_strategy="reflexion",
         llm=FakeListChatModel(responses=["1"]),
         reflections=[""],
         examples="",
@@ -373,7 +373,7 @@ def test_cot_reflect() -> None:
 
     # Last attempt and Reflexion.
     out = cot_reflect(
-        strategy="last_attempt_and_reflexion",
+        reflection_strategy="last_attempt_and_reflexion",
         llm=FakeListChatModel(responses=["1"]),
         reflections=[""],
         examples="",
