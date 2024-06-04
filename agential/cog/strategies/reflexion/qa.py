@@ -146,12 +146,12 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
     #     return query
 
     def generate_observation(
-        self, query: str, key: str
-    ) -> bool:
-        """Generates an observation based on the action type and query.
+        self, answer: str, key: str
+    ) -> Tuple[bool, str]:
+        """Generates an observation based on the action type and answer.
 
         Args:
-            query (str): The query for the action.
+            answer (str): The answer to the question.
             key (str): The key for the observation.
 
         Returns:
@@ -159,32 +159,30 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         """
         self._scratchpad += f"\nObservation: "
         self._finished = True
-        self._answer = query
+        self._answer = answer
 
-        self._scratchpad += "Answer is CORRECT" if EM(self._answer, key) else "Answer is INCORRECT"
+        obs = "Answer is CORRECT" if EM(self._answer, key) else "Answer is INCORRECT"
+        self._scratchpad += obs
 
-        return EM(self._answer, key)
+        return EM(self._answer, key), obs
 
     def create_output_dict(
-        self, thought: str, query: str, obs: str, key: str
+        self, answer: str, is_correct: str, obs: str
     ) -> Dict[str, str]:
         """Creates a dictionary of the output components.
 
         Args:
-            thought (str): The generated thought.
-            query (str): The query for the action.
+            answer (str): The answer.
+            is_correct (bool): The key for the observation.
             obs (str): The generated observation.
-            key (str): The key for the observation.
 
         Returns:
-            Dict[str, str]: A dictionary containing the thought, action type, query, and observation.
+            Dict[str, str]: A dictionary containing the answer, is_correct, and observation.
         """
         return {
-            "thought": thought,
-            "query": query,
+            "answer": answer,
+            "is_correct": is_correct,
             "obs": obs,
-            "answer": self._answer,
-            "is_correct": EM(self._answer, key),
         }
 
     def halting_condition(

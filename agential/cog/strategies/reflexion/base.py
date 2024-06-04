@@ -41,7 +41,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
     #     pass
 
     @abstractmethod
-    def generate_observation(self, action_type: str, query: str, key: str) -> str:
+    def generate_observation(self, action_type: str, query: str, key: str) -> Tuple[bool, str]:
         """Generates an observation based on the action type and query.
 
         Args:
@@ -50,7 +50,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
             key (str): The key for the observation.
 
         Returns:
-            str: The generated observation.
+            Tuple[bool, str]: A boolean specifying if the answer is correct and the observation.
         """
         pass
 
