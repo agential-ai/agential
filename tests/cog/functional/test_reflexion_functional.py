@@ -28,10 +28,10 @@ from agential.cog.functional.reflexion import (
     react_reflect_reflexion,
 )
 from agential.cog.prompts.agent.reflexion import (
-    REFLEXION_COT_INSTRUCTION_HOTPOTQA,
-    REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+    REFLEXION_COT_INSTRUCTION_HOTPOTQA,
+    REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.prompts.benchmark.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
@@ -108,7 +108,11 @@ def test__build_cot_agent_prompt() -> None:
     """Test _build_cot_agent_prompt function."""
     gt_out = "Solve a question answering task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task.\nHere are some examples:\n\n(END OF EXAMPLES)\n\n\n\nQuestion: "
     out = _build_cot_agent_prompt(
-        examples="", reflections="", question="", scratchpad="", prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA
+        examples="",
+        reflections="",
+        question="",
+        scratchpad="",
+        prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
     )
     assert out == gt_out
 
@@ -127,7 +131,6 @@ def test__prompt_cot_agent() -> None:
     )
     assert isinstance(out, str)
     assert out == "1"
-
 
     # Test simple case (no reflection).
     gt_out = 'Thought: Let\'s think step by step. The new acronym for VIVA Media AG after changing its name in 2004 is "Vivendi Visual and Interactive." \nAction: Finish[Vivendi Visual and Interactive]'
@@ -186,13 +189,19 @@ def test__build_cot_reflection_prompt() -> None:
     """Test _build_cot_reflection_prompt function."""
     gt_out = "You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.\nHere are some examples:\n\n(END OF EXAMPLES)\n\nPrevious trial:\nQuestion: \n\nReflection:"
     out = _build_cot_reflection_prompt(
-        examples="", question="", scratchpad="", prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA
+        examples="",
+        question="",
+        scratchpad="",
+        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert out == gt_out
 
     gt_out = "You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.\nHere are some examples:\n\n(END OF EXAMPLES)\n\nPrevious trial:\nQuestion: \n\nReflection:"
     out = _build_cot_reflection_prompt(
-        examples="", question="", scratchpad="", prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA
+        examples="",
+        question="",
+        scratchpad="",
+        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert out == gt_out
 
@@ -293,7 +302,7 @@ def test__prompt_cot_reflection() -> None:
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
         question=q,
         scratchpad=scratchpad,
-        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA
+        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert out == gt_out
 
@@ -313,7 +322,7 @@ def test_cot_reflect_reflexion() -> None:
         examples="",
         question="",
         scratchpad="",
-        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA
+        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, list)
     assert out == ["", "1"]
@@ -326,7 +335,7 @@ def test_cot_reflect_last_attempt_and_reflexion() -> None:
         examples="",
         question="",
         scratchpad="",
-        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA
+        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, list)
     assert out == ["1"]
