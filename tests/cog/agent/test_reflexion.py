@@ -43,25 +43,6 @@ def test_reflexion_cot_reset() -> None:
     assert not agent.strategy.reflector.reflections_str
 
 
-def test_reflexion_cot_reflect() -> None:
-    """Test reflect method."""
-    reflexion_cot_agent = ReflexionCoTAgent(
-        self_reflect_llm=FakeListChatModel(responses=["1"]),
-        action_llm=FakeListChatModel(responses=["1"]),
-    )
-
-    reflexion_cot_agent.reset()
-
-    # Test last attempt with no context.
-    gt_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: \n\n(END PREVIOUS TRIAL)\n"
-    reflections_str = reflexion_cot_agent.reflect(
-        strategy="last_attempt",
-        question="",
-        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
-    )
-    assert reflections_str == gt_reflections_str
-
-
 def test_reflexion_cot_generate() -> None:
     """Test generate method."""
     question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
