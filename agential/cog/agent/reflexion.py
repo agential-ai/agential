@@ -135,8 +135,7 @@ class ReflexionCoTAgent(BaseAgent):
         if reset:
             self.reset()
 
-        idx = 0
-        patience_cnt = 0
+        idx, patience_cnt = 0, 0
         out = []
         while self.strategy.halting_condition(idx=idx, key=key, **kwargs):
 
@@ -168,14 +167,14 @@ class ReflexionCoTAgent(BaseAgent):
             )
 
             # Act.
-            # query = self.strategy.generate_action(
-            #     question=question,
-            #     examples=examples,
-            #     reflections=reflections,
-            #     prompt=prompt,
-            #     additional_keys=additional_keys,
-            #     **kwargs,
-            # )
+            query = self.strategy.generate_action(
+                question=question,
+                examples=examples,
+                reflections=reflections,
+                prompt=prompt,
+                additional_keys=additional_keys,
+                **kwargs,
+            )
 
             # Observe.
             is_correct, obs = self.strategy.generate_observation(
