@@ -136,7 +136,7 @@ Thought 3: Leonid Levin is a mathematician and computer scientist. So Pavel Urys
 Action 3: Finish[yes]"""
 
 
-HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT = """Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT = """Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
 Thought: Let's think step by step. The eastern sector of Colorado orogeny extends into the High Plains. High Plains rise in elevation from around 1,800 to 7,000 ft, so the answer is 1,800 to 7,000 ft.
 Action: Finish[1,800 to 7,000 ft]
 

@@ -35,7 +35,7 @@ from agential.cog.prompts.agent.reflexion import (
 )
 from agential.cog.prompts.benchmark.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT,
+    HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
 )
 
 
@@ -123,7 +123,7 @@ def test__prompt_cot_agent() -> None:
 
     out = _prompt_cot_agent(
         llm=FakeListChatModel(responses=["1"]),
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
         reflections="",
         question="",
         scratchpad="",
@@ -142,7 +142,7 @@ def test__prompt_cot_agent() -> None:
     ]
     out = _prompt_cot_agent(
         llm=FakeListChatModel(responses=responses),
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
         reflections="",
         question=q,
         scratchpad="\nThought:",
@@ -175,7 +175,7 @@ def test__prompt_cot_agent() -> None:
     gt_out = 'I made a mistake in my previous attempts. Let\'s think more carefully this time. The acronym "AG" stands for "Aktiengesellschaft" in German, which translates to "stock corporation" in English. So the new acronym for VIVA Media AG after the name change is "Constantin Film Aktiengesellschaft."\nFinish[Constantin Film Aktiengesellschaft]'
     out = _prompt_cot_agent(
         llm=FakeListChatModel(responses=responses),
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
         reflections=reflections,
         question=q,
         scratchpad=scratchpad,
