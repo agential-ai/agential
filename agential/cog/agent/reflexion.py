@@ -158,7 +158,7 @@ class ReflexionCoTAgent(BaseAgent):
             self.strategy.reset(only_scratchpad=True)
 
             # Think.
-            answer = self.strategy.generate(
+            thought = self.strategy.generate(
                 question=question,
                 examples=examples,
                 reflections=reflections,
@@ -185,7 +185,7 @@ class ReflexionCoTAgent(BaseAgent):
             idx += 1
             out.append(
                 self.strategy.create_output_dict(
-                    answer=answer,
+                    thought=thought,
                     is_correct=is_correct,
                     obs=obs,
                 )
