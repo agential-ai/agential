@@ -10,9 +10,9 @@ from agential.cog.modules.reflect.reflexion import (
     ReflexionReActReflector,
 )
 from agential.cog.prompts.agent.reflexion import (
-    REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
+    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     REFLEXION_COT_INSTRUCTION_HOTPOTQA,
-    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT
+    REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.prompts.benchmark.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
@@ -58,7 +58,7 @@ def test_reflexion_cot_generate() -> None:
     # Incorrect.
     responses = [
         "Let's think step by step. VIVA Media AG changed its name to VGL Group in 2004. VGL Group stands for VIVA GLobilization.\nAction: Finish[VIVA GLobilization]"
-        'Finish[VIVA GLobilization]',
+        "Finish[VIVA GLobilization]",
     ]
     agent = ReflexionCoTAgent(
         llm=FakeListChatModel(responses=responses),
@@ -67,13 +67,13 @@ def test_reflexion_cot_generate() -> None:
     )
 
     out = agent.generate(
-        question=question, 
-        key=key, 
+        question=question,
+        key=key,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
-        prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA, 
+        prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
         reflection_strategy=None,
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-        reflect_prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA
+        reflect_prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, list)
     assert len(out) == 1
@@ -90,13 +90,13 @@ def test_reflexion_cot_generate() -> None:
     )
 
     out = agent.generate(
-        question=question, 
-        key=key, 
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT, 
-        prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA, 
+        question=question,
+        key=key,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
+        prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
         reflection_strategy=None,
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-        reflect_prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA
+        reflect_prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, list)
     assert len(out) == 1
@@ -113,13 +113,13 @@ def test_reflexion_cot_generate() -> None:
     )
 
     out = agent.generate(
-        question=question, 
-        key=key, 
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT, 
-        prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA, 
+        question=question,
+        key=key,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
+        prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
         reflection_strategy=None,
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-        reflect_prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA
+        reflect_prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, list)
     assert len(out) == 1
@@ -135,13 +135,13 @@ def test_reflexion_cot_generate() -> None:
         max_trials=1,
     )
     out = agent.generate(
-        question=question, 
-        key=key, 
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT, 
-        prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA, 
+        question=question,
+        key=key,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
+        prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
         reflection_strategy="last_attempt",
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-        reflect_prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA
+        reflect_prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, list)
     assert len(out) == 1
@@ -160,14 +160,14 @@ def test_reflexion_cot_generate() -> None:
         max_trials=2,
     )
     out = agent.generate(
-        question=question, 
-        key=key, 
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT, 
-        prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA, 
+        question=question,
+        key=key,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
+        prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
         reflection_strategy="reflexion",
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
         reflect_prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
-        patience=2
+        patience=2,
     )
     assert isinstance(out, list)
     assert len(out) == 2
@@ -186,14 +186,14 @@ def test_reflexion_cot_generate() -> None:
         max_trials=3,
     )
     out = agent.generate(
-        question=question, 
-        key=key, 
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT, 
-        prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA, 
+        question=question,
+        key=key,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
+        prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
         reflection_strategy="reflexion",
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
         reflect_prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
-        patience=2
+        patience=2,
     )
     assert isinstance(out, list)
     assert len(out) == 2
@@ -211,31 +211,32 @@ def test_reflexion_cot_generate() -> None:
         max_trials=1,
     )
     out = agent.generate(
-        question=question, 
-        key=key, 
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT, 
-        prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA, 
+        question=question,
+        key=key,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
+        prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
         reflection_strategy="reflexion",
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
         reflect_prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
-        patience=1
+        patience=1,
     )
     assert isinstance(out, list)
     assert len(out) == 1
 
     # In a subsequent run, answer correctly (reset defaults to True). Output is non-empty if patience is correctly reset.
     out = agent.generate(
-        question=question, 
-        key=key, 
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT, 
-        prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA, 
+        question=question,
+        key=key,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
+        prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
         reflection_strategy="reflexion",
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
         reflect_prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
-        patience=2
+        patience=2,
     )
     assert isinstance(out, list)
     assert len(out) == 1
+
 
 def test_reflexion_react_init() -> None:
     """Test ReflexionReActAgent initialization."""
