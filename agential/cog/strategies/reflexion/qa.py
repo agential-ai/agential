@@ -172,7 +172,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         return EM(self._answer, key), obs
 
     def create_output_dict(
-        self, thought: str, action_type: str, query: str, obs: str, key: str
+        self, thought: str, action_type: str, query: str, obs: str, is_correct: bool
     ) -> Dict[str, str]:
         """Creates a dictionary of the output components.
 
@@ -181,10 +181,10 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             action_type (str): The type of action performed.
             query (str): The query for the action.
             obs (str): The generated observation.
-            key (str): The key for the observation.
+            is_correct (bool): Whether the answer is correct.
 
         Returns:
-            Dict[str, str]: A dictionary containing the thought, action type, query, and observation.
+            Dict[str, str]: A dictionary containing the thought, action type, query, observation, answer, and is_correct.
         """
         return {
             "thought": thought,
@@ -192,7 +192,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             "query": query,
             "obs": obs,
             "answer": self._answer,
-            "is_correct": EM(self._answer, key),
+            "is_correct": is_correct,
         }
 
     def halting_condition(
