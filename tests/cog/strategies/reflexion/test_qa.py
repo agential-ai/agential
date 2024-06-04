@@ -10,19 +10,11 @@ from agential.cog.prompts.agent.reflexion import (
     REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.prompts.benchmark.hotpotqa import (
-    HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
+    HOTPOTQA_FEWSHOT_EXAMPLES_COT,
 )
 from agential.cog.strategies.reflexion.qa import (
     ReflexionCoTQAStrategy,
-    parse_qa_action,
 )
-
-
-def test_parse_qa_action() -> None:
-    """Test the parse_qa_action function."""
-    assert parse_qa_action("QA[question]") == ("QA", "question")
-    assert parse_qa_action("QA[]") == ("", "")
-    assert parse_qa_action("QA") == ("", "")
 
 
 def test_reflexion_cot_init() -> None:
@@ -51,7 +43,7 @@ def test_reflexion_cot_generate() -> None:
     strategy = ReflexionCoTQAStrategy(llm=llm)
     out = strategy.generate(
         question=question,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT,
         reflections="",
         prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
         additional_keys={},
@@ -71,7 +63,7 @@ def test_reflexion_cot_generate_action() -> None:
     strategy = ReflexionCoTQAStrategy(llm=llm)
     action_type, query = strategy.generate_action(
         question=question,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT_REACT,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT,
         reflections="",
         prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
         additional_keys={},
