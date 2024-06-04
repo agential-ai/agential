@@ -120,14 +120,12 @@ def test_reflexion_cot_create_output_dict() -> None:
     output = strategy.create_output_dict(
         thought="This is a thought.",
         action_type="Finish",
-        query="correct_answer",
         obs="Observation: Answer is CORRECT",
-        key="correct_answer",
+        is_correct=True,
     )
     expected_output = {
         "thought": "This is a thought.",
         "action_type": "Finish",
-        "query": "correct_answer",
         "obs": "Observation: Answer is CORRECT",
         "answer": "correct_answer",
         "is_correct": True,
@@ -139,14 +137,12 @@ def test_reflexion_cot_create_output_dict() -> None:
     output = strategy.create_output_dict(
         thought="This is a thought.",
         action_type="Finish",
-        query="incorrect_answer",
         obs="Observation: Answer is INCORRECT",
-        key="correct_answer",
+        is_correct=False,
     )
     expected_output = {
         "thought": "This is a thought.",
         "action_type": "Finish",
-        "query": "incorrect_answer",
         "obs": "Observation: Answer is INCORRECT",
         "answer": "incorrect_answer",
         "is_correct": False,
@@ -158,14 +154,12 @@ def test_reflexion_cot_create_output_dict() -> None:
     output = strategy.create_output_dict(
         thought="This is another thought.",
         action_type="Calculate",
-        query="some_query",
         obs="Observation: Invalid action type, please try again.",
-        key="correct_answer",
+        is_correct=False,
     )
     expected_output = {
         "thought": "This is another thought.",
         "action_type": "Calculate",
-        "query": "some_query",
         "obs": "Observation: Invalid action type, please try again.",
         "answer": "some_answer",
         "is_correct": False,
