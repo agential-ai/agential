@@ -19,26 +19,26 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         """Initialization."""
         super().__init__(llm)
 
-    # @abstractmethod
-    # def generate_action(
-    #     self,
-    #     question: str,
-    #     examples: str,
-    #     prompt: str,
-    #     additional_keys: Dict[str, str],
-    # ) -> str:
-    #     """Generates an action based on the question, examples, and prompt.
+    @abstractmethod
+    def generate_action(
+        self,
+        question: str,
+        examples: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> str:
+        """Generates an action based on the question, examples, and prompt.
 
-    #     Args:
-    #         question (str): The question to be answered.
-    #         examples (str): Examples to guide the generation process.
-    #         prompt (str): The prompt used for generating the action.
-    #         additional_keys (Dict[str, str]): Additional keys for the generation process.
+        Args:
+            question (str): The question to be answered.
+            examples (str): Examples to guide the generation process.
+            prompt (str): The prompt used for generating the action.
+            additional_keys (Dict[str, str]): Additional keys for the generation process.
 
-    #     Returns:
-    #         str: The generated query.
-    #     """
-    #     pass
+        Returns:
+            str: The generated query.
+        """
+        pass
 
     @abstractmethod
     def generate_observation(self, key: str) -> Tuple[bool, str]:
