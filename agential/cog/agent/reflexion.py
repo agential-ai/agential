@@ -179,7 +179,7 @@ class ReflexionCoTAgent(BaseAgent):
 
             # Observe.
             is_correct, obs = self.strategy.generate_observation(
-                answer=answer, key=key
+                key=key
             )
 
             idx += 1

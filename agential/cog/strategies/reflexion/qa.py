@@ -104,6 +104,9 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         answer = remove_newline(answer)
         self._scratchpad += " " + answer
 
+        self._finished = True
+        self._answer = answer.split("So the answer is: ")[-1]
+        
         return answer
 
     # def generate_action(
@@ -146,23 +149,18 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
     #     return query
 
     def generate_observation(
-        self, answer: str, key: str
+        self, key: str
     ) -> Tuple[bool, str]:
         """Generates an observation based on the action type and answer.
 
         Args:
-            answer (str): The answer to the question.
             key (str): The key for the observation.
 
         Returns:
             Tuple[bool, str]: The generated observation.
         """
-        self._scratchpad += f"\nObservation: "
-        self._finished = True
-        self._answer = answer
-
         obs = "Answer is CORRECT" if EM(self._answer, key) else "Answer is INCORRECT"
-        self._scratchpad += obs
+        self._scratchpad += f"\n{obs}"
 
         return EM(self._answer, key), obs
 
