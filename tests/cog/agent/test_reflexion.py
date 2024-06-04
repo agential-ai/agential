@@ -156,7 +156,9 @@ def test_reflexion_cot_generate() -> None:
     ]
     agent = ReflexionCoTAgent(
         llm=FakeListChatModel(responses=responses),
+        mode={"qa": "hotpotqa"},
         max_trials=2,
+        patience=2
     )
     out = agent.generate(
         question=question, 
@@ -169,7 +171,7 @@ def test_reflexion_cot_generate() -> None:
     )
     assert isinstance(out, list)
     assert len(out) == 2
-    
+
     # # Test exhaust patience and get incorrect answers for all trials.
     # gt_out = [
     #     'Thought: Upon reflecting on the incorrect answer I provided, I realize that the phrasing discrepancy in my response may have been the reason for the error. While I correctly identified that the new acronym for VIVA Media AG was GmbH, I did not provide the full expansion of the acronym as "Gesellschaft mit beschränkter Haftung." This lack of completeness in my answer likely led to it being marked as incorrect. In the future, I will ensure to always provide the complete expansion of acronyms when responding to similar questions to avoid any phrasing discrepancies.\nAction: Finish[VIVA Media GmbH]\nObservation: Answer is INCORRECT',
