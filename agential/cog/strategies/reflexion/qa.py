@@ -147,7 +147,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
 
     def generate_observation(
         self, query: str, key: str
-    ) -> Tuple[bool, str]:
+    ) -> bool:
         """Generates an observation based on the action type and query.
 
         Args:
@@ -160,14 +160,10 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         self._scratchpad += f"\nObservation: "
         self._finished = True
         self._answer = query
-        if EM(self._answer, key):
-            obs = "Answer is CORRECT"
-        else:
-            obs = "Answer is INCORRECT"
 
-        self._scratchpad += obs
+        self._scratchpad += "Answer is CORRECT" if EM(self._answer, key) else "Answer is INCORRECT"
 
-        return EM(self._answer, key), obs
+        return EM(self._answer, key)
 
     def create_output_dict(
         self, thought: str, query: str, obs: str, key: str
