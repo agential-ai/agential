@@ -313,7 +313,7 @@ def test_cot_reflect_reflexion() -> None:
         examples="",
         question="",
         scratchpad="",
-        context="",
+        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA
     )
     assert isinstance(out, list)
     assert out == ["", "1"]
@@ -326,7 +326,7 @@ def test_cot_reflect_last_attempt_and_reflexion() -> None:
         examples="",
         question="",
         scratchpad="",
-        context="",
+        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA
     )
     assert isinstance(out, list)
     assert out == ["1"]
@@ -343,7 +343,7 @@ def test_cot_reflect() -> None:
             examples="",
             question="",
             scratchpad="",
-            context="",
+            prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
         )
 
     # Last attempt.
@@ -354,7 +354,7 @@ def test_cot_reflect() -> None:
         examples="",
         question="",
         scratchpad="",
-        context="",
+        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert out == [""]
 
@@ -366,7 +366,7 @@ def test_cot_reflect() -> None:
         examples="",
         question="",
         scratchpad="",
-        context="",
+        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, list)
     assert out == ["", "1"]
@@ -379,7 +379,7 @@ def test_cot_reflect() -> None:
         examples="",
         question="",
         scratchpad="",
-        context="",
+        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, list)
     assert out == ["1"]
