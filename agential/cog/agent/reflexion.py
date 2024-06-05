@@ -55,7 +55,7 @@ def parse_action(string: str) -> Tuple[str, str]:
     if match:
         action_type = match.group(1)
         argument = match.group(2)
-    else:  # TODO: Handle parsing/data validation.
+    else:
         action_type = ""
         argument = ""
     return action_type, argument
