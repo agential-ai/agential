@@ -7,7 +7,7 @@ from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.agent.critic import CriticAgent
-from agential.cog.prompts.agents.critic import (
+from agential.cog.prompts.agent.critic import (
     CRITIC_CRITIQUE_INSTRUCTION_GSM8K,
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
     CRITIC_CRITIQUE_INSTRUCTION_MBPP,
@@ -23,10 +23,10 @@ from agential.cog.prompts.agents.critic import (
     HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
     MBPP_FEWSHOT_EXAMPLES_CRITIC,
 )
-from agential.cog.prompts.benchmarks.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
-from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
-from agential.cog.prompts.benchmarks.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_POT
-from agential.cog.prompts.benchmarks.mbpp import MBPP_FEWSHOT_EXAMPLES_POT
+from agential.cog.prompts.benchmark.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
+from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
+from agential.cog.prompts.benchmark.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_POT
+from agential.cog.prompts.benchmark.mbpp import MBPP_FEWSHOT_EXAMPLES_POT
 
 
 def test_init() -> None:
@@ -172,11 +172,11 @@ def test_generate() -> None:
     )
     out = agent.generate(
         question=question,
-        critique_additional_keys={"tests": tests},
         examples=HUMANEVAL_FEWSHOT_EXAMPLES_POT,
         prompt=CRITIC_POT_INSTRUCTION_HUMANEVAL,
         critique_examples=HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
         critique_prompt=CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_HUMANEVAL,
+        critique_additional_keys={"tests": tests},
         use_tool=False,
         max_interactions=3,
     )
@@ -198,12 +198,12 @@ def test_generate() -> None:
     )
     out = agent.generate(
         question=question,
-        additional_keys={"tests": tests},
-        critique_additional_keys={"tests": tests},
         examples=MBPP_FEWSHOT_EXAMPLES_POT,
         prompt=CRITIC_POT_INSTRUCTION_MBPP,
         critique_examples=MBPP_FEWSHOT_EXAMPLES_CRITIC,
         critique_prompt=CRITIC_CRITIQUE_INSTRUCTION_MBPP,
+        additional_keys={"tests": tests},
+        critique_additional_keys={"tests": tests},
         use_tool=True,
         max_interactions=3,
     )

@@ -90,16 +90,16 @@ class ReActAgent(BaseAgent):
             idx=idx,
             question=question,
             examples=examples,
-            additional_keys=additional_keys,
             prompt=prompt,
+            additional_keys=additional_keys,
             **kwargs,
         ):
             # Think.
             thought = self.strategy.generate(
                 question=question,
                 examples=examples,
-                additional_keys=additional_keys,
                 prompt=prompt,
+                additional_keys=additional_keys,
                 **kwargs,
             )
 
@@ -107,8 +107,8 @@ class ReActAgent(BaseAgent):
             action_type, query = self.strategy.generate_action(
                 question=question,
                 examples=examples,
-                additional_keys=additional_keys,
                 prompt=prompt,
+                additional_keys=additional_keys,
                 **kwargs,
             )
 

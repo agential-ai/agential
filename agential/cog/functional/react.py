@@ -7,18 +7,14 @@ from langchain_core.messages.human import HumanMessage
 from langchain_core.prompts.prompt import PromptTemplate
 from tiktoken import Encoding
 
-from agential.cog.prompts.agents.react import (
-    REACT_INSTRUCTION_HOTPOTQA,
-)
-
 
 def _build_agent_prompt(
     question: str,
     scratchpad: str,
     examples: str,
     max_steps: int,
+    prompt: str,
     additional_keys: Dict[str, str] = {},
-    prompt: str = REACT_INSTRUCTION_HOTPOTQA,
 ) -> str:
     """Constructs a prompt template for the agent.
 
@@ -30,9 +26,8 @@ def _build_agent_prompt(
         scratchpad (str): Additional scratchpad information to be included.
         examples (str): Fewshot examples.
         max_steps (int): Max number of steps.
+        prompt (str, optional): Prompt template string.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
-        prompt (str, optional): Prompt template string. Defaults to REACT_INSTRUCTION_HOTPOTQA. Must include question,
-            scratchpad, examples, and max_steps.
 
     Returns:
         str: A formatted prompt template ready for use.
@@ -53,8 +48,8 @@ def _prompt_agent(
     scratchpad: str,
     examples: str,
     max_steps: int,
+    prompt: str,
     additional_keys: Dict[str, str] = {},
-    prompt: str = REACT_INSTRUCTION_HOTPOTQA,
 ) -> str:
     """Generates a response from the LLM based on a given question and scratchpad.
 
@@ -67,9 +62,8 @@ def _prompt_agent(
         scratchpad (str): Additional context or information for the language model.
         examples (str): Fewshot examples.
         max_steps (int): Maximum number of steps.
+        prompt (str, optional): Prompt template string.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
-        prompt (str, optional): Prompt template string. Defaults to REACT_INSTRUCTION_HOTPOTQA. Must include question,
-            scratchpad, examples, and max_steps.
 
     Returns:
         str: The processed response from the language model.
@@ -79,8 +73,8 @@ def _prompt_agent(
         scratchpad=scratchpad,
         examples=examples,
         max_steps=max_steps,
-        additional_keys=additional_keys,
         prompt=prompt,
+        additional_keys=additional_keys,
     )
     out = llm(
         [
@@ -89,6 +83,7 @@ def _prompt_agent(
             )
         ]
     ).content
+    print(repr(out))
     assert isinstance(out, str)
     return out
 
@@ -102,8 +97,8 @@ def _is_halted(
     max_steps: int,
     max_tokens: int,
     enc: Encoding,
+    prompt: str,
     additional_keys: Dict[str, str] = {},
-    prompt: str = REACT_INSTRUCTION_HOTPOTQA,
 ) -> bool:
     """Determines whether the agent's operation should be halted.
 
@@ -120,9 +115,8 @@ def _is_halted(
         max_steps (int): Maximum allowed steps.
         max_tokens (int): Maximum allowed token count.
         enc (Encoding): The encoder to calculate token length.
+        prompt (str, optional): Prompt template string.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
-        prompt (str, optional): Prompt template string. Defaults to REACT_INSTRUCTION_HOTPOTQA. Must include question,
-            scratchpad, examples, and max_steps.
 
     Returns:
         bool: True if the operation should be halted, False otherwise.
@@ -136,8 +130,8 @@ def _is_halted(
                     scratchpad=scratchpad,
                     examples=examples,
                     max_steps=max_steps,
-                    additional_keys=additional_keys,
                     prompt=prompt,
+                    additional_keys=additional_keys,
                 )
             )
         )

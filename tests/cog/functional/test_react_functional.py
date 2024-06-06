@@ -9,7 +9,8 @@ from agential.cog.functional.react import (
     _is_halted,
     _prompt_agent,
 )
-from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+from agential.cog.prompts.agent.react import REACT_INSTRUCTION_HOTPOTQA
+from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 
 
 def test__build_agent_prompt() -> None:
@@ -19,6 +20,7 @@ def test__build_agent_prompt() -> None:
         scratchpad="",
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         max_steps=1,
+        prompt=REACT_INSTRUCTION_HOTPOTQA,
     )
 
     assert isinstance(prompt, str)
@@ -42,6 +44,7 @@ def test__prompt_agent() -> None:
         scratchpad="",
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         max_steps=1,
+        prompt=REACT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, str)
     assert out == "1"
@@ -73,6 +76,7 @@ def test__is_halted() -> None:
         10,
         100,
         gpt3_5_turbo_enc,
+        REACT_INSTRUCTION_HOTPOTQA,
     )
 
     # Test when idx exceeds max_steps.
@@ -85,6 +89,7 @@ def test__is_halted() -> None:
         10,
         100,
         gpt3_5_turbo_enc,
+        REACT_INSTRUCTION_HOTPOTQA,
     )
 
     # Test when encoded prompt exceeds max_tokens.
@@ -97,6 +102,7 @@ def test__is_halted() -> None:
         10,
         10,
         gpt3_5_turbo_enc,
+        REACT_INSTRUCTION_HOTPOTQA,
     )
 
     # Test when none of the conditions for halting are met.
@@ -109,6 +115,7 @@ def test__is_halted() -> None:
         10,
         100000,
         gpt3_5_turbo_enc,
+        REACT_INSTRUCTION_HOTPOTQA,
     )
 
     # Test edge case when idx equals max_steps.
@@ -121,6 +128,7 @@ def test__is_halted() -> None:
         10,
         100,
         gpt3_5_turbo_enc,
+        REACT_INSTRUCTION_HOTPOTQA,
     )
 
     # Test edge case when encoded prompt equals max_tokens.
@@ -133,6 +141,7 @@ def test__is_halted() -> None:
         10,
         1603,
         gpt3_5_turbo_enc,
+        REACT_INSTRUCTION_HOTPOTQA,
     )
 
     # Test with custom prompt template string.

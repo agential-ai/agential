@@ -9,6 +9,10 @@ from agential.cog.functional.critic import (
     _prompt_critique,
     remove_comment,
 )
+from agential.cog.prompts.agent.critic import (
+    CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
+    CRITIC_INSTRUCTION_HOTPOTQA,
+)
 
 
 # Ref: https://github.com/microsoft/ProphetNet/blob/master/CRITIC/src/tools/interpreter_api.py.
@@ -24,8 +28,7 @@ def test__build_agent_prompt() -> None:
     """Test _build_agent_prompt function."""
     gt_out = "\n(END OF EXAMPLES)\n\nQ: \nA: "
     prompt = _build_agent_prompt(
-        question="",
-        examples="",
+        question="", examples="", prompt=CRITIC_INSTRUCTION_HOTPOTQA
     )
     assert prompt == gt_out
 
@@ -39,9 +42,7 @@ def test__build_agent_prompt() -> None:
 def test__prompt_agent() -> None:
     """Test _prompt_agent function."""
     out = _prompt_agent(
-        llm=FakeListChatModel(responses=["1"]),
-        question="",
-        examples="",
+        llm=FakeListChatModel(responses=["1"]), question="", examples="", prompt=""
     )
     assert out == "1"
 
@@ -58,7 +59,13 @@ def test__prompt_agent() -> None:
 def test__build_critique_prompt() -> None:
     """Test _build_critique_prompt function."""
     gt_out = "\n(END OF EXAMPLES)\n\nQuestion: \nProposed Answer: \n\nWhat's the problem with the above answer?\n\n1. Plausibility:\n\n"
-    prompt = _build_critique_prompt(question="", examples="", answer="", critique="")
+    prompt = _build_critique_prompt(
+        question="",
+        examples="",
+        answer="",
+        critique="",
+        prompt=CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
+    )
     assert prompt == gt_out
 
     # Test custom prompt.
@@ -75,7 +82,12 @@ def test__build_critique_prompt() -> None:
 def test__prompt_critique() -> None:
     """Test _prompt_critique function."""
     out = _prompt_critique(
-        llm=FakeListChatModel(responses=["1"]), question="", examples="", answer=""
+        llm=FakeListChatModel(responses=["1"]),
+        question="",
+        examples="",
+        answer="",
+        critique="",
+        prompt="",
     )
     assert out == "1"
 
@@ -85,6 +97,7 @@ def test__prompt_critique() -> None:
         question="",
         examples="",
         answer="",
-        prompt="{question}{examples}",
+        critique="",
+        prompt="{question}{examples}{critique}",
     )
     assert out == "1"

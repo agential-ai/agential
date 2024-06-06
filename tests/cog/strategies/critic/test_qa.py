@@ -8,12 +8,12 @@ from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 from langchain_core.language_models.chat_models import BaseChatModel
 
-from agential.cog.prompts.agents.critic import (
+from agential.cog.prompts.agent.critic import (
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
     CRITIC_INSTRUCTION_HOTPOTQA,
     HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
 )
-from agential.cog.prompts.benchmarks.hotpotqa import (
+from agential.cog.prompts.benchmark.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
 )
 from agential.cog.strategies.critic.qa import (

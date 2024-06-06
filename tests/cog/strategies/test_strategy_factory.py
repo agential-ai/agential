@@ -23,6 +23,11 @@ from agential.cog.strategies.critic.qa import (
     CritTriviaQAStrategy,
 )
 from agential.cog.strategies.react.code import ReActHEvalStrategy, ReActMBPPStrategy
+from agential.cog.strategies.react.math import (
+    ReActGSM8KStrategy,
+    ReActSVAMPStrategy,
+    ReActTabMWPStrategy,
+)
 from agential.cog.strategies.react.qa import (
     ReActAmbigNQStrategy,
     ReActFEVERStrategy,
@@ -175,6 +180,29 @@ def test_react_strategy_factory_get_strategy() -> None:
     assert isinstance(strategy, ReActHotQAStrategy)
     assert strategy.llm == llm
 
+    # Math benchmarks.
+    assert isinstance(
+        ReActStrategyFactory.get_strategy({"math": "gsm8k"}, llm=llm),
+        ReActGSM8KStrategy,
+    )
+    assert isinstance(
+        ReActStrategyFactory.get_strategy({"math": "svamp"}, llm=llm),
+        ReActSVAMPStrategy,
+    )
+    assert isinstance(
+        ReActStrategyFactory.get_strategy({"math": "tabmwp"}, llm=llm),
+        ReActTabMWPStrategy,
+    )
+
+    # Test kwargs for Math strategy.
+    strategy = ReActStrategyFactory.get_strategy(
+        {"math": "gsm8k"}, llm=llm, max_tokens=123
+    )
+    assert isinstance(strategy, ReActGSM8KStrategy)
+    assert strategy.llm == llm
+    assert strategy.max_tokens == 123
+
+    # Code benchmarks.
     assert isinstance(
         ReActStrategyFactory.get_strategy({"code": "humaneval"}, llm=llm),
         ReActHEvalStrategy,

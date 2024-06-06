@@ -7,12 +7,12 @@ from agential.cog.agent.react import (
     ReActAgent,
     ReActOutput,
 )
-from agential.cog.prompts.agents.react import (
+from agential.cog.prompts.agent.react import (
     REACT_INSTRUCTION_HOTPOTQA,
     REACT_INSTRUCTION_HUMANEVAL,
 )
-from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.cog.prompts.benchmarks.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_POT
+from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+from agential.cog.prompts.benchmark.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_POT
 from agential.cog.strategies.react.base import ReActBaseStrategy
 
 

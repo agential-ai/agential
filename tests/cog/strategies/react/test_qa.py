@@ -4,10 +4,10 @@ from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
 
-from agential.cog.prompts.agents.react import (
+from agential.cog.prompts.agent.react import (
     REACT_INSTRUCTION_HOTPOTQA,
 )
-from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.strategies.react.qa import (
     ReActAmbigNQStrategy,
     ReActFEVERStrategy,
@@ -65,8 +65,8 @@ def test_generate() -> None:
     result = strategy.generate(
         question=question,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        additional_keys={},
         prompt=REACT_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
     )
     assert result == gt_result
     assert not strategy._finished
@@ -88,8 +88,8 @@ def test_generate_action() -> None:
     action_type, query = strategy.generate_action(
         question=question,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        additional_keys={},
         prompt=REACT_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
     )
     assert action_type == gt_action_type
     assert query == gt_query

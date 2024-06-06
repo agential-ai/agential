@@ -12,7 +12,7 @@ from agential.cog.modules.memory.expel import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
-from agential.cog.prompts.benchmarks.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 
 fewshot_questions = re.findall(r"Question: (.+?)\n", HOTPOTQA_FEWSHOT_EXAMPLES_REACT)
 fewshot_keys = re.findall(
