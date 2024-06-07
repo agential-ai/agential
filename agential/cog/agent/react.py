@@ -7,6 +7,7 @@ Paper Repository: https://github.com/ysymyth/ReAct
 from typing import Any, Dict, List
 
 from langchain_core.language_models.chat_models import BaseChatModel
+from pydantic import BaseModel
 
 from agential.cog.agent.base import BaseAgent
 from agential.cog.strategies.strategy_factory import ReActStrategyFactory
@@ -46,7 +47,7 @@ class ReActAgent(BaseAgent):
         additional_keys: Dict[str, str] = {},
         reset: bool = True,
         **kwargs: Dict[str, Any],
-    ) -> List[Dict[str, str]]:
+    ) -> List[BaseModel]:
         """Processes a given question through ReAct.
 
         Iteratively applies the think-act-observe cycle to generate an answer for the question.
@@ -99,9 +100,9 @@ class ReActAgent(BaseAgent):
             obs = self.strategy.generate_observation(
                 idx=idx, action_type=action_type, query=query
             )
-
+            # This line is modified for testing structured output in Pydantic model
             out.append(
-                dict[str, str](
+                self.strategy.create_output_pydantic(
                     thought=thought,
                     action_type=action_type,
                     query=query,

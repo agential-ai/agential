@@ -191,6 +191,27 @@ class ReActQAStrategy(ReActBaseStrategy):
 
         return obs
 
+    def create_output_pydantic(
+        self, thought: str, action_type: str, query: str, observation: str
+    ) -> ReActQAStrategyOutput:
+        """Creates a Pydantic model of the output components.
+
+        Args:
+            thought (str): The generated thought.
+            action_type (str): The type of action performed.
+            query (str): The query for the action.
+            observation (str): The generated observation.
+
+        Returns:
+            ReActMathStrategyOutput: A Pydantic model containing the thought, action type, query, and observation.
+        """
+        return ReActQAStrategyOutput(
+            thought=thought,
+            action_type=action_type,
+            query=query,
+            observation=observation,
+        )
+
     def create_output_dict(
         self, thought: str, action_type: str, query: str, obs: str
     ) -> Dict[str, str]:
