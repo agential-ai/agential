@@ -151,6 +151,10 @@ class CriticAgent(BaseAgent):
 
             out.append(
                 self.strategy.create_output_dict(answer, critique, external_tool_info)
+
+                self.strategy.create_output_pydantic(
+                    XXXXXXX
+                )
             )
 
             if self.strategy.halting_condition():
