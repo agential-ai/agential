@@ -244,40 +244,42 @@ class ReflexionReActAgent(BaseAgent):
             mode=self.mode, llm=self.llm, reflector=reflector, **strategy_kwargs
         )
 
-        self.self_reflect_llm = self_reflect_llm
-        self.action_llm = action_llm
+        
 
-        # if not memory:
-        #     self.memory = ReflexionMemory()
+        # self.self_reflect_llm = self_reflect_llm
+        # self.action_llm = action_llm
+
+        # # if not memory:
+        # #     self.memory = ReflexionMemory()
+        # # else:
+        # self.memory = memory
+
+        # self.max_reflections = max_reflections
+        # if not reflector:
+        #     self.reflector = ReflexionReActReflector(
+        #         llm=self_reflect_llm, max_reflections=max_reflections
+        #     )
         # else:
-        self.memory = memory
+        #     self.reflector = reflector
 
-        self.max_reflections = max_reflections
-        if not reflector:
-            self.reflector = ReflexionReActReflector(
-                llm=self_reflect_llm, max_reflections=max_reflections
-            )
-        else:
-            self.reflector = reflector
+        # self.max_steps = max_steps
+        # self.max_tokens = max_tokens
+        # self.max_trials = max_trials
 
-        self.max_steps = max_steps
-        self.max_tokens = max_tokens
-        self.max_trials = max_trials
+        # if not patience:
+        #     self.patience = max_trials
+        # else:
+        #     self.patience = patience
+        # assert self.patience >= 0 and self.patience <= max_trials
 
-        if not patience:
-            self.patience = max_trials
-        else:
-            self.patience = patience
-        assert self.patience >= 0 and self.patience <= max_trials
+        # self.docstore = docstore
+        # self.enc = enc
 
-        self.docstore = docstore
-        self.enc = enc
-
-        # Private variables.
-        self._trial_n = 1
-        self._step_n = 1
-        self._finished = False
-        self._answer = ""
+        # # Private variables.
+        # self._trial_n = 1
+        # self._step_n = 1
+        # self._finished = False
+        # self._answer = ""
 
     def generate(
         self,
