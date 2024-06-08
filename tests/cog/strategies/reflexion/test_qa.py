@@ -227,11 +227,11 @@ def test_reflexion_cot_reflect() -> None:
 
 
 def test_reflexion_cot_should_reflect() -> None:
-    """Tests ReflexionCoTQAStrategy should_reflect."""
+    """Tests ReflexionCoTQAStrategy reflect_condition."""
     llm = FakeListChatModel(responses=[])
     strategy = ReflexionCoTQAStrategy(llm)
 
-    assert not strategy.should_reflect(0, "strategy1", "key1")
-    assert strategy.should_reflect(1, "strategy1", "key1")
-    assert strategy.should_reflect(1, "strategy1", "key2")
-    assert not strategy.should_reflect(1, "", "key2")
+    assert not strategy.reflect_condition(0, "strategy1", "key1")
+    assert strategy.reflect_condition(1, "strategy1", "key1")
+    assert strategy.reflect_condition(1, "strategy1", "key2")
+    assert not strategy.reflect_condition(1, "", "key2")
