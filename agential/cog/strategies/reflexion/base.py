@@ -111,7 +111,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         pass
 
     @abstractmethod
-    def should_reflect(self, idx: int, reflection_strategy: str, key: str) -> bool:
+    def reflect_condition(self, idx: int, reflection_strategy: str, key: str) -> bool:
         """Determines whether the reflection condition has been met.
 
         Args:
@@ -203,6 +203,12 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         pass
 
     @abstractmethod
+    def react_halting_condition(
+        self,
+    ) -> bool:
+        pass
+
+    @abstractmethod
     def reflect(
         self,
         reflection_strategy: str,
@@ -228,7 +234,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         pass
 
     @abstractmethod
-    def should_reflect(self, idx: int, reflection_strategy: str, key: str) -> bool:
+    def reflect_condition(self, idx: int, reflection_strategy: str, key: str) -> bool:
         """Determines whether the reflection condition has been met.
 
         Args:

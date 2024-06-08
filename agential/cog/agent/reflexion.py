@@ -133,7 +133,7 @@ class ReflexionCoTAgent(BaseAgent):
 
             # Reflect if possible.
             reflections = ""
-            if self.strategy.should_reflect(
+            if self.strategy.reflect_condition(
                 idx=idx,
                 reflection_strategy=reflection_strategy,
                 key=key,
@@ -272,7 +272,7 @@ class ReflexionReActAgent(BaseAgent):
         # self.enc = enc
 
         # # Private variables.
-        # self._trial_n = 1
+        # idx = 1
         # self._step_n = 1
         # self._finished = False
         # self._answer = ""
@@ -310,13 +310,23 @@ class ReflexionReActAgent(BaseAgent):
             result (List[Tuple[bool, str, List[Tuple[str, str, str]]]]): List of trials where each trial is
                 in the format (is_correct, answer, output) and output is in a thought-action-observation 3-tuple.
         """
+        if reset:
+            self.reset()
+
+        idx, patience_cnt = 1, 0
+        result = []
+        while self.strategy.halting_condition(key=key):
+            pass
+
+
         # Reset.
         if reset:
             self.reset()
 
+        idx = 1
         patience_cnt = 0
         result = []
-        while not EM(self._answer, key) and self._trial_n < self.max_trials + 1:
+        while not EM(self._answer, key) and idx < self.max_trials + 1:
             # Reflect if possible.
             if (
                 _is_halted(
@@ -424,7 +434,7 @@ class ReflexionReActAgent(BaseAgent):
             if patience_cnt == self.patience:
                 break
 
-            self._trial_n += 1
+            idx += 1
 
         return result
 
@@ -465,20 +475,14 @@ class ReflexionReActAgent(BaseAgent):
 
         return reflections_str
 
-    def retrieve(self) -> Dict[str, Any]:
-        """Retrieves the current state of the agent's memory.
-
-        Returns:
-            Dict[str, Any]: The current state of the agent's memory.
-        """
-        return self.memory.load_memories()
-
     def reset(self) -> None:
         """Resets the internal state of the ReflexionReAct agent.
 
         Sets the step number, finished flag, and scratchpad to their initial values.
         """
-        self._trial_n = 1
+        self.strategy.reset()
+
+        idx = 1
         self._step_n = 1
         self._finished = False
         self._answer = ""

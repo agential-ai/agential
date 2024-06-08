@@ -270,7 +270,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         )
         return reflections_str
 
-    def should_reflect(
+    def reflect_condition(
         self,
         idx: int,
         reflection_strategy: str,
@@ -326,6 +326,43 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         self.max_tokens = max_tokens
         self.docstore = docstore
         self.enc = enc
+
+        self._finished = False
+        self._answer = ""
+        self._scratchpad = ""
+
+    def generate(self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str], **kwargs: Dict[str, Any]) -> str:
+        return super().generate(question, examples, prompt, additional_keys, **kwargs)
+    
+    def generate_action(self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]) -> Tuple[str]:
+        return super().generate_action(question, examples, prompt, additional_keys)
+    
+    def generate_observation(self, action_type: str, query: str, key: str) -> str:
+        return super().generate_observation(action_type, query, key)
+    
+    def create_output_dict(self, thought: str, action_type: str, obs: str, is_correct: bool) -> Dict[str, str]:
+        return super().create_output_dict(thought, action_type, obs, is_correct)
+    
+    def halting_condition(self, idx: int, key: str, **kwargs: Dict[str, Any]) -> bool:
+        max_trials = kwargs.get("max_trials", self.max_trials)
+        return not EM(self._answer, key) and idx < max_trials + 1
+    
+    def react_halting_condition(self) -> bool:
+        return super().react_halting_condition()
+
+    def reset(self, **kwargs: Dict[str, Any]) -> None:
+        self.reflector.reset()
+        self._scratchpad = ""
+        self._finished = False
+        self._answer = ""    
+
+    def reflect(self, reflection_strategy: str, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]) -> str:
+        return super().reflect(reflection_strategy, question, examples, prompt, additional_keys)
+    
+    def reflect_condition(self, idx: int, reflection_strategy: str, key: str) -> bool:
+        return super().reflect_condition(idx, reflection_strategy, key)
+    
+
 
 
 class ReflexionCoTHotQAStrategy(ReflexionCoTQAStrategy):
