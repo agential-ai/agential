@@ -214,7 +214,6 @@ def test__build_cot_reflection_prompt() -> None:
         scratchpad="",
         prompt="{examples} {question} {scratchpad}",
     )
-    print(repr(out))
     assert out == gt_out
 
 
