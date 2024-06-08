@@ -101,8 +101,8 @@ class ReflexionCoTReflector(BaseReflector):
 
         return reflections, reflections_str
 
-    def clear(self) -> None:
-        """Clears the reflections and reflections_str."""
+    def reset(self) -> None:
+        """Resets the reflections and reflections_str."""
         self.reflections = []
         self.reflections_str = ""
 

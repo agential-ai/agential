@@ -228,7 +228,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         if only_scratchpad:
             self._scratchpad = ""
         else:
-            self.reflector.clear()
+            self.reflector.reset()
             self._scratchpad = ""
             self._finished = False
             self._answer = ""
