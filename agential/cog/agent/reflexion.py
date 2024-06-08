@@ -310,13 +310,25 @@ class ReflexionReActAgent(BaseAgent):
             result (List[Tuple[bool, str, List[Tuple[str, str, str]]]]): List of trials where each trial is
                 in the format (is_correct, answer, output) and output is in a thought-action-observation 3-tuple.
         """
+        # Reset.
         if reset:
             self.reset()
 
         idx, patience_cnt = 1, 0
         result = []
         while self.strategy.halting_condition(key=key):
-            pass
+            # Reflect if possible.
+            if self.strategy.reflect_condition(
+                idx=,
+                question=question,
+                examples=reflect_examples,
+                reflections=self.reflector.reflections_str,
+                prompt=reflect_prompt,
+            ):
+
+
+
+
 
 
         # Reset.
