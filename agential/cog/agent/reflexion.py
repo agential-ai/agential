@@ -33,7 +33,7 @@ from agential.cog.prompts.agent.reflexion import (
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.cog.strategies.strategy_factory import ReflexionCoTStrategyFactory
+from agential.cog.strategies.strategy_factory import ReflexionCoTStrategyFactory, ReflexionReActStrategyFactory
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
 
@@ -65,14 +65,13 @@ class ReflexionCoTAgent(BaseAgent):
     """Reflexion with Chain-of-Thought actor.
 
     Attributes:
-        self_reflect_llm (BaseChatModel): The language model used for self-reflection.
         llm (BaseChatModel): The language model used to generate responses.
         mode (Dict[str, str]): The mode of the agent.
         reflector (Optional[ReflexionCoTReflector]): An optional reflector module for guided self-reflection.
         **strategy_kwargs (Dict[str, Any]): Additional keyword arguments for the strategy.
         
     Methods:
-        generate(): Generates a response based on the provided context, question, and key.
+        generate(): Generates a response.
         reset(): Resets the agent's state for a new problem-solving session.
     """
 
@@ -83,7 +82,7 @@ class ReflexionCoTAgent(BaseAgent):
         reflector: Optional[ReflexionCoTReflector] = None,
         **strategy_kwargs: Dict[str, Any],
     ) -> None:
-        """Initialization with default or provided values."""
+        """Initialization."""
         super().__init__()
 
         self.llm = llm
@@ -206,12 +205,13 @@ class ReflexionReActAgent(BaseAgent):
     """Reflexion with ReAct actor.
 
     Attributes:
-
+        llm (BaseChatModel): The language model used to generate responses.
+        mode (Dict[str, str]): The mode of the agent.
+        reflector (Optional[ReflexionReActReflector]): An optional reflector module for guided self-reflection. Defaults to None.
+        **strategy_kwargs (Dict[str, Any]): Additional keyword arguments for the strategy.
 
     Methods:
-        generate(question, key, strategy): Generates a response based on the given question and strategy.
-        reflect(question, strategy): Reflects on the previous response and modifies the strategy accordingly.
-        retrieve(): Retrieves the current memory state of the agent.
+        generate(): Generates a response.
         reset(): Resets the agent's state for a new problem-solving session.
     """
 
@@ -237,6 +237,10 @@ class ReflexionReActAgent(BaseAgent):
         """Initialization."""
         super().__init__()
         
+        self.llm = llm
+        self.mode = mode
+
+        self.strategy = ReflexionReActStrategyFactory().get_strategy()
 
         self.self_reflect_llm = self_reflect_llm
         self.action_llm = action_llm
