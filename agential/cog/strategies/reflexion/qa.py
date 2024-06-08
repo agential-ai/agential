@@ -363,7 +363,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
     
     def reflect_condition(
         self, 
-        step_n: int, 
+        step_idx: int, 
         reflection_strategy: str, 
         question: str, 
         examples: str, 
@@ -376,7 +376,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
 
         halted =  _is_halted(
             finished=self._finished,
-            step_n=step_n,
+            step_idx=step_idx,
             question=question,
             scratchpad=self._scratchpad,
             examples=examples,
