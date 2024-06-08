@@ -10,11 +10,8 @@ import re
 
 from typing import Any, Dict, List, Optional, Tuple
 
-import tiktoken
 
-from langchain_community.docstore.wikipedia import Wikipedia
 from langchain_core.language_models.chat_models import BaseChatModel
-from tiktoken import Encoding
 
 from agential.cog.agent.base import BaseAgent
 from agential.cog.eval.reflexion import EM
@@ -34,7 +31,6 @@ from agential.cog.prompts.agent.reflexion import (
 )
 from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.strategies.strategy_factory import ReflexionCoTStrategyFactory, ReflexionReActStrategyFactory
-from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
 
 
@@ -244,7 +240,7 @@ class ReflexionReActAgent(BaseAgent):
             mode=self.mode, llm=self.llm, reflector=reflector, **strategy_kwargs
         )
 
-        
+
 
         # self.self_reflect_llm = self_reflect_llm
         # self.action_llm = action_llm
