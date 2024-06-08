@@ -31,12 +31,16 @@ from agential.cog.strategies.react.qa import (
     ReActHotQAStrategy,
     ReActTriviaQAStrategy,
 )
-from agential.cog.strategies.reflexion.base import ReflexionCoTBaseStrategy
+from agential.cog.strategies.reflexion.base import ReflexionCoTBaseStrategy, ReflexionReActBaseStrategy
 from agential.cog.strategies.reflexion.qa import (
     ReflexionCoTAmbigNQStrategy,
     ReflexionCoTFEVERStrategy,
     ReflexionCoTHotQAStrategy,
     ReflexionCoTTriviaQAStrategy,
+    ReflexionReActHotQAStrategy,
+    ReflexionReActTriviaQAStrategy,
+    ReflexionReActAmbigNQStrategy,
+    ReflexionReActFEVERStrategy,
 )
 from agential.cog.strategies.self_refine.base import SelfRefineBaseStrategy
 from agential.cog.strategies.self_refine.math import SelfRefineGSM8KStrategy
@@ -289,18 +293,18 @@ class ReflexionCoTStrategyFactory:
     
 
 class ReflexionReActStrategyFactory:
-    """A factory class for creating instances of different ReflexionCoT strategies based on the specified mode and benchmark.
+    """A factory class for creating instances of different ReflexionReAct strategies based on the specified mode and benchmark.
 
     Methods:
-        get_strategy(mode: Dict[str, str], **strategy_kwargs) -> ReflexionCoTBaseStrategy:
-            Returns an instance of the appropriate ReflexionCoT strategy based on the provided mode and benchmark.
+        get_strategy(mode: Dict[str, str], **strategy_kwargs) -> ReflexionReActBaseStrategy:
+            Returns an instance of the appropriate ReflexionReAct strategy based on the provided mode and benchmark.
     """
 
     @staticmethod
     def get_strategy(
         mode: Dict[str, str], **strategy_kwargs: Any
-    ) -> ReflexionCoTBaseStrategy:
-        """Returns an instance of the appropriate ReflexionCoT strategy based on the provided mode and benchmark.
+    ) -> ReflexionReActBaseStrategy:
+        """Returns an instance of the appropriate ReflexionReAct strategy based on the provided mode and benchmark.
 
         Available modes:
             - qa: "hotpotqa", "triviaqa", "ambignq", "fever"
@@ -313,20 +317,20 @@ class ReflexionReActStrategyFactory:
             **strategy_kwargs (Dict[str, Any]): Additional keyword arguments to pass to the strategy's constructor.
 
         Returns:
-            ReflexionCoTBaseStrategy: An instance of the appropriate ReflexionCoT strategy.
+            ReflexionReActBaseStrategy: An instance of the appropriate ReflexionReAct strategy.
 
         Raises:
             ValueError: If the mode or benchmark is unsupported.
         """
         if "qa" in mode:
             if mode["qa"] == "hotpotqa":
-                return ReflexionCoTHotQAStrategy(**strategy_kwargs)
+                return ReflexionReActHotQAStrategy(**strategy_kwargs)
             elif mode["qa"] == "triviaqa":
-                return ReflexionCoTTriviaQAStrategy(**strategy_kwargs)
+                return ReflexionReActTriviaQAStrategy(**strategy_kwargs)
             elif mode["qa"] == "ambignq":
-                return ReflexionCoTAmbigNQStrategy(**strategy_kwargs)
+                return ReflexionReActAmbigNQStrategy(**strategy_kwargs)
             elif mode["qa"] == "fever":
-                return ReflexionCoTFEVERStrategy(**strategy_kwargs)
+                return ReflexionReActFEVERStrategy(**strategy_kwargs)
             else:
                 raise ValueError(f"Unsupported QA benchmark: {mode['qa']}")
         elif "math" in mode:
