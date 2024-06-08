@@ -86,6 +86,9 @@ class ReflexionCoTAgent(BaseAgent):
         """Initialization with default or provided values."""
         super().__init__()
 
+        self.llm = llm
+        self.mode = mode
+
         self.strategy = ReflexionCoTStrategyFactory().get_strategy(
             mode=self.mode, llm=self.llm, reflector=reflector, **strategy_kwargs
         )
