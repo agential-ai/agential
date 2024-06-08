@@ -11,7 +11,7 @@ from agential.cog.functional.reflexion import _prompt_cot_agent
 from agential.cog.modules.reflect.reflexion import (
     ReflexionCoTReflector,
 )
-from agential.cog.strategies.reflexion.base import ReflexionCoTBaseStrategy
+from agential.cog.strategies.reflexion.base import ReflexionCoTBaseStrategy, ReflexionReActBaseStrategy
 from agential.utils.parse import remove_newline
 
 
@@ -282,6 +282,17 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         return idx > 0 and not EM(self._answer, key) and reflection_strategy
 
 
+class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
+    """A strategy class for QA benchmarks using the ReflexionReAct agent.
+
+    Attributes:
+        llm (BaseChatModel): The language model used for generating answers and critiques.
+        reflector (Optional[ReflexionReAct]): The reflector used for generating reflections. Defaults to None.
+        max_reflections (int): The maximum number of reflections allowed. Defaults to 3.
+        max_trials (int): The maximum number of trials allowed. Defaults to 1.
+    """
+    
+
 class ReflexionCoTHotQAStrategy(ReflexionCoTQAStrategy):
     """A strategy class for the HotpotQA benchmark using the ReflexionCoT agent."""
 
@@ -302,5 +313,29 @@ class ReflexionCoTAmbigNQStrategy(ReflexionCoTQAStrategy):
 
 class ReflexionCoTFEVERStrategy(ReflexionCoTQAStrategy):
     """A strategy class for the FEVER benchmark using the ReflexionCoT agent."""
+
+    pass
+
+
+class ReflexionReActHotQAStrategy(ReflexionReActQAStrategy):
+    """A strategy class for the HotpotQA benchmark using the ReflexionReAct agent."""
+
+    pass
+
+
+class ReflexionReActTriviaQAStrategy(ReflexionReActQAStrategy):
+    """A strategy class for the TriviaQA benchmark using the ReflexionReAct agent."""
+
+    pass
+
+
+class ReflexionReActAmbigNQStrategy(ReflexionReActQAStrategy):
+    """A strategy class for the AmbigNQ benchmark using the ReflexionReAct agent."""
+
+    pass
+
+
+class ReflexionReActFEVERStrategy(ReflexionReActQAStrategy):
+    """A strategy class for the FEVER benchmark using the ReflexionReAct agent."""
 
     pass
