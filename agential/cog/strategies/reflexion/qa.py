@@ -13,6 +13,13 @@ from agential.cog.modules.reflect.reflexion import (
 )
 from agential.cog.strategies.reflexion.base import ReflexionCoTBaseStrategy, ReflexionReActBaseStrategy
 from agential.utils.parse import remove_newline
+import tiktoken
+
+from langchain_community.docstore.wikipedia import Wikipedia
+
+from tiktoken import Encoding
+
+from agential.utils.docstore import DocstoreExplorer
 
 
 def parse_qa_action(string: str) -> Tuple[str, str]:
@@ -291,6 +298,19 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         max_reflections (int): The maximum number of reflections allowed. Defaults to 3.
         max_trials (int): The maximum number of trials allowed. Defaults to 1.
     """
+    def __init__(
+        self, 
+        llm: BaseChatModel,
+        max_steps: int = 6,
+        max_tokens: int = 3896,
+        docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
+        enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
+    ) -> None:
+        super().__init__(llm)
+        self.max_steps = max_steps
+        self.max_tokens = max_tokens
+        self.docstore = docstore
+        self.enc = enc
     
 
 class ReflexionCoTHotQAStrategy(ReflexionCoTQAStrategy):
