@@ -316,15 +316,15 @@ class ReflexionReActAgent(BaseAgent):
 
         idx, patience_cnt = 1, 0
         result = []
-        while self.strategy.halting_condition(key=key):
-            # Reflect if possible.
-            if self.strategy.reflect_condition(
-                idx=,
-                question=question,
-                examples=reflect_examples,
-                reflections=self.reflector.reflections_str,
-                prompt=reflect_prompt,
-            ):
+        # while self.strategy.halting_condition(key=key):
+        #     # Reflect if possible.
+        #     if self.strategy.reflect_condition(
+        #         idx=,
+        #         question=question,
+        #         examples=reflect_examples,
+        #         reflections=self.reflector.reflections_str,
+        #         prompt=reflect_prompt,
+        #     ):
 
 
 
