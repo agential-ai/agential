@@ -240,7 +240,9 @@ class ReflexionReActAgent(BaseAgent):
         self.llm = llm
         self.mode = mode
 
-        self.strategy = ReflexionReActStrategyFactory().get_strategy()
+        self.strategy = ReflexionReActStrategyFactory().get_strategy(
+            mode=self.mode, llm=self.llm, reflector=reflector, **strategy_kwargs
+        )
 
         self.self_reflect_llm = self_reflect_llm
         self.action_llm = action_llm
