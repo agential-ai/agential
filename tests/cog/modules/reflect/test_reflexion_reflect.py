@@ -292,14 +292,14 @@ def test_reflexion_cot_reflect_strat() -> None:
     assert reflections_str == gt_out_reflections_str
 
 
-def test_reflexion_cot_clear() -> None:
-    """Unit tests for ReflexionCoT Reflector clear method."""
+def test_reflexion_cot_reset() -> None:
+    """Unit tests for ReflexionCoT Reflector reset method."""
     reflector = ReflexionCoTReflector(
         llm=FakeListChatModel(responses=["1"]),
     )
     reflector.reflections = ["c", "a", "t"]
     reflector.reflections_str = "cat"
-    reflector.clear()
+    reflector.reset()
     assert reflector.reflections == []
     assert reflector.reflections_str == ""
 
