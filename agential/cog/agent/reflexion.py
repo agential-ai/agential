@@ -66,16 +66,13 @@ class ReflexionCoTAgent(BaseAgent):
 
     Attributes:
         self_reflect_llm (BaseChatModel): The language model used for self-reflection.
-        action_llm (BaseChatModel): The language model used for generating thoughts/actions.
-        reflector (Optional[ReflexionReflector]): An optional reflector module for guided self-reflection.
-        max_reflections (int): An int specifying the max number of reflections to use in a subsequent run. Defaults to 3.
-        max_trials (int): Max number of answering attempts before stopping generation. Must be greater than 1 for reflection to occur. Defaults to 1.
-        patience (int): The number of incorrect retries before stopping. Must be >= 1 and <= max_trials. Defaults to max_trials.
-
+        llm (BaseChatModel): The language model used to generate responses.
+        mode (Dict[str, str]): The mode of the agent.
+        reflector (Optional[ReflexionCoTReflector]): An optional reflector module for guided self-reflection.
+        **strategy_kwargs (Dict[str, Any]): Additional keyword arguments for the strategy.
+        
     Methods:
-        generate(context, question, key, strategy): Generates a response based on the given context, question, and strategy.
-        reflect(context, question, strategy): Reflects on the previous response and modifies the strategy accordingly.
-        retrieve(): Retrieves the current memory state of the agent.
+        generate(): Generates a response based on the provided context, question, and key.
         reset(): Resets the agent's state for a new problem-solving session.
     """
 
@@ -88,9 +85,6 @@ class ReflexionCoTAgent(BaseAgent):
     ) -> None:
         """Initialization with default or provided values."""
         super().__init__()
-
-        self.llm = llm
-        self.mode = mode
 
         self.strategy = ReflexionCoTStrategyFactory().get_strategy(
             mode=self.mode, llm=self.llm, reflector=reflector, **strategy_kwargs
@@ -239,6 +233,8 @@ class ReflexionReActAgent(BaseAgent):
     ) -> None:
         """Initialization."""
         super().__init__()
+        
+
         self.self_reflect_llm = self_reflect_llm
         self.action_llm = action_llm
 
