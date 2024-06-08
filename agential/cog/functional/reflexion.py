@@ -528,7 +528,7 @@ def _prompt_react_agent(
 
 def _is_halted(
     finished: bool,
-    step_n: int,
+    step_idx: int,
     question: str,
     scratchpad: str,
     examples: str,
@@ -547,7 +547,7 @@ def _is_halted(
 
     Args:
         finished (bool): Flag indicating if the operation is completed.
-        step_n (int): Current step number.
+        step_idx (int): Current step number.
         question (str): The question being processed.
         scratchpad (str): The scratchpad content.
         examples (str): Fewshot examples.
@@ -561,7 +561,7 @@ def _is_halted(
     Returns:
         bool: True if the operation should be halted, False otherwise.
     """
-    over_max_steps = step_n > max_steps
+    over_max_steps = step_idx > max_steps
     over_token_limit = (
         len(
             enc.encode(
