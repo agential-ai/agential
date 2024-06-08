@@ -209,17 +209,7 @@ class ReflexionReActAgent(BaseAgent):
     """Reflexion with ReAct actor.
 
     Attributes:
-        self_reflect_llm (BaseChatModel): The language model used for self-reflection.
-        action_llm (BaseChatModel): The language model used for generating thoughts/actions.
-        memory (Optional[ReflexionMemory]): An optional memory module to store the agent's internal state.
-        reflector (Optional[ReflexionReflector]): An optional reflector module for guided self-reflection.
-        max_reflections: (int): An int specifying the max number of reflections to use in a subsequent run. Defaults to 3.
-        max_steps (int): Max number of steps for ReAct actor to take. Defaults to 6.
-        max_tokens (int): Max tokens before the agent's memory is truncated. Defaults to 3896.
-        max_trials (int): Max number of answering attempts before stopping generation. Must be greater than 1 for reflection to occur. Defaults to 1.
-        patience (int): The number of incorrect retries before stopping. Must be >= 1 and <= max_trials. Defaults to max_trials.
-        docstore (DocstoreExplorer): The Wikipedia docstore explorer.
-        enc (Encoding): tiktoken Encoding for tracking token count of prompts.
+
 
     Methods:
         generate(question, key, strategy): Generates a response based on the given question and strategy.
@@ -230,17 +220,22 @@ class ReflexionReActAgent(BaseAgent):
 
     def __init__(
         self,
-        self_reflect_llm: BaseChatModel,
-        action_llm: BaseChatModel,
-        memory: Any,
+        llm: BaseChatModel,
+        mode: Dict[str, str],
         reflector: Optional[ReflexionReActReflector] = None,
-        max_reflections: int = 3,
-        max_steps: int = 6,
-        max_tokens: int = 3896,
-        max_trials: int = 1,
-        patience: Optional[int] = None,
-        docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
-        enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
+        **strategy_kwargs: Dict[str, Any],
+
+        # self_reflect_llm: BaseChatModel,
+        # action_llm: BaseChatModel,
+        # memory: Any,
+        # reflector: Optional[ReflexionReActReflector] = None,
+        # max_reflections: int = 3,
+        # max_steps: int = 6,
+        # max_tokens: int = 3896,
+        # max_trials: int = 1,
+        # patience: Optional[int] = None,
+        # docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
+        # enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
     ) -> None:
         """Initialization."""
         super().__init__()
