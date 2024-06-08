@@ -32,6 +32,7 @@ from agential.cog.prompts.agent.reflexion import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     REFLEXION_COT_INSTRUCTION_HOTPOTQA,
     REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
+    REFLEXION_REACT_INSTRUCTION_HOTPOTQA
 )
 from agential.cog.prompts.benchmark.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
@@ -549,6 +550,7 @@ def test__is_halted() -> None:
         10,
         100,
         gpt3_5_turbo_enc,
+        REFLEXION_REACT_INSTRUCTION_HOTPOTQA
     )
 
     # Test when step_n exceeds max_steps.
@@ -562,6 +564,7 @@ def test__is_halted() -> None:
         10,
         100,
         gpt3_5_turbo_enc,
+        REFLEXION_REACT_INSTRUCTION_HOTPOTQA
     )
 
     # Test when encoded prompt exceeds max_tokens.
@@ -575,6 +578,7 @@ def test__is_halted() -> None:
         10,
         10,
         gpt3_5_turbo_enc,
+        REFLEXION_REACT_INSTRUCTION_HOTPOTQA
     )
 
     # Test when none of the conditions for halting are met.
@@ -588,6 +592,7 @@ def test__is_halted() -> None:
         10,
         100000,
         gpt3_5_turbo_enc,
+        REFLEXION_REACT_INSTRUCTION_HOTPOTQA
     )
 
     # Test edge case when step_n equals max_steps.
@@ -601,6 +606,7 @@ def test__is_halted() -> None:
         10,
         100,
         gpt3_5_turbo_enc,
+        REFLEXION_REACT_INSTRUCTION_HOTPOTQA
     )
 
     # Test edge case when encoded prompt equals max_tokens.
@@ -614,6 +620,7 @@ def test__is_halted() -> None:
         10,
         1603,
         gpt3_5_turbo_enc,
+        REFLEXION_REACT_INSTRUCTION_HOTPOTQA
     )
 
     # Test with custom prompt template string.

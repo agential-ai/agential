@@ -234,11 +234,11 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         pass
 
     @abstractmethod
-    def reflect_condition(self, idx: int, reflection_strategy: str, key: str) -> bool:
+    def reflect_condition(self, step_n: int, reflection_strategy: str, key: str, **kwargs: Dict[str, str]) -> bool:
         """Determines whether the reflection condition has been met.
 
         Args:
-            idx (int): The current step.
+            step_n (int): The current step.
             reflection_strategy (str): The strategy to use for reflection.
             key (str): The key for the observation.
 

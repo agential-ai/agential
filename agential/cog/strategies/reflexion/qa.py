@@ -20,7 +20,9 @@ from langchain_community.docstore.wikipedia import Wikipedia
 from tiktoken import Encoding
 
 from agential.utils.docstore import DocstoreExplorer
-
+from agential.cog.functional.reflexion import (
+    _is_halted,
+)
 
 def parse_qa_action(string: str) -> Tuple[str, str]:
     """Parses an action string into an action type and its argument.
@@ -359,8 +361,34 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
     def reflect(self, reflection_strategy: str, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]) -> str:
         return super().reflect(reflection_strategy, question, examples, prompt, additional_keys)
     
-    def reflect_condition(self, idx: int, reflection_strategy: str, key: str) -> bool:
-        return super().reflect_condition(idx, reflection_strategy, key)
+    def reflect_condition(
+        self, 
+        step_n: int, 
+        reflection_strategy: str, 
+        question: str, 
+        examples: str, 
+        key: str, 
+        prompt: str, 
+        additional_keys: Dict[str, str], 
+        **kwargs: Dict[str, str]
+    ) -> bool:
+        max_steps = kwargs.get("max_steps", self.max_steps)
+
+        halted =  _is_halted(
+            finished=self._finished,
+            step_n=step_n,
+            question=question,
+            scratchpad=self._scratchpad,
+            examples=examples,
+            reflections=self.reflector.reflections_str,
+            max_steps=max_steps,  # type: ignore
+            max_tokens=self.max_tokens,
+            enc=self.enc,
+            prompt=prompt,
+            additional_keys=additional_keys,
+        )
+
+        return halted and not EM(self._answer, key) and reflection_strategy
     
 
 
