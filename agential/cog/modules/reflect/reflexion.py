@@ -137,8 +137,8 @@ class ReflexionReActReflector(BaseReflector):
     def reflect(
         self,
         strategy: str,
-        examples: str,
         question: str,
+        examples: str,
         scratchpad: str,
         prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     ) -> Tuple[List[str], str]:
@@ -150,8 +150,8 @@ class ReflexionReActReflector(BaseReflector):
 
         Args:
             strategy (str): The reflection strategy to be used ('last_attempt', 'reflexion', or 'last_attempt_and_reflexion').
-            examples (str): Example inputs for the prompt template.
             question (str): The question being addressed.
+            examples (str): Example inputs for the prompt template.
             scratchpad (str): The scratchpad content related to the question.
             prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA.
 
@@ -166,8 +166,8 @@ class ReflexionReActReflector(BaseReflector):
             strategy=strategy,
             llm=self.llm,
             reflections=self.reflections,
-            examples=examples,
             question=question,
+            examples=examples,
             scratchpad=scratchpad,
             prompt=prompt,
         )[-self.max_reflections :]

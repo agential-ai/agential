@@ -582,8 +582,8 @@ def _is_halted(
 
 
 def _build_react_reflection_prompt(
-    examples: str,
     question: str,
+    examples: str,
     scratchpad: str,
     prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     additional_keys: Dict[str, str] = {},
@@ -594,8 +594,8 @@ def _build_react_reflection_prompt(
     with examples, the provided question, and a scratchpad.
 
     Args:
-        examples (str): Example inputs for the prompt template.
         question (str): The question being addressed.
+        examples (str): Example inputs for the prompt template.
         scratchpad (str): The scratchpad content related to the question.
         prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
@@ -607,8 +607,8 @@ def _build_react_reflection_prompt(
         input_variables=["examples", "question", "scratchpad"],
         template=prompt,
     ).format(
-        examples=examples,
         question=question,
+        examples=examples,
         scratchpad=scratchpad,
         **additional_keys,
     )
@@ -618,8 +618,8 @@ def _build_react_reflection_prompt(
 
 def _prompt_react_reflection(
     llm: BaseChatModel,
-    examples: str,
     question: str,
+    examples: str,
     scratchpad: str,
     prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     additional_keys: Dict[str, str] = {},
@@ -630,8 +630,8 @@ def _prompt_react_reflection(
 
     Args:
         llm (BaseChatModel): The language model to be used for generating the reflection.
-        examples (str): Example inputs for the prompt template.
         question (str): The question being addressed.
+        examples (str): Example inputs for the prompt template.
         scratchpad (str): The scratchpad content related to the question.
         prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
@@ -640,8 +640,8 @@ def _prompt_react_reflection(
         str: The generated reflection prompt.
     """
     prompt = _build_react_reflection_prompt(
-        examples=examples,
         question=question,
+        examples=examples,
         scratchpad=scratchpad,
         prompt=prompt,
         additional_keys=additional_keys,
@@ -675,8 +675,8 @@ def react_reflect_last_attempt(scratchpad: str) -> List[str]:
 def react_reflect_reflexion(
     llm: BaseChatModel,
     reflections: List[str],
-    examples: str,
     question: str,
+    examples: str,
     scratchpad: str,
     prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 ) -> List[str]:
@@ -688,8 +688,8 @@ def react_reflect_reflexion(
     Args:
         llm (BaseChatModel): The language model used for generating the reflection.
         reflections (List[str]): Existing list of reflections.
-        examples (str): Example inputs for the prompt template.
         question (str): The question being addressed.
+        examples (str): Example inputs for the prompt template.
         scratchpad (str): The scratchpad content related to the question.
         prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA.
 
@@ -698,8 +698,8 @@ def react_reflect_reflexion(
     """
     new_reflection = _prompt_react_reflection(
         llm=llm,
-        examples=examples,
         question=question,
+        examples=examples,
         scratchpad=scratchpad,
         prompt=prompt,
     )
@@ -709,8 +709,8 @@ def react_reflect_reflexion(
 
 def react_reflect_last_attempt_and_reflexion(
     llm: BaseChatModel,
-    examples: str,
     question: str,
+    examples: str,
     scratchpad: str,
     prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 ) -> List[str]:
@@ -720,8 +720,8 @@ def react_reflect_last_attempt_and_reflexion(
 
     Args:
         llm (BaseChatModel): The language model used for generating the new reflection.
-        examples (str): Example inputs for the prompt template.
         question (str): The question being addressed.
+        examples (str): Example inputs for the prompt template.
         scratchpad (str): The scratchpad content related to the question.
         prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA.
 
@@ -731,8 +731,8 @@ def react_reflect_last_attempt_and_reflexion(
     reflections = [
         _prompt_react_reflection(
             llm=llm,
-            examples=examples,
             question=question,
+            examples=examples,
             scratchpad=scratchpad,
             prompt=prompt,
         )
@@ -744,8 +744,8 @@ def react_reflect(
     strategy: str,
     llm: BaseChatModel,
     reflections: List[str],
-    examples: str,
     question: str,
+    examples: str,
     scratchpad: str,
     prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 ) -> List[str]:
@@ -759,8 +759,8 @@ def react_reflect(
         strategy (str): The reflection strategy to be used ('last_attempt', 'reflexion', or 'last_attempt_and_reflexion').
         llm (BaseChatModel): The language model used for generating new reflections.
         reflections (List[str]): A list of existing reflections.
-        examples (str): Example inputs for the prompt template.
         question (str): The question being addressed.
+        examples (str): Example inputs for the prompt template.
         scratchpad (str): The scratchpad content related to the question.
         prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA.
 
@@ -782,16 +782,16 @@ def react_reflect(
         reflections = react_reflect_reflexion(
             llm=llm,
             reflections=reflections,
-            examples=examples,
             question=question,
+            examples=examples,
             scratchpad=scratchpad,
             prompt=prompt,
         )
     elif strategy == "last_attempt_and_reflexion":
         reflections = react_reflect_last_attempt_and_reflexion(
             llm=llm,
-            examples=examples,
             question=question,
+            examples=examples,
             scratchpad=scratchpad,
             prompt=prompt,
         )

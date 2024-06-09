@@ -368,8 +368,8 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
     ) -> str:
         _, reflections_str = self.reflector.reflect(
             strategy=reflection_strategy,
-            examples=examples,
             question=question,
+            examples=examples,
             scratchpad=_truncate_scratchpad(
                 scratchpad=self.memory.load_memories()["scratchpad"], tokenizer=self.enc
             ),
