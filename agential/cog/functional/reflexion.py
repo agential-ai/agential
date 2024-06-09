@@ -12,7 +12,6 @@ from tiktoken.core import Encoding
 from agential.cog.prompts.agent.reflexion import (
     LAST_TRIAL_HEADER,
     REFLECTION_HEADER,
-    REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 from agential.utils.parse import remove_newline
@@ -443,13 +442,10 @@ def _build_react_agent_prompt(
     reflections: str,
     scratchpad: str,
     max_steps: int,
-    prompt: str = REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+    prompt: str,
     additional_keys: Dict[str, str] = {},
 ) -> str:
     """Constructs a ReflexionReAct prompt template for the agent.
-
-    This function formats a predefined prompt template (REFLEXION_REACT_INSTRUCTION_HOTPOTQA)
-    with examples, the provided question, and a scratchpad.
 
     Args:
         question (str): The question being addressed.
@@ -457,7 +453,7 @@ def _build_react_agent_prompt(
         reflections (List[str]): Existing list of reflections.
         scratchpad (str): The scratchpad content related to the question.
         max_steps (int): Maximum number of steps.
-        prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION_HOTPOTQA.
+        prompt (str, optional): Prompt template string.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
@@ -486,7 +482,7 @@ def _prompt_react_agent(
     reflections: str,
     scratchpad: str,
     max_steps: int,
-    prompt: str = REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+    prompt: str,
     additional_keys: Dict[str, str] = {},
 ) -> str:
     """Generates a ReAct prompt for thought and action.
@@ -500,7 +496,7 @@ def _prompt_react_agent(
         reflections (List[str]): Existing list of reflections.
         scratchpad (str): The scratchpad content related to the question.
         max_steps (int): Maximum number of steps.
-        prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION_HOTPOTQA.
+        prompt (str, optional): Prompt template string.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
