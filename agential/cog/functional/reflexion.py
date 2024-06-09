@@ -438,9 +438,9 @@ def cot_reflect(
 
 
 def _build_react_agent_prompt(
+    question: str,
     examples: str,
     reflections: str,
-    question: str,
     scratchpad: str,
     max_steps: int,
     prompt: str = REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
@@ -452,9 +452,9 @@ def _build_react_agent_prompt(
     with examples, the provided question, and a scratchpad.
 
     Args:
+        question (str): The question being addressed.
         examples (str): Example inputs for the prompt template.
         reflections (List[str]): Existing list of reflections.
-        question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         max_steps (int): Maximum number of steps.
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION_HOTPOTQA.
@@ -468,9 +468,9 @@ def _build_react_agent_prompt(
         + list(additional_keys.keys()),
         template=prompt,
     ).format(
+        question=question,
         examples=examples,
         reflections=reflections,
-        question=question,
         scratchpad=scratchpad,
         max_steps=max_steps,
         **additional_keys,
@@ -481,9 +481,9 @@ def _build_react_agent_prompt(
 
 def _prompt_react_agent(
     llm: BaseChatModel,
+    question: str,
     examples: str,
     reflections: str,
-    question: str,
     scratchpad: str,
     max_steps: int,
     prompt: str = REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
@@ -495,9 +495,9 @@ def _prompt_react_agent(
 
     Args:
         llm (BaseChatModel): The language model to be used for generating the reflection.
+        question (str): The question being addressed.
         examples (str): Example inputs for the prompt template.
         reflections (List[str]): Existing list of reflections.
-        question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
         max_steps (int): Maximum number of steps.
         prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION_HOTPOTQA.
@@ -507,9 +507,9 @@ def _prompt_react_agent(
         str: The generated reflection prompt.
     """
     prompt = _build_react_agent_prompt(
+        question=question,
         examples=examples,
         reflections=reflections,
-        question=question,
         scratchpad=scratchpad,
         max_steps=max_steps,
         prompt=prompt,

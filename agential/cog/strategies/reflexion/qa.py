@@ -22,7 +22,8 @@ from tiktoken import Encoding
 from agential.utils.docstore import DocstoreExplorer
 from agential.cog.functional.reflexion import (
     _is_halted,
-    _truncate_scratchpad
+    _truncate_scratchpad,
+    _prompt_react_agent,
 )
 
 def parse_qa_action(string: str) -> Tuple[str, str]:
@@ -335,7 +336,12 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         self._scratchpad = ""
 
     def generate(self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str], **kwargs: Dict[str, Any]) -> str:
-        return super().generate(question, examples, prompt, additional_keys, **kwargs)
+        max_steps = kwargs.get("max_steps", self.max_steps)  # type: ignore
+
+        thought = _prompt_react_agent(
+            llm=self.llm,
+            
+        )
     
     def generate_action(self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]) -> Tuple[str]:
         return super().generate_action(question, examples, prompt, additional_keys)
@@ -369,7 +375,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
             scratchpad=self._scratchpad,
             examples=examples,
             reflections=reflections,
-            max_steps=self.max_steps,
+            max_steps=max_steps,
             max_tokens=self.max_tokens,
             enc=self.enc,
             prompt=prompt,
