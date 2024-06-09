@@ -399,7 +399,7 @@ def test__build_react_agent_prompt() -> None:
     """Test _build_react_agent_prompt function."""
     gt_out = "Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: \n(1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.\n(2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.\n(3) Finish[answer], which returns the answer and finishes the task.\nYou have a maximum of 1 steps.\n\nHere are some examples:\n\n(END OF EXAMPLES)\n\n\n\nQuestion: "
     out = _build_react_agent_prompt(
-        question="", examples="", reflections="", scratchpad="", max_steps=1
+        question="", examples="", reflections="", scratchpad="", max_steps=1, prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA
     )
     assert out == gt_out
 
@@ -416,6 +416,7 @@ def test__prompt_react_agent() -> None:
         reflections="",
         scratchpad="",
         max_steps=1,
+        prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA
     )
     assert isinstance(out, str)
     assert out == "1"
@@ -434,6 +435,7 @@ def test__prompt_react_agent() -> None:
         reflections="",
         scratchpad="\nThought:",
         max_steps=1,
+        prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA
     )
     assert out == gt_out
 
@@ -531,6 +533,7 @@ def test__prompt_react_agent() -> None:
         reflections=reflections,
         scratchpad=scratchpad,
         max_steps=6,
+        prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA
     )
     assert out == gt_out
 

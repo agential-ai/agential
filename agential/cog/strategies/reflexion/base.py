@@ -141,6 +141,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         self,
         question: str,
         examples: str,
+        reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str, str]:
@@ -149,6 +150,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         Args:
             question (str): The question to be answered.
             examples (str): Examples to guide the generation process.
+            reflections (str): Reflections to guide the generation process.
             prompt (str): The prompt used for generating the action.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
 
