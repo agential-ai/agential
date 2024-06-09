@@ -349,6 +349,10 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        thought = remove_newline(thought).split("Action")[0]
+        self._scratchpad += " " + thought
+
+        return thought
     
     def generate_action(self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]) -> Tuple[str]:
         return super().generate_action(question, examples, prompt, additional_keys)
