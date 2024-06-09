@@ -220,7 +220,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             bool: True if the halting condition is met, False otherwise.
         """
         max_trials = kwargs.get("max_trials", self.max_trials)
-        return not EM(self._answer, key) and idx < max_trials
+        return EM(self._answer, key) or idx >= max_trials
 
     def reset(self, **kwargs: Dict[str, Any]) -> None:
         """Resets the internal state of the strategy.
@@ -350,11 +350,36 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         max_trials = kwargs.get("max_trials", self.max_trials)
         return not EM(self._answer, key) and idx < max_trials + 1
     
-    def react_halting_condition(self) -> bool:
-        return super().react_halting_condition()
+    def react_halting_condition(
+        self,
+        step_idx: int,
+        question: str, 
+        examples: str,
+        reflections: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+        **kwargs: Dict[str, Any],
+    ) -> bool:
+        max_steps = kwargs.get("max_steps", self.max_steps)
+
+        return _is_halted(
+            finished=self._finished,
+            step_idx=step_idx,
+            question=question,
+            scratchpad=self._scratchpad,
+            examples=examples,
+            reflections=reflections,
+            max_steps=self.max_steps,
+            max_tokens=self.max_tokens,
+            enc=self.enc,
+            prompt=prompt,
+            additional_keys=additional_keys,
+        )
 
     def reset(self, **kwargs: Dict[str, Any]) -> None:
-        self.reflector.reset()
+        no_reflector = kwargs.get('no_reflector', False)
+        if not no_reflector:
+            self.reflector.reset()
         self._scratchpad = ""
         self._finished = False
         self._answer = ""    

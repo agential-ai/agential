@@ -173,13 +173,13 @@ def test_reflexion_cot_halting_condition() -> None:
     strategy = ReflexionCoTQAStrategy(llm=llm, max_trials=3)
 
     strategy._answer = "incorrect_answer"
-    assert strategy.halting_condition(3, "correct_answer") == False
+    assert strategy.halting_condition(3, "correct_answer") == True
 
     strategy._answer = "correct_answer"
-    assert strategy.halting_condition(2, "correct_answer") == False
+    assert strategy.halting_condition(2, "correct_answer") == True
 
     strategy._answer = "incorrect_answer"
-    assert strategy.halting_condition(2, "correct_answer") == True
+    assert strategy.halting_condition(2, "correct_answer") == False
 
 
 def test_reflexion_cot_reset() -> None:
