@@ -427,7 +427,7 @@ def test__prompt_react_agent() -> None:
             "I need to search for VIVA Media AG and find out what their new acronym stands for.\n\nAction: Search[VIVA Media AG]"
         )
     ]
-    gt_out = "I need to search for VIVA Media AG and find out what their new acronym stands for.Action: Search[VIVA Media AG]"
+    gt_out = 'I need to search for VIVA Media AG and find out what their new acronym stands for.\n\nAction: Search[VIVA Media AG]'
     out = _prompt_react_agent(
         llm=FakeListChatModel(responses=responses),
         question=q,
@@ -504,28 +504,7 @@ def test__prompt_react_agent() -> None:
         "'Virgin Money UK plc', 'Voice of America', '2016 in Philippine television', 'PolyGram', "
         "'Universal Music Group', 'Veolia Transport']\nThought:"
     )
-    gt_out = (
-        "Given the lack of information on VIVA Media AG and their name change in 2004, "
-        "I should try to search for VIVA Media AG acquisitions or mergers to see if their new acronym "
-        "was related to that. Action: Search[VIVA Media AG acquisitions]Observation: Could not find "
-        "[VIVA Media AG acquisitions]. Similar: ['List of mergers and acquisitions by Alphabet', "
-        "'List of mergers and acquisitions by Apple', 'List of mergers and acquisitions by Microsoft', "
-        "'List of mergers and acquisitions by Facebook', 'List of mergers and acquisitions by Amazon', "
-        "'List of mergers and acquisitions by IBM', 'List of mergers and acquisitions by Cisco Systems', "
-        "'List of mergers and acquisitions by Oracle', 'List of mergers and acquisitions by SAP', "
-        "'List of mergers and acquisitions by Yahoo!']Thought: Since I couldn't find information on "
-        "acquisitions, I should try searching for VIVA Media AG partnerships or collaborations to see "
-        "if their new acronym was related to that.Action: Search[VIVA Media AG partnerships]"
-        "Observation: Could not find [VIVA Media AG partnerships]. Similar: ['List of airline codes', "
-        "'List of country codes on British diplomatic vehicle registration plates', "
-        "'List of international vehicle registration codes', 'Vehicle registration plates of the "
-        "United States for the diplomatic corps', 'Vehicle registration plates of the European Union', "
-        "'List of diplomatic missions of Japan', 'List of diplomatic missions of Australia', "
-        "'Diplomatic missions of the European Union', 'Vehicle registration plates of the United Kingdom', "
-        "'Vehicle registration plates of the United States']Thought: I am still unable to find relevant "
-        "information, I should try a broader search term like VIVA Media AG history to see if I can "
-        "find any details about their name change and new acronym.Action: Search[VIVA Media AG history]"
-    )
+    gt_out = "Given the lack of information on VIVA Media AG and their name change in 2004, I should try to search for VIVA Media AG acquisitions or mergers to see if their new acronym was related to that. \nAction: Search[VIVA Media AG acquisitions]\nObservation: Could not find [VIVA Media AG acquisitions]. Similar: ['List of mergers and acquisitions by Alphabet', 'List of mergers and acquisitions by Apple', 'List of mergers and acquisitions by Microsoft', 'List of mergers and acquisitions by Facebook', 'List of mergers and acquisitions by Amazon', 'List of mergers and acquisitions by IBM', 'List of mergers and acquisitions by Cisco Systems', 'List of mergers and acquisitions by Oracle', 'List of mergers and acquisitions by SAP', 'List of mergers and acquisitions by Yahoo!']\nThought: Since I couldn't find information on acquisitions, I should try searching for VIVA Media AG partnerships or collaborations to see if their new acronym was related to that.\nAction: Search[VIVA Media AG partnerships]\nObservation: Could not find [VIVA Media AG partnerships]. Similar: ['List of airline codes', 'List of country codes on British diplomatic vehicle registration plates', 'List of international vehicle registration codes', 'Vehicle registration plates of the United States for the diplomatic corps', 'Vehicle registration plates of the European Union', 'List of diplomatic missions of Japan', 'List of diplomatic missions of Australia', 'Diplomatic missions of the European Union', 'Vehicle registration plates of the United Kingdom', 'Vehicle registration plates of the United States']\nThought: I am still unable to find relevant information, I should try a broader search term like VIVA Media AG history to see if I can find any details about their name change and new acronym.\nAction: Search[VIVA Media AG history]"  
     out = _prompt_react_agent(
         llm=FakeListChatModel(responses=responses),
         question=q,
