@@ -22,6 +22,7 @@ from tiktoken import Encoding
 from agential.utils.docstore import DocstoreExplorer
 from agential.cog.functional.reflexion import (
     _is_halted,
+    _truncate_scratchpad
 )
 
 def parse_qa_action(string: str) -> Tuple[str, str]:
@@ -371,7 +372,8 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
             question=question,
             examples=examples,
             scratchpad=_truncate_scratchpad(
-                scratchpad=self.memory.load_memories()["scratchpad"], tokenizer=self.enc
+                scratchpad=self._scratchpad, 
+                tokenizer=self.enc
             ),
             prompt=prompt,
         )
