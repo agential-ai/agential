@@ -264,8 +264,8 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         """
         _, reflections_str = self.reflector.reflect(
             reflection_strategy=reflection_strategy,
-            examples=examples,
             question=question,
+            examples=examples,
             scratchpad=self._scratchpad,
             prompt=prompt,
             additional_keys=additional_keys,
@@ -358,9 +358,24 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         self._finished = False
         self._answer = ""    
 
-    def reflect(self, reflection_strategy: str, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]) -> str:
-        return super().reflect(reflection_strategy, question, examples, prompt, additional_keys)
-    
+    def reflect(
+        self, 
+        reflection_strategy: str, 
+        question: str, 
+        examples: str, 
+        prompt: str, 
+        additional_keys: Dict[str, str]
+    ) -> str:
+        _, reflections_str = self.reflector.reflect(
+            strategy=reflection_strategy,
+            examples=examples,
+            question=question,
+            scratchpad=_truncate_scratchpad(
+                scratchpad=self.memory.load_memories()["scratchpad"], tokenizer=self.enc
+            ),
+            prompt=prompt,
+        )
+
     def reflect_condition(
         self, 
         step_idx: int, 
