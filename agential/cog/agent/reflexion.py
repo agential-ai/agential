@@ -129,7 +129,7 @@ class ReflexionCoTAgent(BaseAgent):
 
         idx, patience_cnt = 0, 0
         out = []
-        while self.strategy.halting_condition(idx=idx, key=key, **kwargs):
+        while not self.strategy.halting_condition(idx=idx, key=key, **kwargs):
 
             # Reflect if possible.
             reflections = ""
@@ -318,9 +318,10 @@ class ReflexionReActAgent(BaseAgent):
         if reset:
             self.reset()
 
-        idx, step_idx, patience_cnt = 1, 1, 0
-        result = []
+        idx, patience_cnt = 1, 0
+        out = []
         while self.strategy.halting_condition(key=key, **kwargs):
+            step_idx = 1
 
             # Reflect if possible.
             reflections = ""
@@ -342,7 +343,17 @@ class ReflexionReActAgent(BaseAgent):
                     additional_keys=additional_keys,
                 )
 
-
+            self.strategy.reset(no_reflector=True)
+            while not self.strategy.react_halting_condition(
+                step_idx=step_idx, 
+                question=question,
+                examples=examples,
+                reflections=reflections,
+                prompt=prompt,
+                additional_keys=additional_keys,
+                **kwargs
+            ):
+                pass
 
 
 
