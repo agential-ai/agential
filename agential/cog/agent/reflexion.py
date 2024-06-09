@@ -353,7 +353,13 @@ class ReflexionReActAgent(BaseAgent):
                 additional_keys=additional_keys,
                 **kwargs
             ):
-                pass
+                self.strategy.generate(
+                    question=question,
+                    examples=examples,
+                    prompt=prompt,
+                    additional_keys=additional_keys,
+                    **kwargs
+                )
 
 
 
