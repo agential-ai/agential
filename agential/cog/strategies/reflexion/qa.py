@@ -376,7 +376,10 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
                 tokenizer=self.enc
             ),
             prompt=prompt,
+            additional_keys=additional_keys,
         )
+
+        return reflections_str
 
     def reflect_condition(
         self, 
