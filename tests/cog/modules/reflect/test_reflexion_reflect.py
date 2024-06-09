@@ -35,8 +35,8 @@ def test_reflexion_cot_reflector() -> None:
     with pytest.raises(NotImplementedError):
         out = reflector.reflect(
             reflection_strategy="invalid input",
-            examples="",
             question="",
+            examples="",
             scratchpad="",
             prompt="",
         )
@@ -44,8 +44,8 @@ def test_reflexion_cot_reflector() -> None:
     # Test with last attempt.
     out = reflector.reflect(
         reflection_strategy="last_attempt",
-        examples="",
         question="",
+        examples="",
         scratchpad="",
         prompt="",
     )
@@ -65,8 +65,8 @@ def test_reflexion_cot_reflector() -> None:
     )
     out = reflector.reflect(
         reflection_strategy="reflexion",
-        examples="",
         question="",
+        examples="",
         scratchpad="",
         prompt="",
     )
@@ -87,8 +87,8 @@ def test_reflexion_cot_reflector() -> None:
     )
     out = reflector.reflect(
         reflection_strategy="last_attempt_and_reflexion",
-        examples="",
         question="",
+        examples="",
         scratchpad="",
         prompt="",
     )
@@ -114,8 +114,8 @@ def test_reflexion_cot_reflector() -> None:
     reflector.reflections_str = reflections_str
     _ = reflector.reflect(
         reflection_strategy="reflexion",  # Only applicable to reflexion strategy.
-        examples="",
         question="",
+        examples="",
         scratchpad="",
         prompt="",
     )
@@ -137,8 +137,8 @@ def test_reflexion_cot_reflect_strat() -> None:
     )
     reflections, reflections_str = reflector.reflect(
         reflection_strategy="last_attempt",
-        examples=examples,
         question=question,
+        examples=examples,
         scratchpad=scratchpad,
         prompt="",
     )
@@ -148,8 +148,8 @@ def test_reflexion_cot_reflect_strat() -> None:
     gt_out_reflections = ["Initial scratchpad content", "1"]
     reflections, reflections_str = reflector.reflect(
         reflection_strategy="reflexion",
-        examples=examples,
         question=question,
+        examples=examples,
         scratchpad=scratchpad,
         prompt="",
     )
@@ -164,8 +164,8 @@ def test_reflexion_cot_reflect_strat() -> None:
     )
     reflections, reflections_str = reflector.reflect(
         reflection_strategy="reflexion",
-        examples=examples,
         question=question,
+        examples=examples,
         scratchpad=scratchpad,
         prompt="",
     )
@@ -175,8 +175,8 @@ def test_reflexion_cot_reflect_strat() -> None:
     gt_out_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nInitial scratchpad content\n(END PREVIOUS TRIAL)\n"
     reflections, reflections_str = reflector.reflect(
         reflection_strategy="last_attempt",
-        examples=examples,
         question=question,
+        examples=examples,
         scratchpad=scratchpad,
         prompt="",
     )
@@ -191,8 +191,8 @@ def test_reflexion_cot_reflect_strat() -> None:
     )
     reflections, reflections_str = reflector.reflect(
         reflection_strategy="last_attempt",
-        examples=examples,
         question=question,
+        examples=examples,
         scratchpad=scratchpad,
         prompt="",
     )
@@ -202,8 +202,8 @@ def test_reflexion_cot_reflect_strat() -> None:
     gt_out_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nInitial scratchpad content\n(END PREVIOUS TRIAL)\n\nThe following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
     reflections, reflections_str = reflector.reflect(
         reflection_strategy="last_attempt_and_reflexion",
-        examples=examples,
         question=question,
+        examples=examples,
         scratchpad=scratchpad,
         prompt="",
     )
@@ -218,8 +218,8 @@ def test_reflexion_cot_reflect_strat() -> None:
     )
     reflections, reflections_str = reflector.reflect(
         reflection_strategy="last_attempt_and_reflexion",
-        examples=examples,
         question=question,
+        examples=examples,
         scratchpad=scratchpad,
         prompt="",
     )
@@ -229,8 +229,8 @@ def test_reflexion_cot_reflect_strat() -> None:
     gt_out_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nInitial scratchpad content\n(END PREVIOUS TRIAL)\n"
     reflections, reflections_str = reflector.reflect(
         reflection_strategy="last_attempt",
-        examples=examples,
         question=question,
+        examples=examples,
         scratchpad=scratchpad,
         prompt="",
     )
@@ -245,8 +245,8 @@ def test_reflexion_cot_reflect_strat() -> None:
     )
     reflections, reflections_str = reflector.reflect(
         reflection_strategy="reflexion",
-        examples=examples,
         question=question,
+        examples=examples,
         scratchpad=scratchpad,
         prompt="",
     )
@@ -256,8 +256,8 @@ def test_reflexion_cot_reflect_strat() -> None:
     gt_out_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nInitial scratchpad content\n(END PREVIOUS TRIAL)\n\nThe following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
     reflections, reflections_str = reflector.reflect(
         reflection_strategy="last_attempt_and_reflexion",
-        examples=examples,
         question=question,
+        examples=examples,
         scratchpad=scratchpad,
         prompt="",
     )
@@ -272,8 +272,8 @@ def test_reflexion_cot_reflect_strat() -> None:
     )
     reflections, reflections_str = reflector.reflect(
         reflection_strategy="last_attempt_and_reflexion",
-        examples=examples,
         question=question,
+        examples=examples,
         scratchpad=scratchpad,
         prompt="",
     )
@@ -283,8 +283,8 @@ def test_reflexion_cot_reflect_strat() -> None:
     gt_out_reflections_str = "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1\n- 1"
     reflections, reflections_str = reflector.reflect(
         reflection_strategy="reflexion",
-        examples=examples,
         question=question,
+        examples=examples,
         scratchpad=scratchpad,
         prompt="",
     )

@@ -47,8 +47,8 @@ class ReflexionCoTReflector(BaseReflector):
     def reflect(
         self,
         reflection_strategy: str,
-        examples: str,
         question: str,
+        examples: str,
         scratchpad: str,
         prompt: str,
         additional_keys: Dict[str, str] = {},
@@ -61,8 +61,8 @@ class ReflexionCoTReflector(BaseReflector):
 
         Args:
             reflection_strategy (str): The reflection strategy to be used ('last_attempt', 'reflexion', or 'last_attempt_and_reflexion').
-            examples (str): Example inputs for the prompt template.
             question (str): The question being addressed.
+            examples (str): Example inputs for the prompt template.
             scratchpad (str): The scratchpad content related to the question.
             prompt (str): Reflect prompt template string.
             additional_keys (Dict[str, str]): Additional keys to be passed to the prompt template.
