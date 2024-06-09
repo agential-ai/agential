@@ -519,7 +519,7 @@ def _prompt_react_agent(
         ]
     ).content
     assert isinstance(out, str)
-    return remove_newline(out)
+    return out
 
 
 def _is_halted(
