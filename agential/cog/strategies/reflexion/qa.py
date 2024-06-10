@@ -335,7 +335,15 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         self._answer = ""
         self._scratchpad = ""
 
-    def generate(self, question: str, examples: str, reflections: str, prompt: str, additional_keys: Dict[str, str], **kwargs: Dict[str, Any]) -> str:
+    def generate(
+        self, 
+        question: str, 
+        examples: str, 
+        reflections: str, 
+        prompt: str, 
+        additional_keys: Dict[str, str], 
+        **kwargs: Dict[str, Any]
+    ) -> str:
         max_steps = kwargs.get("max_steps", self.max_steps)  # type: ignore
 
         self._scratchpad += "\nThought:"
