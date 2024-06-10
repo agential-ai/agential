@@ -423,6 +423,22 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
 
     def create_output_dict(self, thought: str, action_type: str, obs: str, is_correct: bool) -> Dict[str, str]:
         return super().create_output_dict(thought, action_type, obs, is_correct)
+
+    def react_create_output_dict(
+        self, 
+        thought: str, 
+        action_type: str, 
+        query: str, 
+        obs: str, 
+        is_correct: bool
+    ) -> Dict[str, str]:
+        return {
+            "thought": thought,
+            "action_type": action_type,
+            "query": query,
+            "observation": obs,
+            "is_correct": is_correct, 
+        }
     
     def halting_condition(self, idx: int, key: str, **kwargs: Dict[str, Any]) -> bool:
         max_trials = kwargs.get("max_trials", self.max_trials)
