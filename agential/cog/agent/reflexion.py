@@ -416,6 +416,24 @@ class ReflexionReActAgent(BaseAgent):
 
             result.append((is_correct, self._answer, out))
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         # Reset.
         if reset:
             self.reset()
