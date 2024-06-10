@@ -160,13 +160,13 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         pass
 
     @abstractmethod
-    def generate_observation(self, action_type: str, query: str, key: str) -> str:
+    def generate_observation(self, step_idx: int, action_type: str, query: str) -> str:
         """Generates an observation based on the action type and query.
 
         Args:
+            step_idx (int): The index of the step.
             action_type (str): The type of action to be performed.
             query (str): The query for the action.
-            key (str): The key for the observation.
 
         Returns:
             str: The generated observation.

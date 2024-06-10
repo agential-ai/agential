@@ -382,9 +382,37 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         return action_type, query
 
 
-    def generate_observation(self, action_type: str, query: str, key: str) -> str:
-        return super().generate_observation(action_type, query, key)
-    
+    def generate_observation(
+        self, 
+        step_idx: int, 
+        action_type: str, 
+        query: str,
+        key: str,
+    ) -> Tuple[bool, str]:
+        self._scratchpad += f"\nObservation {step_idx}: "
+        if action_type.lower() == "finish":
+            self._answer = query
+            self._finished = True
+            if EM(self._answer, key):
+                obs = "Answer is CORRECT"
+            else:
+                obs = "Answer is INCORRECT"
+        elif action_type.lower() == "search":
+            try:
+                obs = remove_newline(self.docstore.search(query))
+            except Exception:
+                obs = "Could not find that page, please try again."
+        elif action_type.lower() == "lookup":
+            try:
+                obs = remove_newline(self.docstore.lookup(query))
+            except ValueError:
+                obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
+        else:
+            obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
+        self._scratchpad += obs
+
+        return EM(self._answer, key), obs
+
     def create_output_dict(self, thought: str, action_type: str, obs: str, is_correct: bool) -> Dict[str, str]:
         return super().create_output_dict(thought, action_type, obs, is_correct)
     
