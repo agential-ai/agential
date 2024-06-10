@@ -191,6 +191,23 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         pass
 
     @abstractmethod
+    def react_create_output_dict(
+        self, thought: str, action_type: str, obs: str, is_correct: bool
+    ) -> Dict[str, str]:
+        """Creates a dictionary of the output components.
+
+        Args:
+            thought (str): The generated thought.
+            action_type (str): The type of action performed.
+            obs (str): The generated observation.
+            is_correct (bool): Whether the observation is correct.
+
+        Returns:
+            Dict[str, str]: A dictionary containing the thought, action type, observation, answer, and is_correct.
+        """
+        pass
+
+    @abstractmethod
     def halting_condition(self, idx: int, key: str, **kwargs: Dict[str, Any]) -> bool:
         """Determines whether the halting condition has been met.
 

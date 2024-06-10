@@ -328,7 +328,7 @@ class ReflexionReActAgent(BaseAgent):
             )
 
             out.append(
-                self.strategy.create_output_dict(
+                self.strategy.react_create_output_dict(
                     thought=thought,
                     action_type=action_type,
                     obs=obs,
@@ -414,7 +414,12 @@ class ReflexionReActAgent(BaseAgent):
                 **kwargs
             )
 
-            result.append((is_correct, self._answer, out))
+            out.append(
+                {
+                "reflections": reflections, 
+                **react_out
+                }
+            )
 
 
 
