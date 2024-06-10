@@ -321,8 +321,6 @@ class ReflexionReActAgent(BaseAgent):
         idx, patience_cnt = 1, 0
         out = []
         while self.strategy.halting_condition(key=key, **kwargs):
-            step_idx = 1
-
             # Reflect if possible.
             reflections = ""
             if self.strategy.reflect_condition(
@@ -343,6 +341,7 @@ class ReflexionReActAgent(BaseAgent):
                     additional_keys=additional_keys,
                 )
 
+            step_idx = 1
             self.strategy.reset(no_reflector=True)
             while not self.strategy.react_halting_condition(
                 step_idx=step_idx, 
@@ -363,7 +362,7 @@ class ReflexionReActAgent(BaseAgent):
                 )
 
                 # Act.
-                action = self.strategy.generate_action(
+                action_type, query = self.strategy.generate_action(
                     question=question,
                     examples=examples,
                     reflections=reflections,
@@ -372,7 +371,27 @@ class ReflexionReActAgent(BaseAgent):
                     **kwargs
                 )
 
+                # Observe.
+                is_correct, obs = self.strategy.generate_observation(
+                    question=question,
+                    examples=examples,
+                    reflections=reflections,
+                    action=action,
+                    prompt=prompt,
+                    additional_keys=additional_keys,
+                    **kwargs
+                )
 
+                out.append(
+                    self.strategy.create_output_dict(
+                        thought=thought,
+                        action_type=action_type,
+                        obs=obs,
+                        is_correct=is_correct,
+                    )
+                )
+
+                step_idx += 1
 
         # Reset.
         if reset:
