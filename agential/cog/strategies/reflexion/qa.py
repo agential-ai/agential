@@ -2,7 +2,7 @@
 
 import re
 
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple, List
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -184,7 +184,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
 
     def create_output_dict(
         self, thought: str, action_type: str, obs: str, is_correct: bool
-    ) -> Dict[str, str]:
+    ) -> Dict[str, Any]:
         """Creates a dictionary of the output components.
 
         Args:
@@ -421,8 +421,15 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
 
         return EM(self._answer, key), obs
 
-    def create_output_dict(self, thought: str, action_type: str, obs: str, is_correct: bool) -> Dict[str, str]:
-        return super().create_output_dict(thought, action_type, obs, is_correct)
+    def create_output_dict(
+        self, 
+        react_out: List[Dict[str, Any]],
+        reflections: str,
+    ) -> Dict[str, str]:
+        return {
+            "react_output": react_out,
+            "reflections": reflections,
+        }
 
     def react_create_output_dict(
         self, 
@@ -431,7 +438,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         query: str, 
         obs: str, 
         is_correct: bool
-    ) -> Dict[str, str]:
+    ) -> Dict[str, Any]:
         return {
             "thought": thought,
             "action_type": action_type,

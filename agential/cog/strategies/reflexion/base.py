@@ -1,7 +1,7 @@
 """Base Reflexion Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Tuple, List
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -57,7 +57,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
     @abstractmethod
     def create_output_dict(
         self, thought: str, action_type: str, obs: str, is_correct: bool
-    ) -> Dict[str, str]:
+    ) -> Dict[str, Any]:
         """Creates a dictionary of the output components.
 
         Args:
@@ -175,7 +175,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
 
     @abstractmethod
     def create_output_dict(
-        self, thought: str, action_type: str, obs: str, is_correct: bool
+        self, react_out: List[Dict[str, Any]], reflections: str
     ) -> Dict[str, str]:
         """Creates a dictionary of the output components.
 
@@ -192,7 +192,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
 
     @abstractmethod
     def react_create_output_dict(
-        self, thought: str, action_type: str, obs: str, is_correct: bool
+        self, thought: str, action_type: str, query: str, obs: str, is_correct: bool
     ) -> Dict[str, str]:
         """Creates a dictionary of the output components.
 
