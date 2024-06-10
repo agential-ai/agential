@@ -339,7 +339,7 @@ class ReflexionReActAgent(BaseAgent):
 
             step_idx += 1
 
-        return step_idx, out
+        return step_idx, is_correct, out
 
     def generate(
         self,
@@ -347,11 +347,12 @@ class ReflexionReActAgent(BaseAgent):
         key: str,
         examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         reflection_strategy: Optional[str] = None,
-        reset: bool = True,
         prompt: str = REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
         reflect_examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         reflect_prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
         additional_keys: Dict[str, str] = {},
+        patience: int = 1,
+        reset: bool = True,
         **kwargs: Dict[str, Any],
     ) -> List[Tuple[bool, str, List[Tuple[str, str, str]]]]:
         """Processes a given question through ReAct and reflects using Reflexion strategies when possible.
@@ -405,7 +406,7 @@ class ReflexionReActAgent(BaseAgent):
                     additional_keys=additional_keys,
                 )
 
-            step_idx, react_out = self._generate_react(
+            step_idx, is_correct, react_out = self._generate_react(
                 question=question,
                 key=key,
                 examples=examples,
@@ -416,13 +417,19 @@ class ReflexionReActAgent(BaseAgent):
             )
 
             out.append(
-                {
-                "reflections": reflections, 
-                **react_out
-                }
+                self.strategy.create_output_dict(
+                    react_out=react_out,
+                    reflections=reflections,
+                )
             )
 
-
+            # Increment patience counter.
+            if not is_correct:
+                patience_cnt += 1
+            if patience_cnt == patience:
+                break
+            
+            idx += 1
 
 
 
