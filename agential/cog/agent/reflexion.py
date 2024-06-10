@@ -279,8 +279,64 @@ class ReflexionReActAgent(BaseAgent):
 
     def generate_react(
         self,
+        question: str,
+        key: str,
+        examples: str,
+        reflections: str,
+        prompt: str,
+        additional_keys: Dict[str, str] = {},
+        **kwargs: Dict[str, Any],
     ):
-        pass
+        out = []
+        step_idx = 1
+        self.strategy.reset(no_reflector=True)
+        while not self.strategy.react_halting_condition(
+            step_idx=step_idx, 
+            question=question,
+            examples=examples,
+            reflections=reflections,
+            prompt=prompt,
+            additional_keys=additional_keys,
+            **kwargs
+        ):
+            # Think.
+            thought = self.strategy.generate(
+                question=question,
+                examples=examples,
+                reflections=reflections,
+                prompt=prompt,
+                additional_keys=additional_keys,
+                **kwargs
+            )
+
+            # Act.
+            action_type, query = self.strategy.generate_action(
+                question=question,
+                examples=examples,
+                reflections=reflections,
+                prompt=prompt,
+                additional_keys=additional_keys,
+                **kwargs
+            )
+
+            # Observe.
+            is_correct, obs = self.strategy.generate_observation(
+                step_idx=step_idx,
+                action_type=action_type,
+                query=query,
+                key=key,
+            )
+
+            out.append(
+                self.strategy.create_output_dict(
+                    thought=thought,
+                    action_type=action_type,
+                    obs=obs,
+                    is_correct=is_correct,
+                )
+            )
+
+            step_idx += 1
 
     def generate(
         self,
@@ -346,57 +402,6 @@ class ReflexionReActAgent(BaseAgent):
                     additional_keys=additional_keys,
                 )
 
-            step_idx = 1
-            self.strategy.reset(no_reflector=True)
-            while not self.strategy.react_halting_condition(
-                step_idx=step_idx, 
-                question=question,
-                examples=examples,
-                reflections=reflections,
-                prompt=prompt,
-                additional_keys=additional_keys,
-                **kwargs
-            ):
-                # Think.
-                thought = self.strategy.generate(
-                    question=question,
-                    examples=examples,
-                    prompt=prompt,
-                    additional_keys=additional_keys,
-                    **kwargs
-                )
-
-                # Act.
-                action_type, query = self.strategy.generate_action(
-                    question=question,
-                    examples=examples,
-                    reflections=reflections,
-                    prompt=prompt,
-                    additional_keys=additional_keys,
-                    **kwargs
-                )
-
-                # Observe.
-                is_correct, obs = self.strategy.generate_observation(
-                    question=question,
-                    examples=examples,
-                    reflections=reflections,
-                    action=action,
-                    prompt=prompt,
-                    additional_keys=additional_keys,
-                    **kwargs
-                )
-
-                out.append(
-                    self.strategy.create_output_dict(
-                        thought=thought,
-                        action_type=action_type,
-                        obs=obs,
-                        is_correct=is_correct,
-                    )
-                )
-
-                step_idx += 1
 
         # Reset.
         if reset:
