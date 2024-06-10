@@ -354,9 +354,34 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
 
         return thought
     
-    def generate_action(self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]) -> Tuple[str]:
-        return super().generate_action(question, examples, prompt, additional_keys)
-    
+    def generate_action(
+        self, 
+        question: str, 
+        examples: str, 
+        reflections: str,
+        prompt: str, 
+        additional_keys: Dict[str, str],
+        **kwargs: Dict[str, Any],
+    ) -> Tuple[str, str]:
+        max_steps = kwargs.get("max_steps", self.max_steps)
+        self._scratchpad += "\nAction:"
+        action = _prompt_react_agent(
+            llm=self.llm,
+            question=question,
+            examples=examples,
+            reflections=reflections,
+            scratchpad=self._scratchpad,
+            max_steps=max_steps,  # type: ignore
+            prompt=prompt,
+            additional_keys=additional_keys,
+        )
+        action = remove_newline(action).split("Observation")[0]
+        self._scratchpad += " " + action
+        action_type, query = parse_qa_action(action)
+
+        return action_type, query
+
+
     def generate_observation(self, action_type: str, query: str, key: str) -> str:
         return super().generate_observation(action_type, query, key)
     
