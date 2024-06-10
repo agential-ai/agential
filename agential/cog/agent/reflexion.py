@@ -277,6 +277,11 @@ class ReflexionReActAgent(BaseAgent):
         # self._finished = False
         # self._answer = ""
 
+    def generate_react(
+        self,
+    ):
+        pass
+
     def generate(
         self,
         question: str,
