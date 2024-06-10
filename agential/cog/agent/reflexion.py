@@ -277,7 +277,7 @@ class ReflexionReActAgent(BaseAgent):
         # self._finished = False
         # self._answer = ""
 
-    def generate_react(
+    def _generate_react(
         self,
         question: str,
         key: str,
@@ -338,6 +338,8 @@ class ReflexionReActAgent(BaseAgent):
 
             step_idx += 1
 
+        return step_idx, out
+
     def generate(
         self,
         question: str,
@@ -379,7 +381,7 @@ class ReflexionReActAgent(BaseAgent):
         if reset:
             self.reset()
 
-        idx, patience_cnt = 1, 0
+        idx, step_idx, patience_cnt = 1, 1, 0
         out = []
         while self.strategy.halting_condition(key=key, **kwargs):
             # Reflect if possible.
@@ -402,6 +404,17 @@ class ReflexionReActAgent(BaseAgent):
                     additional_keys=additional_keys,
                 )
 
+            step_idx, react_out = self._generate_react(
+                question=question,
+                key=key,
+                examples=examples,
+                reflections=reflections,
+                prompt=prompt,
+                additional_keys=additional_keys,
+                **kwargs
+            )
+
+            result.append((is_correct, self._answer, out))
 
         # Reset.
         if reset:
