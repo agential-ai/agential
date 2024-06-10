@@ -353,9 +353,20 @@ class ReflexionReActAgent(BaseAgent):
                 additional_keys=additional_keys,
                 **kwargs
             ):
+                # Think.
                 thought = self.strategy.generate(
                     question=question,
                     examples=examples,
+                    prompt=prompt,
+                    additional_keys=additional_keys,
+                    **kwargs
+                )
+
+                # Act.
+                action = self.strategy.generate_action(
+                    question=question,
+                    examples=examples,
+                    reflections=reflections,
                     prompt=prompt,
                     additional_keys=additional_keys,
                     **kwargs
