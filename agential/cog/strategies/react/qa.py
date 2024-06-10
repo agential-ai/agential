@@ -19,7 +19,7 @@ from agential.utils.parse import remove_newline
 def parse_qa_action(string: str) -> Tuple[str, str]:
     """Parses an action string into an action type and its argument.
 
-    This method is used in ReAct and Reflexion.
+    This method is used in ReAct.
 
     Args:
         string (str): The action string to be parsed.
