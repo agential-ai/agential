@@ -217,18 +217,6 @@ class ReflexionReActAgent(BaseAgent):
         mode: Dict[str, str],
         reflector: Optional[ReflexionReActReflector] = None,
         **strategy_kwargs: Dict[str, Any],
-
-        # self_reflect_llm: BaseChatModel,
-        # action_llm: BaseChatModel,
-        # memory: Any,
-        # reflector: Optional[ReflexionReActReflector] = None,
-        # max_reflections: int = 3,
-        # max_steps: int = 6,
-        # max_tokens: int = 3896,
-        # max_trials: int = 1,
-        # patience: Optional[int] = None,
-        # docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
-        # enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
     ) -> None:
         """Initialization."""
         super().__init__()
