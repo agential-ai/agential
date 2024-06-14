@@ -348,7 +348,7 @@ class ReflexionReActAgent(BaseAgent):
 
         idx, step_idx, patience_cnt = 1, 1, 0
         out = []
-        while self.strategy.halting_condition(key=key, **kwargs):
+        while self.strategy.halting_condition(idx=idx, key=key, **kwargs):
             # Reflect if possible.
             reflections = ""
             if self.strategy.reflect_condition(
@@ -402,10 +402,3 @@ class ReflexionReActAgent(BaseAgent):
         Sets the step number, finished flag, and scratchpad to their initial values.
         """
         self.strategy.reset()
-
-        idx = 1
-        self._step_n = 1
-        self._finished = False
-        self._answer = ""
-        self.memory.clear()
-        self.reflector.clear()
