@@ -535,8 +535,6 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         )
 
         return halted and not EM(self._answer, key) and reflection_strategy
-    
-
 
 
 class ReflexionCoTHotQAStrategy(ReflexionCoTQAStrategy):
