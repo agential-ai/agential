@@ -98,7 +98,7 @@ class ReflexionCoTAgent(BaseAgent):
         reflect_prompt: str,
         reflection_strategy: str,
         additional_keys: Dict[str, str] = {},
-        reflection_additional_keys: Dict[str, str] = {},
+        reflect_additional_keys: Dict[str, str] = {},
         patience: int = 1,
         reset: bool = True,
         **kwargs: Dict[str, Any],
@@ -143,7 +143,7 @@ class ReflexionCoTAgent(BaseAgent):
                     question=question,
                     examples=reflect_examples,
                     prompt=reflect_prompt,
-                    additional_keys=reflection_additional_keys,
+                    additional_keys=reflect_additional_keys,
                 )
 
             self.strategy.reset(only_scratchpad=True)
@@ -302,6 +302,7 @@ class ReflexionReActAgent(BaseAgent):
         reflect_prompt: str,
         reflection_strategy: Optional[str] = None,
         additional_keys: Dict[str, str] = {},
+        reflection_additional_keys: Dict[str, str] = {},
         patience: int = 1,
         reset: bool = True,
         **kwargs: Dict[str, Any],
@@ -354,7 +355,7 @@ class ReflexionReActAgent(BaseAgent):
                     question=question,
                     examples=reflect_examples,
                     prompt=reflect_prompt,
-                    additional_keys=additional_keys,
+                    additional_keys=reflection_additional_keys,
                 )
 
             step_idx, is_correct, react_out = self._generate_react(
