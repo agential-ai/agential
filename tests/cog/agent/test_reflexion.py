@@ -5,7 +5,6 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken.core import Encoding
 
 from agential.cog.agent.reflexion import ReflexionCoTAgent, ReflexionReActAgent
-from agential.cog.modules.memory.reflexion import ReflexionMemory
 from agential.cog.modules.reflect.reflexion import (
     ReflexionReActReflector,
 )

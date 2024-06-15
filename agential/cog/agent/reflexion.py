@@ -93,10 +93,10 @@ class ReflexionCoTAgent(BaseAgent):
         question: str,
         key: str,
         examples: str,
-        reflection_strategy: str,
         prompt: str,
         reflect_examples: str,
         reflect_prompt: str,
+        reflection_strategy: str,
         additional_keys: Dict[str, str] = {},
         reflection_additional_keys: Dict[str, str] = {},
         patience: int = 1,
@@ -112,11 +112,11 @@ class ReflexionCoTAgent(BaseAgent):
             question (str): The question to answer.
             key (str): The key to evaluate the correctness of the answer.
             examples (str, optional): Fewshot examples.
-            reflection_strategy (str): The strategy to use for reflection. Can be one of "last_attempt",
-                "reflexion", or "last_attempt_and_reflexion".
             prompt (str, optional): Prompt template string.
             reflect_examples (str, optional): Reflection fewshot examples.
             reflect_prompt (str, optional): Reflect prompt template string.
+            reflection_strategy (str): The strategy to use for reflection. Can be one of "last_attempt",
+                "reflexion", or "last_attempt_and_reflexion".
             reset (bool): Resets the agent's memory. Defaults to True.
 
         Returns:
