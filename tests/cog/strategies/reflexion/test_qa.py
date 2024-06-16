@@ -277,6 +277,7 @@ def test_reflexion_react_generate() -> None:
     """Tests ReflexionReActQAStrategy generate."""
     question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
 
+    gt_scratchpad = '\nThought: I need to search for VIVA Media AG and find out their new acronym after changing their name in 2004.'
     gt_out = 'I need to search for VIVA Media AG and find out their new acronym after changing their name in 2004.'
     responses = [
         'I need to search for VIVA Media AG and find out their new acronym after changing their name in 2004.'
@@ -292,10 +293,30 @@ def test_reflexion_react_generate() -> None:
         max_steps=5
     )
     assert out == gt_out
+    assert strategy._scratchpad == gt_scratchpad
 
 
 def test_reflexion_react_generate_action() -> None:
     """Tests ReflexionReActQAStrategy generate_action."""
+    question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
+    
+    gt_scratchpad = '\nAction: Search[VIVA Media AG]'
+    responses = [
+        "Search[VIVA Media AG]",
+    ]
+    llm = FakeListChatModel(responses=responses)
+    strategy = ReflexionReActQAStrategy(llm=llm)
+    action_type, query = strategy.generate_action(
+        question=question,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        reflections="",
+        prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
+        max_steps=5
+    )
+    assert action_type == "Search"
+    assert query == "VIVA Media AG"
+    assert strategy._scratchpad == gt_scratchpad
 
 
 def test_reflexion_react_generate_observation() -> None:
