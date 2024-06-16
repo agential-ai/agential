@@ -31,16 +31,19 @@ from agential.cog.strategies.react.qa import (
     ReActHotQAStrategy,
     ReActTriviaQAStrategy,
 )
-from agential.cog.strategies.reflexion.base import ReflexionCoTBaseStrategy, ReflexionReActBaseStrategy
+from agential.cog.strategies.reflexion.base import (
+    ReflexionCoTBaseStrategy,
+    ReflexionReActBaseStrategy,
+)
 from agential.cog.strategies.reflexion.qa import (
     ReflexionCoTAmbigNQStrategy,
     ReflexionCoTFEVERStrategy,
     ReflexionCoTHotQAStrategy,
     ReflexionCoTTriviaQAStrategy,
-    ReflexionReActHotQAStrategy,
-    ReflexionReActTriviaQAStrategy,
     ReflexionReActAmbigNQStrategy,
     ReflexionReActFEVERStrategy,
+    ReflexionReActHotQAStrategy,
+    ReflexionReActTriviaQAStrategy,
 )
 from agential.cog.strategies.self_refine.base import SelfRefineBaseStrategy
 from agential.cog.strategies.self_refine.math import SelfRefineGSM8KStrategy
@@ -290,7 +293,7 @@ class ReflexionCoTStrategyFactory:
             raise ValueError(f"Unsupported mode: {mode}")
 
         return
-    
+
 
 class ReflexionReActStrategyFactory:
     """A factory class for creating instances of different ReflexionReAct strategies based on the specified mode and benchmark.
