@@ -280,8 +280,16 @@ def test_reflexion_react_create_output_dict() -> None:
     """Tests ReflexionReActQAStrategy create_output_dict."""
 
 
+def test_reflexion_react_react_create_output_dict() -> None:
+    """Tests ReflexionReActQAStrategy react_create_output_dict."""
+
+
 def test_reflexion_react_halting_condition() -> None:
     """Tests ReflexionReActQAStrategy halting_condition."""
+
+
+def test_reflexion_react_react_halting_condition() -> None:
+    """Tests ReflexionReActQAStrategy react_halting_condition."""
 
 
 def test_reflexion_react_reset() -> None:
