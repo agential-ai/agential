@@ -3,7 +3,7 @@
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 
-from agential.cog.modules.reflect.reflexion import ReflexionCoTReflector
+from agential.cog.modules.reflect.reflexion import ReflexionCoTReflector, ReflexionReActReflector
 from agential.cog.prompts.agent.reflexion import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     REFLEXION_COT_INSTRUCTION_HOTPOTQA,
@@ -262,6 +262,15 @@ def test_reflexion_cot_instantiate_strategies() -> None:
 
 def test_reflexion_react_init() -> None:
     """Test ReflexionReActStrategy initialization."""
+    llm = FakeListChatModel(responses=[])
+    strategy = ReflexionReActQAStrategy(llm=llm)
+    assert isinstance(strategy.llm, BaseChatModel)
+    assert isinstance(strategy.reflector, ReflexionReActReflector)
+    assert strategy.max_reflections == 3
+    assert strategy.max_trials == 1
+    assert strategy._scratchpad == ""
+    assert strategy._finished == False
+    assert strategy._answer == ""
 
 
 def test_reflexion_react_generate() -> None:
