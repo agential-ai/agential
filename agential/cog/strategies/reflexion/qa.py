@@ -310,7 +310,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
     def __init__(
         self, 
         llm: BaseChatModel,
-        reflector: Optional[ReflexionCoTReflector] = None,
+        reflector: Optional[ReflexionReActReflector] = None,
         max_reflections: int = 3,
         max_trials: int = 1,
         max_steps: int = 6,

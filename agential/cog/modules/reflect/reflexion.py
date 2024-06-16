@@ -188,7 +188,7 @@ class ReflexionReActReflector(BaseReflector):
 
         return reflections, reflections_str
 
-    def clear(self) -> None:
+    def reset(self) -> None:
         """Clears the reflections and reflections_str."""
         self.reflections = []
         self.reflections_str = ""
