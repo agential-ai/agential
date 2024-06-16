@@ -15,6 +15,7 @@ from agential.cog.prompts.agent.reflexion import (
 )
 from agential.cog.prompts.benchmark.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
+    HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 )
 
 
@@ -284,24 +285,26 @@ def test_reflexion_react_generate() -> None:
         "The search for information about VIVA Media AG's name change in 2004 did not yield any results. It seems that there is limited information available on this topic. Without further information, I am unable to determine what their new acronym stands for.",
         "Finish[unable to determine]",
     ]
-    action_llm = FakeListChatModel(responses=responses)
     agent = ReflexionReActAgent(
-        self_reflect_llm=FakeListChatModel(responses=["1"]),
-        action_llm=action_llm,
+        llm=FakeListChatModel(responses=responses),
+        mode={"qa": "hotpotqa"},
         max_trials=1,
     )
-    out = agent.generate(question=question, key=key, strategy=None)
+    out = agent.generate(
+        question=question, 
+        key=key, 
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+        reflection_strategy=None,
+        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+        reflect_prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+    )
     assert isinstance(out, list)
     assert len(out) == 1
-    assert isinstance(out[0], tuple)
-    assert not out[0][0]
-    assert out[0][1] == "unable to determine"
-    for triplet in out[0][-1]:
-        assert isinstance(triplet, tuple)
-    assert agent._answer == "unable to determine"
-    assert agent._finished
-    assert agent.reflector.reflections == []
-    assert agent.reflector.reflections_str == ""
+    assert agent.strategy._answer == "unable to determine"
+    assert agent.strategy._finished
+    assert agent.strategy.reflector.reflections == []
+    assert agent.strategy.reflector.reflections_str == ""
 
 #     # Test generate with reflection (last_attempt_and_reflexion).
 #     action_responses = [
