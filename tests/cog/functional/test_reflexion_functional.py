@@ -32,7 +32,9 @@ from agential.cog.prompts.agent.reflexion import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     REFLEXION_COT_INSTRUCTION_HOTPOTQA,
     REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
-    REFLEXION_REACT_INSTRUCTION_HOTPOTQA
+    REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+
 )
 from agential.cog.prompts.benchmark.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
@@ -714,45 +716,49 @@ def test_react_reflect() -> None:
     # Invalid strategy.
     with pytest.raises(NotImplementedError):
         out = react_reflect(
-            strategy="invalid input",
+            reflection_strategy="invalid input",
             llm=FakeListChatModel(responses=["1"]),
             reflections=[""],
             question="",
             examples="",
             scratchpad="",
+            prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
         )
 
     # Last attempt.
     out = react_reflect(
-        strategy="last_attempt",
+        reflection_strategy="last_attempt",
         llm=FakeListChatModel(responses=["1"]),
         reflections=[""],
         question="",
         examples="",
         scratchpad="",
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
     )
     assert out == [""]
 
     # Reflexion.
     out = react_reflect(
-        strategy="reflexion",
+        reflection_strategy="reflexion",
         llm=FakeListChatModel(responses=["1"]),
         reflections=[""],
         question="",
         examples="",
         scratchpad="",
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
     )
     assert isinstance(out, list)
     assert out == ["", "1"]
 
     # Last attempt and Reflexion.
     out = react_reflect(
-        strategy="last_attempt_and_reflexion",
+        reflection_strategy="last_attempt_and_reflexion",
         llm=FakeListChatModel(responses=["1"]),
         reflections=[""],
         question="",
         examples="",
         scratchpad="",
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
     )
     assert isinstance(out, list)
     assert out == ["1"]

@@ -10,6 +10,7 @@ from agential.cog.eval.reflexion import EM
 from agential.cog.functional.reflexion import _prompt_cot_agent
 from agential.cog.modules.reflect.reflexion import (
     ReflexionCoTReflector,
+    ReflexionReActReflector
 )
 from agential.cog.strategies.reflexion.base import ReflexionCoTBaseStrategy, ReflexionReActBaseStrategy
 from agential.utils.parse import remove_newline
@@ -298,7 +299,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
 
     Attributes:
         llm (BaseChatModel): The language model used for generating answers and critiques.
-        reflector (Optional[ReflexionCoTReflector]): The reflector used for generating reflections. Defaults to None.
+        reflector (Optional[ReflexionReActReflector]): The reflector used for generating reflections. Defaults to None.
         max_reflections (int): The maximum number of reflections allowed. Defaults to 3.
         max_trials (int): The maximum number of trials allowed. Defaults to 1.
         max_steps (int): The maximum number of steps allowed. Defaults to 6.
@@ -323,7 +324,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         self.max_trials = max_trials
 
         if not reflector:
-            reflector = ReflexionCoTReflector(llm=llm, max_reflections=max_reflections)
+            reflector = ReflexionReActReflector(llm=llm, max_reflections=max_reflections)
         self.reflector = reflector
 
         self.max_steps = max_steps
@@ -494,7 +495,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         additional_keys: Dict[str, str]
     ) -> str:
         _, reflections_str = self.reflector.reflect(
-            strategy=reflection_strategy,
+            reflection_strategy=reflection_strategy,
             question=question,
             examples=examples,
             scratchpad=_truncate_scratchpad(
