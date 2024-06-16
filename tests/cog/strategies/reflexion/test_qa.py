@@ -321,6 +321,43 @@ def test_reflexion_react_generate_action() -> None:
 
 def test_reflexion_react_generate_observation() -> None:
     """Tests ReflexionReActQAStrategy generate_observation."""
+    llm = FakeListChatModel(responses=[])
+    strategy = ReflexionReActQAStrategy(llm=llm)
+    is_correct, obs = strategy.generate_observation(
+        step_idx=1,
+        action_type="Search",
+        query="VIVA Media AG",
+        key="key1",
+    )
+    assert not is_correct
+    assert isinstance(obs, str)
+    assert strategy._scratchpad != ""
+    assert not strategy._finished
+    assert strategy._answer == ""
+
+    is_correct, obs = strategy.generate_observation(
+        step_idx=1,
+        action_type="Lookup",
+        query="VIVA Media AG",
+        key="key1",
+    )
+    assert not is_correct
+    assert isinstance(obs, str)
+    assert strategy._scratchpad != ""
+    assert not strategy._finished
+    assert strategy._answer == ""
+
+    is_correct, obs = strategy.generate_observation(
+        step_idx=1,
+        action_type="Finish",
+        query="VIVA Media AG",
+        key="key1",
+    )
+    assert not is_correct
+    assert isinstance(obs, str)
+    assert strategy._scratchpad != ""
+    assert strategy._finished
+    assert strategy._answer == "VIVA Media AG"
 
 
 def test_reflexion_react_create_output_dict() -> None:
