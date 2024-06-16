@@ -180,10 +180,8 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         """Creates a dictionary of the output components.
 
         Args:
-            thought (str): The generated thought.
-            action_type (str): The type of action performed.
-            obs (str): The generated observation.
-            is_correct (bool): Whether the observation is correct.
+            react_out (List[Dict[str, Any]]): The output from the ReAct agent.
+            reflections (str): The output from the ReAct reflections.
 
         Returns:
             Dict[str, str]: A dictionary containing the thought, action type, observation, answer, and is_correct.
@@ -199,6 +197,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         Args:
             thought (str): The generated thought.
             action_type (str): The type of action performed.
+            query (str): The query for the action.
             obs (str): The generated observation.
             is_correct (bool): Whether the observation is correct.
 
@@ -224,7 +223,28 @@ class ReflexionReActBaseStrategy(BaseStrategy):
     @abstractmethod
     def react_halting_condition(
         self,
+        step_idx: int,
+        question: str,
+        examples: str,
+        reflections: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+        **kwargs: Dict[str, Any],
     ) -> bool:
+        """Determines whether the halting condition for the ReAct agent has been met.
+
+        Args:
+            step_idx (int): The index of the current step.
+            question (str): The question to be answered.
+            examples (str): Examples to guide the generation process.
+            reflections (str): Reflections to guide the generation process.
+            prompt (str): The prompt used for generating the action.
+            additional_keys (Dict[str, str]): Additional keys for the generation process.
+            kwargs (Dict[str, Any]): Additional keyword arguments.
+
+        Returns:
+            bool: True if the halting condition is met, False otherwise.
+        """
         pass
 
     @abstractmethod
@@ -232,7 +252,6 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         self,
         reflection_strategy: str,
         question: str,
-        context: str,
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
@@ -242,7 +261,6 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         Args:
             reflection_strategy (str): The strategy to use for reflection.
             question (str): The question to be reflected upon.
-            context (str): The context in which the question is being asked.
             examples (str): Examples to guide the reflection process.
             prompt (str): The prompt or instruction to guide the reflection.
             additional_keys (Dict[str, str]): Additional keys for the reflection process.
@@ -267,9 +285,14 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         """Determines whether the reflection condition has been met.
 
         Args:
-            step_n (int): The current step.
+            step_idx (int): The current step index.
             reflection_strategy (str): The strategy to use for reflection.
+            question (str): The question to be reflected upon.
+            examples (str): Examples to guide the reflection process.
             key (str): The key for the observation.
+            prompt (str): The prompt or instruction to guide the reflection.
+            additional_keys (Dict[str, str]): Additional keys for the reflection process.
+            kwargs (Dict[str, str]): Additional keyword arguments.
 
         Returns:
             bool: True if the reflection condition is met, False otherwise.

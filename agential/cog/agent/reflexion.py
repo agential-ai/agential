@@ -104,7 +104,7 @@ class ReflexionCoTAgent(BaseAgent):
         patience: int = 1,
         reset: bool = True,
         **kwargs: Dict[str, Any],
-    ) -> List[Tuple[bool, str, Tuple[str, str, str]]]:
+    ) -> List[Dict[str, Any]]:
         """Generates a response based on the provided context, question, and key.
 
         The `generate` method internally calls reflect (if possible), resets the memory,
@@ -119,11 +119,14 @@ class ReflexionCoTAgent(BaseAgent):
             reflect_prompt (str, optional): Reflect prompt template string.
             reflection_strategy (str): The strategy to use for reflection. Can be one of "last_attempt",
                 "reflexion", or "last_attempt_and_reflexion".
-            reset (bool): Resets the agent's memory. Defaults to True.
+            additional_keys (Dict[str, str], optional): Additional keys for the prompt. Defaults to {}.
+            reflect_additional_keys (Dict[str, str], optional): Additional keys for the reflect prompt. Defaults to {}.
+            patience (int, optional): The patience for the agent. Defaults to 1.
+            reset (bool, optional): Whether to reset the agent's memory. Defaults to True.
+            **kwargs (Dict[str, Any], optional): Additional keyword arguments for the strategy.
 
         Returns:
-            result (List[Tuple[bool, str, List[str, str, str]]]): A list of tuples containing (is_correct, answer, output)
-                where output is a thought-action-observation 3-tuple.
+            result (List[Dict[str, Any]]): A list of dictionaries containing the thought, action, observation, and is_correct.
         """
         # Reset.
         if reset:
@@ -308,7 +311,7 @@ class ReflexionReActAgent(BaseAgent):
         patience: int = 1,
         reset: bool = True,
         **kwargs: Dict[str, Any],
-    ) -> List[Tuple[bool, str, List[Tuple[str, str, str]]]]:
+    ) -> List[Dict[str, Any]]:
         """Processes a given question through ReAct and reflects using Reflexion strategies when possible.
 
         Iteratively applies the think-act-observe cycle to generate an answer for the question.
@@ -327,11 +330,13 @@ class ReflexionReActAgent(BaseAgent):
             reflect_examples (str, optional): Reflection fewshot examples.
             reflect_prompt (str, optional): Reflect prompt template string.
             additional_keys (Dict[str, str], optional): Additional keys for the prompt. Defaults to {}.
+            reflection_additional_keys (Dict[str, str], optional): Additional keys for the reflect prompt. Defaults to {}.
+            patience (int, optional): The patience for the agent. Defaults to 1.
             **kwargs (Dict[str, Any]): Additional keyword arguments for the strategy.
 
         Returns:
-            result (List[Tuple[bool, str, List[Tuple[str, str, str]]]]): List of trials where each trial is
-                in the format (is_correct, answer, output) and output is in a thought-action-observation 3-tuple.
+            result (List[Dict[str, Any]]): List of dictionaries containing the ReAct output as a List[Dict[str, str]] and
+                the reflection at the end of each trial.
         """
         # Reset.
         if reset:
