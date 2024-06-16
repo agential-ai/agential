@@ -566,7 +566,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         Resets only the scratchpad if specified with 'only_scratchpad'.
 
         Args:
-            no_reflector (bool): If True, the reflector will not be reset. Defaults to False.
+            **kwargs (Dict[str, Any]): Additional keyword arguments.
         """
         no_reflector = kwargs.get("no_reflector", False)
         if not no_reflector:
