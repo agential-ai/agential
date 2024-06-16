@@ -625,7 +625,7 @@ def test__is_halted() -> None:
 def test__build_react_reflection_prompt() -> None:
     """Test _build_react_reflection_prompt function."""
     gt_out = "You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  \nHere are some examples:\n\n(END OF EXAMPLES)\n\nPrevious trial:\nQuestion: \n\nReflection:"
-    out = _build_react_reflection_prompt(question="", examples="", scratchpad="")
+    out = _build_react_reflection_prompt(question="", examples="", scratchpad="", prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA)
     assert out == gt_out
 
 
@@ -639,6 +639,7 @@ def test__prompt_react_reflection() -> None:
         question="",
         examples="",
         scratchpad="",
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
     )
     assert isinstance(out, str)
     assert out == "1"
@@ -675,6 +676,7 @@ def test__prompt_react_reflection() -> None:
         question=q,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         scratchpad=scratchpad,
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
     )
     assert out == gt_out
 
@@ -694,6 +696,7 @@ def test_react_reflect_reflexion() -> None:
         question="",
         examples="",
         scratchpad="",
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
     )
     assert isinstance(out, list)
     assert out == ["", "1"]
@@ -706,6 +709,7 @@ def test_react_reflect_last_attempt_and_reflexion() -> None:
         question="",
         examples="",
         scratchpad="",
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
     )
     assert isinstance(out, list)
     assert out == ["1"]
