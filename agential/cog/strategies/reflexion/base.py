@@ -1,7 +1,7 @@
 """Base Reflexion Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Any, Dict, Tuple, List
+from typing import Any, Dict, List, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -255,14 +255,14 @@ class ReflexionReActBaseStrategy(BaseStrategy):
     @abstractmethod
     def reflect_condition(
         self,
-        step_idx: int, 
-        reflection_strategy: str, 
-        question: str, 
-        examples: str, 
-        key: str, 
-        prompt: str, 
-        additional_keys: Dict[str, str], 
-        **kwargs: Dict[str, str]
+        step_idx: int,
+        reflection_strategy: str,
+        question: str,
+        examples: str,
+        key: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+        **kwargs: Dict[str, str],
     ) -> bool:
         """Determines whether the reflection condition has been met.
 

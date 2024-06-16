@@ -33,8 +33,7 @@ from agential.cog.prompts.agent.reflexion import (
     REFLEXION_COT_INSTRUCTION_HOTPOTQA,
     REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
-
+    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.prompts.benchmark.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
@@ -109,7 +108,7 @@ def test__format_last_attempt() -> None:
 
 def test__build_cot_agent_prompt() -> None:
     """Test _build_cot_agent_prompt function."""
-    gt_out = 'Solve a question answering task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task.\n\nHere are some examples:\n\n(END OF EXAMPLES)\n\n\n\nQuestion: '
+    gt_out = "Solve a question answering task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task.\n\nHere are some examples:\n\n(END OF EXAMPLES)\n\n\n\nQuestion: "
     out = _build_cot_agent_prompt(
         examples="",
         reflections="",
@@ -190,7 +189,7 @@ def test__prompt_cot_agent() -> None:
 
 def test__build_cot_reflection_prompt() -> None:
     """Test _build_cot_reflection_prompt function."""
-    gt_out = 'You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.\n\nHere are some examples:\n\n(END OF EXAMPLES)\n\nPrevious trial:\nQuestion: \n\nReflection:'
+    gt_out = "You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.\n\nHere are some examples:\n\n(END OF EXAMPLES)\n\nPrevious trial:\nQuestion: \n\nReflection:"
     out = _build_cot_reflection_prompt(
         examples="",
         question="",
@@ -199,7 +198,7 @@ def test__build_cot_reflection_prompt() -> None:
     )
     assert out == gt_out
 
-    gt_out = 'You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.\n\nHere are some examples:\n\n(END OF EXAMPLES)\n\nPrevious trial:\nQuestion: \n\nReflection:'
+    gt_out = "You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.\n\nHere are some examples:\n\n(END OF EXAMPLES)\n\nPrevious trial:\nQuestion: \n\nReflection:"
     out = _build_cot_reflection_prompt(
         examples="",
         question="",
@@ -401,7 +400,12 @@ def test__build_react_agent_prompt() -> None:
     """Test _build_react_agent_prompt function."""
     gt_out = "Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: \n(1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.\n(2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.\n(3) Finish[answer], which returns the answer and finishes the task.\nYou have a maximum of 1 steps.\n\nHere are some examples:\n\n(END OF EXAMPLES)\n\n\n\nQuestion: "
     out = _build_react_agent_prompt(
-        question="", examples="", reflections="", scratchpad="", max_steps=1, prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA
+        question="",
+        examples="",
+        reflections="",
+        scratchpad="",
+        max_steps=1,
+        prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     )
     assert out == gt_out
 
@@ -418,7 +422,7 @@ def test__prompt_react_agent() -> None:
         reflections="",
         scratchpad="",
         max_steps=1,
-        prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA
+        prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, str)
     assert out == "1"
@@ -429,7 +433,7 @@ def test__prompt_react_agent() -> None:
             "I need to search for VIVA Media AG and find out what their new acronym stands for.\n\nAction: Search[VIVA Media AG]"
         )
     ]
-    gt_out = 'I need to search for VIVA Media AG and find out what their new acronym stands for.\n\nAction: Search[VIVA Media AG]'
+    gt_out = "I need to search for VIVA Media AG and find out what their new acronym stands for.\n\nAction: Search[VIVA Media AG]"
     out = _prompt_react_agent(
         llm=FakeListChatModel(responses=responses),
         question=q,
@@ -437,7 +441,7 @@ def test__prompt_react_agent() -> None:
         reflections="",
         scratchpad="\nThought:",
         max_steps=1,
-        prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA
+        prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     )
     assert out == gt_out
 
@@ -506,7 +510,7 @@ def test__prompt_react_agent() -> None:
         "'Virgin Money UK plc', 'Voice of America', '2016 in Philippine television', 'PolyGram', "
         "'Universal Music Group', 'Veolia Transport']\nThought:"
     )
-    gt_out = "Given the lack of information on VIVA Media AG and their name change in 2004, I should try to search for VIVA Media AG acquisitions or mergers to see if their new acronym was related to that. \nAction: Search[VIVA Media AG acquisitions]\nObservation: Could not find [VIVA Media AG acquisitions]. Similar: ['List of mergers and acquisitions by Alphabet', 'List of mergers and acquisitions by Apple', 'List of mergers and acquisitions by Microsoft', 'List of mergers and acquisitions by Facebook', 'List of mergers and acquisitions by Amazon', 'List of mergers and acquisitions by IBM', 'List of mergers and acquisitions by Cisco Systems', 'List of mergers and acquisitions by Oracle', 'List of mergers and acquisitions by SAP', 'List of mergers and acquisitions by Yahoo!']\nThought: Since I couldn't find information on acquisitions, I should try searching for VIVA Media AG partnerships or collaborations to see if their new acronym was related to that.\nAction: Search[VIVA Media AG partnerships]\nObservation: Could not find [VIVA Media AG partnerships]. Similar: ['List of airline codes', 'List of country codes on British diplomatic vehicle registration plates', 'List of international vehicle registration codes', 'Vehicle registration plates of the United States for the diplomatic corps', 'Vehicle registration plates of the European Union', 'List of diplomatic missions of Japan', 'List of diplomatic missions of Australia', 'Diplomatic missions of the European Union', 'Vehicle registration plates of the United Kingdom', 'Vehicle registration plates of the United States']\nThought: I am still unable to find relevant information, I should try a broader search term like VIVA Media AG history to see if I can find any details about their name change and new acronym.\nAction: Search[VIVA Media AG history]"  
+    gt_out = "Given the lack of information on VIVA Media AG and their name change in 2004, I should try to search for VIVA Media AG acquisitions or mergers to see if their new acronym was related to that. \nAction: Search[VIVA Media AG acquisitions]\nObservation: Could not find [VIVA Media AG acquisitions]. Similar: ['List of mergers and acquisitions by Alphabet', 'List of mergers and acquisitions by Apple', 'List of mergers and acquisitions by Microsoft', 'List of mergers and acquisitions by Facebook', 'List of mergers and acquisitions by Amazon', 'List of mergers and acquisitions by IBM', 'List of mergers and acquisitions by Cisco Systems', 'List of mergers and acquisitions by Oracle', 'List of mergers and acquisitions by SAP', 'List of mergers and acquisitions by Yahoo!']\nThought: Since I couldn't find information on acquisitions, I should try searching for VIVA Media AG partnerships or collaborations to see if their new acronym was related to that.\nAction: Search[VIVA Media AG partnerships]\nObservation: Could not find [VIVA Media AG partnerships]. Similar: ['List of airline codes', 'List of country codes on British diplomatic vehicle registration plates', 'List of international vehicle registration codes', 'Vehicle registration plates of the United States for the diplomatic corps', 'Vehicle registration plates of the European Union', 'List of diplomatic missions of Japan', 'List of diplomatic missions of Australia', 'Diplomatic missions of the European Union', 'Vehicle registration plates of the United Kingdom', 'Vehicle registration plates of the United States']\nThought: I am still unable to find relevant information, I should try a broader search term like VIVA Media AG history to see if I can find any details about their name change and new acronym.\nAction: Search[VIVA Media AG history]"
     out = _prompt_react_agent(
         llm=FakeListChatModel(responses=responses),
         question=q,
@@ -514,7 +518,7 @@ def test__prompt_react_agent() -> None:
         reflections=reflections,
         scratchpad=scratchpad,
         max_steps=6,
-        prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA
+        prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     )
     assert out == gt_out
 
@@ -534,7 +538,7 @@ def test__is_halted() -> None:
         10,
         100,
         gpt3_5_turbo_enc,
-        REFLEXION_REACT_INSTRUCTION_HOTPOTQA
+        REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     )
 
     # Test when step_n exceeds max_steps.
@@ -548,7 +552,7 @@ def test__is_halted() -> None:
         10,
         100,
         gpt3_5_turbo_enc,
-        REFLEXION_REACT_INSTRUCTION_HOTPOTQA
+        REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     )
 
     # Test when encoded prompt exceeds max_tokens.
@@ -562,7 +566,7 @@ def test__is_halted() -> None:
         10,
         10,
         gpt3_5_turbo_enc,
-        REFLEXION_REACT_INSTRUCTION_HOTPOTQA
+        REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     )
 
     # Test when none of the conditions for halting are met.
@@ -576,7 +580,7 @@ def test__is_halted() -> None:
         10,
         100000,
         gpt3_5_turbo_enc,
-        REFLEXION_REACT_INSTRUCTION_HOTPOTQA
+        REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     )
 
     # Test edge case when step_n equals max_steps.
@@ -590,7 +594,7 @@ def test__is_halted() -> None:
         10,
         100,
         gpt3_5_turbo_enc,
-        REFLEXION_REACT_INSTRUCTION_HOTPOTQA
+        REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     )
 
     # Test edge case when encoded prompt equals max_tokens.
@@ -604,7 +608,7 @@ def test__is_halted() -> None:
         10,
         1603,
         gpt3_5_turbo_enc,
-        REFLEXION_REACT_INSTRUCTION_HOTPOTQA
+        REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     )
 
     # Test with custom prompt template string.
@@ -625,7 +629,12 @@ def test__is_halted() -> None:
 def test__build_react_reflection_prompt() -> None:
     """Test _build_react_reflection_prompt function."""
     gt_out = "You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  \nHere are some examples:\n\n(END OF EXAMPLES)\n\nPrevious trial:\nQuestion: \n\nReflection:"
-    out = _build_react_reflection_prompt(question="", examples="", scratchpad="", prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA)
+    out = _build_react_reflection_prompt(
+        question="",
+        examples="",
+        scratchpad="",
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+    )
     assert out == gt_out
 
 
@@ -639,7 +648,7 @@ def test__prompt_react_reflection() -> None:
         question="",
         examples="",
         scratchpad="",
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, str)
     assert out == "1"
@@ -676,7 +685,7 @@ def test__prompt_react_reflection() -> None:
         question=q,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         scratchpad=scratchpad,
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert out == gt_out
 
@@ -696,7 +705,7 @@ def test_react_reflect_reflexion() -> None:
         question="",
         examples="",
         scratchpad="",
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, list)
     assert out == ["", "1"]
@@ -709,7 +718,7 @@ def test_react_reflect_last_attempt_and_reflexion() -> None:
         question="",
         examples="",
         scratchpad="",
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, list)
     assert out == ["1"]
@@ -726,7 +735,7 @@ def test_react_reflect() -> None:
             question="",
             examples="",
             scratchpad="",
-            prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+            prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
         )
 
     # Last attempt.
@@ -737,7 +746,7 @@ def test_react_reflect() -> None:
         question="",
         examples="",
         scratchpad="",
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert out == [""]
 
@@ -749,7 +758,7 @@ def test_react_reflect() -> None:
         question="",
         examples="",
         scratchpad="",
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, list)
     assert out == ["", "1"]
@@ -762,7 +771,7 @@ def test_react_reflect() -> None:
         question="",
         examples="",
         scratchpad="",
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, list)
     assert out == ["1"]

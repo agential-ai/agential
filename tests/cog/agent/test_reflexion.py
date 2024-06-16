@@ -6,11 +6,11 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from agential.cog.agent.reflexion import ReflexionCoTAgent, ReflexionReActAgent
 from agential.cog.prompts.agent.reflexion import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
+    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     REFLEXION_COT_INSTRUCTION_HOTPOTQA,
     REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT
 )
 from agential.cog.prompts.benchmark.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,

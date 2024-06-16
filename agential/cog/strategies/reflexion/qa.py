@@ -2,30 +2,32 @@
 
 import re
 
-from typing import Any, Dict, Optional, Tuple, List
+from typing import Any, Dict, List, Optional, Tuple
 
-from langchain_core.language_models.chat_models import BaseChatModel
-
-from agential.cog.eval.reflexion import EM
-from agential.cog.functional.reflexion import _prompt_cot_agent
-from agential.cog.modules.reflect.reflexion import (
-    ReflexionCoTReflector,
-    ReflexionReActReflector
-)
-from agential.cog.strategies.reflexion.base import ReflexionCoTBaseStrategy, ReflexionReActBaseStrategy
-from agential.utils.parse import remove_newline
 import tiktoken
 
 from langchain_community.docstore.wikipedia import Wikipedia
-
+from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
 
-from agential.utils.docstore import DocstoreExplorer
+from agential.cog.eval.reflexion import EM
 from agential.cog.functional.reflexion import (
     _is_halted,
-    _truncate_scratchpad,
+    _prompt_cot_agent,
     _prompt_react_agent,
+    _truncate_scratchpad,
 )
+from agential.cog.modules.reflect.reflexion import (
+    ReflexionCoTReflector,
+    ReflexionReActReflector,
+)
+from agential.cog.strategies.reflexion.base import (
+    ReflexionCoTBaseStrategy,
+    ReflexionReActBaseStrategy,
+)
+from agential.utils.docstore import DocstoreExplorer
+from agential.utils.parse import remove_newline
+
 
 def parse_qa_action(string: str) -> Tuple[str, str]:
     """Parses an action string into an action type and its argument.
@@ -307,8 +309,9 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         docstore (DocstoreExplorer): The document store explorer for retrieving relevant documents. Defaults to Wikipedia.
         enc (Encoding): The encoding for tokenization. Defaults to gpt-3.5-turbo.
     """
+
     def __init__(
-        self, 
+        self,
         llm: BaseChatModel,
         reflector: Optional[ReflexionReActReflector] = None,
         max_reflections: int = 3,
@@ -324,7 +327,9 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         self.max_trials = max_trials
 
         if not reflector:
-            reflector = ReflexionReActReflector(llm=llm, max_reflections=max_reflections)
+            reflector = ReflexionReActReflector(
+                llm=llm, max_reflections=max_reflections
+            )
         self.reflector = reflector
 
         self.max_steps = max_steps
@@ -337,13 +342,13 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         self._scratchpad = ""
 
     def generate(
-        self, 
-        question: str, 
-        examples: str, 
-        reflections: str, 
-        prompt: str, 
-        additional_keys: Dict[str, str], 
-        **kwargs: Dict[str, Any]
+        self,
+        question: str,
+        examples: str,
+        reflections: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+        **kwargs: Dict[str, Any],
     ) -> str:
         max_steps = kwargs.get("max_steps", self.max_steps)  # type: ignore
 
@@ -362,13 +367,13 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         self._scratchpad += " " + thought
 
         return thought
-    
+
     def generate_action(
-        self, 
-        question: str, 
-        examples: str, 
+        self,
+        question: str,
+        examples: str,
         reflections: str,
-        prompt: str, 
+        prompt: str,
         additional_keys: Dict[str, str],
         **kwargs: Dict[str, Any],
     ) -> Tuple[str, str]:
@@ -390,11 +395,10 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
 
         return action_type, query
 
-
     def generate_observation(
-        self, 
-        step_idx: int, 
-        action_type: str, 
+        self,
+        step_idx: int,
+        action_type: str,
         query: str,
         key: str,
     ) -> Tuple[bool, str]:
@@ -423,7 +427,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         return EM(self._answer, key), obs
 
     def create_output_dict(
-        self, 
+        self,
         react_out: List[Dict[str, Any]],
         reflections: str,
     ) -> Dict[str, str]:
@@ -433,29 +437,24 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         }
 
     def react_create_output_dict(
-        self, 
-        thought: str, 
-        action_type: str, 
-        query: str, 
-        obs: str, 
-        is_correct: bool
+        self, thought: str, action_type: str, query: str, obs: str, is_correct: bool
     ) -> Dict[str, Any]:
         return {
             "thought": thought,
             "action_type": action_type,
             "query": query,
             "observation": obs,
-            "is_correct": is_correct, 
+            "is_correct": is_correct,
         }
-    
+
     def halting_condition(self, idx: int, key: str, **kwargs: Dict[str, Any]) -> bool:
         max_trials = kwargs.get("max_trials", self.max_trials)
         return not EM(self._answer, key) and idx < max_trials + 1
-    
+
     def react_halting_condition(
         self,
         step_idx: int,
-        question: str, 
+        question: str,
         examples: str,
         reflections: str,
         prompt: str,
@@ -479,28 +478,27 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         )
 
     def reset(self, **kwargs: Dict[str, Any]) -> None:
-        no_reflector = kwargs.get('no_reflector', False)
+        no_reflector = kwargs.get("no_reflector", False)
         if not no_reflector:
             self.reflector.reset()
         self._scratchpad = ""
         self._finished = False
-        self._answer = ""    
+        self._answer = ""
 
     def reflect(
-        self, 
-        reflection_strategy: str, 
-        question: str, 
-        examples: str, 
-        prompt: str, 
-        additional_keys: Dict[str, str]
+        self,
+        reflection_strategy: str,
+        question: str,
+        examples: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
     ) -> str:
         _, reflections_str = self.reflector.reflect(
             reflection_strategy=reflection_strategy,
             question=question,
             examples=examples,
             scratchpad=_truncate_scratchpad(
-                scratchpad=self._scratchpad, 
-                tokenizer=self.enc
+                scratchpad=self._scratchpad, tokenizer=self.enc
             ),
             prompt=prompt,
             additional_keys=additional_keys,
@@ -509,19 +507,19 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         return reflections_str
 
     def reflect_condition(
-        self, 
-        step_idx: int, 
-        reflection_strategy: str, 
-        question: str, 
-        examples: str, 
-        key: str, 
-        prompt: str, 
-        additional_keys: Dict[str, str], 
-        **kwargs: Dict[str, str]
+        self,
+        step_idx: int,
+        reflection_strategy: str,
+        question: str,
+        examples: str,
+        key: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+        **kwargs: Dict[str, str],
     ) -> bool:
         max_steps = kwargs.get("max_steps", self.max_steps)
 
-        halted =  _is_halted(
+        halted = _is_halted(
             finished=self._finished,
             step_idx=step_idx,
             question=question,

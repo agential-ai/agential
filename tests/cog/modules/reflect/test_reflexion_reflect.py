@@ -9,12 +9,12 @@ from agential.cog.functional.reflexion import (
     _format_reflections,
 )
 from agential.cog.modules.reflect.reflexion import (
+    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )
-from agential.cog.modules.reflect.reflexion import (
-    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
-)
+
+
 def test_reflexion_cot_init() -> None:
     """Unit test for ReflexionCoT Reflector initialization."""
     reflector = ReflexionCoTReflector(
@@ -318,12 +318,16 @@ def test_reflexion_react_reflector() -> None:
             examples="",
             question="",
             scratchpad="",
-            prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+            prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
         )
 
     # Test with last attempt.
     out = reflector.reflect(
-        reflection_strategy="last_attempt", examples="", question="", scratchpad="", prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+        reflection_strategy="last_attempt",
+        examples="",
+        question="",
+        scratchpad="",
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, tuple)
     assert len(out) == 2
@@ -340,7 +344,11 @@ def test_reflexion_react_reflector() -> None:
         llm=FakeListChatModel(responses=["1"]),
     )
     out = reflector.reflect(
-        reflection_strategy="reflexion", examples="", question="", scratchpad="", prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+        reflection_strategy="reflexion",
+        examples="",
+        question="",
+        scratchpad="",
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
 
     assert isinstance(out, tuple)
@@ -362,7 +370,7 @@ def test_reflexion_react_reflector() -> None:
         examples="",
         question="",
         scratchpad="",
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, tuple)
     assert len(out) == 2
@@ -389,7 +397,7 @@ def test_reflexion_react_reflector() -> None:
         examples="",
         question="",
         scratchpad="",
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert len(reflector.reflections) == 2
     assert reflector.reflections_str == _format_reflections(reflections[-2:])
@@ -412,7 +420,7 @@ def test_reflexion_react_reflect_strat() -> None:
         examples=examples,
         question=question,
         scratchpad=scratchpad,
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
@@ -423,7 +431,7 @@ def test_reflexion_react_reflect_strat() -> None:
         examples=examples,
         question=question,
         scratchpad=scratchpad,
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
@@ -439,7 +447,7 @@ def test_reflexion_react_reflect_strat() -> None:
         examples=examples,
         question=question,
         scratchpad=scratchpad,
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
@@ -450,7 +458,7 @@ def test_reflexion_react_reflect_strat() -> None:
         examples=examples,
         question=question,
         scratchpad=scratchpad,
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
@@ -466,7 +474,7 @@ def test_reflexion_react_reflect_strat() -> None:
         examples=examples,
         question=question,
         scratchpad=scratchpad,
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
@@ -477,7 +485,7 @@ def test_reflexion_react_reflect_strat() -> None:
         examples=examples,
         question=question,
         scratchpad=scratchpad,
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
@@ -493,7 +501,7 @@ def test_reflexion_react_reflect_strat() -> None:
         examples=examples,
         question=question,
         scratchpad=scratchpad,
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
@@ -504,7 +512,7 @@ def test_reflexion_react_reflect_strat() -> None:
         examples=examples,
         question=question,
         scratchpad=scratchpad,
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
@@ -520,7 +528,7 @@ def test_reflexion_react_reflect_strat() -> None:
         examples=examples,
         question=question,
         scratchpad=scratchpad,
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
@@ -531,7 +539,7 @@ def test_reflexion_react_reflect_strat() -> None:
         examples=examples,
         question=question,
         scratchpad=scratchpad,
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
@@ -547,7 +555,7 @@ def test_reflexion_react_reflect_strat() -> None:
         examples=examples,
         question=question,
         scratchpad=scratchpad,
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
@@ -558,7 +566,7 @@ def test_reflexion_react_reflect_strat() -> None:
         examples=examples,
         question=question,
         scratchpad=scratchpad,
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
