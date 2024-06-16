@@ -350,6 +350,19 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         additional_keys: Dict[str, str],
         **kwargs: Dict[str, Any],
     ) -> str:
+        """Generates a thought based on the given question, examples, reflections, prompt, and additional keys.
+
+        Args:
+            question (str): The question to generate a thought for.
+            examples (str): Examples to guide the thought generation process.
+            reflections (str): Reflections to consider during the thought generation process.
+            prompt (str): The prompt or instruction to guide the thought generation.
+            additional_keys (Dict[str, str]): Additional keys for the thought generation process.
+            kwargs (Dict[str, Any]): Additional keyword arguments.
+
+        Returns:
+            str: The generated thought.
+        """
         max_steps = kwargs.get("max_steps", self.max_steps)  # type: ignore
 
         self._scratchpad += "\nThought:"
@@ -377,6 +390,19 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         additional_keys: Dict[str, str],
         **kwargs: Dict[str, Any],
     ) -> Tuple[str, str]:
+        """Generates an action based on the given question, examples, reflections, prompt, and additional keys.
+
+        Args:
+            question (str): The question to generate an action for.
+            examples (str): Examples to guide the action generation process.
+            reflections (str): Reflections to consider during the action generation process.
+            prompt (str): The prompt or instruction to guide the action generation.
+            additional_keys (Dict[str, str]): Additional keys for the action generation process.
+            kwargs (Dict[str, Any]): Additional keyword arguments.
+
+        Returns:
+            Tuple[str, str]: The generated action type and query.
+        """
         max_steps = kwargs.get("max_steps", self.max_steps)
         self._scratchpad += "\nAction:"
         action = _prompt_react_agent(
@@ -402,6 +428,18 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         query: str,
         key: str,
     ) -> Tuple[bool, str]:
+        """
+        Generate an observation based on the action type and query.
+
+        Args:
+            step_idx (int): The index of the current step.
+            action_type (str): The type of action to be performed.
+            query (str): The query for the action.
+            key (str): The key for the observation.
+
+        Returns:
+            Tuple[bool, str]: A tuple containing a boolean indicating whether the answer is correct, and a string representing the observation.
+        """
         self._scratchpad += f"\nObservation {step_idx}: "
         if action_type.lower() == "finish":
             self._answer = query
