@@ -672,6 +672,7 @@ def react_reflect_reflexion(
     examples: str,
     scratchpad: str,
     prompt: str,
+    additional_keys: Dict[str, str] = {},
 ) -> List[str]:
     """Perform reflexion-based reflecting.
 
@@ -685,7 +686,8 @@ def react_reflect_reflexion(
         examples (str): Example inputs for the prompt template.
         scratchpad (str): The scratchpad content related to the question.
         prompt (str, optional): Reflect prompt template string.
-
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
+        
     Returns:
         List[str]: An updated list of reflections.
     """
@@ -695,6 +697,7 @@ def react_reflect_reflexion(
         examples=examples,
         scratchpad=scratchpad,
         prompt=prompt,
+        additional_keys=additional_keys
     )
     reflections += [new_reflection]
     return reflections
@@ -706,6 +709,7 @@ def react_reflect_last_attempt_and_reflexion(
     examples: str,
     scratchpad: str,
     prompt: str,
+    additional_keys: Dict[str, str] = {},    
 ) -> List[str]:
     """Performs reflection with the reflection of the last attempt and reflexion.
 
@@ -717,7 +721,8 @@ def react_reflect_last_attempt_and_reflexion(
         examples (str): Example inputs for the prompt template.
         scratchpad (str): The scratchpad content related to the question.
         prompt (str, optional): Reflect prompt template string.
-
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
+        
     Returns:
         List[str]: A list with the new reflections.
     """
@@ -728,6 +733,7 @@ def react_reflect_last_attempt_and_reflexion(
             examples=examples,
             scratchpad=scratchpad,
             prompt=prompt,
+            additional_keys=additional_keys
         )
     ]
     return reflections
@@ -741,6 +747,7 @@ def react_reflect(
     examples: str,
     scratchpad: str,
     prompt: str,
+    additional_keys: Dict[str, str] = {},
 ) -> List[str]:
     """Performs reflection based on a specified strategy using the provided question and scratchpad.
 
@@ -756,7 +763,8 @@ def react_reflect(
         examples (str): Example inputs for the prompt template.
         scratchpad (str): The scratchpad content related to the question.
         prompt (str, optional): Reflect prompt template string.
-
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
+        
     Returns:
         List[str]: A tuple containing the updated list of reflections.
 
@@ -779,6 +787,7 @@ def react_reflect(
             examples=examples,
             scratchpad=scratchpad,
             prompt=prompt,
+            additional_keys=additional_keys
         )
     elif reflection_strategy == "last_attempt_and_reflexion":
         reflections = react_reflect_last_attempt_and_reflexion(
@@ -787,6 +796,7 @@ def react_reflect(
             examples=examples,
             scratchpad=scratchpad,
             prompt=prompt,
+            additional_keys=additional_keys
         )
     else:
         raise NotImplementedError(f"Unknown reflection strategy: {reflection_strategy}.")
