@@ -275,6 +275,23 @@ def test_reflexion_react_init() -> None:
 
 def test_reflexion_react_generate() -> None:
     """Tests ReflexionReActQAStrategy generate."""
+    question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
+
+    gt_out = 'I need to search for VIVA Media AG and find out their new acronym after changing their name in 2004.'
+    responses = [
+        'I need to search for VIVA Media AG and find out their new acronym after changing their name in 2004.'
+    ]
+    llm = FakeListChatModel(responses=responses)
+    strategy = ReflexionReActQAStrategy(llm=llm)
+    out = strategy.generate(
+        question=question,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        reflections="",
+        prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
+        max_steps=5
+    )
+    assert out == gt_out
 
 
 def test_reflexion_react_generate_action() -> None:
