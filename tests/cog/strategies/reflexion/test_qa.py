@@ -362,10 +362,116 @@ def test_reflexion_react_generate_observation() -> None:
 
 def test_reflexion_react_create_output_dict() -> None:
     """Tests ReflexionReActQAStrategy create_output_dict."""
+    strategy = ReflexionReActQAStrategy(llm=FakeListChatModel(responses=[]))
+
+    # Test case 1: Valid output creation
+    react_out = [
+        {
+            "thought": "First thought",
+            "action_type": "Query",
+            "query": "What is the capital of France?",
+            "observation": "Observation: Answer is CORRECT",
+            "is_correct": True
+        }
+    ]
+    reflections = "Reflection on the first thought."
+    output = strategy.create_output_dict(react_out, reflections)
+    expected_output = {
+        "react_output": react_out,
+        "reflections": reflections,
+    }
+    assert output == expected_output
+
+    # Test case 2: Multiple steps in react_out
+    react_out = [
+        {
+            "thought": "First thought",
+            "action_type": "Query",
+            "query": "What is the capital of France?",
+            "observation": "Observation: Answer is CORRECT",
+            "is_correct": True
+        },
+        {
+            "thought": "Second thought",
+            "action_type": "Validate",
+            "query": "Is 2+2=4?",
+            "observation": "Observation: Answer is CORRECT",
+            "is_correct": True
+        }
+    ]
+    reflections = "Reflection on the second thought."
+    output = strategy.create_output_dict(react_out, reflections)
+    expected_output = {
+        "react_output": react_out,
+        "reflections": reflections,
+    }
+    assert output == expected_output
+
+    # Test case 3: Empty react_out
+    react_out = []
+    reflections = "No reflections since no actions were taken."
+    output = strategy.create_output_dict(react_out, reflections)
+    expected_output = {
+        "react_output": react_out,
+        "reflections": reflections,
+    }
+    assert output == expected_output
 
 
 def test_reflexion_react_react_create_output_dict() -> None:
     """Tests ReflexionReActQAStrategy react_create_output_dict."""
+    strategy = ReflexionReActQAStrategy(llm=FakeListChatModel(responses=[]))
+
+    # Test case 1: Valid output creation
+    output = strategy.react_create_output_dict(
+        thought="Initial thought",
+        action_type="Query",
+        query="What is the capital of France?",
+        obs="Observation: Answer is CORRECT",
+        is_correct=True
+    )
+    expected_output = {
+        "thought": "Initial thought",
+        "action_type": "Query",
+        "query": "What is the capital of France?",
+        "observation": "Observation: Answer is CORRECT",
+        "is_correct": True,
+    }
+    assert output == expected_output
+
+    # Test case 2: Another valid output creation
+    output = strategy.react_create_output_dict(
+        thought="Second thought",
+        action_type="Validate",
+        query="Is 2+2=4?",
+        obs="Observation: Answer is CORRECT",
+        is_correct=True
+    )
+    expected_output = {
+        "thought": "Second thought",
+        "action_type": "Validate",
+        "query": "Is 2+2=4?",
+        "observation": "Observation: Answer is CORRECT",
+        "is_correct": True,
+    }
+    assert output == expected_output
+
+    # Test case 3: Incorrect answer handling
+    output = strategy.react_create_output_dict(
+        thought="Final thought",
+        action_type="Answer",
+        query="What is the square root of 16?",
+        obs="Observation: Answer is INCORRECT",
+        is_correct=False
+    )
+    expected_output = {
+        "thought": "Final thought",
+        "action_type": "Answer",
+        "query": "What is the square root of 16?",
+        "observation": "Observation: Answer is INCORRECT",
+        "is_correct": False,
+    }
+    assert output == expected_output
 
 
 def test_reflexion_react_halting_condition() -> None:
