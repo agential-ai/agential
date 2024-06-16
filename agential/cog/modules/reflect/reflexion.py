@@ -140,7 +140,8 @@ class ReflexionReActReflector(BaseReflector):
         question: str,
         examples: str,
         scratchpad: str,
-        prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+        prompt: str,
+        additional_keys: Optional[Dict[str, str]] = {}
     ) -> Tuple[List[str], str]:
         """Wrapper around ReflexionReAct's `react_reflect` method in functional.
 
@@ -153,8 +154,9 @@ class ReflexionReActReflector(BaseReflector):
             question (str): The question being addressed.
             examples (str): Example inputs for the prompt template.
             scratchpad (str): The scratchpad content related to the question.
-            prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA.
-
+            prompt (str, optional): Reflect prompt template string.
+            additional_keys (Dict[str, str]): Additional keys to be passed to the
+            
         Returns:
             Tuple[List[str], str]: A tuple of the updated list of reflections based on the selected strategy and the formatted
                 reflections.
@@ -163,13 +165,14 @@ class ReflexionReActReflector(BaseReflector):
             NotImplementedError: If an unknown reflection strategy is specified.
         """
         reflections = react_reflect(
-            strategy=reflection_strategy,
+            reflection_strategy=reflection_strategy,
             llm=self.llm,
             reflections=self.reflections,
             question=question,
             examples=examples,
             scratchpad=scratchpad,
             prompt=prompt,
+            additional_keys=additional_keys,
         )[-self.max_reflections :]
 
         self.reflections = reflections
