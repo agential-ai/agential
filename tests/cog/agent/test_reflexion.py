@@ -3,6 +3,7 @@
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 
+from agential.cog.strategies.reflexion.base import ReflexionReActBaseStrategy
 from agential.cog.agent.reflexion import ReflexionCoTAgent, ReflexionReActAgent
 from agential.cog.prompts.agent.reflexion import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
@@ -235,39 +236,35 @@ def test_reflexion_cot_generate() -> None:
     assert len(out) == 1
 
 
-# def test_reflexion_react_init() -> None:
-#     """Test ReflexionReActAgent initialization."""
-#     llm = FakeListChatModel(responses=["1"])
-#     agent = ReflexionReActAgent(
-#         self_reflect_llm=llm,
-#         action_llm=llm,
-#     )
-#     assert isinstance(agent.self_reflect_llm, BaseChatModel)
-#     assert isinstance(agent.action_llm, BaseChatModel)
-#     assert isinstance(agent.memory, ReflexionMemory)
-#     assert isinstance(agent.reflector, ReflexionReActReflector)
-#     assert agent.max_steps == 6
-#     assert agent.max_tokens == 3896
-#     assert isinstance(agent.enc, Encoding)
-#     assert isinstance(agent.docstore, DocstoreExplorer)
+def test_reflexion_react_init() -> None:
+    """Test ReflexionReActAgent initialization."""
+    llm = FakeListChatModel(responses=["1"])
+    agent = ReflexionReActAgent(
+        llm=llm,
+        mode={"qa": "hotpotqa"},
+    )
+    assert isinstance(agent.llm, BaseChatModel)
+    assert agent.mode == {"qa": "hotpotqa"}
+    assert isinstance(agent.strategy, ReflexionReActBaseStrategy)
 
 
-# def test_reflexion_react_reset(reflexion_react_agent: ReflexionReActAgent) -> None:
-#     """Test reset method."""
-#     reflexion_react_agent._finished = True
-#     reflexion_react_agent._step_n = 143
-#     reflexion_react_agent._trial_n = 143
-#     reflexion_react_agent._answer = "cat"
-#     reflexion_react_agent.memory.scratchpad = "dog"
-#     reflexion_react_agent.reflector.reflections = ["puppy"]
-#     reflexion_react_agent.reflector.reflections_str = "puppy"
-#     reflexion_react_agent.reset()
-#     assert not reflexion_react_agent._finished
-#     assert not reflexion_react_agent.memory.scratchpad
-#     assert not reflexion_react_agent.reflector.reflections
-#     assert not reflexion_react_agent.reflector.reflections_str
-#     assert reflexion_react_agent._step_n == 1
-#     assert not reflexion_react_agent._answer
+def test_reflexion_react_reset() -> None:
+    """Test reset method."""
+    agent = ReflexionReActAgent(
+        llm=FakeListChatModel(responses=["1"]),
+        mode={"qa": "hotpotqa"},
+    )
+    agent.strategy._finished = True
+    agent.strategy._answer = "cat"
+    agent.strategy._scratchpad = "dog"
+    agent.strategy.reflector.reflections = ["puppy"]
+    agent.strategy.reflector.reflections_str = "puppy"
+    agent.reset()
+    assert not agent.strategy._finished
+    assert not agent.strategy._scratchpad
+    assert not agent.strategy.reflector.reflections
+    assert not agent.strategy.reflector.reflections_str
+    assert not agent.strategy._answer
 
 
 # def test_reflexion_react_retrieve(reflexion_react_agent: ReflexionReActAgent) -> None:
