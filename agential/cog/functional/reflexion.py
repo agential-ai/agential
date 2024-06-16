@@ -737,13 +737,13 @@ def react_reflect_last_attempt_and_reflexion(
 
 
 def react_reflect(
-    strategy: str,
+    reflection_strategy: str,
     llm: BaseChatModel,
     reflections: List[str],
     question: str,
     examples: str,
     scratchpad: str,
-    prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+    prompt: str,
 ) -> List[str]:
     """Performs reflection based on a specified strategy using the provided question and scratchpad.
 
@@ -758,7 +758,7 @@ def react_reflect(
         question (str): The question being addressed.
         examples (str): Example inputs for the prompt template.
         scratchpad (str): The scratchpad content related to the question.
-        prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA.
+        prompt (str, optional): Reflect prompt template string.
 
     Returns:
         List[str]: A tuple containing the updated list of reflections.
@@ -772,9 +772,9 @@ def react_reflect(
         - "last_attempt_and_reflexion": This strategy combines the 'last_attempt' and 'reflexion' strategies.
           It first formats the last attempt using 'question' and 'scratchpad', then adds a new reflexion using all the parameters.
     """
-    if strategy == "last_attempt":
+    if reflection_strategy == "last_attempt":
         reflections = react_reflect_last_attempt(scratchpad)
-    elif strategy == "reflexion":
+    elif reflection_strategy == "reflexion":
         reflections = react_reflect_reflexion(
             llm=llm,
             reflections=reflections,
@@ -783,7 +783,7 @@ def react_reflect(
             scratchpad=scratchpad,
             prompt=prompt,
         )
-    elif strategy == "last_attempt_and_reflexion":
+    elif reflection_strategy == "last_attempt_and_reflexion":
         reflections = react_reflect_last_attempt_and_reflexion(
             llm=llm,
             question=question,
@@ -792,6 +792,6 @@ def react_reflect(
             prompt=prompt,
         )
     else:
-        raise NotImplementedError(f"Unknown reflection strategy: {strategy}.")
+        raise NotImplementedError(f"Unknown reflection strategy: {reflection_strategy}.")
 
     return reflections

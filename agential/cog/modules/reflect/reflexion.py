@@ -136,7 +136,7 @@ class ReflexionReActReflector(BaseReflector):
 
     def reflect(
         self,
-        strategy: str,
+        reflection_strategy: str,
         question: str,
         examples: str,
         scratchpad: str,
@@ -149,7 +149,7 @@ class ReflexionReActReflector(BaseReflector):
         reflections list with the newly generated reflections.
 
         Args:
-            strategy (str): The reflection strategy to be used ('last_attempt', 'reflexion', or 'last_attempt_and_reflexion').
+            reflection_strategy (str): The reflection strategy to be used ('last_attempt', 'reflexion', or 'last_attempt_and_reflexion').
             question (str): The question being addressed.
             examples (str): Example inputs for the prompt template.
             scratchpad (str): The scratchpad content related to the question.
@@ -163,7 +163,7 @@ class ReflexionReActReflector(BaseReflector):
             NotImplementedError: If an unknown reflection strategy is specified.
         """
         reflections = react_reflect(
-            strategy=strategy,
+            strategy=reflection_strategy,
             llm=self.llm,
             reflections=self.reflections,
             question=question,
@@ -174,11 +174,11 @@ class ReflexionReActReflector(BaseReflector):
 
         self.reflections = reflections
 
-        if strategy == "last_attempt":
+        if reflection_strategy == "last_attempt":
             reflections_str = _format_last_attempt(question, scratchpad)
-        elif strategy == "reflexion":
+        elif reflection_strategy == "reflexion":
             reflections_str = _format_reflections(reflections)
-        elif strategy == "last_attempt_and_reflexion":
+        elif reflection_strategy == "last_attempt_and_reflexion":
             reflections_str = _format_last_attempt(question, scratchpad)
             reflections_str += "\n" + _format_reflections(
                 reflections, REFLECTION_AFTER_LAST_TRIAL_HEADER
