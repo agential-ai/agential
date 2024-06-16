@@ -8,12 +8,21 @@ from agential.cog.prompts.agent.reflexion import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     REFLEXION_COT_INSTRUCTION_HOTPOTQA,
     REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
+    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+    REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT
 )
 from agential.cog.prompts.benchmark.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
+    HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 )
 from agential.cog.strategies.reflexion.qa import (
     ReflexionCoTQAStrategy,
+    ReflexionCoTHotQAStrategy,
+    ReflexionCoTFEVERStrategy,
+    ReflexionCoTTriviaQAStrategy,
+    ReflexionCoTAmbigNQStrategy,
+    ReflexionReActQAStrategy
 )
 
 
@@ -226,7 +235,7 @@ def test_reflexion_cot_reflect() -> None:
     assert out == gt_out
 
 
-def test_reflexion_cot_should_reflect() -> None:
+def test_reflexion_cot_reflect_condition() -> None:
     """Tests ReflexionCoTQAStrategy reflect_condition."""
     llm = FakeListChatModel(responses=[])
     strategy = ReflexionCoTQAStrategy(llm)
@@ -235,3 +244,17 @@ def test_reflexion_cot_should_reflect() -> None:
     assert strategy.reflect_condition(1, "strategy1", "key1")
     assert strategy.reflect_condition(1, "strategy1", "key2")
     assert not strategy.reflect_condition(1, "", "key2")
+
+
+def test_reflexion_cot_instantiate_strategies() -> None:
+    """Test instantiate all ReflexionCoT QA strategies."""
+    llm = FakeListChatModel(responses=[])
+    hotqa_strategy = ReflexionCoTHotQAStrategy(llm=llm)
+    triviaqa_strategy = ReflexionCoTTriviaQAStrategy(llm=llm)
+    ambignq_strategy = ReflexionCoTAmbigNQStrategy(llm=llm)
+    fever_strategy = ReflexionCoTFEVERStrategy(llm=llm)
+
+    assert isinstance(hotqa_strategy, ReflexionCoTHotQAStrategy)
+    assert isinstance(triviaqa_strategy, ReflexionCoTTriviaQAStrategy)
+    assert isinstance(ambignq_strategy, ReflexionCoTAmbigNQStrategy)
+    assert isinstance(fever_strategy, ReflexionCoTFEVERStrategy)
