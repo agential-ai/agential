@@ -13,7 +13,6 @@ from agential.cog.functional.reflexion import (
 from agential.cog.modules.reflect.base import BaseReflector
 from agential.cog.prompts.agent.reflexion import (
     REFLECTION_AFTER_LAST_TRIAL_HEADER,
-    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 
 
