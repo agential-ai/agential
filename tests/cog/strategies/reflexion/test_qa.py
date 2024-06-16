@@ -258,3 +258,43 @@ def test_reflexion_cot_instantiate_strategies() -> None:
     assert isinstance(triviaqa_strategy, ReflexionCoTTriviaQAStrategy)
     assert isinstance(ambignq_strategy, ReflexionCoTAmbigNQStrategy)
     assert isinstance(fever_strategy, ReflexionCoTFEVERStrategy)
+
+
+def test_reflexion_react_init() -> None:
+    """Test ReflexionReActStrategy initialization."""
+
+
+def test_reflexion_react_generate() -> None:
+    """Tests ReflexionReActQAStrategy generate."""
+
+
+def test_reflexion_react_generate_action() -> None:
+    """Tests ReflexionReActQAStrategy generate_action."""
+
+
+def test_reflexion_react_generate_observation() -> None:
+    """Tests ReflexionReActQAStrategy generate_observation."""
+
+
+def test_reflexion_react_create_output_dict() -> None:
+    """Tests ReflexionReActQAStrategy create_output_dict."""
+
+
+def test_reflexion_react_halting_condition() -> None:
+    """Tests ReflexionReActQAStrategy halting_condition."""
+
+
+def test_reflexion_react_reset() -> None:
+    """Tests ReflexionReActQAStrategy reset."""
+
+
+def test_reflexion_react_reflect() -> None:
+    """Tests ReflexionReActQAStrategy reflect."""
+
+
+def test_reflexion_react_reflect_condition() -> None:
+    """Tests ReflexionReActQAStrategy reflect_condition."""
+
+
+def test_reflexion_react_instantiate_strategies() -> None:
+    """Test instantiate all ReflexionReAct QA strategies."""
