@@ -428,8 +428,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         query: str,
         key: str,
     ) -> Tuple[bool, str]:
-        """
-        Generate an observation based on the action type and query.
+        """Generate an observation based on the action type and query.
 
         Args:
             step_idx (int): The index of the current step.
@@ -516,7 +515,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
 
         Returns:
             bool: True if the halting condition is met, False otherwise. The halting condition is met when the answer is not correct and the current step index is less than the maximum number of trials plus one.
-        """        
+        """
         max_trials = kwargs.get("max_trials", self.max_trials)
         return not EM(self._answer, key) and idx < max_trials + 1
 
@@ -584,6 +583,18 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> str:
+        """Reflects on a given question, context, examples, prompt, and additional keys using the specified reflection strategy.
+
+        Args:
+            reflection_strategy (str): The strategy to use for reflection.
+            question (str): The question to be reflected upon.
+            examples (str): Examples to guide the reflection process.
+            prompt (str): The prompt or instruction to guide the reflection.
+            additional_keys (Dict[str, str]): Additional keys for the reflection process.
+
+        Returns:
+            str: The reflection string.
+        """
         _, reflections_str = self.reflector.reflect(
             reflection_strategy=reflection_strategy,
             question=question,
@@ -608,6 +619,21 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         additional_keys: Dict[str, str],
         **kwargs: Dict[str, str],
     ) -> bool:
+        """Determine whether the reflection condition has been met in the ReflexionReAct agent.
+
+        Args:
+            step_idx (int): The index of the current step.
+            reflection_strategy (str): The strategy to use for reflection.
+            question (str): The question to be reflected upon.
+            examples (str): Examples to guide the reflection process.
+            key (str): The key for the observation.
+            prompt (str): The prompt or instruction to guide the reflection.
+            additional_keys (Dict[str, str]): Additional keys for the reflection process.
+            kwargs (Dict[str, str]): Additional keyword arguments.
+
+        Returns:
+            bool: True if the reflection condition is met, False otherwise. The reflection condition is met when the agent is halted, the answer is not correct, and the reflection strategy is provided.
+        """
         max_steps = kwargs.get("max_steps", self.max_steps)
 
         halted = _is_halted(
