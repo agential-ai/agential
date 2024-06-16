@@ -266,25 +266,6 @@ def test_reflexion_react_reset() -> None:
     assert not agent.strategy.reflector.reflections_str
     assert not agent.strategy._answer
 
-
-# def test_reflexion_react_retrieve(reflexion_react_agent: ReflexionReActAgent) -> None:
-#     """Test retrieve method."""
-#     out = reflexion_react_agent.retrieve()
-#     assert isinstance(out, dict)
-#     assert "scratchpad" in out
-#     assert out["scratchpad"] == ""
-
-
-# def test_reflexion_react_reflect(reflexion_react_agent: ReflexionReActAgent) -> None:
-#     """Test reflect method."""
-#     gt_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: \n\n(END PREVIOUS TRIAL)\n"
-#     reflections_str = reflexion_react_agent.reflect(
-#         strategy="last_attempt",
-#         question="",
-#     )
-#     assert reflections_str == gt_reflections_str
-
-
 # def test_reflexion_react_generate() -> None:
 #     """Test generate method."""
 #     question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
