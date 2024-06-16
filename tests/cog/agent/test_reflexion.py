@@ -471,60 +471,61 @@ def test_reflexion_react_generate() -> None:
     assert agent.strategy.reflector.reflections == gt_out_reflections
     assert agent.strategy.reflector.reflections_str == gt_out_reflections_str
 
-#     # Test patience reset after incorrect answer and subsequent runs.
+    # Test patience reset after incorrect answer and subsequent runs.
 
-#     # Answer incorrectly.
-#     action_llm_responses = [
-#         "I need to search for VIVA Media AG to find out their new acronym and what it stands for. Let's start by searching for VIVA Media AG.",
-#         "Search[VIVA Media AG]",
-#         "Since I couldn't find VIVA Media AG, I should try searching for VIVA Media AG name change 2004 to see if I can find their new acronym and what it stands for.\nAction: Search[VIVA Media AG name change 2004]\nObservation 2: Could not find [VIVA Media AG name change 2004]. Similar: ['2004 VIVA World Cup', '2004 Gaming', '2004 VIVA World Cup squads', '2004 VIVA World Cup qualification', '2004 VIVA World Cup Final', '2004 VIVA World Cup Group A', '2004 VIVA World Cup Group B', '2004 VIVA World Cup Group C', '2004 VIVA World Cup Group D', '2004 VIVA World Cup Group E']\nThought: Since I couldn't find the specific information, I should try searching for VIVA Media AG history or company information to see if I can find details about their name change in 2004 and their new acronym.\nAction: Search[VIVA Media AG history]\nObservation 3: VIVA Media AG was a German media company headquartered in Cologne, Germany. The company was founded in 1993 and was known for its music television programs.\nThought: To find out their new acronym, I need to search for VIVA Media AG new name 2004 or something similar.\nAction: Search[VIVA Media AG new name 2004]\nObservation 4: Could not find [VIVA Media AG new name 2004]. Similar: ['2004 VIVA World Cup', '2004 Gaming', '2004 VIVA World Cup squads', '2004 VIVA World Cup qualification', '2004 VIVA World Cup Final', '2004 VIVA World Cup Group A', '2004 VIVA World Cup Group B', '2004 VIVA World Cup Group C', '2004 VIVA World Cup Group D', '2004 VIVA World Cup Group E']\nThought: Since I'm not getting the specific information, I should try searching for VIVA Media AG corporate changes in 2004 to see if I can find the details about their name change and new acronym.\nAction: Search[VIVA Media AG corporate changes 2004]",
-#         "Search[VIVA Media AG name change 2004]",
-#         "Since I couldn't find information about VIVA Media AG's name change in 2004, I should try searching for VIVA Media AG acronym to see if I can find any relevant information.\nAction: Search[VIVA Media AG acronym]\nObservation 3: Could not find [VIVA Media AG acronym]. Similar: ['NBA', 'PDA', 'GTA', 'DGA', 'GMA', 'GA', 'RNA', 'GFA', 'GAA', 'CIA']\nThought: It seems like I am not able to find specific information about VIVA Media AG's new acronym and what it stands for. I will need to find a different approach to answer this question.\nAction: Finish[Unable to find information]",
-#         "Search[VIVA Media AG acronym]",
-#     ]
-#     self_reflect_llm = FakeListChatModel(responses=["1"])
-#     action_llm = FakeListChatModel(responses=action_llm_responses)
-#     agent = ReflexionReActAgent(
-#         self_reflect_llm=self_reflect_llm,
-#         action_llm=action_llm,
-#         max_trials=1,
-#         max_steps=3,
-#         patience=1,
-#     )
-#     out = agent.generate(question=question, key=key, strategy="reflexion")
-#     assert len(out) == 1  # Assert 1 trial only ran.
-#     assert isinstance(out[0], tuple)
-#     for triplet in out[0][-1]:
-#         assert isinstance(triplet, tuple)
-#     assert not out[0][0]
-#     assert out[0][1] == ""
-#     assert out[0][2]
-#     assert agent._step_n == 4
-#     assert agent._trial_n == 1
-#     assert agent._answer == ""
-#     assert not agent._finished
-#     assert agent.reflector.reflections == []
-#     assert agent.reflector.reflections_str == ""
+    # Answer incorrectly.
+    responses = [
+        "I need to search for VIVA Media AG to find out their new acronym and what it stands for. Let's start by searching for VIVA Media AG.",
+        "Search[VIVA Media AG]",
+        "Since I couldn't find VIVA Media AG, I should try searching for VIVA Media AG name change 2004 to see if I can find their new acronym and what it stands for.\nAction: Search[VIVA Media AG name change 2004]\nObservation 2: Could not find [VIVA Media AG name change 2004]. Similar: ['2004 VIVA World Cup', '2004 Gaming', '2004 VIVA World Cup squads', '2004 VIVA World Cup qualification', '2004 VIVA World Cup Final', '2004 VIVA World Cup Group A', '2004 VIVA World Cup Group B', '2004 VIVA World Cup Group C', '2004 VIVA World Cup Group D', '2004 VIVA World Cup Group E']\nThought: Since I couldn't find the specific information, I should try searching for VIVA Media AG history or company information to see if I can find details about their name change in 2004 and their new acronym.\nAction: Search[VIVA Media AG history]\nObservation 3: VIVA Media AG was a German media company headquartered in Cologne, Germany. The company was founded in 1993 and was known for its music television programs.\nThought: To find out their new acronym, I need to search for VIVA Media AG new name 2004 or something similar.\nAction: Search[VIVA Media AG new name 2004]\nObservation 4: Could not find [VIVA Media AG new name 2004]. Similar: ['2004 VIVA World Cup', '2004 Gaming', '2004 VIVA World Cup squads', '2004 VIVA World Cup qualification', '2004 VIVA World Cup Final', '2004 VIVA World Cup Group A', '2004 VIVA World Cup Group B', '2004 VIVA World Cup Group C', '2004 VIVA World Cup Group D', '2004 VIVA World Cup Group E']\nThought: Since I'm not getting the specific information, I should try searching for VIVA Media AG corporate changes in 2004 to see if I can find the details about their name change and new acronym.\nAction: Search[VIVA Media AG corporate changes 2004]",
+        "Search[VIVA Media AG name change 2004]",
+        "Since I couldn't find information about VIVA Media AG's name change in 2004, I should try searching for VIVA Media AG acronym to see if I can find any relevant information.\nAction: Search[VIVA Media AG acronym]\nObservation 3: Could not find [VIVA Media AG acronym]. Similar: ['NBA', 'PDA', 'GTA', 'DGA', 'GMA', 'GA', 'RNA', 'GFA', 'GAA', 'CIA']\nThought: It seems like I am not able to find specific information about VIVA Media AG's new acronym and what it stands for. I will need to find a different approach to answer this question.\nAction: Finish[Unable to find information]",
+        "Search[VIVA Media AG acronym]",
+    ]
+    llm = FakeListChatModel(responses=responses)
+    agent = ReflexionReActAgent(
+        llm=llm,
+        mode={"qa": "hotpotqa"}
+    )
+    out = agent.generate(
+        question=question, 
+        key=key, 
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+        reflect_prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+        reflection_strategy="reflexion",
+        max_trials=1,
+        max_steps=3,
+        patience=1,
+        reset=True
+    )
+    assert len(out) == 1  # Assert 1 trial only ran.
+    assert agent.strategy._answer == ""
+    assert not agent.strategy._finished
+    assert agent.strategy.reflector.reflections == []
+    assert agent.strategy.reflector.reflections_str == ""
 
-#     # In a subsequent run, answer correctly (reset defaults to True). Output is non-empty if patience is correctly reset.
-#     agent = ReflexionReActAgent(
-#         self_reflect_llm=self_reflect_llm,
-#         action_llm=action_llm,
-#         max_trials=1,
-#         max_steps=3,
-#         patience=1,
-#     )
-#     out = agent.generate(question=question, key=key, strategy="reflexion")
-#     assert len(out) == 1  # Assert 1 trial only ran.
-#     assert isinstance(out[0], tuple)
-#     for triplet in out[0][-1]:
-#         assert isinstance(triplet, tuple)
-#     assert not out[0][0]
-#     assert out[0][1] == ""
-#     assert out[0][2]
-#     assert agent._step_n == 4
-#     assert agent._trial_n == 1
-#     assert agent._answer == ""
-#     assert not agent._finished
-#     assert agent.reflector.reflections == []
-#     assert agent.reflector.reflections_str == ""
+    # In a subsequent run, answer correctly (reset defaults to True). Output is non-empty if patience is correctly reset.
+    agent = ReflexionReActAgent(
+        llm=llm,
+        mode={"qa": "hotpotqa"}
+    )
+    out = agent.generate(
+        question=question, 
+        key=key, 
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+        reflect_prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+        reflection_strategy="reflexion",
+        max_trials=1,
+        max_steps=3,
+        patience=1,
+        reset=True
+    )
+    assert len(out) == 1  # Assert 1 trial only ran.
+    assert agent.strategy._answer == ""
+    assert not agent.strategy._finished
+    assert agent.strategy.reflector.reflections == []
+    assert agent.strategy.reflector.reflections_str == ""
