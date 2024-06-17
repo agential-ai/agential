@@ -26,6 +26,10 @@ from agential.cog.strategies.reflexion.qa import (
     ReflexionCoTQAStrategy,
     ReflexionCoTTriviaQAStrategy,
     ReflexionReActQAStrategy,
+    ReflexionReActHotQAStrategy,
+    ReflexionReActTriviaQAStrategy,
+    ReflexionReActAmbigNQStrategy,
+    ReflexionReActFEVERStrategy,
 )
 
 
@@ -570,3 +574,13 @@ def test_reflexion_react_reflect_condition() -> None:
 
 def test_reflexion_react_instantiate_strategies() -> None:
     """Test instantiate all ReflexionReAct QA strategies."""
+    llm = FakeListChatModel(responses=[])
+    hotqa_strategy = ReflexionReActHotQAStrategy(llm=llm)
+    triviaqa_strategy = ReflexionReActTriviaQAStrategy(llm=llm)
+    ambignq_strategy = ReflexionReActAmbigNQStrategy(llm=llm)
+    fever_strategy = ReflexionReActFEVERStrategy(llm=llm)
+
+    assert isinstance(hotqa_strategy, ReflexionReActHotQAStrategy)
+    assert isinstance(triviaqa_strategy, ReflexionReActTriviaQAStrategy)
+    assert isinstance(ambignq_strategy, ReflexionReActAmbigNQStrategy)
+    assert isinstance(fever_strategy, ReflexionReActFEVERStrategy)
