@@ -549,7 +549,18 @@ def test_reflexion_react_reflect() -> None:
 
 def test_reflexion_react_reflect_condition() -> None:
     """Tests ReflexionReActQAStrategy reflect_condition."""
-
+    llm = FakeListChatModel(responses=['1'])
+    strategy = ReflexionReActQAStrategy(llm=llm)
+    out = strategy.reflect_condition(
+        step_idx=1,
+        reflection_strategy="reflexion",
+        question="VIVA Media AG changed it's name in 2004. What does their new acronym stand for?",
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+        key="key",
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+        additional_keys={}
+    )
+    assert not out
 
 def test_reflexion_react_instantiate_strategies() -> None:
     """Test instantiate all ReflexionReAct QA strategies."""
