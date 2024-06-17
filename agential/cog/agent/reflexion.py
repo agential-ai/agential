@@ -137,13 +137,13 @@ class ReflexionCoTAgent(BaseAgent):
         while not self.strategy.halting_condition(idx=idx, key=key, **kwargs):
 
             # Reflect if possible.
-            reflections = ""
+            reflections, reflections_str = [], ""
             if self.strategy.reflect_condition(
                 idx=idx,
                 reflection_strategy=reflection_strategy,
                 key=key,
             ):
-                reflections = self.strategy.reflect(
+                reflections, reflections_str = self.strategy.reflect(
                     reflection_strategy=reflection_strategy,
                     question=question,
                     examples=reflect_examples,
@@ -157,7 +157,7 @@ class ReflexionCoTAgent(BaseAgent):
             thought = self.strategy.generate(
                 question=question,
                 examples=examples,
-                reflections=reflections,
+                reflections=reflections_str,
                 prompt=prompt,
                 additional_keys=additional_keys,
                 **kwargs,
@@ -167,7 +167,7 @@ class ReflexionCoTAgent(BaseAgent):
             action_type, query = self.strategy.generate_action(
                 question=question,
                 examples=examples,
-                reflections=reflections,
+                reflections=reflections_str,
                 prompt=prompt,
                 additional_keys=additional_keys,
                 **kwargs,
@@ -184,6 +184,7 @@ class ReflexionCoTAgent(BaseAgent):
                     action_type=action_type,
                     obs=obs,
                     is_correct=is_correct,
+                    reflections=reflections
                 )
             )
 

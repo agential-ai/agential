@@ -186,7 +186,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         return EM(self._answer, key), obs
 
     def create_output_dict(
-        self, thought: str, action_type: str, obs: str, is_correct: bool
+        self, thought: str, action_type: str, obs: str, is_correct: bool, reflections: List[str]
     ) -> Dict[str, Any]:
         """Creates a dictionary of the output components.
 
@@ -195,7 +195,8 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             action_type (str): The type of action performed.
             obs (str): The generated observation.
             is_correct (bool): Whether the answer is correct.
-
+            reflections (List[str]): The reflections.
+            
         Returns:
             Dict[str, str]: A dictionary containing the thought, action type, observation, answer, and is_correct.
         """
@@ -205,6 +206,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             "obs": obs,
             "answer": self._answer,
             "is_correct": is_correct,
+            "reflections": reflections
         }
 
     def halting_condition(
@@ -254,7 +256,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> str:
+    ) -> Tuple[List[str], str]:
         """Reflects on a given question, context, examples, prompt, and additional keys using the specified reflection strategy.
 
         Args:
@@ -265,9 +267,9 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the reflection process.
 
         Returns:
-            str: The reflection string.
+            Tuple[List[str], str]: The reflections and the reflection string.
         """
-        _, reflections_str = self.reflector.reflect(
+        reflections, reflections_str = self.reflector.reflect(
             reflection_strategy=reflection_strategy,
             question=question,
             examples=examples,
@@ -275,7 +277,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        return reflections_str
+        return reflections, reflections_str
 
     def reflect_condition(
         self,
