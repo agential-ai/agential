@@ -584,7 +584,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> str:
+    ) -> Tuple[List[str], str]:
         """Reflects on a given question, context, examples, prompt, and additional keys using the specified reflection strategy.
 
         Args:
@@ -595,9 +595,9 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the reflection process.
 
         Returns:
-            str: The reflection string.
+            Tuple[List[str], str]: The reflections and reflection string.
         """
-        _, reflections_str = self.reflector.reflect(
+        reflections, reflections_str = self.reflector.reflect(
             reflection_strategy=reflection_strategy,
             question=question,
             examples=examples,
@@ -608,7 +608,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
             additional_keys=additional_keys,
         )
 
-        return reflections_str
+        return reflections, reflections_str
 
     def reflect_condition(
         self,
