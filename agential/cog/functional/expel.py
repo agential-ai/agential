@@ -21,12 +21,7 @@ from agential.cog.prompts.agent.expel import (
     SYSTEM_CRITIQUE_EXISTING_INSIGHTS_INSTRUCTION,
     SYSTEM_TEMPLATE,
 )
-from agential.cog.prompts.agent.reflexion import (
-    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-)
-from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+
 
 # ============================================== Experience Gathering ==============================================
 
