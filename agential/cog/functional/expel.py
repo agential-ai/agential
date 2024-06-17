@@ -3,7 +3,7 @@
 import random
 import re
 
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, Union
 
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
@@ -35,11 +35,15 @@ def gather_experience(
     reflexion_react_agent: ReflexionReActAgent,
     questions: List[str],
     keys: List[str],
-    strategy: str = "reflexion",
-    prompt: str = REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-    examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-    reflect_examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    reflect_prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+    examples: str,
+    prompt: str,
+    reflect_examples: str,
+    reflect_prompt: str,
+    reflection_strategy: str = "reflexion",
+    additional_keys: Union[List[Dict[str, str]], Dict[str, str]] = {},
+    reflect_additional_keys: Union[List[Dict[str, str]], Dict[str, str]] = {},
+    patience: int = 1,
+    **kwargs: Dict[str, Any],
 ) -> Dict[str, List]:
     """Collects and aggregates experiences from a ReflexionReActAgent by generating trajectories and reflections for a set of questions and keys.
 
@@ -49,12 +53,16 @@ def gather_experience(
         reflexion_react_agent (ReflexionReActAgent): The agent from which experiences are generated.
         questions (List[str]): A list of questions to be processed by the agent.
         keys (List[str]): A list of keys that are paired with the questions to guide the agent's generation.
-        strategy (str, optional): The strategy used to generate experiences. Defaults to "reflexion" if not specified.
-        prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION_HOTPOTQA.
-        examples (str, optional): Fewshot examples. Defaults to HOTPOTQA_FEWSHOT_EXAMPLES_REACT.
-        reflect_examples (str, optional): Reflection fewshot examples. Defaults to HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT.
-        reflect_prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA.
-
+        examples (str, optional): Fewshot examples.
+        prompt (str, optional): Prompt template string.
+        reflect_examples (str, optional): Reflection fewshot examples. 
+        reflect_prompt (str, optional): Reflect prompt template string.
+        reflection_strategy (str, optional): The strategy used to generate experiences. Defaults to "reflexion" if not specified.
+        additional_keys (List[str], optional): Additional keys for the prompt.
+        reflect_additional_keys (List[str], optional): Additional keys for the reflect prompt.
+        patience (int, optional): The patience for the agent.
+        **kwargs (Dict[str, Any]): Additional keyword arguments.
+        
     Returns:
         Dict[str, List]: A dictionary containing lists of indices ('idxs'), questions ('questions'), keys ('keys'), generated trajectories ('trajectories'), and reflections ('reflections').
 
@@ -67,23 +75,27 @@ def gather_experience(
         "trajectories": [],
         "reflections": [],
     }
-    for idx, (question, key) in enumerate(zip(questions, keys)):
+    for idx, (question, key, main_keys, reflect_keys) in enumerate(zip(questions, keys, additional_keys, reflect_additional_keys)):
         trajectory = reflexion_react_agent.generate(
             question=question,
             key=key,
-            strategy=strategy,
-            reset=True,
-            prompt=prompt,
             examples=examples,
+            prompt=prompt,
             reflect_examples=reflect_examples,
             reflect_prompt=reflect_prompt,
+            reflection_strategy=reflection_strategy,
+            additional_keys=main_keys,
+            reflect_additional_keys=reflect_keys,
+            patience=patience,
+            reset=True,
+            **kwargs
         )
 
         experiences["idxs"].append(idx)
         experiences["questions"].append(question)
         experiences["keys"].append(key)
         experiences["trajectories"].append(trajectory)
-        experiences["reflections"].append(reflexion_react_agent.reflector.reflections)
+        experiences["reflections"].append([trial['reflections'] for trial in trajectory if trial['reflections']])
 
     return experiences
 
@@ -114,8 +126,8 @@ def categorize_experiences(experiences: Dict[str, List]) -> Dict[str, List]:
     for idx in experiences["idxs"]:  # Index for a particular task.
         trajectory = experiences["trajectories"][idx]  # type: ignore
         trials_are_correct = [
-            trial[0] for trial in trajectory
-        ]  # (is_correct, answer, output)[0].
+            trial['react_output'][-1]['is_correct'] for trial in trajectory
+        ]
 
         # Success.
         if (
