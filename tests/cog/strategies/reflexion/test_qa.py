@@ -477,7 +477,7 @@ def test_reflexion_react_react_create_output_dict() -> None:
 def test_reflexion_react_halting_condition() -> None:
     """Tests ReflexionReActQAStrategy halting_condition."""
     llm = FakeListChatModel(responses=[])
-    
+
     # Test case 1: Halting condition met because answer is incorrect and index is less than max_trials.
     strategy = ReflexionReActQAStrategy(llm=llm, max_trials=5)
     strategy._answer = "incorrect_answer"
@@ -519,7 +519,15 @@ def test_reflexion_react_react_halting_condition() -> None:
 
 def test_reflexion_react_reset() -> None:
     """Tests ReflexionReActQAStrategy reset."""
+    llm = FakeListChatModel(responses=[])
+    strategy = ReflexionReActQAStrategy(llm=llm)
+    strategy._scratchpad = "Some previous state"
+    strategy._finished = True
 
+    strategy.reset()
+
+    assert strategy._scratchpad == ""
+    assert not strategy._finished
 
 def test_reflexion_react_reflect() -> None:
     """Tests ReflexionReActQAStrategy reflect."""
