@@ -529,8 +529,22 @@ def test_reflexion_react_reset() -> None:
     assert strategy._scratchpad == ""
     assert not strategy._finished
 
+
 def test_reflexion_react_reflect() -> None:
     """Tests ReflexionReActQAStrategy reflect."""
+    question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
+
+    gt_reflections = 'You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1'
+    llm = FakeListChatModel(responses=['1'])
+    strategy = ReflexionReActQAStrategy(llm=llm)
+    reflections = strategy.reflect(
+        reflection_strategy="reflexion",
+        question=question,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
+        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
+        additional_keys={}
+    )
+    assert reflections == gt_reflections
 
 
 def test_reflexion_react_reflect_condition() -> None:
