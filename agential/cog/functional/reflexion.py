@@ -12,7 +12,6 @@ from tiktoken.core import Encoding
 from agential.cog.prompts.agent.reflexion import (
     LAST_TRIAL_HEADER,
     REFLECTION_HEADER,
-    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 from agential.utils.parse import remove_newline
 
@@ -179,9 +178,6 @@ def _prompt_cot_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print("<PROMPT AGENT=====================================================>")
-    print(prompt)
-    print("<PROMPT AGENT=====================================================>")
     out = llm(
         [
             HumanMessage(
@@ -189,9 +185,6 @@ def _prompt_cot_agent(
             )
         ]
     ).content
-    print("<OUT AGENT=====================================================>")
-    print(repr(out))
-    print("<OUT AGENT=====================================================>")
     assert isinstance(out, str)
     return out
 
@@ -259,9 +252,6 @@ def _prompt_cot_reflection(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print("<PROMPT REFLECT=====================================================>")
-    print(prompt)
-    print("<PROMPT REFLECT=====================================================>")
     out = llm(
         [
             HumanMessage(
@@ -269,9 +259,6 @@ def _prompt_cot_reflection(
             )
         ]
     ).content
-    print("<OUT REFLECT=====================================================>")
-    print(repr(out))
-    print("<OUT REFLECT=====================================================>")
     assert isinstance(out, str)
     return out
 
@@ -511,9 +498,9 @@ def _prompt_react_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print("<PROMPT AGENT=====================================================>")
-    print(prompt)
-    print("<PROMPT AGENT=====================================================>")
+    # print("<PROMPT AGENT=====================================================>")
+    # print(prompt)
+    # print("<PROMPT AGENT=====================================================>")
     out = llm(
         [
             HumanMessage(
@@ -521,9 +508,9 @@ def _prompt_react_agent(
             )
         ]
     ).content
-    print("<OUT AGENT=====================================================>")
-    print(repr(out))
-    print("<OUT AGENT=====================================================>")
+    # print("<OUT AGENT=====================================================>")
+    # print(repr(out))
+    # print("<OUT AGENT=====================================================>")
     assert isinstance(out, str)
     return out
 
@@ -645,9 +632,9 @@ def _prompt_react_reflection(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print("<PROMPT REFLECT=====================================================>")
-    print(prompt)
-    print("<PROMPT REFLECT=====================================================>")
+    # print("<PROMPT REFLECT=====================================================>")
+    # print(prompt)
+    # print("<PROMPT REFLECT=====================================================>")
     out = llm(
         [
             HumanMessage(
@@ -655,11 +642,11 @@ def _prompt_react_reflection(
             )
         ]
     ).content
-    print("<OUT REFLECT=====================================================>")
-    print(repr(out))
-    print("<OUT REFLECT=====================================================>")
+    # print("<OUT REFLECT=====================================================>")
+    # print(repr(out))
+    # print("<OUT REFLECT=====================================================>")
     assert isinstance(out, str)
-    return remove_newline(out)
+    return out
 
 
 def react_reflect_last_attempt(scratchpad: str) -> List[str]:
@@ -703,13 +690,15 @@ def react_reflect_reflexion(
     Returns:
         List[str]: An updated list of reflections.
     """
-    new_reflection = _prompt_react_reflection(
-        llm=llm,
-        question=question,
-        examples=examples,
-        scratchpad=scratchpad,
-        prompt=prompt,
-        additional_keys=additional_keys,
+    new_reflection = remove_newline(
+        _prompt_react_reflection(
+            llm=llm,
+            question=question,
+            examples=examples,
+            scratchpad=scratchpad,
+            prompt=prompt,
+            additional_keys=additional_keys,
+        )
     )
     reflections += [new_reflection]
     return reflections
@@ -739,13 +728,15 @@ def react_reflect_last_attempt_and_reflexion(
         List[str]: A list with the new reflections.
     """
     reflections = [
-        _prompt_react_reflection(
-            llm=llm,
-            question=question,
-            examples=examples,
-            scratchpad=scratchpad,
-            prompt=prompt,
-            additional_keys=additional_keys,
+        remove_newline(
+            _prompt_react_reflection(
+                llm=llm,
+                question=question,
+                examples=examples,
+                scratchpad=scratchpad,
+                prompt=prompt,
+                additional_keys=additional_keys,
+            )
         )
     ]
     return reflections
