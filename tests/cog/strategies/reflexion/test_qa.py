@@ -138,6 +138,7 @@ def test_reflexion_cot_create_output_dict() -> None:
         action_type="Finish",
         obs="Observation: Answer is CORRECT",
         is_correct=True,
+        reflections=[]
     )
     expected_output = {
         "thought": "This is a thought.",
@@ -145,6 +146,7 @@ def test_reflexion_cot_create_output_dict() -> None:
         "obs": "Observation: Answer is CORRECT",
         "answer": "correct_answer",
         "is_correct": True,
+        "reflections": []
     }
     assert output == expected_output
 
@@ -155,6 +157,7 @@ def test_reflexion_cot_create_output_dict() -> None:
         action_type="Finish",
         obs="Observation: Answer is INCORRECT",
         is_correct=False,
+        reflections=[]
     )
     expected_output = {
         "thought": "This is a thought.",
@@ -162,6 +165,7 @@ def test_reflexion_cot_create_output_dict() -> None:
         "obs": "Observation: Answer is INCORRECT",
         "answer": "incorrect_answer",
         "is_correct": False,
+        "reflections": []
     }
     assert output == expected_output
 
@@ -172,6 +176,7 @@ def test_reflexion_cot_create_output_dict() -> None:
         action_type="Calculate",
         obs="Observation: Invalid action type, please try again.",
         is_correct=False,
+        reflections=[]
     )
     expected_output = {
         "thought": "This is another thought.",
@@ -179,6 +184,7 @@ def test_reflexion_cot_create_output_dict() -> None:
         "obs": "Observation: Invalid action type, please try again.",
         "answer": "some_answer",
         "is_correct": False,
+        "reflections": []
     }
     assert output == expected_output
 
@@ -232,7 +238,7 @@ def test_reflexion_cot_reflect() -> None:
     strategy = ReflexionCoTQAStrategy(llm=llm, max_trials=3)
 
     gt_out = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: VIVA Media AG changed it's name in 2004. What does their new acronym stand for?\n\n(END PREVIOUS TRIAL)\n"
-    out = strategy.reflect(
+    _, out = strategy.reflect(
         reflection_strategy="last_attempt",
         question=question,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,

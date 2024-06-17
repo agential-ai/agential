@@ -94,7 +94,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> str:
+    ) -> Tuple[List[str], str]:
         """An abstract method that defines the behavior for reflecting on a given question, context, examples, prompt, and additional keys.
 
         Args:
@@ -106,7 +106,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the reflection process.
 
         Returns:
-            str: The reflection string.
+            Tuple[List[str], str]: The reflection string.
         """
         pass
 
