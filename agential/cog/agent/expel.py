@@ -4,7 +4,7 @@ Original Paper: https://arxiv.org/pdf/2308.10144.pdf
 Paper Repository: https://github.com/LeapLabTHU/ExpeL
 """
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -105,17 +105,21 @@ class ExpeLAgent(BaseAgent):
         question: str,
         key: str,
         should_extract_insights: bool = True,
-        reset: bool = False,
-        reset_reflexion: bool = True,
-        strategy: str = "reflexion",
         prompt: str = EXPEL_REFLEXION_REACT_INSTRUCTION,
         examples: Optional[str] = None,
         reflect_examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         reflect_prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+        reflection_strategy: str = "reflexion",
+        additional_keys: Union[List[Dict[str, str]], Dict[str, str]] = {},
+        reflect_additional_keys: Union[List[Dict[str, str]], Dict[str, str]] = {},
+        patience: int = 1,
         k_docs: int = 24,
         num_fewshots: int = 6,
         max_fewshot_tokens: int = 1500,
         reranker_strategy: Optional[str] = None,
+        reset_reflexion: bool = True,
+        reset: bool = False,
+        **kwargs: Dict[str, Any],
     ) -> Dict[str, Any]:
         """Collects and stores experiences from interactions based on specified questions and strategies.
 
@@ -126,11 +130,22 @@ class ExpeLAgent(BaseAgent):
         Parameters:
             questions (List[str]): A list of questions for the agent to process.
             keys (List[str]): Corresponding keys to the questions, used for internal tracking and analysis.
-            strategy (Optional[str]): The strategy to use for processing questions. Defaults to "reflexion".
+            should_extract_insights (bool): Whether to extract insights from the experiences. Defaults to True.
             prompt (str): The initial prompt or instruction to guide the ReflexionReAct agent's process.
             examples (Optional[str]): Examples to provide context or guidance for the ReflexionReAct agent.
             reflect_examples (str): Examples specifically for the reflection phase of processing.
             reflect_prompt (str): The prompt or instruction guiding the reflection process.
+            reflection_strategy (Optional[str]): The strategy to use for processing questions. Defaults to "reflexion".
+            additional_keys (Union[List[Dict[str, str]], Dict[str, str]]): The additional keys. Defaults to {}.
+            reflect_additional_keys (Union[List[Dict[str, str]], Dict[str, str]]): Additional keys for the reflection phase. Defaults to {}.
+            patience (int): The number of times to retry the agent's process if it fails. Defaults to 1.
+            k_docs (int): The number of documents to retrieve for the fewshot. Defaults to 24.
+            num_fewshots (int): The number of examples to use for the fewshot. Defaults to 6.
+            max_fewshot_tokens (int): The maximum number of tokens to use for the fewshot. Defaults to 1500.
+            reranker_strategy (Optional[str]): The strategy to use for re-ranking the retrieved. Defaults to None.
+            reset_reflexion (bool): Whether to reset the ReflexionReAct agent. Defaults to True.
+            reset (bool): Whether to reset the agent's state for a new problem-solving session. Defaults to False.
+            **kwargs (Dict[str, Any]): Additional keyword arguments.
 
         Returns:
             Dict[str, Any]: A dictionary containing the collected experiences, including questions, keys, trajectories,
@@ -168,11 +183,16 @@ class ExpeLAgent(BaseAgent):
         experience = self.gather_experience(
             questions=[question],
             keys=[key],
-            strategy=strategy,
-            prompt=prompt,
             examples=examples,  # type: ignore
+            prompt=prompt,
             reflect_examples=reflect_examples,
             reflect_prompt=reflect_prompt,
+            strategy=reflection_strategy,
+            reflection_strategy=reflection_strategy,
+            additional_keys=additional_keys,
+            reflect_additional_keys=reflect_additional_keys,
+            patience=patience,
+            **kwargs
         )
 
         if should_extract_insights:
@@ -194,11 +214,15 @@ class ExpeLAgent(BaseAgent):
         self,
         questions: List[str],
         keys: List[str],
-        strategy: str = "reflexion",
-        prompt: str = REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
         examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        prompt: str = REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
         reflect_examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         reflect_prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+        reflection_strategy: str = "reflexion",
+        additional_keys: Union[List[Dict[str, str]], Dict[str, str]] = {},
+        reflect_additional_keys: Union[List[Dict[str, str]], Dict[str, str]] = {},
+        patience: int = 1,
+        **kwargs: Dict[str, Any],
     ) -> Dict[str, Any]:
         """Collects and stores experiences from interactions based on specified questions and keys.
 
@@ -209,15 +233,19 @@ class ExpeLAgent(BaseAgent):
         Parameters:
             questions (List[str]): A list of questions for the agent to process.
             keys (List[str]): Corresponding keys to the questions, used for internal tracking and analysis.
-            strategy (str, optional): The reflection strategy. Can be of 3 types. Defaults to None.
+            examples (str, optional): Fewshot examples. Defaults to HOTPOTQA_FEWSHOT_EXAMPLES_REACT.
+            prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION_HOTPOTQA.
+            reflect_examples (str, optional): Reflection fewshot examples. Defaults to HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT.
+            reflect_prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA.
+            reflection_strategy (str, optional): The reflection strategy. Can be of 3 types. Defaults to None.
                 - "last_attempt": This strategy uses only 'question' and 'scratchpad'. The 'reflections' list is updated with the current scratchpad.
                 - "reflexion": This strategy uses all the parameters. It adds a new reflexion generated by the language model to the 'reflections' list.
                 - "last_attempt_and_reflexion": This strategy combines the 'last_attempt' and 'reflexion' strategies.
-            prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION_HOTPOTQA.
-            examples (str, optional): Fewshot examples. Defaults to HOTPOTQA_FEWSHOT_EXAMPLES_REACT.
-            reflect_examples (str, optional): Reflection fewshot examples. Defaults to HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT.
-            reflect_prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA.
-
+            additional_keys (List[Dict[str, str]], Dict[str, str]): Additional keys for the prompt. Defaults to {}.
+            reflect_additional_keys (List[Dict[str, str]], Dict[str, str]): Additional keys for the reflect prompt. Defaults to {}.
+            patience (int, optional): The patience for the agent. Defaults to 1.
+            **kwargs (Dict[str, Any]): Additional arguments.
+            
         Returns:
             Dict[str, Any]: A dictionary containing the collected experiences, including questions, keys, trajectories,
             and reflections.
@@ -227,11 +255,15 @@ class ExpeLAgent(BaseAgent):
             reflexion_react_agent=self.reflexion_react_agent,
             questions=questions,
             keys=keys,
-            strategy=strategy,
-            prompt=prompt,
             examples=examples,
+            prompt=prompt,
             reflect_examples=reflect_examples,
             reflect_prompt=reflect_prompt,
+            reflection_strategy=reflection_strategy,
+            additional_keys=additional_keys,
+            reflect_additional_keys=reflect_additional_keys,
+            patience=patience,
+            **kwargs
         )
         self.reflexion_react_agent.reset()
 

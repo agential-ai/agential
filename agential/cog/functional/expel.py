@@ -53,9 +53,9 @@ def gather_experience(
         reflect_examples (str, optional): Reflection fewshot examples. 
         reflect_prompt (str, optional): Reflect prompt template string.
         reflection_strategy (str, optional): The strategy used to generate experiences. Defaults to "reflexion" if not specified.
-        additional_keys (List[str], optional): Additional keys for the prompt.
-        reflect_additional_keys (List[str], optional): Additional keys for the reflect prompt.
-        patience (int, optional): The patience for the agent.
+        additional_keys (List[Dict[str, str]], Dict[str, str]): Additional keys for the prompt. Defaults to {}.
+        reflect_additional_keys (List[Dict[str, str]], Dict[str, str]): Additional keys for the reflect prompt. Defaults to {}.
+        patience (int, optional): The patience for the agent. Defaults to 1.
         **kwargs (Dict[str, Any]): Additional keyword arguments.
         
     Returns:
