@@ -74,7 +74,7 @@ def gather_experience(
         "questions": [],
         "keys": [],
         "trajectories": [],
-        "reflections": [],
+        "reflections": set(),
     }
     for idx, (question, key, main_keys, reflect_keys) in enumerate(zip(questions, keys, additional_keys, reflect_additional_keys)):
         trajectory = reflexion_react_agent.generate(
@@ -92,12 +92,14 @@ def gather_experience(
             **kwargs
         )
 
-        reflections = list(set([trial['reflections'] for trial in trajectory if trial['reflections']]))
+        reflections = [trial['reflections'] for trial in trajectory if trial['reflections']]
         experiences["idxs"].append(idx)
         experiences["questions"].append(question)
         experiences["keys"].append(key)
         experiences["trajectories"].append(trajectory)
-        experiences["reflections"].append(reflections)
+        experiences["reflections"].update(reflections)
+
+    experiences['reflections'] = list(experiences['reflections'])
 
     return experiences
 
