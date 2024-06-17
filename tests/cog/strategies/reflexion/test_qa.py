@@ -476,10 +476,45 @@ def test_reflexion_react_react_create_output_dict() -> None:
 
 def test_reflexion_react_halting_condition() -> None:
     """Tests ReflexionReActQAStrategy halting_condition."""
+    llm = FakeListChatModel(responses=[])
+    
+    # Test case 1: Halting condition met because answer is incorrect and index is less than max_trials.
+    strategy = ReflexionReActQAStrategy(llm=llm, max_trials=5)
+    strategy._answer = "incorrect_answer"
+    assert strategy.halting_condition(3, "correct_answer") == True
+
+    # Test case 2: Halting condition not met because answer is correct.
+    strategy = ReflexionReActQAStrategy(llm=llm, max_trials=5)
+    strategy._answer = "correct_answer"
+    assert strategy.halting_condition(3, "correct_answer") == False
+
+    # Test case 3: Halting condition not met because index is greater than or equal to max_trials.
+    strategy = ReflexionReActQAStrategy(llm=llm, max_trials=3)
+    strategy._answer = "incorrect_answer"
+    assert strategy.halting_condition(4, "correct_answer") == False
+
+    # Test case 4: Halting condition met using max_trials from kwargs.
+    strategy = ReflexionReActQAStrategy(llm=llm, max_trials=5)
+    strategy._answer = "incorrect_answer"
+    assert strategy.halting_condition(3, "correct_answer", max_trials=4) == True
+
+    # Test case 5: Halting condition not met using max_trials from kwargs.
+    strategy = ReflexionReActQAStrategy(llm=llm, max_trials=5)
+    strategy._answer = "incorrect_answer"
+    assert strategy.halting_condition(4, "correct_answer", max_trials=3) == False
 
 
 def test_reflexion_react_react_halting_condition() -> None:
     """Tests ReflexionReActQAStrategy react_halting_condition."""
+    strategy = ReflexionReActQAStrategy(llm=FakeListChatModel(responses=[]))
+
+    idx = 0
+    question = "What is the capital of France?"
+    examples = ""
+    reflections = ""
+    prompt = "Answer the question."
+
+    assert not strategy.react_halting_condition(idx, question, examples, reflections, prompt, {})
 
 
 def test_reflexion_react_reset() -> None:
