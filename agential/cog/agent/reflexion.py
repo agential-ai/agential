@@ -307,7 +307,7 @@ class ReflexionReActAgent(BaseAgent):
         reflect_prompt: str,
         reflection_strategy: Optional[str] = None,
         additional_keys: Dict[str, str] = {},
-        reflection_additional_keys: Dict[str, str] = {},
+        reflect_additional_keys: Dict[str, str] = {},
         patience: int = 1,
         reset: bool = True,
         **kwargs: Dict[str, Any],
@@ -330,7 +330,7 @@ class ReflexionReActAgent(BaseAgent):
             reflect_examples (str, optional): Reflection fewshot examples.
             reflect_prompt (str, optional): Reflect prompt template string.
             additional_keys (Dict[str, str], optional): Additional keys for the prompt. Defaults to {}.
-            reflection_additional_keys (Dict[str, str], optional): Additional keys for the reflect prompt. Defaults to {}.
+            reflect_additional_keys (Dict[str, str], optional): Additional keys for the reflect prompt. Defaults to {}.
             patience (int, optional): The patience for the agent. Defaults to 1.
             **kwargs (Dict[str, Any]): Additional keyword arguments for the strategy.
 
@@ -362,7 +362,7 @@ class ReflexionReActAgent(BaseAgent):
                     question=question,
                     examples=reflect_examples,
                     prompt=reflect_prompt,
-                    additional_keys=reflection_additional_keys,
+                    additional_keys=reflect_additional_keys,
                 )
 
             step_idx, is_correct, react_out = self._generate_react(
