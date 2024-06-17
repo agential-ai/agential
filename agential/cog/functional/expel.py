@@ -2,6 +2,7 @@
 
 import random
 import re
+from itertools import chain
 
 from typing import Any, Dict, List, Tuple, Union
 
@@ -74,7 +75,7 @@ def gather_experience(
         "questions": [],
         "keys": [],
         "trajectories": [],
-        "reflections": set(),
+        "reflections": [],
     }
     for idx, (question, key, main_keys, reflect_keys) in enumerate(zip(questions, keys, additional_keys, reflect_additional_keys)):
         trajectory = reflexion_react_agent.generate(
@@ -93,13 +94,12 @@ def gather_experience(
         )
 
         reflections = [trial['reflections'] for trial in trajectory if trial['reflections']]
+        reflections = list(set(list(chain.from_iterable(reflections))))
         experiences["idxs"].append(idx)
         experiences["questions"].append(question)
         experiences["keys"].append(key)
         experiences["trajectories"].append(trajectory)
-        experiences["reflections"].update(reflections)
-
-    experiences['reflections'] = list(experiences['reflections'])
+        experiences["reflections"].append(reflections)
 
     return experiences
 
