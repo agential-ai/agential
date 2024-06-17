@@ -25,11 +25,11 @@ from agential.cog.strategies.reflexion.qa import (
     ReflexionCoTHotQAStrategy,
     ReflexionCoTQAStrategy,
     ReflexionCoTTriviaQAStrategy,
-    ReflexionReActQAStrategy,
-    ReflexionReActHotQAStrategy,
-    ReflexionReActTriviaQAStrategy,
     ReflexionReActAmbigNQStrategy,
     ReflexionReActFEVERStrategy,
+    ReflexionReActHotQAStrategy,
+    ReflexionReActQAStrategy,
+    ReflexionReActTriviaQAStrategy,
 )
 
 
