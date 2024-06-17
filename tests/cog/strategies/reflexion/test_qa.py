@@ -540,8 +540,8 @@ def test_reflexion_react_reflect() -> None:
     reflections = strategy.reflect(
         reflection_strategy="reflexion",
         question=question,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
         additional_keys={}
     )
     assert reflections == gt_reflections
