@@ -347,7 +347,7 @@ class ReflexionReActAgent(BaseAgent):
         out = []
         while self.strategy.halting_condition(idx=idx, key=key, **kwargs):
             # Reflect if possible.
-            reflections = ""
+            reflections, reflections_str = [], ""
             if self.strategy.reflect_condition(
                 step_idx=step_idx,
                 reflection_strategy=reflection_strategy,
@@ -358,7 +358,7 @@ class ReflexionReActAgent(BaseAgent):
                 additional_keys=additional_keys,
                 **kwargs,
             ):
-                reflections = self.strategy.reflect(
+                reflections, reflections_str = self.strategy.reflect(
                     reflection_strategy=reflection_strategy,
                     question=question,
                     examples=reflect_examples,
@@ -370,7 +370,7 @@ class ReflexionReActAgent(BaseAgent):
                 question=question,
                 key=key,
                 examples=examples,
-                reflections=reflections,
+                reflections=reflections_str,
                 prompt=prompt,
                 additional_keys=additional_keys,
                 **kwargs,
