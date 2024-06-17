@@ -63,6 +63,12 @@ def gather_experience(
 
     Each index in 'idxs' corresponds to the respective question, key, trajectory, and reflections at the same position in their lists.
     """
+    if additional_keys == {}:
+        additional_keys = [{} for _ in range(len(questions))]
+
+    if reflect_additional_keys == {}:
+        reflect_additional_keys = [{} for _ in range(len(questions))]
+
     experiences: Dict[str, List] = {
         "idxs": [],
         "questions": [],
