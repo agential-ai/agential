@@ -3,26 +3,29 @@
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 
-from agential.cog.modules.reflect.reflexion import ReflexionCoTReflector, ReflexionReActReflector
+from agential.cog.modules.reflect.reflexion import (
+    ReflexionCoTReflector,
+    ReflexionReActReflector,
+)
 from agential.cog.prompts.agent.reflexion import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
+    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     REFLEXION_COT_INSTRUCTION_HOTPOTQA,
     REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
-    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT
+    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.prompts.benchmark.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
-    HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+    HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
 )
 from agential.cog.strategies.reflexion.qa import (
-    ReflexionCoTQAStrategy,
-    ReflexionCoTHotQAStrategy,
-    ReflexionCoTFEVERStrategy,
-    ReflexionCoTTriviaQAStrategy,
     ReflexionCoTAmbigNQStrategy,
-    ReflexionReActQAStrategy
+    ReflexionCoTFEVERStrategy,
+    ReflexionCoTHotQAStrategy,
+    ReflexionCoTQAStrategy,
+    ReflexionCoTTriviaQAStrategy,
+    ReflexionReActQAStrategy,
 )
 
 
@@ -277,10 +280,10 @@ def test_reflexion_react_generate() -> None:
     """Tests ReflexionReActQAStrategy generate."""
     question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
 
-    gt_scratchpad = '\nThought: I need to search for VIVA Media AG and find out their new acronym after changing their name in 2004.'
-    gt_out = 'I need to search for VIVA Media AG and find out their new acronym after changing their name in 2004.'
+    gt_scratchpad = "\nThought: I need to search for VIVA Media AG and find out their new acronym after changing their name in 2004."
+    gt_out = "I need to search for VIVA Media AG and find out their new acronym after changing their name in 2004."
     responses = [
-        'I need to search for VIVA Media AG and find out their new acronym after changing their name in 2004.'
+        "I need to search for VIVA Media AG and find out their new acronym after changing their name in 2004."
     ]
     llm = FakeListChatModel(responses=responses)
     strategy = ReflexionReActQAStrategy(llm=llm)
@@ -290,7 +293,7 @@ def test_reflexion_react_generate() -> None:
         reflections="",
         prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
         additional_keys={},
-        max_steps=5
+        max_steps=5,
     )
     assert out == gt_out
     assert strategy._scratchpad == gt_scratchpad
@@ -299,8 +302,8 @@ def test_reflexion_react_generate() -> None:
 def test_reflexion_react_generate_action() -> None:
     """Tests ReflexionReActQAStrategy generate_action."""
     question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
-    
-    gt_scratchpad = '\nAction: Search[VIVA Media AG]'
+
+    gt_scratchpad = "\nAction: Search[VIVA Media AG]"
     responses = [
         "Search[VIVA Media AG]",
     ]
@@ -312,7 +315,7 @@ def test_reflexion_react_generate_action() -> None:
         reflections="",
         prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
         additional_keys={},
-        max_steps=5
+        max_steps=5,
     )
     assert action_type == "Search"
     assert query == "VIVA Media AG"
@@ -371,7 +374,7 @@ def test_reflexion_react_create_output_dict() -> None:
             "action_type": "Query",
             "query": "What is the capital of France?",
             "observation": "Observation: Answer is CORRECT",
-            "is_correct": True
+            "is_correct": True,
         }
     ]
     reflections = "Reflection on the first thought."
@@ -389,15 +392,15 @@ def test_reflexion_react_create_output_dict() -> None:
             "action_type": "Query",
             "query": "What is the capital of France?",
             "observation": "Observation: Answer is CORRECT",
-            "is_correct": True
+            "is_correct": True,
         },
         {
             "thought": "Second thought",
             "action_type": "Validate",
             "query": "Is 2+2=4?",
             "observation": "Observation: Answer is CORRECT",
-            "is_correct": True
-        }
+            "is_correct": True,
+        },
     ]
     reflections = "Reflection on the second thought."
     output = strategy.create_output_dict(react_out, reflections)
@@ -428,7 +431,7 @@ def test_reflexion_react_react_create_output_dict() -> None:
         action_type="Query",
         query="What is the capital of France?",
         obs="Observation: Answer is CORRECT",
-        is_correct=True
+        is_correct=True,
     )
     expected_output = {
         "thought": "Initial thought",
@@ -445,7 +448,7 @@ def test_reflexion_react_react_create_output_dict() -> None:
         action_type="Validate",
         query="Is 2+2=4?",
         obs="Observation: Answer is CORRECT",
-        is_correct=True
+        is_correct=True,
     )
     expected_output = {
         "thought": "Second thought",
@@ -462,7 +465,7 @@ def test_reflexion_react_react_create_output_dict() -> None:
         action_type="Answer",
         query="What is the square root of 16?",
         obs="Observation: Answer is INCORRECT",
-        is_correct=False
+        is_correct=False,
     )
     expected_output = {
         "thought": "Final thought",
@@ -514,7 +517,9 @@ def test_reflexion_react_react_halting_condition() -> None:
     reflections = ""
     prompt = "Answer the question."
 
-    assert not strategy.react_halting_condition(idx, question, examples, reflections, prompt, {})
+    assert not strategy.react_halting_condition(
+        idx, question, examples, reflections, prompt, {}
+    )
 
 
 def test_reflexion_react_reset() -> None:
@@ -534,22 +539,22 @@ def test_reflexion_react_reflect() -> None:
     """Tests ReflexionReActQAStrategy reflect."""
     question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
 
-    gt_reflections = 'You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1'
-    llm = FakeListChatModel(responses=['1'])
+    gt_reflections = "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
+    llm = FakeListChatModel(responses=["1"])
     strategy = ReflexionReActQAStrategy(llm=llm)
     reflections = strategy.reflect(
         reflection_strategy="reflexion",
         question=question,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-        additional_keys={}
+        additional_keys={},
     )
     assert reflections == gt_reflections
 
 
 def test_reflexion_react_reflect_condition() -> None:
     """Tests ReflexionReActQAStrategy reflect_condition."""
-    llm = FakeListChatModel(responses=['1'])
+    llm = FakeListChatModel(responses=["1"])
     strategy = ReflexionReActQAStrategy(llm=llm)
     out = strategy.reflect_condition(
         step_idx=1,
@@ -558,9 +563,10 @@ def test_reflexion_react_reflect_condition() -> None:
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         key="key",
         prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-        additional_keys={}
+        additional_keys={},
     )
     assert not out
+
 
 def test_reflexion_react_instantiate_strategies() -> None:
     """Test instantiate all ReflexionReAct QA strategies."""
