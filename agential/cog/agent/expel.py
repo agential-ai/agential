@@ -187,7 +187,6 @@ class ExpeLAgent(BaseAgent):
             prompt=prompt,
             reflect_examples=reflect_examples,
             reflect_prompt=reflect_prompt,
-            strategy=reflection_strategy,
             reflection_strategy=reflection_strategy,
             additional_keys=additional_keys,
             reflect_additional_keys=reflect_additional_keys,
