@@ -92,11 +92,12 @@ def gather_experience(
             **kwargs
         )
 
+        reflections = list(set([trial['reflections'] for trial in trajectory if trial['reflections']]))
         experiences["idxs"].append(idx)
         experiences["questions"].append(question)
         experiences["keys"].append(key)
         experiences["trajectories"].append(trajectory)
-        experiences["reflections"].append([trial['reflections'] for trial in trajectory if trial['reflections']])
+        experiences["reflections"].append(reflections)
 
     return experiences
 
