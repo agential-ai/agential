@@ -13,8 +13,9 @@ from agential.cog.modules.reflect.reflexion import (
     ReflexionReActReflector,
 )
 from agential.cog.prompts.agent.reflexion import (
-    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
+
 
 def test_reflexion_cot_init() -> None:
     """Unit test for ReflexionCoT Reflector initialization."""

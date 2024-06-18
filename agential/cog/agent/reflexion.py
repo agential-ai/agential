@@ -184,7 +184,7 @@ class ReflexionCoTAgent(BaseAgent):
                     action_type=action_type,
                     obs=obs,
                     is_correct=is_correct,
-                    reflections=reflections
+                    reflections=reflections,
                 )
             )
 
