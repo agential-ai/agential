@@ -27,8 +27,8 @@ class ExpeLExperienceMemory(BaseMemory):
             where each key is a task identifier. Generated from `gather_experience`.
         fewshot_questions (List[str], optional): A list of questions used in fewshot learning scenarios.
         fewshot_keys (List[str], optional): A list of answers (keys) corresponding to the fewshot questions.
-        fewshot_examples (List[List[Tuple[str, str, str]]], optional): A nested list where each list
-            contains tuples of (thought, action, observation) used as fewshot examples.
+        fewshot_examples (List[List[Dict[str, str]]], optional): A nested list where each list
+            contains a dictionary of with the thought, action_type, query, observation, and is_correct used as fewshot examples.
         strategy (str): The strategy employed for handling and vectorizing experiences.
         embedder (Embeddings): An embedding object used for generating vector embeddings of documents.
         encoder (Encoding): An encoder object used for token counting within documents.
@@ -39,7 +39,7 @@ class ExpeLExperienceMemory(BaseMemory):
         experiences: Optional[Dict[str, List]] = {},
         fewshot_questions: Optional[List[str]] = [],
         fewshot_keys: Optional[List[str]] = [],
-        fewshot_examples: Optional[List[List[Tuple[str, str, str]]]] = [],
+        fewshot_examples: Optional[List[List[Dict[str, str]]]] = [],
         strategy: str = "task",
         embedder: Embeddings = HuggingFaceEmbeddings(),
         encoder: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
@@ -70,20 +70,17 @@ class ExpeLExperienceMemory(BaseMemory):
         if len(self.experiences["idxs"]):
             success_traj_idxs = []
             for idx in self.experiences["idxs"]:
-                is_correct, _, _ = self.experiences["trajectories"][idx][
-                    0
-                ]  # Success on zero-th trial.
+                trajectory = self.experiences["trajectories"][idx]
+                is_correct = trajectory[0]['react_output'][-1]['is_correct']  # Success on last step of the zero-th trial of this trajectory.
                 if is_correct:
                     success_traj_idxs.append(idx)
 
         self.success_traj_docs: List[Document] = []
         for idx in success_traj_idxs:
             question = self.experiences["questions"][idx]
-            trajectory = self.experiences["trajectories"][idx][
+            steps = self.experiences["trajectories"][idx][
                 0
-            ]  # Zero-th trial of trajectory.
-            is_correct, _, steps = trajectory
-            assert is_correct  # Ensure trajectory is successful.
+            ]['react_output']  # Zero-th trial of trajectory.
 
             # Add the task.
             self.success_traj_docs.append(
@@ -96,10 +93,10 @@ class ExpeLExperienceMemory(BaseMemory):
             self.success_traj_docs.extend(
                 [
                     Document(
-                        page_content=action,
+                        page_content=f"Action: {step['action_type']}[{step['query']}]",
                         metadata={"type": "action", "task_idx": idx},
                     )
-                    for (_, action, _) in steps
+                    for step in steps
                 ]
             )
 
@@ -107,18 +104,19 @@ class ExpeLExperienceMemory(BaseMemory):
             self.success_traj_docs.extend(
                 [
                     Document(
-                        page_content=thought,
+                        page_content=f"Thought: {step['thought']}",
                         metadata={"type": "thought", "task_idx": idx},
                     )
-                    for (thought, _, _) in steps
+                    for step in steps
                 ]
             )
 
             # Add each step.
             for step in steps:
+                step = f"Thought: {step['thought']}\nAction: {step['action_type']}[{step['query']}]\nObservation: {step['observation']}\n"
                 self.success_traj_docs.append(
                     Document(
-                        page_content="\n".join(step),
+                        page_content=step,
                         metadata={"type": "step", "task_idx": idx},
                     )
                 )
@@ -131,10 +129,16 @@ class ExpeLExperienceMemory(BaseMemory):
             ):
                 idx = max(self.experiences["idxs"], default=-1) + 1
 
+                trajectory = [
+                    {
+                        "react_output": steps,
+                        "reflections": []
+                    }
+                ]
                 self.experiences["idxs"].append(idx)
                 self.experiences["questions"].append(question)
                 self.experiences["keys"].append(key)
-                self.experiences["trajectories"].append([(True, key, steps)])
+                self.experiences["trajectories"].append(trajectory)
                 self.experiences["reflections"].append([])
 
                 # Update self.success_traj_docs.
@@ -151,10 +155,10 @@ class ExpeLExperienceMemory(BaseMemory):
                 self.success_traj_docs.extend(
                     [
                         Document(
-                            page_content=action,
+                            page_content=f"Action: {step['action_type']}[{step['query']}]",
                             metadata={"type": "action", "task_idx": idx},
                         )
-                        for (_, action, _) in steps
+                        for step in steps
                     ]
                 )
 
@@ -162,18 +166,19 @@ class ExpeLExperienceMemory(BaseMemory):
                 self.success_traj_docs.extend(
                     [
                         Document(
-                            page_content=thought,
+                            page_content=f"Thought: {step['thought']}",
                             metadata={"type": "thought", "task_idx": idx},
                         )
-                        for (thought, _, _) in steps
+                        for step in steps
                     ]
                 )
 
                 # Add each step.
                 for step in steps:
+                    step = f"Thought: {step['thought']}\nAction: {step['action_type']}[{step['query']}]\nObservation: {step['observation']}\n"
                     self.success_traj_docs.append(
                         Document(
-                            page_content="\n".join(step),
+                            page_content=step,
                             metadata={"type": "step", "task_idx": idx},
                         )
                     )
@@ -213,7 +218,7 @@ class ExpeLExperienceMemory(BaseMemory):
         self,
         questions: List[str],
         keys: List[str],
-        trajectories: List[List[Tuple[bool, str, List[Tuple[str, str, str]]]]],
+        trajectories: List[List[Dict[str, Any]]],
         reflections: Optional[List[List[str]]] = [],
     ) -> None:
         """Adds new experiences to the memory, including associated questions, keys, trajectories, and optional reflections.
@@ -221,8 +226,8 @@ class ExpeLExperienceMemory(BaseMemory):
         Args:
             questions (List[str]): Questions related to the experiences being added.
             keys (List[str]): Answers corresponding to the provided questions.
-            trajectories (List[List[Tuple[bool, str, List[Tuple[str, str, str]]]]]): A list of trajectories where each
-                trajectory is a list of tuples with a boolean indicating success, an action taken, and a list of steps.
+            trajectories (List[List[Dict[str, Any]]]): A list of trajectories where each
+                trajectory is a list of dictionaries, each one a trial. 
             reflections (Optional[List[List[str]]], default=[]): A list of additional reflective notes on the experiences.
         """
         assert len(questions) == len(keys) == len(trajectories)
@@ -257,11 +262,9 @@ class ExpeLExperienceMemory(BaseMemory):
 
         for idx in success_traj_idxs:
             question = self.experiences["questions"][idx]
-            trajectory = self.experiences["trajectories"][idx][
+            steps = self.experiences["trajectories"][idx][
                 0
-            ]  # Zero-th trial of trajectory.
-            is_correct, _, steps = trajectory  # type: ignore
-            assert is_correct  # Ensure trajectory is successful.
+            ]["react_output"]  # Zero-th trial of trajectory.
 
             # Add the task.
             self.success_traj_docs.append(
@@ -274,10 +277,10 @@ class ExpeLExperienceMemory(BaseMemory):
             self.success_traj_docs.extend(
                 [  # type: ignore
                     Document(
-                        page_content=action,  # type: ignore
+                        page_content=f"Action: {step['action_type']}[{step['query']}]",  # type: ignore
                         metadata={"type": "action", "task_idx": idx},
                     )
-                    for (_, action, _) in steps
+                    for step in steps
                 ]
             )
 
@@ -285,18 +288,19 @@ class ExpeLExperienceMemory(BaseMemory):
             self.success_traj_docs.extend(
                 [  # type: ignore
                     Document(
-                        page_content=thought,  # type: ignore
+                        page_content=f"Thought: {step['thought']}",  # type: ignore
                         metadata={"type": "thought", "task_idx": idx},
                     )
-                    for (thought, _, _) in steps
+                    for step in steps
                 ]
             )
 
             # Add each step.
             for step in steps:
+                step = f"Thought: {step['thought']}\nAction: {step['action_type']}[{step['query']}]\nObservation: {step['observation']}\n"
                 self.success_traj_docs.append(
                     Document(
-                        page_content="\n".join(step),  # type: ignore
+                        page_content=step,  # type: ignore
                         metadata={"type": "step", "task_idx": idx},
                     )
                 )
@@ -323,8 +327,12 @@ class ExpeLExperienceMemory(BaseMemory):
         """
         task_idx = fewshot_doc.metadata["task_idx"]
         trajectory = self.experiences["trajectories"][task_idx]
-        _, _, steps = trajectory[0]  # A successful trial.
-        steps_str = "\n".join(["\n".join(step) for step in steps])
+        steps = trajectory[0]['react_output']  # A successful trial.
+        steps_str = ""
+        for step in steps:
+            step = f"Thought: {step['thought']}\nAction: {step['action_type']}[{step['query']}]\nObservation: {step['observation']}\n"
+            steps_str += step
+
         return len(self.encoder.encode(steps_str))
 
     def load_memories(
@@ -414,14 +422,17 @@ class ExpeLExperienceMemory(BaseMemory):
             task_idx = fewshot_doc.metadata["task_idx"]
             question = self.experiences["questions"][task_idx]
             trajectory = self.experiences["trajectories"][task_idx]
-            _, _, steps = trajectory[0]  # Zero-th successful trial.
-            steps = "\n".join(["\n".join(step) for step in steps])
+            steps = trajectory[0]['react_output']  # Zero-th successful trial.
+            steps_str = ""
+            for step in steps:
+                step = f"Thought: {step['thought']}\nAction: {step['action_type']}[{step['query']}]\nObservation: {step['observation']}\n"
+                steps_str += step
 
             if (
-                len(self.encoder.encode(steps)) <= max_fewshot_tokens
+                len(self.encoder.encode(steps_str)) <= max_fewshot_tokens
                 and task_idx not in current_tasks
             ):
-                fewshots.append(f"{question}\n{steps}")
+                fewshots.append(f"{question}\n{steps_str}")
                 current_tasks.add(task_idx)
 
             if len(fewshots) == num_fewshots:

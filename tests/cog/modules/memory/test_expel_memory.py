@@ -18,20 +18,46 @@ fewshot_questions = re.findall(r"Question: (.+?)\n", HOTPOTQA_FEWSHOT_EXAMPLES_R
 fewshot_keys = re.findall(
     r"Action \d+: Finish\[(.+?)\]", HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 )
-blocks = re.split(r"(?=Question: )", HOTPOTQA_FEWSHOT_EXAMPLES_REACT)[
-    1:
-]  # Split and ignore the first empty result
 
-fewshot_examples = []
-for block in blocks:
-    # Extract all thoughts, actions, and observations within each block
-    thoughts = re.findall(r"(Thought \d+: .+?)\n", block)
-    actions = re.findall(r"(Action \d+: .+?)\n", block)
-    observations = re.findall(r"(Observation \d+: .+)", block)
-
-    # Combine them into tuples and add to the examples list
-    fewshot_examples.append(list(zip(thoughts, actions, observations)))
-
+fewshot_examples = [
+    [
+        {
+            'thought': 'I need to search Colorado orogeny, find the area that the eastern sector of the Colorado orogeny extends into, then find the elevation range of the area.',
+            'action_type': 'Search',
+            'query': 'Colorado orogeny',
+            'observation': 'The Colorado orogeny was an episode of mountain building (an orogeny) in Colorado and surrounding areas.',
+            'is_correct': False
+        },
+        {
+            'thought': 'It does not mention the eastern sector. So I need to look up eastern sector.',
+            'action_type': 'Lookup',
+            'query': 'eastern sector',
+            'observation': '(Result 1 / 1) The eastern sector extends into the High Plains and is called the Central Plains orogeny.',
+            'is_correct': False
+        },
+        {
+            'thought': 'The eastern sector of Colorado orogeny extends into the High Plains. So I need to search High Plains and find its elevation range.',
+            'action_type': 'Search',
+            'query': 'High Plains',
+            'observation': 'High Plains refers to one of two distinct land regions:',
+            'is_correct': False
+        },
+        {
+            'thought': 'I need to instead search High Plains (United States).',
+            'action_type': 'Search',
+            'query': 'High Plains (United States)',
+            'observation': 'The High Plains are a subregion of the Great Plains. From east to west, the High Plains rise in elevation from around 1,800 to 7,000 ft (550 to 2,130 m).[3]',
+            'is_correct': False
+        },
+        {
+            'thought': 'High Plains rise in elevation from around 1,800 to 7,000 ft, so the answer is 1,800 to 7,000 ft.',
+            'action_type': 'Finish',
+            'query': '1,800 to 7,000 ft',
+            'observation': '1,800 to 7,000 ft',
+            'is_correct': True
+        }
+    ] for _ in range(6)
+]
 
 def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> None:
     """Test ExpeLExperienceMemory initialization."""
@@ -65,7 +91,7 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
     assert memory.strategy == "task"
     assert isinstance(memory.embedder, Embeddings)
     assert isinstance(memory.encoder, Encoding)
-    assert len(memory.success_traj_docs) == 38
+    assert len(memory.success_traj_docs) == 10
     assert memory.vectorstore
 
     success_traj_doc_types = [
@@ -73,22 +99,13 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
         "action",
         "action",
         "action",
-        "action",
-        "action",
-        "action",
-        "thought",
-        "thought",
-        "thought",
         "thought",
         "thought",
         "thought",
         "step",
         "step",
         "step",
-        "step",
-        "step",
-        "step",
-    ] * 2
+    ]
 
     for type_, doc in zip(success_traj_doc_types, memory.success_traj_docs):
         assert type_ == doc.metadata["type"]
@@ -107,6 +124,7 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
         "reflections",
     ]
     for v in memory.experiences.values():
+        print(len(v))
         assert len(v) == 6
     assert memory.fewshot_questions
     assert memory.fewshot_keys
@@ -115,7 +133,7 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
     assert isinstance(memory.embedder, Embeddings)
     assert isinstance(memory.encoder, Encoding)
 
-    assert len(memory.success_traj_docs) == 48
+    assert len(memory.success_traj_docs) == 96
     assert memory.vectorstore
 
     # Test with experiences and fewshot examples.
