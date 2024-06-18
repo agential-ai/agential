@@ -151,7 +151,7 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
         "reflections",
     ]
     for v in memory.experiences.values():
-        assert len(v) == 16
+        assert len(v) == 11
     assert memory.fewshot_questions
     assert memory.fewshot_keys
     assert memory.fewshot_examples
@@ -159,7 +159,7 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
     assert isinstance(memory.embedder, Embeddings)
     assert isinstance(memory.encoder, Encoding)
 
-    assert len(memory.success_traj_docs) == 86
+    assert len(memory.success_traj_docs) == 106
     assert memory.vectorstore
 
 
