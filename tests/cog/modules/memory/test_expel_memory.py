@@ -170,7 +170,7 @@ def test_expel_experience_memory_len(expel_experiences_10_fake_path: str) -> Non
 
     experiences = joblib.load(expel_experiences_10_fake_path)
     memory = ExpeLExperienceMemory(experiences)
-    assert len(memory) == 10
+    assert len(memory) == 5
 
 
 def test_expel_experience_memory_clear(expel_experiences_10_fake_path: str) -> None:
@@ -221,7 +221,7 @@ def test_expel_experience_memory_add_memories(
     assert memory.experiences["keys"][0] == success_keys[0]
     assert memory.experiences["trajectories"][0] == success_trajectories[0]
     assert memory.experiences["reflections"][0] == success_reflections[0]
-    assert len(memory.success_traj_docs) == 19
+    assert len(memory.success_traj_docs) == 10
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
     assert memory.vectorstore
 
@@ -235,7 +235,7 @@ def test_expel_experience_memory_add_memories(
     assert memory.experiences["keys"][1] == success_keys[0]
     assert memory.experiences["trajectories"][1] == success_trajectories[0]
     assert memory.experiences["reflections"][1] == success_reflections[0]
-    assert len(memory.success_traj_docs) == 38
+    assert len(memory.success_traj_docs) == 20
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
     assert memory.success_traj_docs[-1].metadata["task_idx"] == 1
     assert memory.vectorstore
@@ -249,9 +249,9 @@ def test_expel_experience_memory_add_memories(
     assert memory.experiences["keys"][2] == success_keys[0]
     assert memory.experiences["trajectories"][2] == success_trajectories[0]
     assert memory.experiences["reflections"][2] == success_reflections[0]
-    assert len(memory.success_traj_docs) == 57
+    assert len(memory.success_traj_docs) == 30
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
-    assert memory.success_traj_docs[20].metadata["task_idx"] == 1
+    assert memory.success_traj_docs[20].metadata["task_idx"] == 2
     assert memory.success_traj_docs[-1].metadata["task_idx"] == 2
     assert memory.vectorstore
 
@@ -266,10 +266,9 @@ def test_expel_experience_memory_add_memories(
     assert memory.experiences["trajectories"][4] == fail_trajectories[1]
     assert memory.experiences["reflections"][3] == fail_reflections[0]
     assert memory.experiences["reflections"][4] == fail_reflections[1]
-    assert len(memory.success_traj_docs) == 57
+    assert len(memory.success_traj_docs) == 30
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
-    assert memory.success_traj_docs[20].metadata["task_idx"] == 1
-    assert memory.success_traj_docs[50].metadata["task_idx"] == 2
+    assert memory.success_traj_docs[20].metadata["task_idx"] == 2
     assert memory.vectorstore
 
     # Test with a mix of failed and successful trajectories.
@@ -292,11 +291,9 @@ def test_expel_experience_memory_add_memories(
     assert memory.experiences["reflections"][5] == success_reflections[0]
     assert memory.experiences["reflections"][6] == fail_reflections[0]
     assert memory.experiences["reflections"][7] == fail_reflections[1]
-    assert len(memory.success_traj_docs) == 76
+    assert len(memory.success_traj_docs) == 40
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
-    assert memory.success_traj_docs[20].metadata["task_idx"] == 1
-    assert memory.success_traj_docs[56].metadata["task_idx"] == 2
-    assert memory.success_traj_docs[57].metadata["task_idx"] == 5
+    assert memory.success_traj_docs[20].metadata["task_idx"] == 2
     assert memory.vectorstore
 
 
@@ -310,20 +307,18 @@ def test_expel_experience_memory__fewshot_doc_token_count(
     memory = ExpeLExperienceMemory(experiences)
     for doc in memory.success_traj_docs:
         token_count = memory._fewshot_doc_token_count(doc)
-        assert token_count == 1245
+        assert token_count == 982
 
     # Testing with fewshots only.
-    gt_token_counts = (
-        [273] * 13 + [149] * 7 + [156] * 7 + [163] * 7 + [134] * 7 + [154] * 7
-    )
     memory = ExpeLExperienceMemory(
         fewshot_questions=fewshot_questions,
         fewshot_keys=fewshot_keys,
         fewshot_examples=fewshot_examples,
     )
-    for gt_token_count, doc in zip(gt_token_counts, memory.success_traj_docs):
+    for doc in memory.success_traj_docs:
         token_count = memory._fewshot_doc_token_count(doc)
-        assert gt_token_count == token_count
+        print(token_count)
+        assert token_count == 312
 
 
 def test_expel_experience_memory_load_memories(
@@ -355,17 +350,17 @@ def test_expel_experience_memory_load_memories(
     memory_dict = memory.load_memories(query=queries["task"])
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict["fewshots"], list)
-    assert len(memory_dict["fewshots"]) == 2
+    assert len(memory_dict["fewshots"]) == 1
 
     memory_dict = memory.load_memories(query=queries["thought"])
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict["fewshots"], list)
-    assert len(memory_dict["fewshots"]) == 2
+    assert len(memory_dict["fewshots"]) == 1
 
     memory_dict = memory.load_memories(query=queries["other"])
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict["fewshots"], list)
-    assert len(memory_dict["fewshots"]) == 2
+    assert len(memory_dict["fewshots"]) == 1
 
     # Test with every reranking strategy + error.
     with pytest.raises(NotImplementedError):
@@ -379,7 +374,7 @@ def test_expel_experience_memory_load_memories(
     )
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict["fewshots"], list)
-    assert len(memory_dict["fewshots"]) == 2
+    assert len(memory_dict["fewshots"]) == 1
 
     # Length case.
     memory_dict = memory.load_memories(
@@ -387,7 +382,7 @@ def test_expel_experience_memory_load_memories(
     )
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict["fewshots"], list)
-    assert len(memory_dict["fewshots"]) == 2
+    assert len(memory_dict["fewshots"]) == 1
 
     # Thought case.
     memory_dict = memory.load_memories(
@@ -395,13 +390,13 @@ def test_expel_experience_memory_load_memories(
     )
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict["fewshots"], list)
-    assert len(memory_dict["fewshots"]) == 2
+    assert len(memory_dict["fewshots"]) == 1
 
     # Task case.
     memory_dict = memory.load_memories(query=queries["task"], reranker_strategy="task")
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict["fewshots"], list)
-    assert len(memory_dict["fewshots"]) == 2
+    assert len(memory_dict["fewshots"]) == 1
 
     # Test with varying max_fewshot_tokens.
     memory_dict = memory.load_memories(query=queries["task"], max_fewshot_tokens=0)
@@ -413,12 +408,12 @@ def test_expel_experience_memory_load_memories(
     memory_dict = memory.load_memories(query=queries["task"], num_fewshots=3)
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict["fewshots"], list)
-    assert len(memory_dict["fewshots"]) == 2
+    assert len(memory_dict["fewshots"]) == 1
 
     memory_dict = memory.load_memories(query=queries["task"], num_fewshots=2)
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict["fewshots"], list)
-    assert len(memory_dict["fewshots"]) == 2
+    assert len(memory_dict["fewshots"]) == 1
 
     memory_dict = memory.load_memories(query=queries["task"], num_fewshots=1)
     assert list(memory_dict.keys()) == ["fewshots"]
@@ -470,7 +465,7 @@ def test_expel_experience_memory_show_memories(
         "vectorstore",
     ]
     assert memory.experiences == memory_dict["experiences"]
-    assert len(memory_dict["success_traj_docs"]) == 38
+    assert len(memory_dict["success_traj_docs"]) == 10
     assert memory_dict["vectorstore"]
 
 

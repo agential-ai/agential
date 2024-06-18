@@ -256,7 +256,7 @@ class ExpeLExperienceMemory(BaseMemory):
         # Update success_traj_docs.
         success_traj_idxs = []
         for idx, trajectory in enumerate(trajectories, start_idx):
-            is_correct, _, _ = trajectory[0]
+            is_correct = trajectory[0]['react_output'][-1]['is_correct']
             if is_correct:
                 success_traj_idxs.append(idx)
 
