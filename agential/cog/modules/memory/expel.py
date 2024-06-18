@@ -71,16 +71,18 @@ class ExpeLExperienceMemory(BaseMemory):
             success_traj_idxs = []
             for idx in self.experiences["idxs"]:
                 trajectory = self.experiences["trajectories"][idx]
-                is_correct = trajectory[0]['react_output'][-1]['is_correct']  # Success on last step of the zero-th trial of this trajectory.
+                is_correct = trajectory[0]["react_output"][-1][
+                    "is_correct"
+                ]  # Success on last step of the zero-th trial of this trajectory.
                 if is_correct:
                     success_traj_idxs.append(idx)
 
         self.success_traj_docs: List[Document] = []
         for idx in success_traj_idxs:
             question = self.experiences["questions"][idx]
-            steps = self.experiences["trajectories"][idx][
-                0
-            ]['react_output']  # Zero-th trial of trajectory.
+            steps = self.experiences["trajectories"][idx][0][
+                "react_output"
+            ]  # Zero-th trial of trajectory.
 
             # Add the task.
             self.success_traj_docs.append(
@@ -129,12 +131,7 @@ class ExpeLExperienceMemory(BaseMemory):
             ):
                 idx = max(self.experiences["idxs"], default=-1) + 1
 
-                trajectory = [
-                    {
-                        "react_output": steps,
-                        "reflections": []
-                    }
-                ]
+                trajectory = [{"react_output": steps, "reflections": []}]
                 self.experiences["idxs"].append(idx)
                 self.experiences["questions"].append(question)
                 self.experiences["keys"].append(key)
@@ -227,7 +224,7 @@ class ExpeLExperienceMemory(BaseMemory):
             questions (List[str]): Questions related to the experiences being added.
             keys (List[str]): Answers corresponding to the provided questions.
             trajectories (List[List[Dict[str, Any]]]): A list of trajectories where each
-                trajectory is a list of dictionaries, each one a trial. 
+                trajectory is a list of dictionaries, each one a trial.
             reflections (Optional[List[List[str]]], default=[]): A list of additional reflective notes on the experiences.
         """
         assert len(questions) == len(keys) == len(trajectories)
@@ -256,15 +253,15 @@ class ExpeLExperienceMemory(BaseMemory):
         # Update success_traj_docs.
         success_traj_idxs = []
         for idx, trajectory in enumerate(trajectories, start_idx):
-            is_correct = trajectory[0]['react_output'][-1]['is_correct']
+            is_correct = trajectory[0]["react_output"][-1]["is_correct"]
             if is_correct:
                 success_traj_idxs.append(idx)
 
         for idx in success_traj_idxs:
             question = self.experiences["questions"][idx]
-            steps = self.experiences["trajectories"][idx][
-                0
-            ]["react_output"]  # Zero-th trial of trajectory.
+            steps = self.experiences["trajectories"][idx][0][
+                "react_output"
+            ]  # Zero-th trial of trajectory.
 
             # Add the task.
             self.success_traj_docs.append(
@@ -327,7 +324,7 @@ class ExpeLExperienceMemory(BaseMemory):
         """
         task_idx = fewshot_doc.metadata["task_idx"]
         trajectory = self.experiences["trajectories"][task_idx]
-        steps = trajectory[0]['react_output']  # A successful trial.
+        steps = trajectory[0]["react_output"]  # A successful trial.
         steps_str = ""
         for step in steps:
             step = f"Thought: {step['thought']}\nAction: {step['action_type']}[{step['query']}]\nObservation: {step['observation']}\n"
@@ -422,7 +419,7 @@ class ExpeLExperienceMemory(BaseMemory):
             task_idx = fewshot_doc.metadata["task_idx"]
             question = self.experiences["questions"][task_idx]
             trajectory = self.experiences["trajectories"][task_idx]
-            steps = trajectory[0]['react_output']  # Zero-th successful trial.
+            steps = trajectory[0]["react_output"]  # Zero-th successful trial.
             steps_str = ""
             for step in steps:
                 step = f"Thought: {step['thought']}\nAction: {step['action_type']}[{step['query']}]\nObservation: {step['observation']}\n"

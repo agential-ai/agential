@@ -18,19 +18,18 @@ from agential.cog.functional.expel import (
     retrieve_insight_index,
 )
 from agential.cog.prompts.agent.reflexion import (
-    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT
+    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
-from agential.cog.prompts.benchmark.hotpotqa import (
-    HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-)
+from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 
 
 def test_gather_experience() -> None:
     """Test gather_experience."""
-
-    agent = ReflexionReActAgent(llm=FakeListChatModel(responses=[]), mode={"qa": "hotpotqa"})
+    agent = ReflexionReActAgent(
+        llm=FakeListChatModel(responses=[]), mode={"qa": "hotpotqa"}
+    )
     questions = [""]
     keys = [""]
     experiences = gather_experience(

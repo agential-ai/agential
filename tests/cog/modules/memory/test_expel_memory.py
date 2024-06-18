@@ -22,42 +22,44 @@ fewshot_keys = re.findall(
 fewshot_examples = [
     [
         {
-            'thought': 'I need to search Colorado orogeny, find the area that the eastern sector of the Colorado orogeny extends into, then find the elevation range of the area.',
-            'action_type': 'Search',
-            'query': 'Colorado orogeny',
-            'observation': 'The Colorado orogeny was an episode of mountain building (an orogeny) in Colorado and surrounding areas.',
-            'is_correct': False
+            "thought": "I need to search Colorado orogeny, find the area that the eastern sector of the Colorado orogeny extends into, then find the elevation range of the area.",
+            "action_type": "Search",
+            "query": "Colorado orogeny",
+            "observation": "The Colorado orogeny was an episode of mountain building (an orogeny) in Colorado and surrounding areas.",
+            "is_correct": False,
         },
         {
-            'thought': 'It does not mention the eastern sector. So I need to look up eastern sector.',
-            'action_type': 'Lookup',
-            'query': 'eastern sector',
-            'observation': '(Result 1 / 1) The eastern sector extends into the High Plains and is called the Central Plains orogeny.',
-            'is_correct': False
+            "thought": "It does not mention the eastern sector. So I need to look up eastern sector.",
+            "action_type": "Lookup",
+            "query": "eastern sector",
+            "observation": "(Result 1 / 1) The eastern sector extends into the High Plains and is called the Central Plains orogeny.",
+            "is_correct": False,
         },
         {
-            'thought': 'The eastern sector of Colorado orogeny extends into the High Plains. So I need to search High Plains and find its elevation range.',
-            'action_type': 'Search',
-            'query': 'High Plains',
-            'observation': 'High Plains refers to one of two distinct land regions:',
-            'is_correct': False
+            "thought": "The eastern sector of Colorado orogeny extends into the High Plains. So I need to search High Plains and find its elevation range.",
+            "action_type": "Search",
+            "query": "High Plains",
+            "observation": "High Plains refers to one of two distinct land regions:",
+            "is_correct": False,
         },
         {
-            'thought': 'I need to instead search High Plains (United States).',
-            'action_type': 'Search',
-            'query': 'High Plains (United States)',
-            'observation': 'The High Plains are a subregion of the Great Plains. From east to west, the High Plains rise in elevation from around 1,800 to 7,000 ft (550 to 2,130 m).[3]',
-            'is_correct': False
+            "thought": "I need to instead search High Plains (United States).",
+            "action_type": "Search",
+            "query": "High Plains (United States)",
+            "observation": "The High Plains are a subregion of the Great Plains. From east to west, the High Plains rise in elevation from around 1,800 to 7,000 ft (550 to 2,130 m).[3]",
+            "is_correct": False,
         },
         {
-            'thought': 'High Plains rise in elevation from around 1,800 to 7,000 ft, so the answer is 1,800 to 7,000 ft.',
-            'action_type': 'Finish',
-            'query': '1,800 to 7,000 ft',
-            'observation': '1,800 to 7,000 ft',
-            'is_correct': True
-        }
-    ] for _ in range(6)
+            "thought": "High Plains rise in elevation from around 1,800 to 7,000 ft, so the answer is 1,800 to 7,000 ft.",
+            "action_type": "Finish",
+            "query": "1,800 to 7,000 ft",
+            "observation": "1,800 to 7,000 ft",
+            "is_correct": True,
+        },
+    ]
+    for _ in range(6)
 ]
+
 
 def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> None:
     """Test ExpeLExperienceMemory initialization."""

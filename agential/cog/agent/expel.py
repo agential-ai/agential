@@ -191,7 +191,7 @@ class ExpeLAgent(BaseAgent):
             additional_keys=additional_keys,
             reflect_additional_keys=reflect_additional_keys,
             patience=patience,
-            **kwargs
+            **kwargs,
         )
 
         if should_extract_insights:
@@ -244,7 +244,7 @@ class ExpeLAgent(BaseAgent):
             reflect_additional_keys (List[Dict[str, str]], Dict[str, str]): Additional keys for the reflect prompt. Defaults to {}.
             patience (int, optional): The patience for the agent. Defaults to 1.
             **kwargs (Dict[str, Any]): Additional arguments.
-            
+
         Returns:
             Dict[str, Any]: A dictionary containing the collected experiences, including questions, keys, trajectories,
             and reflections.
@@ -262,7 +262,7 @@ class ExpeLAgent(BaseAgent):
             additional_keys=additional_keys,
             reflect_additional_keys=reflect_additional_keys,
             patience=patience,
-            **kwargs
+            **kwargs,
         )
         self.reflexion_react_agent.reset()
 

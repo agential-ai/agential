@@ -138,7 +138,7 @@ def test_reflexion_cot_create_output_dict() -> None:
         action_type="Finish",
         obs="Observation: Answer is CORRECT",
         is_correct=True,
-        reflections=[]
+        reflections=[],
     )
     expected_output = {
         "thought": "This is a thought.",
@@ -146,7 +146,7 @@ def test_reflexion_cot_create_output_dict() -> None:
         "obs": "Observation: Answer is CORRECT",
         "answer": "correct_answer",
         "is_correct": True,
-        "reflections": []
+        "reflections": [],
     }
     assert output == expected_output
 
@@ -157,7 +157,7 @@ def test_reflexion_cot_create_output_dict() -> None:
         action_type="Finish",
         obs="Observation: Answer is INCORRECT",
         is_correct=False,
-        reflections=[]
+        reflections=[],
     )
     expected_output = {
         "thought": "This is a thought.",
@@ -165,7 +165,7 @@ def test_reflexion_cot_create_output_dict() -> None:
         "obs": "Observation: Answer is INCORRECT",
         "answer": "incorrect_answer",
         "is_correct": False,
-        "reflections": []
+        "reflections": [],
     }
     assert output == expected_output
 
@@ -176,7 +176,7 @@ def test_reflexion_cot_create_output_dict() -> None:
         action_type="Calculate",
         obs="Observation: Invalid action type, please try again.",
         is_correct=False,
-        reflections=[]
+        reflections=[],
     )
     expected_output = {
         "thought": "This is another thought.",
@@ -184,7 +184,7 @@ def test_reflexion_cot_create_output_dict() -> None:
         "obs": "Observation: Invalid action type, please try again.",
         "answer": "some_answer",
         "is_correct": False,
-        "reflections": []
+        "reflections": [],
     }
     assert output == expected_output
 
