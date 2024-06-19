@@ -15,7 +15,7 @@ from agential.cog.modules.memory.expel import (
 
 def test_init(expel_experiences_10_fake_path: str) -> None:
     """Test initialization."""
-    llm = FakeListChatModel(responses=["1"])
+    llm = FakeListChatModel(responses=[])
 
     agent = ExpeLAgent(
         llm=llm,
@@ -81,21 +81,27 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
     assert agent.insight_memory.insights == []
 
 
-def test_reset(expel_agent: ExpeLAgent) -> None:
+def test_reset() -> None:
     """Test reset."""
-    expel_agent.reflexion_react_agent.memory.scratchpad == "cat"
-    expel_agent.experience_memory.experiences == "dog"
-    expel_agent.insight_memory.insights = ["turtle"]
-    expel_agent.reset()
-    assert expel_agent.reflexion_react_agent.memory.scratchpad == ""
-    assert expel_agent.experience_memory.experiences == {
+    llm = FakeListChatModel(responses=["1"])
+
+    agent = ExpeLAgent(
+        llm=llm,
+        mode={"qa": "hotpotqa"}
+    )
+    agent.reflexion_react_agent.strategy._scratchpad == "cat"
+    agent.experience_memory.experiences == "dog"
+    agent.insight_memory.insights = ["turtle"]
+    agent.reset()
+    assert agent.reflexion_react_agent.strategy._scratchpad == ""
+    assert agent.experience_memory.experiences == {
         "idxs": [],
         "questions": [],
         "keys": [],
         "trajectories": [],
         "reflections": [],
     }
-    assert expel_agent.insight_memory.insights == []
+    assert agent.insight_memory.insights == []
 
 
 def test_retrieve(expel_agent: ExpeLAgent) -> None:
