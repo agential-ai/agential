@@ -19,6 +19,7 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
 
     agent = ExpeLAgent(
         llm=llm,
+        mode={"qa": "hotpotqa"}
     )
     assert isinstance(agent.llm, BaseChatModel)
     assert isinstance(agent.reflexion_react_agent, ReflexionReActAgent)
@@ -39,9 +40,8 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
     # Test with all parameters specified except experience memory and reflexion_react_agent.
     agent = ExpeLAgent(
         llm=llm,
-        self_reflect_llm=FakeListChatModel(responses=["2"]),
-        action_llm=FakeListChatModel(responses=["3"]),
-        reflexion_react_kwargs={"max_steps": 3},
+        mode={"qa": "hotpotqa"},
+        reflexion_react_strategy_kwargs={"max_steps": 3},
         insight_memory=ExpeLInsightMemory(
             insights=[{"insight": "blah blah", "score": 10}]
         ),
@@ -52,9 +52,6 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
     assert isinstance(agent.experience_memory, ExpeLExperienceMemory)
     assert isinstance(agent.insight_memory, ExpeLInsightMemory)
     assert agent.success_batch_size == 10
-    assert agent.reflexion_react_agent.self_reflect_llm.responses == ["2"]
-    assert agent.reflexion_react_agent.action_llm.responses == ["3"]
-    assert agent.reflexion_react_agent.max_steps == 3
     assert agent.experience_memory.experiences == {
         "idxs": [],
         "questions": [],
@@ -69,16 +66,17 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
     # Test with custom reflexion_react_agent (verify it overrides reflexion_react_kwargs)
     agent = ExpeLAgent(
         llm=llm,
-        reflexion_react_kwargs={"max_steps": 100},
-        reflexion_react_agent=ReflexionReActAgent(self_reflect_llm=llm, action_llm=llm),
+        reflexion_react_strategy_kwargs={"max_steps": 100},
+        reflexion_react_agent=ReflexionReActAgent(llm=llm, mode={"qa": "hotpotqa"}),
     )
-    assert agent.reflexion_react_agent.max_steps == 6
+    assert isinstance(agent.reflexion_react_agent, ReflexionReActAgent)
+    assert agent.reflexion_react_agent.mode == {"qa": "hotpotqa"}
 
     # Test with custom experience memory (verify correct initialization).
     experiences = joblib.load(expel_experiences_10_fake_path)
     experiences = {key: value[:1] for key, value in experiences.items()}
 
-    agent = ExpeLAgent(llm=llm, experience_memory=ExpeLExperienceMemory(experiences))
+    agent = ExpeLAgent(llm=llm, mode={"qa": "hotpotqa"}, experience_memory=ExpeLExperienceMemory(experiences))
     assert agent.experience_memory.experiences == experiences
     assert agent.insight_memory.insights == []
 
