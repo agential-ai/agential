@@ -331,12 +331,12 @@ class ExpeLAgent(BaseAgent):
                     # Concatenate batched successful trajectories.
                     concat_success_trajs = []
                     for idx in success_idxs:
-                        success_traj_str = "\n".join(
-                            [
-                                "\n".join(step)
-                                for step in experiences["trajectories"][idx][0][-1]
-                            ]
-                        )
+                        success_traj_str = ""
+                        steps = experiences['trajectories'][idx][0]['react_output']
+                        for step in steps:
+                            step = f"Thought: {step['thought']}\nAction: {step['action_type']}[{step['query']}]\nObservation: {step['observation']}\n"
+                            success_traj_str += step
+                            
                         concat_success_trajs.append(
                             f"{experiences['questions'][idx]}\n{success_traj_str}"
                         )
