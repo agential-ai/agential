@@ -104,9 +104,15 @@ def test_reset() -> None:
     assert agent.insight_memory.insights == []
 
 
-def test_retrieve(expel_agent: ExpeLAgent) -> None:
+def test_retrieve() -> None:
     """Test retrieve."""
-    memory = expel_agent.retrieve()
+    llm = FakeListChatModel(responses=["1"])
+
+    agent = ExpeLAgent(
+        llm=llm,
+        mode={"qa": "hotpotqa"}
+    )
+    memory = agent.retrieve()
     assert list(memory.keys()) == [
         "experiences",
         "success_traj_docs",
@@ -137,37 +143,46 @@ def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
         "keys": ["Oneida Limited"],
         "trajectories": [
             [
-                (
-                    True,
-                    "Oneida Limited",
-                    [
-                        (
-                            "Thought: I need to search for the giant silverware company that was started as a religious Utopian group and was run by Pierrepont Noyes.",
-                            "Action: Search[giant silverware company started as religious Utopian group Pierrepont Noyes]",
-                            "Observation 1: Could not find [giant silverware company started as religious Utopian group Pierrepont Noyes]. Similar: []",
-                        ),
-                        (
-                            "Thought: The search query was too specific. I should try searching for the silverware company and then look for information about its history and founder.",
-                            "Action: Search[silverware company Pierrepont Noyes]",
-                            "Observation 2: Pierrepont Burt Noyes (August 18, 1870 – April 15, 1959) was an American businessman and writer. He was brought up in the Oneida Community, a religious Utopian group. Noyes later became the head of Oneida Limited, a position he held for many years.",
-                        ),
-                        (
-                            "Thought: Pierrepont Noyes was the head of Oneida Limited, a silverware company. I need to confirm if Oneida Limited was indeed started as a religious Utopian group.",
-                            "Action: Search[Oneida Limited religious Utopian group]",
-                            "Observation 3: The Oneida Community ( oh-NYE-də) was a perfectionist religious communal society founded by John Humphrey Noyes and his followers in 1848 near Oneida, New York. The community believed that Jesus had already returned in AD 70, making it possible for them to bring about Jesus's millennial kingdom themselves, and be perfect and free of sin in this world, not just in Heaven (a belief called perfectionism). The Oneida Community practiced communalism (in the sense of communal property and possessions), group marriage, male sexual continence, Oneida stirpiculture (a form of eugenics), and mutual criticism.The community's original 87 members grew to 172 by February 1850, 208 by 1852, and 306 by 1878. There were smaller Noyesian communities in Wallingford, Connecticut; Newark, New Jersey; Putney and Cambridge, Vermont. The branches were closed in 1854 except for the Wallingford branch, which operated until the 1878 tornado devastated it.The Oneida Community dissolved in 1881, converting itself to a joint-stock company. This eventually became the silverware company Oneida Limited, one of the largest in the world.",
-                        ),
-                        (
-                            "Thought: Oneida Limited was indeed started as a religious Utopian group. The answer to the question is Oneida Limited.",
-                            "Action: Finish[Oneida Limited]",
-                            "Observation 4: Answer is CORRECT",
-                        ),
-                    ],
-                )
+                {
+                    'react_output': [
+                        {
+                            'thought': 'I need to search for the giant silverware company that was started as a religious Utopian group and was run by Pierrepont Noyes.', 
+                            'action_type': 'Search', 
+                            'query': 'giant silverware company started as religious Utopian group Pierrepont Noyes', 
+                            'observation': 'Could not find [giant silverware company started as religious Utopian group Pierrepont Noyes]. Similar: []', 
+                            'is_correct': False
+                        }, 
+                        {
+                            'thought': 'The search query was too specific. I should try searching for the silverware company and then look for information about its history and founder.', 
+                            'action_type': 'Search', 
+                            'query': 'silverware company Pierrepont Noyes', 
+                            'observation': 'Pierrepont Burt Noyes (August 18, 1870 – April 15, 1959) was an American businessman and writer. He was brought up in the Oneida Community, a religious Utopian group. Noyes later became the head of Oneida Limited, a position he held for many years.', 
+                            'is_correct': False
+                        }, 
+                        {
+                            'thought': 'Pierrepont Noyes was the head of Oneida Limited, a silverware company. I need to confirm if Oneida Limited was indeed started as a religious Utopian group.', 
+                            'action_type': 'Search', 
+                            'query': 'Oneida Limited religious Utopian group', 
+                            'observation': "The Oneida Community ( oh-NYE-də) was a perfectionist religious communal society founded by John Humphrey Noyes and his followers in 1848 near Oneida, New York. The community believed that Jesus had already returned in AD 70, making it possible for them to bring about Jesus's millennial kingdom themselves, and be perfect and free of sin in this world, not just in Heaven (a belief called perfectionism). The Oneida Community practiced communalism (in the sense of communal property and possessions), group marriage, male sexual continence, Oneida stirpiculture (a form of eugenics), and mutual criticism.The community's original 87 members grew to 172 by February 1850, 208 by 1852, and 306 by 1878. There were smaller Noyesian communities in Wallingford, Connecticut; Newark, New Jersey; Putney and Cambridge, Vermont. The branches were closed in 1854 except for the Wallingford branch, which operated until the 1878 tornado devastated it.The Oneida Community dissolved in 1881, converting itself to a joint-stock company. This eventually became the silverware company Oneida Limited, one of the largest in the world.", 
+                            'is_correct': False
+                        }, 
+                        {
+                            'thought': 'Oneida Limited was indeed started as a religious Utopian group. The answer to the question is Oneida Limited.', 
+                            'action_type': 'Finish', 
+                            'query': 'Oneida Limited', 
+                            'observation': 'Answer is CORRECT', 
+                            'is_correct': True
+                        }
+                    ], 
+                    'reflections': []
+                }
             ]
         ],
-        "reflections": [[]],
+        "reflections": [[]]
     }
-    self_reflect_responses = ["1"]
+
+
+
     action_responses = [
         "I need to search for the giant silverware company that was started as a religious Utopian group and was run by Pierrepont Noyes.\nAction: Search[Pierrepont Noyes]\nObservation: Could not find [Pierrepont Noyes]. Similar: ['Noyes Academy', 'Penn Noyes', 'Pierrepont Noyes', 'Pierrepont Noyes House', 'Pierrepont Noyes Mausoleum', 'Pierrepont Noyes Memorial Foundation']\nThought: I need to search for the company directly instead.\nAction: Search[giant silverware company religious Utopian group]\nObservation: Could not find [giant silverware company religious Utopian group]. Similar: ['Oneida Limited', 'Oneida Community', 'Oneida Silver']\nThought: I should search for Oneida Limited.\nAction: Search[Oneida Limited]\nObservation: Oneida Limited is one of the world's largest designers and sellers of stainless steel and silver-plated cutlery and tableware for the consumer and foodservice industries.\nThought: Oneida Limited is the giant silverware company that was started as a religious Utopian group and run by Pierrepont Noyes.\nAction: Finish[Oneida Limited]",
         "Search[giant silverware company started as religious Utopian group Pierrepont Noyes]\nObservation: Could not find [giant silverware company started as religious Utopian group Pierrepont Noyes]. Similar: ['Oneida Community', 'Gorham Silver Manufacturing Company', 'F. B. Rogers Silver Company']\nThought: Let's search for Oneida Community and see if it was started as a religious Utopian group and run by Pierrepont Noyes.\nAction: Search[Oneida Community]\nObservation: The Oneida Community was a religious perfectionist group founded by John Humphrey Noyes in 1848 in Oneida, New York.\nThought: The Oneida Community was indeed a religious Utopian group, but it was founded by John Humphrey Noyes, not Pierrepont Noyes. Let's look up Pierrepont Noyes to see if he was involved with the Oneida Community.\nAction: Lookup[Pierrepont Noyes]\nObservation: (Result 1 / 1) Pierrepont Noyes was an American industrialist and president of Oneida Community from 1877 to 1881.\nThought: Pierrepont Noyes was indeed involved with the Oneida Community. So the answer to the question is Oneida Community.\nAction: Finish[Oneida Community]",
@@ -178,14 +193,15 @@ def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
         "Oneida Limited was indeed started as a religious Utopian group. The answer to the question is Oneida Limited.\nAction: Finish[Oneida Limited]",
         "Finish[Oneida Limited]",
     ]
-    self_reflect_llm = FakeListChatModel(responses=self_reflect_responses)
-    action_llm = FakeListChatModel(responses=action_responses)
+    llm = FakeListChatModel(responses=action_responses)
     agent = ExpeLAgent(
-        llm=action_llm, self_reflect_llm=self_reflect_llm, action_llm=action_llm
+        llm=llm, 
+        mode={"qa": "hotpotqa"}
     )
     new_experiences = agent.gather_experience(
         questions=hotpotqa.question.values[-1:], keys=hotpotqa.answer.values[-1:]
     )
+    print(new_experiences)
     assert new_experiences == gt_new_experiences
     assert new_experiences == agent.experience_memory.experiences
     assert len(agent.experience_memory.success_traj_docs) == 13
