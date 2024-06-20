@@ -293,179 +293,65 @@ def test_generate(expel_experiences_10_fake_path: str) -> None:
     question = "What giant silverware company was started as a religious Utopian group and was for many years run by Pierrepont Noyes?"
     key = "Oneida Limited"
 
-    gt_out = {
-        "idxs": [0],
-        "questions": [
-            "What giant silverware company was started as a religious Utopian group and was for many years run by Pierrepont Noyes?"
-        ],
-        "keys": ["Oneida Limited"],
-        "trajectories": [
-            [
-                (
-                    True,
-                    "Oneida Limited",
-                    [
-                        (
-                            "Thought: I need to search for the giant silverware company that was started as a religious Utopian group and was run by Pierrepont Noyes.",
-                            "Action: Search[giant silverware company religious Utopian Pierrepont Noyes]",
-                            "Observation 1: Pierrepont Burt Noyes (August 18, 1870 – April 15, 1959) was an American businessman and writer. He was brought up in the Oneida Community, a religious Utopian group. Noyes later became the head of Oneida Limited, a position he held for many years.",
-                        ),
-                        (
-                            "Thought: The giant silverware company started as a religious Utopian group is Oneida Limited, run by Pierrepont Noyes. Now, I need to find out more information about Oneida Limited. ",
-                            "Action: Search[Oneida Limited]",
-                            "Observation 2: Oneida Limited () is an American manufacturer and seller of tableware and cutlery. Oneida is one of the world's largest designers and sellers of stainless steel and silverplated cutlery and tableware for the consumer and foodservice industries. It is also the largest supplier of dinnerware to the foodservice industry in North America. The company operates in the United States, Canada, Latin America, Europe, and Asia, marketing and distributing tabletop products, which include flatware, dinnerware, crystal stemware, glassware and kitchen tools and gadgets.  The factory in upstate NY was sold to Liberty Tabletop, who is the sole manufacturer of US made flatware. The company originated in the late-nineteenth century in the Oneida Community in Oneida, New York.",
-                        ),
-                        (
-                            "Thought: Oneida Limited was indeed the giant silverware company started as a religious Utopian group and run by Pierrepont Noyes. I have found the information needed to answer the question. ",
-                            "Action: Finish[Oneida Limited]",
-                            "Observation 3: Answer is CORRECT",
-                        ),
-                    ],
-                )
-            ]
-        ],
-        "reflections": [[]],
-    }
-    gt_insights = [
-        {
-            "insight": "Ensure to directly search for the specific information needed instead of trying to find similar entities.",
-            "score": 2,
-        },
-        {
-            "insight": "Ensure to search for specific information directly related to the question asked, avoiding unnecessary details.",
-            "score": 5,
-        },
-        {
-            "insight": "When searching for specific information, consider using keywords related to the topic to ensure relevant results are obtained.",
-            "score": 2,
-        },
-        {
-            "insight": "Use specific search terms and relevant keywords when looking for information, rather than general terms.",
-            "score": 2,
-        },
-        {
-            "insight": "When searching for specific information, use keywords related to the topic to ensure relevant results are obtained.",
-            "score": 2,
-        },
-        {
-            "insight": "Focus on directly searching for the specific information needed instead of getting sidetracked by related but not directly relevant information.",
-            "score": 2,
-        },
-        {
-            "insight": "Prioritize using direct sources of information such as official announcements, press releases, and company websites when searching for specific details.",
-            "score": 2,
-        },
-        {
-            "insight": "When searching for specific information, consider using different search terms and approaches if initial searches do not yield relevant results.",
-            "score": 2,
-        },
-        {
-            "insight": "Prioritize using direct sources of information such as official announcements, press releases, and company websites when searching for specific details related to the task at hand.",
-            "score": 2,
-        },
-        {
-            "insight": "Prioritize using specific search terms and keywords related to the topic to ensure accurate and relevant results are obtained.",
-            "score": 2,
-        },
-        {
-            "insight": "Focus on efficiently summarizing key information obtained from search results to answer the question accurately.",
-            "score": 2,
-        },
-    ]
-    gt_trajectory = [
-        (
-            True,
-            "Oneida Limited",
-            [
-                (
-                    "Thought: I need to search for the giant silverware company that was started as a religious Utopian group and was run by Pierrepont Noyes.",
-                    "Action: Search[giant silverware company religious Utopian Pierrepont Noyes]",
-                    "Observation 1: Pierrepont Burt Noyes (August 18, 1870 – April 15, 1959) was an American businessman and writer. He was brought up in the Oneida Community, a religious Utopian group. Noyes later became the head of Oneida Limited, a position he held for many years.",
-                ),
-                (
-                    "Thought: The giant silverware company started as a religious Utopian group is Oneida Limited, run by Pierrepont Noyes. Now, I need to find out more information about Oneida Limited. ",
-                    "Action: Search[Oneida Limited]",
-                    "Observation 2: Oneida Limited () is an American manufacturer and seller of tableware and cutlery. Oneida is one of the world's largest designers and sellers of stainless steel and silverplated cutlery and tableware for the consumer and foodservice industries. It is also the largest supplier of dinnerware to the foodservice industry in North America. The company operates in the United States, Canada, Latin America, Europe, and Asia, marketing and distributing tabletop products, which include flatware, dinnerware, crystal stemware, glassware and kitchen tools and gadgets.  The factory in upstate NY was sold to Liberty Tabletop, who is the sole manufacturer of US made flatware. The company originated in the late-nineteenth century in the Oneida Community in Oneida, New York.",
-                ),
-                (
-                    "Thought: Oneida Limited was indeed the giant silverware company started as a religious Utopian group and run by Pierrepont Noyes. I have found the information needed to answer the question. ",
-                    "Action: Finish[Oneida Limited]",
-                    "Observation 3: Answer is CORRECT",
-                ),
-            ],
-        )
-    ]
-    llm_responses = [
-        # Initial insight extraction.
-        "ADD 11: Ensure to directly search for the specific information needed instead of trying to find similar entities.",
-        "ADD 2: Ensure to use specific search terms when looking for information, rather than general terms.\nEDIT 1: Ensure to directly search for the specific information needed instead of trying to find similar entities by using specific search terms.\nREMOVE 1: <EXISTING RULE>",
-        "ADD 3: Always verify if the initial search term is specific enough to yield relevant results.\nEDIT 1: Ensure to directly search for the specific information needed instead of trying to find similar entities by using specific search terms and relevant keywords.\nREMOVE 2: This rule is similar to rule 1 and can be integrated into it for clarity and simplicity.",
-        "ADD 4: When searching for specific information, consider using keywords related to the topic to ensure relevant results are obtained.",
-        "ADD 5: Use specific search terms and relevant keywords when looking for information, rather than general terms.\nADD 6: Verify the accuracy of the obtained information before proceeding with the answer.\nREMOVE 3: Always verify if the initial search term is specific enough to yield relevant results.",
-        "ADD 7: Focus on directly searching for the specific information needed instead of getting sidetracked by related but not directly relevant information.",
-        "REMOVE 3: Always verify if the initial search term is specific enough to yield relevant results.\nEDIT 4: When searching for specific information, use keywords related to the topic to ensure relevant results are obtained.\nADD 8: Prioritize using direct sources of information such as official announcements, press releases, and company websites when searching for specific details.",
-        "ADD 8: When searching for specific information, consider using different search terms and approaches if initial searches do not yield relevant results.",
-        "ADD 9: Prioritize using direct sources of information such as official announcements, press releases, and company websites when searching for specific details related to the task at hand.",
-        "ADD 10: Prioritize using specific search terms and keywords related to the topic to ensure accurate and relevant results are obtained.",
-        # Extract insight from new question.
-        "ADD 11: Focus on efficiently summarizing key information obtained from search results to answer the question accurately.\nEDIT 1: Ensure to search for specific information directly related to the question asked, avoiding unnecessary details.\nREMOVE 4: When searching for specific information, use keywords related to the topic to ensure relevant results are obtained.",
-    ]
-    self_reflect_llm_responses = []
-    action_llm_responses = [
-        "I need to search for the giant silverware company that was started as a religious Utopian group and was run by Pierrepont Noyes.\nAction: Search[giant silverware company religious Utopian group Pierrepont Noyes]",
-        "Search[giant silverware company religious Utopian Pierrepont Noyes]",
-        "The giant silverware company started as a religious Utopian group is Oneida Limited, run by Pierrepont Noyes. Now, I need to find out more information about Oneida Limited. \nAction: Search[Oneida Limited]\nObservation 2: Oneida Limited is one of the world's largest designers and sellers of stainless steel and silver-plated cutlery and tableware for the consumer and foodservice industries. The company originated in a utopian community, the Oneida Community, founded by John Humphrey Noyes in the mid-19th century. Pierrepont Burt Noyes, the son of John Humphrey Noyes, later became the head of Oneida Limited, overseeing its growth and success in the silverware industry.\nThought:\nNow that I have found the information about Oneida Limited, I can provide the answer. \nAction: Finish[Oneida Limited]\nObservation 3: Answer is CORRECT.",
-        "Search[Oneida Limited]",
-        "Oneida Limited was indeed the giant silverware company started as a religious Utopian group and run by Pierrepont Noyes. I have found the information needed to answer the question. \nAction: Finish[Oneida Limited] \nObservation: Answer is CORRECT.",
-        "Finish[Oneida Limited]",
+    gt_out = {'idxs': [0],
+        'questions': ['What giant silverware company was started as a religious Utopian group and was for many years run by Pierrepont Noyes?'],
+        'keys': ['Oneida Limited'],
+        'trajectories': [[{'react_output': [{'thought': "I need to find out the name of the giant silverware company that was started as a religious Utopian group and was run by Pierrepont Noyes for many years. I should search for the company's name and its history to gather more information. ",
+            'action_type': 'Search',
+            'query': 'giant silverware company religious Utopian group Pierrepont Noyes',
+            'observation': 'Pierrepont Burt Noyes (August 18, 1870 – April 15, 1959) was an American businessman and writer. He was brought up in the Oneida Community, a religious Utopian group. Noyes later became the head of Oneida Limited, a position he held for many years.',
+            'is_correct': False},
+            {'thought': "I need to search for more information about Oneida Limited to see if it matches the description of a giant silverware company that was started as a religious Utopian group and was run by Pierrepont Noyes. I should look for details about the company's history and any relevant connections to Noyes. ",
+            'action_type': 'Search',
+            'query': 'Oneida Limited giant silverware company religious Utopian group Pierrepont Noyes',
+            'observation': 'Pierrepont Burt Noyes (August 18, 1870 – April 15, 1959) was an American businessman and writer. He was brought up in the Oneida Community, a religious Utopian group. Noyes later became the head of Oneida Limited, a position he held for many years.',
+            'is_correct': False},
+            {'thought': 'It seems like the search results are not providing specific information about Oneida Limited as a giant silverware company. I should try to look up the keyword "silverware" in the last passage successfully found and see if it provides any relevant details about Oneida Limited\'s products.',
+            'action_type': 'Lookup',
+            'query': 'silverware',
+            'observation': '(Result 1/1) == Oneida Limited ==After studying at Colgate University, followed by Harvard University, P.B. Noyes joined Oneida Limited, the company which emerged from the commune after his father\'s death. He went on to become president of the company, steering it towards specialising in silverware and stainless steel cutlery. In 1894, he married another stirpicult, Corinna Ackley Kinsley (Also his half-niece), and the couple had three children.As the head of Oneida Limited, Noyes developed the company\'s ideology. He believed that "good wages were essential to good morale," and in 1904 proposed a policy of voluntary salary reductions for management whenever the company was in financial difficulties. The company followed this during economic troubles in 1921. Historian Maren Lockwood Carden wrote that, "Noyes halved his own salary, the directors took a one-third reduction, and the other officials took smaller ones in proportion to their regular salaries."Noyes also encouraged the development of Sherrill, New York as a community for employees. In 1905 the company laid out plans for the town, giving bonuses to those employees who built their own homes there. The company also helped to fund athletic clubs, a golf course, and the building of a new elementary school and a new high school.',
+            'is_correct': False},
+            {'thought': "The passage mentions that Oneida Limited specialized in silverware and stainless steel cutlery under Pierrepont Noyes' leadership. This aligns with the description of a giant silverware company. I can confidently conclude that Oneida Limited is the giant silverware company started as a religious Utopian group and run by Pierrepont Noyes for many years. I need to finish with this answer.",
+            'action_type': 'Finish',
+            'query': 'Oneida Limited',
+            'observation': 'Answer is CORRECT',
+            'is_correct': True}],
+            'reflections': []}]],
+        'reflections': [[]]}
+    
+    gt_insights = [{'insight': 'When searching for information, if the initial search query does not return relevant results, try using different keywords or search terms to refine the search.',
+  'score': 2},
+ {'insight': 'When searching for information, consider searching for the creator or key figures related to the topic to gather more relevant details.',
+  'score': 2},
+ {'insight': 'When searching for information, consider looking up keywords or terms mentioned in the search results to gather more specific details.',
+  'score': 2}]
+
+    responses = [
+        'ADD 9: When searching for information, if the initial search query does not return relevant results, try using different keywords or search terms to refine the search.',
+        'ADD 1: When searching for information, consider searching for the creator or key figures related to the topic to gather more relevant details.',
+        "I need to find out the name of the giant silverware company that was started as a religious Utopian group and was run by Pierrepont Noyes for many years. I should search for the company's name and its history to gather more information. \nAction: Search[giant silverware company religious Utopian Pierrepont Noyes]\nObservation: The search did not return relevant results. I should try refining my search terms to find the information I need.\nAction: Search[silverware company Pierrepont Noyes history]\nObservation: The search results mention Oneida Limited as the giant silverware company that was started as a religious Utopian group and was run by Pierrepont Noyes for many years. \nAction: Lookup[Oneida Limited]\nObservation: Oneida Limited was a company that originated in the 19th century as a religious Utopian community, the Oneida Community, founded by John Humphrey Noyes in Oneida, New York. The company initially produced animal traps and then shifted to the production of silverware. It became known for its high-quality silverware and cutlery products. \nAction: Finish[Oneida Limited]\nObservation: Answer is CORRECT.",
+        'Search[giant silverware company religious Utopian group Pierrepont Noyes]',
+        "I need to search for more information about Oneida Limited to see if it matches the description of a giant silverware company that was started as a religious Utopian group and was run by Pierrepont Noyes. I should look for details about the company's history and any relevant connections to Noyes. \nAction: Search[Oneida Limited history Pierrepont Noyes]\nObservation 2: Oneida Limited is an American manufacturer of tableware and cutlery. The company originated in a utopian community, the Oneida Community, established in the 19th century. Pierrepont Burt Noyes, a descendant of the community's founder, became the head of Oneida Limited and led the company for many years.\nThought: It seems like Oneida Limited fits the description of the giant silverware company started as a religious Utopian group and run by Pierrepont Noyes. I should look for more specific details to confirm this information.\nAction: Lookup[silverware]\nObservation 3: Oneida Limited is known for its production of silverware, flatware, and tableware products. The company has a long history of manufacturing high-quality silverware and cutlery items.\nThought: Based on the information gathered, Oneida Limited is indeed the giant silverware company that matches the description provided in the question. I can now finish with this answer.\nAction: Finish[Oneida Limited] \nObservation: Answer is CORRECT",
+        'Search[Oneida Limited giant silverware company religious Utopian group Pierrepont Noyes]',
+        'It seems like the search results are not providing specific information about Oneida Limited as a giant silverware company. I should try to look up the keyword "silverware" in the last passage successfully found and see if it provides any relevant details about Oneida Limited\'s products.\nAction: Lookup[silverware]',
+        'Lookup[silverware]',
+        "The passage mentions that Oneida Limited specialized in silverware and stainless steel cutlery under Pierrepont Noyes' leadership. This aligns with the description of a giant silverware company. I can confidently conclude that Oneida Limited is the giant silverware company started as a religious Utopian group and run by Pierrepont Noyes for many years. I need to finish with this answer.\nAction: Finish[Oneida Limited]\nObservation: Answer is CORRECT",
+        'Finish[Oneida Limited]',
+        'ADD 2: When searching for information, consider looking up keywords or terms mentioned in the search results to gather more specific details.',
     ]
 
     agent = ExpeLAgent(
-        llm=FakeListChatModel(responses=llm_responses),
-        reflexion_react_agent=ReflexionReActAgent(
-            self_reflect_llm=FakeListChatModel(responses=self_reflect_llm_responses),
-            action_llm=FakeListChatModel(responses=action_llm_responses),
-        ),
+        llm=FakeListChatModel(responses=responses),
+        mode={"qa": "hotpotqa"},
         experience_memory=ExpeLExperienceMemory(experiences),
     )
 
     out = agent.generate(question=question, key=key)
     assert out == gt_out
-    assert len(agent.experience_memory.experiences["idxs"]) == 11
-    assert agent.experience_memory.experiences["questions"][10] == question
-    assert agent.experience_memory.experiences["keys"][10] == key
-    assert agent.experience_memory.experiences["reflections"][10] == []
-    assert agent.experience_memory.experiences["trajectories"][10] == gt_trajectory
+    assert len(agent.experience_memory.experiences["idxs"]) == 6
+    assert agent.experience_memory.experiences["questions"][5] == question
+    assert agent.experience_memory.experiences["keys"][5] == key
+    assert agent.experience_memory.experiences["reflections"][5] == []
     assert agent.insight_memory.insights == gt_insights
-    assert len(agent.experience_memory.success_traj_docs) == 48
+    assert len(agent.experience_memory.success_traj_docs) == 23
     assert agent.experience_memory.vectorstore
-
-    llm_responses = [
-        "ADD 10: Always verify information from multiple sources to ensure accuracy and reliability."
-    ]
-    action_llm_responses = [
-        "I need to search for the giant silverware company that was started as a religious Utopian group and was run by Pierrepont Noyes.\nAction: Search[giant silverware company religious Utopian Pierrepont Noyes]\nObservation: Could not find exact match. Similar: ['Oneida Limited', 'Religious utopia', 'List of tableware']\nThought: I should search for Oneida Limited as it seems to be related to the information I'm looking for.\nAction: Search[Oneida Limited]\nObservation: Oneida Limited is a major American manufacturer of tableware and cutlery. The company originated in a utopian community, the Oneida Community, established in the 19th century.\nThought: The Oneida Limited company started as a religious Utopian group and was run by Pierrepont Noyes. I need to find the name of the company.\nAction: Lookup[name of the company]\nObservation: (Result 1 / 1) Oneida Limited.\nThought: Oneida Limited is the giant silverware company started as a religious Utopian group and run by Pierrepont Noyes.\nAction: Finish[Oneida Limited]",
-        "Search[Pierrepont Noyes]",
-        "Pierrepont Noyes was the head of Oneida Limited, which was started as a religious Utopian group. I need to search for more information about Oneida Limited to confirm if it is the giant silverware company.\nAction: Search[Oneida Limited]\nObservation: Oneida Limited is an American manufacturer of tableware and cutlery. It originated as a utopian community, the Oneida Community, in 1848, and was known for its silverware. Today, Oneida Limited is one of the world's largest designers and sellers of stainless steel and silver-plated cutlery and tableware for the consumer and foodservice industries.\nThought: Oneida Limited is indeed the giant silverware company that was started as a religious Utopian group and run by Pierrepont Noyes.\nAction: Finish[Oneida Limited]",
-        "Search[Oneida Limited]",
-        "Oneida Limited is indeed the giant silverware company that was started as a religious Utopian group and was run by Pierrepont Noyes. I need to find out more about the history of Oneida Limited, specifically its founding as a religious Utopian group.\nAction: Search[Oneida Community]\nObservation 3: The Oneida Community was a perfectionist religious communal society founded by John Humphrey Noyes in 1848 in Oneida, New York. The community believed that Jesus had already returned in AD 70, making it possible for them to bring about Jesus's millennial kingdom themselves, and be free of sin and perfect in this world, not just in Heaven (a belief called perfectionism). The Oneida Community practiced communalism (in the sense of communal property and possessions), complex marriage, male sexual continence, and mutual criticism. There were smaller Noyesian communities in Wallingford, Connecticut; Newark, New Jersey; Putney and Cambridge, Vermont. The community's original 87 members grew to 172 by February 1850, 208 by 1852, and 306 by 1878. The branches were closed in 1854 except for the Wallingford branch, which operated until devastated by a tornado in 1878. The community dissolved in 1881, and eventually became the giant silverware company Oneida Limited. \nThought: The Oneida Community, founded by John Humphrey Noyes, eventually became Oneida Limited, the giant silverware company. I have confirmed that this is the correct information.\nAction: Finish[Oneida Limited]",
-        "Search[Oneida Limited history as religious Utopian group]",
-        "Oneida Limited was indeed started as a religious Utopian group, the Oneida Community, founded by John Humphrey Noyes. The company originated from this community, and Pierrepont Noyes later became the head of Oneida Limited. I need to find out more about the specific role Pierrepont Noyes played in the company. \nAction: Search[Pierrepont Noyes role in Oneida Limited]\nObservation 4: I could not find specific information about Pierrepont Noyes' role in Oneida Limited. However, based on the previous information gathered, it is clear that he played a significant role in leading the company for many years. Therefore, the answer to the question is Oneida Limited. \nAction: Finish[Oneida Limited]",
-        "Search[Pierrepont Noyes role in Oneida Limited]",
-        "Pierrepont Noyes played a significant role as the head of Oneida Limited for many years. This confirms his involvement in the company's operations. I can now provide the answer to the question.\nAction: Finish[Oneida Limited]",
-        "Pierrepont Noyes played a significant role as the head of Oneida Limited for many years. This confirms his involvement in the company's operations. I can now provide the answer to the question.\nAction: Finish[Oneida Limited]",
-    ]
-    agent = ExpeLAgent(
-        llm=FakeListChatModel(responses=llm_responses),
-        reflexion_react_agent=ReflexionReActAgent(
-            self_reflect_llm=FakeListChatModel(responses=[]),
-            action_llm=FakeListChatModel(responses=action_llm_responses),
-        ),
-    )
-    out = agent.generate(question=question, key=key, reset=True)
-    assert out["idxs"] == [0]
-    assert out["questions"] == [
-        "What giant silverware company was started as a religious Utopian group and was for many years run by Pierrepont Noyes?"
-    ]
-    assert out["keys"] == ["Oneida Limited"]
-    assert out["reflections"] == [[]]

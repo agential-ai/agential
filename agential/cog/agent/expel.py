@@ -298,15 +298,17 @@ class ExpeLAgent(BaseAgent):
                 question = experiences["questions"][train_idx]
                 trajectory = experiences["trajectories"][
                     train_idx
-                ]  # List[Tuple[bool, str, List[Tuple[str, str, str]]]].
+                ]  # List[Dict[str, Any]].
 
                 # Compare the successful trial with all previous failed trials.
-                success_trial = "\n".join(
-                    ["\n".join(step) for step in trajectory[-1][-1]]
+                success_trial = "".join(
+                    f"Thought: {step['thought']}\nAction: {step['action_type']}[{step['query']}]\nObservation: {step['observation']}\n"
+                    for step in trajectory[-1]['react_output']
                 )
                 for failed_trial in trajectory[:-1]:
-                    failed_trial = "\n".join(
-                        ["\n".join(step) for step in failed_trial[-1]]
+                    failed_trial = "".join(
+                        f"Thought: {step['thought']}\nAction: {step['action_type']}[{step['query']}]\nObservation: {step['observation']}\n"
+                        for step in failed_trial['react_output']
                     )
                     insights = self.insight_memory.load_memories()["insights"]
 
@@ -329,18 +331,16 @@ class ExpeLAgent(BaseAgent):
                     insights = self.insight_memory.load_memories()["insights"]
 
                     # Concatenate batched successful trajectories.
-                    concat_success_trajs = []
-                    for idx in success_idxs:
-                        success_traj_str = ""
-                        steps = experiences['trajectories'][idx][0]['react_output']
-                        for step in steps:
-                            step = f"Thought: {step['thought']}\nAction: {step['action_type']}[{step['query']}]\nObservation: {step['observation']}\n"
-                            success_traj_str += step
-                            
-                        concat_success_trajs.append(
-                            f"{experiences['questions'][idx]}\n{success_traj_str}"
+                    concat_success_trajs = [
+                        f"{experiences['questions'][idx]}\n" + "".join(
+                            f"Thought: {step['thought']}\nAction: {step['action_type']}[{step['query']}]\nObservation: {step['observation']}\n"
+                            for step in experiences['trajectories'][idx][0]['react_output']
                         )
+                        for idx in success_idxs
+                    ]
+
                     success_trials = "\n\n".join(concat_success_trajs)
+
 
                     operations = get_operations_success(
                         llm=self.llm,
