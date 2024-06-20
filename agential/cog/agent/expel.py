@@ -77,7 +77,7 @@ class ExpeLAgent(BaseAgent):
 
         if not reflexion_react_agent:
             self.reflexion_react_agent = ReflexionReActAgent(
-                llm = llm,
+                llm=llm,
                 mode=mode,
                 **reflexion_react_strategy_kwargs,
             )
@@ -303,12 +303,12 @@ class ExpeLAgent(BaseAgent):
                 # Compare the successful trial with all previous failed trials.
                 success_trial = "".join(
                     f"Thought: {step['thought']}\nAction: {step['action_type']}[{step['query']}]\nObservation: {step['observation']}\n"
-                    for step in trajectory[-1]['react_output']
+                    for step in trajectory[-1]["react_output"]
                 )
                 for failed_trial in trajectory[:-1]:
                     failed_trial = "".join(
                         f"Thought: {step['thought']}\nAction: {step['action_type']}[{step['query']}]\nObservation: {step['observation']}\n"
-                        for step in failed_trial['react_output']
+                        for step in failed_trial["react_output"]
                     )
                     insights = self.insight_memory.load_memories()["insights"]
 
@@ -332,15 +332,17 @@ class ExpeLAgent(BaseAgent):
 
                     # Concatenate batched successful trajectories.
                     concat_success_trajs = [
-                        f"{experiences['questions'][idx]}\n" + "".join(
+                        f"{experiences['questions'][idx]}\n"
+                        + "".join(
                             f"Thought: {step['thought']}\nAction: {step['action_type']}[{step['query']}]\nObservation: {step['observation']}\n"
-                            for step in experiences['trajectories'][idx][0]['react_output']
+                            for step in experiences["trajectories"][idx][0][
+                                "react_output"
+                            ]
                         )
                         for idx in success_idxs
                     ]
 
                     success_trials = "\n\n".join(concat_success_trajs)
-
 
                     operations = get_operations_success(
                         llm=self.llm,
