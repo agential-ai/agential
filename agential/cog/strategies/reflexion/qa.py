@@ -90,7 +90,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> str:
         """Generates a thought based on the question, examples, and prompt.
 
@@ -100,7 +100,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             reflections (str): Reflections to consider during generation.
             prompt (str): The prompt used for generating the thought.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
-            **kwargs (Dict[str, Any]): Additional arguments.
+            **kwargs (Any): Additional arguments.
 
         Returns:
             str: The generated thought.
@@ -127,7 +127,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> Tuple[str, str]:
         """Generates an action based on the question, examples, and prompt.
 
@@ -137,7 +137,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             reflections (str): Reflections to consider during generation.
             prompt (str): The prompt used for generating the action.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
-            **kwargs (Dict[str, Any]): Additional arguments.
+            **kwargs (Any): Additional arguments.
 
         Returns:
             Tuple[str, str]: The generated action type and query.
@@ -203,7 +203,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             reflections (List[str]): The reflections.
 
         Returns:
-            Dict[str, str]: A dictionary containing the thought, action type, observation, answer, and is_correct.
+            Dict[str, Any]: A dictionary containing the thought, action type, observation, answer, and is_correct.
         """
         return {
             "thought": thought,
@@ -218,14 +218,14 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         self,
         idx: int,
         key: str,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> bool:
         """Determines whether the halting condition has been met.
 
         Args:
             idx (int): The current step index.
             key (str): The key for the observation.
-            **kwargs (Dict[str, Any]): Additional arguments.
+            **kwargs (Any): Additional arguments.
 
         Returns:
             bool: True if the halting condition is met, False otherwise.
@@ -233,14 +233,14 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         max_trials = kwargs.get("max_trials", self.max_trials)
         return EM(self._answer, key) or idx >= max_trials
 
-    def reset(self, **kwargs: Dict[str, Any]) -> None:
+    def reset(self, **kwargs: Any) -> None:
         """Resets the internal state of the strategy.
 
         Resets the scratchpad and the finished flag.
         Resets only the scratchpad if specified with 'only_scratchpad'.
 
         Args:
-            **kwargs (Dict[str, Any]): Additional arguments.
+            **kwargs (Any): Additional arguments.
 
         Returns:
             None
@@ -355,7 +355,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> str:
         """Generates a thought based on the given question, examples, reflections, prompt, and additional keys.
 
@@ -395,7 +395,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> Tuple[str, str]:
         """Generates an action based on the given question, examples, reflections, prompt, and additional keys.
 
@@ -512,7 +512,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
             "is_correct": is_correct,
         }
 
-    def halting_condition(self, idx: int, key: str, **kwargs: Dict[str, Any]) -> bool:
+    def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
         """Determine whether the halting condition has been met.
 
         Args:
@@ -523,7 +523,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         Returns:
             bool: True if the halting condition is met, False otherwise. The halting condition is met when the answer is not correct and the current step index is less than the maximum number of trials plus one.
         """
-        max_trials = kwargs.get("max_trials", self.max_trials)
+        max_trials: int = kwargs.get("max_trials", self.max_trials)
         return not EM(self._answer, key) and idx < max_trials + 1
 
     def react_halting_condition(
@@ -534,7 +534,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> bool:
         """Determine whether the halting condition has been met in the ReflexionReAct agent.
 
@@ -566,14 +566,14 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
             additional_keys=additional_keys,
         )
 
-    def reset(self, **kwargs: Dict[str, Any]) -> None:
+    def reset(self, **kwargs: Any) -> None:
         """Resets the internal state of the strategy.
 
         Resets the scratchpad and the finished flag.
         Resets only the scratchpad if specified with 'only_scratchpad'.
 
         Args:
-            **kwargs (Dict[str, Any]): Additional keyword arguments.
+            **kwargs (Any): Additional keyword arguments.
         """
         no_reflector = kwargs.get("no_reflector", False)
         if not no_reflector:

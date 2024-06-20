@@ -41,7 +41,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         pass
 
     @abstractmethod
-    def generate_observation(self, action_type: str, query: str, key: str) -> str:
+    def generate_observation(self, action_type: str, query: str, key: str) -> Tuple[bool, str]:
         """Generates an observation based on the action type and query.
 
         Args:
@@ -50,7 +50,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
             key (str): The key for the observation.
 
         Returns:
-            str: The generated observation.
+            Tuple[bool, str]: The generated observation.
         """
         pass
 
@@ -73,18 +73,18 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
             reflections (List[str]): A list of reflections.
 
         Returns:
-            Dict[str, str]: A dictionary containing the thought, action type, observation, answer, is_correct, and a list of reflections.
+            Dict[str, Any]: A dictionary containing the thought, action type, observation, answer, is_correct, and a list of reflections.
         """
         pass
 
     @abstractmethod
-    def halting_condition(self, idx: int, key: str, **kwargs: Dict[str, Any]) -> bool:
+    def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
         """Determines whether the halting condition has been met.
 
         Args:
             idx (int): The current step index.
             key (str): The key for the observation.
-            **kwargs (Dict[str, Any]): Additional arguments.
+            **kwargs (Any): Additional arguments.
 
         Returns:
             bool: True if the halting condition is met, False otherwise.
@@ -96,7 +96,6 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         self,
         reflection_strategy: str,
         question: str,
-        context: str,
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
@@ -106,7 +105,6 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         Args:
             reflection_strategy (str): The strategy to use for reflection.
             question (str): The question to be reflected upon.
-            context (str): The context in which the question is being asked.
             examples (str): Examples to guide the reflection process.
             prompt (str): The prompt or instruction to guide the reflection.
             additional_keys (Dict[str, str]): Additional keys for the reflection process.
@@ -150,6 +148,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
+        **kwargs: Any,
     ) -> Tuple[str, str]:
         """Generates an action based on the question, examples, and prompt.
 
@@ -159,20 +158,22 @@ class ReflexionReActBaseStrategy(BaseStrategy):
             reflections (str): Reflections to guide the generation process.
             prompt (str): The prompt used for generating the action.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
-
+            **kwargs (Any): Additional arguments.
+            
         Returns:
             Tuple[str, str]: The generated action type and query.
         """
         pass
 
     @abstractmethod
-    def generate_observation(self, step_idx: int, action_type: str, query: str) -> str:
+    def generate_observation(self, step_idx: int, action_type: str, query: str, key: str) -> Tuple[bool, str]:
         """Generates an observation based on the action type and query.
 
         Args:
             step_idx (int): The index of the step.
             action_type (str): The type of action to be performed.
             query (str): The query for the action.
+            key (str): The key for the observation.
 
         Returns:
             str: The generated observation.
@@ -213,13 +214,13 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         pass
 
     @abstractmethod
-    def halting_condition(self, idx: int, key: str, **kwargs: Dict[str, Any]) -> bool:
+    def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
         """Determines whether the halting condition has been met.
 
         Args:
             idx (int): The current step index.
             key (str): The key for the observation.
-            **kwargs (Dict[str, Any]): Additional arguments.
+            **kwargs (Any): Additional arguments.
 
         Returns:
             bool: True if the halting condition is met, False otherwise.
@@ -235,7 +236,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> bool:
         """Determines whether the halting condition for the ReAct agent has been met.
 

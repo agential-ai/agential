@@ -74,7 +74,7 @@ class ReActQAStrategy(ReActBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> str:
         """Generates a thought based on the question, examples, and prompt.
 
@@ -83,7 +83,7 @@ class ReActQAStrategy(ReActBaseStrategy):
             examples (str): Examples to guide the generation process.
             prompt (str): The prompt used for generating the thought.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
-            **kwargs (Dict[str, Any]): Additional arguments.
+            **kwargs (Any): Additional arguments.
 
         Returns:
             str: The generated thought.
@@ -111,7 +111,7 @@ class ReActQAStrategy(ReActBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> Tuple[str, str]:
         """Generates an action based on the question, examples, and prompt.
 
@@ -120,7 +120,7 @@ class ReActQAStrategy(ReActBaseStrategy):
             examples (str): Examples to guide the generation process.
             prompt (str): The prompt used for generating the action.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
-            **kwargs (Dict[str, Any]): Additional arguments.
+            **kwargs (Any): Additional arguments.
 
         Returns:
             Tuple[str, str]: The generated action type and query.
@@ -202,7 +202,7 @@ class ReActQAStrategy(ReActBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> bool:
         """Determines whether the halting condition has been met.
 
@@ -212,7 +212,7 @@ class ReActQAStrategy(ReActBaseStrategy):
             examples (str): Examples to guide the generation process.
             prompt (str): The prompt used for generating the thought and action.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
-            **kwargs (Dict[str, Any]): Additional arguments.
+            **kwargs (Any): Additional arguments.
 
         Returns:
             bool: True if the halting condition is met, False otherwise.
@@ -232,13 +232,13 @@ class ReActQAStrategy(ReActBaseStrategy):
             additional_keys=additional_keys,
         )
 
-    def reset(self, **kwargs: Dict[str, Any]) -> None:
+    def reset(self, **kwargs: Any) -> None:
         """Resets the internal state of the strategy.
 
         Resets the scratchpad and the finished flag.
 
         Args:
-            **kwargs (Dict[str, Any]): Additional arguments.
+            **kwargs (Any): Additional arguments.
 
         Returns:
             None

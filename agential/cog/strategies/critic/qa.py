@@ -42,7 +42,7 @@ class CriticQAStrategy(CriticBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> str:
         """Generates an answer using the provided language model, question, examples, and prompt.
 
@@ -51,7 +51,7 @@ class CriticQAStrategy(CriticBaseStrategy):
             examples (str): Few-shot examples to guide the language model in generating the answer.
             prompt (str): The instruction template used to prompt the language model.
             additional_keys (Dict[str, str]): Additional keys to format the prompt.
-            **kwargs (Dict[str, Any]): Additional arguments.
+            **kwargs (Any): Additional arguments.
 
         Returns:
             str: The generated answer.
@@ -75,7 +75,7 @@ class CriticQAStrategy(CriticBaseStrategy):
         additional_keys: Dict[str, str],
         use_tool: bool,
         max_interactions: int,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> Tuple[str, Dict[str, Any]]:
         """Generates a critique of the provided answer using the given language model, question, examples, and prompt.
 
@@ -101,7 +101,7 @@ class CriticQAStrategy(CriticBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys to format the critique prompt.
             use_tool (bool): Whether to use an external tool (e.g., interpreter, search tool) during critique.
             max_interactions (int): The maximum number of critique interactions.
-            **kwargs (Dict[str, Any]): Additional arguments that might be needed for specific implementations.
+            **kwargs (Any): Additional arguments that might be needed for specific implementations.
 
         Returns:
             Tuple[str, Dict[str, Any]]: The generated critique and any external tool information.
@@ -193,7 +193,7 @@ class CriticQAStrategy(CriticBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
         external_tool_info: Dict[str, str],
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> str:
         """Updates the answer based on the provided critique using the given language model and question.
 
@@ -207,7 +207,7 @@ class CriticQAStrategy(CriticBaseStrategy):
             prompt (str): The instruction template used to prompt the language model for the update.
             additional_keys (Dict[str, str]): Additional keys to format the update prompt.
             external_tool_info (Dict[str, str]): Information from any external tools used during the critique.
-            **kwargs (Dict[str, Any]): Additional arguments that might be needed for specific implementations.
+            **kwargs (Any): Additional arguments that might be needed for specific implementations.
 
         Returns:
             str: The updated answer.
@@ -224,14 +224,14 @@ class CriticQAStrategy(CriticBaseStrategy):
         """
         return self._halt
 
-    def reset(self, **kwargs: Dict[str, Any]) -> None:
+    def reset(self, **kwargs: Any) -> None:
         """Resets the strategy's internal state.
 
         This function resets the internal state of the strategy, including clearing the query
         history, evidence history, and resetting the halt flag.
 
         Args:
-            **kwargs (Dict[str, Any]): Additional arguments.
+            **kwargs (Any): Additional arguments.
 
         Returns:
             None
@@ -247,7 +247,7 @@ class CriticQAStrategy(CriticBaseStrategy):
         search_query: str,
         use_tool: bool,
         max_interactions: int,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> Tuple[Dict[str, str], str]:
         """Handles a search query and returns the search result and context.
 
@@ -262,7 +262,7 @@ class CriticQAStrategy(CriticBaseStrategy):
             search_query (str): The search query to be executed.
             use_tool (bool): Whether to use an external tool (e.g., search tool) during critique.
             max_interactions (int): The maximum number of critique interactions.
-            **kwargs (Dict[str, Any]): Additional arguments that might be needed for specific implementations.
+            **kwargs (Any): Additional arguments that might be needed for specific implementations.
 
         Returns:
             Tuple[Dict[str, str], str]: The search result and context.
