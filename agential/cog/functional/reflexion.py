@@ -505,9 +505,6 @@ def _prompt_react_agent(
             )
         ]
     ).content
-    print("<OUT AGENT=====================================================>")
-    print(repr(out))
-    print("<OUT AGENT=====================================================>")
     assert isinstance(out, str)
     return out
 
@@ -636,9 +633,6 @@ def _prompt_react_reflection(
             )
         ]
     ).content
-    print("<OUT REFLECT=====================================================>")
-    print(repr(out))
-    print("<OUT REFLECT=====================================================>")
     assert isinstance(out, str)
     return out
 

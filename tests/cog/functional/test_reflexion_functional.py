@@ -183,7 +183,6 @@ def test__prompt_cot_agent() -> None:
         scratchpad=scratchpad,
         prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
     )
-    print(repr(out))
     assert out == gt_out
 
 
