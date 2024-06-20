@@ -341,9 +341,6 @@ def _prompt_compare_critique(
             )
         ]
     ).content
-    print("<OUT COMPARE=====================================================>")
-    print(repr(out))
-    print("<OUT COMPARE=====================================================>")
     out = out.strip("\n").strip()  # type: ignore
 
     if replace_newline:
@@ -387,9 +384,6 @@ def _prompt_all_success_critique(
             )
         ]
     ).content
-    print("<OUT SUCCESS=====================================================>")
-    print(repr(out))
-    print("<OUT SUCCESS=====================================================>")
     out = out.strip("\n").strip()  # type: ignore
 
     if replace_newline:

@@ -126,7 +126,6 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
         "reflections",
     ]
     for v in memory.experiences.values():
-        print(len(v))
         assert len(v) == 6
     assert memory.fewshot_questions
     assert memory.fewshot_keys
@@ -319,7 +318,6 @@ def test_expel_experience_memory__fewshot_doc_token_count(
     )
     for doc in memory.success_traj_docs:
         token_count = memory._fewshot_doc_token_count(doc)
-        print(token_count)
         assert token_count == 312
 
 
