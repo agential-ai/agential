@@ -140,7 +140,7 @@ class ReflexionReActReflector(BaseReflector):
         examples: str,
         scratchpad: str,
         prompt: str,
-        additional_keys: Optional[Dict[str, str]] = {},
+        additional_keys: Dict[str, str] = {},
     ) -> Tuple[List[str], str]:
         """Wrapper around ReflexionReAct's `react_reflect` method in functional.
 
@@ -154,7 +154,7 @@ class ReflexionReActReflector(BaseReflector):
             examples (str): Example inputs for the prompt template.
             scratchpad (str): The scratchpad content related to the question.
             prompt (str, optional): Reflect prompt template string.
-            additional_keys (Dict[str, str]): Additional keys to be passed to the
+            additional_keys (Dict[str, str]): Additional keys. Defaults to {}.
 
         Returns:
             Tuple[List[str], str]: A tuple of the updated list of reflections based on the selected strategy and the formatted

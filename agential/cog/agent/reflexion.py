@@ -103,7 +103,7 @@ class ReflexionCoTAgent(BaseAgent):
         reflect_additional_keys: Dict[str, str] = {},
         patience: int = 1,
         reset: bool = True,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> List[Dict[str, Any]]:
         """Generates a response based on the provided context, question, and key.
 
@@ -242,7 +242,7 @@ class ReflexionReActAgent(BaseAgent):
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str] = {},
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ):
         out = []
         step_idx = 1
@@ -311,7 +311,7 @@ class ReflexionReActAgent(BaseAgent):
         reflect_additional_keys: Dict[str, str] = {},
         patience: int = 1,
         reset: bool = True,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> List[Dict[str, Any]]:
         """Processes a given question through ReAct and reflects using Reflexion strategies when possible.
 
@@ -333,7 +333,7 @@ class ReflexionReActAgent(BaseAgent):
             additional_keys (Dict[str, str], optional): Additional keys for the prompt. Defaults to {}.
             reflect_additional_keys (Dict[str, str], optional): Additional keys for the reflect prompt. Defaults to {}.
             patience (int, optional): The patience for the agent. Defaults to 1.
-            **kwargs (Dict[str, Any]): Additional keyword arguments for the strategy.
+            **kwargs (Any): Additional keyword arguments for the strategy.
 
         Returns:
             result (List[Dict[str, Any]]): List of dictionaries containing the ReAct output as a List[Dict[str, str]] and

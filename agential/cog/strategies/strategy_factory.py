@@ -292,7 +292,7 @@ class ReflexionCoTStrategyFactory:
         else:
             raise ValueError(f"Unsupported mode: {mode}")
 
-        return
+        return ReflexionCoTHotQAStrategy(**strategy_kwargs)  # TODO
 
 
 class ReflexionReActStrategyFactory:
@@ -355,4 +355,5 @@ class ReflexionReActStrategyFactory:
         else:
             raise ValueError(f"Unsupported mode: {mode}")
 
-        return
+        return ReflexionReActHotQAStrategy(**strategy_kwargs)  # TODO
+

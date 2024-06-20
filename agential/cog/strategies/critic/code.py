@@ -28,7 +28,7 @@ class CriticCodeStrategy(CriticBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> str:
         """Generates an answer for the given question using the provided prompt and examples.
 
@@ -37,7 +37,7 @@ class CriticCodeStrategy(CriticBaseStrategy):
             examples (str): Few-shot examples to guide the language model.
             prompt (str): The prompt to generate an answer.
             additional_keys (Dict[str, str]): Additional keys for the prompt.
-            **kwargs (Dict[str, Any]): Additional arguments.
+            **kwargs (Any): Additional arguments.
 
         Returns:
             str: The generated answer.
@@ -64,7 +64,7 @@ class CriticCodeStrategy(CriticBaseStrategy):
         additional_keys: Dict[str, str],
         use_tool: bool,
         max_interactions: int,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> Tuple[str, Dict[str, Any]]:
         """Generates a critique for the provided answer using the given prompt and examples.
 
@@ -90,7 +90,7 @@ class CriticCodeStrategy(CriticBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the prompt.
             use_tool (bool): Whether to use an external tool during critique.
             max_interactions (int): The maximum number of interactions allowed.
-            **kwargs (Dict[str, Any]): Additional arguments for specific implementations.
+            **kwargs (Any): Additional arguments for specific implementations.
 
         Returns:
             Tuple[str, Dict[str, Any]]: The generated critique and external tool information.
@@ -152,7 +152,7 @@ class CriticCodeStrategy(CriticBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
         external_tool_info: Dict[str, str],
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> str:
         """Updates the answer based on the given critique.
 
@@ -164,7 +164,7 @@ class CriticCodeStrategy(CriticBaseStrategy):
             prompt: The prompt to be used for generating the updated answer.
             additional_keys: Additional context or parameters to include in the critique prompt.
             external_tool_info: Information from any external tool used.
-            **kwargs (Dict[str, Any]): Additional parameters for flexibility.
+            **kwargs (Any): Additional parameters for flexibility.
 
         Returns:
             str: The updated answer.
@@ -196,13 +196,13 @@ class CriticCodeStrategy(CriticBaseStrategy):
         """
         return self._halt
 
-    def reset(self, **kwargs: Dict[str, Any]) -> None:
+    def reset(self, **kwargs: Any) -> None:
         """Resets the strategy to its initial state.
 
         Resets internal variables keeping track of halting and answer history.
 
         Args:
-            **kwargs (Dict[str, Any]): Additional arguments.
+            **kwargs (Any): Additional arguments.
 
         Returns:
             None
@@ -230,7 +230,7 @@ class CritHEvalCodeStrategy(CriticCodeStrategy):
         additional_keys: Dict[str, str],
         use_tool: bool,
         max_interactions: int,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> Tuple[str, Dict[str, Any]]:
         """Generates a critique for the provided answer using the given prompt and examples.
 
@@ -256,7 +256,7 @@ class CritHEvalCodeStrategy(CriticCodeStrategy):
             additional_keys (Dict[str, str]): Additional keys for the prompt.
             use_tool (bool): Whether to use an external tool during critique.
             max_interactions (int): The maximum number of interactions allowed.
-            **kwargs (Dict[str, Any]): Additional arguments for specific implementations.
+            **kwargs (Any): Additional arguments for specific implementations.
 
         Returns:
             Tuple[str, Dict[str, Any]]: The generated critique and external tool information.
@@ -307,7 +307,7 @@ class CritHEvalCodeStrategy(CriticCodeStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
         external_tool_info: Dict[str, str],
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> str:
         """Updates the answer based on the given critique.
 
@@ -319,7 +319,7 @@ class CritHEvalCodeStrategy(CriticCodeStrategy):
             prompt: The prompt to be used for generating the updated answer.
             additional_keys: Additional context or parameters to include in the critique prompt.
             external_tool_info: Information from any external tool used.
-            **kwargs (Dict[str, Any]): Additional parameters for flexibility.
+            **kwargs (Any): Additional parameters for flexibility.
 
         Returns:
             str: The updated answer.

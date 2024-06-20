@@ -35,7 +35,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> str:
         """Generates an answer for the given question using the provided prompt and examples.
 
@@ -44,7 +44,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
             examples (str): Few-shot examples to guide the language model.
             prompt (str): The prompt to generate an answer.
             additional_keys (Dict[str, str]): Additional keys for the prompt.
-            **kwargs (Dict[str, Any]): Additional arguments.
+            **kwargs (Any): Additional arguments.
 
         Returns:
             str: The generated answer.
@@ -158,13 +158,13 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
         """
         return self._halt
 
-    def reset(self, **kwargs: Dict[str, Any]) -> None:
+    def reset(self, **kwargs: Any) -> None:
         """Resets the strategy to its initial state.
 
         Resets internal variables keeping track of halting.
 
         Args:
-            **kwargs (Dict[str, Any]): Additional arguments.
+            **kwargs (Any): Additional arguments.
 
         Returns:
             None

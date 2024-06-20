@@ -116,7 +116,7 @@ class ExpeLAgent(BaseAgent):
         reranker_strategy: Optional[str] = None,
         reset_reflexion: bool = True,
         reset: bool = False,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> Dict[str, Any]:
         """Collects and stores experiences from interactions based on specified questions and strategies.
 
@@ -142,7 +142,7 @@ class ExpeLAgent(BaseAgent):
             reranker_strategy (Optional[str]): The strategy to use for re-ranking the retrieved. Defaults to None.
             reset_reflexion (bool): Whether to reset the ReflexionReAct agent. Defaults to True.
             reset (bool): Whether to reset the agent's state for a new problem-solving session. Defaults to False.
-            **kwargs (Dict[str, Any]): Additional keyword arguments.
+            **kwargs (Any): Additional keyword arguments.
 
         Returns:
             Dict[str, Any]: A dictionary containing the collected experiences, including questions, keys, trajectories,
@@ -218,7 +218,7 @@ class ExpeLAgent(BaseAgent):
         additional_keys: Union[List[Dict[str, str]], Dict[str, str]] = {},
         reflect_additional_keys: Union[List[Dict[str, str]], Dict[str, str]] = {},
         patience: int = 1,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> Dict[str, Any]:
         """Collects and stores experiences from interactions based on specified questions and keys.
 
@@ -240,7 +240,7 @@ class ExpeLAgent(BaseAgent):
             additional_keys (List[Dict[str, str]], Dict[str, str]): Additional keys for the prompt. Defaults to {}.
             reflect_additional_keys (List[Dict[str, str]], Dict[str, str]): Additional keys for the reflect prompt. Defaults to {}.
             patience (int, optional): The patience for the agent. Defaults to 1.
-            **kwargs (Dict[str, Any]): Additional arguments.
+            **kwargs (Any): Additional arguments.
 
         Returns:
             Dict[str, Any]: A dictionary containing the collected experiences, including questions, keys, trajectories,
