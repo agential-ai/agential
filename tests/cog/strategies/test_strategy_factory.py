@@ -39,16 +39,16 @@ from agential.cog.strategies.reflexion.qa import (
     ReflexionCoTFEVERStrategy,
     ReflexionCoTHotQAStrategy,
     ReflexionCoTTriviaQAStrategy,
-    ReflexionReActHotQAStrategy,
-    ReflexionReActTriviaQAStrategy,
     ReflexionReActAmbigNQStrategy,
     ReflexionReActFEVERStrategy,
+    ReflexionReActHotQAStrategy,
+    ReflexionReActTriviaQAStrategy,
 )
 from agential.cog.strategies.strategy_factory import (
     CriticStrategyFactory,
     ReActStrategyFactory,
     ReflexionCoTStrategyFactory,
-    ReflexionReActStrategyFactory
+    ReflexionReActStrategyFactory,
 )
 
 
