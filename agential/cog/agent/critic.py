@@ -8,7 +8,7 @@ from typing import Any, Dict, List
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
-from pydantic import BaseModel, Field, Extra
+from pydantic import BaseModel
 
 from agential.cog.agent.base import BaseAgent
 from agential.cog.strategies.strategy_factory import CriticStrategyFactory
