@@ -13,27 +13,14 @@ from typing import Any, Dict, List, Optional, Tuple
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.agent.base import BaseAgent
-from agential.cog.eval.reflexion import EM
-from agential.cog.functional.reflexion import (
-    _is_halted,
-    _prompt_react_agent,
-    _truncate_scratchpad,
-)
 from agential.cog.modules.reflect.reflexion import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )
-from agential.cog.prompts.agent.reflexion import (
-    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-)
-from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.strategies.strategy_factory import (
     ReflexionCoTStrategyFactory,
     ReflexionReActStrategyFactory,
 )
-from agential.utils.parse import remove_newline
 
 
 def parse_action(string: str) -> Tuple[str, str]:
