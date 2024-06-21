@@ -1,7 +1,7 @@
 """Base Reflexion Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, Optional
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -24,6 +24,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         self,
         question: str,
         examples: str,
+        reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str, str]:
@@ -32,6 +33,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         Args:
             question (str): The question to be answered.
             examples (str): Examples to guide the generation process.
+            reflections (str): Reflections to guide the generation process.
             prompt (str): The prompt used for generating the action.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
 
@@ -115,12 +117,12 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         pass
 
     @abstractmethod
-    def reflect_condition(self, idx: int, reflection_strategy: str, key: str) -> bool:
+    def reflect_condition(self, idx: int, reflection_strategy: Optional[str], key: str) -> bool:
         """Determines whether the reflection condition has been met.
 
         Args:
             idx (int): The current step.
-            reflection_strategy (str): The strategy to use for reflection.
+            reflection_strategy (Optional[str]): The strategy to use for reflection.
             key (str): The key for the observation.
 
         Returns:
@@ -182,13 +184,13 @@ class ReflexionReActBaseStrategy(BaseStrategy):
 
     @abstractmethod
     def create_output_dict(
-        self, react_out: List[Dict[str, Any]], reflections: str
+        self, react_out: List[Dict[str, Any]], reflections: List[str]
     ) -> Dict[str, str]:
         """Creates a dictionary of the output components.
 
         Args:
             react_out (List[Dict[str, Any]]): The output from the ReAct agent.
-            reflections (str): The output from the ReAct reflections.
+            reflections (List[str]): The output from the ReAct reflections.
 
         Returns:
             Dict[str, str]: A dictionary containing the thought, action type, observation, answer, and is_correct.
@@ -281,7 +283,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
     def reflect_condition(
         self,
         step_idx: int,
-        reflection_strategy: str,
+        reflection_strategy: Optional[str],
         question: str,
         examples: str,
         key: str,
@@ -293,7 +295,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
 
         Args:
             step_idx (int): The current step index.
-            reflection_strategy (str): The strategy to use for reflection.
+            reflection_strategy (Optional[str]): The strategy to use for reflection.
             question (str): The question to be reflected upon.
             examples (str): Examples to guide the reflection process.
             key (str): The key for the observation.

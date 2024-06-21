@@ -87,8 +87,8 @@ def gather_experience(
             reflect_examples=reflect_examples,
             reflect_prompt=reflect_prompt,
             reflection_strategy=reflection_strategy,
-            additional_keys=main_keys,
-            reflect_additional_keys=reflect_keys,
+            additional_keys=main_keys,  # type: ignore
+            reflect_additional_keys=reflect_keys,  # type: ignore
             patience=patience,
             reset=True,
             **kwargs,
