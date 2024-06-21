@@ -106,7 +106,7 @@ class CriticCodeStrategy(CriticBaseStrategy):
             critique=critique,
             query=query,
             search_result=search_result,
-            revised_answer=self.revised_answer,
+            revised_answer=revised_answer,
         )
 
     def generate_critique(
