@@ -239,7 +239,7 @@ def test_reflexion_cot_reflect() -> None:
 
     gt_out = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: VIVA Media AG changed it's name in 2004. What does their new acronym stand for?\n\n(END PREVIOUS TRIAL)\n"
     _, out = strategy.reflect(
-        reflection_strategy="last_attempt",
+        reflect_strategy="last_attempt",
         question=question,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
         prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
@@ -553,7 +553,7 @@ def test_reflexion_react_reflect() -> None:
     llm = FakeListChatModel(responses=["1"])
     strategy = ReflexionReActQAStrategy(llm=llm)
     _, reflections = strategy.reflect(
-        reflection_strategy="reflexion",
+        reflect_strategy="reflexion",
         question=question,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
@@ -568,7 +568,7 @@ def test_reflexion_react_reflect_condition() -> None:
     strategy = ReflexionReActQAStrategy(llm=llm)
     out = strategy.reflect_condition(
         step_idx=1,
-        reflection_strategy="reflexion",
+        reflect_strategy="reflexion",
         question="VIVA Media AG changed it's name in 2004. What does their new acronym stand for?",
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         key="key",

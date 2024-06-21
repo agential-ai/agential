@@ -40,7 +40,7 @@ def test_gather_experience() -> None:
         prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         reflect_prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-        reflection_strategy="reflexion",
+        reflect_strategy="reflexion",
     )
     gt_experiences = {
         "idxs": [0],

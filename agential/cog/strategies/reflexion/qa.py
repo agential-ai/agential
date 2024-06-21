@@ -256,7 +256,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
 
     def reflect(
         self,
-        reflection_strategy: str,
+        reflect_strategy: str,
         question: str,
         examples: str,
         prompt: str,
@@ -265,7 +265,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         """Reflects on a given question, context, examples, prompt, and additional keys using the specified reflection strategy.
 
         Args:
-            reflection_strategy (str): The strategy to use for reflection.
+            reflect_strategy (str): The strategy to use for reflection.
             question (str): The question to be reflected upon.
             examples (str): Examples to guide the reflection process.
             prompt (str): The prompt or instruction to guide the reflection.
@@ -275,7 +275,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             Tuple[List[str], str]: The reflections and the reflection string.
         """
         reflections, reflections_str = self.reflector.reflect(
-            reflection_strategy=reflection_strategy,
+            reflect_strategy=reflect_strategy,
             question=question,
             examples=examples,
             scratchpad=self._scratchpad,
@@ -287,20 +287,20 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
     def reflect_condition(
         self,
         idx: int,
-        reflection_strategy: Optional[str],
+        reflect_strategy: Optional[str],
         key: str,
     ) -> bool:
         """Determines whether the reflection condition has been met.
 
         Args:
             idx (int): The current step.
-            reflection_strategy (Optional[str]): The strategy to use for reflection.
+            reflect_strategy (Optional[str]): The strategy to use for reflection.
             key (str): The key for the observation.
 
         Returns:
             bool: True if the reflection condition is met, False otherwise.
         """
-        return idx > 0 and not EM(self._answer, key) and reflection_strategy is not None
+        return idx > 0 and not EM(self._answer, key) and reflect_strategy is not None
 
 
 class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
@@ -584,7 +584,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
 
     def reflect(
         self,
-        reflection_strategy: str,
+        reflect_strategy: str,
         question: str,
         examples: str,
         prompt: str,
@@ -593,7 +593,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         """Reflects on a given question, context, examples, prompt, and additional keys using the specified reflection strategy.
 
         Args:
-            reflection_strategy (str): The strategy to use for reflection.
+            reflect_strategy (str): The strategy to use for reflection.
             question (str): The question to be reflected upon.
             examples (str): Examples to guide the reflection process.
             prompt (str): The prompt or instruction to guide the reflection.
@@ -603,7 +603,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
             Tuple[List[str], str]: The reflections and reflection string.
         """
         reflections, reflections_str = self.reflector.reflect(
-            reflection_strategy=reflection_strategy,
+            reflect_strategy=reflect_strategy,
             question=question,
             examples=examples,
             scratchpad=_truncate_scratchpad(
@@ -618,7 +618,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
     def reflect_condition(
         self,
         step_idx: int,
-        reflection_strategy: Optional[str],
+        reflect_strategy: Optional[str],
         question: str,
         examples: str,
         key: str,
@@ -630,7 +630,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
 
         Args:
             step_idx (int): The index of the current step.
-            reflection_strategy (Optional[str]): The strategy to use for reflection.
+            reflect_strategy (Optional[str]): The strategy to use for reflection.
             question (str): The question to be reflected upon.
             examples (str): Examples to guide the reflection process.
             key (str): The key for the observation.
@@ -657,7 +657,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
             additional_keys=additional_keys,
         )
 
-        return halted and not EM(self._answer, key) and reflection_strategy is not None
+        return halted and not EM(self._answer, key) and reflect_strategy is not None
 
 
 class ReflexionCoTHotQAStrategy(ReflexionCoTQAStrategy):

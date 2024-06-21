@@ -357,7 +357,7 @@ def cot_reflect_last_attempt_and_reflexion(
 
 
 def cot_reflect(
-    reflection_strategy: str,
+    reflect_strategy: str,
     llm: BaseChatModel,
     reflections: List[str],
     examples: str,
@@ -373,7 +373,7 @@ def cot_reflect(
     the existing reflections, modifies them, or generates new reflections using the provided language model.
 
     Args:
-        reflection_strategy (str): The reflection strategy to be used ('last_attempt', 'reflexion', or 'last_attempt_and_reflexion').
+        reflect_strategy (str): The reflection strategy to be used ('last_attempt', 'reflexion', or 'last_attempt_and_reflexion').
         llm (BaseChatModel): The language model used for generating new reflections.
         reflections (List[str]): A list of existing reflections.
         examples (str): Example inputs for the prompt template.
@@ -394,9 +394,9 @@ def cot_reflect(
         - "last_attempt_and_reflexion": This strategy combines the 'last_attempt' and 'reflexion' strategies.
           It first formats the last attempt using 'question' and 'scratchpad', then adds a new reflexion using all the parameters.
     """
-    if reflection_strategy == "last_attempt":
+    if reflect_strategy == "last_attempt":
         reflections = cot_reflect_last_attempt(scratchpad)
-    elif reflection_strategy == "reflexion":
+    elif reflect_strategy == "reflexion":
         reflections = cot_reflect_reflexion(
             llm=llm,
             reflections=reflections,
@@ -406,7 +406,7 @@ def cot_reflect(
             prompt=prompt,
             additional_keys=additional_keys,
         )
-    elif reflection_strategy == "last_attempt_and_reflexion":
+    elif reflect_strategy == "last_attempt_and_reflexion":
         reflections = cot_reflect_last_attempt_and_reflexion(
             llm=llm,
             examples=examples,
@@ -416,9 +416,7 @@ def cot_reflect(
             additional_keys=additional_keys,
         )
     else:
-        raise NotImplementedError(
-            f"Unknown reflection strategy: {reflection_strategy}."
-        )
+        raise NotImplementedError(f"Unknown reflection strategy: {reflect_strategy}.")
 
     return reflections
 
@@ -731,7 +729,7 @@ def react_reflect_last_attempt_and_reflexion(
 
 
 def react_reflect(
-    reflection_strategy: str,
+    reflect_strategy: str,
     llm: BaseChatModel,
     reflections: List[str],
     question: str,
@@ -747,7 +745,7 @@ def react_reflect(
     the existing reflections, modifies them, or generates new reflections using the provided language model.
 
     Args:
-        reflection_strategy (str): The reflection strategy to be used ('last_attempt', 'reflexion', or 'last_attempt_and_reflexion').
+        reflect_strategy (str): The reflection strategy to be used ('last_attempt', 'reflexion', or 'last_attempt_and_reflexion').
         llm (BaseChatModel): The language model used for generating new reflections.
         reflections (List[str]): A list of existing reflections.
         question (str): The question being addressed.
@@ -768,9 +766,9 @@ def react_reflect(
         - "last_attempt_and_reflexion": This strategy combines the 'last_attempt' and 'reflexion' strategies.
           It first formats the last attempt using 'question' and 'scratchpad', then adds a new reflexion using all the parameters.
     """
-    if reflection_strategy == "last_attempt":
+    if reflect_strategy == "last_attempt":
         reflections = react_reflect_last_attempt(scratchpad)
-    elif reflection_strategy == "reflexion":
+    elif reflect_strategy == "reflexion":
         reflections = react_reflect_reflexion(
             llm=llm,
             reflections=reflections,
@@ -780,7 +778,7 @@ def react_reflect(
             prompt=prompt,
             additional_keys=additional_keys,
         )
-    elif reflection_strategy == "last_attempt_and_reflexion":
+    elif reflect_strategy == "last_attempt_and_reflexion":
         reflections = react_reflect_last_attempt_and_reflexion(
             llm=llm,
             question=question,
@@ -790,8 +788,6 @@ def react_reflect(
             additional_keys=additional_keys,
         )
     else:
-        raise NotImplementedError(
-            f"Unknown reflection strategy: {reflection_strategy}."
-        )
+        raise NotImplementedError(f"Unknown reflection strategy: {reflect_strategy}.")
 
     return reflections
