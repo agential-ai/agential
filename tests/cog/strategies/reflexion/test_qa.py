@@ -256,7 +256,7 @@ def test_reflexion_cot_reflect_condition() -> None:
     assert not strategy.reflect_condition(0, "strategy1", "key1")
     assert strategy.reflect_condition(1, "strategy1", "key1")
     assert strategy.reflect_condition(1, "strategy1", "key2")
-    assert not strategy.reflect_condition(1, "", "key2")
+    assert strategy.reflect_condition(1, "", "key2")
 
 
 def test_reflexion_cot_instantiate_strategies() -> None:
