@@ -347,7 +347,7 @@ def test_cot_reflect() -> None:
     # Invalid strategy.
     with pytest.raises(NotImplementedError):
         out = cot_reflect(
-            reflection_strategy="invalid input",
+            reflect_strategy="invalid input",
             llm=FakeListChatModel(responses=["1"]),
             reflections=[""],
             examples="",
@@ -358,7 +358,7 @@ def test_cot_reflect() -> None:
 
     # Last attempt.
     out = cot_reflect(
-        reflection_strategy="last_attempt",
+        reflect_strategy="last_attempt",
         llm=FakeListChatModel(responses=["1"]),
         reflections=[""],
         examples="",
@@ -370,7 +370,7 @@ def test_cot_reflect() -> None:
 
     # Reflexion.
     out = cot_reflect(
-        reflection_strategy="reflexion",
+        reflect_strategy="reflexion",
         llm=FakeListChatModel(responses=["1"]),
         reflections=[""],
         examples="",
@@ -383,7 +383,7 @@ def test_cot_reflect() -> None:
 
     # Last attempt and Reflexion.
     out = cot_reflect(
-        reflection_strategy="last_attempt_and_reflexion",
+        reflect_strategy="last_attempt_and_reflexion",
         llm=FakeListChatModel(responses=["1"]),
         reflections=[""],
         examples="",
@@ -728,7 +728,7 @@ def test_react_reflect() -> None:
     # Invalid strategy.
     with pytest.raises(NotImplementedError):
         out = react_reflect(
-            reflection_strategy="invalid input",
+            reflect_strategy="invalid input",
             llm=FakeListChatModel(responses=["1"]),
             reflections=[""],
             question="",
@@ -739,7 +739,7 @@ def test_react_reflect() -> None:
 
     # Last attempt.
     out = react_reflect(
-        reflection_strategy="last_attempt",
+        reflect_strategy="last_attempt",
         llm=FakeListChatModel(responses=["1"]),
         reflections=[""],
         question="",
@@ -751,7 +751,7 @@ def test_react_reflect() -> None:
 
     # Reflexion.
     out = react_reflect(
-        reflection_strategy="reflexion",
+        reflect_strategy="reflexion",
         llm=FakeListChatModel(responses=["1"]),
         reflections=[""],
         question="",
@@ -764,7 +764,7 @@ def test_react_reflect() -> None:
 
     # Last attempt and Reflexion.
     out = react_reflect(
-        reflection_strategy="last_attempt_and_reflexion",
+        reflect_strategy="last_attempt_and_reflexion",
         llm=FakeListChatModel(responses=["1"]),
         reflections=[""],
         question="",

@@ -34,7 +34,7 @@ def gather_experience(
     prompt: str,
     reflect_examples: str,
     reflect_prompt: str,
-    reflection_strategy: str = "reflexion",
+    reflect_strategy: str = "reflexion",
     additional_keys: Union[List[Dict[str, str]], Dict[str, str]] = {},
     reflect_additional_keys: Union[List[Dict[str, str]], Dict[str, str]] = {},
     patience: int = 1,
@@ -52,7 +52,7 @@ def gather_experience(
         prompt (str, optional): Prompt template string.
         reflect_examples (str, optional): Reflection fewshot examples.
         reflect_prompt (str, optional): Reflect prompt template string.
-        reflection_strategy (str, optional): The strategy used to generate experiences. Defaults to "reflexion" if not specified.
+        reflect_strategy (str, optional): The strategy used to generate experiences. Defaults to "reflexion" if not specified.
         additional_keys (List[Dict[str, str]], Dict[str, str]): Additional keys for the prompt. Defaults to {}.
         reflect_additional_keys (List[Dict[str, str]], Dict[str, str]): Additional keys for the reflect prompt. Defaults to {}.
         patience (int, optional): The patience for the agent. Defaults to 1.
@@ -86,7 +86,7 @@ def gather_experience(
             prompt=prompt,
             reflect_examples=reflect_examples,
             reflect_prompt=reflect_prompt,
-            reflection_strategy=reflection_strategy,
+            reflect_strategy=reflect_strategy,
             additional_keys=main_keys,  # type: ignore
             reflect_additional_keys=reflect_keys,  # type: ignore
             patience=patience,

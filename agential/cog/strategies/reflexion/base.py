@@ -98,7 +98,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
     @abstractmethod
     def reflect(
         self,
-        reflection_strategy: str,
+        reflect_strategy: str,
         question: str,
         examples: str,
         prompt: str,
@@ -107,7 +107,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         """An abstract method that defines the behavior for reflecting on a given question, context, examples, prompt, and additional keys.
 
         Args:
-            reflection_strategy (str): The strategy to use for reflection.
+            reflect_strategy (str): The strategy to use for reflection.
             question (str): The question to be reflected upon.
             examples (str): Examples to guide the reflection process.
             prompt (str): The prompt or instruction to guide the reflection.
@@ -120,13 +120,13 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
 
     @abstractmethod
     def reflect_condition(
-        self, idx: int, reflection_strategy: Optional[str], key: str
+        self, idx: int, reflect_strategy: Optional[str], key: str
     ) -> bool:
         """Determines whether the reflection condition has been met.
 
         Args:
             idx (int): The current step.
-            reflection_strategy (Optional[str]): The strategy to use for reflection.
+            reflect_strategy (Optional[str]): The strategy to use for reflection.
             key (str): The key for the observation.
 
         Returns:
@@ -265,7 +265,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
     @abstractmethod
     def reflect(
         self,
-        reflection_strategy: str,
+        reflect_strategy: str,
         question: str,
         examples: str,
         prompt: str,
@@ -274,7 +274,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         """An abstract method that defines the behavior for reflecting on a given question, context, examples, prompt, and additional keys.
 
         Args:
-            reflection_strategy (str): The strategy to use for reflection.
+            reflect_strategy (str): The strategy to use for reflection.
             question (str): The question to be reflected upon.
             examples (str): Examples to guide the reflection process.
             prompt (str): The prompt or instruction to guide the reflection.
@@ -289,7 +289,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
     def reflect_condition(
         self,
         step_idx: int,
-        reflection_strategy: Optional[str],
+        reflect_strategy: Optional[str],
         question: str,
         examples: str,
         key: str,
@@ -301,7 +301,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
 
         Args:
             step_idx (int): The current step index.
-            reflection_strategy (Optional[str]): The strategy to use for reflection.
+            reflect_strategy (Optional[str]): The strategy to use for reflection.
             question (str): The question to be reflected upon.
             examples (str): Examples to guide the reflection process.
             key (str): The key for the observation.
