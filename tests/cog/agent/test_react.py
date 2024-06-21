@@ -11,7 +11,7 @@ from agential.cog.prompts.agent.react import (
     REACT_INSTRUCTION_HUMANEVAL,
 )
 from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.cog.prompts.benchmark.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_POT
+from agential.cog.prompts.benchmark.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
 from agential.cog.strategies.react.base import ReActBaseStrategy
 
 
@@ -74,7 +74,7 @@ def test_generate() -> None:
     agent = ReActAgent(llm=llm, mode={"code": "humaneval"})
     out = agent.generate(
         question=question,
-        examples=HUMANEVAL_FEWSHOT_EXAMPLES_POT,
+        examples=HUMANEVAL_FEWSHOT_EXAMPLES_REACT,
         prompt=REACT_INSTRUCTION_HUMANEVAL,
         max_steps=3,
     )
