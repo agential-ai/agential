@@ -106,7 +106,7 @@ class CriticStrategyFactory:
                 raise ValueError(f"Unsupported Code benchmark: {mode['code']}")
         else:
             raise ValueError(f"Unsupported mode: {mode}")
-        
+
 
 class ReActStrategyFactory:
     """A factory class for creating instances of different ReAct strategies based on the specified mode and benchmark.
