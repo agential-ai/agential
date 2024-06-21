@@ -356,4 +356,3 @@ class ReflexionReActStrategyFactory:
             raise ValueError(f"Unsupported mode: {mode}")
 
         return ReflexionReActHotQAStrategy(**strategy_kwargs)  # TODO
-

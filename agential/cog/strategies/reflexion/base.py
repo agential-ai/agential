@@ -1,7 +1,7 @@
 """Base Reflexion Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Any, Dict, List, Tuple, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -43,7 +43,9 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         pass
 
     @abstractmethod
-    def generate_observation(self, action_type: str, query: str, key: str) -> Tuple[bool, str]:
+    def generate_observation(
+        self, action_type: str, query: str, key: str
+    ) -> Tuple[bool, str]:
         """Generates an observation based on the action type and query.
 
         Args:
@@ -117,7 +119,9 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         pass
 
     @abstractmethod
-    def reflect_condition(self, idx: int, reflection_strategy: Optional[str], key: str) -> bool:
+    def reflect_condition(
+        self, idx: int, reflection_strategy: Optional[str], key: str
+    ) -> bool:
         """Determines whether the reflection condition has been met.
 
         Args:
@@ -161,14 +165,16 @@ class ReflexionReActBaseStrategy(BaseStrategy):
             prompt (str): The prompt used for generating the action.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
             **kwargs (Any): Additional arguments.
-            
+
         Returns:
             Tuple[str, str]: The generated action type and query.
         """
         pass
 
     @abstractmethod
-    def generate_observation(self, step_idx: int, action_type: str, query: str, key: str) -> Tuple[bool, str]:
+    def generate_observation(
+        self, step_idx: int, action_type: str, query: str, key: str
+    ) -> Tuple[bool, str]:
         """Generates an observation based on the action type and query.
 
         Args:
