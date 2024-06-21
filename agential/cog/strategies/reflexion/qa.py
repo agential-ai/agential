@@ -474,7 +474,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         self,
         react_out: List[Dict[str, Any]],
         reflections: List[str],
-    ) -> Dict[str, str]:
+    ) -> Dict[str, Any]:
         """Create a dictionary containing the output of the ReflexionReAct agent.
 
         Args:
