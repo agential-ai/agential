@@ -185,7 +185,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
     @abstractmethod
     def create_output_dict(
         self, react_out: List[Dict[str, Any]], reflections: List[str]
-    ) -> Dict[str, str]:
+    ) -> Dict[str, Any]:
         """Creates a dictionary of the output components.
 
         Args:
@@ -193,7 +193,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
             reflections (List[str]): The output from the ReAct reflections.
 
         Returns:
-            Dict[str, str]: A dictionary containing the thought, action type, observation, answer, and is_correct.
+            Dict[str, Any]: A dictionary containing the ReAct output and the reflections.
         """
         pass
 

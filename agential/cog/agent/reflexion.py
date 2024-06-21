@@ -138,7 +138,7 @@ class ReflexionCoTAgent(BaseAgent):
 
             # Reflect if possible.
             reflections: List[str] = []
-            reflections_str: str = ""
+            reflections_str = ""
             if self.strategy.reflect_condition(
                 idx=idx,
                 reflection_strategy=reflection_strategy,
@@ -348,7 +348,8 @@ class ReflexionReActAgent(BaseAgent):
         out = []
         while self.strategy.halting_condition(idx=idx, key=key, **kwargs):
             # Reflect if possible.
-            reflections, reflections_str = [], ""
+            reflections: List[str] = []
+            reflections_str = ""
             if self.strategy.reflect_condition(
                 step_idx=step_idx,
                 reflection_strategy=reflection_strategy,
