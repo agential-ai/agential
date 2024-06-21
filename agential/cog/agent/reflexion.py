@@ -137,7 +137,8 @@ class ReflexionCoTAgent(BaseAgent):
         while not self.strategy.halting_condition(idx=idx, key=key, **kwargs):
 
             # Reflect if possible.
-            reflections, reflections_str = [], ""
+            reflections: List[str] = []
+            reflections_str: str = ""
             if self.strategy.reflect_condition(
                 idx=idx,
                 reflection_strategy=reflection_strategy,
@@ -243,7 +244,7 @@ class ReflexionReActAgent(BaseAgent):
         prompt: str,
         additional_keys: Dict[str, str] = {},
         **kwargs: Any,
-    ):
+    ) -> Tuple[int, bool, List[Dict[str, Any]]]:
         out = []
         step_idx = 1
         self.strategy.reset(no_reflector=True)
@@ -358,6 +359,7 @@ class ReflexionReActAgent(BaseAgent):
                 additional_keys=additional_keys,
                 **kwargs,
             ):
+                assert isinstance(reflection_strategy, str)
                 reflections, reflections_str = self.strategy.reflect(
                     reflection_strategy=reflection_strategy,
                     question=question,
