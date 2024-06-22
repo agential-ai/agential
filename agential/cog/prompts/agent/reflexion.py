@@ -25,7 +25,39 @@ Question: Musician and satirist Allie Goertz wrote a song about the "The Simpson
 Thought: Let's think step by step. Milhouse was named after a prominent cartoon character, Mickey Mouse, so the answer is Mickey Mouse.
 Action: Finish[Mickey Mouse]
 
-Reflection: My reasoning for the naming of the character Milhouse in "The Simpsons" failed because I incorrectly assumed that the character was named after a prominent cartoon character, Mickey Mouse. In the future, when attempting this question, I should focus on better researching the background of "The Simpsons" and Matt Groening's influences in naming characters to avoid making incorrect assumptions. """
+Reflection: My reasoning for the naming of the character Milhouse in "The Simpsons" failed because I incorrectly assumed that the character was named after a prominent cartoon character, Mickey Mouse. In the future, when attempting this question, I should focus on better researching the background of "The Simpsons" and Matt Groening's influences in naming characters to avoid making incorrect assumptions.
+
+---
+
+Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
+Thought: Let's think step by step. Adam Clayton Powell was a significant figure, so the documentary about Finnish rock groups must be about him.
+Action: Finish[Adam Clayton Powell]
+
+Reflection: My reasoning failed because I associated Adam Clayton Powell with the topic due to his prominence rather than considering the specific subject matter of Finnish rock groups. In the future, I should focus on the context and subject of the documentary rather than the prominence of the individuals involved.
+
+---
+
+Question: What profession does Nicholas Ray and Elia Kazan have in common?
+Thought: Let's think step by step. Nicholas Ray and Elia Kazan were both known for their political activism, so the answer must be political activist.
+Action: Finish[political activist]
+
+Reflection: My reasoning failed because I focused on their political involvement rather than their primary professions. In the future, I should consider the main professional roles they are renowned for, which in this case are director, screenwriter, and actor.
+
+---
+
+Question: Which magazine was started first Arthur's Magazine or First for Women?
+Thought: Let's think step by step. First for Women sounds more established and older, so it must have been started first.
+Action: Finish[First for Women]
+
+Reflection: My reasoning failed because I relied on the perceived establishment of the magazine names rather than researching their actual start dates. In the future, I should look up the publication history of each magazine to determine which one was started first.
+
+---
+
+Question: Were Pavel Urysohn and Leonid Levin known for the same type of work?
+Thought: Let's think step by step. Pavel Urysohn and Leonid Levin worked in different fields; Urysohn in mathematics and Levin in computer science, so the answer must be No.
+Action: Finish[No]
+
+Reflection: My reasoning failed because I did not recognize the overlap in their fields of study. In the future, I should consider the broader context of their work and understand that both were known for contributions in theoretical and applied mathematics, making the correct answer Yes."""
 
 
 REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
