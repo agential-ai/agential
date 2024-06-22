@@ -46,7 +46,7 @@ Action 2: Finish[REFUTES]
 
 ---
 
-Claim: Beautiful reached number two on the Billboard Hot 100 in 2003.?
+Claim: Did the song "Beautiful" by Christina Aguilera reach number two on the Billboard Hot 100 in 2003?
 Thought 1: I need to search the song Beautiful and find if it reached number two on the Billboard Hot 100 in 2003.
 Action 1: Search[Beautiful]
 Observation 1: Could not find [Beautiful]. Similar: ['Beautiful', 'Beautiful, Beautiful', 'A Beautiful Mind (film)', 'Beautiful (Christina Aguilera song)', 'Life Is Beautiful'].
