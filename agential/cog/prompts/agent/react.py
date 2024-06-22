@@ -19,7 +19,7 @@ Question: {question}{scratchpad}"""
 # ======================================================================== FEVER ======================================================================== #
 
 
-REACT_INSTRUCTION_FEVER = """Determine if there is Observation that SUPPORTS or REFUTES a Claim, or if there is NOT ENOUGH INFORMATION.  and Action can be two types: 
+REACT_INSTRUCTION_FEVER = """Determine if there is Observation that SUPPORTS or REFUTES a Claim, or if there is NOT ENOUGH INFORMATION. Thought can reason about the current situation, and Action can be two types: 
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 (3) Finish[answer], which returns the answer and finishes the task.
 You have a maximum of {max_steps} steps.
