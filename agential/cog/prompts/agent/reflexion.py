@@ -210,16 +210,26 @@ Reflection: My reasoning failed because I did not recognize the overlap between 
 
 
 FEVER_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """Claim: Did Nikolaj Coster-Waldau work with the Fox Broadcasting Company?
-Thought: 
+Thought: Nikolaj Coster-Waldau is best known for his role in Game of Thrones, which is an HBO series. Since he is primarily associated with HBO, he likely did not work with the Fox Broadcasting Company.
 Action: Finish[REFUTES]
 
-Reflection: 
+Reflection: My reasoning failed because I incorrectly assumed that an actor cannot work with multiple networks. In the future, I should verify specific instances of collaboration rather than making assumptions based on primary associations.
+
+---
 
 Claim: Is Stranger Things set in Bloomington, Indiana?
-Thought: 
-Action: Finish[]
+Thought: Stranger Things is a science fiction series with a fictional setting. Bloomington is a real place, so it must be set in a fictional town instead.
+Action: Finish[NOT ENOUGH INFO]
 
-Reflection: """
+Reflection: My reasoning failed because I incorrectly assumed that the series could not be set in a real place without checking the actual setting. In the future, I should verify the setting details from reliable sources before concluding.
+
+---
+
+Claim: Did the song "Beautiful" by Christina Aguilera reach number two on the Billboard Hot 100 in 2003?
+Thought: Christina Aguilera is a popular artist, but I don't recall this specific song reaching number two. It might have charted but not that high.
+Action: Finish[REFUTES]
+
+Reflection: My reasoning failed because I relied on memory rather than checking the chart history. In the future, I should verify chart positions from reliable music chart sources to ensure accuracy."""
 
 
 REFLEXION_COT_REFLECT_INSTRUCTION_FEVER = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
@@ -243,6 +253,46 @@ Here are some examples:
 {reflections}
 
 Claim: {question}{scratchpad}"""
+
+
+FEVER_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """Previous Trial:
+Thought 1: I need to search Nikolaj Coster-Waldau and find if he has worked with the Fox Broadcasting Company.
+Action 1: Search[Nikolaj Coster-Waldau]
+Observation 1: Nikolaj William Coster-Waldau (born 27 July 1970) is a Danish actor and producer. He graduated from the Danish National School of Performing Arts in Copenhagen in 1993,[1] and had his breakthrough role in Denmark with the film Nightwatch (1994). He played Jaime Lannister in the HBO fantasy drama series Game of Thrones, for which he received two Primetime Emmy Award nominations for Outstanding Supporting Actor in a Drama Series. Coster-Waldau has appeared in numerous films in his native Denmark and Scandinavia, including Headhunters (2011) and A Thousand Times Good Night (2013). In the U.S, his debut film role was in the war film Black Hawk Down (2001), playing Medal of Honor recipient Gary Gordon.[2] He then played a detective in the short-lived Fox television series New Amsterdam (2008), and appeared in the 2009 Fox television film Virtuality, originally intended as a pilot.
+Thought 2: Despite his role in the Fox television series New Amsterdam, his primary association with HBO's Game of Thrones suggests he didn't significantly work with Fox Broadcasting Company.
+Action 2: Finish[REFUTES]
+
+Reflection: My reasoning failed because I assumed that significant work with one network precludes any notable work with another. In this case, I ignored his documented roles in Fox television series and films. In the future, I should consider all relevant information and roles rather than focusing on primary associations.
+
+---
+
+Previous Trial:
+Claim: Stranger Things is set in Bloomington, Indiana.
+Thought 1: I should search for Stranger Things, and see if it is set in Bloomington, Indiana.
+Action 1: Search[Stranger Things]
+Observation 1: Stranger Things is an American science fiction horror drama television series created by the Duffer Brothers. Set in the 1980s, primarily in the fictional town of Hawkins, Indiana, the series centers on a number of mysteries and supernatural events occurring around the town and their impact on an ensemble of child and adult characters.
+Thought 2: Since Hawkins is a fictional town, it is possible that it is based on or synonymous with a real town like Bloomington, Indiana.
+Action 2: Finish[SUPPORTS]
+
+Reflection: My reasoning failed because I incorrectly assumed that a fictional town could be directly equated with a real town without evidence. In the future, I should rely on explicit information rather than making assumptions based on potential similarities between fictional and real locations.
+
+---
+
+Previous Trial:
+Claim: Did the song "Beautiful" by Christina Aguilera reach number two on the Billboard Hot 100 in 2003?
+Thought 1: I need to search the song Beautiful and find if it reached number two on the Billboard Hot 100 in 2003.
+Action 1: Search[Beautiful]
+Observation 1: Could not find [Beautiful]. Similar: ['Beautiful', 'Beautiful, Beautiful', 'A Beautiful Mind (film)', 'Beautiful (Christina Aguilera song)', 'Life Is Beautiful'].
+Thought 2: From suggestions, I should search "Beautiful (Christina Aguilera song)" to find the song.
+Action 2: Search[Beautiful (Christina Aguilera song)]
+Observation 2: "Beautiful" is a song recorded by American singer Christina Aguilera for her fourth studio album, Stripped (2002).
+Thought 3: It does not mention Billboard, so I need to look up "Billboard Hot 100" to find if it reached number two on it in 2003.
+Action 3: Lookup[Billboard Hot 100]
+Observation 3: (Result 1 / 3) The song peaked at number two on the Billboard Hot 100 in the United States, where it was certified Gold for 500,000 units shipped.
+Thought 4: The song "Beautiful" did peak at number two on the Billboard Hot 100, but since it doesn't specify the year, it might not be 2003. I will assume it was not in 2003.
+Action 4: Finish[REFUTES]
+
+Reflection: My reasoning failed because I doubted the information even though it was clearly stated that the song peaked at number two. In the future, I should trust the provided evidence unless there is a strong reason to question its accuracy, and verify the timeline with additional sources if necessary."""
 
 
 # ======================================================================== AMBIGNQ ======================================================================== #
