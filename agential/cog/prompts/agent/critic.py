@@ -109,6 +109,33 @@ What's the problem with the above answer?
 {critique}"""
 
 
+
+AMBIGNQ_FEWSHOT_EXAMPLES_CRITIC_TESTING = """Question: When did men's figure skating become a summer Olympic sport?
+Proposed Answer: Men's figure skating has never been a summer Olympic sport. It has been a part of the Winter Olympics since the first Winter Olympics in 1924. So the answer is: never
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The question asks for the time men's figure skating become a summer Olympic sport, and the answer "never" does not provide a time. So it's not plausible. The answer should be a time, like year or date.
+
+2. Truthfulness:
+
+Let's search the question in google:
+
+> Search Query: When did men's figure skating become a summer Olympic sport?
+> Evidence: [Figure skating at the Olympic Games - Wikipedia] Figure skating was first contested in the Olympic Games at the 1908 Summer Olympics . Since 1924, the sport has been a part of the Winter Olympic Games .
+
+The evidence suggests Figure skating became an Olympic sport at the 1908 Summer Olympics, and has been a part of the Winter Olympic Games in 1924.
+
+The answer is wrong by saying that men's figure skating has never been a part of the Summer Olympics.
+
+Question: When did men's figure skating become a summer Olympic sport?
+Here's the most possible answer: Men's figure skating became a part of the Olympic Games at the 1908 Summer Olympics, and it has been a part of the Winter Olympic Games since its inception in 1924. So the answer is: 1908.
+
+
+"""
+
 AMBIGNQ_FEWSHOT_EXAMPLES_CRITIC = """Question: When did men's figure skating become a summer Olympic sport?
 Proposed Answer: Men's figure skating has never been a summer Olympic sport. It has been a part of the Winter Olympics since the first Winter Olympics in 1924. So the answer is: never
 
