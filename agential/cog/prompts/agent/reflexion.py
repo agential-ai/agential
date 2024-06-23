@@ -324,10 +324,55 @@ Reflection: My reasoning failed because I doubted the information even though it
 # ======================================================================== AMBIGNQ ======================================================================== #
 
 
-AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """"""
+AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """Question: When did men's figure skating become a summer Olympic sport?
+Thought: Let's think step by step. Figure skating is typically associated with winter sports, so it is unlikely it was ever a summer Olympic sport.
+Action: Finish[NOT A SUMMER SPORT]
+
+Reflection: My reasoning failed because I incorrectly assumed that figure skating could not have been part of the summer Olympics without verifying historical facts. In the future, I should check historical records to confirm such details.
+
+---
+
+Question: When was the last time the USA men's national soccer team missed the World Cup?
+Thought: Let's think step by step. The USA men's national soccer team is quite strong, so they likely haven't missed the World Cup in recent years.
+Action: Finish[ALWAYS QUALIFIED]
+
+Reflection: My reasoning failed because I made assumptions based on the general performance of the team rather than checking actual qualification records. In the future, I should verify recent World Cup qualification data.
+
+---
+
+Question: What does barium do in a ct scan?
+Thought: Let's think step by step. Barium is a dense element, so it must be used to block radiation during a CT scan.
+Action: Finish[to block radiation]
+
+Reflection: My reasoning failed because I misunderstood the purpose of barium in medical imaging. In the future, I should verify the specific roles of substances used in diagnostic procedures.
+
+---
+
+Question: Where was the fort located at which the first shot of the civil war was fired?
+Thought: Let's think step by step. The first shot of the Civil War was likely fired at a fort in a northern state since the Union and Confederacy clashed.
+Action: Finish[Gettysburg, Pennsylvania]
+
+Reflection: My reasoning failed because I did not verify the historical details of where the first shot of the Civil War was fired. In the future, I should ensure to check historical sources for precise locations of significant events.
+
+---
+
+Question: When did Nando's come to the UK?
+Thought: Let's think step by step. Nando's is a relatively modern restaurant chain, so it probably came to the UK in the 2000s.
+Action: Finish[2005]
+
+Reflection: My reasoning failed because I made assumptions based on the perceived modernity of the restaurant chain without checking the actual timeline. In the future, I should look up the historical details of brand expansions."""
 
 
-REFLEXION_COT_REFLECT_INSTRUCTION_AMBIGNQ = """"""
+REFLEXION_COT_REFLECT_INSTRUCTION_AMBIGNQ = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Previous trial:
+Question: {question}{scratchpad}
+
+Reflection:"""
 
 
 REFLEXION_COT_INSTRUCTION_AMBIGNQ = """Solve a question answering task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task.
