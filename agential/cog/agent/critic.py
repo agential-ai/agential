@@ -115,7 +115,16 @@ class CriticAgent(BaseAgent):
                 self.strategy.create_output_dict(answer, critique, external_tool_info)
 
                 self.strategy.create_output_pydantic(
-                    XXXXXXX
+                    answer=answer,
+                    critique=critique,
+                    query=query,
+                    search_result=search_result,
+                    revised_answer=revised_answer,
+
+                    code=code,
+                    execution_status=execution_status,
+                    code_answer=code_answer,
+                    improved_code=improved_code,
                 )
             )
 
