@@ -412,7 +412,64 @@ Question: {question}{scratchpad}
 Reflection:"""
 
 
-AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """"""
+AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """Previous Trial:
+Question: When did men's figure skating become a summer Olympic sport?
+Thought 1: Let's search the question in google
+Action 1: Search[When did men's figure skating become a summer Olympic sport?]
+Observation 1: [Figure skating at the Olympic Games - Wikipedia] Figure skating was first contested in the Olympic Games at the 1908 Summer Olympics. Since 1924, the sport has been a part of the Winter Olympic Games.
+Thought 2: The evidence suggests Figure skating became an Olympic sport at the 1908 Summer Olympics, but considering it's known as a winter sport, it must have been a mistake to list it as part of the Summer Olympics.
+Action 2: Finish[1924]
+
+Reflection: My reasoning failed because I disregarded clear historical evidence and allowed my assumptions about the nature of the sport to influence my conclusion. In the future, I should rely more on the provided evidence and verify unusual historical facts rather than dismissing them based on preconceived notions.
+
+---
+
+Previous Trial:
+Question: When was the last time the USA men's national soccer team missed the World Cup?
+Thought 1: Let's search the question in google
+Action 1: Search[When was the last time the USA men's national soccer team missed the World Cup? site: wikipedia.org]
+Observation 1: [United States at the FIFA World Cup - Wikipedia] The United States participated in every World Cup from 1990 through 2014, but did not qualify in 2018, marking the first time the team had missed a World Cup since 1986. They returned to the World Cup by qualifying for the 2022 edition.
+Thought 2: The evidence suggests that the USA men's national soccer team did not qualify for the World Cup in 2018. Since they participated in every World Cup from 1990 through 2014, the last time they missed before 2018 must be 1986.
+Action 2: Finish[1986]
+
+Reflection: My reasoning failed because I misinterpreted the evidence and did not correctly identify 2018 as the most recent instance of the USA men's national soccer team missing the World Cup. In the future, I should carefully consider the chronological order of events and ensure I am answering the specific question asked.
+
+---
+
+Previous Trial:
+Question: What does barium do in a ct scan?
+Thought 1: Let's search the question in google
+Action 1: Search[What does barium do in a ct scan? site: wikipedia.org]
+Observation 1: [Barium sulfate suspension - Wikipedia] Barium sulfate suspension, often simply called barium, is a contrast agent used during X-rays. Specifically it is used to improve visualization of the gastrointestinal tract (esophagus, stomach, intestines) on plain X-ray or computed tomography.
+Thought 2: The evidence suggests that barium is used to "improve visualization of the gastrointestinal tract".
+Action 2: Search[Why barium used in CT scans?]
+Observation 2: [What To Expect Before Your CT Scan - St. Elizabeth's Medical Center] The barium helps to highlight body areas for the CT scan. If you are having a scan of a body part other than the abdomen you should arrive 30 minutes before your appointed time.
+Thought 3: The evidence suggests that barium helps "highlight body areas" for the CT scan, so it is used for general visualization purposes.
+Action 3: Finish[to highlight body areas]
+
+Reflection: My reasoning failed because I generalized the use of barium in CT scans without focusing on its primary purpose, which is to improve visualization of the gastrointestinal tract. In the future, I should ensure to identify the specific functions of substances in medical procedures rather than making broad assumptions based on partial information.
+
+---
+
+Previous Trial:
+Question: Where was the fort located at which the first shot of the civil war was fired?
+Thought 1: Let's search the question in google
+Action 1: Search[Where was the fort located at which the first shot of the civil war was fired?]
+Observation 1: [Civil War Begins - U.S. Senate] April 12, 1861 At 4:30 a.m. on April 12, 1861, Confederate troops fired on Fort Sumter in South Carolina’s Charleston Harbor. Less than 34 hours later, Union forces surrendered.
+Thought 2: The evidence suggests that the first shot of the Civil War was fired at Fort Sumter. Fort Sumter is located in South Carolina’s Charleston Harbor, but since Fort Sumter was an important site, it might have been in a different location within the state.
+Action 2: Finish[South Carolina]
+
+Reflection: My reasoning failed because I ignored the specific information provided about the location of Fort Sumter in Charleston Harbor, South Carolina. In the future, I should ensure to use precise details from reliable sources and not make assumptions about geographical locations.
+
+Previous Trial:
+Question: When did Nando's come to the UK?
+Thought 1: Let's search the question in google
+Action 1: Search[When did Nando's come to the UK? site: wikipedia.org]
+Observation 1: [Nando's - Wikipedia] Nando's opened its first restaurants within the United Kingdom, in 1992, in the west London suburbs of Ealing and Earls Court, initially focusing on takeaway food.
+Thought 2: The evidence suggests that Nando's first opened in the UK in 1992, but considering the popularity of the brand, it might have been earlier.
+Action 2: Finish[1985]
+
+Reflection: My reasoning failed because I doubted the clear evidence provided by the source and made an incorrect assumption based on the brand's popularity. In the future, I should rely on the provided evidence rather than making unsupported assumptions."""
 
 
 # ======================================================================== TRIVIAQA ======================================================================== #
