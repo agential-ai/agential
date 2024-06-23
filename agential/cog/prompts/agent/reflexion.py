@@ -210,7 +210,7 @@ Reflection: My reasoning failed because I did not recognize the overlap between 
 # ======================================================================== FEVER ======================================================================== #
 
 
-FEVER_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """Claim: Did Nikolaj Coster-Waldau work with the Fox Broadcasting Company?
+FEVER_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """Claim: Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.
 Thought: Nikolaj Coster-Waldau is best known for his role in Game of Thrones, which is an HBO series. Since he is primarily associated with HBO, he likely did not work with the Fox Broadcasting Company.
 Action: Finish[REFUTES]
 
@@ -218,7 +218,7 @@ Reflection: My reasoning failed because I incorrectly assumed that an actor cann
 
 ---
 
-Claim: Is Stranger Things set in Bloomington, Indiana?
+Claim: Stranger Things is set in Bloomington, Indiana.
 Thought: Stranger Things is a science fiction series with a fictional setting. Bloomington is a real place, so it must be set in a fictional town instead.
 Action: Finish[NOT ENOUGH INFO]
 
@@ -226,7 +226,7 @@ Reflection: My reasoning failed because I incorrectly assumed that the series co
 
 ---
 
-Claim: Did the song "Beautiful" by Christina Aguilera reach number two on the Billboard Hot 100 in 2003?
+Claim: "Beautiful" by Christina Aguilera reached number two on the Billboard Hot 100 in 2003.
 Thought: Christina Aguilera is a popular artist, but I don't recall this specific song reaching number two. It might have charted but not that high.
 Action: Finish[REFUTES]
 
@@ -283,6 +283,7 @@ Reflection:"""
 
 
 FEVER_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """Previous Trial:
+Claim: Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.
 Thought 1: I need to search Nikolaj Coster-Waldau and find if he has worked with the Fox Broadcasting Company.
 Action 1: Search[Nikolaj Coster-Waldau]
 Observation 1: Nikolaj William Coster-Waldau (born 27 July 1970) is a Danish actor and producer. He graduated from the Danish National School of Performing Arts in Copenhagen in 1993,[1] and had his breakthrough role in Denmark with the film Nightwatch (1994). He played Jaime Lannister in the HBO fantasy drama series Game of Thrones, for which he received two Primetime Emmy Award nominations for Outstanding Supporting Actor in a Drama Series. Coster-Waldau has appeared in numerous films in his native Denmark and Scandinavia, including Headhunters (2011) and A Thousand Times Good Night (2013). In the U.S, his debut film role was in the war film Black Hawk Down (2001), playing Medal of Honor recipient Gary Gordon.[2] He then played a detective in the short-lived Fox television series New Amsterdam (2008), and appeared in the 2009 Fox television film Virtuality, originally intended as a pilot.
@@ -306,7 +307,7 @@ Reflection: My reasoning failed because I incorrectly assumed that a fictional t
 ---
 
 Previous Trial:
-Claim: Did the song "Beautiful" by Christina Aguilera reach number two on the Billboard Hot 100 in 2003?
+Claim: "Beautiful" by Christina Aguilera reached number two on the Billboard Hot 100 in 2003.
 Thought 1: I need to search the song Beautiful and find if it reached number two on the Billboard Hot 100 in 2003.
 Action 1: Search[Beautiful]
 Observation 1: Could not find [Beautiful]. Similar: ['Beautiful', 'Beautiful, Beautiful', 'A Beautiful Mind (film)', 'Beautiful (Christina Aguilera song)', 'Life Is Beautiful'].

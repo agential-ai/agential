@@ -25,7 +25,7 @@ What's the problem with the above answer?
 {critique}"""
 
 
-FEVER_FEWSHOT_EXAMPLES_CRITIC = """Claim: Did Nikolaj Coster-Waldau work with the Fox Broadcasting Company?
+FEVER_FEWSHOT_EXAMPLES_CRITIC = """Claim: Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.
 Proposed Answer: REFUTES
 
 What's the problem with the above answer?
@@ -41,12 +41,12 @@ The answer "REFUTES" incorrectly negates the claim without supporting details.
 
 The evidence contradicts the proposed answer, confirming he did work with Fox in the television film Virtuality.
 
-Claim: Did Nikolaj Coster-Waldau work with the Fox Broadcasting Company?
+Claim: Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.
 Here's the most possible answer: Yes, Nikolaj Coster-Waldau worked with the Fox Broadcasting Company as he appeared in the 2009 Fox television film Virtuality. So the answer is: SUPPORTS.
 
 ---
 
-Claim: Is Stranger Things set in Bloomington, Indiana?
+Claim: Stranger Things is set in Bloomington, Indiana.
 Proposed Answer: No
 
 What's the problem with the above answer?
@@ -62,12 +62,12 @@ The answer is correct but lacks specific details that verify the claim.
 
 Although the proposed answer is correct, it could be more informative by mentioning the specific setting.
 
-Claim: Is Stranger Things set in Bloomington, Indiana?
+Claim: Stranger Things is set in Bloomington, Indiana.
 Here's the most possible answer: No, Stranger Things is set in the fictional town of Hawkins, Indiana. So the answer is: REFUTES.
 
 ---
 
-Claim: Did the song "Beautiful" by Christina Aguilera reach number two on the Billboard Hot 100 in 2003?
+Claim: "Beautiful" by Christina Aguilera reached number two on the Billboard Hot 100 in 2003.
 Proposed Answer: NOT ENOUGH INFO
 
 What's the problem with the above answer?
@@ -83,7 +83,7 @@ The answer "NOT ENOUGH INFO" is appropriate as it reflects the uncertainty due t
 
 Given that the year 2003 is not verified in the available evidence, the proposed answer correctly reflects the uncertainty regarding the exact year of the chart position.
 
-Claim: Did the song "Beautiful" by Christina Aguilera reach number two on the Billboard Hot 100 in 2003?
+Claim: "Beautiful" by Christina Aguilera reach number two on the Billboard Hot 100 in 2003.
 Here's the most possible answer: The song "Beautiful" by Christina Aguilera peaked at number two on the Billboard Hot 100, but there is no specific evidence confirming this occurred in 2003. So the answer is: NOT ENOUGH INFO."""
 
 
