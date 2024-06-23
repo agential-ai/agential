@@ -56,7 +56,7 @@ A: 2018
 ---
 
 Q: Where was tin pan alley in new york city?
-A: West 28th Street between Fifth and Sixth Avenues in Manhattan.
+A: West 28th Street between Fifth and Sixth Avenues in Manhattan
 
 ---
 
@@ -76,7 +76,7 @@ A: 1992
 ---
 
 Q: Who plays wilmas mom in the flintstones movie?
-A: Elizabeth Taylor.
+A: Elizabeth Taylor
 
 """
 
@@ -114,7 +114,7 @@ Thought 1: Let's search the question in google
 Action 1: Search[Where was tin pan alley in new york city? site: wikipedia.org]]
 Observation 1:
 Thought 2:
-Action 2:
+Action 2: Finish[West 28th Street between Fifth and Sixth Avenues in Manhattan]
 
 ---
 
@@ -151,4 +151,8 @@ Action 2: Finish[1992]
 Question: Who plays wilmas mom in the flintstones movie?
 Thought 1: Let's search the question in google
 Action 1: Search[Who plays wilmas mom in the flintstones movie? site: wikipedia.org]
+Observation 1:
+Thought 2:
+Action 2: Finish [Elizabeth Taylor]
+
 """
