@@ -519,7 +519,7 @@ Question: {question}{scratchpad}
 Reflection:"""
 
 
-REFLEXION_COT_INSTRUCTION_TRIVIAQA = """Solve a question answering task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task.
+REFLEXION_COT_INSTRUCTION_TRIVIAQA = """Solve a trivia question answering task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task.
 
 Here are some examples:
 {examples}
@@ -530,7 +530,7 @@ Here are some examples:
 Question: {question}{scratchpad}"""
 
 
-REFLEXION_REACT_INSTRUCTION_TRIVIAQA = """Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: 
+REFLEXION_REACT_INSTRUCTION_TRIVIAQA = """Solve a trivia question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: 
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 (2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
 (3) Finish[answer], which returns the answer and finishes the task.
