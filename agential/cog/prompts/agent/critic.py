@@ -133,7 +133,30 @@ The answer is wrong by saying that men's figure skating has never been a part of
 Question: When did men's figure skating become a summer Olympic sport?
 Here's the most possible answer: Men's figure skating became a part of the Olympic Games at the 1908 Summer Olympics, and it has been a part of the Winter Olympic Games since its inception in 1924. So the answer is: 1908.
 
+---
 
+Question: When did men's figure skating become a summer Olympic sport?
+Proposed Answer: Men's figure skating has never been a summer Olympic sport. It has always been part of the Winter Olympic Games since its inclusion in the 1908 Olympics in London, where figure skating was featured in the summer games for the first and only time. So the answer is: 1908
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The question asks for the time of men's figure skating became a summer Olympic sport and the answer is 1908, which is a year . So its plausible .
+
+2. Truthfulness:
+
+Let's search the question in google:
+
+> Search Query: When did men's figure skating become a summer Olympic sport?
+> Evidence: [Figure skating at the Olympic Games - Wikipedia] Figure skating was first contested in the Olympic Games at the 1908 Summer Olympics . Since 1924, the sport has been a part of the Winter Olympic Games .
+
+The evidence suggests Figure skating became an Olympic sport at the 1908 Summer Olympics, and has been a part of the Winter Olympic Games in 1924.
+
+The answer is correct .
+
+Question: When did men's figure skating become a summer Olympic sport?
+Here's the most possible answer: Men's figure skating became a part of the Olympic Games at the 1908 Summer Olympics, and it has been a part of the Winter Olympic Games since its inception in 1924. So the answer is: 1908.
 """
 
 AMBIGNQ_FEWSHOT_EXAMPLES_CRITIC = """Question: When did men's figure skating become a summer Olympic sport?
@@ -2974,3 +2997,5 @@ import re
 def find_char_long(text):
     return re.findall(r"\b\w{4,}\b", text)
 ```"""
+
+
