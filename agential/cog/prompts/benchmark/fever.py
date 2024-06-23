@@ -1,18 +1,5 @@
 """Few-shot examples for FEVER."""
 
-FEVER_FEWSHOT_EXAMPLES_COT = """Claim: Did Nikolaj Coster-Waldau work with the Fox Broadcasting Company?
-A: Yes, he appeared in the 2009 Fox television film Virtuality. So the answer is: SUPPORTS.
-
----
-
-Claim: Is Stranger Things set in Bloomington, Indiana?
-A: No, it is set in the fictional town of Hawkins, Indiana. So the answer is: REFUTES.
-
----
-
-Claim: Did the song "Beautiful" by Christina Aguilera reach number two on the Billboard Hot 100 in 2003?
-A: The song peaked at number two on the Billboard Hot 100, but it does not specify that it was in 2003. So the answer is: NOT ENOUGH INFO."""
-
 
 FEVER_FEWSHOT_EXAMPLES_DIRECT = """Claim: Did Nikolaj Coster-Waldau work with the Fox Broadcasting Company?
 A: SUPPORTS
@@ -26,6 +13,19 @@ A: REFUTES
 
 Claim: Did the song "Beautiful" by Christina Aguilera reach number two on the Billboard Hot 100 in 2003?
 A: NOT ENOUGH INFO"""
+
+
+FEVER_FEWSHOT_EXAMPLES_COT = """Question: Did Nikolaj Coster-Waldau work with the Fox Broadcasting Company?
+Thought: Let's think step by step. He appeared in the 2009 Fox television film Virtuality. So the answer is: SUPPORTS.
+Action: Finish[SUPPORTS]
+
+Question: Is Stranger Things set in Bloomington, Indiana?
+Thought: Let's think step by step. It is set in the fictional town of Hawkins, Indiana. So the answer is: REFUTES.
+Action: Finish[REFUTES]
+
+Question: Did the song "Beautiful" by Christina Aguilera reach number two on the Billboard Hot 100 in 2003?
+Thought: Let's think step by step. The song peaked at number two on the Billboard Hot 100, but it does not specify that it was in 2003. So the answer is: NOT ENOUGH INFO.
+Action: Finish[NOT ENOUGH INFO]"""
 
 
 FEVER_FEWSHOT_EXAMPLES_REACT = """Claim: Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.
