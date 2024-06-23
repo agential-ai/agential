@@ -1,6 +1,5 @@
 """Few-shot examples for AmbigNQ."""
 
-
 AMBIGNQ_FEWSHOT_EXAMPLES_DIRECT = """Q: When did men's figure skating become a summer Olympic sport?
 A: 1908
 

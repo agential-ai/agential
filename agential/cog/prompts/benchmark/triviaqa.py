@@ -1,6 +1,5 @@
 """Few-shot examples for TriviaQA."""
 
-
 TRIVIAQA_FEWSHOT_EXAMPLES_DIRECT = """Q: Mendelssohn's 'Wedding March' was. originally written as incidental music for which Shakespeare play in 1842?
 A: A Midsummer Night's Dream
 
@@ -35,7 +34,6 @@ Action: Finish[Denys Lasdun]
 Question: Also a two-time World Champion, which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics? 
 Thought: Let's think step by step. The only American skier who won the gold medal in the Men's Combined at the 2010 Winter Olympics is Bode Miller. So the answer is: Bode Miller.
 Action: Finish[Bode Miller]"""
-
 
 
 TRIVIAQA_FEWSHOT_EXAMPLES_REACT = """Question: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842?

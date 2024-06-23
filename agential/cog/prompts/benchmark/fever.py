@@ -1,6 +1,5 @@
 """Few-shot examples for FEVER."""
 
-
 FEVER_FEWSHOT_EXAMPLES_DIRECT = """Claim: Did Nikolaj Coster-Waldau work with the Fox Broadcasting Company?
 A: SUPPORTS
 
