@@ -476,7 +476,35 @@ Reflection: My reasoning failed because I doubted the clear evidence provided by
 # ======================================================================== TRIVIAQA ======================================================================== #
 
 
-TRIVIAQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """"""
+TRIVIAQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """Question: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842? 
+Thought: Let's think step by step. Mendelssohn's 'Wedding March' is a well-known piece of music, but I think it was written for Romeo and Juliet since it's often associated with romantic weddings.
+Action: Finish[Romeo and Juliet]
+
+Reflection: My reasoning failed because I made an assumption based on the general association of the music with romance rather than verifying the historical details. In the future, I should ensure to check specific historical facts rather than relying on assumptions.
+
+---
+
+Question: "Christ in the House of his Parents" is one of the best known paintings of which artist? 
+Thought: Let's think step by step. The title suggests a religious theme, and since Caravaggio is famous for his religious paintings, it must be by him.
+Action: Finish[Caravaggio]
+
+Reflection: My reasoning failed because I assumed the artist based on the theme of the painting without verifying the actual painter. In the future, I should confirm the artist through reliable sources instead of making assumptions.
+
+---
+
+Question: Who designed the National Theatre building on the South Bank in London? 
+Thought: Let's think step by step. The National Theatre building has a modernist design, which is characteristic of architects like Norman Foster, so it must be designed by him.
+Action: Finish[Norman Foster]
+
+Reflection: My reasoning failed because I guessed the architect based on the style rather than checking the specific architect responsible for the building. In the future, I should verify the details about the designer through accurate references.
+
+---
+
+Question: Also a two-time World Champion, which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics? 
+Thought: Let's think step by step. Lindsey Vonn is a famous American skier, so she must have won the gold medal in the Men's Combined at the 2010 Winter Olympics.
+Action: Finish[Lindsey Vonn]
+
+Reflection: My reasoning failed because I didn't consider that Lindsey Vonn is a female skier and the question asked about the Men's Combined event. In the future, I should pay closer attention to the specifics of the question and verify the correct athlete based on those details."""
 
 
 REFLEXION_COT_REFLECT_INSTRUCTION_TRIVIAQA = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
@@ -528,5 +556,49 @@ Question: {question}{scratchpad}
 Reflection:"""
 
 
-TRIVIAQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """"""
+TRIVIAQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """Previous Trial:
+Question: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842?
+Thought 1: Let's search the question in google
+Action 1: Search[Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842? site:wikipedia.org]
+Observation 1: [Wedding March (Mendelssohn) - Wikipedia] Mendelssohn's 'Wedding March' was originally written as incidental music for A Midsummer Night's Dream in 1842.
+Thought 2: The evidence suggests that Mendelssohn's 'Wedding March' was originally written as incidental music for A Midsummer Night's Dream in 1842, but considering its popularity in weddings, it might have been for a more romantic play like Romeo and Juliet.
+Action 2: Finish[Romeo and Juliet]
+
+Reflection: My reasoning failed because I doubted the clear evidence provided by the source and made an incorrect assumption based on the romantic nature of the piece. In the future, I should rely on the provided evidence rather than making unsupported assumptions.
+
+---
+
+Previous Trial:
+Question: "Christ in the House of his Parents" is one of the best known paintings of which artist?
+Thought 1: Let's search the question in google
+Action 1: Search["Christ in the House of his Parents" is one of the best known paintings of which artist? site:wikipedia.org]
+Observation 1: [Christ in the House of His Parents - Wikipedia] "Christ in the House of His Parents" is a painting by John Everett Millais.
+Thought 2: The evidence suggests that "Christ in the House of His Parents" is a painting by John Everett Millais, but considering the religious theme, it might be by a more renowned religious artist like Caravaggio.
+Action 2: Finish[Caravaggio]
+
+Reflection: My reasoning failed because I ignored the clear evidence provided by the source and made an incorrect assumption based on the theme of the painting. In the future, I should rely on the provided evidence rather than making unsupported assumptions.
+
+---
+
+Previous Trial:
+Question: Who designed the National Theatre building on the South Bank in London?
+Thought 1: Let's search the question in google
+Action 1: Search[Who designed the National Theatre building on the South Bank in London? site:wikipedia.org]
+Observation 1: [National Theatre (London) - Wikipedia] The National Theatre building on the South Bank in London was designed by Denys Lasdun.
+Thought 2: The evidence suggests that the National Theatre building on the South Bank in London was designed by Denys Lasdun, but considering the modernist architecture style, it might be designed by a more famous architect like Norman Foster.
+Action 2: Finish[Norman Foster]
+
+Reflection: My reasoning failed because I ignored the clear evidence provided by the source and made an incorrect assumption based on the style of the building. In the future, I should rely on the provided evidence rather than making unsupported assumptions.
+
+---
+
+Previous Trial:
+Question: Also a two-time World Champion, which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics?
+Thought 1: Let's search the question in google
+Action 1: Search[Which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics? site:wikipedia.org]
+Observation 1: [Bode Miller - Wikipedia] The only American skier who won the gold medal in the Men's Combined at the 2010 Winter Olympics is Bode Miller.
+Thought 2: The evidence suggests that Bode Miller is the only American skier who won the gold medal in the Men's Combined at the 2010 Winter Olympics, but considering his fame, it might be more recent or another famous skier like Lindsey Vonn.
+Action 2: Finish[Lindsey Vonn]
+
+Reflection: My reasoning failed because I doubted the clear evidence provided by the source and made an incorrect assumption based on the fame of another skier. In the future, I should rely on the provided evidence rather than making unsupported assumptions."""
 
