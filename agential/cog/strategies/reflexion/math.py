@@ -70,3 +70,39 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
     
     def reflect_condition(self, step_idx: int, reflect_strategy: str | None, question: str, examples: str, key: str, prompt: str, additional_keys: Dict[str, str], **kwargs: Dict[str, str]) -> bool:
         return super().reflect_condition(step_idx, reflect_strategy, question, examples, key, prompt, additional_keys, **kwargs)
+    
+
+class ReflexionCoTGSM8KStrategy(ReflexionCoTMathStrategy):
+    """A strategy class for the GSM8K benchmark using the ReflexionCoT agent."""
+
+    pass
+
+
+class ReflexionCoTSVAMPStrategy(ReflexionCoTMathStrategy):
+    """A strategy class for the SVAMP benchmark using the ReflexionCoT agent."""
+
+    pass
+
+
+class ReflexionCoTTabMWPStrategy(ReflexionCoTMathStrategy):
+    """A strategy class for the TabMWP benchmark using the ReflexionCoT agent."""
+
+    pass
+
+
+class ReflexionReActGSM8KStrategy(ReflexionReActMathStrategy):
+    """A strategy class for the GSM8K benchmark using the ReflexionReAct agent."""
+
+    pass
+
+
+class ReflexionReActSVAMPStrategy(ReflexionReActMathStrategy):
+    """A strategy class for the SVAMP benchmark using the ReflexionReAct agent."""
+
+    pass
+
+
+class ReflexionReActTabMWPStrategy(ReflexionReActMathStrategy):
+    """A strategy class for the TabMWP benchmark using the ReflexionReAct agent."""
+
+    pass
