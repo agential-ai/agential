@@ -231,6 +231,7 @@ def test_create_output_dict() -> None:
         "action_type": action_type,
         "query": query,
         "observation": obs,
+        "answer": ""
     }
 
     assert (

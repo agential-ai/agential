@@ -178,7 +178,7 @@ class ReActMathStrategy(ReActBaseStrategy):
 
     def create_output_dict(
         self, thought: str, action_type: str, query: str, obs: str
-    ) -> Dict[str, str]:
+    ) -> Dict[str, Any]:
         """Creates a dictionary of the output components.
 
         Args:
@@ -188,7 +188,7 @@ class ReActMathStrategy(ReActBaseStrategy):
             obs (str): The generated observation.
 
         Returns:
-            Dict[str, str]: A dictionary containing the thought, action type, query, observation, and answer.
+            Dict[str, Any]: A dictionary containing the thought, action type, query, observation, and answer.
         """
         return {
             "thought": thought,
