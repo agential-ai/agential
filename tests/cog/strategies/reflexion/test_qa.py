@@ -143,7 +143,7 @@ def test_reflexion_cot_create_output_dict() -> None:
     expected_output = {
         "thought": "This is a thought.",
         "action_type": "Finish",
-        "obs": "Observation: Answer is CORRECT",
+        "observation": "Observation: Answer is CORRECT",
         "answer": "correct_answer",
         "is_correct": True,
         "reflections": [],
@@ -162,7 +162,7 @@ def test_reflexion_cot_create_output_dict() -> None:
     expected_output = {
         "thought": "This is a thought.",
         "action_type": "Finish",
-        "obs": "Observation: Answer is INCORRECT",
+        "observation": "Observation: Answer is INCORRECT",
         "answer": "incorrect_answer",
         "is_correct": False,
         "reflections": [],
@@ -181,7 +181,7 @@ def test_reflexion_cot_create_output_dict() -> None:
     expected_output = {
         "thought": "This is another thought.",
         "action_type": "Calculate",
-        "obs": "Observation: Invalid action type, please try again.",
+        "observation": "Observation: Invalid action type, please try again.",
         "answer": "some_answer",
         "is_correct": False,
         "reflections": [],
