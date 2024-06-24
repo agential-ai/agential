@@ -66,7 +66,7 @@ class CriticCodeStrategy(CriticBaseStrategy):
 
 
     def generate_pydantic_output(
-        self, answer: str, critique: str, query: str, search_result: str, revised_answer: str
+        self, code: str, critique: str, execution_status: str, improved_code: str
     ) -> CriticPydanticOutput:
         """Creates a pydantic model of the output.
         Args:
