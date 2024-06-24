@@ -128,19 +128,19 @@ class CriticCodeStrategy(CriticBaseStrategy):
         return new_critique, external_tool_info
 
     def create_output_dict(
-        self, answer: str, critique: str, external_tool_info: Dict[str, str]
+        self, answer: str, critique: str, external_tool_info: Dict[str, Any]
     ) -> Dict[str, str]:
         """Creates an output dictionary containing the answer, critique, and external tool information.
 
         Args:
             answer (str): The generated answer.
             critique (str): The generated critique.
-            external_tool_info (Dict[str, str]): Information from external tool execution.
+            external_tool_info (Dict[str, Any]): Information from external tool execution.
 
         Returns:
             Dict[str, str]: The output dictionary.
         """
-        output_dict = {"code": answer, "critique": critique, **external_tool_info}
+        output_dict = {"answer": answer, "critique": critique, "external_tool_info": external_tool_info}
         return output_dict
 
     def update_answer_based_on_critique(
