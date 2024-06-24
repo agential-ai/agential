@@ -105,10 +105,13 @@ def test_generate_observation() -> None:
     strategy = ReActQAStrategy(llm=llm)
     strategy._scratchpad = init_scratchpad
     strategy._finished = False
-    obs = strategy.generate_observation(idx=1, action_type=action_type, query=query)
+    obs, external_tool_info = strategy.generate_observation(idx=1, action_type=action_type, query=query)
     assert isinstance(obs, str)
     assert strategy._finished == False
     assert strategy._scratchpad != init_scratchpad
+    assert "search_result" in external_tool_info
+    assert "lookup_result" in external_tool_info
+    assert external_tool_info['search_result'] != ""
 
     # Test finish.
     action_type = "Finish"
@@ -119,11 +122,14 @@ def test_generate_observation() -> None:
     strategy = ReActQAStrategy(llm=llm)
     strategy._scratchpad = init_scratchpad
     strategy._finished = False
-    obs = strategy.generate_observation(idx=2, action_type=action_type, query=query)
+    obs, external_tool_info = strategy.generate_observation(idx=2, action_type=action_type, query=query)
     assert isinstance(obs, str)
     assert obs == "The best kickboxer is Buakaw Banchamek."
     assert strategy._finished == True
     assert strategy._scratchpad != init_scratchpad
+    assert "search_result" in external_tool_info
+    assert "lookup_result" in external_tool_info
+    assert external_tool_info == {"search_result": "", "lookup_result": ""}
 
     # Test search success.
     action_type = "Search"
@@ -137,11 +143,14 @@ def test_generate_observation() -> None:
     strategy.docstore.search = (
         lambda x: "Buakaw Banchamek has faced several controversies and legal issues."
     )
-    obs = strategy.generate_observation(idx=3, action_type=action_type, query=query)
+    obs, external_tool_info = strategy.generate_observation(idx=3, action_type=action_type, query=query)
     assert isinstance(obs, str)
     assert obs == "Buakaw Banchamek has faced several controversies and legal issues."
     assert strategy._finished == False
     assert strategy._scratchpad != init_scratchpad
+    assert "search_result" in external_tool_info
+    assert "lookup_result" in external_tool_info
+    assert external_tool_info['search_result'] != ""
 
     # Test search failure.
     action_type = "Search"
@@ -225,17 +234,25 @@ def test_create_output_dict() -> None:
     action_type = "search"
     query = "query"
     obs = "observation"
+    external_tool_info = {
+        "search_result": "",
+        "lookup_result": ""
+    }
 
     expected_output = {
         "thought": thought,
         "action_type": action_type,
         "query": query,
         "observation": obs,
-        "answer": ""
+        "answer": "",
+        "external_tool_info": {
+            "search_result": "",
+            "lookup_result": ""
+        }
     }
 
     assert (
-        strategy.create_output_dict(thought, action_type, query, obs) == expected_output
+        strategy.create_output_dict(thought, action_type, query, obs, external_tool_info) == expected_output
     )
 
 

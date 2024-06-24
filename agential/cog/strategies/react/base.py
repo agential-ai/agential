@@ -1,7 +1,7 @@
 """Base ReAct Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Any
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -41,7 +41,7 @@ class ReActBaseStrategy(BaseStrategy):
         pass
 
     @abstractmethod
-    def generate_observation(self, idx: int, action_type: str, query: str) -> str:
+    def generate_observation(self, idx: int, action_type: str, query: str) -> Tuple[str, Dict[str, Any]]:
         """Generates an observation based on the action type and query.
 
         Args:
@@ -50,13 +50,13 @@ class ReActBaseStrategy(BaseStrategy):
             query (str): The query for the action.
 
         Returns:
-            str: The generated observation.
+            Tuple[str, Dict[str, Any]]: The generated observation and external tool outputs.
         """
         pass
 
     @abstractmethod
     def create_output_dict(
-        self, thought: str, action_type: str, query: str, obs: str
+        self, thought: str, action_type: str, query: str, obs: str, external_tool_info: Dict[str, Any]
     ) -> Dict[str, str]:
         """Creates a dictionary of the output components.
 
@@ -65,9 +65,10 @@ class ReActBaseStrategy(BaseStrategy):
             action_type (str): The type of action performed.
             query (str): The query for the action.
             obs (str): The generated observation.
+            external_tool_info (Dict[str, Any]): The external tool outputs.
 
         Returns:
-            Dict[str, str]: A dictionary containing the thought, action type, query, and observation.
+            Dict[str, Any]: A dictionary containing the thought, action type, query, observation, and external tool output.
         """
         pass
 

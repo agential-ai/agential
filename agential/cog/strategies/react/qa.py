@@ -143,7 +143,7 @@ class ReActQAStrategy(ReActBaseStrategy):
 
         return action_type, query
 
-    def generate_observation(self, idx: int, action_type: str, query: str) -> str:
+    def generate_observation(self, idx: int, action_type: str, query: str) -> Tuple[str, Dict[str, Any]]:
         """Generates an observation based on the action type and query.
 
         Args:
@@ -152,8 +152,13 @@ class ReActQAStrategy(ReActBaseStrategy):
             query (str): The query for the action.
 
         Returns:
-            str: The generated observation.
+            Tuple[str, Dict[str, Any]]: The generated observation and external tool outputs.
         """
+        external_tool_info = {
+            "search_result": "",
+            "lookup_result": ""
+        }
+
         self._scratchpad += f"\nObservation {idx}: "
         if action_type.lower() == "finish":
             self._answer = query
@@ -161,22 +166,27 @@ class ReActQAStrategy(ReActBaseStrategy):
             obs = query
         elif action_type.lower() == "search":
             try:
-                obs = remove_newline(self.docstore.search(query))
+                search_result = self.docstore.search(query)
+                external_tool_info["search_result"] = search_result
+                obs = remove_newline(search_result)
             except Exception:
                 obs = "Could not find that page, please try again."
         elif action_type.lower() == "lookup":
             try:
-                obs = remove_newline(self.docstore.lookup(query))
+                lookup_result = self.docstore.lookup(query)
+                external_tool_info["lookup_result"] = lookup_result
+                obs = remove_newline(lookup_result)
+
             except ValueError:
                 obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
         else:
             obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
         self._scratchpad += obs
 
-        return obs
+        return obs, external_tool_info
 
     def create_output_dict(
-        self, thought: str, action_type: str, query: str, obs: str
+        self, thought: str, action_type: str, query: str, obs: str, external_tool_info: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Creates a dictionary of the output components.
 
@@ -185,6 +195,7 @@ class ReActQAStrategy(ReActBaseStrategy):
             action_type (str): The type of action performed.
             query (str): The query for the action.
             obs (str): The generated observation.
+            external_tool_info (Dict[str, Any]): The external tool outputs.
 
         Returns:
             Dict[str, Any]: A dictionary containing the thought, action type, query, observation, and answer.
@@ -194,7 +205,8 @@ class ReActQAStrategy(ReActBaseStrategy):
             "action_type": action_type,
             "query": query,
             "observation": obs,
-            "answer": self._answer
+            "answer": self._answer,
+            "external_tool_info": external_tool_info
         }
 
     def halting_condition(
