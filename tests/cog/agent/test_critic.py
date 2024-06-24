@@ -67,6 +67,13 @@ def test_generate() -> None:
 
     # Test "qa" mode with search tool.
     search = MagicMock(spec=GoogleSerperAPIWrapper)
+    search.results.return_value = [
+        {
+            "title": "agential-ai/agential: The encyclopedia of LLM-based agents - GitHub",
+            "link": "https://github.com/alckasoc/agential",
+            "snippet": '\'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts"\xa0...',
+        }
+    ]
     responses = [
         "Let's break it down step by step. The kickboxer who fits this description is Badr Hari. So the answer is: Badr Hari.",
         'The question asks for a kickboxer who fits the description provided, and the answer "Badr Hari" is a plausible response.\n\n2. Truthfulness:\n\nLet\'s search the question in Google:\n\n> Search Query: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring\n> Evidence: [Badr Hari - Wikipedia] Badr Hari is a Moroccan-Dutch super heavyweight kickboxer from the Netherlands, fighting out of Mike\'s Gym in Oostzaan. He is a former K-1 Heavyweight Champion (2007-2008) and It\'s Showtime Heavyweight Champion (2009-2010).\n\nThe evidence confirms that Badr Hari fits the description provided in the question.\n\nOverall, the proposed answer is both plausible and truthful.\n\nQuestion: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring?\nHere\'s the most possible answer: Let\'s break it down step by step. The kickboxer who fits this description is Badr Hari. So the answer is: Badr Hari.',
