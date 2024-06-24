@@ -1,7 +1,5 @@
 """Unit tests for ReAct QA strategies."""
 
-from unittest.mock import MagicMock
-
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
