@@ -117,7 +117,10 @@ def test_generate_observation() -> None:
     assert strategy._scratchpad != init_scratchpad
     assert "search_result" in external_tool_info
     assert "lookup_result" in external_tool_info
-    assert external_tool_info["search_result"] == "Buakaw Banchamek has faced several controversies and legal issues."
+    assert (
+        external_tool_info["search_result"]
+        == "Buakaw Banchamek has faced several controversies and legal issues."
+    )
 
     # Test finish.
     action_type = "Finish"
@@ -160,7 +163,10 @@ def test_generate_observation() -> None:
     assert strategy._scratchpad != init_scratchpad
     assert "search_result" in external_tool_info
     assert "lookup_result" in external_tool_info
-    assert external_tool_info["search_result"] == "Buakaw Banchamek has faced several controversies and legal issues."
+    assert (
+        external_tool_info["search_result"]
+        == "Buakaw Banchamek has faced several controversies and legal issues."
+    )
 
     # Test search failure.
     action_type = "Search"

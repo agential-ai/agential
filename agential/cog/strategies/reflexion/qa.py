@@ -497,7 +497,13 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         }
 
     def react_create_output_dict(
-        self, thought: str, action_type: str, query: str, obs: str, external_tool_info: Dict[str, Any], is_correct: bool
+        self,
+        thought: str,
+        action_type: str,
+        query: str,
+        obs: str,
+        external_tool_info: Dict[str, Any],
+        is_correct: bool,
     ) -> Dict[str, Any]:
         """Create a dictionary containing the output of a single step in the ReflexionReAct agent.
 
