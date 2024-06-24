@@ -198,7 +198,7 @@ class ReActQAStrategy(ReActBaseStrategy):
             external_tool_info (Dict[str, Any]): The external tool outputs.
 
         Returns:
-            Dict[str, Any]: A dictionary containing the thought, action type, query, observation, and answer.
+            Dict[str, Any]: A dictionary containing the thought, action type, query, observation, answer, and external tool output.
         """
         return {
             "thought": thought,
