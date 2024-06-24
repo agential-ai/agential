@@ -350,9 +350,7 @@ def test_reflexion_react_generate_observation() -> None:
     assert strategy._scratchpad != ""
     assert not strategy._finished
     assert strategy._answer == ""
-    assert "search_result" in external_tool_info
-    assert "lookup_result" in external_tool_info
-    assert external_tool_info == {"search_result": "Search result", "Search result": ""}
+    assert external_tool_info == {"search_result": "Search result", "lookup_result": ""}
 
     strategy.docstore.lookup = (
         lambda x: "Lookup result"
