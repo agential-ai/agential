@@ -434,7 +434,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         action_type: str,
         query: str,
         key: str,
-    ) -> Tuple[bool, str]:
+    ) -> Tuple[bool, str, Dict[str, Any]]:
         """Generate an observation based on the action type and query.
 
         Args:
