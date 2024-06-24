@@ -163,7 +163,11 @@ class CriticMathStrategy(CriticBaseStrategy):
         Returns:
             Dict[str, str]: The output dictionary.
         """
-        output_dict = {"answer": answer, "critique": critique, "external_tool_info": external_tool_info}
+        output_dict = {
+            "answer": answer,
+            "critique": critique,
+            "external_tool_info": external_tool_info,
+        }
         return output_dict
 
     def update_answer_based_on_critique(
