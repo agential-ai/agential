@@ -66,7 +66,7 @@ class ReActCodeStrategy(ReActBaseStrategy):
         self.enc = enc
 
         self._scratchpad = ""
-        self._current_answer = ""
+        self._answer = ""
         self._finished = False
 
     def generate(
@@ -161,15 +161,15 @@ class ReActCodeStrategy(ReActBaseStrategy):
         """
         self._scratchpad += f"\nObservation {idx}: "
         if action_type.lower() == "finish":
-            self._current_answer = query
+            self._answer = query
             self._finished = True
-            obs = f"\n```python\n{self._current_answer}\n```"
+            obs = f"\n```python\n{self._answer}\n```"
         elif action_type.lower() == "implement":
             _, execution_status = safe_execute(query)
-            self._current_answer = query
-            obs = f"\n```python\n{self._current_answer}\n```\nExecution Status: {execution_status}"
+            self._answer = query
+            obs = f"\n```python\n{self._answer}\n```\nExecution Status: {execution_status}"
         elif action_type.lower() == "test":
-            obs = f"{self._current_answer}\n\n{query}"
+            obs = f"{self._answer}\n\n{query}"
             _, execution_status = safe_execute(obs)
             obs = f"\n```python\n{obs}\n```\nExecution Status: {execution_status}"
         else:
@@ -197,7 +197,7 @@ class ReActCodeStrategy(ReActBaseStrategy):
             "action_type": action_type,
             "query": query,
             "observation": obs,
-            "answer": self._current_answer,
+            "answer": self._answer,
         }
 
     def halting_condition(
@@ -248,7 +248,7 @@ class ReActCodeStrategy(ReActBaseStrategy):
         Returns:
             None
         """
-        self._current_answer = ""
+        self._answer = ""
         self._scratchpad = ""
         self._finished = False
 
