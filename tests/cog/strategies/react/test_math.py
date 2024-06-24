@@ -69,7 +69,7 @@ def test_init() -> None:
     assert strategy.max_steps == 6
     assert strategy.max_tokens == 3896
     assert isinstance(strategy.enc, Encoding)
-    assert strategy._current_answer == ""
+    assert strategy._answer == ""
     assert strategy._scratchpad == ""
     assert strategy._finished == False
 
@@ -91,7 +91,7 @@ def test_generate() -> None:
         additional_keys={},
     )
     assert out == gt_out
-    assert strategy._current_answer == ""
+    assert strategy._answer == ""
     assert strategy._scratchpad == gt_scratchpad
     assert not strategy._finished
 
@@ -114,7 +114,7 @@ def test_generate_action() -> None:
     )
     assert action_type == "Calculate"
     assert query == gt_query
-    assert strategy._current_answer == ""
+    assert strategy._answer == ""
     assert strategy._scratchpad == gt_scratchpad
 
 
@@ -129,7 +129,7 @@ def test_generate_observation() -> None:
     strategy = ReActMathStrategy(llm=llm)
     obs = strategy.generate_observation(idx=0, action_type=action_type, query=query)
     assert obs == gt_obs
-    assert strategy._current_answer == query
+    assert strategy._answer == query
     assert strategy._finished is False
     assert strategy._scratchpad == gt_scratchpad
 
@@ -142,7 +142,7 @@ def test_generate_observation() -> None:
     strategy = ReActMathStrategy(llm=llm)
     obs = strategy.generate_observation(idx=0, action_type=action_type, query=query)
     assert obs == gt_obs
-    assert strategy._current_answer == query
+    assert strategy._answer == query
     assert strategy._finished is True
     assert strategy._scratchpad == gt_scratchpad
 
@@ -156,7 +156,7 @@ def test_generate_observation() -> None:
     assert (
         obs == "Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
     )
-    assert strategy._current_answer == ""
+    assert strategy._answer == ""
     assert strategy._finished is False
     assert strategy._scratchpad == gt_scratchpad
 
@@ -172,7 +172,7 @@ def test_create_output_dict() -> None:
     )
     obs = "\n```python\ntoys_initial = 5\ntoys_received = 2 + 2\nanswer = toys_initial + toys_received\n```\nExecution Status: Done\nOutput: answer = 9"
 
-    strategy._current_answer = "answer = 9"
+    strategy._answer = "answer = 9"
     expected_output = {
         "thought": thought,
         "action_type": action_type,
@@ -214,13 +214,13 @@ def test_reset() -> None:
     """Tests ReActMathStrategy reset."""
     strategy = ReActMathStrategy(llm=FakeListChatModel(responses=[]))
 
-    strategy._current_answer = "answer = 9"
+    strategy._answer = "answer = 9"
     strategy._scratchpad = "Some scratchpad content"
     strategy._finished = True
 
     strategy.reset()
 
-    assert strategy._current_answer == ""
+    assert strategy._answer == ""
     assert strategy._scratchpad == ""
     assert strategy._finished == False
 

@@ -66,7 +66,7 @@ class ReActMathStrategy(ReActBaseStrategy):
         self.enc = enc
 
         self._scratchpad = ""
-        self._current_answer = ""
+        self._answer = ""
         self._finished = False
 
     def generate(
@@ -161,13 +161,13 @@ class ReActMathStrategy(ReActBaseStrategy):
         """
         self._scratchpad += f"\nObservation {idx}: "
         if action_type.lower() == "finish":
-            self._current_answer = query
+            self._answer = query
             self._finished = True
-            obs = f"\n```python\n{self._current_answer}\n```"
+            obs = f"\n```python\n{self._answer}\n```"
         elif action_type.lower() == "calculate":
             answer, execution_status = safe_execute(query)
-            self._current_answer = query
-            obs = f"\n```python\n{self._current_answer}\n```\nExecution Status: {execution_status}\nOutput: answer = {answer[0]}"
+            self._answer = query
+            obs = f"\n```python\n{self._answer}\n```\nExecution Status: {execution_status}\nOutput: answer = {answer[0]}"
         else:
             obs = (
                 "Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
@@ -195,7 +195,7 @@ class ReActMathStrategy(ReActBaseStrategy):
             "action_type": action_type,
             "query": query,
             "observation": obs,
-            "answer": self._current_answer,
+            "answer": self._answer,
         }
 
     def halting_condition(
@@ -246,7 +246,7 @@ class ReActMathStrategy(ReActBaseStrategy):
         Returns:
             None
         """
-        self._current_answer = ""
+        self._answer = ""
         self._scratchpad = ""
         self._finished = False
 
