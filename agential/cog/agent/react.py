@@ -102,11 +102,11 @@ class ReActAgent(BaseAgent):
 
             out.append(
                 self.strategy.create_output_dict(
-                    thought=thought, 
-                    action_type=action_type, 
-                    query=query, 
+                    thought=thought,
+                    action_type=action_type,
+                    query=query,
                     obs=obs,
-                    external_tool_info=external_tool_info 
+                    external_tool_info=external_tool_info,
                 )
             )
 

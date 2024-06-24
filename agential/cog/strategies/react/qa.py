@@ -143,7 +143,9 @@ class ReActQAStrategy(ReActBaseStrategy):
 
         return action_type, query
 
-    def generate_observation(self, idx: int, action_type: str, query: str) -> Tuple[str, Dict[str, Any]]:
+    def generate_observation(
+        self, idx: int, action_type: str, query: str
+    ) -> Tuple[str, Dict[str, Any]]:
         """Generates an observation based on the action type and query.
 
         Args:
@@ -154,10 +156,7 @@ class ReActQAStrategy(ReActBaseStrategy):
         Returns:
             Tuple[str, Dict[str, Any]]: The generated observation and external tool outputs.
         """
-        external_tool_info = {
-            "search_result": "",
-            "lookup_result": ""
-        }
+        external_tool_info = {"search_result": "", "lookup_result": ""}
 
         self._scratchpad += f"\nObservation {idx}: "
         if action_type.lower() == "finish":
@@ -186,7 +185,12 @@ class ReActQAStrategy(ReActBaseStrategy):
         return obs, external_tool_info
 
     def create_output_dict(
-        self, thought: str, action_type: str, query: str, obs: str, external_tool_info: Dict[str, Any]
+        self,
+        thought: str,
+        action_type: str,
+        query: str,
+        obs: str,
+        external_tool_info: Dict[str, Any],
     ) -> Dict[str, Any]:
         """Creates a dictionary of the output components.
 
@@ -206,7 +210,7 @@ class ReActQAStrategy(ReActBaseStrategy):
             "query": query,
             "observation": obs,
             "answer": self._answer,
-            "external_tool_info": external_tool_info
+            "external_tool_info": external_tool_info,
         }
 
     def halting_condition(
