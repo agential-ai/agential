@@ -148,7 +148,7 @@ class ReActCodeStrategy(ReActBaseStrategy):
 
         return action_type, query
 
-    def generate_observation(self, idx: int, action_type: str, query: str) -> str:
+    def generate_observation(self, idx: int, action_type: str, query: str) -> Tuple[str, Dict[str, Any]]:
         """Generates an observation based on the action type and query.
 
         Args:
@@ -157,29 +157,38 @@ class ReActCodeStrategy(ReActBaseStrategy):
             query (str): The query for the action.
 
         Returns:
-            str: The generated observation.
+            Tuple[str, Dict[str, Any]]: The generated observation and external tool outputs.
         """
+        external_tool_info = {"execution_status": ""}
+
         self._scratchpad += f"\nObservation {idx}: "
         if action_type.lower() == "finish":
+            _, execution_status = safe_execute(query)
+            external_tool_info["execution_status"] = execution_status
+
             self._answer = query
             self._finished = True
             obs = f"\n```python\n{self._answer}\n```"
         elif action_type.lower() == "implement":
             _, execution_status = safe_execute(query)
+            external_tool_info["execution_status"] = execution_status
+
             self._answer = query
             obs = f"\n```python\n{self._answer}\n```\nExecution Status: {execution_status}"
         elif action_type.lower() == "test":
             obs = f"{self._answer}\n\n{query}"
             _, execution_status = safe_execute(obs)
+            external_tool_info["execution_status"] = execution_status
+
             obs = f"\n```python\n{obs}\n```\nExecution Status: {execution_status}"
         else:
             obs = "Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer]."
         self._scratchpad += obs
 
-        return obs
+        return obs, external_tool_info
 
     def create_output_dict(
-        self, thought: str, action_type: str, query: str, obs: str
+        self, thought: str, action_type: str, query: str, obs: str, external_tool_info: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Creates a dictionary of the output components.
 
@@ -188,9 +197,10 @@ class ReActCodeStrategy(ReActBaseStrategy):
             action_type (str): The type of action performed.
             query (str): The query for the action.
             obs (str): The generated observation.
+            external_tool_info (Dict[str, Any]): The external tool outputs.
 
         Returns:
-            Dict[str, Any]: A dictionary containing the thought, action type, query, observation, and answer.
+            Dict[str, Any]: A dictionary containing the thought, action type, query, observation, answer, and external tool output.
         """
         return {
             "thought": thought,
@@ -198,6 +208,7 @@ class ReActCodeStrategy(ReActBaseStrategy):
             "query": query,
             "observation": obs,
             "answer": self._answer,
+            "external_tool_info": external_tool_info,
         }
 
     def halting_condition(

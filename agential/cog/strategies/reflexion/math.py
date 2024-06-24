@@ -1,14 +1,12 @@
 """Reflexion Agent strategies for Math."""
 
 import re
-from typing import Any, Dict, List, Tuple, Optional
-from langchain_core.language_models.chat_models import BaseChatModel
-from agential.cog.strategies.reflexion.base import (
-    ReflexionCoTBaseStrategy,
-    ReflexionReActBaseStrategy,
-)
-from agential.cog.eval.reflexion import EM
 
+from typing import Any, Dict, List, Optional, Tuple
+
+from langchain_core.language_models.chat_models import BaseChatModel
+
+from agential.cog.eval.reflexion import EM
 from agential.cog.functional.reflexion import (
     _is_halted,
     _prompt_cot_agent,
@@ -19,8 +17,12 @@ from agential.cog.modules.reflect.reflexion import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )
-from agential.utils.parse import remove_newline
+from agential.cog.strategies.reflexion.base import (
+    ReflexionCoTBaseStrategy,
+    ReflexionReActBaseStrategy,
+)
 from agential.utils.general import safe_execute
+from agential.utils.parse import remove_newline
 
 
 def parse_math_action(action: str) -> Tuple[str, str]:
