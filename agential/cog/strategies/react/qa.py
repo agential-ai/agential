@@ -66,6 +66,7 @@ class ReActQAStrategy(ReActBaseStrategy):
         self.enc = enc
 
         self._scratchpad = ""
+        self._answer = ""
         self._finished = False
 
     def generate(
@@ -176,7 +177,7 @@ class ReActQAStrategy(ReActBaseStrategy):
 
     def create_output_dict(
         self, thought: str, action_type: str, query: str, obs: str
-    ) -> Dict[str, str]:
+    ) -> Dict[str, Any]:
         """Creates a dictionary of the output components.
 
         Args:
@@ -186,13 +187,14 @@ class ReActQAStrategy(ReActBaseStrategy):
             obs (str): The generated observation.
 
         Returns:
-            Dict[str, str]: A dictionary containing the thought, action type, query, and observation.
+            Dict[str, Any]: A dictionary containing the thought, action type, query, observation, and answer.
         """
         return {
             "thought": thought,
             "action_type": action_type,
             "query": query,
             "observation": obs,
+            "answer": self._answer
         }
 
     def halting_condition(
