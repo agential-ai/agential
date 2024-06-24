@@ -188,19 +188,19 @@ def test_create_output_dict() -> None:
 
     assert result["answer"] == "The capital of France is Paris."
     assert result["critique"] == "The answer is correct."
-    assert result['external_tool_info']["search_query"] == "capital of France"
-    assert result['external_tool_info']["search_result"] == "Paris"
+    assert result["external_tool_info"]["search_query"] == "capital of France"
+    assert result["external_tool_info"]["search_result"] == "Paris"
 
     strategy._halt = True
     result = strategy.create_output_dict(answer, critique, external_tool_info)
     assert "answer" in result
     assert "critique" in result
-    assert "search_query" in result['external_tool_info']
-    assert "search_result" in result['external_tool_info']
+    assert "search_query" in result["external_tool_info"]
+    assert "search_result" in result["external_tool_info"]
     assert result["answer"] == "The answer is correct."
     assert result["critique"] == "The answer is correct."
-    assert result['external_tool_info']["search_query"] == "capital of France"
-    assert result['external_tool_info']["search_result"] == "Paris"
+    assert result["external_tool_info"]["search_query"] == "capital of France"
+    assert result["external_tool_info"]["search_result"] == "Paris"
 
 
 def test_update_answer_based_on_critique() -> None:
