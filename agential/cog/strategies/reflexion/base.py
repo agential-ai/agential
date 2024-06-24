@@ -206,7 +206,13 @@ class ReflexionReActBaseStrategy(BaseStrategy):
 
     @abstractmethod
     def react_create_output_dict(
-        self, thought: str, action_type: str, query: str, obs: str, external_tool_info: Dict[str, Any], is_correct: bool
+        self,
+        thought: str,
+        action_type: str,
+        query: str,
+        obs: str,
+        external_tool_info: Dict[str, Any],
+        is_correct: bool,
     ) -> Dict[str, Any]:
         """Creates a dictionary of the output components.
 
