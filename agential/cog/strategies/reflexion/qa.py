@@ -497,7 +497,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         }
 
     def react_create_output_dict(
-        self, thought: str, action_type: str, query: str, obs: str, is_correct: bool
+        self, thought: str, action_type: str, query: str, obs: str, external_tool_info: Dict[str, Any], is_correct: bool
     ) -> Dict[str, Any]:
         """Create a dictionary containing the output of a single step in the ReflexionReAct agent.
 
@@ -506,10 +506,11 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
             action_type (str): The type of action performed in the current step.
             query (str): The query or information related to the action performed in the current step.
             obs (str): The observation generated in the current step.
+            external_tool_info (Dict[str, Any]): The external tool outputs.
             is_correct (bool): A boolean indicating whether the answer generated in the current step is correct.
 
         Returns:
-            Dict[str, Any]: A dictionary containing the 'thought', 'action_type', 'query', 'observation', 'answer', and 'is_correct' of the current step.
+            Dict[str, Any]: A dictionary containing the 'thought', 'action_type', 'query', 'observation', 'answer', 'external_tool_info', and 'is_correct' of the current step.
         """
         return {
             "thought": thought,
@@ -517,6 +518,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
             "query": query,
             "observation": obs,
             "answer": self._answer,
+            "external_tool_info": external_tool_info,
             "is_correct": is_correct,
         }
 

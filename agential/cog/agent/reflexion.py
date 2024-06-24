@@ -265,7 +265,7 @@ class ReflexionReActAgent(BaseAgent):
             )
 
             # Observe.
-            is_correct, obs = self.strategy.generate_observation(
+            is_correct, obs, external_tool_info = self.strategy.generate_observation(
                 step_idx=step_idx,
                 action_type=action_type,
                 query=query,
@@ -278,6 +278,7 @@ class ReflexionReActAgent(BaseAgent):
                     action_type=action_type,
                     query=query,
                     obs=obs,
+                    external_tool_info=external_tool_info,
                     is_correct=is_correct,
                 )
             )
