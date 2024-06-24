@@ -40,6 +40,9 @@ def test_generate() -> None:
     ]
     llm = FakeListChatModel(responses=responses)
     agent = ReActAgent(llm=llm, mode={"qa": "hotpotqa"})
+    agent.strategy.docstore.search = (
+        lambda x: "Buakaw Banchamek has faced several controversies and legal issues."
+    )
 
     out = agent.generate(
         question=question,
