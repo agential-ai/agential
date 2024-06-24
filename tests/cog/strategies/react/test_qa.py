@@ -1,5 +1,7 @@
 """Unit tests for ReAct QA strategies."""
 
+from unittest.mock import MagicMock
+
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
@@ -102,9 +104,13 @@ def test_generate_observation() -> None:
     init_scratchpad = "\nThought: I need to search for the best kickboxer in the world who has been involved in controversies and crimes.\nAction: Search[best kick boxer in the world controversies crimes]"
     responses = []
     llm = FakeListChatModel(responses=responses)
+
     strategy = ReActQAStrategy(llm=llm)
     strategy._scratchpad = init_scratchpad
     strategy._finished = False
+    strategy.docstore.search = (
+        lambda x: "Buakaw Banchamek has faced several controversies and legal issues."
+    )
     obs, external_tool_info = strategy.generate_observation(
         idx=1, action_type=action_type, query=query
     )
@@ -113,7 +119,7 @@ def test_generate_observation() -> None:
     assert strategy._scratchpad != init_scratchpad
     assert "search_result" in external_tool_info
     assert "lookup_result" in external_tool_info
-    assert external_tool_info["search_result"] != ""
+    assert external_tool_info["search_result"] == "Buakaw Banchamek has faced several controversies and legal issues."
 
     # Test finish.
     action_type = "Finish"
@@ -156,7 +162,7 @@ def test_generate_observation() -> None:
     assert strategy._scratchpad != init_scratchpad
     assert "search_result" in external_tool_info
     assert "lookup_result" in external_tool_info
-    assert external_tool_info["search_result"] != ""
+    assert external_tool_info["search_result"] == "Buakaw Banchamek has faced several controversies and legal issues."
 
     # Test search failure.
     action_type = "Search"
