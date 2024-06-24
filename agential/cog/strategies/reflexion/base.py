@@ -174,7 +174,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
     @abstractmethod
     def generate_observation(
         self, step_idx: int, action_type: str, query: str, key: str
-    ) -> Tuple[bool, str]:
+    ) -> Tuple[bool, str, Dict[str, Any]]:
         """Generates an observation based on the action type and query.
 
         Args:
@@ -184,7 +184,8 @@ class ReflexionReActBaseStrategy(BaseStrategy):
             key (str): The key for the observation.
 
         Returns:
-            str: The generated observation.
+            Tuple[bool, str, Dict[str, Any]]: A tuple containing a boolean indicating whether the answer is correct, a string representing the observation,
+                and a dictionary of the external tool outputs.
         """
         pass
 
