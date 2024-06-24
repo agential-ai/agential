@@ -195,7 +195,7 @@ def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
     new_experiences = agent.gather_experience(
         questions=hotpotqa.question.values[-1:], keys=hotpotqa.answer.values[-1:]
     )
-    print(new_experiences['trajectories'][0][0]['react_output'])
+    print(new_experiences["trajectories"][0][0]["react_output"])
 
     assert new_experiences == gt_new_experiences
     assert new_experiences == agent.experience_memory.experiences
