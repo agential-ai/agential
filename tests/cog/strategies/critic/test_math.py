@@ -152,10 +152,10 @@ def test_create_output_dict() -> None:
 
     result = strategy.create_output_dict(answer, critique, external_tool_info)
 
-    assert result["code"] == answer
+    assert result["answer"] == answer
     assert result["critique"] == critique
-    assert result["execution_status"] == external_tool_info["execution_status"]
-    assert result["code_answer"] == external_tool_info["code_answer"]
+    assert result['external_tool_info']["execution_status"] == external_tool_info["execution_status"]
+    assert result['external_tool_info']["code_answer"] == external_tool_info["code_answer"]
 
 
 def test_update_answer_based_on_critique() -> None:
