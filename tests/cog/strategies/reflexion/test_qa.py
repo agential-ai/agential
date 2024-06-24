@@ -336,6 +336,9 @@ def test_reflexion_react_generate_observation() -> None:
     """Tests ReflexionReActQAStrategy generate_observation."""
     llm = FakeListChatModel(responses=[])
     strategy = ReflexionReActQAStrategy(llm=llm)
+    strategy.docstore.search = (
+        lambda x: "Search result"
+    )
     is_correct, obs, external_tool_info = strategy.generate_observation(
         step_idx=1,
         action_type="Search",
@@ -349,8 +352,11 @@ def test_reflexion_react_generate_observation() -> None:
     assert strategy._answer == ""
     assert "search_result" in external_tool_info
     assert "lookup_result" in external_tool_info
-    assert external_tool_info["search_result"] != ""
+    assert external_tool_info == {"search_result": "Search result", "Search result": ""}
 
+    strategy.docstore.lookup = (
+        lambda x: "Lookup result"
+    )
     is_correct, obs, external_tool_info = strategy.generate_observation(
         step_idx=1,
         action_type="Lookup",
@@ -362,7 +368,7 @@ def test_reflexion_react_generate_observation() -> None:
     assert strategy._scratchpad != ""
     assert not strategy._finished
     assert strategy._answer == ""
-    assert external_tool_info == {"search_result": "", "lookup_result": ""}
+    assert external_tool_info == {"search_result": "", "lookup_result": "Lookup result"}
 
     is_correct, obs, external_tool_info = strategy.generate_observation(
         step_idx=1,
