@@ -502,13 +502,14 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
             is_correct (bool): A boolean indicating whether the answer generated in the current step is correct.
 
         Returns:
-            Dict[str, Any]: A dictionary containing the 'thought', 'action_type', 'query', 'observation', and 'is_correct' of the current step.
+            Dict[str, Any]: A dictionary containing the 'thought', 'action_type', 'query', 'observation', 'answer', and 'is_correct' of the current step.
         """
         return {
             "thought": thought,
             "action_type": action_type,
             "query": query,
             "observation": obs,
+            "answer": self._answer,
             "is_correct": is_correct,
         }
 
