@@ -336,7 +336,7 @@ def test_reflexion_react_generate_observation() -> None:
     """Tests ReflexionReActQAStrategy generate_observation."""
     llm = FakeListChatModel(responses=[])
     strategy = ReflexionReActQAStrategy(llm=llm)
-    is_correct, obs = strategy.generate_observation(
+    is_correct, obs, external_tool_info = strategy.generate_observation(
         step_idx=1,
         action_type="Search",
         query="VIVA Media AG",
@@ -347,8 +347,11 @@ def test_reflexion_react_generate_observation() -> None:
     assert strategy._scratchpad != ""
     assert not strategy._finished
     assert strategy._answer == ""
+    assert "search_result" in external_tool_info
+    assert "lookup_result" in external_tool_info
+    assert external_tool_info["search_result"] != ""
 
-    is_correct, obs = strategy.generate_observation(
+    is_correct, obs, external_tool_info = strategy.generate_observation(
         step_idx=1,
         action_type="Lookup",
         query="VIVA Media AG",
@@ -359,8 +362,9 @@ def test_reflexion_react_generate_observation() -> None:
     assert strategy._scratchpad != ""
     assert not strategy._finished
     assert strategy._answer == ""
+    assert external_tool_info == {"search_result": "", "lookup_result": ""}
 
-    is_correct, obs = strategy.generate_observation(
+    is_correct, obs, external_tool_info = strategy.generate_observation(
         step_idx=1,
         action_type="Finish",
         query="VIVA Media AG",
@@ -371,6 +375,7 @@ def test_reflexion_react_generate_observation() -> None:
     assert strategy._scratchpad != ""
     assert strategy._finished
     assert strategy._answer == "VIVA Media AG"
+    assert external_tool_info == {"search_result": "", "lookup_result": ""}
 
 
 def test_reflexion_react_create_output_dict() -> None:
@@ -441,6 +446,7 @@ def test_reflexion_react_react_create_output_dict() -> None:
         action_type="Query",
         query="What is the capital of France?",
         obs="Observation: Answer is CORRECT",
+        external_tool_info={"search_result": "", "lookup_result": ""},
         is_correct=True,
     )
     expected_output = {
@@ -449,6 +455,7 @@ def test_reflexion_react_react_create_output_dict() -> None:
         "query": "What is the capital of France?",
         "observation": "Observation: Answer is CORRECT",
         "answer": "",
+        "external_tool_info": {"search_result": "", "lookup_result": ""},
         "is_correct": True,
     }
     assert output == expected_output
@@ -459,6 +466,7 @@ def test_reflexion_react_react_create_output_dict() -> None:
         action_type="Validate",
         query="Is 2+2=4?",
         obs="Observation: Answer is CORRECT",
+        external_tool_info={"search_result": "", "lookup_result": ""},
         is_correct=True,
     )
     expected_output = {
@@ -467,6 +475,7 @@ def test_reflexion_react_react_create_output_dict() -> None:
         "query": "Is 2+2=4?",
         "observation": "Observation: Answer is CORRECT",
         "answer": "",
+        "external_tool_info": {"search_result": "", "lookup_result": ""},
         "is_correct": True,
     }
     assert output == expected_output
@@ -477,6 +486,7 @@ def test_reflexion_react_react_create_output_dict() -> None:
         action_type="Answer",
         query="What is the square root of 16?",
         obs="Observation: Answer is INCORRECT",
+        external_tool_info={"search_result": "", "lookup_result": ""},
         is_correct=False,
     )
     expected_output = {
@@ -485,6 +495,7 @@ def test_reflexion_react_react_create_output_dict() -> None:
         "query": "What is the square root of 16?",
         "observation": "Observation: Answer is INCORRECT",
         "answer": "",
+        "external_tool_info": {"search_result": "", "lookup_result": ""},
         "is_correct": False,
     }
     assert output == expected_output
