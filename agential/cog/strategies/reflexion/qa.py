@@ -208,7 +208,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         return {
             "thought": thought,
             "action_type": action_type,
-            "obs": obs,
+            "observation": obs,
             "answer": self._answer,
             "is_correct": is_correct,
             "reflections": reflections,
