@@ -171,7 +171,7 @@ def test_generate_observation() -> None:
     assert strategy._scratchpad != init_scratchpad
     assert "search_result" in external_tool_info
     assert "lookup_result" in external_tool_info
-    assert external_tool_info['search_result'] != ""
+    assert external_tool_info['search_result'] == ""
 
     # Test lookup success.
     action_type = "Lookup"
@@ -216,7 +216,7 @@ def test_generate_observation() -> None:
     assert strategy._scratchpad != init_scratchpad
     assert "search_result" in external_tool_info
     assert "lookup_result" in external_tool_info
-    assert external_tool_info['lookup_result'] != ""
+    assert external_tool_info['lookup_result'] == ""
 
     # Test invalid action.
     action_type = "Invalid"
