@@ -173,6 +173,7 @@ def test_create_output_dict() -> None:
     query = "def add(a, b): return a + b"
     obs = "Execution succeeded"
     strategy._answer = "def add(a, b): return a + b"
+    external_tool_info = {"execution_status": "Done"}
 
     expected_output = {
         "thought": thought,
@@ -180,9 +181,10 @@ def test_create_output_dict() -> None:
         "query": query,
         "observation": obs,
         "answer": strategy._answer,
+        "external_tool_info": external_tool_info
     }
 
-    output = strategy.create_output_dict(thought, action_type, query, obs)
+    output = strategy.create_output_dict(thought, action_type, query, obs, external_tool_info)
     assert output == expected_output
 
 

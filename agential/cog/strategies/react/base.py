@@ -1,7 +1,7 @@
 """Base ReAct Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Dict, Tuple, Any
+from typing import Any, Dict, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
