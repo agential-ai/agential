@@ -56,7 +56,7 @@ def test_init() -> None:
     assert strategy.max_steps == 6
     assert strategy.max_tokens == 3896
     assert isinstance(strategy.enc, Encoding)
-    assert strategy._current_answer == ""
+    assert strategy._answer == ""
     assert strategy._scratchpad == ""
     assert strategy._finished == False
 
@@ -117,7 +117,7 @@ def test_generate_observation() -> None:
     strategy = ReActCodeStrategy(llm=llm)
     obs = strategy.generate_observation(idx=0, action_type=action_type, query=query)
     assert obs == gt_obs
-    assert strategy._current_answer == query
+    assert strategy._answer == query
     assert strategy._finished is False
     assert strategy._scratchpad == gt_scratchpad
 
@@ -128,10 +128,10 @@ def test_generate_observation() -> None:
     query = "def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None"
     llm = FakeListChatModel(responses=[])
     strategy = ReActCodeStrategy(llm=llm)
-    strategy._current_answer = "print('Hello World')"
+    strategy._answer = "print('Hello World')"
     obs = strategy.generate_observation(idx=0, action_type=action_type, query=query)
     assert obs == gt_obs
-    assert strategy._current_answer == "print('Hello World')"
+    assert strategy._answer == "print('Hello World')"
     assert strategy._finished is False
     assert strategy._scratchpad == gt_scratchpad
 
@@ -144,7 +144,7 @@ def test_generate_observation() -> None:
     strategy = ReActCodeStrategy(llm=llm)
     obs = strategy.generate_observation(idx=0, action_type=action_type, query=query)
     assert obs == gt_obs
-    assert strategy._current_answer == query
+    assert strategy._answer == query
     assert strategy._finished is True
     assert strategy._scratchpad == gt_scratchpad
 
@@ -159,7 +159,7 @@ def test_generate_observation() -> None:
         obs
         == "Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer]."
     )
-    assert strategy._current_answer == ""
+    assert strategy._answer == ""
     assert strategy._finished is False
     assert strategy._scratchpad == gt_scratchpad
 
@@ -172,14 +172,14 @@ def test_create_output_dict() -> None:
     action_type = "implement"
     query = "def add(a, b): return a + b"
     obs = "Execution succeeded"
-    strategy._current_answer = "def add(a, b): return a + b"
+    strategy._answer = "def add(a, b): return a + b"
 
     expected_output = {
         "thought": thought,
         "action_type": action_type,
         "query": query,
         "observation": obs,
-        "answer": strategy._current_answer,
+        "answer": strategy._answer,
     }
 
     output = strategy.create_output_dict(thought, action_type, query, obs)
@@ -207,13 +207,13 @@ def test_reset() -> None:
     """Tests ReActCodeStrategy reset."""
     llm = FakeListChatModel(responses=[])
     strategy = ReActCodeStrategy(llm=llm)
-    strategy._current_answer = "def add(a, b): return a + b"
+    strategy._answer = "def add(a, b): return a + b"
     strategy._scratchpad = "Some scratchpad content"
     strategy._finished = True
 
     strategy.reset()
 
-    assert strategy._current_answer == ""
+    assert strategy._answer == ""
     assert strategy._scratchpad == ""
     assert not strategy._finished
 
