@@ -444,8 +444,11 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
             key (str): The key for the observation.
 
         Returns:
-            Tuple[bool, str]: A tuple containing a boolean indicating whether the answer is correct, and a string representing the observation.
+            Tuple[bool, str, Dict[str, Any]]: A tuple containing a boolean indicating whether the answer is correct, a string representing the observation,
+                and a dictionary of the external tool outputs.
         """
+        external_tool_info = {"search_result": "", "lookup_result": ""}
+
         self._scratchpad += f"\nObservation {step_idx}: "
         if action_type.lower() == "finish":
             self._answer = query
@@ -456,19 +459,23 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
                 obs = "Answer is INCORRECT"
         elif action_type.lower() == "search":
             try:
-                obs = remove_newline(self.docstore.search(query))
+                search_result = self.docstore.search(query)
+                external_tool_info["search_result"] = search_result
+                obs = remove_newline(search_result)
             except Exception:
                 obs = "Could not find that page, please try again."
         elif action_type.lower() == "lookup":
             try:
-                obs = remove_newline(self.docstore.lookup(query))
+                lookup_result = self.docstore.lookup(query)
+                external_tool_info["lookup_result"] = lookup_result
+                obs = remove_newline(lookup_result)
             except ValueError:
                 obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
         else:
             obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
         self._scratchpad += obs
 
-        return EM(self._answer, key), obs
+        return EM(self._answer, key), obs, external_tool_info
 
     def create_output_dict(
         self,
