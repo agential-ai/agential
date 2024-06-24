@@ -448,6 +448,7 @@ def test_reflexion_react_react_create_output_dict() -> None:
         "action_type": "Query",
         "query": "What is the capital of France?",
         "observation": "Observation: Answer is CORRECT",
+        "answer": "",
         "is_correct": True,
     }
     assert output == expected_output
@@ -465,6 +466,7 @@ def test_reflexion_react_react_create_output_dict() -> None:
         "action_type": "Validate",
         "query": "Is 2+2=4?",
         "observation": "Observation: Answer is CORRECT",
+        "answer": "",
         "is_correct": True,
     }
     assert output == expected_output
@@ -482,6 +484,7 @@ def test_reflexion_react_react_create_output_dict() -> None:
         "action_type": "Answer",
         "query": "What is the square root of 16?",
         "observation": "Observation: Answer is INCORRECT",
+        "answer": "",
         "is_correct": False,
     }
     assert output == expected_output
