@@ -7,8 +7,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.strategies.base import BaseStrategy
 
-from pydantic import BaseModel, Field, Extra
-
+from pydantic import BaseModel, Field
 
 class CriticBaseStrategy(BaseStrategy):
     """An abstract base class for defining strategies for the CRITIC Agent."""
