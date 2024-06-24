@@ -164,11 +164,14 @@ def test_generate_observation() -> None:
     strategy.docstore.search = lambda x: (_ for _ in ()).throw(
         Exception("Search failed")
     )
-    obs = strategy.generate_observation(idx=4, action_type=action_type, query=query)
+    obs, external_tool_info = strategy.generate_observation(idx=4, action_type=action_type, query=query)
     assert isinstance(obs, str)
     assert obs == "Could not find that page, please try again."
     assert strategy._finished == False
     assert strategy._scratchpad != init_scratchpad
+    assert "search_result" in external_tool_info
+    assert "lookup_result" in external_tool_info
+    assert external_tool_info['search_result'] != ""
 
     # Test lookup success.
     action_type = "Lookup"
@@ -182,11 +185,14 @@ def test_generate_observation() -> None:
     strategy.docstore.lookup = (
         lambda x: "Several controversies and legal issues related to Buakaw Banchamek."
     )
-    obs = strategy.generate_observation(idx=5, action_type=action_type, query=query)
+    obs, external_tool_info = strategy.generate_observation(idx=5, action_type=action_type, query=query)
     assert isinstance(obs, str)
     assert obs == "Several controversies and legal issues related to Buakaw Banchamek."
     assert strategy._finished == False
     assert strategy._scratchpad != init_scratchpad
+    assert "search_result" in external_tool_info
+    assert "lookup_result" in external_tool_info
+    assert external_tool_info['lookup_result'] != ""
 
     # Test lookup failure.
     action_type = "Lookup"
@@ -200,7 +206,7 @@ def test_generate_observation() -> None:
     strategy.docstore.lookup = lambda x: (_ for _ in ()).throw(
         ValueError("Lookup failed")
     )
-    obs = strategy.generate_observation(idx=6, action_type=action_type, query=query)
+    obs, external_tool_info = strategy.generate_observation(idx=6, action_type=action_type, query=query)
     assert isinstance(obs, str)
     assert (
         obs
@@ -208,6 +214,9 @@ def test_generate_observation() -> None:
     )
     assert strategy._finished == False
     assert strategy._scratchpad != init_scratchpad
+    assert "search_result" in external_tool_info
+    assert "lookup_result" in external_tool_info
+    assert external_tool_info['lookup_result'] != ""
 
     # Test invalid action.
     action_type = "Invalid"
@@ -218,13 +227,16 @@ def test_generate_observation() -> None:
     strategy = ReActQAStrategy(llm=llm)
     strategy._scratchpad = init_scratchpad
     strategy._finished = False
-    obs = strategy.generate_observation(idx=7, action_type=action_type, query=query)
+    obs, external_tool_info = strategy.generate_observation(idx=7, action_type=action_type, query=query)
     assert isinstance(obs, str)
     assert (
         obs
         == "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
     )
-
+    assert "search_result" in external_tool_info
+    assert "lookup_result" in external_tool_info
+    assert external_tool_info['search_result'] == ""
+    assert external_tool_info['lookup_result'] == ""
 
 def test_create_output_dict() -> None:
     """Tests ReActQAStrategy create_output_dict."""
