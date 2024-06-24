@@ -291,6 +291,12 @@ def test_reflexion_react_generate() -> None:
         mode={"qa": "hotpotqa"},
         max_trials=1,
     )
+    agent.strategy.docstore.search = (
+        lambda x: "Search result"
+    )
+    agent.strategy.docstore.lookup = (
+        lambda x: "Lookup result"
+    )
     out = agent.generate(
         question=question,
         key=key,
@@ -333,6 +339,12 @@ def test_reflexion_react_generate() -> None:
     ]
     llm = FakeListChatModel(responses=responses)
     agent = ReflexionReActAgent(llm=llm, mode={"qa": "hotpotqa"}, max_trials=1)
+    agent.strategy.docstore.search = (
+        lambda x: "Search result"
+    )
+    agent.strategy.docstore.lookup = (
+        lambda x: "Lookup result"
+    )
     out = agent.generate(
         question=question,
         key=key,
@@ -403,6 +415,12 @@ def test_reflexion_react_generate() -> None:
         mode={"qa": "hotpotqa"},
         max_trials=2,
     )
+    agent.strategy.docstore.search = (
+        lambda x: "Search result"
+    )
+    agent.strategy.docstore.lookup = (
+        lambda x: "Lookup result"
+    )
     out = agent.generate(
         question=question,
         key=key,
@@ -446,6 +464,12 @@ def test_reflexion_react_generate() -> None:
     ]
     llm = FakeListChatModel(responses=responses)
     agent = ReflexionReActAgent(llm=llm, mode={"qa": "hotpotqa"})
+    agent.strategy.docstore.search = (
+        lambda x: "Search result"
+    )
+    agent.strategy.docstore.lookup = (
+        lambda x: "Lookup result"
+    )
     out = agent.generate(
         question=question,
         key=key,
@@ -480,6 +504,12 @@ def test_reflexion_react_generate() -> None:
     ]
     llm = FakeListChatModel(responses=responses)
     agent = ReflexionReActAgent(llm=llm, mode={"qa": "hotpotqa"})
+    agent.strategy.docstore.search = (
+        lambda x: "Search result"
+    )
+    agent.strategy.docstore.lookup = (
+        lambda x: "Lookup result"
+    )
     out = agent.generate(
         question=question,
         key=key,
@@ -501,6 +531,12 @@ def test_reflexion_react_generate() -> None:
 
     # In a subsequent run, answer correctly (reset defaults to True). Output is non-empty if patience is correctly reset.
     agent = ReflexionReActAgent(llm=llm, mode={"qa": "hotpotqa"})
+    agent.strategy.docstore.search = (
+        lambda x: "Search result"
+    )
+    agent.strategy.docstore.lookup = (
+        lambda x: "Lookup result"
+    )
     out = agent.generate(
         question=question,
         key=key,
