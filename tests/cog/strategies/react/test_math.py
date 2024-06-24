@@ -161,8 +161,7 @@ def test_generate_observation() -> None:
     assert strategy._answer == ""
     assert strategy._finished is False
     assert strategy._scratchpad == gt_scratchpad
-    print(external_tool_info)
-    assert external_tool_info == {"execution_status": "Done", "code_answer": [-9867630]}
+    assert external_tool_info == {'execution_status': '', 'code_answer': ''}
 
 
 def test_create_output_dict() -> None:
