@@ -607,6 +607,24 @@ Reflection: My reasoning failed because I doubted the clear evidence provided by
 # ======================================================================== GSM8K ======================================================================== #
 
 
+GSM8K_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """"""
+
+
+REFLEXION_COT_REFLECT_INSTRUCTION_GSM8K = """"""
+
+
+REFLEXION_COT_INSTRUCTION_GSM8K = """"""
+
+
+REFLEXION_REACT_INSTRUCTION_GSM8K = """"""
+
+
+REFLEXION_REACT_REFLECT_INSTRUCTION_GSM8K = """"""
+
+
+GSM8K_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """"""
+
+
 # ======================================================================== SVAMP ======================================================================== #
 
 
