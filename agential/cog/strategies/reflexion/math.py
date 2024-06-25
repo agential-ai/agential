@@ -194,7 +194,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
             self._scratchpad = ""
             self._finished = False
             self._answer = ""
-            
+
     def reflect(
         self,
         reflect_strategy: str,
@@ -203,14 +203,20 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[List[str] | str]:
-        return super().reflect(
-            reflect_strategy, question, examples, prompt, additional_keys
+        reflections, reflections_str = self.reflector.reflect(
+            reflect_strategy=reflect_strategy,
+            question=question,
+            examples=examples,
+            scratchpad=self._scratchpad,
+            prompt=prompt,
+            additional_keys=additional_keys,
         )
+        return reflections, reflections_str
 
     def reflect_condition(
         self, idx: int, reflect_strategy: str | None, key: str
     ) -> bool:
-        return super().reflect_condition(idx, reflect_strategy, key)
+        return idx > 0 and not EM(self._answer, key) and reflect_strategy is not None
 
 
 class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
