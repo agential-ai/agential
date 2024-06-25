@@ -154,7 +154,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
             self._finished = True
             self._answer = query
             answer, _ = safe_execute(self._answer)
-            if str(answer[0]) == str(key):
+            if EM(answer[0], key, normalize=False):
                 obs = "Answer is CORRECT"
             else:
                 obs = "Answer is INCORRECT"
@@ -162,7 +162,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
             obs = "Invalid action type, please try again."
         self._scratchpad += obs
 
-        return str(answer[0]) == str(key), obs
+        return EM(answer[0], key, normalize=False), obs
 
     def create_output_dict(
         self,
@@ -184,7 +184,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
     def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
         max_trials = kwargs.get("max_trials", self.max_trials)
         answer, _ = safe_execute(self._answer)
-        return str(answer[0]) == str(key) or idx >= max_trials
+        return EM(answer[0], key, normalize=False) or idx >= max_trials
     
     def reset(self, *args: Any, **kwargs: Any) -> None:
         only_scratchpad = kwargs.get("only_scratchpad", False)
@@ -218,7 +218,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
         self, idx: int, reflect_strategy: str | None, key: str
     ) -> bool:
         answer, _ = safe_execute(self._answer)
-        return idx > 0 and not (str(answer[0]) == str(key)) and reflect_strategy is not None
+        return idx > 0 and not EM(answer[0], key, normalize=False) and reflect_strategy is not None
 
 
 class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
