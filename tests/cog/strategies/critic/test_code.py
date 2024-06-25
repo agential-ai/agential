@@ -90,7 +90,7 @@ assert first_repeated_char("123123") == "1\""""
     )
 
     assert critique == gt_critique
-    assert external_tool_info == {}
+    assert external_tool_info == {"execution_status": ""}
 
     # Test no tests error.
     with pytest.raises(ValueError):
