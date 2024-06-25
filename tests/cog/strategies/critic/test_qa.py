@@ -169,7 +169,10 @@ def test_generate_critique() -> None:
     )
 
     assert result == gt_result
-    assert external_tool_info == {}
+    assert external_tool_info == {
+        "search_query": "",
+        "search_result": ""
+    }
     assert strategy._query_history == []
     assert strategy._evidence_history == set()
     assert strategy._halt
