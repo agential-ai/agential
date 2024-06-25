@@ -22,3 +22,13 @@ def test_em() -> None:
     )
     result = EM(sample_answer, sample_key)
     assert not result
+
+    sample_answer = " A fox jumped over the fence. "
+    sample_key = "A fox jumped over the fence."
+    result = EM(sample_answer, sample_key, normalize=False)
+    assert not result
+
+    sample_answer = "A fox jumped over the fence."
+    sample_key = "A fox jumped over the fence."
+    result = EM(sample_answer, sample_key, normalize=False)
+    assert result
