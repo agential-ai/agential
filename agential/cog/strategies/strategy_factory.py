@@ -45,6 +45,14 @@ from agential.cog.strategies.reflexion.qa import (
     ReflexionReActHotQAStrategy,
     ReflexionReActTriviaQAStrategy,
 )
+from agential.cog.strategies.reflexion.math import (
+    ReflexionCoTGSM8KStrategy,
+    ReflexionCoTSVAMPStrategy,
+    ReflexionCoTTabMWPStrategy,
+    ReflexionReActGSM8KStrategy,
+    ReflexionReActSVAMPStrategy,
+    ReflexionReActTabMWPStrategy,
+)
 
 
 class CriticStrategyFactory:
@@ -210,11 +218,11 @@ class ReflexionCoTStrategyFactory:
                 raise ValueError(f"Unsupported QA benchmark: {mode['qa']}")
         elif "math" in mode:
             if mode["math"] == "gsm8k":
-                pass
+                return ReflexionCoTGSM8KStrategy(**strategy_kwargs)
             elif mode["math"] == "svamp":
-                pass
+                return ReflexionCoTSVAMPStrategy(**strategy_kwargs)
             elif mode["math"] == "tabmwp":
-                pass
+                return ReflexionCoTTabMWPStrategy(**strategy_kwargs)
             else:
                 raise ValueError(f"Unsupported Math benchmark: {mode['math']}")
         elif "code" in mode:
@@ -273,11 +281,11 @@ class ReflexionReActStrategyFactory:
                 raise ValueError(f"Unsupported QA benchmark: {mode['qa']}")
         elif "math" in mode:
             if mode["math"] == "gsm8k":
-                pass
+                return ReflexionReActGSM8KStrategy(**strategy_kwargs)
             elif mode["math"] == "svamp":
-                pass
+                return ReflexionReActSVAMPStrategy(**strategy_kwargs)
             elif mode["math"] == "tabmwp":
-                pass
+                return ReflexionReActTabMWPStrategy(**strategy_kwargs)
             else:
                 raise ValueError(f"Unsupported Math benchmark: {mode['math']}")
         elif "code" in mode:
