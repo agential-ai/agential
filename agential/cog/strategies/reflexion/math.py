@@ -128,6 +128,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
+        **kwargs: Any
     ) -> Tuple[str, str]:
         self._scratchpad += "\nAction:"
         action = _prompt_cot_agent(
@@ -186,7 +187,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
         answer, _ = safe_execute(self._answer)
         return EM(answer[0], key, normalize=False) or idx >= max_trials
     
-    def reset(self, *args: Any, **kwargs: Any) -> None:
+    def reset(self, **kwargs: Any) -> None:
         only_scratchpad = kwargs.get("only_scratchpad", False)
         if only_scratchpad:
             self._scratchpad = ""
