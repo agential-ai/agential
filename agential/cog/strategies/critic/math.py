@@ -101,7 +101,11 @@ class CriticMathStrategy(CriticBaseStrategy):
         Returns:
             Tuple[str, Dict[str, Any]]: The generated critique and external tool information.
         """
-        external_tool_info = {}
+        external_tool_info = {
+            "execution_status": "",
+            "code_answer": ""
+        }
+
         if use_tool:
             code_answer, execution_status = safe_execute(answer)
             external_tool_info = {
@@ -136,7 +140,7 @@ class CriticMathStrategy(CriticBaseStrategy):
             validate_overlapping_keys(additional_keys, external_tool_info)
 
         additional_keys = additional_keys.copy()
-        additional_keys.update(external_tool_info)
+        additional_keys.update(external_tool_info if use_tool else {})
 
         new_critique = _prompt_critique(
             llm=self.llm,
