@@ -175,18 +175,26 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
         return {
             "thought": thought,
             "action_type": action_type,
-            "obs": obs,
+            "observation": obs,
             "answer": self._answer,
             "is_correct": is_correct,
             "reflections": reflections,
         }
 
     def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
-        return super().halting_condition(idx, key, **kwargs)
-
+        max_trials = kwargs.get("max_trials", self.max_trials)
+        return EM(self._answer, key) or idx >= max_trials
+    
     def reset(self, *args: Any, **kwargs: Any) -> None:
-        return super().reset(*args, **kwargs)
-
+        only_scratchpad = kwargs.get("only_scratchpad", False)
+        if only_scratchpad:
+            self._scratchpad = ""
+        else:
+            self.reflector.reset()
+            self._scratchpad = ""
+            self._finished = False
+            self._answer = ""
+            
     def reflect(
         self,
         reflect_strategy: str,
