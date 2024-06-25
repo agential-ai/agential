@@ -91,6 +91,8 @@ answer = denny_lollipops
 ```
 ]
 
+---
+
 Question: There are 15 trees in the grove. Grove workers will plant trees in the grove today. After they are done, there will be 21 trees. How many trees did the grove workers plant today?
 Thought: Let's think step by step. There were initially 15 trees and after planting, there are 21 trees. So, the number of trees planted is 21 - 15 = 6.
 Action: Finish[
@@ -101,6 +103,8 @@ trees_added = trees_after - trees_initial
 answer = trees_added
 ```
 ]
+
+---
 
 Question: Shawn has five toys. For Christmas, he got two toys each from his mom and dad. How many toys does he have now?
 Thought: Let's think step by step. Shawn had 5 toys initially, and he got 2 toys from his mom and 2 toys from his dad. So, the total number of toys he has now is 5 + 2 + 2 = 9.
@@ -115,6 +119,8 @@ answer = total_toys
 ```
 ]
 
+---
+
 Question: There were nine computers in the server room. Five more computers were installed each day, from Monday to Thursday. How many computers are now in the server room?
 Thought: Let's think step by step. Initially, there were 9 computers. Five more computers were added each day from Monday to Thursday, which is 4 days. So, the total number of computers added is 5 * 4 = 20. Therefore, the total number of computers now is 9 + 20 = 29.
 Action: Finish[
@@ -128,6 +134,8 @@ answer = computers_total
 ```
 ]
 
+---
+
 Question: Michael had 58 golf balls. On Tuesday, he lost 23 golf balls. On Wednesday, he lost 2 more. How many golf balls did he have at the end of Wednesday?
 Thought: Let's think step by step. Michael initially had 58 golf balls. He lost 23 golf balls on Tuesday and 2 more on Wednesday. So, the total number of golf balls lost is 23 + 2 = 25. Therefore, the number of golf balls he has left is 58 - 25 = 33.
 Action: Finish[
@@ -140,6 +148,9 @@ answer = golf_balls_left
 ```
 ]
 
+
+---
+
 Question: If there are 3 cars in the parking lot and 2 more cars arrive, how many cars are in the parking lot?
 Thought: Let's think step by step. Initially, there are 3 cars in the parking lot. When 2 more cars arrive, the total number of cars is 3 + 2 = 5.
 Action: Finish[
@@ -150,6 +161,8 @@ total_cars = cars_initial + cars_arrived
 answer = total_cars
 ```
 ]
+
+---
 
 Question: Olivia has $23. She bought five bagels for $3 each. How much money does she have left?
 Thought: Let's think step by step. Olivia had $23 initially. She bought 5 bagels for $3 each. The total cost of the bagels is 5 * 3 = $15. So, the money she has left is 23 - 15 = $8.
@@ -163,6 +176,8 @@ money_left = money_initial - money_spent
 answer = money_left
 ```
 ]
+
+---
 
 Question: Leah had 32 chocolates and her sister had 42. If they ate 35, how many pieces do they have left in total?
 Thought: Let's think step by step. Leah had 32 chocolates and her sister had 42 chocolates. Together they had 32 + 42 = 74 chocolates. They ate 35 chocolates, so the number of chocolates left is 74 - 35 = 39.

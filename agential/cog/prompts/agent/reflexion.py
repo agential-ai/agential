@@ -607,13 +607,60 @@ Reflection: My reasoning failed because I doubted the clear evidence provided by
 # ======================================================================== GSM8K ======================================================================== #
 
 
-GSM8K_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """"""
+GSM8K_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """Question: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops did Jason give to Denny?
+Thought: Let's think step by step. Jason had 20 lollipops initially and now he has 12 lollipops. So, he must have given 20 + 12 = 32 lollipops to Denny.
+Action: Finish[
+```python
+jason_lollipops_initial = 20
+jason_lollipops_after = 12
+denny_lollipops = jason_lollipops_initial + jason_lollipops_after
+answer = denny_lollipops
+```
+]
+
+Reflection: My reasoning failed because I incorrectly added the initial and remaining lollipops instead of subtracting the remaining from the initial to find out how many were given away. In the future, I should ensure to carefully review the mathematical operations required to solve the problem accurately.
+
+---
+
+Question: There are 15 trees in the grove. Grove workers will plant trees in the grove today. After they are done, there will be 21 trees. How many trees did the grove workers plant today?
+Thought: Let's think step by step. There were initially 15 trees and after planting, there are 21 trees. So, the number of trees planted is 15 - 21 = -6.
+Action: Finish[
+```python
+trees_initial = 15
+trees_after = 21
+trees_added = trees_initial - trees_after
+answer = trees_added
+```
+]
+
+Reflection: My reasoning failed because I subtracted the final number of trees from the initial number of trees instead of subtracting the initial number from the final number. In the future, I should ensure to correctly apply the operations needed to find the difference.
+"""
 
 
-REFLEXION_COT_REFLECT_INSTRUCTION_GSM8K = """"""
 
 
-REFLEXION_COT_INSTRUCTION_GSM8K = """"""
+
+REFLEXION_COT_REFLECT_INSTRUCTION_GSM8K = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Previous trial:
+Question: {question}{scratchpad}
+
+Reflection:"""
+
+
+REFLEXION_COT_INSTRUCTION_GSM8K = """Solve a math question task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+{reflections}
+
+Question: {question}{scratchpad}"""
 
 
 REFLEXION_REACT_INSTRUCTION_GSM8K = """"""
