@@ -106,11 +106,8 @@ class CriticQAStrategy(CriticBaseStrategy):
         Returns:
             Tuple[str, Dict[str, Any]]: The generated critique and any external tool information.
         """
-        external_tool_info = {
-            "search_query": "",
-            "search_result": ""
-        }
-        
+        external_tool_info = {"search_query": "", "search_result": ""}
+
         new_critique = _prompt_critique(
             llm=self.llm,
             question=question,

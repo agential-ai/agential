@@ -101,10 +101,7 @@ class CriticMathStrategy(CriticBaseStrategy):
         Returns:
             Tuple[str, Dict[str, Any]]: The generated critique and external tool information.
         """
-        external_tool_info = {
-            "execution_status": "",
-            "code_answer": ""
-        }
+        external_tool_info = {"execution_status": "", "code_answer": ""}
 
         if use_tool:
             code_answer, execution_status = safe_execute(answer)
