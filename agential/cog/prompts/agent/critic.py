@@ -904,10 +904,10 @@ According to the question, each person only eats their own personal pan pizza, `
 Here's a better solution:
 ```python
 pizza_pieces = 4  # each person buys a personal pan pizza cut into 4 pieces
-ann_pieces = 4 * 0.75  # Ann eats 75% of her pizza
-bill_pieces = 4 * 0.5  # Bill eats 50% of his pizza
-cate_pieces = 4 * 0.75  # Cate eats 75% of her pizza
-dale_pieces = 4 * 0.5  # Dale eats 50% of his pizza
+ann_pieces = 4 * 0.75  # Ann eats 75%% of her pizza
+bill_pieces = 4 * 0.5  # Bill eats 50%% of his pizza
+cate_pieces = 4 * 0.75  # Cate eats 75%% of her pizza
+dale_pieces = 4 * 0.5  # Dale eats 50%% of his pizza
 
 total_pieces_eaten = ann_pieces + bill_pieces + cate_pieces + dale_pieces
 

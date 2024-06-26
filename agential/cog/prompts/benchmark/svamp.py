@@ -1,5 +1,48 @@
 """Few-shot examples for SVAMP."""
 
+NEW_SVAMP_FEWSHOT_EXAMPLES_POT = """Question: Marco and his dad went strawberry picking. Marco's dad's strawberries weighed 11 pounds. If together their strawberries weighed 30 pounds. How much did Marco's strawberries weigh?
+# Python code, return answer
+dad_strawberries_weight = 11
+total_weight_together = 30
+answer = total_weight_together - dad_strawberries_weight
+
+---
+
+Question: Zachary did 46 push-ups and 58 crunches in gym class today. David did 38 more push-ups but 62 less crunches than zachary. How many more crunches than push-ups did Zachary do?
+# Python code, return answer
+zachary_push_ups = 46
+zachary_crunches = 58
+david_push_ups = zachary_push_ups + 38
+david_crunches = zachary_crunches - 62
+# Calculate how many more crunches Zachary did than push-ups
+answer = zachary_crunches - zachary_push_ups
+
+---
+
+Question: Faye had 35 packs of pencils each one having 4 pencils. She was placing her pencils into rows with 2 pencils in each row. How many rows could she make?
+# Python code, return answer
+num_packs_of_pencils = 35
+pencils_per_pack = 4
+pencils_total = num_packs_of_pencils * pencils_per_pack
+pencils_per_row = 2
+# Calculate how many rows Faye could make
+answer = pencils_total // pencils_per_row
+
+---
+
+Question: Jack received 4 emails and sent 2 emails in the morning. He then received 6 emails and sent 8 emails in the afternoon. How many emails did Jack send in the day?
+# Python code, return answer
+morning_received = 4
+morning_sent = 2
+afternoon_received = 6
+afternoon_sent = 8
+# Calculate total emails sent by Jack in the day
+total_sent = morning_sent + afternoon_sent
+total_sent
+
+
+"""
+
 SVAMP_FEWSHOT_EXAMPLES_POT = """Question: James bought 93 red and 10 blue stickers, he used 31 red sticker on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
 # Python code, return answer
 original_red_stickers = 93
