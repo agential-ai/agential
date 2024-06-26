@@ -5,6 +5,9 @@ import re
 from typing import Any, Dict, List, Optional, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
+import tiktoken
+
+from tiktoken.core import Encoding
 
 from agential.cog.eval.reflexion import EM
 from agential.cog.functional.reflexion import (
@@ -223,12 +226,59 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
 
 
 class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
-    def __init__(self, llm: BaseChatModel) -> None:
+    def __init__(
+        self, 
+        llm: BaseChatModel,
+        reflector: Optional[ReflexionReActReflector] = None,
+        max_reflections: int = 3,
+        max_trials: int = 1,
+        max_steps: int = 6,
+        max_tokens: int = 3896,
+        enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
+    ) -> None:
         super().__init__(llm)
+        self.max_reflections = max_reflections
+        self.max_trials = max_trials
+        self.max_steps = max_steps
+        self.max_tokens = max_tokens
+        self.enc = enc
 
-    def generate(self, *args: Any, **kwargs: Any) -> str:
-        return super().generate(*args, **kwargs)
+        if not reflector:
+            reflector = ReflexionReActReflector(
+                llm=llm, max_reflections=max_reflections
+            )
+        self.reflector = reflector
 
+        self._finished = False
+        self._answer = ""
+        self._scratchpad = ""
+
+    def generate(
+        self,
+        question: str,
+        examples: str,
+        reflections: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+        **kwargs: Any,
+    ) -> str:
+        max_steps = kwargs.get("max_steps", self.max_steps)  # type: ignore
+
+        self._scratchpad += "\nThought:"
+        thought = _prompt_react_agent(
+            llm=self.llm,
+            question=question,
+            examples=examples,
+            reflections=reflections,
+            scratchpad=self._scratchpad,
+            max_steps=max_steps,  # type: ignore
+            prompt=prompt,
+            additional_keys=additional_keys,
+        )
+        thought = remove_newline(thought).split("Action")[0]
+        self._scratchpad += " " + thought
+
+        return thought
     def generate_action(
         self,
         question: str,
@@ -238,15 +288,54 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         additional_keys: Dict[str, str],
         **kwargs: Any,
     ) -> Tuple[str]:
-        return super().generate_action(
-            question, examples, reflections, prompt, additional_keys, **kwargs
+        max_steps = kwargs.get("max_steps", self.max_steps)
+        self._scratchpad += "\nAction:"
+        action = _prompt_react_agent(
+            llm=self.llm,
+            question=question,
+            examples=examples,
+            reflections=reflections,
+            scratchpad=self._scratchpad,
+            max_steps=max_steps,  # type: ignore
+            prompt=prompt,
+            additional_keys=additional_keys,
         )
+        action = action.split("Observation")[0].strip()
+
+        action_type, query = parse_math_action(action)
+        self._scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
+
+        return action_type, query
 
     def generate_observation(
         self, step_idx: int, action_type: str, query: str, key: str
     ) -> Tuple[bool | str]:
-        return super().generate_observation(step_idx, action_type, query, key)
+        external_tool_info = {"execution_status": "", "code_answer": ""}
 
+        self._scratchpad += f"\nObservation {step_idx}: "
+        if action_type.lower() == "finish":
+            code_answer, execution_status = safe_execute(query)
+            external_tool_info["code_answer"] = code_answer
+            external_tool_info["execution_status"] = execution_status
+
+            self._answer = query
+            self._finished = True
+            obs = f"\n```python\n{self._answer}\n```"
+        elif action_type.lower() == "calculate":
+            code_answer, execution_status = safe_execute(query)
+            external_tool_info["code_answer"] = code_answer
+            external_tool_info["execution_status"] = execution_status
+
+            self._answer = query
+            obs = f"\n```python\n{self._answer}\n```\nExecution Status: {execution_status}\nOutput: answer = {code_answer[0]}"
+        else:
+            obs = (
+                "Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
+            )
+        self._scratchpad += obs
+
+        return obs, external_tool_info
+    
     def create_output_dict(
         self, react_out: List[Dict[str, Any]], reflections: List[str]
     ) -> Dict[str, Any]:
