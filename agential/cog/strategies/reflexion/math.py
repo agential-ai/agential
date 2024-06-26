@@ -153,11 +153,12 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
     def generate_observation(
         self, action_type: str, query: str, key: str
     ) -> Tuple[bool | str]:
+        answer, _ = safe_execute(self._answer)
+        
         self._scratchpad += f"\nObservation: "
         if action_type.lower() == "finish":
             self._finished = True
             self._answer = query
-            answer, _ = safe_execute(self._answer)
             if EM(answer[0], key, normalize=False):
                 obs = "Answer is CORRECT"
             else:
@@ -320,7 +321,12 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
 
             self._answer = query
             self._finished = True
-            obs = f"\n```python\n{self._answer}\n```"
+
+            answer, _ = safe_execute(self._answer)
+            if EM(answer[0], key, normalize=False):
+                obs = "Answer is CORRECT"
+            else:
+                obs = "Answer is INCORRECT"
         elif action_type.lower() == "calculate":
             code_answer, execution_status = safe_execute(query)
             external_tool_info["code_answer"] = code_answer
@@ -334,8 +340,8 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
             )
         self._scratchpad += obs
 
-        return obs, external_tool_info
-    
+        return EM(answer[0], key, normalize=False), obs, external_tool_info
+
     def create_output_dict(
         self, react_out: List[Dict[str, Any]], reflections: List[str]
     ) -> Dict[str, Any]:
