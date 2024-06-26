@@ -895,7 +895,7 @@ What's the problem with the above code?
 
 It calculates the total number of pieces `num_of_pieces`, that's correct.
 
-> # Bill and Dale eat 50% of their pizzas and Ann and Cate eat 75% of the pizzas
+> # Bill and Dale eat 50%% of their pizzas and Ann and Cate eat 75%% of the pizzas
 > num_of_pieces_eaten_by_bill_and_dale = num_of_pieces * 0.5
 > num_of_pieces_eaten_by_ann_and_cate = num_of_pieces * 0.75
 

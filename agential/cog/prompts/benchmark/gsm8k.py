@@ -1,5 +1,79 @@
 """Few-shot examples for GSM8K."""
 
+NEW_GSM8K_FEWSHOT_EXAMPLES_POT = """Question: Janet hires six employees. Four of them are warehouse workers who make $15/hour, and the other two are managers who make $20/hour. Janet has to pay 10% of her workers' salaries in FICA taxes. If everyone works 25 days a month and 8 hours a day, how much does Janet owe total for their wages and taxes for one month?
+# Python code, return answer
+# Define the variables
+warehouse_workers = 4
+manager_workers = 2
+warehouse_hourly_rate = 15
+manager_hourly_rate = 20
+days_worked_per_month = 25
+hours_per_day = 8
+fica_tax_rate = 0.1
+wages_warehouse = warehouse_workers * warehouse_hourly_rate * days_worked_per_month * hours_per_day
+wages_managers = manager_workers * manager_hourly_rate * days_worked_per_month * hours_per_day
+total_wages_before_tax = wages_warehouse + wages_managers
+total_due = total_wages_before_tax * ( 1 + fica_tax_rate)
+answer = total_due
+
+---
+
+Question: A farmer has twice as many pigs as cows, and 4 more cows than goats.  If the farmer has 56 animals total, how many pigs does he have?
+# Python code, return answer
+# let's define the number of goats is x
+# then the number of cows is 4+x
+# then the number of pigs is 2(4+x) 
+# so, total animals is x + (4+x) + 2(4+x) = 56
+# Now we can solve for "x":
+# x + 4 + x + 2x + 8 = 56
+# 4x + 12 = 56
+# 4x = 44
+# x = 11
+num_of_goats = 11
+num_of_cows = num_of_goats + 4
+num_of_pigs = 2 * num_of_cows
+answer = num_of_pigs
+
+---
+
+Question: Ann, Bill, Cate, and Dale each buy personal pan pizzas cut into 4 pieces. If Bill and Dale eat 50%% of their pizzas and Ann and Cate eat 75%% of the pizzas, how many pizza pieces are left uneaten?
+# Python code, return answer
+pizza_pieces = 4
+ann_pieces = 4 * 0.75
+bill_pieces = 4 * 0.5
+cate_pieces = 4 * 0.75
+dale_pieces = 4 * 0.5
+total_pieces_eaten = ann_pieces + bill_pieces + cate_pieces + dale_pieces
+total_pieces = pizza_pieces * 4  # there are 4 people
+pieces_left = total_pieces - total_pieces_eaten
+answer = pieces_left
+
+---
+
+Question: Tommy is making 12 loaves of bread. He needs 4 pounds of flour per loaf. A 10-pound bag of flour costs $10 and a 12-pound bag costs $13. When he is done making his bread, he has no use for flour and so he will throw away whatever is left. How much does he spend on flour if he buys the cheapest flour to get enough?
+# Python code, return answer
+import math
+# Calculate how many pounds of flour Tommy needs
+num_of_loaves = 12
+pounds_of_flour_per_loaf = 4
+total_pounds_of_flour = num_of_loaves * pounds_of_flour_per_loaf
+cost_of_10_pounds_bag = 10
+cost_of_12_pounds_bag = 13
+# Calculate the number of bags needed
+num_of_10_pounds_bag = math.ceil(total_pounds_of_flour / 10)
+num_of_12_pounds_bag = math.ceil(total_pounds_of_flour / 12)
+# Calculate the cost of flour
+cost_of_10_pounds = num_of_10_pounds_bag * cost_of_10_pounds_bag
+cost_of_12_pounds = num_of_12_pounds_bag * cost_of_12_pounds_bag
+# Choose the cheapest option
+total_cost = min(cost_of_10_pounds, cost_of_12_pounds)
+answer = total_cost
+
+"""
+
+NEW_GSM8K_FEWSHOT_EXAMPLES_REACT = """
+"""
+
 GSM8K_FEWSHOT_EXAMPLES_POT = """Question: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops did Jason give to Denny?
 # Python code, return answer
 jason_lollipops_initial = 20
