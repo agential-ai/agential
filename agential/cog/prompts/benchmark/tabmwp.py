@@ -1,5 +1,107 @@
 """Few-shot examples for TabMWP."""
 
+NEW_TABMWP_FEWSHOT_EXAMPLES_POT = """Read the following table and then write Python code to answer a question:
+
+llama | $2,860.00
+macaw | $8,897.00
+parrot | $1,586.00
+boa constrictor | $1,382.00
+kinkajou | $2,629.00
+
+Question: How much money does Kendra need to buy a kinkajou and a parrot?
+# Python Code, return answer
+price_kinkajou = 2629.00
+price_parrot = 1586.00
+# Total money needed
+answer = price_kinkajou + price_parrot
+
+---
+
+Read the following table regarding "Words per page" and then write Python code to answer a question:
+
+Stem | Leaf 
+3 | 3
+4 | 1, 7, 8
+5 | 2, 5, 6
+6 | 0, 0, 1, 3, 4
+7 | 2, 2, 4, 5, 8
+8 | 0, 1, 4, 8
+9 | 0
+
+Question: Cameron counted the number of words per page in his new book. How many pages have at least 70 words but fewer than 90 words?
+# Python Code, return answer
+# Stem-and-leaf plot data
+words_per_page = {
+    3: [3],
+    4: [1, 7, 8],
+    5: [2, 5, 6],
+    6: [0, 0, 1, 3, 4],
+    7: [2, 2, 4, 5, 8],
+    8: [0, 1, 4, 8],
+    9: [0]
+}
+
+# Initialize a counter for pages with 70-89 words
+pages_count = 0
+
+# Iterate through each stem and count pages with words between 70 and 89
+for stem, leaves in words_per_page.items():
+    if stem >= 7 and stem < 9:  # stems 7 and 8
+        for leaf in leaves:
+            if (stem * 10) + leaf >= 70 and (stem * 10) + leaf < 90:
+                pages_count += 1
+
+answer = pages_count
+
+---
+
+Read the following table and then write Python code to answer a question:
+
+Number of cow pastures | Number of sprinklers
+1 | 10
+2 | 20
+3 | 30
+4 | 40
+5 | 50
+6 | ?
+
+Question: Each cow pasture has 10 sprinklers. How many sprinklers are in 6 cow pastures?
+# Python Code, return answer
+# Number of sprinklers per pasture
+sprinklers_per_pasture = 10
+
+# Number of pastures
+number_of_pastures = 6
+
+# Total number of sprinklers
+answer = sprinklers_per_pasture * number_of_pastures
+
+---
+
+Read the following table regarding "Company sizes" and then write Python code to answer a question:
+
+Company | Number of employees
+Madison Corporation | 454
+Downtown Publishing | 442
+Thompson Corporation | 452
+Bronson Attorneys | 428
+
+Question: The board of commerce recorded how many employees work at each company. Which company has the fewest employees? Please select from the following options: ['Madison Corporation', 'Downtown Publishing', 'Thompson Corporation', 'Bronson Attorneys']
+# Python Code, return answer
+# Number of employees at each company
+companies = {
+    'Madison Corporation': 454,
+    'Downtown Publishing': 442,
+    'Thompson Corporation': 452,
+    'Bronson Attorneys': 428
+}
+
+# Find the company with the fewest employees
+answer = min(companies, key=companies.get)
+
+"""
+
+
 TABMWP_FEWSHOT_EXAMPLES_POT = """Read the following table regarding "Coin collections" and then write Python code to answer a question:
 
 Name | Number of coins
