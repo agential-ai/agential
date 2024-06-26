@@ -16,7 +16,7 @@ A: The USA men's national soccer team did not qualify for the World Cup in 2018.
 ---
 
 Q: Where was tin pan alley in new york city?
-A: Tin Pan Alley was located on West 28th Street between Fifth and Sixth Avenues in Manhattan, New York City. So the answer is: West 28th Street between Fifth and Sixth Avenues in Manhattan.
+A: Tin Pan Alley was located on West 28th Street between Fifth and Sixth Avenues in Manhattan, New York City. So the answer is: West 28th Street between Fifth and Sixth Avenues.
 
 ---
 
@@ -56,7 +56,7 @@ A: 2018
 ---
 
 Q: Where was tin pan alley in new york city?
-A: West 28th Street between Fifth and Sixth Avenues in Manhattan
+A: West 28th Street between Fifth and Sixth Avenues
 
 ---
 
@@ -109,12 +109,12 @@ Action 2: Finish[2018]
 
 ---
 
-Question : Where was tin pan alley in new york city?
-Thought 1: Let's search the question in google
-Action 1: Search[Where was tin pan alley in new york city? site: wikipedia.org]]
-Observation 1:
-Thought 2:
-Action 2: Finish[West 28th Street between Fifth and Sixth Avenues in Manhattan]
+Question: Where was Tin Pan Alley in New York City?
+Thought 1: I need to find the location of Tin Pan Alley in New York City.
+Action 1: Search[Tin Pan Alley New York City]
+Observation 1: Tin Pan Alley was a collection of music publishers and songwriters located on West 28th Street between Fifth and Sixth Avenues in Manhattan, New York City.
+Thought 2: Tin Pan Alley was located on West 28th Street between Fifth and Sixth Avenues in Manhattan.
+Action 2: Finish[West 28th Street between Fifth and Sixth Avenues]
 
 ---
 
@@ -148,11 +148,11 @@ Action 2: Finish[1992]
 
 ---
 
-Question: Who plays wilmas mom in the flintstones movie?
-Thought 1: Let's search the question in google
-Action 1: Search[Who plays wilmas mom in the flintstones movie? site: wikipedia.org]
-Observation 1:
-Thought 2:
-Action 2: Finish [Elizabeth Taylor]
+Question: Who plays Wilma's mom in the Flintstones movie?
+Thought 1: I need to find out who plays Wilma's mom in the Flintstones movie.
+Action 1: Search[Flintstones movie Wilma's mom actress]
+Observation 1: In the Flintstones movie, Wilma's mom is portrayed by Elizabeth Taylor.
+Thought 2: Elizabeth Taylor played Wilma's mom in the Flintstones movie.
+Action 2: Finish[Elizabeth Taylor]
 
 """
