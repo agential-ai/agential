@@ -18,19 +18,47 @@ fewshot_questions = re.findall(r"Question: (.+?)\n", HOTPOTQA_FEWSHOT_EXAMPLES_R
 fewshot_keys = re.findall(
     r"Action \d+: Finish\[(.+?)\]", HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 )
-blocks = re.split(r"(?=Question: )", HOTPOTQA_FEWSHOT_EXAMPLES_REACT)[
-    1:
-]  # Split and ignore the first empty result
 
-fewshot_examples = []
-for block in blocks:
-    # Extract all thoughts, actions, and observations within each block
-    thoughts = re.findall(r"(Thought \d+: .+?)\n", block)
-    actions = re.findall(r"(Action \d+: .+?)\n", block)
-    observations = re.findall(r"(Observation \d+: .+)", block)
-
-    # Combine them into tuples and add to the examples list
-    fewshot_examples.append(list(zip(thoughts, actions, observations)))
+fewshot_examples = [
+    [
+        {
+            "thought": "I need to search Colorado orogeny, find the area that the eastern sector of the Colorado orogeny extends into, then find the elevation range of the area.",
+            "action_type": "Search",
+            "query": "Colorado orogeny",
+            "observation": "The Colorado orogeny was an episode of mountain building (an orogeny) in Colorado and surrounding areas.",
+            "is_correct": False,
+        },
+        {
+            "thought": "It does not mention the eastern sector. So I need to look up eastern sector.",
+            "action_type": "Lookup",
+            "query": "eastern sector",
+            "observation": "(Result 1 / 1) The eastern sector extends into the High Plains and is called the Central Plains orogeny.",
+            "is_correct": False,
+        },
+        {
+            "thought": "The eastern sector of Colorado orogeny extends into the High Plains. So I need to search High Plains and find its elevation range.",
+            "action_type": "Search",
+            "query": "High Plains",
+            "observation": "High Plains refers to one of two distinct land regions:",
+            "is_correct": False,
+        },
+        {
+            "thought": "I need to instead search High Plains (United States).",
+            "action_type": "Search",
+            "query": "High Plains (United States)",
+            "observation": "The High Plains are a subregion of the Great Plains. From east to west, the High Plains rise in elevation from around 1,800 to 7,000 ft (550 to 2,130 m).[3]",
+            "is_correct": False,
+        },
+        {
+            "thought": "High Plains rise in elevation from around 1,800 to 7,000 ft, so the answer is 1,800 to 7,000 ft.",
+            "action_type": "Finish",
+            "query": "1,800 to 7,000 ft",
+            "observation": "1,800 to 7,000 ft",
+            "is_correct": True,
+        },
+    ]
+    for _ in range(6)
+]
 
 
 def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> None:
@@ -65,7 +93,7 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
     assert memory.strategy == "task"
     assert isinstance(memory.embedder, Embeddings)
     assert isinstance(memory.encoder, Encoding)
-    assert len(memory.success_traj_docs) == 38
+    assert len(memory.success_traj_docs) == 10
     assert memory.vectorstore
 
     success_traj_doc_types = [
@@ -73,22 +101,13 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
         "action",
         "action",
         "action",
-        "action",
-        "action",
-        "action",
-        "thought",
-        "thought",
-        "thought",
         "thought",
         "thought",
         "thought",
         "step",
         "step",
         "step",
-        "step",
-        "step",
-        "step",
-    ] * 2
+    ]
 
     for type_, doc in zip(success_traj_doc_types, memory.success_traj_docs):
         assert type_ == doc.metadata["type"]
@@ -115,7 +134,7 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
     assert isinstance(memory.embedder, Embeddings)
     assert isinstance(memory.encoder, Encoding)
 
-    assert len(memory.success_traj_docs) == 48
+    assert len(memory.success_traj_docs) == 96
     assert memory.vectorstore
 
     # Test with experiences and fewshot examples.
@@ -133,7 +152,7 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
         "reflections",
     ]
     for v in memory.experiences.values():
-        assert len(v) == 16
+        assert len(v) == 11
     assert memory.fewshot_questions
     assert memory.fewshot_keys
     assert memory.fewshot_examples
@@ -141,7 +160,7 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
     assert isinstance(memory.embedder, Embeddings)
     assert isinstance(memory.encoder, Encoding)
 
-    assert len(memory.success_traj_docs) == 86
+    assert len(memory.success_traj_docs) == 106
     assert memory.vectorstore
 
 
@@ -152,7 +171,7 @@ def test_expel_experience_memory_len(expel_experiences_10_fake_path: str) -> Non
 
     experiences = joblib.load(expel_experiences_10_fake_path)
     memory = ExpeLExperienceMemory(experiences)
-    assert len(memory) == 10
+    assert len(memory) == 5
 
 
 def test_expel_experience_memory_clear(expel_experiences_10_fake_path: str) -> None:
@@ -203,7 +222,7 @@ def test_expel_experience_memory_add_memories(
     assert memory.experiences["keys"][0] == success_keys[0]
     assert memory.experiences["trajectories"][0] == success_trajectories[0]
     assert memory.experiences["reflections"][0] == success_reflections[0]
-    assert len(memory.success_traj_docs) == 19
+    assert len(memory.success_traj_docs) == 10
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
     assert memory.vectorstore
 
@@ -217,7 +236,7 @@ def test_expel_experience_memory_add_memories(
     assert memory.experiences["keys"][1] == success_keys[0]
     assert memory.experiences["trajectories"][1] == success_trajectories[0]
     assert memory.experiences["reflections"][1] == success_reflections[0]
-    assert len(memory.success_traj_docs) == 38
+    assert len(memory.success_traj_docs) == 20
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
     assert memory.success_traj_docs[-1].metadata["task_idx"] == 1
     assert memory.vectorstore
@@ -231,9 +250,9 @@ def test_expel_experience_memory_add_memories(
     assert memory.experiences["keys"][2] == success_keys[0]
     assert memory.experiences["trajectories"][2] == success_trajectories[0]
     assert memory.experiences["reflections"][2] == success_reflections[0]
-    assert len(memory.success_traj_docs) == 57
+    assert len(memory.success_traj_docs) == 30
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
-    assert memory.success_traj_docs[20].metadata["task_idx"] == 1
+    assert memory.success_traj_docs[20].metadata["task_idx"] == 2
     assert memory.success_traj_docs[-1].metadata["task_idx"] == 2
     assert memory.vectorstore
 
@@ -248,10 +267,9 @@ def test_expel_experience_memory_add_memories(
     assert memory.experiences["trajectories"][4] == fail_trajectories[1]
     assert memory.experiences["reflections"][3] == fail_reflections[0]
     assert memory.experiences["reflections"][4] == fail_reflections[1]
-    assert len(memory.success_traj_docs) == 57
+    assert len(memory.success_traj_docs) == 30
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
-    assert memory.success_traj_docs[20].metadata["task_idx"] == 1
-    assert memory.success_traj_docs[50].metadata["task_idx"] == 2
+    assert memory.success_traj_docs[20].metadata["task_idx"] == 2
     assert memory.vectorstore
 
     # Test with a mix of failed and successful trajectories.
@@ -274,11 +292,9 @@ def test_expel_experience_memory_add_memories(
     assert memory.experiences["reflections"][5] == success_reflections[0]
     assert memory.experiences["reflections"][6] == fail_reflections[0]
     assert memory.experiences["reflections"][7] == fail_reflections[1]
-    assert len(memory.success_traj_docs) == 76
+    assert len(memory.success_traj_docs) == 40
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
-    assert memory.success_traj_docs[20].metadata["task_idx"] == 1
-    assert memory.success_traj_docs[56].metadata["task_idx"] == 2
-    assert memory.success_traj_docs[57].metadata["task_idx"] == 5
+    assert memory.success_traj_docs[20].metadata["task_idx"] == 2
     assert memory.vectorstore
 
 
@@ -292,20 +308,17 @@ def test_expel_experience_memory__fewshot_doc_token_count(
     memory = ExpeLExperienceMemory(experiences)
     for doc in memory.success_traj_docs:
         token_count = memory._fewshot_doc_token_count(doc)
-        assert token_count == 1245
+        assert token_count == 982
 
     # Testing with fewshots only.
-    gt_token_counts = (
-        [273] * 13 + [149] * 7 + [156] * 7 + [163] * 7 + [134] * 7 + [154] * 7
-    )
     memory = ExpeLExperienceMemory(
         fewshot_questions=fewshot_questions,
         fewshot_keys=fewshot_keys,
         fewshot_examples=fewshot_examples,
     )
-    for gt_token_count, doc in zip(gt_token_counts, memory.success_traj_docs):
+    for doc in memory.success_traj_docs:
         token_count = memory._fewshot_doc_token_count(doc)
-        assert gt_token_count == token_count
+        assert token_count == 312
 
 
 def test_expel_experience_memory_load_memories(
@@ -337,17 +350,17 @@ def test_expel_experience_memory_load_memories(
     memory_dict = memory.load_memories(query=queries["task"])
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict["fewshots"], list)
-    assert len(memory_dict["fewshots"]) == 2
+    assert len(memory_dict["fewshots"]) == 1
 
     memory_dict = memory.load_memories(query=queries["thought"])
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict["fewshots"], list)
-    assert len(memory_dict["fewshots"]) == 2
+    assert len(memory_dict["fewshots"]) == 1
 
     memory_dict = memory.load_memories(query=queries["other"])
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict["fewshots"], list)
-    assert len(memory_dict["fewshots"]) == 2
+    assert len(memory_dict["fewshots"]) == 1
 
     # Test with every reranking strategy + error.
     with pytest.raises(NotImplementedError):
@@ -361,7 +374,7 @@ def test_expel_experience_memory_load_memories(
     )
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict["fewshots"], list)
-    assert len(memory_dict["fewshots"]) == 2
+    assert len(memory_dict["fewshots"]) == 1
 
     # Length case.
     memory_dict = memory.load_memories(
@@ -369,7 +382,7 @@ def test_expel_experience_memory_load_memories(
     )
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict["fewshots"], list)
-    assert len(memory_dict["fewshots"]) == 2
+    assert len(memory_dict["fewshots"]) == 1
 
     # Thought case.
     memory_dict = memory.load_memories(
@@ -377,13 +390,13 @@ def test_expel_experience_memory_load_memories(
     )
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict["fewshots"], list)
-    assert len(memory_dict["fewshots"]) == 2
+    assert len(memory_dict["fewshots"]) == 1
 
     # Task case.
     memory_dict = memory.load_memories(query=queries["task"], reranker_strategy="task")
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict["fewshots"], list)
-    assert len(memory_dict["fewshots"]) == 2
+    assert len(memory_dict["fewshots"]) == 1
 
     # Test with varying max_fewshot_tokens.
     memory_dict = memory.load_memories(query=queries["task"], max_fewshot_tokens=0)
@@ -395,12 +408,12 @@ def test_expel_experience_memory_load_memories(
     memory_dict = memory.load_memories(query=queries["task"], num_fewshots=3)
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict["fewshots"], list)
-    assert len(memory_dict["fewshots"]) == 2
+    assert len(memory_dict["fewshots"]) == 1
 
     memory_dict = memory.load_memories(query=queries["task"], num_fewshots=2)
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict["fewshots"], list)
-    assert len(memory_dict["fewshots"]) == 2
+    assert len(memory_dict["fewshots"]) == 1
 
     memory_dict = memory.load_memories(query=queries["task"], num_fewshots=1)
     assert list(memory_dict.keys()) == ["fewshots"]
@@ -452,7 +465,7 @@ def test_expel_experience_memory_show_memories(
         "vectorstore",
     ]
     assert memory.experiences == memory_dict["experiences"]
-    assert len(memory_dict["success_traj_docs"]) == 38
+    assert len(memory_dict["success_traj_docs"]) == 10
     assert memory_dict["vectorstore"]
 
 

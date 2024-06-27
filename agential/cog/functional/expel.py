@@ -3,7 +3,8 @@
 import random
 import re
 
-from typing import Any, Dict, List, Tuple
+from itertools import chain
+from typing import Any, Dict, List, Tuple, Union
 
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
@@ -21,12 +22,6 @@ from agential.cog.prompts.agent.expel import (
     SYSTEM_CRITIQUE_EXISTING_INSIGHTS_INSTRUCTION,
     SYSTEM_TEMPLATE,
 )
-from agential.cog.prompts.agent.reflexion import (
-    REFLEXION_REACT_INSTRUCTION,
-    REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
-    REFLEXION_REACT_REFLECT_INSTRUCTION,
-)
-from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 
 # ============================================== Experience Gathering ==============================================
 
@@ -35,11 +30,15 @@ def gather_experience(
     reflexion_react_agent: ReflexionReActAgent,
     questions: List[str],
     keys: List[str],
-    strategy: str = "reflexion",
-    prompt: str = REFLEXION_REACT_INSTRUCTION,
-    examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-    reflect_examples: str = REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES,
-    reflect_prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION,
+    examples: str,
+    prompt: str,
+    reflect_examples: str,
+    reflect_prompt: str,
+    reflect_strategy: str = "reflexion",
+    additional_keys: Union[List[Dict[str, str]], Dict[str, str]] = {},
+    reflect_additional_keys: Union[List[Dict[str, str]], Dict[str, str]] = {},
+    patience: int = 1,
+    **kwargs: Any,
 ) -> Dict[str, List]:
     """Collects and aggregates experiences from a ReflexionReActAgent by generating trajectories and reflections for a set of questions and keys.
 
@@ -49,17 +48,27 @@ def gather_experience(
         reflexion_react_agent (ReflexionReActAgent): The agent from which experiences are generated.
         questions (List[str]): A list of questions to be processed by the agent.
         keys (List[str]): A list of keys that are paired with the questions to guide the agent's generation.
-        strategy (str, optional): The strategy used to generate experiences. Defaults to "reflexion" if not specified.
-        prompt (str, optional): Prompt template string. Defaults to REFLEXION_REACT_INSTRUCTION.
-        examples (str, optional): Fewshot examples. Defaults to HOTPOTQA_FEWSHOT_EXAMPLES_REACT.
-        reflect_examples (str, optional): Reflection fewshot examples. Defaults to REFLEXION_REACT_REFLECT_FEWSHOT_EXAMPLES.
-        reflect_prompt (str, optional): Reflect prompt template string. Defaults to REFLEXION_REACT_REFLECT_INSTRUCTION.
+        examples (str, optional): Fewshot examples.
+        prompt (str, optional): Prompt template string.
+        reflect_examples (str, optional): Reflection fewshot examples.
+        reflect_prompt (str, optional): Reflect prompt template string.
+        reflect_strategy (str, optional): The strategy used to generate experiences. Defaults to "reflexion" if not specified.
+        additional_keys (List[Dict[str, str]], Dict[str, str]): Additional keys for the prompt. Defaults to {}.
+        reflect_additional_keys (List[Dict[str, str]], Dict[str, str]): Additional keys for the reflect prompt. Defaults to {}.
+        patience (int, optional): The patience for the agent. Defaults to 1.
+        **kwargs (Any): Additional keyword arguments.
 
     Returns:
         Dict[str, List]: A dictionary containing lists of indices ('idxs'), questions ('questions'), keys ('keys'), generated trajectories ('trajectories'), and reflections ('reflections').
 
     Each index in 'idxs' corresponds to the respective question, key, trajectory, and reflections at the same position in their lists.
     """
+    if additional_keys == {}:
+        additional_keys = [{} for _ in range(len(questions))]
+
+    if reflect_additional_keys == {}:
+        reflect_additional_keys = [{} for _ in range(len(questions))]
+
     experiences: Dict[str, List] = {
         "idxs": [],
         "questions": [],
@@ -67,23 +76,33 @@ def gather_experience(
         "trajectories": [],
         "reflections": [],
     }
-    for idx, (question, key) in enumerate(zip(questions, keys)):
+    for idx, (question, key, main_keys, reflect_keys) in enumerate(
+        zip(questions, keys, additional_keys, reflect_additional_keys)
+    ):
         trajectory = reflexion_react_agent.generate(
             question=question,
             key=key,
-            strategy=strategy,
-            reset=True,
-            prompt=prompt,
             examples=examples,
+            prompt=prompt,
             reflect_examples=reflect_examples,
             reflect_prompt=reflect_prompt,
+            reflect_strategy=reflect_strategy,
+            additional_keys=main_keys,  # type: ignore
+            reflect_additional_keys=reflect_keys,  # type: ignore
+            patience=patience,
+            reset=True,
+            **kwargs,
         )
 
+        reflections = [
+            trial["reflections"] for trial in trajectory if trial["reflections"]
+        ]
+        reflections = list(set(list(chain.from_iterable(reflections))))
         experiences["idxs"].append(idx)
         experiences["questions"].append(question)
         experiences["keys"].append(key)
         experiences["trajectories"].append(trajectory)
-        experiences["reflections"].append(reflexion_react_agent.reflector.reflections)
+        experiences["reflections"].append(reflections)
 
     return experiences
 
@@ -114,8 +133,8 @@ def categorize_experiences(experiences: Dict[str, List]) -> Dict[str, List]:
     for idx in experiences["idxs"]:  # Index for a particular task.
         trajectory = experiences["trajectories"][idx]  # type: ignore
         trials_are_correct = [
-            trial[0] for trial in trajectory
-        ]  # (is_correct, answer, output)[0].
+            trial["react_output"][-1]["is_correct"] for trial in trajectory
+        ]
 
         # Success.
         if (
