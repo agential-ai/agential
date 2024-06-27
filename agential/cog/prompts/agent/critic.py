@@ -1257,6 +1257,57 @@ money_left = money_initial - money_spent
 # The answer is the amount of money Olivia has left
 answer = money_left
 
+---
+
+Question: Leah had 32 chocolates and her sister had 42. If they ate 35, how many pieces do they have left in total?
+
+#python
+leah_chocolates = 32
+sister_chocolates = 42
+total_chocolates = leah_chocolates + sister_chocolates
+chocolates_eaten = 35
+chocolates_left = total_chocolates - chocolates_eaten
+answer = chocolates_left
+
+Execution: Done
+Output: answer = 23
+
+What's the problem with the above code?
+
+1. The calculation subtracted the total chocolates eaten from the combined initial total of Leah's and her sister's chocolates, rather than from their individual initial amounts, resulting in an incorrect remaining chocolate count.
+
+2. Let's check the code:
+
+# Initial Chocolates: Leah initially has 32 chocolates and her sister has 42 chocolates
+> leah_chocolates = 32
+> sister_chocolates = 42
+# The total number of chocolates they have together is calculated as 
+> total_chocolates = leah_chocolates + sister_chocolates # correct formula
+# They ate a total of 35 chocolates
+> chocolates_eaten = 35
+# To find out how many chocolates they have left in total, we subtract
+> chocolates_left = total_chocolates - chocolates_eaten
+
+In summary, the code makes errors in calculating the chocolates_left.
+We need to find out how many chocolates they have left after eating 35 chocolates in total.
+
+Here's a better solution:
+```python
+# Define initial number of chocolates
+leah_chocolates = 32
+sister_chocolates = 42
+
+# Calculate total number of chocolates
+total_chocolates = leah_chocolates + sister_chocolates
+
+# Number of chocolates eaten
+chocolates_eaten = 35
+
+# Calculate number of chocolates left
+chocolates_left = total_chocolates - chocolates_eaten
+
+# Print the answer
+print("Total chocolates left after eating:", chocolates_left)
 
 
 
