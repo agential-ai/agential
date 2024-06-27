@@ -166,7 +166,7 @@ class ReActMathStrategy(ReActBaseStrategy):
         self._scratchpad += f"\nObservation {idx}: "
         if action_type.lower() == "finish":
             code_answer, execution_status = safe_execute(query)
-            external_tool_info["code_answer"] = code_answer
+            external_tool_info["code_answer"] = code_answer[0]
             external_tool_info["execution_status"] = execution_status
 
             self._answer = query
@@ -174,7 +174,7 @@ class ReActMathStrategy(ReActBaseStrategy):
             obs = f"\n```python\n{self._answer}\n```"
         elif action_type.lower() == "calculate":
             code_answer, execution_status = safe_execute(query)
-            external_tool_info["code_answer"] = code_answer
+            external_tool_info["code_answer"] = code_answer[0]
             external_tool_info["execution_status"] = execution_status
 
             self._answer = query

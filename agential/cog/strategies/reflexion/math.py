@@ -280,6 +280,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         self._scratchpad += " " + thought
 
         return thought
+    
     def generate_action(
         self,
         question: str,
