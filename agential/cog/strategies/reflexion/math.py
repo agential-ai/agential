@@ -152,7 +152,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
 
     def generate_observation(
         self, action_type: str, query: str, key: str
-    ) -> Tuple[bool | str]:
+    ) -> Tuple[bool, str]:
         answer, _ = safe_execute(self._answer)
         
         self._scratchpad += f"\nObservation: "
@@ -208,7 +208,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[List[str] | str]:
+    ) -> Tuple[List[str], str]:
         reflections, reflections_str = self.reflector.reflect(
             reflect_strategy=reflect_strategy,
             question=question,
@@ -220,7 +220,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
         return reflections, reflections_str
 
     def reflect_condition(
-        self, idx: int, reflect_strategy: str | None, key: str
+        self, idx: int, reflect_strategy: Optional[str], key: str
     ) -> bool:
         answer, _ = safe_execute(self._answer)
         return idx > 0 and not EM(answer[0], key, normalize=False) and reflect_strategy is not None
@@ -289,7 +289,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
         **kwargs: Any,
-    ) -> Tuple[str]:
+    ) -> Tuple[str, str]:
         max_steps = kwargs.get("max_steps", self.max_steps)
         self._scratchpad += "\nAction:"
         action = _prompt_react_agent(
@@ -311,7 +311,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
 
     def generate_observation(
         self, step_idx: int, action_type: str, query: str, key: str
-    ) -> Tuple[bool | str]:
+    ) -> Tuple[bool, str, Dict[str, Any]]:
         external_tool_info = {"execution_status": "", "code_answer": ""}
         code_answer, execution_status = safe_execute(query)
 
@@ -415,7 +415,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[List[str] | str]:
+    ) -> Tuple[List[str], str]:
         reflections, reflections_str = self.reflector.reflect(
             reflect_strategy=reflect_strategy,
             question=question,
@@ -432,7 +432,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
     def reflect_condition(
         self,
         step_idx: int,
-        reflect_strategy: str | None,
+        reflect_strategy: Optional[str],
         question: str,
         examples: str,
         key: str,
