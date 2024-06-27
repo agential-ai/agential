@@ -4,9 +4,9 @@ import re
 
 from typing import Any, Dict, List, Optional, Tuple
 
-from langchain_core.language_models.chat_models import BaseChatModel
 import tiktoken
 
+from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken.core import Encoding
 
 from agential.cog.eval.reflexion import EM
@@ -131,7 +131,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Tuple[str, str]:
         self._scratchpad += "\nAction:"
         action = _prompt_cot_agent(
@@ -154,7 +154,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
         self, action_type: str, query: str, key: str
     ) -> Tuple[bool, str]:
         answer, _ = safe_execute(self._answer)
-        
+
         self._scratchpad += f"\nObservation: "
         if action_type.lower() == "finish":
             self._finished = True
@@ -190,7 +190,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
         max_trials = kwargs.get("max_trials", self.max_trials)
         answer, _ = safe_execute(self._answer)
         return EM(answer[0], key, normalize=False) or idx >= max_trials
-    
+
     def reset(self, **kwargs: Any) -> None:
         only_scratchpad = kwargs.get("only_scratchpad", False)
         if only_scratchpad:
@@ -223,12 +223,16 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
         self, idx: int, reflect_strategy: Optional[str], key: str
     ) -> bool:
         answer, _ = safe_execute(self._answer)
-        return idx > 0 and not EM(answer[0], key, normalize=False) and reflect_strategy is not None
+        return (
+            idx > 0
+            and not EM(answer[0], key, normalize=False)
+            and reflect_strategy is not None
+        )
 
 
 class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
     def __init__(
-        self, 
+        self,
         llm: BaseChatModel,
         reflector: Optional[ReflexionReActReflector] = None,
         max_reflections: int = 3,
@@ -280,7 +284,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         self._scratchpad += " " + thought
 
         return thought
-    
+
     def generate_action(
         self,
         question: str,
@@ -348,15 +352,15 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
             "react_output": react_out,
             "reflections": reflections,
         }
-    
+
     def react_create_output_dict(
-        self, 
-        thought: str, 
-        action_type: str, 
-        query: str, 
-        obs: str, 
-        external_tool_info: Dict[str, Any], 
-        is_correct: bool
+        self,
+        thought: str,
+        action_type: str,
+        query: str,
+        obs: str,
+        external_tool_info: Dict[str, Any],
+        is_correct: bool,
     ) -> Dict[str, Any]:
         return {
             "thought": thought,
@@ -373,7 +377,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         code_answer, _ = safe_execute(self._answer)
 
         return not EM(code_answer[0], key) and idx < max_trials + 1
-    
+
     def react_halting_condition(
         self,
         step_idx: int,
