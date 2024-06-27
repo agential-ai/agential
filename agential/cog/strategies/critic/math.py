@@ -122,7 +122,7 @@ class CriticMathStrategy(CriticBaseStrategy):
         Returns:
             Tuple[str, Dict[str, Any]]: The generated critique and external tool information.
         """
-        external_tool_info = {}
+        external_tool_info = {"execution_status": "", "code_answer": ""}
         if use_tool:
             code_answer, execution_status = safe_execute(answer)
             external_tool_info = {
@@ -157,7 +157,7 @@ class CriticMathStrategy(CriticBaseStrategy):
             validate_overlapping_keys(additional_keys, external_tool_info)
 
         additional_keys = additional_keys.copy()
-        additional_keys.update(external_tool_info)
+        additional_keys.update(external_tool_info if use_tool else {})
 
         new_critique = _prompt_critique(
             llm=self.llm,
@@ -195,19 +195,25 @@ def create_output_pydantic(
         )
 
     def create_output_dict(
-        self, answer: str, critique: str, external_tool_info: Dict[str, str]
+        self, answer: str, critique: str, external_tool_info: Dict[str, Any]
     ) -> Dict[str, str]:
         """Creates an output dictionary containing the answer, critique, and external tool information.
 
         Args:
             answer (str): The generated answer.
             critique (str): The generated critique.
-            external_tool_info (Dict[str, str]): Information from external tool execution.
+            external_tool_info (Dict[str, Any]): Information from external tool execution.
 
         Returns:
             Dict[str, str]: The output dictionary.
         """
-        output_dict = {"code": answer, "critique": critique, **external_tool_info}
+        
+        output_dict = {
+            "answer": answer,
+            "critique": critique,
+            "external_tool_info": external_tool_info,
+        }        
+        
         return output_dict
 
     def update_answer_based_on_critique(
