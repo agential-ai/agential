@@ -986,7 +986,51 @@ cost_of_12_pounds = num_of_12_pounds_bag * cost_of_12_pounds_bag
 total_cost = min(cost_of_10_pounds, cost_of_12_pounds)
 
 answer = total_cost
+
+
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''Gao''''''''''''''''''''''''''''''''''''''''''''''''''''
+Question: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops did Jason give to Denny?
+# Python code, return answer
+jason_lollipops_initial = 20
+jason_lollipops_after = 12
+denny_lollipops =  jason_lollipops_after - jason_lollipops_initial
+answer = denny_lollipops
+
+Execution: Done
+Output: answer = -8
+
+What's the problem with the above code?
+
+ 1. The answer should be positive because Jason gave lollipops to Denny
+
+ 2. Let's check the code:
+
+> jason_lollipops_initial = 20
+> jason_lollipops_after = 12
+> denny_lollipops =  jason_lollipops_after - jason_lollipops_initial
+
+The variable denny_lollipops is calculated incorrectly.
+The formula used is jason_lollipops_after - jason_lollipops_initial, which results in a negative value because Jason gave away some lollipops
+
+so The calculation should be jason_lollipops_initial - jason_lollipops_after.
+
+Here's a better solution:
+
+# Jason initially had 20 lollipops
+jason_lollipops_initial = 20
+
+# After giving some to Denny, Jason has 12 lollipops left
+jason_lollipops_after = 12
+
+# The number of lollipops Jason gave to Denny is the initial amount minus the remaining amount
+denny_lollipops = jason_lollipops_initial - jason_lollipops_after
+
+# The answer is the number of lollipops Jason gave to Denny
+answer = denny_lollipops
+
 ```"""
+
+
 
 
 CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_GSM8K = """{examples}
