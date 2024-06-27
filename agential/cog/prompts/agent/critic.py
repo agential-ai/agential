@@ -1206,9 +1206,56 @@ Observation 2:
 ---
 
 Question: Olivia has $23. She bought five bagels for $3 each. How much money does she have left?
+
+#python
+money_initial = 23
+bagels = 5
+bagel_cost = 3
+money_spent = bagels * bagel_cost
+money_left =   money_spent - money_initial
+answer = money_left
+
+
+Execution: Done
+Output: answer = -8
+
+What's the problem with the above code?
+
+1. the money_left should be positive number because need to determine how much money Olivia has left after buying the bagels
+
+2. Let's check the code:
+
+# Initial Money: Olivia starts with $23 (money_initial = 23).
+> money_initial = 23
+# Bagel Purchase: She buys 5 bagels, and each bagel costs $3 (bagels = 5, bagel_cost = 3).
+> bagels = 5
+> bagel_cost = 3
+# Total Spent: The total money spent on bagels is calculated as money_spent = bagels * bagel_cost.
+> money_spent = bagels * bagel_cost
+# money_initial from money_spent, which is incorrect for determining how much money Olivia has left after buying the bagels.
+> money_left =  money_spent - money_initial
+
+answer = money_spent - money_initial calculates the difference in the wrong direction. It subtracts the initial amount from the spent amount, which gives a negative value (-8), indicating an incorrect result.
+
+Here's a better solution:
 ```python
+# Initial amount of money Olivia has
+money_initial = 23
 
+# Number of bagels bought
+bagels = 5
 
+# Cost per bagel
+bagel_cost = 3
+
+# Calculate the total amount spent on bagels
+money_spent = bagels * bagel_cost
+
+# Calculate how much money Olivia has left
+money_left = money_initial - money_spent
+
+# The answer is the amount of money Olivia has left
+answer = money_left
 
 
 
