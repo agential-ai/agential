@@ -125,7 +125,7 @@ class CriticQAStrategy(CriticBaseStrategy):
         Returns:
             Tuple[str, Dict[str, Any]]: The generated critique and any external tool information.
         """
-        external_tool_info = {}
+        external_tool_info = {"search_query": "", "search_result": ""}
         new_critique = _prompt_critique(
             llm=self.llm,
             question=question,
@@ -224,6 +224,7 @@ class CriticQAStrategy(CriticBaseStrategy):
             "critique": critique,
             "external_tool_info": external_tool_info,
         }
+        
         return output_dict
 
     def update_answer_based_on_critique(
