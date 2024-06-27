@@ -35,6 +35,14 @@ from agential.cog.strategies.reflexion.base import (
     ReflexionCoTBaseStrategy,
     ReflexionReActBaseStrategy,
 )
+from agential.cog.strategies.reflexion.math import (
+    ReflexionCoTGSM8KStrategy,
+    ReflexionCoTSVAMPStrategy,
+    ReflexionCoTTabMWPStrategy,
+    ReflexionReActGSM8KStrategy,
+    ReflexionReActSVAMPStrategy,
+    ReflexionReActTabMWPStrategy,
+)
 from agential.cog.strategies.reflexion.qa import (
     ReflexionCoTAmbigNQStrategy,
     ReflexionCoTFEVERStrategy,
@@ -44,14 +52,6 @@ from agential.cog.strategies.reflexion.qa import (
     ReflexionReActFEVERStrategy,
     ReflexionReActHotQAStrategy,
     ReflexionReActTriviaQAStrategy,
-)
-from agential.cog.strategies.reflexion.math import (
-    ReflexionCoTGSM8KStrategy,
-    ReflexionCoTSVAMPStrategy,
-    ReflexionCoTTabMWPStrategy,
-    ReflexionReActGSM8KStrategy,
-    ReflexionReActSVAMPStrategy,
-    ReflexionReActTabMWPStrategy,
 )
 
 

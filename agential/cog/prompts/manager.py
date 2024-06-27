@@ -13,9 +13,9 @@ from agential.cog.prompts.benchmark.fever import (
     FEVER_FEWSHOT_EXAMPLES_REACT,
 )
 from agential.cog.prompts.benchmark.gsm8k import (
+    GSM8K_FEWSHOT_EXAMPLES_COT,
     GSM8K_FEWSHOT_EXAMPLES_POT,
     GSM8K_FEWSHOT_EXAMPLES_REACT,
-    GSM8K_FEWSHOT_EXAMPLES_COT
 )
 from agential.cog.prompts.benchmark.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
@@ -110,7 +110,7 @@ BENCHMARK_STRINGS = {
         Benchmarks.math.GSM8K: {
             FewShotType.POT: GSM8K_FEWSHOT_EXAMPLES_POT,
             FewShotType.REACT: GSM8K_FEWSHOT_EXAMPLES_REACT,
-            FewShotType.COT: GSM8K_FEWSHOT_EXAMPLES_COT
+            FewShotType.COT: GSM8K_FEWSHOT_EXAMPLES_COT,
         },
         Benchmarks.math.SVAMP: {
             FewShotType.POT: SVAMP_FEWSHOT_EXAMPLES_POT,
