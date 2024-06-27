@@ -134,7 +134,7 @@ def test_generate_observation() -> None:
     assert strategy._answer == query
     assert strategy._finished is False
     assert strategy._scratchpad == gt_scratchpad
-    assert external_tool_info == {"execution_status": "Done", "code_answer": [-9867630]}
+    assert external_tool_info == {"execution_status": "Done", "code_answer": -9867630}
 
     # Test Finish.
     gt_obs = "\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_used = eggs_for_breakfast + eggs_for_muffins\neggs_remaining = eggs_laid_per_day - eggs_used\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day\n```"
@@ -150,7 +150,7 @@ def test_generate_observation() -> None:
     assert strategy._answer == query
     assert strategy._finished is True
     assert strategy._scratchpad == gt_scratchpad
-    assert external_tool_info == {"execution_status": "Done", "code_answer": [-9867630]}
+    assert external_tool_info == {"execution_status": "Done", "code_answer": -9867630}
 
     # Test error case.
     gt_scratchpad = "\nObservation 0: Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
