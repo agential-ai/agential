@@ -370,7 +370,9 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
 
     def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
         max_trials: int = kwargs.get("max_trials", self.max_trials)
-        return not EM(self._answer, key) and idx < max_trials + 1
+        code_answer, _ = safe_execute(self._answer)
+
+        return not EM(code_answer[0], key) and idx < max_trials + 1
     
     def react_halting_condition(
         self,
@@ -399,7 +401,12 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         )
 
     def reset(self, *args: Any, **kwargs: Any) -> None:
-        return super().reset(*args, **kwargs)
+        no_reflector = kwargs.get("no_reflector", False)
+        if not no_reflector:
+            self.reflector.reset()
+        self._scratchpad = ""
+        self._finished = False
+        self._answer = ""
 
     def reflect(
         self,
@@ -409,9 +416,18 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[List[str] | str]:
-        return super().reflect(
-            reflect_strategy, question, examples, prompt, additional_keys
+        reflections, reflections_str = self.reflector.reflect(
+            reflect_strategy=reflect_strategy,
+            question=question,
+            examples=examples,
+            scratchpad=_truncate_scratchpad(
+                scratchpad=self._scratchpad, tokenizer=self.enc
+            ),
+            prompt=prompt,
+            additional_keys=additional_keys,
         )
+
+        return reflections, reflections_str
 
     def reflect_condition(
         self,
@@ -424,16 +440,24 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         additional_keys: Dict[str, str],
         **kwargs: Dict[str, str],
     ) -> bool:
-        return super().reflect_condition(
-            step_idx,
-            reflect_strategy,
-            question,
-            examples,
-            key,
-            prompt,
-            additional_keys,
-            **kwargs,
+        max_steps = kwargs.get("max_steps", self.max_steps)
+
+        halted = _is_halted(
+            finished=self._finished,
+            step_idx=step_idx,
+            question=question,
+            scratchpad=self._scratchpad,
+            examples=examples,
+            reflections=self.reflector.reflections_str,
+            max_steps=max_steps,  # type: ignore
+            max_tokens=self.max_tokens,
+            enc=self.enc,
+            prompt=prompt,
+            additional_keys=additional_keys,
         )
+        code_answer, _ = safe_execute(self._answer)
+
+        return halted and not EM(code_answer[0], key) and reflect_strategy is not None
 
 
 class ReflexionCoTGSM8KStrategy(ReflexionCoTMathStrategy):
