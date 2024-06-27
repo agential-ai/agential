@@ -1065,8 +1065,68 @@ trees_planted = trees_after - trees_initial
 # The answer is the number of trees planted
 answer = trees_planted
 
+Question: Shawn has five toys. For Christmas, he got two toys each from his mom and dad. How many toys does he have now?
+toys_initial = 5
+toys_received = 2 * 3
+answer = toys_initial + toys_received
+```
+Execution Status: Done
+Output: answer = 11
 
+What's the problem with the above code?
 
+ 1. I incorrectly calculated the total toys received. Shawn got 2 toys each from his mom and dad, so the correct total received should be 2 + 2.
+
+ 2. Let's check the code:
+
+> toys_initial = 5
+> toys_received = 2 * 3 # Incorrect calculation here
+> answer = toys_initial + toys_received
+
+toys_received = 2 * 3 calculates the total number of toys received as 6, which assumes Shawn received two sets of toys, not two toys each from his mom and dad
+so The calculation should be toys_initial + toys_received.
+
+Here's a better solution:
+
+# Initial number of toys Shawn has
+toys_initial = 5
+
+# Number of toys received from mom and dad
+toys_received = 2 + 2  # Two toys from mom + two toys from dad
+
+# Calculate the total number of toys Shawn has now
+total_toys = toys_initial + toys_received
+
+# The answer is the total number of toys Shawn has now
+answer = total_toys
+
+Question: There were nine computers in the server room. Five more computers were installed each day, from monday to thursday. How many computers are now in the server room?
+# Python code
+computers_initial = 9
+computers_per_day = 5
+num_days = 4  # 4 days between Monday and Thursday
+computers_added = computers_per_day * num_days
+answer = computers_initial + computers_added
+
+Execution Status: Done
+Output: answer = 29
+
+What's the problem with the above code?
+
+ 1. there is no problem with formula
+ 
+ 2. Let's check the code:
+
+> computers_initial = 9
+> computers_per_day = 5
+> num_days = 4  # 4 days between Monday and Thursday
+> computers_added = computers_per_day * num_days
+> answer = computers_initial + computers_added
+
+computers_added = computers_per_day * num_days calculates the total number of computers added over the 4 days.
+answer = computers_initial + computers_added computes the total number of computers in the server room after the installations.
+
+So the code generate is correct 
 
 
 
