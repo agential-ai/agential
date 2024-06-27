@@ -369,8 +369,9 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         }
 
     def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
-        return super().halting_condition(idx, key, **kwargs)
-
+        max_trials: int = kwargs.get("max_trials", self.max_trials)
+        return not EM(self._answer, key) and idx < max_trials + 1
+    
     def react_halting_condition(
         self,
         step_idx: int,
@@ -381,8 +382,20 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         additional_keys: Dict[str, str],
         **kwargs: Any,
     ) -> bool:
-        return super().react_halting_condition(
-            step_idx, question, examples, reflections, prompt, additional_keys, **kwargs
+        max_steps = kwargs.get("max_steps", self.max_steps)
+
+        return _is_halted(
+            finished=self._finished,
+            step_idx=step_idx,
+            question=question,
+            scratchpad=self._scratchpad,
+            examples=examples,
+            reflections=reflections,
+            max_steps=max_steps,
+            max_tokens=self.max_tokens,
+            enc=self.enc,
+            prompt=prompt,
+            additional_keys=additional_keys,
         )
 
     def reset(self, *args: Any, **kwargs: Any) -> None:
