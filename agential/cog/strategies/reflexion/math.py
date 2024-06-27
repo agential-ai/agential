@@ -344,8 +344,11 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
     def create_output_dict(
         self, react_out: List[Dict[str, Any]], reflections: List[str]
     ) -> Dict[str, Any]:
-        return super().create_output_dict(react_out, reflections)
-
+        return {
+            "react_output": react_out,
+            "reflections": reflections,
+        }
+    
     def react_create_output_dict(
         self, 
         thought: str, 
