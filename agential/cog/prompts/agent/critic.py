@@ -990,7 +990,7 @@ answer = total_cost
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''Gao''''''''''''''''''''''''''''''''''''''''''''''''''''
 Question: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops did Jason give to Denny?
-# Python code, return answer
+# Python code
 jason_lollipops_initial = 20
 jason_lollipops_after = 12
 denny_lollipops =  jason_lollipops_after - jason_lollipops_initial
@@ -1027,6 +1027,53 @@ denny_lollipops = jason_lollipops_initial - jason_lollipops_after
 
 # The answer is the number of lollipops Jason gave to Denny
 answer = denny_lollipops
+
+Question: There are 15 trees in the grove. Grove workers will plant trees in the grove today. After they are done, there will be 21 trees. How many trees did the grove workers plant today?
+# Python code
+trees_initial = 15
+trees_after = 21
+answer = trees_initial - trees_after
+
+Execution: Done
+Output: answer = -6
+
+What's the problem with the above code?
+
+ 1. The answer should be positive because trees are being added, not removed. I need to reverse the subtraction.
+
+ 2. Let's check the code:
+
+> trees_initial = 15
+> trees_after = 21
+> answer = trees_initial - trees_after
+
+The variable trees_planted is calculated incorrectly.
+The formula used is  trees_initial - trees_after, which results in a negative value because Jason gave away some lollipops
+
+so The calculation should be trees_after - trees_initial.
+
+Here's a better solution:
+# Initial number of trees in the grove
+trees_initial = 15
+
+# Number of trees after planting
+trees_after = 21
+
+# Calculate the number of trees planted
+trees_planted = trees_after - trees_initial
+
+# The answer is the number of trees planted
+answer = trees_planted
+
+
+
+
+
+
+
+
+
+
 
 
 ```"""
