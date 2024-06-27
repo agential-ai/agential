@@ -347,11 +347,23 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         return super().create_output_dict(react_out, reflections)
 
     def react_create_output_dict(
-        self, thought: str, action_type: str, query: str, obs: str, is_correct: bool
-    ) -> Dict[str, str]:
-        return super().react_create_output_dict(
-            thought, action_type, query, obs, is_correct
-        )
+        self, 
+        thought: str, 
+        action_type: str, 
+        query: str, 
+        obs: str, 
+        external_tool_info: Dict[str, Any], 
+        is_correct: bool
+    ) -> Dict[str, Any]:
+        return {
+            "thought": thought,
+            "action_type": action_type,
+            "query": query,
+            "observation": obs,
+            "answer": self._answer,
+            "external_tool_info": external_tool_info,
+            "is_correct": is_correct,
+        }
 
     def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
         return super().halting_condition(idx, key, **kwargs)
