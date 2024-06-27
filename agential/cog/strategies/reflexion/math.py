@@ -455,6 +455,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+
         code_answer, _ = safe_execute(self._answer)
 
         return halted and not EM(code_answer[0], key) and reflect_strategy is not None
