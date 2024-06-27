@@ -1065,6 +1065,8 @@ trees_planted = trees_after - trees_initial
 # The answer is the number of trees planted
 answer = trees_planted
 
+---
+
 Question: Shawn has five toys. For Christmas, he got two toys each from his mom and dad. How many toys does he have now?
 toys_initial = 5
 toys_received = 2 * 3
@@ -1100,36 +1102,111 @@ total_toys = toys_initial + toys_received
 # The answer is the total number of toys Shawn has now
 answer = total_toys
 
-Question: There were nine computers in the server room. Five more computers were installed each day, from monday to thursday. How many computers are now in the server room?
-# Python code
-computers_initial = 9
-computers_per_day = 5
-num_days = 4  # 4 days between Monday and Thursday
-computers_added = computers_per_day * num_days
-answer = computers_initial + computers_added
+---
 
-Execution Status: Done
-Output: answer = 29
+Question: There were nine computers in the server room. Five more computers were installed each day, from Monday to Thursday. How many computers are now in the server room?
+Thought 1: I need to calculate the total number of computers installed from Monday to Thursday.
+Action 1: Calculate[
+    ```python
+    computers_initial = 9
+    computers_per_day = 5
+    num_days = 4  # 4 days between Monday and Thursday
+    computers_added = computers_per_day * num_days
+    answer = computers_initial + computers_added
+    ```
+]
+Observation 1: 
+    ```python
+    computers_initial = 9
+    computers_per_day = 5
+    num_days = 4  # 4 days between Monday and Thursday
+    computers_added = computers_per_day * num_days
+    answer = computers_initial + computers_added
+    ```
+    Execution Status: Done
+    Output: answer = 29
+    Thought 2: There are now 29 computers in the server room.
+    Action 2: Finish[
+    ```python
+    answer = 29
+    ```
+]
+Action 2:Finish[
+    ```python
+    answer = 29
+    ```
+]
+Observation 2:
+    ```python
+    answer = 29
+```
 
-What's the problem with the above code?
+---
 
- 1. there is no problem with formula
- 
- 2. Let's check the code:
+Question: Michael had 58 golf balls. On Tuesday, he lost 23 golf balls. On Wednesday, he lost 2 more. How many golf balls did he have at the end of Wednesday?
+Thought 1: I need to find out how many golf balls Michael has after losing some on Tuesday and Wednesday.
+Action 1: Calculate[
+    ```python
+    golf_balls_initial = 58
+    golf_balls_lost_tuesday = 23
+    golf_balls_lost_wednesday = 2
+    answer = golf_balls_initial - golf_balls_lost_tuesday - golf_balls_lost_wednesday
+    ```
+]
+Observation 1: 
+    ```python
+    golf_balls_initial = 58
+    golf_balls_lost_tuesday = 23
+    golf_balls_lost_wednesday = 2
+    answer = golf_balls_initial - golf_balls_lost_tuesday - golf_balls_lost_wednesday
+    ```
+    Execution Status: Done
+    Output: answer = 33
+    Thought 2: Michael has 33 golf balls left at the end of Wednesday.
 
-> computers_initial = 9
-> computers_per_day = 5
-> num_days = 4  # 4 days between Monday and Thursday
-> computers_added = computers_per_day * num_days
-> answer = computers_initial + computers_added
+Action 2: Finish[
+    ```python
+    answer = 33
+    ```
+]
+Observation 2: 
+    ```python
+    answer = 33
+```
 
-computers_added = computers_per_day * num_days calculates the total number of computers added over the 4 days.
-answer = computers_initial + computers_added computes the total number of computers in the server room after the installations.
+----
 
-So the code generate is correct 
+Question: If there are 3 cars in the parking lot and 2 more cars arrive, how many cars are in the parking lot?
+Thought 1: I need to calculate the total number of cars in the parking lot after 2 more cars arrive.
+Action 1: Calculate[
+    ```python
+    cars_initial = 3
+    cars_arrived = 2
+    answer = cars_initial + cars_arrived
+    ```
+]
+Observation 1: 
+    ```python
+    cars_initial = 3
+    cars_arrived = 2
+    answer = cars_initial + cars_arrived
+    ```
+    Execution Status: Done
+    Output: answer = 5
+    Thought 2: There are 5 cars in the parking lot now.
+Action 2: Finish[
+    ```python
+    answer = 5
+    ```
+]
+Observation 2: 
+    ```python
+    answer = 5
+    ```
+---
 
-
-
+Question: Olivia has $23. She bought five bagels for $3 each. How much money does she have left?
+```python
 
 
 
