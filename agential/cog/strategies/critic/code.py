@@ -125,7 +125,7 @@ class CriticCodeStrategy(CriticBaseStrategy):
         Returns:
             Tuple[str, Dict[str, Any]]: The generated critique and external tool information.
         """
-        external_tool_info = {}
+        external_tool_info = {"execution_status": ""}
         if use_tool:
             if "tests" not in additional_keys:
                 raise ValueError(
@@ -143,7 +143,7 @@ class CriticCodeStrategy(CriticBaseStrategy):
             validate_overlapping_keys(additional_keys, external_tool_info)
 
         additional_keys = additional_keys.copy()
-        additional_keys.update(external_tool_info)
+        additional_keys.update(external_tool_info if use_tool else {})
 
         new_critique = _prompt_critique(
             llm=self.llm,
@@ -158,19 +158,24 @@ class CriticCodeStrategy(CriticBaseStrategy):
         return new_critique, external_tool_info
 
     def create_output_dict(
-        self, answer: str, critique: str, external_tool_info: Dict[str, str]
+        self, answer: str, critique: str, external_tool_info: Dict[str, Any]
     ) -> Dict[str, str]:
         """Creates an output dictionary containing the answer, critique, and external tool information.
 
         Args:
             answer (str): The generated answer.
             critique (str): The generated critique.
-            external_tool_info (Dict[str, str]): Information from external tool execution.
+            external_tool_info (Dict[str, Any]): Information from external tool execution.
 
         Returns:
             Dict[str, str]: The output dictionary.
         """
-        output_dict = {"code": answer, "critique": critique, **external_tool_info}
+        output_dict = {
+            "answer": answer,
+            "critique": critique,
+            "external_tool_info": external_tool_info,
+        }        
+        
         return output_dict
 
     def update_answer_based_on_critique(
