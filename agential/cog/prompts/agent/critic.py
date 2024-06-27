@@ -1028,6 +1028,7 @@ denny_lollipops = jason_lollipops_initial - jason_lollipops_after
 # The answer is the number of lollipops Jason gave to Denny
 answer = denny_lollipops
 
+
 ```"""
 
 
