@@ -313,24 +313,22 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         self, step_idx: int, action_type: str, query: str, key: str
     ) -> Tuple[bool | str]:
         external_tool_info = {"execution_status": "", "code_answer": ""}
+        code_answer, execution_status = safe_execute(query)
 
         self._scratchpad += f"\nObservation {step_idx}: "
         if action_type.lower() == "finish":
-            code_answer, execution_status = safe_execute(query)
-            external_tool_info["code_answer"] = code_answer
+            external_tool_info["code_answer"] = code_answer[0]
             external_tool_info["execution_status"] = execution_status
 
             self._answer = query
             self._finished = True
 
-            answer, _ = safe_execute(self._answer)
-            if EM(answer[0], key, normalize=False):
+            if EM(code_answer[0], key, normalize=False):
                 obs = "Answer is CORRECT"
             else:
                 obs = "Answer is INCORRECT"
         elif action_type.lower() == "calculate":
-            code_answer, execution_status = safe_execute(query)
-            external_tool_info["code_answer"] = code_answer
+            external_tool_info["code_answer"] = code_answer[0]
             external_tool_info["execution_status"] = execution_status
 
             self._answer = query
@@ -341,7 +339,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
             )
         self._scratchpad += obs
 
-        return EM(answer[0], key, normalize=False), obs, external_tool_info
+        return EM(code_answer[0], key, normalize=False), obs, external_tool_info
 
     def create_output_dict(
         self, react_out: List[Dict[str, Any]], reflections: List[str]
