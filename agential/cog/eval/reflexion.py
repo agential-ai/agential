@@ -17,6 +17,9 @@ def EM(answer: str, key: str, normalize: bool = True) -> bool:
     Returns:
         bool: True if the normalized `answer` and `key` match, else False.
     """
+    if answer is None:
+        return False
+
     if not normalize:
         return answer == key
     return normalize_answer(answer) == normalize_answer(key)
