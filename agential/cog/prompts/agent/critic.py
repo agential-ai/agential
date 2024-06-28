@@ -1347,144 +1347,14 @@ What's the problem with the above code?
 {critique}"""
 
 
-SVAMP_FEWSHOT_EXAMPLES_CRITIC = """Question: Marco and his dad went strawberry picking. Marco's dad's strawberries weighed 11 pounds. If together their strawberries weighed 30 pounds. How much did Marco's strawberries weigh?
+SVAMP_FEWSHOT_EXAMPLES_CRITIC = """ Question: James bought 93 red and 10 blue stickers, he used 31 red sticker on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
 ```python
-num_strawberries_dad_picked = 11
-num_strawberries_marco_picked = 30
-answer = num_strawberries_dad_picked + num_strawberries_marco_picked
-```
-Execution: Done
-Output: answer = 41.0
-
-What's the problem with the above code?
-
-1. The weight of straberries should be positive, 41.0 > 0, it's reasonable.
-2. Let's check the code:
-
-> answer = num_strawberries_dad_picked + num_strawberries_marco_picked
-
-The above code calculates the total weight of strawberries picked by both Marco and his dad, instead of finding the weight of strawberries picked by Marco alone.
-
-According to the question, the total weight of strawberries picked by both Marco and his dad is 30 pounds, and Marco's dad's strawberries weighed 11 pounds. To find the weight of Marco's strawberries, we need to subtract the weight of his dad's strawberries from the total weight.
-
-Here's a better solution:
-```python
-total_weight = 30
-dad_weight = 11
-
-# Calculate the weight of Marco's strawberries
-marco_weight = total_weight - dad_weight
-answer = marco_weight
-```
-
----
-
-Question: Zachary did 46 push-ups and 58 crunches in gym class today. David did 38 more push-ups but 62 less crunches than zachary. How many more crunches than push-ups did Zachary do?
-```python
-zachary_push_ups = 46
-zachary_crunches = 58
-zachary_diff = zachary_crunches - zachary_push_ups
-answer = zachary_diff
-```
-Execution: Done
-Output: answer = 12
-
-What's the problem with the above code?
-
-1. The answer, 12, is a reasonable result.
-2. Let's check the code:
-
-> zachary_diff = zachary_crunches - zachary_push_ups
-
-The code calculates the difference between the number of crunches and push-ups that Zachary did, it is correct.
-
-The information about David is not relevant to the question and does not need to be considered in the calculation. There is no problem with the above code. 
-
-Here's a better solution:
-```python
-zachary_push_ups = 46
-zachary_crunches = 58
-
-# Calculate the difference between Zachary's crunches and push-ups
-zachary_diff = zachary_crunches - zachary_push_ups
-answer = zachary_diff
-```
-
----
-
-Question: Faye had 35 packs of pencils each one having 4 pencils. She was placing her pencils into rows with 2 pencils in each row. How many rows could she make?
-```python
-num_packs_of_pencils = 35
-num_pencils_in_each_pack = 4
-answer = num_packs_of_pencils * num_pencils_in_each_pack
-```
-Execution: Done
-Output: answer = 140.0
-
-What's the problem with the above code?
-
-1. The answer rows 140 > 0, it's reasonable.
-2. Let's check the code:
-
-> answer = num_packs_of_pencils * num_pencils_in_each_pack
-
-The code calculates the total number of pencils Faye has, but it does not calculate the number of rows she can make. It needs to be modified to take into account the fact that she is placing 2 pencils in each row.
-
-Here's a better solution:
-```python
-num_packs_of_pencils = 35
-num_pencils_in_each_pack = 4
-
-# Calculate the total number of pencils
-total_pencils = num_packs_of_pencils * num_pencils_in_each_pack
-
-# Calculate the number of rows with 2 pencils in each row
-num_pencils_in_each_row = 2
-num_rows = total_pencils // num_pencils_in_each_row
-answer = num_rows
-```
-
----
-
-Question: Jack received 4 emails and sent 2 emails in the morning. He then received 6 emails and sent 8 emails in the afternoon. How many emails did Jack send in the day?
-```python
-num_emails_received_in_morning = 4
-num_emails_sent_in_morning = 2
-num_emails_received_in_afternoon = 6
-num_emails_sent_in_afternoon = 8
-answer = num_emails_sent_in_morning + num_emails_sent_in_afternoon
-```
-Execution: Done
-Output: answer = 10.0
-
-What's the problem with the above code?
-
-1. The answer, 10, is a reasonable result.
-2. Let's check the code:
-
-> answer = num_emails_sent_in_morning + num_emails_sent_in_afternoon
-
-The code calculates the total number of emails Jack sent during the day by adding the number of emails he sent in the morning to the number of emails he sent in the afternoon. There is no problem with the above code. 
-
-Here's a better solution:
-```python
-num_emails_received_in_morning = 4
-num_emails_sent_in_morning = 2
-num_emails_received_in_afternoon = 6
-num_emails_sent_in_afternoon = 8
-answer = num_emails_sent_in_morning + num_emails_sent_in_afternoon
-
-
-
---------------------------------------------------Gao----------------------------------------------
-
-Question: James bought 93 red and 10 blue stickers, he used 31 red sticker on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
-# Python code
 red_stickers_bought = 93
 blue_stickers_bought = 10
 red_stickers_used_on_fridge = 31
 blue_stickers_used_on_laptop = 7
 answer = red_stickers_bought + red_stickers_used_on_fridge
+```
 
 Execution Status: Done
 Output: answer = 124
@@ -1545,7 +1415,7 @@ answer = final_price_per_egg  # Result
 
 
 Question: Dianna collects both cases and books. He bought 22 cases and 5 books from the store. 
-# Python code
+```python
 cases_bought = 22
 books_bought = 5
 total_cases_now = 57
@@ -1578,7 +1448,7 @@ answer = initial_books  # Result
 -----
 
 Question: There were 108 chickens and 20 sheep at the farm, some of the chickens and sheep were sold. There are 87 chickens and 18 sheep left now. How many chickens were sold?
-# Python code
+```python
 initial_chickens = 108
 initial_sheep = 20
 remaining_chickens = 87
@@ -1616,7 +1486,7 @@ answer = chickens_sold  # Result
 ------
 
 Question: Katty scored 2 goals on Monday, 8 goals on Tuesday and 9 goals on Wednesday. How many did Katty score on Monday and Wednesday?
-# Python code
+```python
 goals_on_monday = 2
 goals_on_tuesday = 8
 goals_on_wednesday = 9
@@ -1646,7 +1516,7 @@ answer = total_goals  # Result
 
 
 Question: There are 5 girls and 4 boys in the Masquerade, 12 more girls and 7 more boys joined. How many more girls than boys are in the Masquerade?
-# Python code
+```python
 
 num_girls_before = 5
 num_girls_joined = 12
@@ -1688,6 +1558,39 @@ answer = total_girls - total_boys  # Difference in number of girls and boys
 
 --- 
 
+Question: Joseph and Getty went to buy ice creams, they together bought 36 ice creams. On the way back, Joseph ate 12 of the ice creams, and he has 2 ice creams left now. How many ice creams did Getty purchase?
+```python
+total_ice_creams = 36
+joseph_left = 2
+joseph_ate = 12
+
+# Calculate the number of ice creams Getty purchased
+getty_ice_creams = total_ice_creams - (joseph_left + joseph_ate)
+answer = getty_ice_creams
+
+Execution: Done
+Output: answer = 22
+
+What's the problem with the above code?
+
+1. The number of ice creams should be a non-negative integer. 22 is a reasonable number.
+
+2. Let's check the code:
+
+> getty_ice_creams = total_ice_creams - (joseph_left + joseph_ate)
+
+According to the question, Joseph and Getty together bought 36 ice creams. Joseph ate 12 of them and has 2 left. To find out how many ice creams Getty purchased, we subtract the sum of what Joseph ate and what he has left from the total number they bought together
+
+Here's a better solution:
+```python
+
+total_ice_creams = 36  # Total number of ice creams
+joseph_left = 2  # Number of ice creams Joseph left
+joseph_ate = 12  # Number of ice creams Joseph ate
+
+# Calculate the number of ice creams Getty purchased
+getty_ice_creams = total_ice_creams - (joseph_left + joseph_ate)  # Ice creams Getty purchased
+answer = getty_ice_creams  # Result
 
 
 ```"""
