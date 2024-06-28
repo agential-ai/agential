@@ -28,7 +28,7 @@ from agential.utils.general import safe_execute
 from agential.utils.parse import remove_newline
 
 
-def parse_math_action(action: str) -> Tuple[str, str]:
+def parse_math_action_cot(action: str) -> Tuple[str, str]:
     """Parses an action string to extract the action type and code content.
 
     Identifies action types (`Finish`) and extracts the
@@ -45,6 +45,33 @@ def parse_math_action(action: str) -> Tuple[str, str]:
     """
     action_split = action.split("```python", maxsplit=1)
     match = re.search(r"\b(Finish)\b", action_split[0], re.IGNORECASE)
+
+    action_type = match.group(0).lower().capitalize() if match else ""
+    try:
+        query = action_split[1].split("```")[0].strip() if action_type else ""
+    except:
+        action_type = ""
+        query = ""
+
+    return action_type, query
+
+def parse_math_action_react(action: str) -> Tuple[str, str]:
+    """Parses an action string to extract the action type and code content.
+
+    Identifies action types (`Finish`, `Calculate`) and extracts the
+    corresponding code content enclosed within Markdown-style code blocks.
+    The action type is case-insensitive and the code content is trimmed of
+    leading and trailing whitespace.
+
+    Args:
+        action (str): The action string containing the action type and code content.
+
+    Returns:
+        Tuple[str, str]: A tuple containing the extracted action type (capitalized)
+        and the extracted code content.
+    """
+    action_split = action.split("```python", maxsplit=1)
+    match = re.search(r"\b(Finish|Calculate)\b", action_split[0], re.IGNORECASE)
 
     action_type = match.group(0).lower().capitalize() if match else ""
     try:
@@ -145,7 +172,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
         )
         action = action.split("Observation")[0].strip()
 
-        action_type, query = parse_math_action(action)
+        action_type, query = parse_math_action_cot(action)
         self._scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
 
         return action_type, query
@@ -308,7 +335,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         )
         action = action.split("Observation")[0].strip()
 
-        action_type, query = parse_math_action(action)
+        action_type, query = parse_math_action_react(action)
         self._scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
 
         return action_type, query
@@ -376,7 +403,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         max_trials: int = kwargs.get("max_trials", self.max_trials)
         code_answer, _ = safe_execute(self._answer)
 
-        return not EM(code_answer[0], key) and idx < max_trials + 1
+        return not EM(code_answer[0], key, normalize=False) and idx < max_trials + 1
 
     def react_halting_condition(
         self,
@@ -462,7 +489,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
 
         code_answer, _ = safe_execute(self._answer)
 
-        return halted and not EM(code_answer[0], key) and reflect_strategy is not None
+        return halted and not EM(code_answer[0], key, normalize=False) and reflect_strategy is not None
 
 
 class ReflexionCoTGSM8KStrategy(ReflexionCoTMathStrategy):
