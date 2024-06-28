@@ -1166,4 +1166,59 @@ Reflection: My reasoning failed because I mistakenly multiplied the number of ch
 # ======================================================================== SVAMP ======================================================================== #
 
 
+SVAMP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """"""
+
+
+REFLEXION_COT_REFLECT_INSTRUCTION_SVAMP = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Previous trial:
+Question: {question}{scratchpad}
+
+Reflection:"""
+
+
+REFLEXION_COT_INSTRUCTION_SVAMP = """Solve a math question task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+{reflections}
+
+Question: {question}{scratchpad}"""
+
+
+REFLEXION_REACT_INSTRUCTION_SVAMP = """Answer a math question with interleaving Thought, Action, Observation steps. Thought can reason about the current question and plan the retrieval steps, and Action can be two types:
+(1) Calculate[code], which implements code to answer the math question, saving the answer as the `answer` variable.
+(2) Finish[code], which returns the code to answer the math question and finishes the task, saving the answer as the `answer` variable.
+You have a maximum of {max_steps} steps.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+{reflections}
+
+Question: {question}
+{scratchpad}"""
+
+
+REFLEXION_REACT_REFLECT_INSTRUCTION_SVAMP = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Previous trial:
+Question: {question}{scratchpad}
+
+Reflection:"""
+
+
+SVAMP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """"""
+
+
 # ======================================================================== TABMWP ======================================================================== #
