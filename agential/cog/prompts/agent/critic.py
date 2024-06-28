@@ -1577,9 +1577,121 @@ answer = initial_books  # Result
 
 -----
 
+Question: There were 108 chickens and 20 sheep at the farm, some of the chickens and sheep were sold. There are 87 chickens and 18 sheep left now. How many chickens were sold?
+# Python code
+initial_chickens = 108
+initial_sheep = 20
+remaining_chickens = 87
+remaining_sheep = 18
+
+# Calculate the number of chickens sold
+chickens_sold =  remaining_chickens - initial_chickens  
+answer = chickens_sold
+
+Execution: Done
+Output: answer = -21
+
+What's the problem with the above code?
+
+1. The output answer = -21 indicates that more chickens were remaining than initially present, which is logically incorrect.
+
+2. Let's check the code:
+
+> chickens_sold = initial_chickens - remaining_chickens
+
+The code incorrectly subtracts the remaining chickens from the initial chickens, which results in a negative value indicating additional chickens added instead of sold.
+
+Here's a better solution:
+```python
+
+initial_chickens = 108  # Initial number of chickens
+remaining_chickens = 87  # Remaining chickens
+
+# Calculate the number of chickens sold
+chickens_sold = initial_chickens - remaining_chickens   # Number of chickens sold
+answer = chickens_sold  # Result
+
+
+
+------
+
+Question: Katty scored 2 goals on Monday, 8 goals on Tuesday and 9 goals on Wednesday. How many did Katty score on Monday and Wednesday?
+# Python code
+goals_on_monday = 2
+goals_on_tuesday = 8
+goals_on_wednesday = 9
+answer = goals_on_monday + goals_on_wednesday
+
+Execution: Done
+Output: answer = 11
+
+What's the problem with the above code?
+1. The answer 11 goals scored on Monday and Wednesday is reasonable.
+2. Let's check the code:
+
+> answer = goals_on_monday + goals_on_wednesday
+
+The code correctly calculates the total number of goals Katty scored on Monday and Wednesday.
+
+
+Here's a better solution:
+```python
+
+goals_on_monday = 2  # Goals scored on Monday
+goals_on_wednesday = 9  # Goals scored on Wednesday
+
+# Calculate the total number of goals scored on Monday and Wednesday
+total_goals = goals_on_monday + goals_on_wednesday  # Total goals scored
+answer = total_goals  # Result
+
+
+Question: There are 5 girls and 4 boys in the Masquerade, 12 more girls and 7 more boys joined. How many more girls than boys are in the Masquerade?
+# Python code
+
+num_girls_before = 5
+num_girls_joined = 12
+num_boys_before = 4
+num_boys_joined = 7
+total_girls =  num_girls_joined - num_girls_before
+total_boys = num_boys_before + num_boys_joined
+answer = total_girls - total_boys
+
+Execution: Done
+Output: answer = 11
+
+What's the problem with the initial output?
+
+1. The initial output result of 11 is incorrect because This approach does not correctly calculate the total number of girls after the additions.
+2. Let's check the corrected code:
+
+> total_girls = num_girls_joined - num_girls_before
+
+According to the question, we should should add the initial number of girls to the number of girls who joined to get the total number of girls after the additions.
+
+Here's a better solution:
+```python
+
+num_girls_before = 5  # Number of girls before joining
+num_girls_joined = 12  # Number of girls joined
+num_boys_before = 4  # Number of boys before joining
+num_boys_joined = 7  # Number of boys joined
+
+# Calculate the total number of girls after joining
+total_girls = num_girls_before + num_girls_joined
+
+# Calculate the total number of boys after joining
+total_boys = num_boys_before + num_boys_joined
+
+# Calculate how many more girls than boys there are
+answer = total_girls - total_boys  # Difference in number of girls and boys
+
+
+--- 
+
 
 
 ```"""
+
 
 
 
