@@ -1473,7 +1473,115 @@ num_emails_sent_in_morning = 2
 num_emails_received_in_afternoon = 6
 num_emails_sent_in_afternoon = 8
 answer = num_emails_sent_in_morning + num_emails_sent_in_afternoon
+
+
+
+--------------------------------------------------Gao----------------------------------------------
+
+Question: James bought 93 red and 10 blue stickers, he used 31 red sticker on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
+# Python code
+red_stickers_bought = 93
+blue_stickers_bought = 10
+red_stickers_used_on_fridge = 31
+blue_stickers_used_on_laptop = 7
+answer = red_stickers_bought + red_stickers_used_on_fridge
+
+Execution Status: Done
+Output: answer = 124
+
+What's the problem with the above code?
+
+1. The answer red stickers 124 is greater than the number of stickers James initially had, which is incorrect.
+2. Let's check the code:
+
+
+> answer = red_stickers_bought + red_stickers_used_on_fridge
+
+The code incorrectly adds the number of red stickers bought to the number of red stickers used, instead of subtracting the used stickers from the bought stickers.
+
+Here's a better solution:
+```python
+
+red_stickers_bought = 93  # Total red stickers
+red_stickers_used_on_fridge = 31  # Stickers used
+
+# Calculate remaining stickers
+remaining_red_stickers = red_stickers_bought - red_stickers_used_on_fridge  # Remaining stickers
+answer = remaining_red_stickers  # Result
+
+-------
+
+Question: Allen went to supermarket to buy eggs, each egg costs 80 dollars, if the discount is 29 dollars. How much do you have to pay to buy each egg?
+
+cost_per_egg = 80
+discount_per_egg = 29
+answer = cost_per_egg + discount_per_egg
+
+Execution: Done
+Output: answer = 109
+
+What's the problem with the above code?
+
+1. The answer 109 dollars per egg is incorrect because it adds the discount instead of subtracting it.
+
+2. Let's check the code:
+
+> answer = cost_per_egg + discount_per_egg
+
+The code incorrectly adds the discount to the cost of the egg instead of subtracting it.
+
+Here's a better solution:
+```python
+
+cost_per_egg = 80  # Price per egg
+discount_per_egg = 29  # Discount per egg
+
+# Calculate final price
+final_price_per_egg = cost_per_egg - discount_per_egg  # Final price per egg
+answer = final_price_per_egg  # Result
+
+
+--------
+
+
+Question: Dianna collects both cases and books. He bought 22 cases and 5 books from the store. 
+# Python code
+cases_bought = 22
+books_bought = 5
+total_cases_now = 57
+total_books_now = 25
+answer = total_books_now - books_bought
+
+Execution: Done
+Output: answer = 20
+
+What's the problem with the above code?
+
+1. The answer 20 books at first is reasonable.
+2. Let's check the code:
+
+> answer = total_books_now - books_bought
+
+The code correctly calculates the number of books Danny had initially.
+
+Here's a better solution:
+```python
+
+books_bought = 5  # Number of books Danny bought
+total_books_now = 25  # Total books Danny has now
+
+# Calculate initial number of books Danny had
+initial_books = total_books_now - books_bought  # Initial number of books Danny had
+answer = initial_books  # Result
+
+
+-----
+
+
+
 ```"""
+
+
 
 
 CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_SVAMP = """{examples}
