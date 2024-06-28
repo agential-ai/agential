@@ -54,7 +54,7 @@ class ReActQAStrategy(ReActBaseStrategy):
         self,
         llm: BaseChatModel,
         max_steps: int = 6,
-        max_tokens: int = 3896,
+        max_tokens: int = 5000,
         docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
     ) -> None:

@@ -238,7 +238,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         max_reflections: int = 3,
         max_trials: int = 1,
         max_steps: int = 6,
-        max_tokens: int = 3896,
+        max_tokens: int = 5000,
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
     ) -> None:
         super().__init__(llm)

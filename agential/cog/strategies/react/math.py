@@ -56,7 +56,7 @@ class ReActMathStrategy(ReActBaseStrategy):
         self,
         llm: BaseChatModel,
         max_steps: int = 6,
-        max_tokens: int = 3896,
+        max_tokens: int = 5000,
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
     ) -> None:
         """Initialization."""
