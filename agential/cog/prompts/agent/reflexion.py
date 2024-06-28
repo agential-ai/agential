@@ -1166,7 +1166,112 @@ Reflection: My reasoning failed because I mistakenly multiplied the number of ch
 # ======================================================================== SVAMP ======================================================================== #
 
 
-SVAMP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """"""
+SVAMP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """Question: James bought 93 red and 10 blue stickers, he used 31 red stickers on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
+Thought: Let's think step by step. James initially bought 93 red stickers. He used 31 red stickers on his fridge. So, the number of red stickers left is 93 + 31 = 124.
+Action: Finish[
+```python
+original_red_stickers = 93
+used_red_stickers = 31
+red_stickers_left = original_red_stickers + used_red_stickers
+answer = red_stickers_left
+```
+]
+
+Reflection: My reasoning failed because I incorrectly added the number of red stickers used to the total number of red stickers instead of subtracting it. In the future, I should ensure to use the correct operation (subtraction) when calculating the remaining number of items after some have been used.
+
+---
+
+Question: Allen went to the supermarket to buy eggs. Each egg costs 80 dollars, and there is a discount of 29 dollars. How much does Allen have to pay for each egg?
+Thought: Let's think step by step. The original cost of each egg is 80 dollars. There is a discount of 29 dollars. So, the amount Allen has to pay for each egg is 80 + 29 = 109 dollars.
+Action: Finish[
+```python
+original_egg_price_in_dollars = 80
+discount_dollars = 29
+price_after_discount = original_egg_price_in_dollars + discount_dollars
+answer = price_after_discount
+```
+]
+
+Reflection: My reasoning failed because I incorrectly added the discount to the original price instead of subtracting it. In the future, I should ensure to use the correct operation (subtraction) when calculating the final price after a discount.
+
+---
+
+Question: Dianna collects both cases and books. She bought 22 cases and 5 books from the store. Now she has 57 cases and 25 books. How many books did Dianna have at first?
+Thought: Let's think step by step. Dianna bought 5 books from the store, and now she has 25 books. So, the number of books she had at first is 25 + 5 = 30.
+Action: Finish[
+```python
+num_books_bought_at_store = 5
+num_books_now = 25
+initial_books = num_books_now + num_books_bought_at_store
+answer = initial_books
+```
+]
+
+Reflection: My reasoning failed because I incorrectly added the number of books bought to the current number of books instead of subtracting it. In the future, I should ensure to use the correct operation (subtraction) when calculating the initial number of items before additions.
+
+---
+
+Question: There were 108 chickens and 20 sheep at the farm. Some of the chickens and sheep were sold. Now there are 87 chickens and 18 sheep left. How many chickens were sold?
+Thought: Let's think step by step. Initially, there were 108 chickens. Now there are 87 chickens. So, the number of chickens sold is 108 + 87 = 195.
+Action: Finish[
+```python
+num_chickens_before = 108
+num_chickens_now = 87
+chickens_sold = num_chickens_before + num_chickens_now
+answer = chickens_sold
+```
+]
+
+Reflection: My reasoning failed because I incorrectly added the number of chickens left to the initial number of chickens instead of subtracting it. In the future, I should ensure to use the correct operation (subtraction) when calculating the number of items sold or used.
+
+---
+
+Question: Katty scored 2 goals on Monday, 8 goals on Tuesday, and 9 goals on Wednesday. How many goals did Katty score on Monday and Wednesday?
+Thought: Let's think step by step. Katty scored 2 goals on Monday and 9 goals on Wednesday. So, the total number of goals scored on Monday and Wednesday is 2 * 9 = 18.
+Action: Finish[
+```python
+num_goals_on_monday = 2
+num_goals_on_wednesday = 9
+total_goals = num_goals_on_monday * num_goals_on_wednesday
+answer = total_goals
+```
+]
+
+Reflection: My reasoning failed because I incorrectly multiplied the number of goals scored on Monday and Wednesday instead of adding them. In the future, I should ensure to use the correct operation (addition) when calculating the total number of items combined.
+
+---
+
+Question: There are 5 girls and 4 boys in the Masquerade. 12 more girls and 7 more boys joined. How many more girls than boys are in the Masquerade?
+Thought: Let's think step by step. Initially, there were 5 girls and 4 boys. Then 12 more girls and 7 more boys joined. The total number of girls is 5 + 12 = 17, and the total number of boys is 4 + 7 = 11. So, the difference is 11 - 17 = -6.
+Action: Finish[
+```python
+num_girls_before = 5
+num_girls_joined = 12
+num_boys_before = 4
+num_boys_joined = 7
+total_girls = num_girls_before + num_girls_joined
+total_boys = num_boys_before + num_boys_joined
+difference = total_boys - total_girls
+answer = difference
+```
+]
+
+Reflection: My reasoning failed because I incorrectly subtracted the total number of girls from the total number of boys instead of the other way around. In the future, I should ensure to use the correct order when calculating the difference between two quantities.
+
+---
+
+Question: Joseph and Getty went to buy ice creams. Together, they bought 36 ice creams. On the way back, Joseph ate 12 of the ice creams, and he has 2 ice creams left now. How many ice creams did Getty purchase?
+Thought: Let's think step by step. Joseph ate 12 ice creams and has 2 left, so he initially had 12 + 2 = 14 ice creams. Together, they bought 36 ice creams, so the number of ice creams Getty purchased is 36 + 14 = 50.
+Action: Finish[
+```python
+num_ice_creams_bought_by_joseph = 2 + 12
+total_ice_creams = 36
+ice_creams_bought_by_getty = total_ice_creams + num_ice_creams_bought_by_joseph
+answer = ice_creams_bought_by_getty
+```
+]
+
+Reflection: My reasoning failed because I incorrectly added the number of ice creams Joseph had to the total number of ice creams bought instead of subtracting it. In the future, I should ensure to use the correct operation (subtraction) when calculating the number of items one person has from the total."""
 
 
 REFLEXION_COT_REFLECT_INSTRUCTION_SVAMP = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
