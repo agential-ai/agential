@@ -44,7 +44,7 @@ def test_init() -> None:
     strategy = ReActQAStrategy(llm=llm)
     assert isinstance(strategy.llm, BaseChatModel)
     assert strategy.max_steps == 6
-    assert strategy.max_tokens == 3896
+    assert strategy.max_tokens == 5000
     assert isinstance(strategy.docstore, DocstoreExplorer)
     assert isinstance(strategy.enc, Encoding)
     assert strategy._scratchpad == ""

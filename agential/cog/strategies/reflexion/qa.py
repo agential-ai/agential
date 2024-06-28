@@ -312,7 +312,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         max_reflections (int): The maximum number of reflections allowed. Defaults to 3.
         max_trials (int): The maximum number of trials allowed. Defaults to 1.
         max_steps (int): The maximum number of steps allowed. Defaults to 6.
-        max_tokens (int): The maximum number of tokens allowed. Defaults to 3896.
+        max_tokens (int): The maximum number of tokens allowed. Defaults to 5000.
         docstore (DocstoreExplorer): The document store explorer for retrieving relevant documents. Defaults to Wikipedia.
         enc (Encoding): The encoding for tokenization. Defaults to gpt-3.5-turbo.
     """
@@ -324,7 +324,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         max_reflections: int = 3,
         max_trials: int = 1,
         max_steps: int = 6,
-        max_tokens: int = 3896,
+        max_tokens: int = 5000,
         docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
     ) -> None:
