@@ -7,18 +7,6 @@ from agential.cog.modules.reflect.reflexion import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )
-from agential.cog.strategies.reflexion.math import (
-    ReflexionCoTMathStrategy,
-    ReflexionReActMathStrategy,
-    ReflexionCoTGSM8KStrategy,
-    ReflexionCoTSVAMPStrategy,
-    ReflexionCoTTabMWPStrategy,
-    ReflexionReActMathStrategy,
-    ReflexionReActSVAMPStrategy,
-    ReflexionReActTabMWPStrategy,
-    parse_math_action_cot,
-    parse_math_action_react,
-)
 from agential.cog.prompts.agent.reflexion import (
     GSM8K_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     GSM8K_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
@@ -30,6 +18,17 @@ from agential.cog.prompts.agent.reflexion import (
 from agential.cog.prompts.benchmark.gsm8k import (
     GSM8K_FEWSHOT_EXAMPLES_COT,
     GSM8K_FEWSHOT_EXAMPLES_REACT,
+)
+from agential.cog.strategies.reflexion.math import (
+    ReflexionCoTGSM8KStrategy,
+    ReflexionCoTMathStrategy,
+    ReflexionCoTSVAMPStrategy,
+    ReflexionCoTTabMWPStrategy,
+    ReflexionReActMathStrategy,
+    ReflexionReActSVAMPStrategy,
+    ReflexionReActTabMWPStrategy,
+    parse_math_action_cot,
+    parse_math_action_react,
 )
 
 
@@ -492,15 +491,45 @@ def test_reflexion_react_halting_condition() -> None:
 
 def test_reflexion_react_react_halting_condition() -> None:
     """Tests ReflexionReActMathStrategy react_halting_condition."""
+    strategy = ReflexionReActMathStrategy(llm=FakeListChatModel(responses=[]))
 
+    idx = 0
+    question = "What is the capital of France?"
+    examples = ""
+    reflections = ""
+    prompt = "Answer the question."
+
+    assert not strategy.react_halting_condition(
+        idx, question, examples, reflections, prompt, {}
+    )
 
 def test_reflexion_react_reset() -> None:
     """Tests ReflexionReActMathStrategy reset."""
+    llm = FakeListChatModel(responses=[])
+    strategy = ReflexionReActMathStrategy(llm=llm)
+    strategy._scratchpad = "Some previous state"
+    strategy._finished = True
 
+    strategy.reset()
+
+    assert strategy._scratchpad == ""
+    assert not strategy._finished
 
 def test_reflexion_react_reflect() -> None:
     """Tests ReflexionReActMathStrategy reflect."""
+    question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
 
+    gt_reflections = "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
+    llm = FakeListChatModel(responses=["1"])
+    strategy = ReflexionReActQAStrategy(llm=llm)
+    _, reflections = strategy.reflect(
+        reflect_strategy="reflexion",
+        question=question,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
+    )
+    assert reflections == gt_reflections
 
 def test_reflexion_react_reflect_condition() -> None:
     """Tests ReflexionReActMathStrategy reflect_condition."""
