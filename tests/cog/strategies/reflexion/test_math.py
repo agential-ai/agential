@@ -517,16 +517,16 @@ def test_reflexion_react_reset() -> None:
 
 def test_reflexion_react_reflect() -> None:
     """Tests ReflexionReActMathStrategy reflect."""
-    question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
+    question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
 
     gt_reflections = "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
     llm = FakeListChatModel(responses=["1"])
-    strategy = ReflexionReActQAStrategy(llm=llm)
+    strategy = ReflexionReActMathStrategy(llm=llm)
     _, reflections = strategy.reflect(
         reflect_strategy="reflexion",
         question=question,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+        examples=GSM8K_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_GSM8K,
         additional_keys={},
     )
     assert reflections == gt_reflections
