@@ -503,6 +503,7 @@ def test_reflexion_react_react_halting_condition() -> None:
         idx, question, examples, reflections, prompt, {}
     )
 
+
 def test_reflexion_react_reset() -> None:
     """Tests ReflexionReActMathStrategy reset."""
     llm = FakeListChatModel(responses=[])
@@ -514,6 +515,7 @@ def test_reflexion_react_reset() -> None:
 
     assert strategy._scratchpad == ""
     assert not strategy._finished
+
 
 def test_reflexion_react_reflect() -> None:
     """Tests ReflexionReActMathStrategy reflect."""
@@ -531,8 +533,23 @@ def test_reflexion_react_reflect() -> None:
     )
     assert reflections == gt_reflections
 
+
 def test_reflexion_react_reflect_condition() -> None:
     """Tests ReflexionReActMathStrategy reflect_condition."""
+    question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
+
+    llm = FakeListChatModel(responses=["1"])
+    strategy = ReflexionReActMathStrategy(llm=llm)
+    out = strategy.reflect_condition(
+        step_idx=1,
+        reflect_strategy="reflexion",
+        question=question,
+        examples=GSM8K_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+        key="key",
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_GSM8K,
+        additional_keys={},
+    )
+    assert not out
 
 
 def test_reflexion_react_instantiate_strategies() -> None:
