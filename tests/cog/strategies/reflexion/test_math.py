@@ -15,7 +15,18 @@ from agential.cog.strategies.reflexion.math import (
     ReflexionReActSVAMPStrategy,
     ReflexionReActTabMWPStrategy,
 )
-
+from agential.cog.prompts.agent.reflexion import (
+    GSM8K_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
+    GSM8K_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+    REFLEXION_COT_INSTRUCTION_GSM8K,
+    REFLEXION_COT_REFLECT_INSTRUCTION_GSM8K,
+    REFLEXION_REACT_INSTRUCTION_GSM8K,
+    REFLEXION_REACT_REFLECT_INSTRUCTION_GSM8K,
+)
+from agential.cog.prompts.benchmark.gsm8k import (
+    GSM8K_FEWSHOT_EXAMPLES_COT,
+    GSM8K_FEWSHOT_EXAMPLES_REACT,
+)
 
 def test_reflexion_cot_init() -> None:
     """Tests ReflexionCoTQAStrategy init."""
