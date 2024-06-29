@@ -323,6 +323,25 @@ def test_reflexion_react_generate() -> None:
 
 def test_reflexion_react_generate_action() -> None:
     """Tests ReflexionReActMathStrategy generate_action."""
+    question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
+
+    gt_scratchpad = '\nAction: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income\n```\n]'
+    responses = [
+        'Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income\n```\n]'
+    ]
+    llm = FakeListChatModel(responses=responses)
+    strategy = ReflexionReActMathStrategy(llm=llm)
+    action_type, query = strategy.generate_action(
+        question=question,
+        examples=GSM8K_FEWSHOT_EXAMPLES_REACT,
+        reflections="",
+        prompt=REFLEXION_REACT_INSTRUCTION_GSM8K,
+        additional_keys={},
+        max_steps=5,
+    )
+    assert action_type == 'Calculate'
+    assert query == 'eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income'
+    assert strategy._scratchpad == gt_scratchpad
 
 
 def test_reflexion_react_generate_observation() -> None:
