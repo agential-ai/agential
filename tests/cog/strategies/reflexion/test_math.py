@@ -17,7 +17,7 @@ from agential.cog.strategies.reflexion.math import (
     ReflexionReActSVAMPStrategy,
     ReflexionReActTabMWPStrategy,
     parse_math_action_cot,
-    parse_math_action_react
+    parse_math_action_react,
 )
 from agential.cog.prompts.agent.reflexion import (
     GSM8K_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
@@ -106,7 +106,7 @@ def test_reflexion_cot_generate_action() -> None:
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
 
     responses = [
-        'Finish[\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_per_day = eggs_sold * price_per_egg\nanswer = money_made_per_day\n```\n]'
+        "Finish[\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_per_day = eggs_sold * price_per_egg\nanswer = money_made_per_day\n```\n]"
     ]
     llm = FakeListChatModel(responses=responses)
     strategy = ReflexionCoTMathStrategy(llm=llm)
@@ -118,12 +118,15 @@ def test_reflexion_cot_generate_action() -> None:
         additional_keys={},
     )
     assert action_type == "Finish"
-    assert query == 'eggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_per_day = eggs_sold * price_per_egg\nanswer = money_made_per_day'
+    assert (
+        query
+        == "eggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_per_day = eggs_sold * price_per_egg\nanswer = money_made_per_day"
+    )
     assert strategy._finished == False
     assert strategy._answer == ""
     assert (
         strategy._scratchpad
-        == '\nAction: Finish[\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_per_day = eggs_sold * price_per_egg\nanswer = money_made_per_day\n```\n]'
+        == "\nAction: Finish[\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_per_day = eggs_sold * price_per_egg\nanswer = money_made_per_day\n```\n]"
     )
 
 
@@ -325,9 +328,9 @@ def test_reflexion_react_generate_action() -> None:
     """Tests ReflexionReActMathStrategy generate_action."""
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
 
-    gt_scratchpad = '\nAction: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income\n```\n]'
+    gt_scratchpad = "\nAction: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income\n```\n]"
     responses = [
-        'Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income\n```\n]'
+        "Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income\n```\n]"
     ]
     llm = FakeListChatModel(responses=responses)
     strategy = ReflexionReActMathStrategy(llm=llm)
@@ -339,8 +342,11 @@ def test_reflexion_react_generate_action() -> None:
         additional_keys={},
         max_steps=5,
     )
-    assert action_type == 'Calculate'
-    assert query == 'eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income'
+    assert action_type == "Calculate"
+    assert (
+        query
+        == "eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income"
+    )
     assert strategy._scratchpad == gt_scratchpad
 
 
@@ -353,12 +359,15 @@ def test_reflexion_react_generate_observation() -> None:
     is_correct, obs, external_tool_info = strategy.generate_observation(
         step_idx=1,
         action_type="Calculate",
-        query='eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income',
+        query="eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income",
         key=-9867630,
     )
     assert is_correct
-    assert obs == '\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income\n```\nExecution Status: Done\nOutput: answer = -9867630'
-    assert external_tool_info == {'execution_status': 'Done', 'code_answer': -9867630}
+    assert (
+        obs
+        == "\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income\n```\nExecution Status: Done\nOutput: answer = -9867630"
+    )
+    assert external_tool_info == {"execution_status": "Done", "code_answer": -9867630}
 
     # Test Finish incorrect.
     is_correct, obs, external_tool_info = strategy.generate_observation(
@@ -368,7 +377,7 @@ def test_reflexion_react_generate_observation() -> None:
         key="key1",
     )
     assert not is_correct
-    assert obs == 'Answer is INCORRECT'
+    assert obs == "Answer is INCORRECT"
     assert strategy._scratchpad != ""
     assert strategy._finished
     assert strategy._answer == "answer = 5"
@@ -382,7 +391,7 @@ def test_reflexion_react_generate_observation() -> None:
         key=5,
     )
     assert is_correct
-    assert obs == 'Answer is CORRECT'
+    assert obs == "Answer is CORRECT"
     assert strategy._scratchpad != ""
     assert strategy._finished
     assert strategy._answer == "answer = 5"
@@ -396,7 +405,9 @@ def test_reflexion_react_generate_observation() -> None:
         key=5,
     )
     assert is_correct
-    assert obs == "Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
+    assert (
+        obs == "Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
+    )
     assert strategy._scratchpad != ""
     assert strategy._finished
     assert strategy._answer == "answer = 5"
@@ -447,6 +458,7 @@ def test_reflexion_react_react_create_output_dict() -> None:
         "is_correct": True,
     }
     assert output == expected_output
+
 
 def test_reflexion_react_halting_condition() -> None:
     """Tests ReflexionReActMathStrategy halting_condition."""
