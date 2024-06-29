@@ -77,6 +77,10 @@ else:
     answer = "no\""""
 
 
+TABMWP_FEWSHOT_EXAMPLES_POT = """
+"""
+
+
 TABMWP_FEWSHOT_EXAMPLES_REACT = """Read the following table regarding "Coin collections" and then write Python code to answer a question:
 
 Name | Number of coins
