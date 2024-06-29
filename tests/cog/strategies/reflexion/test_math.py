@@ -13,7 +13,7 @@ from agential.cog.strategies.reflexion.math import (
     ReflexionCoTGSM8KStrategy,
     ReflexionCoTSVAMPStrategy,
     ReflexionCoTTabMWPStrategy,
-    ReflexionReActGSM8KStrategy,
+    ReflexionReActMathStrategy,
     ReflexionReActSVAMPStrategy,
     ReflexionReActTabMWPStrategy,
     parse_math_action_cot,
@@ -272,6 +272,7 @@ def test_reflexion_cot_reflect_condition() -> None:
     assert strategy.reflect_condition(1, "strategy1", "key2")
     assert strategy.reflect_condition(1, "", "key2")
 
+
 def test_reflexion_cot_instantiate_strategies() -> None:
     """Tests ReflexionCoTMathStrategy instantiate strategies."""
     llm = FakeListChatModel(responses=[])
@@ -285,9 +286,9 @@ def test_reflexion_cot_instantiate_strategies() -> None:
 
 
 def test_reflexion_react_init() -> None:
-    """Tests ReflexionReActQAStrategy init."""
+    """Tests ReflexionReActMathStrategy init."""
     llm = FakeListChatModel(responses=[])
-    strategy = ReflexionReActGSM8KStrategy(llm=llm)
+    strategy = ReflexionReActMathStrategy(llm=llm)
     assert isinstance(strategy.llm, BaseChatModel)
     assert isinstance(strategy.reflector, ReflexionReActReflector)
     assert strategy.max_reflections == 3
@@ -298,52 +299,70 @@ def test_reflexion_react_init() -> None:
 
 
 def test_reflexion_react_generate() -> None:
-    """Tests ReflexionReActQAStrategy generate."""
+    """Tests ReflexionReActMathStrategy generate."""
+    question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
 
+    gt_scratchpad = "\nThought: I need to calculate how much money Janet makes at the farmers' market daily based on the number of fresh duck eggs she sells."
+    gt_out = "I need to calculate how much money Janet makes at the farmers' market daily based on the number of fresh duck eggs she sells."
+    responses = [
+        "I need to calculate how much money Janet makes at the farmers' market daily based on the number of fresh duck eggs she sells.\n\nAction: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_baked_into_muffins\nprice_per_egg = 2\ntotal_money_daily = eggs_sold * price_per_egg\nanswer = total_money_daily\n```\n]\n\nObservation: \n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_baked_into_muffins\nprice_per_egg = 2\ntotal_money_daily = eggs_sold * price_per_egg\nanswer = total_money_daily\n```\nExecution Status: Done\nOutput: answer = -9867653\n\nThought: The answer is negative, which doesn't make sense. I must have made a mistake in the calculation.\n\nAction: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_baked_into_muffins\nprice_per_egg = 2\ntotal_money_daily = eggs_sold * price_per_egg\ntotal_money_daily = abs(total_money_daily)  # Taking the absolute value\nanswer = total_money_daily\n```\n]\n\nObservation: \n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_baked_into_muffins\nprice_per_egg = 2\ntotal_money_daily = eggs_sold * price_per_egg\ntotal_money_daily = abs(total_money_daily)  # Taking the absolute value\nanswer = total_money_daily\n```\nExecution Status: Done\nOutput: answer = 9867646\n\nThought: Janet makes $9867646 every day at the farmers' market.\nAction: Finish[\n```python\nanswer = 9867646\n```\n]\n\nObservation: \n```python\nanswer = 9867646\n```"
+    ]
+    llm = FakeListChatModel(responses=responses)
+    strategy = ReflexionReActMathStrategy(llm=llm)
+    out = strategy.generate(
+        question=question,
+        examples=GSM8K_FEWSHOT_EXAMPLES_REACT,
+        reflections="",
+        prompt=REFLEXION_REACT_INSTRUCTION_GSM8K,
+        additional_keys={},
+        max_steps=5,
+    )
+    assert out == gt_out
+    assert strategy._scratchpad == gt_scratchpad
 
 def test_reflexion_react_generate_action() -> None:
-    """Tests ReflexionReActQAStrategy generate_action."""
+    """Tests ReflexionReActMathStrategy generate_action."""
 
 
 def test_reflexion_react_generate_observation() -> None:
-    """Tests ReflexionReActQAStrategy generate_observation."""
+    """Tests ReflexionReActMathStrategy generate_observation."""
 
 
 def test_reflexion_react_create_output_dict() -> None:
-    """Tests ReflexionReActQAStrategy create_output_dict."""
+    """Tests ReflexionReActMathStrategy create_output_dict."""
 
 
 def test_reflexion_react_react_create_output_dict() -> None:
-    """Tests ReflexionReActQAStrategy react_create_output_dict."""
+    """Tests ReflexionReActMathStrategy react_create_output_dict."""
 
 
 def test_reflexion_react_halting_condition() -> None:
-    """Tests ReflexionReActQAStrategy halting_condition."""
+    """Tests ReflexionReActMathStrategy halting_condition."""
 
 
 def test_reflexion_react_react_halting_condition() -> None:
-    """Tests ReflexionReActQAStrategy react_halting_condition."""
+    """Tests ReflexionReActMathStrategy react_halting_condition."""
 
 
 def test_reflexion_react_reset() -> None:
-    """Tests ReflexionReActQAStrategy reset."""
+    """Tests ReflexionReActMathStrategy reset."""
 
 
 def test_reflexion_react_reflect() -> None:
-    """Tests ReflexionReActQAStrategy reflect."""
+    """Tests ReflexionReActMathStrategy reflect."""
 
 
 def test_reflexion_react_reflect_condition() -> None:
-    """Tests ReflexionReActQAStrategy reflect_condition."""
+    """Tests ReflexionReActMathStrategy reflect_condition."""
 
 
 def test_reflexion_react_instantiate_strategies() -> None:
-    """Tests ReflexionReActQAStrategy instantiate strategies."""
+    """Tests ReflexionReActMathStrategy instantiate strategies."""
     llm = FakeListChatModel(responses=[])
-    gsm8k_strategy = ReflexionReActGSM8KStrategy(llm=llm)
+    gsm8k_strategy = ReflexionReActMathStrategy(llm=llm)
     svamp_strategy = ReflexionReActSVAMPStrategy(llm=llm)
     tabmwp_strategy = ReflexionReActTabMWPStrategy(llm=llm)
 
-    assert isinstance(gsm8k_strategy, ReflexionReActGSM8KStrategy)
+    assert isinstance(gsm8k_strategy, ReflexionReActMathStrategy)
     assert isinstance(svamp_strategy, ReflexionReActSVAMPStrategy)
     assert isinstance(tabmwp_strategy, ReflexionReActTabMWPStrategy)
