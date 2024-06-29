@@ -122,7 +122,7 @@ BENCHMARK_STRINGS = {
         Benchmarks.math.TABMWP: {
             FewShotType.POT: TABMWP_FEWSHOT_EXAMPLES_POT,
             FewShotType.REACT: TABMWP_FEWSHOT_EXAMPLES_REACT,
-            FewShotType.COT: TABMWP_FEWSHOT_EXAMPLES_COT
+            FewShotType.COT: TABMWP_FEWSHOT_EXAMPLES_COT,
         },
     },
     Benchmarks.CODE: {
