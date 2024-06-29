@@ -405,11 +405,48 @@ def test_reflexion_react_generate_observation() -> None:
 
 def test_reflexion_react_create_output_dict() -> None:
     """Tests ReflexionReActMathStrategy create_output_dict."""
+    strategy = ReflexionReActMathStrategy(llm=FakeListChatModel(responses=[]))
+    react_out = [
+        {
+            "thought": "First thought",
+            "action_type": "Query",
+            "query": "What is the capital of France?",
+            "observation": "Observation: Answer is CORRECT",
+            "is_correct": True,
+        }
+    ]
+    reflections = "Reflection on the first thought."
+    output = strategy.create_output_dict(react_out, reflections)
+    expected_output = {
+        "react_output": react_out,
+        "reflections": reflections,
+    }
+    assert output == expected_output
 
 
 def test_reflexion_react_react_create_output_dict() -> None:
     """Tests ReflexionReActMathStrategy react_create_output_dict."""
+    strategy = ReflexionReActMathStrategy(llm=FakeListChatModel(responses=[]))
 
+    # Test case 1: Valid output creation
+    output = strategy.react_create_output_dict(
+        thought="Initial thought",
+        action_type="Query",
+        query="What is the capital of France?",
+        obs="Observation: Answer is CORRECT",
+        external_tool_info={"search_result": "", "lookup_result": ""},
+        is_correct=True,
+    )
+    expected_output = {
+        "thought": "Initial thought",
+        "action_type": "Query",
+        "query": "What is the capital of France?",
+        "observation": "Observation: Answer is CORRECT",
+        "answer": "",
+        "external_tool_info": {"search_result": "", "lookup_result": ""},
+        "is_correct": True,
+    }
+    assert output == expected_output
 
 def test_reflexion_react_halting_condition() -> None:
     """Tests ReflexionReActMathStrategy halting_condition."""
