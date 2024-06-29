@@ -8,6 +8,7 @@ from agential.cog.modules.reflect.reflexion import (
     ReflexionReActReflector,
 )
 from agential.cog.strategies.reflexion.math import (
+    ReflexionCoTMathStrategy,
     ReflexionReActMathStrategy,
     ReflexionCoTGSM8KStrategy,
     ReflexionCoTSVAMPStrategy,
@@ -78,6 +79,26 @@ def test_reflexion_cot_init() -> None:
 
 def test_reflexion_cot_generate() -> None:
     """Tests ReflexionCoTQAStrategy generate."""
+    question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
+
+    gt_out = "Let's calculate the total number of eggs she sells after breakfast and baking muffins. Then, we can find out how much she makes daily at the farmers' market."
+    gt_scratchpad = ""
+    responses = [
+        "Let's calculate the total number of eggs she sells after breakfast and baking muffins. Then, we can find out how much she makes daily at the farmers' market.\nAction: Finish[\n```python\neggs_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\ntotal_eggs_sold = eggs_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\ndaily_income = total_eggs_sold * price_per_egg\nanswer = daily_income\n```\n]"
+    ]
+    llm = FakeListChatModel(responses=responses)
+    strategy = ReflexionCoTMathStrategy(llm=llm)
+    out = strategy.generate(
+        question=question,
+        examples=GSM8K_FEWSHOT_EXAMPLES_COT,
+        reflections="",
+        prompt=REFLEXION_COT_INSTRUCTION_GSM8K,
+        additional_keys={},
+    )
+    assert out == gt_out
+    assert strategy._scratchpad == gt_scratchpad
+    assert strategy._finished == False
+    assert strategy._answer == ""
 
 
 def test_reflexion_cot_generate_action() -> None:
