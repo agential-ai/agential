@@ -31,10 +31,12 @@ from agential.cog.prompts.benchmark.mbpp import (
     MBPP_FEWSHOT_EXAMPLES_REACT,
 )
 from agential.cog.prompts.benchmark.svamp import (
+    SVAMP_FEWSHOT_EXAMPLES_COT,
     SVAMP_FEWSHOT_EXAMPLES_POT,
     SVAMP_FEWSHOT_EXAMPLES_REACT,
 )
 from agential.cog.prompts.benchmark.tabmwp import (
+    TABMWP_FEWSHOT_EXAMPLES_COT,
     TABMWP_FEWSHOT_EXAMPLES_POT,
     TABMWP_FEWSHOT_EXAMPLES_REACT,
 )
@@ -115,10 +117,12 @@ BENCHMARK_STRINGS = {
         Benchmarks.math.SVAMP: {
             FewShotType.POT: SVAMP_FEWSHOT_EXAMPLES_POT,
             FewShotType.REACT: SVAMP_FEWSHOT_EXAMPLES_REACT,
+            FewShotType.COT: SVAMP_FEWSHOT_EXAMPLES_COT,
         },
         Benchmarks.math.TABMWP: {
             FewShotType.POT: TABMWP_FEWSHOT_EXAMPLES_POT,
             FewShotType.REACT: TABMWP_FEWSHOT_EXAMPLES_REACT,
+            FewShotType.COT: TABMWP_FEWSHOT_EXAMPLES_COT
         },
     },
     Benchmarks.CODE: {
@@ -145,8 +149,8 @@ def get_fewshot_examples(mode: Dict[str, str], fewshot_type: str) -> str:
             - ambignq: Supports "cot", "direct", "react"
         - math:
             - gsm8k: Supports "pot", "cot", "react"
-            - svamp: Supports "pot", "react"
-            - tabmwp: Supports "pot", "react"
+            - svamp: Supports "pot", "cot", "react"
+            - tabmwp: Supports "pot", "cot", "react"
         - code:
             - humaneval: Supports "pot", "react"
             - mbpp: Supports "pot", "react"
