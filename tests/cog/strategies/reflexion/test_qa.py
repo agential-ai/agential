@@ -30,7 +30,7 @@ from agential.cog.strategies.reflexion.qa import (
     ReflexionReActHotQAStrategy,
     ReflexionReActQAStrategy,
     ReflexionReActTriviaQAStrategy,
-    parse_qa_action
+    parse_qa_action,
 )
 
 
