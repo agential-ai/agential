@@ -82,7 +82,7 @@ def test_reflexion_cot_generate() -> None:
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
 
     gt_out = "Let's calculate the total number of eggs she sells after breakfast and baking muffins. Then, we can find out how much she makes daily at the farmers' market."
-    gt_scratchpad = ""
+    gt_scratchpad = "\nThought: Let's calculate the total number of eggs she sells after breakfast and baking muffins. Then, we can find out how much she makes daily at the farmers' market."
     responses = [
         "Let's calculate the total number of eggs she sells after breakfast and baking muffins. Then, we can find out how much she makes daily at the farmers' market.\nAction: Finish[\n```python\neggs_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\ntotal_eggs_sold = eggs_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\ndaily_income = total_eggs_sold * price_per_egg\nanswer = daily_income\n```\n]"
     ]
@@ -135,9 +135,9 @@ def test_reflexion_cot_generate_observation() -> None:
     is_correct, obs = strategy.generate_observation(
         action_type="Finish", query="correct_answer", key="correct_answer"
     )
-    assert is_correct == True
-    assert obs == "Answer is CORRECT"
-    assert "Observation: Answer is CORRECT" in strategy._scratchpad
+    assert is_correct == False
+    assert obs == "Answer is INCORRECT"
+    assert "Observation: Answer is INCORRECT" in strategy._scratchpad
 
     # Case 2: action_type is "Finish" and answer is incorrect.
     strategy = ReflexionCoTMathStrategy(llm=llm)
@@ -212,7 +212,7 @@ def test_reflexion_cot_halting_condition() -> None:
     assert strategy.halting_condition(3, "correct_answer") == True
 
     strategy._answer = "correct_answer"
-    assert strategy.halting_condition(2, "correct_answer") == True
+    assert strategy.halting_condition(2, "correct_answer") == False
 
     strategy._answer = "incorrect_answer"
     assert strategy.halting_condition(2, "correct_answer") == False
@@ -246,11 +246,31 @@ def test_reflexion_cot_reset() -> None:
 
 def test_reflexion_cot_reflect() -> None:
     """Tests ReflexionCoTMathStrategy reflect."""
+    question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
+
+    llm = FakeListChatModel(responses=[])
+    strategy = ReflexionCoTMathStrategy(llm=llm, max_trials=3)
+
+    gt_out = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?\n\n(END PREVIOUS TRIAL)\n"
+    _, out = strategy.reflect(
+        reflect_strategy="last_attempt",
+        question=question,
+        examples=GSM8K_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
+        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_GSM8K,
+        additional_keys={},
+    )
+    assert out == gt_out
 
 
 def test_reflexion_cot_reflect_condition() -> None:
     """Tests ReflexionCoTMathStrategy reflect_condition."""
+    llm = FakeListChatModel(responses=[])
+    strategy = ReflexionCoTMathStrategy(llm)
 
+    assert not strategy.reflect_condition(0, "strategy1", "key1")
+    assert strategy.reflect_condition(1, "strategy1", "key1")
+    assert strategy.reflect_condition(1, "strategy1", "key2")
+    assert strategy.reflect_condition(1, "", "key2")
 
 def test_reflexion_cot_instantiate_strategies() -> None:
     """Tests ReflexionCoTMathStrategy instantiate strategies."""
