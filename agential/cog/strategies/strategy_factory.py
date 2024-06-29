@@ -111,10 +111,10 @@ class CriticStrategyFactory:
             else:
                 raise ValueError(f"Unsupported Math benchmark: {mode['math']}")
         elif "code" in mode:
-            if mode["code"] == "mbpp":
-                return CritMBPPCodeStrategy(**strategy_kwargs)
-            elif mode["code"] == "humaneval":
+            if mode["code"] == "humaneval":
                 return CritHEvalCodeStrategy(**strategy_kwargs)
+            elif mode["code"] == "mbpp":
+                return CritMBPPCodeStrategy(**strategy_kwargs)
             else:
                 raise ValueError(f"Unsupported Code benchmark: {mode['code']}")
         else:
@@ -170,10 +170,10 @@ class ReActStrategyFactory:
             else:
                 raise ValueError(f"Unsupported Math benchmark: {mode['math']}")
         elif "code" in mode:
-            if mode["code"] == "mbpp":
-                return ReActMBPPStrategy(**strategy_kwargs)
-            elif mode["code"] == "humaneval":
+            if mode["code"] == "humaneval":
                 return ReActHEvalStrategy(**strategy_kwargs)
+            elif mode["code"] == "mbpp":
+                return ReActMBPPStrategy(**strategy_kwargs)
             else:
                 raise ValueError(f"Unsupported Code benchmark: {mode['code']}")
         else:
@@ -231,10 +231,10 @@ class ReflexionCoTStrategyFactory:
             else:
                 raise ValueError(f"Unsupported Math benchmark: {mode['math']}")
         elif "code" in mode:
-            if mode["code"] == "mbpp":
-                return ReflexionCoTMBPPStrategy(**strategy_kwargs)
-            elif mode["code"] == "humaneval":
+            if mode["code"] == "humaneval":
                 return ReflexionCoTHEvalStrategy(**strategy_kwargs)
+            elif mode["code"] == "mbpp":
+                return ReflexionCoTMBPPStrategy(**strategy_kwargs)
             else:
                 raise ValueError(f"Unsupported Code benchmark: {mode['code']}")
         else:
@@ -292,10 +292,10 @@ class ReflexionReActStrategyFactory:
             else:
                 raise ValueError(f"Unsupported Math benchmark: {mode['math']}")
         elif "code" in mode:
-            if mode["code"] == "mbpp":
-                return ReflexionReActMBPPStrategy(**strategy_kwargs)
-            elif mode["code"] == "humaneval":
+            if mode["code"] == "humaneval":
                 return ReflexionReActHEvalStrategy(**strategy_kwargs)
+            elif mode["code"] == "mbpp":
+                return ReflexionReActMBPPStrategy(**strategy_kwargs)
             else:
                 raise ValueError(f"Unsupported Code benchmark: {mode['code']}")
         else:
