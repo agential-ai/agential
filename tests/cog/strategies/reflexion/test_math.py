@@ -348,6 +348,8 @@ def test_reflexion_react_generate_observation() -> None:
     """Tests ReflexionReActMathStrategy generate_observation."""
     llm = FakeListChatModel(responses=[])
     strategy = ReflexionReActMathStrategy(llm=llm)
+
+    # Test Calculate.
     is_correct, obs, external_tool_info = strategy.generate_observation(
         step_idx=1,
         action_type="Calculate",
@@ -358,6 +360,7 @@ def test_reflexion_react_generate_observation() -> None:
     assert obs == '\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income\n```\nExecution Status: Done\nOutput: answer = -9867630'
     assert external_tool_info == {'execution_status': 'Done', 'code_answer': -9867630}
 
+    # Test Finish incorrect.
     is_correct, obs, external_tool_info = strategy.generate_observation(
         step_idx=1,
         action_type="Finish",
@@ -371,6 +374,7 @@ def test_reflexion_react_generate_observation() -> None:
     assert strategy._answer == "answer = 5"
     assert external_tool_info == {"code_answer": 5, "execution_status": "Done"}
 
+    # Test Finish correct.
     is_correct, obs, external_tool_info = strategy.generate_observation(
         step_idx=1,
         action_type="Finish",
@@ -383,6 +387,20 @@ def test_reflexion_react_generate_observation() -> None:
     assert strategy._finished
     assert strategy._answer == "answer = 5"
     assert external_tool_info == {"code_answer": 5, "execution_status": "Done"}
+
+    # Test invalid.
+    is_correct, obs, external_tool_info = strategy.generate_observation(
+        step_idx=1,
+        action_type="Invalid",
+        query="answer = 5",
+        key=5,
+    )
+    assert is_correct
+    assert obs == "Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
+    assert strategy._scratchpad != ""
+    assert strategy._finished
+    assert strategy._answer == "answer = 5"
+    assert external_tool_info == {"code_answer": "", "execution_status": ""}
 
 
 def test_reflexion_react_create_output_dict() -> None:
