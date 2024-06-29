@@ -1,8 +1,10 @@
 """Reflexion Agent strategies for Code."""
+
 from typing import Any, Dict, List, Optional, Tuple
-from langchain_core.language_models.chat_models import BaseChatModel
+
 import tiktoken
 
+from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken.core import Encoding
 
 from agential.cog.modules.reflect.reflexion import (
@@ -83,7 +85,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
     ) -> bool:
         pass
 
-        
+
 class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
     def __init__(
         self,
@@ -181,7 +183,7 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
     ) -> bool:
         pass
 
-        
+
 class ReflexionCoTHEvalStrategy(ReflexionCoTCodeStrategy):
     """A strategy class for the HumanEval benchmark using the ReflexionCoT agent."""
 
