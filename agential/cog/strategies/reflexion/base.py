@@ -54,7 +54,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
             key (str): The key for the observation.
 
         Returns:
-            Tuple[bool, str]: The generated observation.
+            Tuple[bool, str]: A boolean indicating correctness and the generated observation.
         """
         pass
 
