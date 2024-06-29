@@ -320,6 +320,7 @@ def test_reflexion_react_generate() -> None:
     assert out == gt_out
     assert strategy._scratchpad == gt_scratchpad
 
+
 def test_reflexion_react_generate_action() -> None:
     """Tests ReflexionReActMathStrategy generate_action."""
 
