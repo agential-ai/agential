@@ -346,6 +346,43 @@ def test_reflexion_react_generate_action() -> None:
 
 def test_reflexion_react_generate_observation() -> None:
     """Tests ReflexionReActMathStrategy generate_observation."""
+    llm = FakeListChatModel(responses=[])
+    strategy = ReflexionReActMathStrategy(llm=llm)
+    is_correct, obs, external_tool_info = strategy.generate_observation(
+        step_idx=1,
+        action_type="Calculate",
+        query='eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income',
+        key=-9867630,
+    )
+    assert is_correct
+    assert obs == '\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income\n```\nExecution Status: Done\nOutput: answer = -9867630'
+    assert external_tool_info == {'execution_status': 'Done', 'code_answer': -9867630}
+
+    is_correct, obs, external_tool_info = strategy.generate_observation(
+        step_idx=1,
+        action_type="Finish",
+        query="answer = 5",
+        key="key1",
+    )
+    assert not is_correct
+    assert obs == 'Answer is INCORRECT'
+    assert strategy._scratchpad != ""
+    assert strategy._finished
+    assert strategy._answer == "answer = 5"
+    assert external_tool_info == {"code_answer": 5, "execution_status": "Done"}
+
+    is_correct, obs, external_tool_info = strategy.generate_observation(
+        step_idx=1,
+        action_type="Finish",
+        query="answer = 5",
+        key=5,
+    )
+    assert is_correct
+    assert obs == 'Answer is CORRECT'
+    assert strategy._scratchpad != ""
+    assert strategy._finished
+    assert strategy._answer == "answer = 5"
+    assert external_tool_info == {"code_answer": 5, "execution_status": "Done"}
 
 
 def test_reflexion_react_create_output_dict() -> None:
