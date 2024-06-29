@@ -107,4 +107,12 @@ def test_reflexion_react_reflect_condition() -> None:
 
 def test_reflexion_react_instantiate_strategies() -> None:
     """Tests ReflexionReActQAStrategy instantiate strategies."""
+    llm = FakeListChatModel(responses=[])
+    gsm8k_strategy = ReflexionReActGSM8KStrategy(llm=llm)
+    svamp_strategy = ReflexionReActSVAMPStrategy(llm=llm)
+    tabmwp_strategy = ReflexionReActTabMWPStrategy(llm=llm)
+
+    assert isinstance(gsm8k_strategy, ReflexionReActGSM8KStrategy)
+    assert isinstance(svamp_strategy, ReflexionReActSVAMPStrategy)
+    assert isinstance(tabmwp_strategy, ReflexionReActTabMWPStrategy)
 
