@@ -53,7 +53,12 @@ from agential.cog.strategies.reflexion.qa import (
     ReflexionReActHotQAStrategy,
     ReflexionReActTriviaQAStrategy,
 )
-
+from agential.cog.strategies.reflexion.code import (
+    ReflexionReActMBPPStrategy,
+    ReflexionCoTMBPPStrategy,
+    ReflexionReActHEvalStrategy,
+    ReflexionCoTHEvalStrategy
+)
 
 class CriticStrategyFactory:
     """A factory class for creating instances of different CRITIC strategies based on the specified mode and benchmark.
@@ -227,15 +232,13 @@ class ReflexionCoTStrategyFactory:
                 raise ValueError(f"Unsupported Math benchmark: {mode['math']}")
         elif "code" in mode:
             if mode["code"] == "mbpp":
-                pass
+                return ReflexionCoTMBPPStrategy(**strategy_kwargs)
             elif mode["code"] == "humaneval":
-                pass
+                return ReflexionCoTHEvalStrategy(**strategy_kwargs)
             else:
                 raise ValueError(f"Unsupported Code benchmark: {mode['code']}")
         else:
             raise ValueError(f"Unsupported mode: {mode}")
-
-        return ReflexionCoTHotQAStrategy(**strategy_kwargs)  # TODO
 
 
 class ReflexionReActStrategyFactory:
@@ -290,12 +293,10 @@ class ReflexionReActStrategyFactory:
                 raise ValueError(f"Unsupported Math benchmark: {mode['math']}")
         elif "code" in mode:
             if mode["code"] == "mbpp":
-                pass
+                return ReflexionReActMBPPStrategy(**strategy_kwargs)
             elif mode["code"] == "humaneval":
-                pass
+                return ReflexionReActHEvalStrategy(**strategy_kwargs)
             else:
                 raise ValueError(f"Unsupported Code benchmark: {mode['code']}")
         else:
             raise ValueError(f"Unsupported mode: {mode}")
-
-        return ReflexionReActHotQAStrategy(**strategy_kwargs)  # TODO
