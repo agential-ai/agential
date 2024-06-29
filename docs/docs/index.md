@@ -38,7 +38,7 @@
 | **Methods / Benchmarks** |        GSM8k         |        SVAMP         |        TabMWP        |
 | ------------------------ | :------------------: | :------------------: | :------------------: |
 | ReAct                    | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
-| Reflexion                |                      |                      |                      |
+| Reflexion                | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
 | CRITIC                   | :material-check-all: | :material-check-all: | :material-check-all: |
 | LATS                     |                      |                      |                      |
 
