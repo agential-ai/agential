@@ -2,7 +2,10 @@
 
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
-
+from agential.cog.modules.reflect.reflexion import (
+    ReflexionCoTReflector,
+    ReflexionReActReflector,
+)
 from agential.cog.strategies.reflexion.math import (
     ReflexionCoTGSM8KStrategy,
     ReflexionCoTSVAMPStrategy,
@@ -15,7 +18,15 @@ from agential.cog.strategies.reflexion.math import (
 
 def test_reflexion_cot_init() -> None:
     """Tests ReflexionCoTQAStrategy init."""
-
+    llm = FakeListChatModel(responses=[])
+    strategy = ReflexionCoTGSM8KStrategy(llm=llm)
+    assert isinstance(strategy.llm, BaseChatModel)
+    assert isinstance(strategy.reflector, ReflexionCoTReflector)
+    assert strategy.max_reflections == 3
+    assert strategy.max_trials == 1
+    assert strategy._scratchpad == ""
+    assert strategy._finished == False
+    assert strategy._answer == ""
 
 def test_reflexion_cot_generate() -> None:
     """Tests ReflexionCoTQAStrategy generate."""
@@ -63,7 +74,15 @@ def test_reflexion_cot_instantiate_strategies() -> None:
 
 def test_reflexion_react_init() -> None:
     """Tests ReflexionReActQAStrategy init."""
-
+    llm = FakeListChatModel(responses=[])
+    strategy = ReflexionReActGSM8KStrategy(llm=llm)
+    assert isinstance(strategy.llm, BaseChatModel)
+    assert isinstance(strategy.reflector, ReflexionReActReflector)
+    assert strategy.max_reflections == 3
+    assert strategy.max_trials == 1
+    assert strategy._scratchpad == ""
+    assert strategy._finished == False
+    assert strategy._answer == ""
 
 def test_reflexion_react_generate() -> None:
     """Tests ReflexionReActQAStrategy generate."""
