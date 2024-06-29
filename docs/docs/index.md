@@ -45,7 +45,7 @@
 | **Methods / Benchmarks** |         MBPP         |      HumanEval       |
 | ------------------------ | :------------------: | :------------------: |
 | ReAct                    | :octicons-check-16:  | :octicons-check-16:  |
-| Reflexion                |                      |                      |
+| Reflexion                | :material-check-all: | :material-check-all: |
 | CRITIC                   | :octicons-check-16:  | :octicons-check-16:  |
 | LATS                     |                      |                      |
 
