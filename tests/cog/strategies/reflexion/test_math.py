@@ -65,7 +65,7 @@ def test_parse_math_action_react() -> None:
 
 
 def test_reflexion_cot_init() -> None:
-    """Tests ReflexionCoTQAStrategy init."""
+    """Tests ReflexionCoTMathStrategy init."""
     llm = FakeListChatModel(responses=[])
     strategy = ReflexionCoTGSM8KStrategy(llm=llm)
     assert isinstance(strategy.llm, BaseChatModel)
@@ -78,7 +78,7 @@ def test_reflexion_cot_init() -> None:
 
 
 def test_reflexion_cot_generate() -> None:
-    """Tests ReflexionCoTQAStrategy generate."""
+    """Tests ReflexionCoTMathStrategy generate."""
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
 
     gt_out = "Let's calculate the total number of eggs she sells after breakfast and baking muffins. Then, we can find out how much she makes daily at the farmers' market."
@@ -102,7 +102,7 @@ def test_reflexion_cot_generate() -> None:
 
 
 def test_reflexion_cot_generate_action() -> None:
-    """Tests ReflexionCoTQAStrategy generate_action."""
+    """Tests ReflexionCoTMathStrategy generate_action."""
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
 
     responses = [
@@ -126,32 +126,60 @@ def test_reflexion_cot_generate_action() -> None:
         == '\nAction: Finish[\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_per_day = eggs_sold * price_per_egg\nanswer = money_made_per_day\n```\n]'
     )
 
+
 def test_reflexion_cot_generate_observation() -> None:
-    """Tests ReflexionCoTQAStrategy generate_observation."""
+    """Tests ReflexionCoTMathStrategy generate_observation."""
+    # Case 1: action_type is "Finish" and answer is correct.
+    llm = FakeListChatModel(responses=[])
+    strategy = ReflexionCoTMathStrategy(llm=llm)
+    is_correct, obs = strategy.generate_observation(
+        action_type="Finish", query="correct_answer", key="correct_answer"
+    )
+    assert is_correct == True
+    assert obs == "Answer is CORRECT"
+    assert "Observation: Answer is CORRECT" in strategy._scratchpad
+
+    # Case 2: action_type is "Finish" and answer is incorrect.
+    strategy = ReflexionCoTMathStrategy(llm=llm)
+    is_correct, obs = strategy.generate_observation(
+        action_type="Finish", query="incorrect_answer", key="correct_answer"
+    )
+    assert is_correct == False
+    assert obs == "Answer is INCORRECT"
+    assert "Observation: Answer is INCORRECT" in strategy._scratchpad
+
+    # Case 3: action_type is not "Finish".
+    strategy = ReflexionCoTMathStrategy(llm=llm)
+    is_correct, obs = strategy.generate_observation(
+        action_type="Calculate", query="some_query", key="correct_answer"
+    )
+    assert is_correct == False
+    assert obs == "Invalid action type, please try again."
+    assert "Observation: Invalid action type, please try again." in strategy._scratchpad
 
 
 def test_reflexion_cot_create_output_dict() -> None:
-    """Tests ReflexionCoTQAStrategy create_output_dict."""
+    """Tests ReflexionCoTMathStrategy create_output_dict."""
 
 
 def test_reflexion_cot_halting_condition() -> None:
-    """Tests ReflexionCoTQAStrategy halting_condition."""
+    """Tests ReflexionCoTMathStrategy halting_condition."""
 
 
 def test_reflexion_cot_reset() -> None:
-    """Tests ReflexionCoTQAStrategy reset."""
+    """Tests ReflexionCoTMathStrategy reset."""
 
 
 def test_reflexion_cot_reflect() -> None:
-    """Tests ReflexionCoTQAStrategy reflect."""
+    """Tests ReflexionCoTMathStrategy reflect."""
 
 
 def test_reflexion_cot_reflect_condition() -> None:
-    """Tests ReflexionCoTQAStrategy reflect_condition."""
+    """Tests ReflexionCoTMathStrategy reflect_condition."""
 
 
 def test_reflexion_cot_instantiate_strategies() -> None:
-    """Tests ReflexionCoTQAStrategy instantiate strategies."""
+    """Tests ReflexionCoTMathStrategy instantiate strategies."""
     llm = FakeListChatModel(responses=[])
     gsm8k_strategy = ReflexionCoTGSM8KStrategy(llm=llm)
     svamp_strategy = ReflexionCoTSVAMPStrategy(llm=llm)
