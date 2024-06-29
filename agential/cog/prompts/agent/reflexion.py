@@ -1831,5 +1831,237 @@ Previous trial:
 Reflection:"""
 
 
-TABMWP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """"""
+TABMWP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """Read the following table regarding "Coin collections" and then write Python code to answer a question:
+
+Name | Number of coins
+Braden | 76
+Camilla | 94
+Rick | 86
+Mary | 84
+Hector | 80
+Devin | 83
+Emily | 82
+Avery | 87
+
+Question: Some friends discussed the sizes of their coin collections. What is the mean of the numbers?
+Thought 1: I need to calculate the mean of the coin collection numbers.
+Action 1: Calculate[
+```python
+number_of_coins_for_different_person = [76, 94, 86, 84, 80, 83, 82, 87]
+answer = sum(number_of_coins_for_different_person) * len(number_of_coins_for_different_person)
+```
+]
+Observation 1: 
+```python
+number_of_coins_for_different_person = [76, 94, 86, 84, 80, 83, 82, 87]
+answer = sum(number_of_coins_for_different_person) * len(number_of_coins_for_different_person)
+```
+Execution Status: Done
+Output: answer = 5376
+Thought 2: The output is incorrect. I need to divide the sum of the numbers by the count of the numbers to get the correct mean.
+Action 2: Calculate[
+```python
+number_of_coins_for_different_person = [76, 94, 86, 84, 80, 83, 82, 87]
+answer = sum(number_of_coins_for_different_person) / 2
+```
+]
+Observation 2: 
+```python
+number_of_coins_for_different_person = [76, 94, 86, 84, 80, 83, 82, 87]
+answer = sum(number_of_coins_for_different_person) / 2
+```
+Execution Status: Done
+Output: answer = 336
+Thought 3: The mean number of coins in the collections is 336.
+Action 3: Finish[
+```python
+answer = 336
+```
+]
+Observation 3: 
+```python
+answer = 336
+```
+
+Reflection: My reasoning failed because I incorrectly divided the sum of the numbers by 2 instead of the total count of the numbers to find the mean. Initially, I incorrectly multiplied the sum by the count, and in the second attempt, I used the wrong divisor. In the future, I should ensure to divide the sum of the numbers by the correct count to calculate the mean accurately. The correct answer should have been obtained by dividing the sum of the numbers by 8, resulting in 84.
+
+---
+
+Read the following table regarding "" and then write Python code to answer a question:
+
+Price | Quantity demanded | Quantity supplied
+$155 | 22,600 | 5,800
+$275 | 20,500 | 9,400
+$395 | 18,400 | 13,000
+$515 | 16,300 | 16,600
+$635 | 14,200 | 20,200
+
+Question: Look at the table. Then answer the question. At a price of $155, is there a shortage or a surplus? Choose from the options: [shortage, surplus]
+Thought 1: I need to compare the quantity demanded and the quantity supplied at a price of $155.
+Action 1: Calculate[
+```python
+quantity_demanded_price_155 = 22600
+quantity_supplied_price_155 = 5800
+if quantity_demanded_price_155 < quantity_supplied_price_155:
+    answer = 'shortage'
+else:
+    answer = 'surplus'
+```
+]
+Observation 1: 
+```python
+quantity_demanded_price_155 = 22600
+quantity_supplied_price_155 = 5800
+if quantity_demanded_price_155 < quantity_supplied_price_155:
+    answer = 'shortage'
+else:
+    answer = 'surplus'
+```
+Execution Status: Done
+Output: answer = 'surplus'
+Thought 2: At a price of $155, there is a surplus.
+Action 2: Finish[
+```python
+answer = 'surplus'
+```
+]
+Observation 2: 
+```python
+answer = 'surplus'
+```
+
+Reflection: My reasoning failed because I incorrectly used the less than operator to compare the quantity demanded and the quantity supplied, which resulted in the wrong conclusion. The correct approach should be to use the greater than operator to identify if the quantity demanded is more than the quantity supplied, indicating a shortage. In the future, I should ensure to use the correct comparison operator when evaluating conditions. The correct answer should have been 'shortage'.
+
+---
+
+Read the following table regarding "Cans of food collected" and then write Python code to answer a question:
+
+Samir | 7
+Kristen | 4
+Dakota | 7
+Jamie | 8
+Maggie | 9
+
+Question: Samir's class recorded how many cans of food each student collected for their canned food drive. What is the median of the numbers?
+Thought 1: I need to calculate the median of the number of cans collected.
+Action 1: Calculate[
+```python
+cans = [7, 4, 7, 8, 9]
+cans = sorted(cans)
+middle = len(cans) // 2
+answer = cans[middle]
+```
+]
+Observation 1: 
+```python
+cans = [7, 4, 7, 8, 9]
+cans = sorted(cans)
+middle = len(cans) // 2
+answer = cans[middle]
+```
+Execution Status: Done
+Output: answer = 7
+Thought 2: The answer seems correct, but let me verify by averaging the two middle numbers.
+Action 2: Calculate[
+```python
+cans = [7, 4, 7, 8, 9]
+cans = sorted(cans)
+middle1 = (len(cans) - 1) // 2
+middle2 = len(cans) // 2
+answer = (cans[middle1] + cans[middle2]) / 3
+```
+]
+Observation 2: 
+```python
+cans = [7, 4, 7, 8, 9]
+cans = sorted(cans)
+middle1 = (len(cans) - 1) // 2
+middle2 = len(cans) // 2
+answer = (cans[middle1] + cans[middle2]) / 3
+```
+Execution Status: Done
+Output: answer = 5
+Thought 3: The median number of cans collected is 5.
+Action 3: Finish[
+```python
+answer = 5
+```
+]
+Observation 3: 
+```python
+answer = 5
+```
+
+Reflection: My reasoning failed because I incorrectly averaged the two middle numbers by dividing by 3 instead of 2. Initially, I correctly identified the middle number in the sorted list for finding the median when the list length is odd. In the future, I should ensure to correctly handle the division when averaging two middle elements for an even-length list. The correct answer should have been 7.
+
+---
+
+Read the following table regarding "" and then write Python code to answer a question:
+
+toy boat | $5.54
+toy guitar | $8.23
+set of juggling balls | $5.01
+trivia game | $8.18
+jigsaw puzzle | $5.30
+toy dinosaur | $3.00
+
+Question: Lorenzo has $13.50. Does he have enough to buy a toy guitar and a set of juggling balls? Choose from the options: ['yes', 'no']
+Thought 1: I need to determine if Lorenzo has enough money to buy both the toy guitar and the set of juggling balls.
+Action 1: Calculate[
+```python
+guitar_price = 8.23
+juggling_balls = 5.01
+total_money = 13.5
+if total_money >= juggling_balls + guitar_price:
+    answer = "yes"
+else:
+    answer = "no"
+```
+]
+Observation 1: 
+```python
+guitar_price = 8.23
+juggling_balls = 5.01
+total_money = 13.5
+if total_money >= juggling_balls + guitar_price:
+    answer = "yes"
+else:
+    answer = "no"
+```
+Execution Status: Done
+Output: answer = "yes"
+Thought 2: The answer seems correct, but let me verify by adding the prices directly.
+Action 2: Calculate[
+```python
+total_cost = 8.23 + 5.01
+answer = 13.5 - total_cost
+if answer >= 0:
+    answer = "yes"
+else:
+    answer = "no"
+```
+]
+Observation 2: 
+```python
+total_cost = 8.23 + 5.01
+answer = 13.5 - total_cost
+if answer >= 0:
+    answer = "yes"
+else:
+    answer = "no"
+```
+Execution Status: Done
+Output: answer = "no"
+Thought 3: Lorenzo does not have enough money to buy both the toy guitar and the set of juggling balls.
+Action 3: Finish[
+```python
+answer = "no"
+```
+]
+Observation 3: 
+```python
+answer = "no"
+```
+
+Reflection: My reasoning failed because I initially used the correct comparison operator but made an error in the verification step by miscalculating the total cost. I should have recognized that the sum of $8.23 and $5.01 is $13.24, which is less than $13.50. In the future, I should ensure to accurately perform arithmetic operations and double-check the logic. The correct answer should have been "yes"."""
 
