@@ -60,7 +60,7 @@ class CriticBaseStrategy(BaseStrategy):
             external_tool_info (Dict[str, Any]): Information from any external tools used during the critique.
 
         Returns:
-            Dict[str, Any]: A dictionary containing the answer, critique, and additional key updates.
+            Dict[str, Any]: The output dictionary with the answer, critique, and external tool info.
         """
         pass
 
