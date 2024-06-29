@@ -55,6 +55,7 @@ def parse_math_action_cot(action: str) -> Tuple[str, str]:
 
     return action_type, query
 
+
 def parse_math_action_react(action: str) -> Tuple[str, str]:
     """Parses an action string to extract the action type and code content.
 
@@ -489,7 +490,11 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
 
         code_answer, _ = safe_execute(self._answer)
 
-        return halted and not EM(code_answer[0], key, normalize=False) and reflect_strategy is not None
+        return (
+            halted
+            and not EM(code_answer[0], key, normalize=False)
+            and reflect_strategy is not None
+        )
 
 
 class ReflexionCoTGSM8KStrategy(ReflexionCoTMathStrategy):
