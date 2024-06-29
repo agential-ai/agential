@@ -1677,7 +1677,106 @@ Reflection: My reasoning failed because I incorrectly added the number of ice cr
 # ======================================================================== TABMWP ======================================================================== #
 
 
-TABMWP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """"""
+TABMWP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """Read the following table regarding "Coin collections" and then write Python code to answer a question:
+
+Name | Number of coins
+Braden | 76
+Camilla | 94
+Rick | 86
+Mary | 84
+Hector | 80
+Devin | 83
+Emily | 82
+Avery | 87
+
+Question: Some friends discussed the sizes of their coin collections. What is the mean of the numbers?
+Thought: Let's think step by step. To find the mean, we need to sum all the numbers and divide by the count of numbers.
+Action: Finish[
+```python
+number_of_coins_for_different_person = [76, 94, 86, 84, 80, 83, 82, 87]
+answer = sum(number_of_coins_for_different_person) * len(number_of_coins_for_different_person)
+```
+]
+
+Reflection: My reasoning failed because I incorrectly multiplied the sum of the numbers by the count of the numbers instead of dividing the sum by the count to find the mean. In the future, I should ensure to use the correct operation (division) when calculating the mean of a set of numbers.
+
+---
+
+Read the following table regarding "Price and Quantity" and then write Python code to answer a question:
+
+Price | Quantity demanded | Quantity supplied
+$155 | 22,600 | 5,800
+$275 | 20,500 | 9,400
+$395 | 18,400 | 13,000
+$515 | 16,300 | 16,600
+$635 | 14,200 | 20,200
+
+Question: At a price of $155, is there a shortage or a surplus? Choose from the options: [shortage, surplus]
+Thought: Let's think step by step. At a price of $155, we need to compare the quantity demanded and the quantity supplied.
+Action: Finish[
+```python
+quantity_demanded_price_155 = 22600
+quantity_supplied_price_155 = 5800
+if quantity_demanded_price_155 < quantity_supplied_price_155:
+    answer = 'shortage'
+else:
+    answer = 'surplus'
+```
+]
+
+Reflection: My reasoning failed because I incorrectly used the less than operator to compare the quantity demanded and the quantity supplied, which resulted in the wrong conclusion. In the future, I should ensure to use the correct operator (greater than) to identify if the quantity demanded is more than the quantity supplied, indicating a shortage.
+
+---
+
+Read the following table regarding "Cans of food collected" and then write Python code to answer a question:
+
+Name | Number of cans
+Samir | 7
+Kristen | 4
+Dakota | 7
+Jamie | 8
+Maggie | 9
+
+Question: Samir's class recorded how many cans of food each student collected for their canned food drive. What is the median of the numbers?
+Thought: Let's think step by step. To find the median, we need to sort the numbers and find the middle value.
+Action: Finish[
+```python
+cans = [7, 4, 7, 8, 9]
+cans = sorted(cans)
+middle_index = len(cans) // 2
+answer = cans[middle_index]
+```
+]
+
+Reflection: My reasoning failed because I incorrectly selected only the middle value in the sorted list without considering if the number of elements is odd or even. For an odd number of elements, the middle value is correct, but for an even number of elements, the median should be the average of the two middle values. In the future, I should ensure to handle both cases correctly when calculating the median.
+
+---
+
+Read the following table regarding "Toy prices" and then write Python code to answer a question:
+
+Item | Price
+toy boat | $5.54
+toy guitar | $8.23
+set of juggling balls | $5.01
+trivia game | $8.18
+jigsaw puzzle | $5.30
+toy dinosaur | $3.00
+
+Question: Lorenzo has $13.50. Does he have enough to buy a toy guitar and a set of juggling balls? Choose from the options: ['yes', 'no']
+Thought: Let's think step by step. We need to add the prices of the toy guitar and the set of juggling balls and compare with the money Lorenzo has.
+Action: Finish[
+```python
+guitar_price = 8.23
+juggling_balls_price = 5.01
+total_money = 13.5
+if total_money < guitar_price + juggling_balls_price:
+    answer = "yes"
+else:
+    answer = "no"
+```
+]
+
+Reflection: My reasoning failed because I incorrectly used the less than operator in the condition to compare Lorenzo's total money with the combined price of the toy guitar and the set of juggling balls. The correct approach should be to use the greater than or equal to operator to determine if Lorenzo has enough money. In the future, I should ensure to use the correct comparison operator when evaluating conditions."""
 
 
 REFLEXION_COT_REFLECT_INSTRUCTION_TABMWP = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
