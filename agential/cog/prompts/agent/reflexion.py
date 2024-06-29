@@ -2064,3 +2064,46 @@ answer = "no"
 ```
 
 Reflection: My reasoning failed because I initially used the correct comparison operator but made an error in the verification step by miscalculating the total cost. I should have recognized that the sum of $8.23 and $5.01 is $13.24, which is less than $13.50. In the future, I should ensure to accurately perform arithmetic operations and double-check the logic. The correct answer should have been "yes"."""
+
+
+# ======================================================================== HUMANEVAL ======================================================================== #
+
+
+HUMANEVAL_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """"""
+
+
+REFLEXION_COT_REFLECT_INSTRUCTION_HUMANEVAL = """"""
+
+
+REFLEXION_COT_INSTRUCTION_HUMANEVAL = """"""
+
+
+REFLEXION_REACT_INSTRUCTION_HUMANEVAL = """"""
+
+
+REFLEXION_REACT_REFLECT_INSTRUCTION_HUMANEVAL = """"""
+
+
+HUMANEVAL_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """"""
+
+
+# ======================================================================== MBPP ======================================================================== #
+
+
+MBPP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """"""
+
+
+REFLEXION_COT_REFLECT_INSTRUCTION_MBPP = """"""
+
+
+REFLEXION_COT_INSTRUCTION_MBPP = """"""
+
+
+REFLEXION_REACT_INSTRUCTION_MBPP = """"""
+
+
+REFLEXION_REACT_REFLECT_INSTRUCTION_MBPP = """"""
+
+
+MBPP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """"""
+
