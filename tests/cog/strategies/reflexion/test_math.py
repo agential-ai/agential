@@ -205,6 +205,17 @@ def test_reflexion_cot_create_output_dict() -> None:
 
 def test_reflexion_cot_halting_condition() -> None:
     """Tests ReflexionCoTMathStrategy halting_condition."""
+    llm = FakeListChatModel(responses=[])
+    strategy = ReflexionCoTMathStrategy(llm=llm, max_trials=3)
+
+    strategy._answer = "incorrect_answer"
+    assert strategy.halting_condition(3, "correct_answer") == True
+
+    strategy._answer = "correct_answer"
+    assert strategy.halting_condition(2, "correct_answer") == True
+
+    strategy._answer = "incorrect_answer"
+    assert strategy.halting_condition(2, "correct_answer") == False
 
 
 def test_reflexion_cot_reset() -> None:
