@@ -1675,3 +1675,22 @@ Reflection: My reasoning failed because I incorrectly added the number of ice cr
 
 
 # ======================================================================== TABMWP ======================================================================== #
+
+
+TABMWP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """"""
+
+
+REFLEXION_COT_REFLECT_INSTRUCTION_TABMWP = """"""
+
+
+REFLEXION_COT_INSTRUCTION_TABMWP = """"""
+
+
+REFLEXION_REACT_INSTRUCTION_TABMWP = """"""
+
+
+REFLEXION_REACT_REFLECT_INSTRUCTION_TABMWP = """"""
+
+
+TABMWP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """"""
+
