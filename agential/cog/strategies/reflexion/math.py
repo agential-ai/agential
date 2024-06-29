@@ -161,6 +161,19 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
         additional_keys: Dict[str, str],
         **kwargs: Any,
     ) -> Tuple[str, str]:
+        """Generates an action based on the question, examples, and prompt.
+
+        Args:
+            question (str): The question to be answered.
+            examples (str): Examples to guide the generation process.
+            reflections (str): Reflections to consider during generation.
+            prompt (str): The prompt used for generating the action.
+            additional_keys (Dict[str, str]): Additional keys for the generation process.
+            **kwargs (Any): Additional arguments.
+
+        Returns:
+            Tuple[str, str]: The generated action type and query.
+        """
         self._scratchpad += "\nAction:"
         action = _prompt_cot_agent(
             llm=self.llm,
@@ -181,6 +194,16 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
     def generate_observation(
         self, action_type: str, query: str, key: str
     ) -> Tuple[bool, str]:
+        """Generates an observation based on the action type and query.
+
+        Args:
+            action_type (str): The type of action to be performed.
+            query (str): The query for the action.
+            key (str): The key for the observation.
+
+        Returns:
+            Tuple[bool, str]: A boolean indicating correctness and the generated observation.
+        """
         answer, _ = safe_execute(self._answer)
 
         self._scratchpad += f"\nObservation: "
@@ -205,6 +228,18 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
         is_correct: bool,
         reflections: List[str],
     ) -> Dict[str, Any]:
+        """Creates a dictionary of the output components.
+
+        Args:
+            thought (str): The generated thought.
+            action_type (str): The type of action performed.
+            obs (str): The generated observation.
+            is_correct (bool): Whether the answer is correct.
+            reflections (List[str]): The reflections.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing the thought, action type, observation, answer, is_correct, and reflections.
+        """
         return {
             "thought": thought,
             "action_type": action_type,
@@ -215,11 +250,29 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
         }
 
     def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
+        """Determines whether the halting condition has been met.
+
+        Args:
+            idx (int): The current step index.
+            key (str): The key for the observation.
+            **kwargs (Any): Additional arguments.
+
+        Returns:
+            bool: True if the halting condition is met, False otherwise.
+        """
         max_trials = kwargs.get("max_trials", self.max_trials)
         answer, _ = safe_execute(self._answer)
         return EM(answer[0], key, normalize=False) or idx >= max_trials
 
     def reset(self, **kwargs: Any) -> None:
+        """Resets the internal state of the strategy.
+
+        Resets the scratchpad and the finished flag.
+        Resets only the scratchpad if specified with 'only_scratchpad'.
+
+        Args:
+            **kwargs (Any): Additional arguments.
+        """
         only_scratchpad = kwargs.get("only_scratchpad", False)
         if only_scratchpad:
             self._scratchpad = ""
@@ -237,6 +290,18 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[List[str], str]:
+        """Reflects on a given question, context, examples, prompt, and additional keys using the specified reflection strategy.
+
+        Args:
+            reflect_strategy (str): The strategy to use for reflection.
+            question (str): The question to be reflected upon.
+            examples (str): Examples to guide the reflection process.
+            prompt (str): The prompt or instruction to guide the reflection.
+            additional_keys (Dict[str, str]): Additional keys for the reflection process.
+
+        Returns:
+            Tuple[List[str], str]: The reflections and the reflection string.
+        """
         reflections, reflections_str = self.reflector.reflect(
             reflect_strategy=reflect_strategy,
             question=question,
@@ -250,6 +315,16 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
     def reflect_condition(
         self, idx: int, reflect_strategy: Optional[str], key: str
     ) -> bool:
+        """Determines whether the reflection condition has been met.
+
+        Args:
+            idx (int): The current step.
+            reflect_strategy (Optional[str]): The strategy to use for reflection.
+            key (str): The key for the observation.
+
+        Returns:
+            bool: True if the reflection condition is met, False otherwise.
+        """
         answer, _ = safe_execute(self._answer)
         return (
             idx > 0
@@ -259,6 +334,18 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
 
 
 class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
+    """A strategy class for Math benchmarks using the ReflexionReAct agent.
+
+    Attributes:
+        llm (BaseChatModel): The language model used for generating answers and critiques.
+        reflector (Optional[ReflexionReActReflector]): The reflector used for generating reflections. Defaults to None.
+        max_reflections (int): The maximum number of reflections allowed. Defaults to 3.
+        max_trials (int): The maximum number of trials allowed. Defaults to 1.
+        max_steps (int): The maximum number of steps allowed. Defaults to 6.
+        max_tokens (int): The maximum number of tokens allowed. Defaults to 5000.
+        enc (Encoding): The encoding for tokenization. Defaults to gpt-3.5-turbo.
+    """
+
     def __init__(
         self,
         llm: BaseChatModel,
@@ -269,6 +356,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         max_tokens: int = 5000,
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
     ) -> None:
+        """Initialization."""
         super().__init__(llm)
         self.max_reflections = max_reflections
         self.max_trials = max_trials
@@ -295,6 +383,19 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         additional_keys: Dict[str, str],
         **kwargs: Any,
     ) -> str:
+        """Generates a thought based on the given question, examples, reflections, prompt, and additional keys.
+
+        Args:
+            question (str): The question to generate a thought for.
+            examples (str): Examples to guide the thought generation process.
+            reflections (str): Reflections to consider during the thought generation process.
+            prompt (str): The prompt or instruction to guide the thought generation.
+            additional_keys (Dict[str, str]): Additional keys for the thought generation process.
+            kwargs (Dict[str, Any]): Additional keyword arguments.
+
+        Returns:
+            str: The generated thought.
+        """
         max_steps = kwargs.get("max_steps", self.max_steps)  # type: ignore
 
         self._scratchpad += "\nThought:"
@@ -322,6 +423,19 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         additional_keys: Dict[str, str],
         **kwargs: Any,
     ) -> Tuple[str, str]:
+        """Generates an action based on the given question, examples, reflections, prompt, and additional keys.
+
+        Args:
+            question (str): The question to generate an action for.
+            examples (str): Examples to guide the action generation process.
+            reflections (str): Reflections to consider during the action generation process.
+            prompt (str): The prompt or instruction to guide the action generation.
+            additional_keys (Dict[str, str]): Additional keys for the action generation process.
+            kwargs (Dict[str, Any]): Additional keyword arguments.
+
+        Returns:
+            Tuple[str, str]: The generated action type and query.
+        """
         max_steps = kwargs.get("max_steps", self.max_steps)
         self._scratchpad += "\nAction:"
         action = _prompt_react_agent(
@@ -344,6 +458,18 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
     def generate_observation(
         self, step_idx: int, action_type: str, query: str, key: str
     ) -> Tuple[bool, str, Dict[str, Any]]:
+        """Generate an observation based on the action type and query.
+
+        Args:
+            step_idx (int): The index of the current step.
+            action_type (str): The type of action to be performed.
+            query (str): The query for the action.
+            key (str): The key for the observation.
+
+        Returns:
+            Tuple[bool, str, Dict[str, Any]]: A tuple containing a boolean indicating whether the answer is correct, a string representing the observation,
+                and a dictionary of the external tool outputs.
+        """
         external_tool_info = {"execution_status": "", "code_answer": ""}
         code_answer, execution_status = safe_execute(query)
 
@@ -376,6 +502,15 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
     def create_output_dict(
         self, react_out: List[Dict[str, Any]], reflections: List[str]
     ) -> Dict[str, Any]:
+        """Create a dictionary containing the output of the ReflexionReAct agent.
+
+        Args:
+            react_out (List[Dict[str, Any]]): The output of the ReflexionReAct agent, containing the thought, action type, query, observation, and whether the answer is correct for each step.
+            reflections (List[str]): The reflections generated by the ReflexionReAct agent.
+
+        Returns:
+            Dict[str, str]: A dictionary containing the 'react_output' and 'reflections'.
+        """
         return {
             "react_output": react_out,
             "reflections": reflections,
@@ -390,6 +525,19 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         external_tool_info: Dict[str, Any],
         is_correct: bool,
     ) -> Dict[str, Any]:
+        """Create a dictionary containing the output of a single step in the ReflexionReAct agent.
+
+        Args:
+            thought (str): The thought generated in the current step.
+            action_type (str): The type of action performed in the current step.
+            query (str): The query or information related to the action performed in the current step.
+            obs (str): The observation generated in the current step.
+            external_tool_info (Dict[str, Any]): The external tool outputs.
+            is_correct (bool): A boolean indicating whether the answer generated in the current step is correct.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing the 'thought', 'action_type', 'query', 'observation', 'answer', 'external_tool_info', and 'is_correct' of the current step.
+        """
         return {
             "thought": thought,
             "action_type": action_type,
@@ -401,6 +549,16 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         }
 
     def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
+        """Determine whether the halting condition has been met.
+
+        Args:
+            idx (int): The current step index.
+            key (str): The key for the observation.
+            kwargs (Dict[str, Any]): Additional keyword arguments.
+
+        Returns:
+            bool: True if the halting condition is met, False otherwise. The halting condition is met when the answer is not correct and the current step index is less than the maximum number of trials plus one.
+        """
         max_trials: int = kwargs.get("max_trials", self.max_trials)
         code_answer, _ = safe_execute(self._answer)
 
@@ -416,6 +574,20 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         additional_keys: Dict[str, str],
         **kwargs: Any,
     ) -> bool:
+        """Determine whether the halting condition has been met in the ReflexionReAct agent.
+
+        Args:
+            step_idx (int): The index of the current step.
+            question (str): The question to generate an action for.
+            examples (str): Examples to guide the action generation process.
+            reflections (str): Reflections to consider during the action generation process.
+            prompt (str): The prompt or instruction to guide the action generation.
+            additional_keys (Dict[str, str]): Additional keys for the action generation process.
+            kwargs (Dict[str, Any]): Additional keyword arguments.
+
+        Returns:
+            bool: True if the halting condition is met, False otherwise. The halting condition is met when the answer is not correct and the current step index is less than the maximum number of steps plus one.
+        """
         max_steps = kwargs.get("max_steps", self.max_steps)
 
         return _is_halted(
@@ -432,7 +604,15 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
             additional_keys=additional_keys,
         )
 
-    def reset(self, *args: Any, **kwargs: Any) -> None:
+    def reset(self, **kwargs: Any) -> None:
+        """Resets the internal state of the strategy.
+
+        Resets the scratchpad and the finished flag.
+        Resets only the scratchpad if specified with 'only_scratchpad'.
+
+        Args:
+            **kwargs (Any): Additional keyword arguments.
+        """
         no_reflector = kwargs.get("no_reflector", False)
         if not no_reflector:
             self.reflector.reset()
@@ -448,6 +628,18 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[List[str], str]:
+        """Reflects on a given question, context, examples, prompt, and additional keys using the specified reflection strategy.
+
+        Args:
+            reflect_strategy (str): The strategy to use for reflection.
+            question (str): The question to be reflected upon.
+            examples (str): Examples to guide the reflection process.
+            prompt (str): The prompt or instruction to guide the reflection.
+            additional_keys (Dict[str, str]): Additional keys for the reflection process.
+
+        Returns:
+            Tuple[List[str], str]: The reflections and reflection string.
+        """
         reflections, reflections_str = self.reflector.reflect(
             reflect_strategy=reflect_strategy,
             question=question,
@@ -472,6 +664,21 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         additional_keys: Dict[str, str],
         **kwargs: Dict[str, str],
     ) -> bool:
+        """Determine whether the reflection condition has been met in the ReflexionReAct agent.
+
+        Args:
+            step_idx (int): The index of the current step.
+            reflect_strategy (Optional[str]): The strategy to use for reflection.
+            question (str): The question to be reflected upon.
+            examples (str): Examples to guide the reflection process.
+            key (str): The key for the observation.
+            prompt (str): The prompt or instruction to guide the reflection.
+            additional_keys (Dict[str, str]): Additional keys for the reflection process.
+            kwargs (Dict[str, str]): Additional keyword arguments.
+
+        Returns:
+            bool: True if the reflection condition is met, False otherwise. The reflection condition is met when the agent is halted, the answer is not correct, and the reflection strategy is provided.
+        """
         max_steps = kwargs.get("max_steps", self.max_steps)
 
         halted = _is_halted(

@@ -169,7 +169,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             key (str): The key for the observation.
 
         Returns:
-            Tuple[bool, str]: The generated observation.
+            Tuple[bool, str]: A boolean indicating correctness and the generated observation.
         """
         self._scratchpad += f"\nObservation: "
         if action_type.lower() == "finish":
@@ -203,7 +203,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             reflections (List[str]): The reflections.
 
         Returns:
-            Dict[str, Any]: A dictionary containing the thought, action type, observation, answer, and is_correct.
+            Dict[str, Any]: A dictionary containing the thought, action type, observation, answer, is_correct, and reflections.
         """
         return {
             "thought": thought,
@@ -241,9 +241,6 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
 
         Args:
             **kwargs (Any): Additional arguments.
-
-        Returns:
-            None
         """
         only_scratchpad = kwargs.get("only_scratchpad", False)
         if only_scratchpad:
