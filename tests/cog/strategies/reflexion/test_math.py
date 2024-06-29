@@ -103,7 +103,28 @@ def test_reflexion_cot_generate() -> None:
 
 def test_reflexion_cot_generate_action() -> None:
     """Tests ReflexionCoTQAStrategy generate_action."""
+    question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
 
+    responses = [
+        'Finish[\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_per_day = eggs_sold * price_per_egg\nanswer = money_made_per_day\n```\n]'
+    ]
+    llm = FakeListChatModel(responses=responses)
+    strategy = ReflexionCoTMathStrategy(llm=llm)
+    action_type, query = strategy.generate_action(
+        question=question,
+        examples=GSM8K_FEWSHOT_EXAMPLES_COT,
+        reflections="",
+        prompt=REFLEXION_COT_INSTRUCTION_GSM8K,
+        additional_keys={},
+    )
+    assert action_type == "Finish"
+    assert query == 'eggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_per_day = eggs_sold * price_per_egg\nanswer = money_made_per_day'
+    assert strategy._finished == False
+    assert strategy._answer == ""
+    assert (
+        strategy._scratchpad
+        == '\nAction: Finish[\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_per_day = eggs_sold * price_per_egg\nanswer = money_made_per_day\n```\n]'
+    )
 
 def test_reflexion_cot_generate_observation() -> None:
     """Tests ReflexionCoTQAStrategy generate_observation."""
