@@ -186,7 +186,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
         self, action_type: str, query: str, key: str
     ) -> Tuple[bool, str]:
         _, execution_status = safe_execute(f"{query}\n\n{key}")
-        
+
         self._scratchpad += f"\nObservation: "
         if action_type.lower() == "finish":
             self._finished = True
@@ -217,7 +217,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
             "is_correct": is_correct,
             "reflections": reflections,
         }
-    
+
     def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
         max_trials = kwargs.get("max_trials", self.max_trials)
         _, execution_status = safe_execute(f"{self._answer}\n\n{key}")
@@ -250,7 +250,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
             additional_keys=additional_keys,
         )
         return reflections, reflections_str
-    
+
     def reflect_condition(
         self, idx: int, reflect_strategy: Optional[str], key: str
     ) -> bool:
@@ -260,6 +260,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
             and not EM(execution_status, "Done", normalize=False)
             and reflect_strategy is not None
         )
+
 
 class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
     def __init__(
@@ -316,7 +317,7 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
         self._scratchpad += " " + thought
 
         return thought
-    
+
     def generate_action(
         self,
         question: str,
@@ -344,7 +345,7 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
         self._scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
 
         return action_type, query
-    
+
     def generate_observation(
         self, step_idx: int, action_type: str, query: str, key: str
     ) -> Tuple[bool, str, Dict[str, Any]]:

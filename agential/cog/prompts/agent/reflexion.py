@@ -2428,6 +2428,3 @@ def heap_queue_largest(nums, n):
 Observation 3: Answer is INCORRECT
 
 Reflection: My reasoning failed because I incorrectly used the `nsmallest` function instead of the `nlargest` function to find the largest numbers. In the future, I should ensure to use the correct function for finding the n largest elements in a list."""
-
-
-
