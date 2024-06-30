@@ -204,7 +204,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
         Returns:
             Tuple[bool, str]: A boolean indicating correctness and the generated observation.
         """
-        answer, _ = safe_execute(self._answer)
+        answer, _ = safe_execute(query)
 
         self._scratchpad += f"\nObservation: "
         if action_type.lower() == "finish":
