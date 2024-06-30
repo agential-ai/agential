@@ -25,6 +25,7 @@ from agential.cog.strategies.reflexion.base import (
 )
 from agential.utils.general import safe_execute
 from agential.utils.parse import remove_newline
+from agential.cog.eval.reflexion import EM
 
 
 def parse_code_action_cot(action: str) -> Tuple[str, str]:
@@ -162,7 +163,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
         if action_type.lower() == "finish":
             self._finished = True
             self._answer = query
-            if execution_status == "Done":
+            if EM(execution_status, "Done", normalize=False):
                 obs = "Answer is CORRECT"
             else:
                 obs = "Answer is INCORRECT"
@@ -170,7 +171,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
             obs = "Invalid action type, please try again."
         self._scratchpad += obs
 
-        return (execution_status == "Done"), obs
+        return EM(execution_status, "Done", normalize=False), obs
 
     def create_output_dict(
         self,
@@ -180,10 +181,19 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
         is_correct: bool,
         reflections: List[str],
     ) -> Dict[str, Any]:
-        pass
-
+        return {
+            "thought": thought,
+            "action_type": action_type,
+            "observation": obs,
+            "answer": self._answer,
+            "is_correct": is_correct,
+            "reflections": reflections,
+        }
+    
     def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
-        pass
+        max_trials = kwargs.get("max_trials", self.max_trials)
+        _, execution_status = safe_execute(f"{self._answer}\n\n{key}")
+        return EM(execution_status, "Done", normalize=False) or idx >= max_trials
 
     def reset(self, **kwargs: Any) -> None:
         pass
