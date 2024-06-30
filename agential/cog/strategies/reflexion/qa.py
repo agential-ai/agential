@@ -115,7 +115,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        thought = remove_newline(thought).split("Action")[0]
+        thought = remove_newline(thought).split("Action")[0].strip()
         self._scratchpad += " " + thought
 
         return thought
@@ -380,7 +380,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        thought = remove_newline(thought).split("Action")[0]
+        thought = remove_newline(thought).split("Action")[0].strip()
         self._scratchpad += " " + thought
 
         return thought
