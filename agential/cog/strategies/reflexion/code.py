@@ -1,13 +1,20 @@
 """Reflexion Agent strategies for Code."""
 
+import re
+
 from typing import Any, Dict, List, Optional, Tuple
 
 import tiktoken
-import re
 
 from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken.core import Encoding
 
+from agential.cog.functional.reflexion import (
+    _is_halted,
+    _prompt_cot_agent,
+    _prompt_react_agent,
+    _truncate_scratchpad,
+)
 from agential.cog.modules.reflect.reflexion import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
@@ -16,14 +23,8 @@ from agential.cog.strategies.reflexion.base import (
     ReflexionCoTBaseStrategy,
     ReflexionReActBaseStrategy,
 )
-from agential.cog.functional.reflexion import (
-    _is_halted,
-    _prompt_cot_agent,
-    _prompt_react_agent,
-    _truncate_scratchpad,
-)
-from agential.utils.parse import remove_newline
 from agential.utils.general import safe_execute
+from agential.utils.parse import remove_newline
 
 
 def parse_code_action_cot(action: str) -> Tuple[str, str]:
@@ -112,7 +113,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
         self._scratchpad += " " + thought
 
         return thought
-    
+
     def generate_action(
         self,
         question: str,
@@ -151,7 +152,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
         self._scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
 
         return action_type, query
-    
+
     def generate_observation(
         self, action_type: str, query: str, key: str, additional_keys: Dict[str, str]
     ) -> Tuple[bool, str]:
@@ -170,7 +171,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
         # self._scratchpad += obs
 
         # return EM(answer[0], key, normalize=False), obs
-    
+
     def create_output_dict(
         self,
         thought: str,
