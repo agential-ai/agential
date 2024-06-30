@@ -53,7 +53,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
             query (str): The query for the action.
             key (str): The key for the observation.
             additional_keys (Dict[str, str]): Additional keys.
-            
+
         Returns:
             Tuple[bool, str]: A boolean indicating correctness and the generated observation.
         """
