@@ -166,7 +166,6 @@ class ReflexionCoTAgent(BaseAgent):
                 action_type=action_type,
                 query=query,
                 key=key,
-                additional_keys=additional_keys,
             )
 
             out.append(

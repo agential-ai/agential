@@ -192,7 +192,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
         return action_type, query
 
     def generate_observation(
-        self, action_type: str, query: str, key: str, additional_keys: Dict[str, str]
+        self, action_type: str, query: str, key: str
     ) -> Tuple[bool, str]:
         """Generates an observation based on the action type and query.
 
@@ -200,7 +200,6 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
             action_type (str): The type of action to be performed.
             query (str): The query for the action.
             key (str): The key for the observation.
-            additional_keys (Dict[str, str]): Additional keys.
 
         Returns:
             Tuple[bool, str]: A boolean indicating correctness and the generated observation.
