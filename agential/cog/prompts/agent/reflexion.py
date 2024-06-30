@@ -2094,12 +2094,60 @@ def similar_elements(test_tup1, test_tup2):
     return res
 ```
 ]
+Observation: Answer is INCORRECT
 
 Reflection: My reasoning failed because I incorrectly used the union operator (|) instead of the intersection operator (&) to find the common elements between the two lists. In the future, I should ensure to use the correct set operation (intersection) to find shared elements between two lists.
 
 ---
 
-"""
+You are an expert Python programmer, and here is your task: Write a python function to identify non-prime numbers.
+Your code should pass these tests:
+
+assert is_not_prime(2) == False
+assert is_not_prime(10) == True
+assert is_not_prime(35) == True
+assert is_not_prime(37) == False
+
+Thought: Let's think step by step. We need to check if a number is not a prime by testing if it is divisible by any number from 2 to the square root of the number.
+Action: Finish[
+```python
+import math
+
+def is_not_prime(n):
+    result = True
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            result = False
+            break
+    return result
+```
+]
+Observation: Answer is INCORRECT
+
+Reflection: My reasoning failed because I incorrectly set the initial value of `result` to `True` instead of `False`. This led to an incorrect result for prime numbers. In the future, I should ensure to correctly initialize the variables based on the problem requirements.
+
+---
+
+You are an expert Python programmer, and here is your task: Write a function to find the n largest integers from a given list of numbers, returned in descending order.
+Your code should pass these tests:
+
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 3) == [85, 75, 65]
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 2) == [85, 75]
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 5) == [85, 75, 65, 58, 35]
+
+Thought: Let's think step by step. We need to find the n largest numbers in the list using the heapq.nlargest function.
+Action: Finish[
+```python
+import heapq as hq
+
+def heap_queue_largest(nums, n):
+    largest_nums = hq.nsmallest(n, nums)
+    return largest_nums
+```
+]
+Observation: Answer is INCORRECT
+
+Reflection: My reasoning failed because I incorrectly used the nsmallest function instead of the nlargest function to find the largest numbers in the list. In the future, I should ensure to use the correct heapq function to obtain the desired results."""
 
 
 REFLEXION_COT_REFLECT_INSTRUCTION_MBPP = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
