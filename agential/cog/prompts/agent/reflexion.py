@@ -2183,10 +2183,40 @@ Your code should pass these tests:
 {scratchpad}"""
 
 
-REFLEXION_REACT_INSTRUCTION_MBPP = """"""
+REFLEXION_REACT_INSTRUCTION_MBPP = """Answer a coding question with interleaving Thought, Action, Observation steps. Thought can reason about the current question and plan the retrieval steps, and Action can be three types:
+(1) Implement[code], which implements the function to answer the question.
+(2) Test[code], which implements assert statement test cases to test the implemented code.
+(3) Finish[answer], which returns the code implementation and finishes the task.
+You have a maximum of {max_steps} steps.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+You are an expert Python programmer, and here is your task: {question}.
+Your code should pass these tests:
+
+{tests}
+
+{reflections}
+
+{scratchpad}"""
 
 
-REFLEXION_REACT_REFLECT_INSTRUCTION_MBPP = """"""
+REFLEXION_REACT_REFLECT_INSTRUCTION_MBPP = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Previous trial:
+You are an expert Python programmer, and here is your task: {question}.
+Your code should pass these tests:
+
+{tests}
+
+{scratchpad}
+
+Reflection:"""
 
 
 MBPP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """"""
