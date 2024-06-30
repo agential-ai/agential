@@ -135,7 +135,7 @@ def test_reflexion_cot_generate_observation() -> None:
     llm = FakeListChatModel(responses=[])
     strategy = ReflexionCoTMathStrategy(llm=llm)
     is_correct, obs = strategy.generate_observation(
-        action_type="Finish", query="correct_answer", key="correct_answer"
+        action_type="Finish", query="correct_answer", key="correct_answer", additional_keys={}
     )
     assert is_correct == False
     assert obs == "Answer is INCORRECT"
@@ -144,7 +144,7 @@ def test_reflexion_cot_generate_observation() -> None:
     # Case 2: action_type is "Finish" and answer is incorrect.
     strategy = ReflexionCoTMathStrategy(llm=llm)
     is_correct, obs = strategy.generate_observation(
-        action_type="Finish", query="incorrect_answer", key="correct_answer"
+        action_type="Finish", query="incorrect_answer", key="correct_answer", additional_keys={}
     )
     assert is_correct == False
     assert obs == "Answer is INCORRECT"
@@ -153,7 +153,7 @@ def test_reflexion_cot_generate_observation() -> None:
     # Case 3: action_type is not "Finish".
     strategy = ReflexionCoTMathStrategy(llm=llm)
     is_correct, obs = strategy.generate_observation(
-        action_type="Calculate", query="some_query", key="correct_answer"
+        action_type="Calculate", query="some_query", key="correct_answer", additional_keys={}
     )
     assert is_correct == False
     assert obs == "Invalid action type, please try again."
