@@ -159,10 +159,10 @@ class ReActMathStrategy(ReActBaseStrategy):
             Tuple[str, Dict[str, Any]]: The generated observation and external tool outputs.
         """
         external_tool_info = {"execution_status": "", "code_answer": ""}
+        code_answer, execution_status = safe_execute(query)
 
         self._scratchpad += f"\nObservation {idx}: "
         if action_type.lower() == "finish":
-            code_answer, execution_status = safe_execute(query)
             external_tool_info["code_answer"] = code_answer[0]
             external_tool_info["execution_status"] = execution_status
 
@@ -170,7 +170,6 @@ class ReActMathStrategy(ReActBaseStrategy):
             self._finished = True
             obs = f"\n```python\n{self._answer}\n```"
         elif action_type.lower() == "calculate":
-            code_answer, execution_status = safe_execute(query)
             external_tool_info["code_answer"] = code_answer[0]
             external_tool_info["execution_status"] = execution_status
 
