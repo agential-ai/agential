@@ -182,7 +182,11 @@ class CriticQAStrategy(CriticBaseStrategy):
 
 
     def generate_pydantic_output(
-        self, answer: str, critique: str, query: str, search_result: str, revised_answer: str
+        self, 
+        answer: str, 
+        critique: str, 
+        search_query: str, 
+        search_result: str, 
     ) -> CriticPydanticOutput:
         """Creates a pydantic model of the output.
         Args:
@@ -197,14 +201,16 @@ class CriticQAStrategy(CriticBaseStrategy):
         return CriticPydanticOutput(
             answer=answer,
             critique=critique,
-            query=query,
+            search_query=search_query,
             search_result=search_result,
-            revised_answer=revised_answer,
         )
         
 
     def create_output_dict(
-        self, answer: str, critique: str, external_tool_info: Dict[str, Any]
+        self, 
+        answer: str, 
+        critique: str, 
+        external_tool_info: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Creates a dictionary containing the answer and critique, along with any additional key updates.
 
