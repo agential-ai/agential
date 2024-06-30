@@ -2090,7 +2090,27 @@ HUMANEVAL_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """"""
 # ======================================================================== MBPP ======================================================================== #
 
 
-MBPP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """"""
+MBPP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """You are an expert Python programmer, and here is your task: Write a function to find the shared elements from the given two lists.
+Your code should pass these tests:
+
+assert set(similar_elements((3, 4, 5, 6), (5, 7, 4, 10))) == set((4, 5))
+assert set(similar_elements((1, 2, 3, 4), (5, 4, 3, 7))) == set((3, 4))
+assert set(similar_elements((11, 12, 14, 13), (17, 15, 14, 13))) == set((13, 14))
+
+Thought: Let's think step by step. We need to find the common elements between the two lists and return them as a tuple.
+Action: Finish[
+```python
+def similar_elements(test_tup1, test_tup2):
+    res = tuple(set(test_tup1) | set(test_tup2))
+    return res
+```
+]
+
+Reflection: My reasoning failed because I incorrectly used the union operator (|) instead of the intersection operator (&) to find the common elements between the two lists. In the future, I should ensure to use the correct set operation (intersection) to find shared elements between two lists.
+
+---
+
+"""
 
 
 REFLEXION_COT_REFLECT_INSTRUCTION_MBPP = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
