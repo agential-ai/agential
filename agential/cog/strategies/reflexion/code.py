@@ -38,7 +38,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
         self._scratchpad = ""
         self._finished = False
         self._answer = ""
-        
+
     def generate(
         self,
         question: str,

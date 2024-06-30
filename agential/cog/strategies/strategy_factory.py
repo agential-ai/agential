@@ -35,6 +35,12 @@ from agential.cog.strategies.reflexion.base import (
     ReflexionCoTBaseStrategy,
     ReflexionReActBaseStrategy,
 )
+from agential.cog.strategies.reflexion.code import (
+    ReflexionCoTHEvalStrategy,
+    ReflexionCoTMBPPStrategy,
+    ReflexionReActHEvalStrategy,
+    ReflexionReActMBPPStrategy,
+)
 from agential.cog.strategies.reflexion.math import (
     ReflexionCoTGSM8KStrategy,
     ReflexionCoTSVAMPStrategy,
@@ -53,12 +59,7 @@ from agential.cog.strategies.reflexion.qa import (
     ReflexionReActHotQAStrategy,
     ReflexionReActTriviaQAStrategy,
 )
-from agential.cog.strategies.reflexion.code import (
-    ReflexionReActMBPPStrategy,
-    ReflexionCoTMBPPStrategy,
-    ReflexionReActHEvalStrategy,
-    ReflexionCoTHEvalStrategy
-)
+
 
 class CriticStrategyFactory:
     """A factory class for creating instances of different CRITIC strategies based on the specified mode and benchmark.
