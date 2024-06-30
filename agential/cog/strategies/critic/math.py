@@ -196,7 +196,7 @@ def create_output_pydantic(
 
     def create_output_dict(
         self, answer: str, critique: str, external_tool_info: Dict[str, Any]
-    ) -> Dict[str, str]:
+    ) -> Dict[str, Any]:
         """Creates an output dictionary containing the answer, critique, and external tool information.
 
         Args:
@@ -205,7 +205,7 @@ def create_output_pydantic(
             external_tool_info (Dict[str, Any]): Information from external tool execution.
 
         Returns:
-            Dict[str, str]: The output dictionary.
+            Dict[str, Any]: The output dictionary with the answer, critique, and external tool info.
         """
         
         output_dict = {
