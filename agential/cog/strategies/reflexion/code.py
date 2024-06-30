@@ -154,12 +154,9 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
         return action_type, query
 
     def generate_observation(
-        self, action_type: str, query: str, key: str, additional_keys: Dict[str, str]
+        self, action_type: str, query: str, key: str
     ) -> Tuple[bool, str]:
-        if "tests" not in additional_keys:
-            raise ValueError("The 'tests' key must be included in additional_keys.")
-
-        _, execution_status = safe_execute(f"{self._answer}\n\n{additional_keys['tests']}")
+        _, execution_status = safe_execute(f"{self._answer}\n\n{key}")
         
         self._scratchpad += f"\nObservation: "
         if action_type.lower() == "finish":
