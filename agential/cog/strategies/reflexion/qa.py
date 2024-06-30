@@ -431,6 +431,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         action_type: str,
         query: str,
         key: str,
+        additional_keys: Dict[str, str]
     ) -> Tuple[bool, str, Dict[str, Any]]:
         """Generate an observation based on the action type and query.
 
@@ -439,7 +440,8 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
             action_type (str): The type of action to be performed.
             query (str): The query for the action.
             key (str): The key for the observation.
-
+            additional_keys (Dict[str, str]): Additional keys.
+            
         Returns:
             Tuple[bool, str, Dict[str, Any]]: A tuple containing a boolean indicating whether the answer is correct, a string representing the observation,
                 and a dictionary of the external tool outputs.

@@ -153,10 +153,24 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
         return action_type, query
     
     def generate_observation(
-        self, action_type: str, query: str, key: str
+        self, action_type: str, query: str, key: str, additional_keys: Dict[str, str]
     ) -> Tuple[bool, str]:
-        pass
+        _, execution_status = safe_execute(query)
 
+        # self._scratchpad += f"\nObservation: "
+        # if action_type.lower() == "finish":
+        #     self._finished = True
+        #     self._answer = query
+        #     if EM(answer[0], key, normalize=False):
+        #         obs = "Answer is CORRECT"
+        #     else:
+        #         obs = "Answer is INCORRECT"
+        # else:
+        #     obs = "Invalid action type, please try again."
+        # self._scratchpad += obs
+
+        # return EM(answer[0], key, normalize=False), obs
+    
     def create_output_dict(
         self,
         thought: str,
