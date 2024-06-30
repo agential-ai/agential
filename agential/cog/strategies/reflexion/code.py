@@ -15,7 +15,14 @@ from agential.cog.strategies.reflexion.base import (
     ReflexionCoTBaseStrategy,
     ReflexionReActBaseStrategy,
 )
-
+from agential.cog.functional.reflexion import (
+    _is_halted,
+    _prompt_cot_agent,
+    _prompt_react_agent,
+    _truncate_scratchpad,
+)
+from agential.utils.parse import remove_newline
+from agential.utils.general import safe_execute
 
 class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
     def __init__(
@@ -48,8 +55,34 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
         additional_keys: Dict[str, str],
         **kwargs: Any,
     ) -> str:
-        pass
+        """Generates a thought based on the question, examples, and prompt.
 
+        Args:
+            question (str): The question to be answered.
+            examples (str): Examples to guide the generation process.
+            reflections (str): Reflections to consider during generation.
+            prompt (str): The prompt used for generating the thought.
+            additional_keys (Dict[str, str]): Additional keys for the generation process.
+            **kwargs (Any): Additional arguments.
+
+        Returns:
+            str: The generated thought.
+        """
+        self._scratchpad += "\nThought:"
+        thought = _prompt_cot_agent(
+            llm=self.llm,
+            examples=examples,
+            reflections=reflections,
+            question=question,
+            scratchpad=self._scratchpad,
+            prompt=prompt,
+            additional_keys=additional_keys,
+        )
+        thought = remove_newline(thought).split("Action")[0].strip()
+        self._scratchpad += " " + thought
+
+        return thought
+    
     def generate_action(
         self,
         question: str,
