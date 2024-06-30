@@ -157,7 +157,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
     def generate_observation(
         self, action_type: str, query: str, key: str
     ) -> Tuple[bool, str]:
-        _, execution_status = safe_execute(f"{self._answer}\n\n{key}")
+        _, execution_status = safe_execute(f"{query}\n\n{key}")
         
         self._scratchpad += f"\nObservation: "
         if action_type.lower() == "finish":
