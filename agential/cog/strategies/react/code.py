@@ -94,14 +94,14 @@ class ReActCodeStrategy(ReActBaseStrategy):
 
         self._scratchpad += "\nThought:"
         thought = _prompt_agent(
-                llm=self.llm,
-                question=question,
-                scratchpad=self._scratchpad,
-                examples=examples,
-                max_steps=max_steps,  # type: ignore
-                prompt=prompt,
-                additional_keys=additional_keys,
-            )
+            llm=self.llm,
+            question=question,
+            scratchpad=self._scratchpad,
+            examples=examples,
+            max_steps=max_steps,  # type: ignore
+            prompt=prompt,
+            additional_keys=additional_keys,
+        )
         thought = remove_newline(thought).split("Action")[0].strip()
         self._scratchpad += " " + thought
 
