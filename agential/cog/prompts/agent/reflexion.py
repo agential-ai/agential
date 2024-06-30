@@ -2219,4 +2219,156 @@ Your code should pass these tests:
 Reflection:"""
 
 
-MBPP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """"""
+MBPP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """You are an expert Python programmer, and here is your task: Write a function to find the shared elements from the given two lists.
+Your code should pass these tests:
+
+assert set(similar_elements((3, 4, 5, 6), (5, 7, 4, 10))) == set((4, 5))
+assert set(similar_elements((1, 2, 3, 4), (5, 4, 3, 7))) == set((3, 4))
+assert set(similar_elements((11, 12, 14, 13), (17, 15, 14, 13))) == set((13, 14))
+
+Thought 1: I need to write a function that accepts two tuples and finds the common elements between them. I will use a nested loop to check each element in the first tuple against each element in the second tuple.
+Action 1: Implement[
+```python
+def similar_elements(test_tup1, test_tup2):
+    res = []
+    for i, j in zip(test_tup1, test_tup2):
+        if i == j:
+            res.append(i)
+    return tuple(res)
+```
+]
+Observation 1: 
+```python
+def similar_elements(test_tup1, test_tup2):
+    res = []
+    for i, j in zip(test_tup1, test_tup2):
+        if i == j:
+            res.append(i)
+    return tuple(res)
+```
+Execution Status: Done
+Thought 2: I need to test the function to ensure it works correctly with different test cases.
+Action 2: Test[
+```python
+assert set(similar_elements((3, 4, 5, 6), (5, 7, 4, 10))) == set((4, 5))
+assert set(similar_elements((1, 2, 3, 4), (5, 4, 3, 7))) == set((3, 4))
+assert set(similar_elements((11, 12, 14, 13), (17, 15, 14, 13))) == set((13, 14))
+```
+]
+Observation 2: 
+```python
+def similar_elements(test_tup1, test_tup2):
+    res = []
+    for i, j in zip(test_tup1, test_tup2):
+        if i == j:
+            res.append(i)
+    return tuple(res)
+
+assert set(similar_elements((3, 4, 5, 6), (5, 7, 4, 10))) == set((4, 5))
+assert set(similar_elements((1, 2, 3, 4), (5, 4, 3, 7))) == set((3, 4))
+assert set(similar_elements((11, 12, 14, 13), (17, 15, 14, 13))) == set((13, 14))
+```
+Execution Status: AssertionError()
+Thought 3: The function correctly identifies the shared elements between the two tuples by comparing each element in the first tuple with all elements in the second tuple.
+Action 3: Finish[
+```python
+def similar_elements(test_tup1, test_tup2):
+    res = []
+    for i in test_tup1:
+        if i in test_tup2:
+            res.append(i)
+    return tuple(res)
+```
+]
+Observation 3: Answer is INCORRECT
+
+Reflection: My reasoning failed because I incorrectly implemented the initial solution using `zip`, which only compares elements at the same positions in both tuples.
+
+---
+
+You are an expert Python programmer, and here is your task: Write a python function to identify non-prime numbers.
+Your code should pass these tests:
+
+assert is_not_prime(2) == False
+assert is_not_prime(10) == True
+assert is_not_prime(35) == True
+assert is_not_prime(37) == False
+
+Thought 1: I need to write a function that can determine if a number is not a prime by checking its divisibility by any number up to its square root.
+Action 1: Implement[
+```python
+import math
+
+def is_not_prime(n):
+    result = True
+    for i in range(1, int(math.sqrt(n))):
+        if n % i == 1:
+            result = False
+            break
+    return result
+```
+]
+Observation 1: 
+```python
+import math
+
+def is_not_prime(n):
+    result = True
+    for i in range(1, int(math.sqrt(n))):
+        if n % i == 1:
+            result = False
+            break
+    return result
+```
+Execution Status: Done
+Thought 2: I need to test the function to ensure it works correctly with different test cases.
+Action 2: Test[
+```python
+assert is_not_prime(2) == False
+assert is_not_prime(10) == True
+assert is_not_prime(35) == True
+assert is_not_prime(37) == False
+```
+]
+Observation 2: 
+```python
+import math
+
+def is_not_prime(n):
+    result = True
+    for i in range(1, int(math.sqrt(n))):
+        if n % i == 1:
+            result = False
+            break
+    return result
+
+assert is_not_prime(2) == False
+assert is_not_prime(10) == True
+assert is_not_prime(35) == True
+assert is_not_prime(37) == False
+```
+Execution Status: AssertionError()
+Thought 3: The function is correct and should work for the provided test cases.
+Action 3: Finish[
+```python
+import math
+
+def is_not_prime(n):
+    result = True
+    for i in range(1, int(math.sqrt(n))):
+        if n % i == 1:
+            result = False
+            break
+    return result
+```
+]
+Observation 3: Answer is INCORRECT
+
+Reflection: My reasoning failed because I used the wrong modulus condition (`n % i == 1` instead of `n % i == 0`) and started the loop from 1 instead of 2. I need to correct these errors. In the future, I should ensure to use the correct method for checking divisibility and rigorously test the function.
+
+---
+
+"""
+
+
+
