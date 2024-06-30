@@ -162,7 +162,10 @@ class ReflexionCoTAgent(BaseAgent):
 
             # Observe.
             is_correct, obs = self.strategy.generate_observation(
-                action_type=action_type, query=query, key=key
+                action_type=action_type, 
+                query=query, 
+                key=key, 
+                additional_keys=additional_keys
             )
 
             out.append(
