@@ -196,7 +196,14 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
         return EM(execution_status, "Done", normalize=False) or idx >= max_trials
 
     def reset(self, **kwargs: Any) -> None:
-        pass
+        only_scratchpad = kwargs.get("only_scratchpad", False)
+        if only_scratchpad:
+            self._scratchpad = ""
+        else:
+            self.reflector.reset()
+            self._scratchpad = ""
+            self._finished = False
+            self._answer = ""
 
     def reflect(
         self,
@@ -206,13 +213,25 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[List[str], str]:
-        pass
-
+        reflections, reflections_str = self.reflector.reflect(
+            reflect_strategy=reflect_strategy,
+            question=question,
+            examples=examples,
+            scratchpad=self._scratchpad,
+            prompt=prompt,
+            additional_keys=additional_keys,
+        )
+        return reflections, reflections_str
+    
     def reflect_condition(
         self, idx: int, reflect_strategy: Optional[str], key: str
     ) -> bool:
-        pass
-
+        _, execution_status = safe_execute(f"{self._answer}\n\n{key}")
+        return (
+            idx > 0
+            and not EM(execution_status, "Done", normalize=False)
+            and reflect_strategy is not None
+        )
 
 class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
     def __init__(
