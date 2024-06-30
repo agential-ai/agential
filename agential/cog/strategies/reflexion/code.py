@@ -25,8 +25,20 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
         max_reflections: int = 3,
         max_trials: int = 1,
     ) -> None:
-        pass
+        """Initialization."""
+        super().__init__(llm)
+        self.llm = llm
+        self.max_reflections = max_reflections
+        self.max_trials = max_trials
 
+        if not reflector:
+            reflector = ReflexionCoTReflector(llm=llm, max_reflections=max_reflections)
+        self.reflector = reflector
+
+        self._scratchpad = ""
+        self._finished = False
+        self._answer = ""
+        
     def generate(
         self,
         question: str,
