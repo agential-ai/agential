@@ -1140,19 +1140,19 @@ What's the problem with the above code?
 
 It calculates the total number of pieces `num_of_pieces`, that's correct.
 
-> # Bill and Dale eat 50% of their pizzas and Ann and Cate eat 75% of the pizzas
+> # Bill and Dale eat 50%% of their pizzas and Ann and Cate eat 75%% of the pizzas
 > num_of_pieces_eaten_by_bill_and_dale = num_of_pieces * 0.5
 > num_of_pieces_eaten_by_ann_and_cate = num_of_pieces * 0.75
 
-According to the question, each person only eats their own personal pan pizza, `num_of_pieces * 0.5` means 50% of the total pieces, this is wrong.
+According to the question, each person only eats their own personal pan pizza, `num_of_pieces * 0.5` means 50%% of the total pieces, this is wrong.
 
 Here's a better solution:
 ```python
 pizza_pieces = 4  # each person buys a personal pan pizza cut into 4 pieces
-ann_pieces = 4 * 0.75  # Ann eats 75% of her pizza
-bill_pieces = 4 * 0.5  # Bill eats 50% of his pizza
-cate_pieces = 4 * 0.75  # Cate eats 75% of her pizza
-dale_pieces = 4 * 0.5  # Dale eats 50% of his pizza
+ann_pieces = 4 * 0.75  # Ann eats 75%% of her pizza
+bill_pieces = 4 * 0.5  # Bill eats 50%% of his pizza
+cate_pieces = 4 * 0.75  # Cate eats 75%% of her pizza
+dale_pieces = 4 * 0.5  # Dale eats 50%% of his pizza
 
 total_pieces_eaten = ann_pieces + bill_pieces + cate_pieces + dale_pieces
 
