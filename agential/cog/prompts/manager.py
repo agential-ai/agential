@@ -192,13 +192,13 @@ def get_examples_and_prompts(
     benchmark_type: str = "",
     benchmark_name: str = "",
     fewshot_type: str = "",
-) -> str:
-    """
-    Available Agent Names:
+) -> dict:
+
+    """Available Agent Names:
     - critic
     - react
     - expel
-    - reflexion
+    - reflexion.
 
     Available Benchmark Types and Names:
         - qa:
