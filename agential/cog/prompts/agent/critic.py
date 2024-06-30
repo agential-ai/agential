@@ -753,327 +753,239 @@ What's the problem with the above code?
 {critique}"""
 
 
-GSM8K_FEWSHOT_EXAMPLES_CRITIC = """Question: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops did Jason give to Denny?
-# Python code
-jason_lollipops_initial = 20
-jason_lollipops_after = 12
-denny_lollipops =  jason_lollipops_after - jason_lollipops_initial
-answer = denny_lollipops
-
-Execution: Done
-Output: answer = -8
-
-What's the problem with the above code?
-
- 1. The answer should be positive because Jason gave lollipops to Denny
-
- 2. Let's check the code:
-
-> jason_lollipops_initial = 20
-> jason_lollipops_after = 12
-> denny_lollipops =  jason_lollipops_after - jason_lollipops_initial
-
-The variable denny_lollipops is calculated incorrectly.
-The formula used is jason_lollipops_after - jason_lollipops_initial, which results in a negative value because Jason gave away some lollipops
-
-so The calculation should be jason_lollipops_initial - jason_lollipops_after.
-
-Here's a better solution:
-
-# Jason initially had 20 lollipops
-jason_lollipops_initial = 20
-
-# After giving some to Denny, Jason has 12 lollipops left
-jason_lollipops_after = 12
-
-# The number of lollipops Jason gave to Denny is the initial amount minus the remaining amount
-denny_lollipops = jason_lollipops_initial - jason_lollipops_after
-
-# The answer is the number of lollipops Jason gave to Denny
-answer = denny_lollipops
-
-Question: There are 15 trees in the grove. Grove workers will plant trees in the grove today. After they are done, there will be 21 trees. How many trees did the grove workers plant today?
-# Python code
-trees_initial = 15
-trees_after = 21
-answer = trees_initial - trees_after
-
-Execution: Done
-Output: answer = -6
-
-What's the problem with the above code?
-
- 1. The answer should be positive because trees are being added, not removed. I need to reverse the subtraction.
-
- 2. Let's check the code:
-
-> trees_initial = 15
-> trees_after = 21
-> answer = trees_initial - trees_after
-
-The variable trees_planted is calculated incorrectly.
-The formula used is  trees_initial - trees_after, which results in a negative value because Jason gave away some lollipops
-
-so The calculation should be trees_after - trees_initial.
-
-Here's a better solution:
-# Initial number of trees in the grove
-trees_initial = 15
-
-# Number of trees after planting
-trees_after = 21
-
-# Calculate the number of trees planted
-trees_planted = trees_after - trees_initial
-
-# The answer is the number of trees planted
-answer = trees_planted
-
----
-
-Question: Shawn has five toys. For Christmas, he got two toys each from his mom and dad. How many toys does he have now?
-toys_initial = 5
-toys_received = 2 * 3
-answer = toys_initial + toys_received
+GSM8K_FEWSHOT_EXAMPLES_CRITIC = """Question: Janet hires six employees. Four of them are warehouse workers who make $15/hour, and the other two are managers who make $20/hour. Janet has to pay 10% of her workers' salaries in FICA taxes. If everyone works 25 days a month and 8 hours a day, how much does Janet owe total for their wages and taxes for one month?
+```python
+num_of_warehouse_workers = 4
+num_of_managers = 2
+wage_of_warehouse_workers = 15
+wage_of_managers = 20
+num_of_days = 25
+num_of_hours = 8
+total_hours = num_of_days * num_of_hours
+total_wage = num_of_warehouse_workers * wage_of_warehouse_workers * total_hours + num_of_managers * wage_of_managers * total_hours
+answer = total_wage * 1.1
 ```
-Execution Status: Done
-Output: answer = 11
-
-What's the problem with the above code?
-
- 1. I incorrectly calculated the total toys received. Shawn got 2 toys each from his mom and dad, so the correct total received should be 2 + 2.
-
- 2. Let's check the code:
-
-> toys_initial = 5
-> toys_received = 2 * 3 # Incorrect calculation here
-> answer = toys_initial + toys_received
-
-toys_received = 2 * 3 calculates the total number of toys received as 6, which assumes Shawn received two sets of toys, not two toys each from his mom and dad
-so The calculation should be toys_initial + toys_received.
-
-Here's a better solution:
-
-# Initial number of toys Shawn has
-toys_initial = 5
-
-# Number of toys received from mom and dad
-toys_received = 2 + 2  # Two toys from mom + two toys from dad
-
-# Calculate the total number of toys Shawn has now
-total_toys = toys_initial + toys_received
-
-# The answer is the total number of toys Shawn has now
-answer = total_toys
-
----
-
-Question: There were nine computers in the server room. Five more computers were installed each day, from Monday to Thursday. How many computers are now in the server room?
-Thought 1: I need to calculate the total number of computers installed from Monday to Thursday.
-Action 1: Calculate[
-    ```python
-    computers_initial = 9
-    computers_per_day = 5
-    num_days = 4  # 4 days between Monday and Thursday
-    computers_added = computers_per_day * num_days
-    answer = computers_initial + computers_added
-    ```
-]
-Observation 1: 
-    ```python
-    computers_initial = 9
-    computers_per_day = 5
-    num_days = 4  # 4 days between Monday and Thursday
-    computers_added = computers_per_day * num_days
-    answer = computers_initial + computers_added
-    ```
-    Execution Status: Done
-    Output: answer = 29
-    Thought 2: There are now 29 computers in the server room.
-    Action 2: Finish[
-    ```python
-    answer = 29
-    ```
-]
-Action 2:Finish[
-    ```python
-    answer = 29
-    ```
-]
-Observation 2:
-    ```python
-    answer = 29
-```
-
----
-
-Question: Michael had 58 golf balls. On Tuesday, he lost 23 golf balls. On Wednesday, he lost 2 more. How many golf balls did he have at the end of Wednesday?
-Thought 1: I need to find out how many golf balls Michael has after losing some on Tuesday and Wednesday.
-Action 1: Calculate[
-    ```python
-    golf_balls_initial = 58
-    golf_balls_lost_tuesday = 23
-    golf_balls_lost_wednesday = 2
-    answer = golf_balls_initial - golf_balls_lost_tuesday - golf_balls_lost_wednesday
-    ```
-]
-Observation 1: 
-    ```python
-    golf_balls_initial = 58
-    golf_balls_lost_tuesday = 23
-    golf_balls_lost_wednesday = 2
-    answer = golf_balls_initial - golf_balls_lost_tuesday - golf_balls_lost_wednesday
-    ```
-    Execution Status: Done
-    Output: answer = 33
-    Thought 2: Michael has 33 golf balls left at the end of Wednesday.
-
-Action 2: Finish[
-    ```python
-    answer = 33
-    ```
-]
-Observation 2: 
-    ```python
-    answer = 33
-```
-
-----
-
-Question: If there are 3 cars in the parking lot and 2 more cars arrive, how many cars are in the parking lot?
-Thought 1: I need to calculate the total number of cars in the parking lot after 2 more cars arrive.
-Action 1: Calculate[
-    ```python
-    cars_initial = 3
-    cars_arrived = 2
-    answer = cars_initial + cars_arrived
-    ```
-]
-Observation 1: 
-    ```python
-    cars_initial = 3
-    cars_arrived = 2
-    answer = cars_initial + cars_arrived
-    ```
-    Execution Status: Done
-    Output: answer = 5
-    Thought 2: There are 5 cars in the parking lot now.
-Action 2: Finish[
-    ```python
-    answer = 5
-    ```
-]
-Observation 2: 
-    ```python
-    answer = 5
-    ```
----
-
-Question: Olivia has $23. She bought five bagels for $3 each. How much money does she have left?
-
-#python
-money_initial = 23
-bagels = 5
-bagel_cost = 3
-money_spent = bagels * bagel_cost
-money_left =   money_spent - money_initial
-answer = money_left
-
-
 Execution: Done
-Output: answer = -8
+Output: answer = 22000.0
 
 What's the problem with the above code?
 
-1. the money_left should be positive number because need to determine how much money Olivia has left after buying the bagels
+1. The total wages and taxes should be positive, 22000 > 0, it's reasonable.
 
 2. Let's check the code:
 
-# Initial Money: Olivia starts with $23 (money_initial = 23).
-> money_initial = 23
-# Bagel Purchase: She buys 5 bagels, and each bagel costs $3 (bagels = 5, bagel_cost = 3).
-> bagels = 5
-> bagel_cost = 3
-# Total Spent: The total money spent on bagels is calculated as money_spent = bagels * bagel_cost.
-> money_spent = bagels * bagel_cost
-# money_initial from money_spent, which is incorrect for determining how much money Olivia has left after buying the bagels.
-> money_left =  money_spent - money_initial
+> # Janet hires six employees. Four of them are warehouse workers who make $15/hour, and the other two are managers who make $20/hour.
+> num_of_warehouse_workers = 4
+> num_of_managers = 2
+> wage_of_warehouse_workers = 15
+> wage_of_managers = 20
 
-answer = money_spent - money_initial calculates the difference in the wrong direction. It subtracts the initial amount from the spent amount, which gives a negative value (-8), indicating an incorrect result.
+This defines the number of warehouse workers and managers, and their wages, this is correct.
+
+> num_of_days = 25
+> num_of_hours = 8
+> total_hours = num_of_days * num_of_hours
+
+It calculates the total hours of working 25 days a month and 8 hours a day, that's right.
+
+> total_wage = num_of_warehouse_workers * wage_of_warehouse_workers * total_hours + num_of_managers * wage_of_managers * total_hours
+
+It calculates the total wage, this is correct.
+
+> answer = total_wage * 1.1
+
+Janet has to pay 10% taxes, 1 + 0.1 = 1.1, that code calculates the total wage and taxes for one month, that's correct.
+
+Overall, the code understood the meaning of the question correctly and did not miss any information, and the answer 22000 is reasonable. However, there are some improvements that can be made to make the code more concise and easier to read.
 
 Here's a better solution:
 ```python
-# Initial amount of money Olivia has
-money_initial = 23
+# Define the wages for the workers
+warehouse_wage = 15
+manager_wage = 20
 
-# Number of bagels bought
-bagels = 5
+# Define the number of employees in each category
+num_warehouse_workers = 4
+num_managers = 2
 
-# Cost per bagel
-bagel_cost = 3
+# Calculate the total number of hours worked in a month
+num_days = 25
+hours_per_day = 8
+total_hours = num_days * hours_per_day
 
-# Calculate the total amount spent on bagels
-money_spent = bagels * bagel_cost
+# Calculate the total wages for the workers
+warehouse_wages = num_warehouse_workers * warehouse_wage * total_hours
+manager_wages = num_managers * manager_wage * total_hours
+total_wages = warehouse_wages + manager_wages
 
-# Calculate how much money Olivia has left
-money_left = money_initial - money_spent
+# Calculate the total FICA taxes owed
+fica_rate = 0.10
+total_fica_tax = total_wages * fica_rate
 
-# The answer is the amount of money Olivia has left
-answer = money_left
+# Calculate the total amount owed
+total_owed = total_wages + total_fica_tax
+answer = total_owed
+```
 
 ---
 
-Question: Leah had 32 chocolates and her sister had 42. If they ate 35, how many pieces do they have left in total?
-
-#python
-leah_chocolates = 32
-sister_chocolates = 42
-total_chocolates = leah_chocolates + sister_chocolates
-chocolates_eaten = 35
-chocolates_left = total_chocolates - chocolates_eaten
-answer = chocolates_left
-
-Execution: Done
-Output: answer = 23
+Question: A farmer has twice as many pigs as cows, and 4 more cows than goats.  If the farmer has 56 animals total, how many pigs does he have?
+```python
+num_of_pigs = 2 * num_of_cows
+num_of_cows = number_of_goats + 4
+num_of_animals = 56
+number_of_goats = (num_of_animals - 4) / 3
+num_of_cows = (number_of_goats + 4) * 2
+answer = num_of_cows
+```
+Execution: NameError("name 'num_of_cows' is not defined")
+Output: answer = None
 
 What's the problem with the above code?
 
-1. The calculation subtracted the total chocolates eaten from the combined initial total of Leah's and her sister's chocolates, rather than from their individual initial amounts, resulting in an incorrect remaining chocolate count.
+1. The above code causes the "NameError" because it use the variable `num_of_cows` before it is defined.
 
-2. Let's check the code:
+2. The variable names in the code are a little bit confusing, becase both `num_of_pigs` and "number_of_goats" are used.
 
-# Initial Chocolates: Leah initially has 32 chocolates and her sister has 42 chocolates
-> leah_chocolates = 32
-> sister_chocolates = 42
-# The total number of chocolates they have together is calculated as 
-> total_chocolates = leah_chocolates + sister_chocolates # correct formula
-# They ate a total of 35 chocolates
-> chocolates_eaten = 35
-# To find out how many chocolates they have left in total, we subtract
-> chocolates_left = total_chocolates - chocolates_eaten
-
-In summary, the code makes errors in calculating the chocolates_left.
-We need to find out how many chocolates they have left after eating 35 chocolates in total.
+Let's analysis the problem, we know that the total number of animals are 56, but we don't konw the number of pigs, cows or goats, and we can't get any of them directly, so we can build equations to solve for the number of pigs.
 
 Here's a better solution:
 ```python
-# Define initial number of chocolates
-leah_chocolates = 32
-sister_chocolates = 42
+# let's define the number of goats is x
+# then the number of cows is 4+x
+# then the number of pigs is 2(4+x) 
+# so, total animals is x + (4+x) + 2(4+x) = 56
+# Now we can solve for "x":
+# x + 4 + x + 2x + 8 = 56
+# 4x + 12 = 56
+# 4x = 44
+# x = 11
+# So the farmer has 11 goats.
+num_of_goats = 11
+num_of_cows = num_of_goats + 4
+# calculate the answer given the number of goats
+num_of_pigs = 2 * num_of_cows
+answer = num_of_pigs
+```
 
-# Calculate total number of chocolates
-total_chocolates = leah_chocolates + sister_chocolates
+---
 
-# Number of chocolates eaten
-chocolates_eaten = 35
+Question: Ann, Bill, Cate, and Dale each buy personal pan pizzas cut into 4 pieces. If Bill and Dale eat 50% of their pizzas and Ann and Cate eat 75% of the pizzas, how many pizza pieces are left uneaten?
+```python
+num_of_pieces_per_pizza = 4
+num_of_pizza = 4
+num_of_pieces = num_of_pieces_per_pizza * num_of_pizza
+num_of_pieces_eaten_by_bill_and_dale = num_of_pieces * 0.5
+num_of_pieces_eaten_by_ann_and_cate = num_of_pieces * 0.75
+answer = num_of_pieces - num_of_pieces_eaten_by_bill_and_dale - num_of_pieces_eaten_by_ann_and_cate
+```
+Execution: Done
+Output: answer = -4.0
 
-# Calculate number of chocolates left
-chocolates_left = total_chocolates - chocolates_eaten
+What's the problem with the above code?
 
-# Print the answer
-print("Total chocolates left after eating:", chocolates_left)
+1. The number of pizza pieces left uneaten should be a positive integer, -4.0 < 0, so the answer is not reasonable. 
 
+2. Let's check the code:
 
+> # Ann, Bill, Cate, and Dale each buy personal pan pizzas cut into 4 pieces.
+> num_of_pieces_per_pizza = 4
+> num_of_pizza = 4
+> num_of_pieces = num_of_pieces_per_pizza * num_of_pizza
+
+It calculates the total number of pieces `num_of_pieces`, that's correct.
+
+> # Bill and Dale eat 50% of their pizzas and Ann and Cate eat 75% of the pizzas
+> num_of_pieces_eaten_by_bill_and_dale = num_of_pieces * 0.5
+> num_of_pieces_eaten_by_ann_and_cate = num_of_pieces * 0.75
+
+According to the question, each person only eats their own personal pan pizza, `num_of_pieces * 0.5` means 50% of the total pieces, this is wrong.
+
+Here's a better solution:
+```python
+pizza_pieces = 4  # each person buys a personal pan pizza cut into 4 pieces
+ann_pieces = 4 * 0.75  # Ann eats 75% of her pizza
+bill_pieces = 4 * 0.5  # Bill eats 50% of his pizza
+cate_pieces = 4 * 0.75  # Cate eats 75% of her pizza
+dale_pieces = 4 * 0.5  # Dale eats 50% of his pizza
+
+total_pieces_eaten = ann_pieces + bill_pieces + cate_pieces + dale_pieces
+
+total_pieces = pizza_pieces * 4  # there are 4 people
+pieces_left = total_pieces - total_pieces_eaten
+
+answer = pieces_left
+```
+
+---
+
+Question: Tommy is making 12 loaves of bread. He needs 4 pounds of flour per loaf. A 10-pound bag of flour costs $10 and a 12-pound bag costs $13. When he is done making his bread, he has no use for flour and so he will throw away whatever is left. How much does he spend on flour if he buys the cheapest flour to get enough?
+```python
+num_of_loaves = 12
+pounds_of_flour_per_loaf = 4
+pounds_of_flour = num_of_loaves * pounds_of_flour_per_loaf
+pounds_per_bag = 10
+cost_of_10_pounds_bag = 10
+cost_of_12_pounds_bag = 13
+num_of_10_pounds_bag = pounds_of_flour / pounds_per_bag
+num_of_12_pounds_bag = pounds_of_flour / pounds_per_bag
+answer = min(num_of_10_pounds_bag * cost_of_10_pounds_bag, num_of_12_pounds_bag * cost_of_12_pounds_bag)
+```
+Execution: Done
+Output: answer = 48.0
+
+What's the problem with the above code?
+
+1. The cost of flour should be a positive number, 48 > 0, it's reasonable.
+
+2. Let's check the code:
+
+> num_of_loaves = 12
+> pounds_of_flour_per_loaf = 4
+> pounds_of_flour = num_of_loaves * pounds_of_flour_per_loaf
+
+It calculates the total pounds of flour needed, that's correct.
+
+> # A 10-pound bag of flour costs $10 and a 12-pound bag costs $13
+> pounds_per_bag = 10  # `pounds_per_bag` is ambiguous since there're two kinds of bags
+> cost_of_10_pounds_bag = 10
+> cost_of_12_pounds_bag = 13
+> num_of_10_pounds_bag = pounds_of_flour / pounds_per_bag
+> num_of_12_pounds_bag = pounds_of_flour / pounds_per_bag  # 12-pound bag has 12 pounds rather than 10, that's wrong
+
+There's problems in calculating the number of bags needed. In addition, the number of bags should be integer, and to get enough flour we should round up.
+
+> answer = min(num_of_10_pounds_bag * cost_of_10_pounds_bag, num_of_12_pounds_bag * cost_of_12_pounds_bag)
+
+This piece code calculates the cheapest cost of flour, it's correct.
+
+In summary, the code makes errors in calculating the cost.
+
+To solve the problem, we first need to calculate how many pounds of flour Tommy needs in total. Then we need to compare the cost of buying a 10-pound bag of flour versus a 12-pound bag of flour and choose the cheaper option to get the required amount of flour.
+
+Here's a better solution:
+```python
+import math
+# Calculate how many pounds of flour Tommy needs
+num_of_loaves = 12
+pounds_of_flour_per_loaf = 4
+total_pounds_of_flour = num_of_loaves * pounds_of_flour_per_loaf
+
+cost_of_10_pounds_bag = 10
+cost_of_12_pounds_bag = 13
+
+# Calculate the number of bags needed
+num_of_10_pounds_bag = math.ceil(total_pounds_of_flour / 10)
+num_of_12_pounds_bag = math.ceil(total_pounds_of_flour / 12)
+
+# Calculate the cost of flour
+cost_of_10_pounds = num_of_10_pounds_bag * cost_of_10_pounds_bag
+cost_of_12_pounds = num_of_12_pounds_bag * cost_of_12_pounds_bag
+
+# Choose the cheapest option
+total_cost = min(cost_of_10_pounds, cost_of_12_pounds)
+
+answer = total_cost
 ```"""
 
 
@@ -1346,256 +1258,133 @@ What's the problem with the above code?
 
 {critique}"""
 
-
-SVAMP_FEWSHOT_EXAMPLES_CRITIC = """ Question: James bought 93 red and 10 blue stickers, he used 31 red sticker on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
+SVAMP_FEWSHOT_EXAMPLES_CRITIC = """Question: Marco and his dad went strawberry picking. Marco's dad's strawberries weighed 11 pounds. If together their strawberries weighed 30 pounds. How much did Marco's strawberries weigh?
 ```python
-red_stickers_bought = 93
-blue_stickers_bought = 10
-red_stickers_used_on_fridge = 31
-blue_stickers_used_on_laptop = 7
-answer = red_stickers_bought + red_stickers_used_on_fridge
+num_strawberries_dad_picked = 11
+num_strawberries_marco_picked = 30
+answer = num_strawberries_dad_picked + num_strawberries_marco_picked
+```
+Execution: Done
+Output: answer = 41.0
+
+What's the problem with the above code?
+
+1. The weight of straberries should be positive, 41.0 > 0, it's reasonable.
+2. Let's check the code:
+
+> answer = num_strawberries_dad_picked + num_strawberries_marco_picked
+
+The above code calculates the total weight of strawberries picked by both Marco and his dad, instead of finding the weight of strawberries picked by Marco alone.
+
+According to the question, the total weight of strawberries picked by both Marco and his dad is 30 pounds, and Marco's dad's strawberries weighed 11 pounds. To find the weight of Marco's strawberries, we need to subtract the weight of his dad's strawberries from the total weight.
+
+Here's a better solution:
+```python
+total_weight = 30
+dad_weight = 11
+
+# Calculate the weight of Marco's strawberries
+marco_weight = total_weight - dad_weight
+answer = marco_weight
 ```
 
-Execution Status: Done
-Output: answer = 124
+---
+
+Question: Zachary did 46 push-ups and 58 crunches in gym class today. David did 38 more push-ups but 62 less crunches than zachary. How many more crunches than push-ups did Zachary do?
+```python
+zachary_push_ups = 46
+zachary_crunches = 58
+zachary_diff = zachary_crunches - zachary_push_ups
+answer = zachary_diff
+```
+Execution: Done
+Output: answer = 12
 
 What's the problem with the above code?
 
-1. The answer red stickers 124 is greater than the number of stickers James initially had, which is incorrect.
+1. The answer, 12, is a reasonable result.
 2. Let's check the code:
 
+> zachary_diff = zachary_crunches - zachary_push_ups
 
-> answer = red_stickers_bought + red_stickers_used_on_fridge
+The code calculates the difference between the number of crunches and push-ups that Zachary did, it is correct.
 
-The code incorrectly adds the number of red stickers bought to the number of red stickers used, instead of subtracting the used stickers from the bought stickers.
+The information about David is not relevant to the question and does not need to be considered in the calculation. There is no problem with the above code. 
 
 Here's a better solution:
 ```python
+zachary_push_ups = 46
+zachary_crunches = 58
 
-red_stickers_bought = 93  # Total red stickers
-red_stickers_used_on_fridge = 31  # Stickers used
+# Calculate the difference between Zachary's crunches and push-ups
+zachary_diff = zachary_crunches - zachary_push_ups
+answer = zachary_diff
+```
 
-# Calculate remaining stickers
-remaining_red_stickers = red_stickers_bought - red_stickers_used_on_fridge  # Remaining stickers
-answer = remaining_red_stickers  # Result
+---
 
--------
-
-Question: Allen went to supermarket to buy eggs, each egg costs 80 dollars, if the discount is 29 dollars. How much do you have to pay to buy each egg?
-
-cost_per_egg = 80
-discount_per_egg = 29
-answer = cost_per_egg + discount_per_egg
-
+Question: Faye had 35 packs of pencils each one having 4 pencils. She was placing her pencils into rows with 2 pencils in each row. How many rows could she make?
+```python
+num_packs_of_pencils = 35
+num_pencils_in_each_pack = 4
+answer = num_packs_of_pencils * num_pencils_in_each_pack
+```
 Execution: Done
-Output: answer = 109
+Output: answer = 140.0
 
 What's the problem with the above code?
 
-1. The answer 109 dollars per egg is incorrect because it adds the discount instead of subtracting it.
-
+1. The answer rows 140 > 0, it's reasonable.
 2. Let's check the code:
 
-> answer = cost_per_egg + discount_per_egg
+> answer = num_packs_of_pencils * num_pencils_in_each_pack
 
-The code incorrectly adds the discount to the cost of the egg instead of subtracting it.
+The code calculates the total number of pencils Faye has, but it does not calculate the number of rows she can make. It needs to be modified to take into account the fact that she is placing 2 pencils in each row.
 
 Here's a better solution:
 ```python
+num_packs_of_pencils = 35
+num_pencils_in_each_pack = 4
 
-cost_per_egg = 80  # Price per egg
-discount_per_egg = 29  # Discount per egg
+# Calculate the total number of pencils
+total_pencils = num_packs_of_pencils * num_pencils_in_each_pack
 
-# Calculate final price
-final_price_per_egg = cost_per_egg - discount_per_egg  # Final price per egg
-answer = final_price_per_egg  # Result
+# Calculate the number of rows with 2 pencils in each row
+num_pencils_in_each_row = 2
+num_rows = total_pencils // num_pencils_in_each_row
+answer = num_rows
+```
 
+---
 
---------
-
-
-Question: Dianna collects both cases and books. He bought 22 cases and 5 books from the store. 
+Question: Jack received 4 emails and sent 2 emails in the morning. He then received 6 emails and sent 8 emails in the afternoon. How many emails did Jack send in the day?
 ```python
-cases_bought = 22
-books_bought = 5
-total_cases_now = 57
-total_books_now = 25
-answer = total_books_now - books_bought
-
+num_emails_received_in_morning = 4
+num_emails_sent_in_morning = 2
+num_emails_received_in_afternoon = 6
+num_emails_sent_in_afternoon = 8
+answer = num_emails_sent_in_morning + num_emails_sent_in_afternoon
+```
 Execution: Done
-Output: answer = 20
+Output: answer = 10.0
 
 What's the problem with the above code?
 
-1. The answer 20 books at first is reasonable.
+1. The answer, 10, is a reasonable result.
 2. Let's check the code:
 
-> answer = total_books_now - books_bought
+> answer = num_emails_sent_in_morning + num_emails_sent_in_afternoon
 
-The code correctly calculates the number of books Danny had initially.
-
-Here's a better solution:
-```python
-
-books_bought = 5  # Number of books Danny bought
-total_books_now = 25  # Total books Danny has now
-
-# Calculate initial number of books Danny had
-initial_books = total_books_now - books_bought  # Initial number of books Danny had
-answer = initial_books  # Result
-
-
------
-
-Question: There were 108 chickens and 20 sheep at the farm, some of the chickens and sheep were sold. There are 87 chickens and 18 sheep left now. How many chickens were sold?
-```python
-initial_chickens = 108
-initial_sheep = 20
-remaining_chickens = 87
-remaining_sheep = 18
-
-# Calculate the number of chickens sold
-chickens_sold =  remaining_chickens - initial_chickens  
-answer = chickens_sold
-
-Execution: Done
-Output: answer = -21
-
-What's the problem with the above code?
-
-1. The output answer = -21 indicates that more chickens were remaining than initially present, which is logically incorrect.
-
-2. Let's check the code:
-
-> chickens_sold = initial_chickens - remaining_chickens
-
-The code incorrectly subtracts the remaining chickens from the initial chickens, which results in a negative value indicating additional chickens added instead of sold.
+The code calculates the total number of emails Jack sent during the day by adding the number of emails he sent in the morning to the number of emails he sent in the afternoon. There is no problem with the above code. 
 
 Here's a better solution:
 ```python
-
-initial_chickens = 108  # Initial number of chickens
-remaining_chickens = 87  # Remaining chickens
-
-# Calculate the number of chickens sold
-chickens_sold = initial_chickens - remaining_chickens   # Number of chickens sold
-answer = chickens_sold  # Result
-
-
-
-------
-
-Question: Katty scored 2 goals on Monday, 8 goals on Tuesday and 9 goals on Wednesday. How many did Katty score on Monday and Wednesday?
-```python
-goals_on_monday = 2
-goals_on_tuesday = 8
-goals_on_wednesday = 9
-answer = goals_on_monday + goals_on_wednesday
-
-Execution: Done
-Output: answer = 11
-
-What's the problem with the above code?
-1. The answer 11 goals scored on Monday and Wednesday is reasonable.
-2. Let's check the code:
-
-> answer = goals_on_monday + goals_on_wednesday
-
-The code correctly calculates the total number of goals Katty scored on Monday and Wednesday.
-
-
-Here's a better solution:
-```python
-
-goals_on_monday = 2  # Goals scored on Monday
-goals_on_wednesday = 9  # Goals scored on Wednesday
-
-# Calculate the total number of goals scored on Monday and Wednesday
-total_goals = goals_on_monday + goals_on_wednesday  # Total goals scored
-answer = total_goals  # Result
-
-
-Question: There are 5 girls and 4 boys in the Masquerade, 12 more girls and 7 more boys joined. How many more girls than boys are in the Masquerade?
-```python
-
-num_girls_before = 5
-num_girls_joined = 12
-num_boys_before = 4
-num_boys_joined = 7
-total_girls =  num_girls_joined - num_girls_before
-total_boys = num_boys_before + num_boys_joined
-answer = total_girls - total_boys
-
-Execution: Done
-Output: answer = 11
-
-What's the problem with the initial output?
-
-1. The initial output result of 11 is incorrect because This approach does not correctly calculate the total number of girls after the additions.
-2. Let's check the corrected code:
-
-> total_girls = num_girls_joined - num_girls_before
-
-According to the question, we should should add the initial number of girls to the number of girls who joined to get the total number of girls after the additions.
-
-Here's a better solution:
-```python
-
-num_girls_before = 5  # Number of girls before joining
-num_girls_joined = 12  # Number of girls joined
-num_boys_before = 4  # Number of boys before joining
-num_boys_joined = 7  # Number of boys joined
-
-# Calculate the total number of girls after joining
-total_girls = num_girls_before + num_girls_joined
-
-# Calculate the total number of boys after joining
-total_boys = num_boys_before + num_boys_joined
-
-# Calculate how many more girls than boys there are
-answer = total_girls - total_boys  # Difference in number of girls and boys
-
-
---- 
-
-Question: Joseph and Getty went to buy ice creams, they together bought 36 ice creams. On the way back, Joseph ate 12 of the ice creams, and he has 2 ice creams left now. How many ice creams did Getty purchase?
-```python
-total_ice_creams = 36
-joseph_left = 2
-joseph_ate = 12
-
-# Calculate the number of ice creams Getty purchased
-getty_ice_creams = total_ice_creams - (joseph_left + joseph_ate)
-answer = getty_ice_creams
-
-Execution: Done
-Output: answer = 22
-
-What's the problem with the above code?
-
-1. The number of ice creams should be a non-negative integer. 22 is a reasonable number.
-
-2. Let's check the code:
-
-> getty_ice_creams = total_ice_creams - (joseph_left + joseph_ate)
-
-According to the question, Joseph and Getty together bought 36 ice creams. Joseph ate 12 of them and has 2 left. To find out how many ice creams Getty purchased, we subtract the sum of what Joseph ate and what he has left from the total number they bought together
-
-Here's a better solution:
-```python
-
-total_ice_creams = 36  # Total number of ice creams
-joseph_left = 2  # Number of ice creams Joseph left
-joseph_ate = 12  # Number of ice creams Joseph ate
-
-# Calculate the number of ice creams Getty purchased
-getty_ice_creams = total_ice_creams - (joseph_left + joseph_ate)  # Ice creams Getty purchased
-answer = getty_ice_creams  # Result
-
-
+num_emails_received_in_morning = 4
+num_emails_sent_in_morning = 2
+num_emails_received_in_afternoon = 6
+num_emails_sent_in_afternoon = 8
+answer = num_emails_sent_in_morning + num_emails_sent_in_afternoon
 ```"""
-
-
 
 
 
