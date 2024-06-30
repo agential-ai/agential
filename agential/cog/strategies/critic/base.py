@@ -45,11 +45,11 @@ class CriticBaseStrategy(BaseStrategy):
             Tuple[str, Dict[str, Any]]: The generated critique and external tool information.
         """
         pass
+
     @abstractmethod
     def create_output_dict(
         self, answer: str, critique: str, external_tool_info: Dict[str, Any]
     ) -> Dict[str, Any]:
-      
         """Creates a dictionary containing the answer and critique, along with any additional key updates.
         Args:
             answer (str): The original answer.
@@ -61,10 +61,14 @@ class CriticBaseStrategy(BaseStrategy):
         """
         pass
 
-
     @abstractmethod
     def create_output_pydantic(
-        self, answer: str, critique: str, query: str, search_result: str, revised_answer: str
+        self, 
+        answer: str, 
+        critique: str, 
+        search_query: str, 
+        search_result: str, 
+        revised_answer: str
     ) -> BaseModel:
         """Creates a pydantic model of the output.
         
@@ -89,7 +93,7 @@ class CriticBaseStrategy(BaseStrategy):
         critique: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        external_tool_info: Dict[str, str],
+        external_tool_info: Dict[str, Any],
         **kwargs: Any,
     ) -> str:
         """Updates the answer based on the provided critique using the given language model and question.
