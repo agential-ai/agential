@@ -272,8 +272,24 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
         max_tokens: int = 5000,
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
     ) -> None:
-        pass
+        """Initialization."""
+        super().__init__(llm)
+        self.max_reflections = max_reflections
+        self.max_trials = max_trials
+        self.max_steps = max_steps
+        self.max_tokens = max_tokens
+        self.enc = enc
 
+        if not reflector:
+            reflector = ReflexionReActReflector(
+                llm=llm, max_reflections=max_reflections
+            )
+        self.reflector = reflector
+
+        self._finished = False
+        self._answer = ""
+        self._scratchpad = ""
+        
     def generate(
         self,
         question: str,
