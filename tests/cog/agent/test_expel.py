@@ -144,21 +144,36 @@ def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
                             "thought": "I need to search for the giant silverware company that was started as a religious Utopian group and was run by Pierrepont Noyes.",
                             "action_type": "Search",
                             "query": "giant silverware company started as religious Utopian group Pierrepont Noyes",
-                            "observation": "Could not find [giant silverware company started as religious Utopian group Pierrepont Noyes]. Similar: []",
+                            "observation": "Search result",
+                            "answer": "",
+                            "external_tool_info": {
+                                "search_result": "Search result",
+                                "lookup_result": "",
+                            },
                             "is_correct": False,
                         },
                         {
                             "thought": "The search query was too specific. I should try searching for the silverware company and then look for information about its history and founder.",
                             "action_type": "Search",
                             "query": "silverware company Pierrepont Noyes",
-                            "observation": "Pierrepont Burt Noyes (August 18, 1870 – April 15, 1959) was an American businessman and writer. He was brought up in the Oneida Community, a religious Utopian group. Noyes later became the head of Oneida Limited, a position he held for many years.",
+                            "observation": "Search result",
+                            "answer": "",
+                            "external_tool_info": {
+                                "search_result": "Search result",
+                                "lookup_result": "",
+                            },
                             "is_correct": False,
                         },
                         {
                             "thought": "Pierrepont Noyes was the head of Oneida Limited, a silverware company. I need to confirm if Oneida Limited was indeed started as a religious Utopian group.",
                             "action_type": "Search",
                             "query": "Oneida Limited religious Utopian group",
-                            "observation": "The Oneida Community ( oh-NYE-də) was a perfectionist religious communal society founded by John Humphrey Noyes and his followers in 1848 near Oneida, New York. The community believed that Jesus had already returned in AD 70, making it possible for them to bring about Jesus's millennial kingdom themselves, and be perfect and free of sin in this world, not just in Heaven (a belief called perfectionism). The Oneida Community practiced communalism (in the sense of communal property and possessions), group marriage, male sexual continence, Oneida stirpiculture (a form of eugenics), and mutual criticism.The community's original 87 members grew to 172 by February 1850, 208 by 1852, and 306 by 1878. There were smaller Noyesian communities in Wallingford, Connecticut; Newark, New Jersey; Putney and Cambridge, Vermont. The branches were closed in 1854 except for the Wallingford branch, which operated until the 1878 tornado devastated it.The Oneida Community dissolved in 1881, converting itself to a joint-stock company. This eventually became the silverware company Oneida Limited, one of the largest in the world.",
+                            "observation": "Search result",
+                            "answer": "",
+                            "external_tool_info": {
+                                "search_result": "Search result",
+                                "lookup_result": "",
+                            },
                             "is_correct": False,
                         },
                         {
@@ -166,6 +181,11 @@ def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
                             "action_type": "Finish",
                             "query": "Oneida Limited",
                             "observation": "Answer is CORRECT",
+                            "answer": "Oneida Limited",
+                            "external_tool_info": {
+                                "search_result": "",
+                                "lookup_result": "",
+                            },
                             "is_correct": True,
                         },
                     ],
@@ -188,9 +208,12 @@ def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
     ]
     llm = FakeListChatModel(responses=action_responses)
     agent = ExpeLAgent(llm=llm, mode={"qa": "hotpotqa"})
+    agent.reflexion_react_agent.strategy.docstore.search = lambda x: "Search result"
+    agent.reflexion_react_agent.strategy.docstore.lookup = lambda x: "Lookup result"
     new_experiences = agent.gather_experience(
         questions=hotpotqa.question.values[-1:], keys=hotpotqa.answer.values[-1:]
     )
+
     assert new_experiences == gt_new_experiences
     assert new_experiences == agent.experience_memory.experiences
     assert len(agent.experience_memory.success_traj_docs) == 13
@@ -297,21 +320,36 @@ def test_generate(expel_experiences_10_fake_path: str) -> None:
                             "thought": "I need to find out the name of the giant silverware company that was started as a religious Utopian group and was run by Pierrepont Noyes for many years. I should search for the company's name and its history to gather more information. ",
                             "action_type": "Search",
                             "query": "giant silverware company religious Utopian group Pierrepont Noyes",
-                            "observation": "Pierrepont Burt Noyes (August 18, 1870 – April 15, 1959) was an American businessman and writer. He was brought up in the Oneida Community, a religious Utopian group. Noyes later became the head of Oneida Limited, a position he held for many years.",
+                            "observation": "Search result",
+                            "answer": "",
+                            "external_tool_info": {
+                                "search_result": "Search result",
+                                "lookup_result": "",
+                            },
                             "is_correct": False,
                         },
                         {
                             "thought": "I need to search for more information about Oneida Limited to see if it matches the description of a giant silverware company that was started as a religious Utopian group and was run by Pierrepont Noyes. I should look for details about the company's history and any relevant connections to Noyes. ",
                             "action_type": "Search",
                             "query": "Oneida Limited giant silverware company religious Utopian group Pierrepont Noyes",
-                            "observation": "Pierrepont Burt Noyes (August 18, 1870 – April 15, 1959) was an American businessman and writer. He was brought up in the Oneida Community, a religious Utopian group. Noyes later became the head of Oneida Limited, a position he held for many years.",
+                            "observation": "Search result",
+                            "answer": "",
+                            "external_tool_info": {
+                                "search_result": "Search result",
+                                "lookup_result": "",
+                            },
                             "is_correct": False,
                         },
                         {
                             "thought": 'It seems like the search results are not providing specific information about Oneida Limited as a giant silverware company. I should try to look up the keyword "silverware" in the last passage successfully found and see if it provides any relevant details about Oneida Limited\'s products.',
                             "action_type": "Lookup",
                             "query": "silverware",
-                            "observation": '(Result 1/1) == Oneida Limited ==After studying at Colgate University, followed by Harvard University, P.B. Noyes joined Oneida Limited, the company which emerged from the commune after his father\'s death. He went on to become president of the company, steering it towards specialising in silverware and stainless steel cutlery. In 1894, he married another stirpicult, Corinna Ackley Kinsley (Also his half-niece), and the couple had three children.As the head of Oneida Limited, Noyes developed the company\'s ideology. He believed that "good wages were essential to good morale," and in 1904 proposed a policy of voluntary salary reductions for management whenever the company was in financial difficulties. The company followed this during economic troubles in 1921. Historian Maren Lockwood Carden wrote that, "Noyes halved his own salary, the directors took a one-third reduction, and the other officials took smaller ones in proportion to their regular salaries."Noyes also encouraged the development of Sherrill, New York as a community for employees. In 1905 the company laid out plans for the town, giving bonuses to those employees who built their own homes there. The company also helped to fund athletic clubs, a golf course, and the building of a new elementary school and a new high school.',
+                            "observation": "Lookup result",
+                            "answer": "",
+                            "external_tool_info": {
+                                "search_result": "",
+                                "lookup_result": "Lookup result",
+                            },
                             "is_correct": False,
                         },
                         {
@@ -319,6 +357,11 @@ def test_generate(expel_experiences_10_fake_path: str) -> None:
                             "action_type": "Finish",
                             "query": "Oneida Limited",
                             "observation": "Answer is CORRECT",
+                            "answer": "Oneida Limited",
+                            "external_tool_info": {
+                                "search_result": "",
+                                "lookup_result": "",
+                            },
                             "is_correct": True,
                         },
                     ],
@@ -363,7 +406,8 @@ def test_generate(expel_experiences_10_fake_path: str) -> None:
         mode={"qa": "hotpotqa"},
         experience_memory=ExpeLExperienceMemory(experiences),
     )
-
+    agent.reflexion_react_agent.strategy.docstore.search = lambda x: "Search result"
+    agent.reflexion_react_agent.strategy.docstore.lookup = lambda x: "Lookup result"
     out = agent.generate(question=question, key=key)
     assert out == gt_out
     assert len(agent.experience_memory.experiences["idxs"]) == 6

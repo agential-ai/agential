@@ -54,7 +54,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
             key (str): The key for the observation.
 
         Returns:
-            Tuple[bool, str]: The generated observation.
+            Tuple[bool, str]: A boolean indicating correctness and the generated observation.
         """
         pass
 
@@ -174,7 +174,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
     @abstractmethod
     def generate_observation(
         self, step_idx: int, action_type: str, query: str, key: str
-    ) -> Tuple[bool, str]:
+    ) -> Tuple[bool, str, Dict[str, Any]]:
         """Generates an observation based on the action type and query.
 
         Args:
@@ -184,7 +184,8 @@ class ReflexionReActBaseStrategy(BaseStrategy):
             key (str): The key for the observation.
 
         Returns:
-            str: The generated observation.
+            Tuple[bool, str, Dict[str, Any]]: A tuple containing a boolean indicating whether the answer is correct, a string representing the observation,
+                and a dictionary of the external tool outputs.
         """
         pass
 
@@ -205,8 +206,14 @@ class ReflexionReActBaseStrategy(BaseStrategy):
 
     @abstractmethod
     def react_create_output_dict(
-        self, thought: str, action_type: str, query: str, obs: str, is_correct: bool
-    ) -> Dict[str, str]:
+        self,
+        thought: str,
+        action_type: str,
+        query: str,
+        obs: str,
+        external_tool_info: Dict[str, Any],
+        is_correct: bool,
+    ) -> Dict[str, Any]:
         """Creates a dictionary of the output components.
 
         Args:
@@ -214,10 +221,11 @@ class ReflexionReActBaseStrategy(BaseStrategy):
             action_type (str): The type of action performed.
             query (str): The query for the action.
             obs (str): The generated observation.
+            external_tool_info (Dict[str, Any]): The external tool outputs.
             is_correct (bool): Whether the observation is correct.
 
         Returns:
-            Dict[str, str]: A dictionary containing the thought, action type, observation, answer, and is_correct.
+            Dict[str, Any]: A dictionary containing the thought, action type, observation, answer, external_tool_info, and is_correct.
         """
         pass
 

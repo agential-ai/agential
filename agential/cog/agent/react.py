@@ -96,13 +96,17 @@ class ReActAgent(BaseAgent):
             )
 
             # Observe.
-            obs = self.strategy.generate_observation(
+            obs, external_tool_info = self.strategy.generate_observation(
                 idx=idx, action_type=action_type, query=query
             )
 
             out.append(
                 self.strategy.create_output_dict(
-                    thought=thought, action_type=action_type, query=query, obs=obs
+                    thought=thought,
+                    action_type=action_type,
+                    query=query,
+                    obs=obs,
+                    external_tool_info=external_tool_info,
                 )
             )
 

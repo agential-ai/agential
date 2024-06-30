@@ -123,6 +123,7 @@ class CriticMathStrategy(CriticBaseStrategy):
             Tuple[str, Dict[str, Any]]: The generated critique and external tool information.
         """
         external_tool_info = {"execution_status": "", "code_answer": ""}
+
         if use_tool:
             code_answer, execution_status = safe_execute(answer)
             external_tool_info = {
@@ -207,12 +208,12 @@ def create_output_pydantic(
         Returns:
             Dict[str, Any]: The output dictionary with the answer, critique, and external tool info.
         """
-        
+
         output_dict = {
             "answer": answer,
             "critique": critique,
             "external_tool_info": external_tool_info,
-        }        
+        }
         
         return output_dict
 

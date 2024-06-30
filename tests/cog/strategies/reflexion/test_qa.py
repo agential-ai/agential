@@ -30,7 +30,36 @@ from agential.cog.strategies.reflexion.qa import (
     ReflexionReActHotQAStrategy,
     ReflexionReActQAStrategy,
     ReflexionReActTriviaQAStrategy,
+    parse_qa_action,
 )
+
+
+def test_parse_qa_action() -> None:
+    """Tests parse_qa_action."""
+    action = "Calculate[sum = 4 + 6]"
+    action_type, argument = parse_qa_action(action)
+    assert action_type == "Calculate"
+    assert argument == "sum = 4 + 6"
+
+    action = "Finish[result = 7 - 2]"
+    action_type, argument = parse_qa_action(action)
+    assert action_type == "Finish"
+    assert argument == "result = 7 - 2"
+
+    action = "InvalidAction[result = 10 / 2]"
+    action_type, argument = parse_qa_action(action)
+    assert action_type == "InvalidAction"
+    assert argument == "result = 10 / 2"
+
+    action = "NoBrackets"
+    action_type, argument = parse_qa_action(action)
+    assert action_type == ""
+    assert argument == ""
+
+    action = "EmptyBrackets[]"
+    action_type, argument = parse_qa_action(action)
+    assert action_type == ""
+    assert argument == ""
 
 
 def test_reflexion_cot_init() -> None:
@@ -143,7 +172,7 @@ def test_reflexion_cot_create_output_dict() -> None:
     expected_output = {
         "thought": "This is a thought.",
         "action_type": "Finish",
-        "obs": "Observation: Answer is CORRECT",
+        "observation": "Observation: Answer is CORRECT",
         "answer": "correct_answer",
         "is_correct": True,
         "reflections": [],
@@ -162,7 +191,7 @@ def test_reflexion_cot_create_output_dict() -> None:
     expected_output = {
         "thought": "This is a thought.",
         "action_type": "Finish",
-        "obs": "Observation: Answer is INCORRECT",
+        "observation": "Observation: Answer is INCORRECT",
         "answer": "incorrect_answer",
         "is_correct": False,
         "reflections": [],
@@ -181,7 +210,7 @@ def test_reflexion_cot_create_output_dict() -> None:
     expected_output = {
         "thought": "This is another thought.",
         "action_type": "Calculate",
-        "obs": "Observation: Invalid action type, please try again.",
+        "observation": "Observation: Invalid action type, please try again.",
         "answer": "some_answer",
         "is_correct": False,
         "reflections": [],
@@ -336,7 +365,8 @@ def test_reflexion_react_generate_observation() -> None:
     """Tests ReflexionReActQAStrategy generate_observation."""
     llm = FakeListChatModel(responses=[])
     strategy = ReflexionReActQAStrategy(llm=llm)
-    is_correct, obs = strategy.generate_observation(
+    strategy.docstore.search = lambda x: "Search result"
+    is_correct, obs, external_tool_info = strategy.generate_observation(
         step_idx=1,
         action_type="Search",
         query="VIVA Media AG",
@@ -347,8 +377,10 @@ def test_reflexion_react_generate_observation() -> None:
     assert strategy._scratchpad != ""
     assert not strategy._finished
     assert strategy._answer == ""
+    assert external_tool_info == {"search_result": "Search result", "lookup_result": ""}
 
-    is_correct, obs = strategy.generate_observation(
+    strategy.docstore.lookup = lambda x: "Lookup result"
+    is_correct, obs, external_tool_info = strategy.generate_observation(
         step_idx=1,
         action_type="Lookup",
         query="VIVA Media AG",
@@ -359,8 +391,9 @@ def test_reflexion_react_generate_observation() -> None:
     assert strategy._scratchpad != ""
     assert not strategy._finished
     assert strategy._answer == ""
+    assert external_tool_info == {"search_result": "", "lookup_result": "Lookup result"}
 
-    is_correct, obs = strategy.generate_observation(
+    is_correct, obs, external_tool_info = strategy.generate_observation(
         step_idx=1,
         action_type="Finish",
         query="VIVA Media AG",
@@ -371,6 +404,7 @@ def test_reflexion_react_generate_observation() -> None:
     assert strategy._scratchpad != ""
     assert strategy._finished
     assert strategy._answer == "VIVA Media AG"
+    assert external_tool_info == {"search_result": "", "lookup_result": ""}
 
 
 def test_reflexion_react_create_output_dict() -> None:
@@ -441,6 +475,7 @@ def test_reflexion_react_react_create_output_dict() -> None:
         action_type="Query",
         query="What is the capital of France?",
         obs="Observation: Answer is CORRECT",
+        external_tool_info={"search_result": "", "lookup_result": ""},
         is_correct=True,
     )
     expected_output = {
@@ -448,6 +483,8 @@ def test_reflexion_react_react_create_output_dict() -> None:
         "action_type": "Query",
         "query": "What is the capital of France?",
         "observation": "Observation: Answer is CORRECT",
+        "answer": "",
+        "external_tool_info": {"search_result": "", "lookup_result": ""},
         "is_correct": True,
     }
     assert output == expected_output
@@ -458,6 +495,7 @@ def test_reflexion_react_react_create_output_dict() -> None:
         action_type="Validate",
         query="Is 2+2=4?",
         obs="Observation: Answer is CORRECT",
+        external_tool_info={"search_result": "", "lookup_result": ""},
         is_correct=True,
     )
     expected_output = {
@@ -465,6 +503,8 @@ def test_reflexion_react_react_create_output_dict() -> None:
         "action_type": "Validate",
         "query": "Is 2+2=4?",
         "observation": "Observation: Answer is CORRECT",
+        "answer": "",
+        "external_tool_info": {"search_result": "", "lookup_result": ""},
         "is_correct": True,
     }
     assert output == expected_output
@@ -475,6 +515,7 @@ def test_reflexion_react_react_create_output_dict() -> None:
         action_type="Answer",
         query="What is the square root of 16?",
         obs="Observation: Answer is INCORRECT",
+        external_tool_info={"search_result": "", "lookup_result": ""},
         is_correct=False,
     )
     expected_output = {
@@ -482,6 +523,8 @@ def test_reflexion_react_react_create_output_dict() -> None:
         "action_type": "Answer",
         "query": "What is the square root of 16?",
         "observation": "Observation: Answer is INCORRECT",
+        "answer": "",
+        "external_tool_info": {"search_result": "", "lookup_result": ""},
         "is_correct": False,
     }
     assert output == expected_output

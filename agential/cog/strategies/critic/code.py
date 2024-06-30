@@ -175,7 +175,7 @@ class CriticCodeStrategy(CriticBaseStrategy):
             "answer": answer,
             "critique": critique,
             "external_tool_info": external_tool_info,
-        }        
+        }
         
         return output_dict
 

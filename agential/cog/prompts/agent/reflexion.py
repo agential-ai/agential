@@ -602,3 +602,1465 @@ Thought 2: The evidence suggests that Bode Miller is the only American skier who
 Action 2: Finish[Lindsey Vonn]
 
 Reflection: My reasoning failed because I doubted the clear evidence provided by the source and made an incorrect assumption based on the fame of another skier. In the future, I should rely on the provided evidence rather than making unsupported assumptions."""
+
+
+# ======================================================================== GSM8K ======================================================================== #
+
+
+GSM8K_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """Question: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops did Jason give to Denny?
+Thought: Let's think step by step. Jason had 20 lollipops initially and now he has 12 lollipops. So, he must have given 20 + 12 = 32 lollipops to Denny.
+Action: Finish[
+```python
+jason_lollipops_initial = 20
+jason_lollipops_after = 12
+denny_lollipops = jason_lollipops_initial + jason_lollipops_after
+answer = denny_lollipops
+```
+]
+
+Reflection: My reasoning failed because I incorrectly added the initial and remaining lollipops instead of subtracting the remaining from the initial to find out how many were given away. In the future, I should ensure to carefully review the mathematical operations required to solve the problem accurately.
+
+---
+
+Question: There are 15 trees in the grove. Grove workers will plant trees in the grove today. After they are done, there will be 21 trees. How many trees did the grove workers plant today?
+Thought: Let's think step by step. There were initially 15 trees and after planting, there are 21 trees. So, the number of trees planted is 15 - 21 = -6.
+Action: Finish[
+```python
+trees_initial = 15
+trees_after = 21
+trees_added = trees_initial - trees_after
+answer = trees_added
+```
+]
+
+Reflection: My reasoning failed because I subtracted the final number of trees from the initial number of trees instead of subtracting the initial number from the final number. In the future, I should ensure to correctly apply the operations needed to find the difference.
+
+---
+
+Question: Shawn has five toys. For Christmas, he got two toys each from his mom and dad. How many toys does he have now?
+Thought: Let's think step by step. Shawn had 5 toys initially, and he got 2 toys from his mom and 2 toys from his dad. So, the total number of toys he has now is 5 + 2 = 7.
+Action: Finish[
+```python
+toys_initial = 5
+mom_toys = 2
+dad_toys = 2
+total_toys = toys_initial + mom_toys
+answer = total_toys
+```
+]
+
+Reflection: My reasoning failed because I only added the toys from his mom and forgot to include the toys from his dad. In the future, I should ensure to account for all given quantities in the problem to arrive at the correct solution.
+
+---
+
+Question: There were nine computers in the server room. Five more computers were installed each day, from Monday to Thursday. How many computers are now in the server room?
+Thought: Let's think step by step. Initially, there were 9 computers. Five more computers were added each day from Monday to Thursday, which is 4 days. So, the total number of computers added is 5 + 4 = 9. Therefore, the total number of computers now is 9 + 9 = 18.
+Action: Finish[
+```python
+computers_initial = 9
+computers_per_day = 5
+num_days = 4  # 4 days between Monday and Thursday
+computers_added = computers_per_day + num_days
+computers_total = computers_initial + computers_added
+answer = computers_total
+```
+]
+
+Reflection: My reasoning failed because I incorrectly added the number of computers per day to the number of days instead of multiplying them. In the future, I should ensure to use the correct operations to calculate the total number of items added.
+
+---
+
+Question: Michael had 58 golf balls. On Tuesday, he lost 23 golf balls. On Wednesday, he lost 2 more. How many golf balls did he have at the end of Wednesday?
+Thought: Let's think step by step. Michael initially had 58 golf balls. He lost 23 golf balls on Tuesday and 2 more on Wednesday. So, the total number of golf balls lost is 23 + 2 = 25. Therefore, the number of golf balls he has left is 58 + 25 = 83.
+Action: Finish[
+```python
+golf_balls_initial = 58
+golf_balls_lost_tuesday = 23
+golf_balls_lost_wednesday = 2
+golf_balls_lost_total = golf_balls_lost_tuesday + golf_balls_lost_wednesday
+golf_balls_left = golf_balls_initial + golf_balls_lost_total
+answer = golf_balls_left
+```
+]
+
+Reflection: My reasoning failed because I incorrectly added the total number of golf balls lost to the initial number of golf balls instead of subtracting it. In the future, I should ensure to use the correct operation (subtraction) to find the remaining number of items.
+
+---
+
+Question: If there are 3 cars in the parking lot and 2 more cars arrive, how many cars are in the parking lot?
+Thought: Let's think step by step. Initially, there are 3 cars in the parking lot. When 2 more cars arrive, the total number of cars is 3 - 2 = 1.
+Action: Finish[
+```python
+cars_initial = 3
+cars_arrived = 2
+total_cars = cars_initial - cars_arrived
+answer = total_cars
+```
+]
+
+Reflection: My reasoning failed because I incorrectly subtracted the number of cars that arrived from the initial number of cars instead of adding them. In the future, I should ensure to use the correct operation (addition) when calculating the total number of items after more items arrive.
+
+---
+
+Question: Olivia has $23. She bought five bagels for $3 each. How much money does she have left?
+Thought: Let's think step by step. Olivia had $23 initially. She bought 5 bagels for $3 each. The total cost of the bagels is 5 * 3 = $15. So, the money she has left is 23 + 15 = $38.
+Action: Finish[
+```python
+money_initial = 23
+bagels = 5
+bagel_cost = 3
+money_spent = bagels * bagel_cost
+money_left = money_initial + money_spent
+answer = money_left
+```
+]
+
+Reflection: My reasoning failed because I incorrectly added the total cost of the bagels to the initial amount of money instead of subtracting it. In the future, I should ensure to use the correct operation (subtraction) when calculating the remaining amount of money after a purchase.
+
+---
+
+Question: Leah had 32 chocolates and her sister had 42. If they ate 35, how many pieces do they have left in total?
+Thought: Let's think step by step. Leah had 32 chocolates and her sister had 42 chocolates. Together they had 32 + 42 = 74 chocolates. They ate 35 chocolates, so the number of chocolates left is 74 + 35 = 109.
+Action: Finish[
+```python
+leah_chocolates = 32
+sister_chocolates = 42
+total_chocolates = leah_chocolates + sister_chocolates
+chocolates_eaten = 35
+chocolates_left = total_chocolates + chocolates_eaten
+answer = chocolates_left
+```
+]
+
+Reflection: My reasoning failed because I incorrectly added the number of chocolates eaten to the total number of chocolates instead of subtracting it. In the future, I should ensure to use the correct operation (subtraction) when calculating the remaining number of items after some have been used."""
+
+
+REFLEXION_COT_REFLECT_INSTRUCTION_GSM8K = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Previous trial:
+Question: {question}{scratchpad}
+
+Reflection:"""
+
+
+REFLEXION_COT_INSTRUCTION_GSM8K = """Solve a math question task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+{reflections}
+
+Question: {question}{scratchpad}"""
+
+
+REFLEXION_REACT_INSTRUCTION_GSM8K = """Answer a math question with interleaving Thought, Action, Observation steps. Thought can reason about the current question and plan the retrieval steps, and Action can be two types:
+(1) Calculate[code], which implements code to answer the math question, saving the answer as the `answer` variable.
+(2) Finish[code], which returns the code to answer the math question and finishes the task, saving the answer as the `answer` variable.
+You have a maximum of {max_steps} steps.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+{reflections}
+
+Question: {question}
+{scratchpad}"""
+
+
+REFLEXION_REACT_REFLECT_INSTRUCTION_GSM8K = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Previous trial:
+Question: {question}{scratchpad}
+
+Reflection:"""
+
+
+GSM8K_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """Question: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops did Jason give to Denny?
+Thought 1: First, I need to find out how many lollipops Jason gave to Denny.
+Action 1: Calculate[
+```python
+jason_lollipops_initial = 20
+jason_lollipops_after = 12
+answer = jason_lollipops_after + jason_lollipops_initial
+```
+]
+Observation 1: 
+```python
+jason_lollipops_initial = 20
+jason_lollipops_after = 12
+answer = jason_lollipops_after + jason_lollipops_initial
+```
+Execution Status: Done
+Output: answer = 32
+Thought 2: The answer seems too high, but I will proceed with this calculation.
+Action 2: Finish[
+```python
+answer = 32
+```
+]
+Observation 2: 
+```python
+answer = 32
+```
+
+Reflection: My reasoning failed because I added the remaining lollipops to the initial count instead of subtracting the remaining from the initial to find out how many were given away. In the future, I should ensure to carefully review the mathematical operations required to solve the problem accurately. The correct operation should have been subtraction, not addition.
+```
+
+---
+
+Question: There are 15 trees in the grove. Grove workers will plant trees in the grove today. After they are done, there will be 21 trees. How many trees did the grove workers plant today?
+Thought 1: I need to determine how many trees were planted.
+Action 1: Calculate[
+```python
+trees_initial = 15
+trees_after = 21
+answer = trees_initial - trees_after
+```
+]
+Observation 1: 
+```python
+trees_initial = 15
+trees_after = 21
+answer = trees_initial - trees_after
+```
+Execution Status: Done
+Output: answer = -6
+Thought 2: The answer should be positive because trees are being added, not removed. However, I will proceed with the subtraction result.
+Action 2: Finish[
+```python
+answer = -6
+```
+]
+Observation 2: 
+```python
+answer = -6
+```
+
+Reflection: My reasoning failed because I subtracted the final number of trees from the initial number instead of the correct operation, which is subtracting the initial number of trees from the final number. In the future, I should ensure to carefully review the mathematical operations required to solve the problem accurately. The correct answer should be obtained by reversing the subtraction to reflect the addition of trees.
+```
+
+---
+
+Question: Shawn has five toys. For Christmas, he got two toys each from his mom and dad. How many toys does he have now?
+Thought 1: I need to calculate the total number of toys Shawn has after receiving gifts from his parents.
+Action 1: Calculate[
+```python
+toys_initial = 5
+toys_received_mom = 2
+toys_received_dad = 2
+answer = toys_initial + toys_received_mom + toys_received_dad
+```
+]
+Observation 1: 
+```python
+toys_initial = 5
+toys_received_mom = 2
+toys_received_dad = 2
+answer = toys_initial + toys_received_mom + toys_received_dad
+```
+Execution Status: Done
+Output: answer = 9
+Thought 2: I realize that I calculated the total toys received correctly. However, I will double-check by using another method.
+Action 2: Calculate[
+```python
+toys_initial = 5
+toys_received = 2 * 3
+answer = toys_initial + toys_received
+```
+]
+Observation 2: 
+```python
+toys_initial = 5
+toys_received = 2 * 3
+answer = toys_initial + toys_received
+```
+Execution Status: Done
+Output: answer = 11
+Thought 3: According to my second calculation, Shawn has 11 toys now. I need to confirm the total number of toys.
+Action 3: Finish[
+```python
+answer = 11
+```
+]
+Observation 3: 
+```python
+answer = 11
+```
+
+Reflection: My reasoning failed because I mistakenly multiplied the number of toys received instead of adding the correct amounts. Initially, I calculated correctly by adding the 2 toys received from mom and 2 toys received from dad to the initial 5 toys. However, my second method was incorrect as I wrongly multiplied the toys received. In the future, I should ensure to stick with the correct arithmetic operations and verify my calculations accurately. The correct answer should be 9 toys.
+```
+
+---
+
+Question: There were nine computers in the server room. Five more computers were installed each day, from Monday to Thursday. How many computers are now in the server room?
+Thought 1: I need to calculate the total number of computers installed from Monday to Thursday.
+Action 1: Calculate[
+```python
+computers_initial = 9
+computers_per_day = 5
+num_days = 4  # 4 days between Monday and Thursday
+computers_added = computers_per_day * num_days
+answer = computers_initial + computers_added
+```
+]
+Observation 1: 
+```python
+computers_initial = 9
+computers_per_day = 5
+num_days = 4  # 4 days between Monday and Thursday
+computers_added = computers_per_day * num_days
+answer = computers_initial + computers_added
+```
+Execution Status: Done
+Output: answer = 29
+Thought 2: The total number of computers seems high. Let me verify by recalculating step-by-step.
+Action 2: Calculate[
+```python
+computers_per_day = 5
+num_days = 4
+computers_added = computers_per_day + num_days
+answer = computers_initial + computers_added
+```
+]
+Observation 2: 
+```python
+computers_per_day = 5
+num_days = 4
+computers_added = computers_per_day + num_days
+answer = computers_initial + computers_added
+```
+Execution Status: Done
+Output: answer = 18
+Thought 3: The recalculated total is 18 computers.
+Action 3: Finish[
+```python
+answer = 18
+```
+]
+Observation 3:
+```python
+answer = 18
+```
+
+Reflection: My reasoning failed because I incorrectly recalculated the total number of computers added by summing the computers per day and the number of days instead of multiplying them. The correct approach was in my initial calculation, where I correctly multiplied the number of computers installed per day by the number of days and added that to the initial number of computers. In the future, I should ensure to carefully review my calculations and verify the arithmetic operations used. The correct answer should have been 29 computers.
+```
+
+---
+
+Question: Michael had 58 golf balls. On Tuesday, he lost 23 golf balls. On Wednesday, he lost 2 more. How many golf balls did he have at the end of Wednesday?
+Thought 1: I need to find out how many golf balls Michael has after losing some on Tuesday and Wednesday.
+Action 1: Calculate[
+```python
+golf_balls_initial = 58
+golf_balls_lost_tuesday = 23
+golf_balls_lost_wednesday = 2
+answer = golf_balls_initial - golf_balls_lost_tuesday - golf_balls_lost_wednesday
+```
+]
+Observation 1: 
+```python
+golf_balls_initial = 58
+golf_balls_lost_tuesday = 23
+golf_balls_lost_wednesday = 2
+answer = golf_balls_initial - golf_balls_lost_tuesday - golf_balls_lost_wednesday
+```
+Execution Status: Done
+Output: answer = 33
+Thought 2: The answer seems low. I should verify my calculations by adding the losses instead of subtracting directly.
+Action 2: Calculate[
+```python
+total_golf_balls_lost = golf_balls_lost_tuesday + golf_balls_lost_wednesday
+answer = golf_balls_initial + total_golf_balls_lost
+```
+]
+Observation 2: 
+```python
+total_golf_balls_lost = golf_balls_lost_tuesday + golf_balls_lost_wednesday
+answer = golf_balls_initial + total_golf_balls_lost
+```
+Execution Status: Done
+Output: answer = 83
+Thought 3: The recalculated total is 83 golf balls.
+Action 3: Finish[
+```python
+answer = 83
+```
+]
+Observation 3: 
+```python
+answer = 83
+```
+
+Reflection: My reasoning failed because I incorrectly added the golf balls lost to the initial number of golf balls instead of subtracting them. Initially, I correctly subtracted the losses from the total, but I doubted my correct method and made a mistake in the verification step. In the future, I should ensure to trust the initial correct arithmetic operations and avoid unnecessary recalculations that lead to errors. The correct answer should have been 33 golf balls.
+```
+
+---
+
+Question: If there are 3 cars in the parking lot and 2 more cars arrive, how many cars are in the parking lot?
+Thought 1: I need to calculate the total number of cars in the parking lot after 2 more cars arrive.
+Action 1: Calculate[
+```python
+cars_initial = 3
+cars_arrived = 2
+answer = cars_initial + cars_arrived
+```
+]
+Observation 1: 
+```python
+cars_initial = 3
+cars_arrived = 2
+answer = cars_initial + cars_arrived
+```
+Execution Status: Done
+Output: answer = 5
+Thought 2: The answer seems correct, but let me verify by considering a different approach.
+Action 2: Calculate[
+```python
+cars_initial = 3
+cars_arrived = 2
+answer = cars_initial * cars_arrived
+```
+]
+Observation 2: 
+```python
+cars_initial = 3
+cars_arrived = 2
+answer = cars_initial * cars_arrived
+```
+Execution Status: Done
+Output: answer = 6
+Thought 3: The recalculated total is 6 cars.
+Action 3: Finish[
+```python
+answer = 6
+```
+]
+Observation 3: 
+```python
+answer = 6
+```
+
+Reflection: My reasoning failed because I unnecessarily verified my initial correct calculation by using multiplication instead of sticking with the simple addition required by the problem. Initially, I correctly calculated that 3 + 2 equals 5, but I introduced an error by changing the operation. In the future, I should trust the straightforward arithmetic operations needed for such problems and avoid overcomplicating the solution. The correct answer should have been 5 cars.
+```
+
+---
+
+Question: Olivia has $23. She bought five bagels for $3 each. How much money does she have left?
+Thought 1: I need to calculate how much money Olivia has left after buying bagels.
+Action 1: Calculate[
+```python
+money_initial = 23
+bagels = 5
+bagel_cost = 3
+money_spent = bagels * bagel_cost
+answer = money_initial - money_spent
+```
+]
+Observation 1: 
+```python
+money_initial = 23
+bagels = 5
+bagel_cost = 3
+money_spent = bagels * bagel_cost
+answer = money_initial - money_spent
+```
+Execution Status: Done
+Output: answer = 8
+Thought 2: The answer seems low. Let me verify by adding the cost instead.
+Action 2: Calculate[
+```python
+money_initial = 23
+bagels = 5
+bagel_cost = 3
+money_spent = bagels + bagel_cost
+answer = money_initial - money_spent
+```
+]
+Observation 2: 
+```python
+money_initial = 23
+bagels = 5
+bagel_cost = 3
+money_spent = bagels + bagel_cost
+answer = money_initial - money_spent
+```
+Execution Status: Done
+Output: answer = 15
+Thought 3: The recalculated total is $15.
+Action 3: Finish[
+```python
+answer = 15
+```
+]
+Observation 3: 
+```python
+answer = 15
+```
+
+Reflection: My reasoning failed because I incorrectly verified my initial correct calculation by summing the number of bagels and the cost per bagel instead of multiplying them. Initially, I correctly calculated that 5 bagels at $3 each cost $15, and subtracted that from $23 to get $8 remaining. However, my verification step was incorrect. In the future, I should trust the straightforward arithmetic operations needed for such problems and avoid introducing errors with unnecessary recalculations. The correct answer should have been $8 left.
+```
+
+---
+
+Question: Leah had 32 chocolates and her sister had 42. If they ate 35, how many pieces do they have left in total?
+Thought 1: I need to find out the total number of chocolates left after Leah and her sister ate some.
+Action 1: Calculate[
+```python
+leah_chocolates = 32
+sister_chocolates = 42
+total_chocolates = leah_chocolates + sister_chocolates
+chocolates_eaten = 35
+answer = total_chocolates - chocolates_eaten
+```
+]
+Observation 1: 
+```python
+leah_chocolates = 32
+sister_chocolates = 42
+total_chocolates = leah_chocolates + sister_chocolates
+chocolates_eaten = 35
+answer = total_chocolates - chocolates_eaten
+```
+Execution Status: Done
+Output: answer = 39
+Thought 2: The answer seems correct, but let me verify by considering an alternate approach.
+Action 2: Calculate[
+```python
+total_chocolates = leah_chocolates * sister_chocolates
+chocolates_left = total_chocolates - chocolates_eaten
+answer = chocolates_left
+```
+]
+Observation 2: 
+```python
+total_chocolates = leah_chocolates * sister_chocolates
+chocolates_left = total_chocolates - chocolates_eaten
+answer = chocolates_left
+```
+Execution Status: Done
+Output: answer = 1309
+Thought 3: The recalculated total is 1309 chocolates left.
+Action 3: Finish[
+```python
+answer = 1309
+```
+]
+Observation 3: 
+```python
+answer = 1309
+```
+
+Reflection: My reasoning failed because I mistakenly multiplied the number of chocolates Leah and her sister had instead of summing them up. Initially, I correctly calculated that 32 + 42 equals 74, and subtracted the 35 chocolates eaten to get 39 remaining. However, my verification step was incorrect due to the multiplication error. In the future, I should trust the straightforward arithmetic operations needed for such problems and avoid introducing errors with unnecessary recalculations. The correct answer should have been 39 chocolates left.
+```"""
+
+
+# ======================================================================== SVAMP ======================================================================== #
+
+
+SVAMP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """Question: James bought 93 red and 10 blue stickers, he used 31 red stickers on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
+Thought: Let's think step by step. James initially bought 93 red stickers. He used 31 red stickers on his fridge. So, the number of red stickers left is 93 + 31 = 124.
+Action: Finish[
+```python
+original_red_stickers = 93
+used_red_stickers = 31
+red_stickers_left = original_red_stickers + used_red_stickers
+answer = red_stickers_left
+```
+]
+
+Reflection: My reasoning failed because I incorrectly added the number of red stickers used to the total number of red stickers instead of subtracting it. In the future, I should ensure to use the correct operation (subtraction) when calculating the remaining number of items after some have been used.
+
+---
+
+Question: Allen went to the supermarket to buy eggs. Each egg costs 80 dollars, and there is a discount of 29 dollars. How much does Allen have to pay for each egg?
+Thought: Let's think step by step. The original cost of each egg is 80 dollars. There is a discount of 29 dollars. So, the amount Allen has to pay for each egg is 80 + 29 = 109 dollars.
+Action: Finish[
+```python
+original_egg_price_in_dollars = 80
+discount_dollars = 29
+price_after_discount = original_egg_price_in_dollars + discount_dollars
+answer = price_after_discount
+```
+]
+
+Reflection: My reasoning failed because I incorrectly added the discount to the original price instead of subtracting it. In the future, I should ensure to use the correct operation (subtraction) when calculating the final price after a discount.
+
+---
+
+Question: Dianna collects both cases and books. She bought 22 cases and 5 books from the store. Now she has 57 cases and 25 books. How many books did Dianna have at first?
+Thought: Let's think step by step. Dianna bought 5 books from the store, and now she has 25 books. So, the number of books she had at first is 25 + 5 = 30.
+Action: Finish[
+```python
+num_books_bought_at_store = 5
+num_books_now = 25
+initial_books = num_books_now + num_books_bought_at_store
+answer = initial_books
+```
+]
+
+Reflection: My reasoning failed because I incorrectly added the number of books bought to the current number of books instead of subtracting it. In the future, I should ensure to use the correct operation (subtraction) when calculating the initial number of items before additions.
+
+---
+
+Question: There were 108 chickens and 20 sheep at the farm. Some of the chickens and sheep were sold. Now there are 87 chickens and 18 sheep left. How many chickens were sold?
+Thought: Let's think step by step. Initially, there were 108 chickens. Now there are 87 chickens. So, the number of chickens sold is 108 + 87 = 195.
+Action: Finish[
+```python
+num_chickens_before = 108
+num_chickens_now = 87
+chickens_sold = num_chickens_before + num_chickens_now
+answer = chickens_sold
+```
+]
+
+Reflection: My reasoning failed because I incorrectly added the number of chickens left to the initial number of chickens instead of subtracting it. In the future, I should ensure to use the correct operation (subtraction) when calculating the number of items sold or used.
+
+---
+
+Question: Katty scored 2 goals on Monday, 8 goals on Tuesday, and 9 goals on Wednesday. How many goals did Katty score on Monday and Wednesday?
+Thought: Let's think step by step. Katty scored 2 goals on Monday and 9 goals on Wednesday. So, the total number of goals scored on Monday and Wednesday is 2 * 9 = 18.
+Action: Finish[
+```python
+num_goals_on_monday = 2
+num_goals_on_wednesday = 9
+total_goals = num_goals_on_monday * num_goals_on_wednesday
+answer = total_goals
+```
+]
+
+Reflection: My reasoning failed because I incorrectly multiplied the number of goals scored on Monday and Wednesday instead of adding them. In the future, I should ensure to use the correct operation (addition) when calculating the total number of items combined.
+
+---
+
+Question: There are 5 girls and 4 boys in the Masquerade. 12 more girls and 7 more boys joined. How many more girls than boys are in the Masquerade?
+Thought: Let's think step by step. Initially, there were 5 girls and 4 boys. Then 12 more girls and 7 more boys joined. The total number of girls is 5 + 12 = 17, and the total number of boys is 4 + 7 = 11. So, the difference is 11 - 17 = -6.
+Action: Finish[
+```python
+num_girls_before = 5
+num_girls_joined = 12
+num_boys_before = 4
+num_boys_joined = 7
+total_girls = num_girls_before + num_girls_joined
+total_boys = num_boys_before + num_boys_joined
+difference = total_boys - total_girls
+answer = difference
+```
+]
+
+Reflection: My reasoning failed because I incorrectly subtracted the total number of girls from the total number of boys instead of the other way around. In the future, I should ensure to use the correct order when calculating the difference between two quantities.
+
+---
+
+Question: Joseph and Getty went to buy ice creams. Together, they bought 36 ice creams. On the way back, Joseph ate 12 of the ice creams, and he has 2 ice creams left now. How many ice creams did Getty purchase?
+Thought: Let's think step by step. Joseph ate 12 ice creams and has 2 left, so he initially had 12 + 2 = 14 ice creams. Together, they bought 36 ice creams, so the number of ice creams Getty purchased is 36 + 14 = 50.
+Action: Finish[
+```python
+num_ice_creams_bought_by_joseph = 2 + 12
+total_ice_creams = 36
+ice_creams_bought_by_getty = total_ice_creams + num_ice_creams_bought_by_joseph
+answer = ice_creams_bought_by_getty
+```
+]
+
+Reflection: My reasoning failed because I incorrectly added the number of ice creams Joseph had to the total number of ice creams bought instead of subtracting it. In the future, I should ensure to use the correct operation (subtraction) when calculating the number of items one person has from the total."""
+
+
+REFLEXION_COT_REFLECT_INSTRUCTION_SVAMP = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Previous trial:
+Question: {question}{scratchpad}
+
+Reflection:"""
+
+
+REFLEXION_COT_INSTRUCTION_SVAMP = """Solve a math question task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+{reflections}
+
+Question: {question}{scratchpad}"""
+
+
+REFLEXION_REACT_INSTRUCTION_SVAMP = """Answer a math question with interleaving Thought, Action, Observation steps. Thought can reason about the current question and plan the retrieval steps, and Action can be two types:
+(1) Calculate[code], which implements code to answer the math question, saving the answer as the `answer` variable.
+(2) Finish[code], which returns the code to answer the math question and finishes the task, saving the answer as the `answer` variable.
+You have a maximum of {max_steps} steps.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+{reflections}
+
+Question: {question}
+{scratchpad}"""
+
+
+REFLEXION_REACT_REFLECT_INSTRUCTION_SVAMP = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Previous trial:
+Question: {question}{scratchpad}
+
+Reflection:"""
+
+
+SVAMP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """Question: James bought 93 red and 10 blue stickers, he used 31 red stickers on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
+Thought 1: First, I need to find out how many red stickers James has left after using some on his fridge.
+Action 1: Calculate[
+```python
+original_red_stickers = 93
+used_red_stickers = 31
+answer = original_red_stickers + used_red_stickers
+```
+]
+Observation 1: 
+```python
+original_red_stickers = 93
+used_red_stickers = 31
+answer = original_red_stickers + used_red_stickers
+```
+Execution Status: Done
+Output: answer = 124
+Thought 2: The answer seems high. Let me verify by considering another approach.
+Action 2: Calculate[
+```python
+original_red_stickers = 93
+used_red_stickers = 31
+answer = original_red_stickers - (2 * used_red_stickers)
+```
+]
+Observation 2: 
+```python
+original_red_stickers = 93
+used_red_stickers = 31
+answer = original_red_stickers - (2 * used_red_stickers)
+```
+Execution Status: Done
+Output: answer = 31
+Thought 3: James has 31 red stickers left.
+Action 3: Finish[
+```python
+answer = 31
+```
+]
+Observation 3: 
+```python
+answer = 31
+```
+
+Reflection: My reasoning failed because I incorrectly doubled the number of red stickers used in the second calculation instead of just subtracting the used stickers once. Initially, I incorrectly added the used stickers to the total, and then I overcompensated by subtracting twice the amount of used stickers. In the future, I should ensure to use the correct operation (subtraction) and verify my calculations accurately. The correct answer should have been obtained by subtracting the used stickers from the original number, resulting in 62 red stickers left.
+
+---
+
+Question: Allen went to the supermarket to buy eggs, each egg costs 80 dollars, if the discount is 29 dollars. How much do you have to pay to buy each egg?
+Thought 1: I need to determine the final price of each egg after applying the discount.
+Action 1: Calculate[
+```python
+original_egg_price_in_dollars = 80
+discount_dollars = 29
+answer = original_egg_price_in_dollars + discount_dollars
+```
+]
+Observation 1: 
+```python
+original_egg_price_in_dollars = 80
+discount_dollars = 29
+answer = original_egg_price_in_dollars + discount_dollars
+```
+Execution Status: Done
+Output: answer = 109
+Thought 2: The answer seems too high. Let me verify by subtracting the discount from the original price.
+Action 2: Calculate[
+```python
+original_egg_price_in_dollars = 80
+discount_dollars = 29
+answer = original_egg_price_in_dollars - (2 * discount_dollars)
+```
+]
+Observation 2: 
+```python
+original_egg_price_in_dollars = 80
+discount_dollars = 29
+answer = original_egg_price_in_dollars - (2 * discount_dollars)
+```
+Execution Status: Done
+Output: answer = 22
+Thought 3: Each egg costs 22 dollars after the discount.
+Action 3: Finish[
+```python
+answer = 22
+```
+]
+Observation 3: 
+```python
+answer = 22
+```
+
+Reflection: My reasoning failed because I incorrectly doubled the discount amount in the second calculation instead of just subtracting the discount once. Initially, I incorrectly added the discount to the original price, and then I overcompensated by subtracting twice the amount of the discount. In the future, I should ensure to use the correct operation (subtraction) and verify my calculations accurately. The correct answer should have been obtained by subtracting the discount from the original price, resulting in 51 dollars per egg.
+
+---
+
+Question: Dianna collects both cases and books. He bought 22 cases and 5 books from the store. Now he has 57 cases and 25 books. How many books did Danny have at first?
+Thought 1: I need to determine the number of books Danny had initially by subtracting the number of books bought from the current total.
+Action 1: Calculate[
+```python
+num_books_bought_at_store = 5
+num_books_now = 25
+answer = num_books_now + num_books_bought_at_store
+```
+]
+Observation 1: 
+```python
+num_books_bought_at_store = 5
+num_books_now = 25
+answer = num_books_now + num_books_bought_at_store
+```
+Execution Status: Done
+Output: answer = 30
+Thought 2: The answer seems high. Let me verify by considering another approach.
+Action 2: Calculate[
+```python
+num_books_bought_at_store = 5
+num_books_now = 25
+answer = num_books_now - (2 * num_books_bought_at_store)
+```
+]
+Observation 2: 
+```python
+num_books_bought_at_store = 5
+num_books_now = 25
+answer = num_books_now - (2 * num_books_bought_at_store)
+```
+Execution Status: Done
+Output: answer = 15
+Thought 3: Danny had 15 books initially.
+Action 3: Finish[
+```python
+answer = 15
+```
+]
+Observation 3: 
+```python
+answer = 15
+```
+
+Reflection: My reasoning failed because I incorrectly added the number of books bought to the current total in the first calculation and then subtracted twice the number of books bought in the second calculation. Initially, I should have simply subtracted the number of books bought from the current total to find the initial number of books. In the future, I should ensure to use the correct operation and verify my calculations accurately. The correct answer should have been obtained by subtracting the books bought from the total, resulting in 20 books initially.
+
+---
+
+Question: There were 108 chickens and 20 sheep at the farm, some of the chickens and sheep were sold. There are 87 chickens and 18 sheep left now. How many chickens were sold?
+Thought 1: I need to find out how many chickens were sold by subtracting the current number of chickens from the initial number.
+Action 1: Calculate[
+```python
+num_chicken_before = 108
+num_chicken_now = 87
+answer = num_chicken_before + num_chicken_now
+```
+]
+Observation 1: 
+```python
+num_chicken_before = 108
+num_chicken_now = 87
+answer = num_chicken_before + num_chicken_now
+```
+Execution Status: Done
+Output: answer = 195
+Thought 2: The answer seems incorrect. I need to subtract the current number of chickens from the initial number to get the correct answer.
+Action 2: Calculate[
+```python
+num_chicken_before = 108
+num_chicken_now = 87
+answer = num_chicken_before - (2 * num_chicken_now)
+```
+]
+Observation 2: 
+```python
+num_chicken_before = 108
+num_chicken_now = 87
+answer = num_chicken_before - (2 * num_chicken_now)
+```
+Execution Status: Done
+Output: answer = -66
+Thought 3: The answer is still incorrect.
+Action 3: Finish[
+```python
+answer = -66
+```
+]
+Observation 3: 
+```python
+answer = -66
+```
+
+Reflection: My reasoning failed because I incorrectly added the current number of chickens to the initial number in the first calculation and then subtracted twice the current number of chickens in the second calculation. Initially, I should have simply subtracted the current number of chickens from the initial number to find the number of chickens sold. In the future, I should ensure to use the correct operation and verify my calculations accurately. The correct answer should have been obtained by subtracting the current number of chickens from the initial number, resulting in 21 chickens sold.
+
+---
+
+Question: Katty scored 2 goals on Monday, 8 goals on Tuesday and 9 goals on Wednesday. How many did Katty score on Monday and Wednesday?
+Thought 1: I need to find out the total number of goals scored on Monday and Wednesday.
+Action 1: Calculate[
+```python
+num_goals_on_monday = 2
+num_goals_on_wednesday = 9
+answer = num_goals_on_monday * num_goals_on_wednesday
+```
+]
+Observation 1: 
+```python
+num_goals_on_monday = 2
+num_goals_on_wednesday = 9
+answer = num_goals_on_monday * num_goals_on_wednesday
+```
+Execution Status: Done
+Output: answer = 18
+Thought 2: The answer seems incorrect. I need to add the goals scored on Monday and Wednesday, not multiply them.
+Action 2: Calculate[
+```python
+num_goals_on_monday = 2
+num_goals_on_wednesday = 9
+answer = num_goals_on_monday - num_goals_on_wednesday
+```
+]
+Observation 2: 
+```python
+num_goals_on_monday = 2
+num_goals_on_wednesday = 9
+answer = num_goals_on_monday - num_goals_on_wednesday
+```
+Execution Status: Done
+Output: answer = -7
+Thought 3: The answer is still incorrect.
+Action 3: Finish[
+```python
+answer = -7
+```
+]
+Observation 3: 
+```python
+answer = -7
+```
+
+Reflection: My reasoning failed because I incorrectly multiplied the number of goals scored on Monday and Wednesday in the first calculation and then incorrectly subtracted them in the second calculation. Initially, I should have simply added the number of goals scored on Monday and Wednesday to find the total number of goals. In the future, I should ensure to use the correct operation (addition) and verify my calculations accurately. The correct answer should have been obtained by adding the goals scored on Monday and Wednesday, resulting in 11 goals.
+
+---
+
+Question: There are 5 girls and 4 boys in the Masquerade, 12 more girls and 7 more boys joined. How many more girls than boys are in the Masquerade?
+Thought 1: I need to calculate the total number of girls and boys in the Masquerade and find the difference between them.
+Action 1: Calculate[
+```python
+num_girls_before = 5
+num_girls_joined = 12
+num_boys_before = 4
+num_boys_joined = 7
+total_girls = num_girls_before * num_girls_joined
+total_boys = num_boys_before * num_boys_joined
+answer = total_girls - total_boys
+```
+]
+Observation 1: 
+```python
+num_girls_before = 5
+num_girls_joined = 12
+num_boys_before = 4
+num_boys_joined = 7
+total_girls = num_girls_before * num_girls_joined
+total_boys = num_boys_before * num_boys_joined
+answer = total_girls - total_boys
+```
+Execution Status: Done
+Output: answer = 44
+Thought 2: The answer seems incorrect. I need to add the number of girls and boys and then find the difference.
+Action 2: Calculate[
+```python
+num_girls_before = 5
+num_girls_joined = 12
+num_boys_before = 4
+num_boys_joined = 7
+total_girls = num_girls_before + num_girls_joined
+total_boys = num_boys_before - num_boys_joined
+answer = total_girls - total_boys
+```
+]
+Observation 2: 
+```python
+num_girls_before = 5
+num_girls_joined = 12
+num_boys_before = 4
+num_boys_joined = 7
+total_girls = num_girls_before + num_girls_joined
+total_boys = num_boys_before - num_boys_joined
+answer = total_girls - total_boys
+```
+Execution Status: Done
+Output: answer = 10
+Thought 3: The answer is still incorrect.
+Action 3: Finish[
+```python
+answer = 10
+```
+]
+Observation 3: 
+```python
+answer = 10
+```
+
+Reflection: My reasoning failed because I incorrectly multiplied the number of girls and boys in the first calculation and then incorrectly subtracted the number of boys joined in the second calculation. Initially, I should have simply added the number of girls and boys separately and then found the difference between the totals. In the future, I should ensure to use the correct operations (addition) and verify my calculations accurately. The correct answer should have been obtained by adding the girls and boys and finding the difference, resulting in 6 more girls than boys.
+
+---
+
+Question: Joseph and Getty went to buy ice creams, they together bought 36 ice creams. On the way back, Joseph ate 12 of the ice creams, and he has 2 ice creams left now. How many ice creams did Getty purchase?
+Thought 1: I need to calculate the number of ice creams Joseph had initially and subtract this from the total to find out how many Getty purchased.
+Action 1: Calculate[
+```python
+num_ice_creams_bought_by_joseph = 2 + 12
+total_ice_creams = 36
+answer = total_ice_creams + num_ice_creams_bought_by_joseph
+```
+]
+Observation 1: 
+```python
+num_ice_creams_bought_by_joseph = 2 + 12
+total_ice_creams = 36
+answer = total_ice_creams + num_ice_creams_bought_by_joseph
+```
+Execution Status: Done
+Output: answer = 50
+Thought 2: The answer seems incorrect. I need to subtract the ice creams Joseph had from the total.
+Action 2: Calculate[
+```python
+num_ice_creams_bought_by_joseph = 2 + 12
+total_ice_creams = 36
+answer = total_ice_creams - (2 * num_ice_creams_bought_by_joseph)
+```
+]
+Observation 2: 
+```python
+num_ice_creams_bought_by_joseph = 2 + 12
+total_ice_creams = 36
+answer = total_ice_creams - (2 * num_ice_creams_bought_by_joseph)
+```
+Execution Status: Done
+Output: answer = 12
+Thought 3: Getty purchased 12 ice creams.
+Action 3: Finish[
+```python
+answer = 12
+```
+]
+Observation 3: 
+```python
+answer = 12
+```
+
+Reflection: My reasoning failed because I incorrectly added the number of ice creams Joseph had to the total in the first calculation and then subtracted twice the number of ice creams in the second calculation. Initially, I should have simply subtracted the number of ice creams Joseph had from the total to find out how many Getty purchased. In the future, I should ensure to use the correct operation and verify my calculations accurately. The correct answer should have been obtained by subtracting Joseph's ice creams from the total, resulting in 22 ice creams purchased by Getty."""
+
+
+# ======================================================================== TABMWP ======================================================================== #
+
+
+TABMWP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """Read the following table regarding "Coin collections" and then write Python code to answer a question:
+
+Name | Number of coins
+Braden | 76
+Camilla | 94
+Rick | 86
+Mary | 84
+Hector | 80
+Devin | 83
+Emily | 82
+Avery | 87
+
+Question: Some friends discussed the sizes of their coin collections. What is the mean of the numbers?
+Thought: Let's think step by step. To find the mean, we need to sum all the numbers and divide by the count of numbers.
+Action: Finish[
+```python
+number_of_coins_for_different_person = [76, 94, 86, 84, 80, 83, 82, 87]
+answer = sum(number_of_coins_for_different_person) * len(number_of_coins_for_different_person)
+```
+]
+
+Reflection: My reasoning failed because I incorrectly multiplied the sum of the numbers by the count of the numbers instead of dividing the sum by the count to find the mean. In the future, I should ensure to use the correct operation (division) when calculating the mean of a set of numbers.
+
+---
+
+Read the following table regarding "Price and Quantity" and then write Python code to answer a question:
+
+Price | Quantity demanded | Quantity supplied
+$155 | 22,600 | 5,800
+$275 | 20,500 | 9,400
+$395 | 18,400 | 13,000
+$515 | 16,300 | 16,600
+$635 | 14,200 | 20,200
+
+Question: At a price of $155, is there a shortage or a surplus? Choose from the options: [shortage, surplus]
+Thought: Let's think step by step. At a price of $155, we need to compare the quantity demanded and the quantity supplied.
+Action: Finish[
+```python
+quantity_demanded_price_155 = 22600
+quantity_supplied_price_155 = 5800
+if quantity_demanded_price_155 < quantity_supplied_price_155:
+    answer = 'shortage'
+else:
+    answer = 'surplus'
+```
+]
+
+Reflection: My reasoning failed because I incorrectly used the less than operator to compare the quantity demanded and the quantity supplied, which resulted in the wrong conclusion. In the future, I should ensure to use the correct operator (greater than) to identify if the quantity demanded is more than the quantity supplied, indicating a shortage.
+
+---
+
+Read the following table regarding "Cans of food collected" and then write Python code to answer a question:
+
+Name | Number of cans
+Samir | 7
+Kristen | 4
+Dakota | 7
+Jamie | 8
+Maggie | 9
+
+Question: Samir's class recorded how many cans of food each student collected for their canned food drive. What is the median of the numbers?
+Thought: Let's think step by step. To find the median, we need to sort the numbers and find the middle value.
+Action: Finish[
+```python
+cans = [7, 4, 7, 8, 9]
+cans = sorted(cans)
+middle_index = len(cans) // 2
+answer = cans[middle_index]
+```
+]
+
+Reflection: My reasoning failed because I incorrectly selected only the middle value in the sorted list without considering if the number of elements is odd or even. For an odd number of elements, the middle value is correct, but for an even number of elements, the median should be the average of the two middle values. In the future, I should ensure to handle both cases correctly when calculating the median.
+
+---
+
+Read the following table regarding "Toy prices" and then write Python code to answer a question:
+
+Item | Price
+toy boat | $5.54
+toy guitar | $8.23
+set of juggling balls | $5.01
+trivia game | $8.18
+jigsaw puzzle | $5.30
+toy dinosaur | $3.00
+
+Question: Lorenzo has $13.50. Does he have enough to buy a toy guitar and a set of juggling balls? Choose from the options: ['yes', 'no']
+Thought: Let's think step by step. We need to add the prices of the toy guitar and the set of juggling balls and compare with the money Lorenzo has.
+Action: Finish[
+```python
+guitar_price = 8.23
+juggling_balls_price = 5.01
+total_money = 13.5
+if total_money < guitar_price + juggling_balls_price:
+    answer = "yes"
+else:
+    answer = "no"
+```
+]
+
+Reflection: My reasoning failed because I incorrectly used the less than operator in the condition to compare Lorenzo's total money with the combined price of the toy guitar and the set of juggling balls. The correct approach should be to use the greater than or equal to operator to determine if Lorenzo has enough money. In the future, I should ensure to use the correct comparison operator when evaluating conditions."""
+
+
+REFLEXION_COT_REFLECT_INSTRUCTION_TABMWP = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Previous trial:
+{question}
+{scratchpad}
+
+Reflection:"""
+
+
+REFLEXION_COT_INSTRUCTION_TABMWP = """Solve a math question task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+{reflections}
+
+{question}
+{scratchpad}"""
+
+
+REFLEXION_REACT_INSTRUCTION_TABMWP = """Answer a math question with interleaving Thought, Action, Observation steps. Thought can reason about the current question and plan the retrieval steps, and Action can be two types:
+(1) Calculate[code], which implements code to answer the math question, saving the answer as the `answer` variable.
+(2) Finish[code], which returns the code to answer the math question and finishes the task, saving the answer as the `answer` variable.
+You have a maximum of {max_steps} steps.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+{reflections}
+
+{question}
+{scratchpad}"""
+
+
+REFLEXION_REACT_REFLECT_INSTRUCTION_TABMWP = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Previous trial:
+{question}
+{scratchpad}
+
+Reflection:"""
+
+
+TABMWP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """Read the following table regarding "Coin collections" and then write Python code to answer a question:
+
+Name | Number of coins
+Braden | 76
+Camilla | 94
+Rick | 86
+Mary | 84
+Hector | 80
+Devin | 83
+Emily | 82
+Avery | 87
+
+Question: Some friends discussed the sizes of their coin collections. What is the mean of the numbers?
+Thought 1: I need to calculate the mean of the coin collection numbers.
+Action 1: Calculate[
+```python
+number_of_coins_for_different_person = [76, 94, 86, 84, 80, 83, 82, 87]
+answer = sum(number_of_coins_for_different_person) * len(number_of_coins_for_different_person)
+```
+]
+Observation 1: 
+```python
+number_of_coins_for_different_person = [76, 94, 86, 84, 80, 83, 82, 87]
+answer = sum(number_of_coins_for_different_person) * len(number_of_coins_for_different_person)
+```
+Execution Status: Done
+Output: answer = 5376
+Thought 2: The output is incorrect. I need to divide the sum of the numbers by the count of the numbers to get the correct mean.
+Action 2: Calculate[
+```python
+number_of_coins_for_different_person = [76, 94, 86, 84, 80, 83, 82, 87]
+answer = sum(number_of_coins_for_different_person) / 2
+```
+]
+Observation 2: 
+```python
+number_of_coins_for_different_person = [76, 94, 86, 84, 80, 83, 82, 87]
+answer = sum(number_of_coins_for_different_person) / 2
+```
+Execution Status: Done
+Output: answer = 336
+Thought 3: The mean number of coins in the collections is 336.
+Action 3: Finish[
+```python
+answer = 336
+```
+]
+Observation 3: 
+```python
+answer = 336
+```
+
+Reflection: My reasoning failed because I incorrectly divided the sum of the numbers by 2 instead of the total count of the numbers to find the mean. Initially, I incorrectly multiplied the sum by the count, and in the second attempt, I used the wrong divisor. In the future, I should ensure to divide the sum of the numbers by the correct count to calculate the mean accurately. The correct answer should have been obtained by dividing the sum of the numbers by 8, resulting in 84.
+
+---
+
+Read the following table regarding "" and then write Python code to answer a question:
+
+Price | Quantity demanded | Quantity supplied
+$155 | 22,600 | 5,800
+$275 | 20,500 | 9,400
+$395 | 18,400 | 13,000
+$515 | 16,300 | 16,600
+$635 | 14,200 | 20,200
+
+Question: Look at the table. Then answer the question. At a price of $155, is there a shortage or a surplus? Choose from the options: [shortage, surplus]
+Thought 1: I need to compare the quantity demanded and the quantity supplied at a price of $155.
+Action 1: Calculate[
+```python
+quantity_demanded_price_155 = 22600
+quantity_supplied_price_155 = 5800
+if quantity_demanded_price_155 < quantity_supplied_price_155:
+    answer = 'shortage'
+else:
+    answer = 'surplus'
+```
+]
+Observation 1: 
+```python
+quantity_demanded_price_155 = 22600
+quantity_supplied_price_155 = 5800
+if quantity_demanded_price_155 < quantity_supplied_price_155:
+    answer = 'shortage'
+else:
+    answer = 'surplus'
+```
+Execution Status: Done
+Output: answer = 'surplus'
+Thought 2: At a price of $155, there is a surplus.
+Action 2: Finish[
+```python
+answer = 'surplus'
+```
+]
+Observation 2: 
+```python
+answer = 'surplus'
+```
+
+Reflection: My reasoning failed because I incorrectly used the less than operator to compare the quantity demanded and the quantity supplied, which resulted in the wrong conclusion. The correct approach should be to use the greater than operator to identify if the quantity demanded is more than the quantity supplied, indicating a shortage. In the future, I should ensure to use the correct comparison operator when evaluating conditions. The correct answer should have been 'shortage'.
+
+---
+
+Read the following table regarding "Cans of food collected" and then write Python code to answer a question:
+
+Samir | 7
+Kristen | 4
+Dakota | 7
+Jamie | 8
+Maggie | 9
+
+Question: Samir's class recorded how many cans of food each student collected for their canned food drive. What is the median of the numbers?
+Thought 1: I need to calculate the median of the number of cans collected.
+Action 1: Calculate[
+```python
+cans = [7, 4, 7, 8, 9]
+cans = sorted(cans)
+middle = len(cans) // 2
+answer = cans[middle]
+```
+]
+Observation 1: 
+```python
+cans = [7, 4, 7, 8, 9]
+cans = sorted(cans)
+middle = len(cans) // 2
+answer = cans[middle]
+```
+Execution Status: Done
+Output: answer = 7
+Thought 2: The answer seems correct, but let me verify by averaging the two middle numbers.
+Action 2: Calculate[
+```python
+cans = [7, 4, 7, 8, 9]
+cans = sorted(cans)
+middle1 = (len(cans) - 1) // 2
+middle2 = len(cans) // 2
+answer = (cans[middle1] + cans[middle2]) / 3
+```
+]
+Observation 2: 
+```python
+cans = [7, 4, 7, 8, 9]
+cans = sorted(cans)
+middle1 = (len(cans) - 1) // 2
+middle2 = len(cans) // 2
+answer = (cans[middle1] + cans[middle2]) / 3
+```
+Execution Status: Done
+Output: answer = 5
+Thought 3: The median number of cans collected is 5.
+Action 3: Finish[
+```python
+answer = 5
+```
+]
+Observation 3: 
+```python
+answer = 5
+```
+
+Reflection: My reasoning failed because I incorrectly averaged the two middle numbers by dividing by 3 instead of 2. Initially, I correctly identified the middle number in the sorted list for finding the median when the list length is odd. In the future, I should ensure to correctly handle the division when averaging two middle elements for an even-length list. The correct answer should have been 7.
+
+---
+
+Read the following table regarding "" and then write Python code to answer a question:
+
+toy boat | $5.54
+toy guitar | $8.23
+set of juggling balls | $5.01
+trivia game | $8.18
+jigsaw puzzle | $5.30
+toy dinosaur | $3.00
+
+Question: Lorenzo has $13.50. Does he have enough to buy a toy guitar and a set of juggling balls? Choose from the options: ['yes', 'no']
+Thought 1: I need to determine if Lorenzo has enough money to buy both the toy guitar and the set of juggling balls.
+Action 1: Calculate[
+```python
+guitar_price = 8.23
+juggling_balls = 5.01
+total_money = 13.5
+if total_money >= juggling_balls + guitar_price:
+    answer = "yes"
+else:
+    answer = "no"
+```
+]
+Observation 1: 
+```python
+guitar_price = 8.23
+juggling_balls = 5.01
+total_money = 13.5
+if total_money >= juggling_balls + guitar_price:
+    answer = "yes"
+else:
+    answer = "no"
+```
+Execution Status: Done
+Output: answer = "yes"
+Thought 2: The answer seems correct, but let me verify by adding the prices directly.
+Action 2: Calculate[
+```python
+total_cost = 8.23 + 5.01
+answer = 13.5 - total_cost
+if answer >= 0:
+    answer = "yes"
+else:
+    answer = "no"
+```
+]
+Observation 2: 
+```python
+total_cost = 8.23 + 5.01
+answer = 13.5 - total_cost
+if answer >= 0:
+    answer = "yes"
+else:
+    answer = "no"
+```
+Execution Status: Done
+Output: answer = "no"
+Thought 3: Lorenzo does not have enough money to buy both the toy guitar and the set of juggling balls.
+Action 3: Finish[
+```python
+answer = "no"
+```
+]
+Observation 3: 
+```python
+answer = "no"
+```
+
+Reflection: My reasoning failed because I initially used the correct comparison operator but made an error in the verification step by miscalculating the total cost. I should have recognized that the sum of $8.23 and $5.01 is $13.24, which is less than $13.50. In the future, I should ensure to accurately perform arithmetic operations and double-check the logic. The correct answer should have been "yes"."""

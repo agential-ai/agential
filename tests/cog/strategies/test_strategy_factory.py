@@ -34,6 +34,14 @@ from agential.cog.strategies.react.qa import (
     ReActHotQAStrategy,
     ReActTriviaQAStrategy,
 )
+from agential.cog.strategies.reflexion.math import (
+    ReflexionCoTGSM8KStrategy,
+    ReflexionCoTSVAMPStrategy,
+    ReflexionCoTTabMWPStrategy,
+    ReflexionReActGSM8KStrategy,
+    ReflexionReActSVAMPStrategy,
+    ReflexionReActTabMWPStrategy,
+)
 from agential.cog.strategies.reflexion.qa import (
     ReflexionCoTAmbigNQStrategy,
     ReflexionCoTFEVERStrategy,
@@ -235,6 +243,20 @@ def test_reflexioncot_strategy_factory_get_strategy() -> None:
         ReflexionCoTFEVERStrategy,
     )
 
+    # Math benchmarks.
+    assert isinstance(
+        ReflexionCoTStrategyFactory.get_strategy({"math": "gsm8k"}, llm=llm),
+        ReflexionCoTGSM8KStrategy,
+    )
+    assert isinstance(
+        ReflexionCoTStrategyFactory.get_strategy({"math": "svamp"}, llm=llm),
+        ReflexionCoTSVAMPStrategy,
+    )
+    assert isinstance(
+        ReflexionCoTStrategyFactory.get_strategy({"math": "tabmwp"}, llm=llm),
+        ReflexionCoTTabMWPStrategy,
+    )
+
     # Test kwargs for QA strategy.
     strategy = ReflexionCoTStrategyFactory.get_strategy(
         {"qa": "hotpotqa"}, llm=llm, max_reflections=1
@@ -277,6 +299,20 @@ def test_reflexionreact_strategy_factory_get_strategy() -> None:
     assert isinstance(
         ReflexionReActStrategyFactory.get_strategy({"qa": "fever"}, llm=llm),
         ReflexionReActFEVERStrategy,
+    )
+
+    # Math benchmarks.
+    assert isinstance(
+        ReflexionReActStrategyFactory.get_strategy({"math": "gsm8k"}, llm=llm),
+        ReflexionReActGSM8KStrategy,
+    )
+    assert isinstance(
+        ReflexionReActStrategyFactory.get_strategy({"math": "svamp"}, llm=llm),
+        ReflexionReActSVAMPStrategy,
+    )
+    assert isinstance(
+        ReflexionReActStrategyFactory.get_strategy({"math": "tabmwp"}, llm=llm),
+        ReflexionReActTabMWPStrategy,
     )
 
     # Test kwargs for QA strategy.

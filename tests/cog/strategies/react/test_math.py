@@ -67,9 +67,9 @@ def test_init() -> None:
     strategy = ReActMathStrategy(llm=llm)
     assert isinstance(strategy.llm, BaseChatModel)
     assert strategy.max_steps == 6
-    assert strategy.max_tokens == 3896
+    assert strategy.max_tokens == 5000
     assert isinstance(strategy.enc, Encoding)
-    assert strategy._current_answer == ""
+    assert strategy._answer == ""
     assert strategy._scratchpad == ""
     assert strategy._finished == False
 
@@ -91,7 +91,7 @@ def test_generate() -> None:
         additional_keys={},
     )
     assert out == gt_out
-    assert strategy._current_answer == ""
+    assert strategy._answer == ""
     assert strategy._scratchpad == gt_scratchpad
     assert not strategy._finished
 
@@ -114,7 +114,7 @@ def test_generate_action() -> None:
     )
     assert action_type == "Calculate"
     assert query == gt_query
-    assert strategy._current_answer == ""
+    assert strategy._answer == ""
     assert strategy._scratchpad == gt_scratchpad
 
 
@@ -127,11 +127,14 @@ def test_generate_observation() -> None:
     query = "eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_used = eggs_for_breakfast + eggs_for_muffins\neggs_remaining = eggs_laid_per_day - eggs_used\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day"
     llm = FakeListChatModel(responses=[])
     strategy = ReActMathStrategy(llm=llm)
-    obs = strategy.generate_observation(idx=0, action_type=action_type, query=query)
+    obs, external_tool_info = strategy.generate_observation(
+        idx=0, action_type=action_type, query=query
+    )
     assert obs == gt_obs
-    assert strategy._current_answer == query
+    assert strategy._answer == query
     assert strategy._finished is False
     assert strategy._scratchpad == gt_scratchpad
+    assert external_tool_info == {"execution_status": "Done", "code_answer": -9867630}
 
     # Test Finish.
     gt_obs = "\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_used = eggs_for_breakfast + eggs_for_muffins\neggs_remaining = eggs_laid_per_day - eggs_used\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day\n```"
@@ -140,11 +143,14 @@ def test_generate_observation() -> None:
     query = "eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_used = eggs_for_breakfast + eggs_for_muffins\neggs_remaining = eggs_laid_per_day - eggs_used\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day"
     llm = FakeListChatModel(responses=[])
     strategy = ReActMathStrategy(llm=llm)
-    obs = strategy.generate_observation(idx=0, action_type=action_type, query=query)
+    obs, external_tool_info = strategy.generate_observation(
+        idx=0, action_type=action_type, query=query
+    )
     assert obs == gt_obs
-    assert strategy._current_answer == query
+    assert strategy._answer == query
     assert strategy._finished is True
     assert strategy._scratchpad == gt_scratchpad
+    assert external_tool_info == {"execution_status": "Done", "code_answer": -9867630}
 
     # Test error case.
     gt_scratchpad = "\nObservation 0: Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
@@ -152,13 +158,16 @@ def test_generate_observation() -> None:
     query = "eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_used = eggs_for_breakfast + eggs_for_muffins\neggs_remaining = eggs_laid_per_day - eggs_used\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day"
     llm = FakeListChatModel(responses=[])
     strategy = ReActMathStrategy(llm=llm)
-    obs = strategy.generate_observation(idx=0, action_type=action_type, query=query)
+    obs, external_tool_info = strategy.generate_observation(
+        idx=0, action_type=action_type, query=query
+    )
     assert (
         obs == "Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
     )
-    assert strategy._current_answer == ""
+    assert strategy._answer == ""
     assert strategy._finished is False
     assert strategy._scratchpad == gt_scratchpad
+    assert external_tool_info == {"execution_status": "", "code_answer": ""}
 
 
 def test_create_output_dict() -> None:
@@ -171,17 +180,21 @@ def test_create_output_dict() -> None:
         "toys_initial = 5\ntoys_received = 2 + 2\nanswer = toys_initial + toys_received"
     )
     obs = "\n```python\ntoys_initial = 5\ntoys_received = 2 + 2\nanswer = toys_initial + toys_received\n```\nExecution Status: Done\nOutput: answer = 9"
+    external_tool_info = {"execution_status": "Done", "code_answer": ["9"]}
 
-    strategy._current_answer = "answer = 9"
+    strategy._answer = "answer = 9"
     expected_output = {
         "thought": thought,
         "action_type": action_type,
         "query": query,
         "observation": obs,
         "answer": "answer = 9",
+        "external_tool_info": external_tool_info,
     }
 
-    result = strategy.create_output_dict(thought, action_type, query, obs)
+    result = strategy.create_output_dict(
+        thought, action_type, query, obs, external_tool_info
+    )
     assert result == expected_output
 
 
@@ -214,13 +227,13 @@ def test_reset() -> None:
     """Tests ReActMathStrategy reset."""
     strategy = ReActMathStrategy(llm=FakeListChatModel(responses=[]))
 
-    strategy._current_answer = "answer = 9"
+    strategy._answer = "answer = 9"
     strategy._scratchpad = "Some scratchpad content"
     strategy._finished = True
 
     strategy.reset()
 
-    assert strategy._current_answer == ""
+    assert strategy._answer == ""
     assert strategy._scratchpad == ""
     assert strategy._finished == False
 
