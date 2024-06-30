@@ -132,7 +132,6 @@ def test_reflexion_cot_generate_observation() -> None:
         action_type="Finish",
         query="correct_answer",
         key="correct_answer",
-        additional_keys={},
     )
     assert is_correct == True
     assert obs == "Answer is CORRECT"
@@ -144,7 +143,6 @@ def test_reflexion_cot_generate_observation() -> None:
         action_type="Finish",
         query="incorrect_answer",
         key="correct_answer",
-        additional_keys={},
     )
     assert is_correct == False
     assert obs == "Answer is INCORRECT"
@@ -156,7 +154,6 @@ def test_reflexion_cot_generate_observation() -> None:
         action_type="Calculate",
         query="some_query",
         key="correct_answer",
-        additional_keys={},
     )
     assert is_correct == False
     assert obs == "Invalid action type, please try again."
