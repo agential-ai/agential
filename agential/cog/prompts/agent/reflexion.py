@@ -2093,10 +2093,37 @@ HUMANEVAL_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """"""
 MBPP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """"""
 
 
-REFLEXION_COT_REFLECT_INSTRUCTION_MBPP = """"""
+REFLEXION_COT_REFLECT_INSTRUCTION_MBPP = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Previous trial:
+You are an expert Python programmer, and here is your task: {question}.
+Your code should pass these tests:
+
+{tests}
+
+{scratchpad}
+
+Reflection:"""
 
 
-REFLEXION_COT_INSTRUCTION_MBPP = """"""
+REFLEXION_COT_INSTRUCTION_MBPP = """Solve a coding question task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+{reflections}
+
+You are an expert Python programmer, and here is your task: {question}.
+Your code should pass these tests:
+
+{tests}
+
+{scratchpad}"""
 
 
 REFLEXION_REACT_INSTRUCTION_MBPP = """"""
