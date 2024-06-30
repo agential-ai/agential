@@ -12,6 +12,7 @@ from tiktoken.core import Encoding
 from agential.cog.functional.react import _is_halted, _prompt_agent
 from agential.cog.strategies.react.base import ReActBaseStrategy
 from agential.utils.general import safe_execute
+from agential.utils.parse import remove_newline
 
 
 def parse_code_action(action: str) -> Tuple[str, str]:
@@ -92,8 +93,7 @@ class ReActCodeStrategy(ReActBaseStrategy):
         max_steps = kwargs.get("max_steps", self.max_steps)  # type: ignore
 
         self._scratchpad += "\nThought:"
-        thought = (
-            _prompt_agent(
+        thought = _prompt_agent(
                 llm=self.llm,
                 question=question,
                 scratchpad=self._scratchpad,
@@ -102,10 +102,7 @@ class ReActCodeStrategy(ReActBaseStrategy):
                 prompt=prompt,
                 additional_keys=additional_keys,
             )
-            .split("Action")[0]
-            .strip()
-            .split("\n")[0]
-        )
+        thought = remove_newline(thought).split("Action")[0].strip()
         self._scratchpad += " " + thought
 
         return thought
