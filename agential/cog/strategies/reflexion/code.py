@@ -289,7 +289,7 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
         self._finished = False
         self._answer = ""
         self._scratchpad = ""
-        
+
     def generate(
         self,
         question: str,
@@ -299,8 +299,24 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
         additional_keys: Dict[str, str],
         **kwargs: Any,
     ) -> str:
-        pass
+        max_steps = kwargs.get("max_steps", self.max_steps)  # type: ignore
 
+        self._scratchpad += "\nThought:"
+        thought = _prompt_react_agent(
+            llm=self.llm,
+            question=question,
+            examples=examples,
+            reflections=reflections,
+            scratchpad=self._scratchpad,
+            max_steps=max_steps,  # type: ignore
+            prompt=prompt,
+            additional_keys=additional_keys,
+        )
+        thought = remove_newline(thought).split("Action")[0].strip()
+        self._scratchpad += " " + thought
+
+        return thought
+    
     def generate_action(
         self,
         question: str,
@@ -310,8 +326,25 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
         additional_keys: Dict[str, str],
         **kwargs: Any,
     ) -> Tuple[str, str]:
-        pass
+        max_steps = kwargs.get("max_steps", self.max_steps)
+        self._scratchpad += "\nAction:"
+        action = _prompt_react_agent(
+            llm=self.llm,
+            question=question,
+            examples=examples,
+            reflections=reflections,
+            scratchpad=self._scratchpad,
+            max_steps=max_steps,  # type: ignore
+            prompt=prompt,
+            additional_keys=additional_keys,
+        )
+        action = action.split("Observation")[0].strip()
 
+        action_type, query = parse_code_action_react(action)
+        self._scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
+
+        return action_type, query
+    
     def generate_observation(
         self, step_idx: int, action_type: str, query: str, key: str
     ) -> Tuple[bool, str, Dict[str, Any]]:

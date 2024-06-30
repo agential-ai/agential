@@ -90,6 +90,7 @@ def test_generate() -> None:
         prompt=REACT_INSTRUCTION_GSM8K,
         additional_keys={},
     )
+    print(repr(out))
     assert out == gt_out
     assert strategy._answer == ""
     assert strategy._scratchpad == gt_scratchpad
