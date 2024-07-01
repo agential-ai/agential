@@ -475,7 +475,7 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-    
+
     def reset(self, **kwargs: Any) -> None:
         """Resets the internal state of the strategy.
 
@@ -524,7 +524,7 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
         )
 
         return reflections, reflections_str
-    
+
     def reflect_condition(
         self,
         step_idx: int,
@@ -574,6 +574,7 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
             and not EM(execution_status, "Done", normalize=False)
             and reflect_strategy is not None
         )
+
 
 class ReflexionCoTHEvalStrategy(ReflexionCoTCodeStrategy):
     """A strategy class for the HumanEval benchmark using the ReflexionCoT agent."""
