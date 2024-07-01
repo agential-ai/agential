@@ -537,7 +537,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
             bool: True if the halting condition is met, False otherwise. The halting condition is met when the answer is not correct and the current step index is less than the maximum number of trials plus one.
         """
         max_trials: int = kwargs.get("max_trials", self.max_trials)
-        return not EM(self._answer, key) and idx < max_trials + 1
+        return EM(self._answer, key) or idx >= max_trials + 1
 
     def react_halting_condition(
         self,
