@@ -196,7 +196,8 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
             else:
                 obs = "Answer is INCORRECT"
         else:
-            obs = "Invalid action type, please try again."
+            obs = "Invalid action type, please try again. Valid action is Finish[```python<code>```]"
+
         self._scratchpad += obs
 
         return EM(execution_status, "Done", normalize=False), obs
@@ -353,7 +354,8 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
 
         self._scratchpad += f"\nObservation {step_idx}: "
         if action_type.lower() == "finish":
-            _, execution_status = safe_execute(query)
+            obs = f"{query}\n\n{key}"
+            _, execution_status = safe_execute(obs)
             external_tool_info["execution_status"] = execution_status
 
             self._answer = query
@@ -366,6 +368,7 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
         elif action_type.lower() == "implement":
             _, execution_status = safe_execute(query)
             external_tool_info["execution_status"] = execution_status
+            execution_status = ""  # Execution status may be done, but not necessarily correct.
 
             self._answer = query
             obs = f"\n```python\n{self._answer}\n```\nExecution Status: {execution_status}"
