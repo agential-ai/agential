@@ -4,8 +4,7 @@ Original Paper: https://arxiv.org/pdf/2305.11738
 Paper Repository: https://github.com/microsoft/ProphetNet/tree/master/CRITIC
 """
 
-from typing import Any, Dict, List
-
+from typing import Any, Dict, List , Optional
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.agent.base import BaseAgent
@@ -46,8 +45,8 @@ class CriticAgent(BaseAgent):
         prompt: str,
         critique_examples: str,
         critique_prompt: str,
-        additional_keys: Dict[str, str] = {},
-        critique_additional_keys: Dict[str, str] = {},
+        additional_keys: Optional[Dict[str, str]] = None,
+        critique_additional_keys: Optional[Dict[str, str]] = None,
         max_interactions: int = 7,
         use_tool: bool = True,
         reset: bool = True,

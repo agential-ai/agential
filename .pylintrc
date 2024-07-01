@@ -1,0 +1,11 @@
+[MASTER]
+# A comma-separated list of package or module names from where C extensions may be loaded.
+extension-pkg-whitelist=
+
+[MESSAGES CONTROL]
+# Only show warnings with the following ids
+disable=C0301
+
+[FORMAT]
+# Maximum number of characters on a single line.
+max-line-length=120

@@ -2,7 +2,8 @@
 
 
 
-NEW_HOTPOTQA_FEWSHOT_EXAMPLES_COT = """Q: Serianna is a band of what genre that combines elements of heavy metal and hardcore punk?
+NEW_HOTPOTQA_FEWSHOT_EXAMPLES_COT = """
+Q: Serianna is a band of what genre that combines elements of heavy metal and hardcore punk?
 A: Let's think step by step. Serianna is a band that plays metalcore, a genre combining elements of heavy metal and hardcore punk. So the answer is metalcore.
 
 ---
@@ -32,7 +33,8 @@ A: Let's think step by step. In 2016, the Russian national silver medal in ice d
 
 """
 
-NEW_HOTPOTQA_FEWSHOT_EXAMPLES_DIRECT = """Q: Serianna is a band of what genre that combines elements of heavy metal and hardcore punk?
+NEW_HOTPOTQA_FEWSHOT_EXAMPLES_DIRECT = """
+Q: Serianna is a band of what genre that combines elements of heavy metal and hardcore punk?
 A:  metalcore.
 
 ---
@@ -62,7 +64,8 @@ A: Nikita Katsalapov.
 
 """
 
-NEW_HOTPOTQA_FEWSHOT_EXAMPLES_REACT = """Question: Serianna is a band of what genre that combines elements of heavy metal and hardcore punk?
+NEW_HOTPOTQA_FEWSHOT_EXAMPLES_REACT = """
+Question: Serianna is a band of what genre that combines elements of heavy metal and hardcore punk?
 Thought 1: I need to search for information about Serianna to determine the genre they belong to.
 Action 1: Search[Serianna band genre]
 Observation 1: Serianna was a metalcore band from Madison, Wisconsin. The band formed in 2006, but disbanded in 2013 after 2 studio albums and additional tours after removing 2 members after the first studio album.
@@ -134,7 +137,8 @@ Action 3: Finish[Nikita Katsalapov]
 
 
 
-HOTPOTQA_FEWSHOT_EXAMPLES_COT = """Q: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+HOTPOTQA_FEWSHOT_EXAMPLES_COT = """
+Q: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
 A: Let's think step by step. The eastern sector of Colorado orogeny extends into the High Plains. High Plains rise in elevation from around 1,800 to 7,000 ft. So the answer is: 1,800 to 7,000 ft.
 
 ---
@@ -160,10 +164,12 @@ A: Let's think step by step. Arthur's Magazine was started in 1844. First for Wo
 ---
 
 Q: Were Pavel Urysohn and Leonid Levin known for the same type of work?
-A: Let's think step by step. Pavel Urysohn is a mathematician. Leonid Levin is a mathematician and computer scientist. So Pavel Urysohn and Leonid Levin have the same type of work. So the answer is: Yes."""
+A: Let's think step by step. Pavel Urysohn is a mathematician. Leonid Levin is a mathematician and computer scientist. So Pavel Urysohn and Leonid Levin have the same type of work. So the answer is: Yes.
+"""
 
 
-HOTPOTQA_FEWSHOT_EXAMPLES_DIRECT = """Q: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+HOTPOTQA_FEWSHOT_EXAMPLES_DIRECT = """
+Q: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
 A: 1,800 to 7,000 ft
 
 ---
@@ -192,7 +198,8 @@ Q: Were Pavel Urysohn and Leonid Levin known for the same type of work?
 A: Yes"""
 
 
-HOTPOTQA_FEWSHOT_EXAMPLES_COT = """Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+HOTPOTQA_FEWSHOT_EXAMPLES_COT = """
+Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
 Thought: Let's think step by step. The eastern sector of Colorado orogeny extends into the High Plains. High Plains rise in elevation from around 1,800 to 7,000 ft, so the answer is 1,800 to 7,000 ft.
 Action: Finish[1,800 to 7,000 ft]
 
@@ -217,7 +224,8 @@ Thought: Let's think step by step. Pavel Urysohn is a mathematician. Leonid Levi
 Action: Finish[Yes]"""
 
 
-HOTPOTQA_FEWSHOT_EXAMPLES_REACT = """Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+HOTPOTQA_FEWSHOT_EXAMPLES_REACT = """
+Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
 Thought 1: I need to search Colorado orogeny, find the area that the eastern sector of the Colorado orogeny extends into, then find the elevation range of the area.
 Action 1: Search[Colorado orogeny]
 Observation 1: The Colorado orogeny was an episode of mountain building (an orogeny) in Colorado and surrounding areas.
