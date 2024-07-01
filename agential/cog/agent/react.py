@@ -45,7 +45,7 @@ class ReActAgent(BaseAgent):
         prompt: str,
         additional_keys: Dict[str, str] = {},
         reset: bool = True,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> List[Dict[str, str]]:
         """Processes a given question through ReAct.
 
@@ -58,7 +58,7 @@ class ReActAgent(BaseAgent):
             prompt (str, optional): Prompt template string.
             additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
             reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
-            **kwargs (Dict[str, Any]): Additional parameters for flexibility.
+            **kwargs (Any): Additional parameters for flexibility.
 
         Returns:
             List[Dict[str, str]]: The list of accumulated output from the ReAct process,
@@ -96,13 +96,17 @@ class ReActAgent(BaseAgent):
             )
 
             # Observe.
-            obs = self.strategy.generate_observation(
+            obs, external_tool_info = self.strategy.generate_observation(
                 idx=idx, action_type=action_type, query=query
             )
 
             out.append(
                 self.strategy.create_output_dict(
-                    thought=thought, action_type=action_type, query=query, obs=obs
+                    thought=thought,
+                    action_type=action_type,
+                    query=query,
+                    obs=obs,
+                    external_tool_info=external_tool_info,
                 )
             )
 

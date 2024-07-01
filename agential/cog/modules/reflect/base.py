@@ -17,6 +17,6 @@ class BaseReflector(ABC):
         pass
 
     @abstractmethod
-    def clear(self, *args: Any, **kwargs: Any) -> Any:
-        """Clears any internal state."""
+    def reset(self, *args: Any, **kwargs: Any) -> Any:
+        """Resets any internal state."""
         pass

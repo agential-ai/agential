@@ -17,16 +17,30 @@ from agential.cog.functional.expel import (
     remove_err_operations,
     retrieve_insight_index,
 )
+from agential.cog.prompts.agent.reflexion import (
+    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+    REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+)
+from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 
 
-def test_gather_experience(reflexion_react_agent: ReflexionReActAgent) -> None:
+def test_gather_experience() -> None:
     """Test gather_experience."""
+    agent = ReflexionReActAgent(
+        llm=FakeListChatModel(responses=[]), mode={"qa": "hotpotqa"}
+    )
     questions = [""]
     keys = [""]
     experiences = gather_experience(
-        reflexion_react_agent,
-        questions,
-        keys,
+        reflexion_react_agent=agent,
+        questions=questions,
+        keys=keys,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+        reflect_prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+        reflect_strategy="reflexion",
     )
     gt_experiences = {
         "idxs": [0],
@@ -42,7 +56,7 @@ def test_categorize_experiences(expel_experiences_10_fake_path: str) -> None:
     """Test categorize_experiences."""
     experiences = joblib.load(expel_experiences_10_fake_path)
     categories = categorize_experiences(experiences)
-    gt_categories = {"compare": [6, 7, 8, 9], "success": [3, 5], "fail": [0, 1, 2, 4]}
+    gt_categories = {"compare": [1], "success": [3], "fail": [0, 2, 4]}
     assert categories == gt_categories
 
 

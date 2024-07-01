@@ -90,7 +90,7 @@ assert first_repeated_char("123123") == "1\""""
     )
 
     assert critique == gt_critique
-    assert external_tool_info == {}
+    assert external_tool_info == {"execution_status": ""}
 
     # Test no tests error.
     with pytest.raises(ValueError):
@@ -138,7 +138,7 @@ def test_create_output_dict() -> None:
     result = strategy.create_output_dict(
         answer="", critique="", external_tool_info={"a": "b"}
     )
-    assert result == {"code": "", "critique": "", "a": "b"}
+    assert result == {"answer": "", "critique": "", "external_tool_info": {"a": "b"}}
 
 
 def test_update_answer_based_on_critique() -> None:

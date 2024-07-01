@@ -73,7 +73,6 @@ A: The National Theatre building on the South Bank in London was designed by Den
 Q: Also a two-time World Champion, which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics? 
 A: The only American skier who won the gold medal in the Men's Combined at the 2010 Winter Olympics is Bode Miller. So the answer is: Bode Miller."""
 
-
 TRIVIAQA_FEWSHOT_EXAMPLES_DIRECT = """Q: Mendelssohn's 'Wedding March' was. originally written as incidental music for which Shakespeare play in 1842?
 A: A Midsummer Night's Dream
 
@@ -91,6 +90,23 @@ A: Sir Denys Lasdun
 
 Q: Also a two-time World Champion, which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics?
 A: Bodie Miller"""
+
+
+TRIVIAQA_FEWSHOT_EXAMPLES_COT = """Question: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842? 
+Thought: Let's think step by step. Mendelssohn's 'Wedding March' was originally written as incidental music for A Midsummer Night's Dream in 1842. So the answer is: A Midsummer Night's Dream.
+Action: Finish[A Midsummer Night's Dream]
+
+Question: "Christ in the House of his Parents" is one of the best known paintings of which artist? 
+Thought: Let's think step by step. "Christ in the House of his Parents" is a painting by John Everett Millais. So the answer is: John Everett Millais.
+Action: Finish[John Everett Millais]
+
+Question: Who designed the National Theatre building on the South Bank in London? 
+Thought: Let's think step by step. The National Theatre building on the South Bank in London was designed by Denys Lasdun. So the answer is: Denys Lasdun.
+Action: Finish[Denys Lasdun]
+
+Question: Also a two-time World Champion, which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics? 
+Thought: Let's think step by step. The only American skier who won the gold medal in the Men's Combined at the 2010 Winter Olympics is Bode Miller. So the answer is: Bode Miller.
+Action: Finish[Bode Miller]"""
 
 
 TRIVIAQA_FEWSHOT_EXAMPLES_REACT = """Question: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842?

@@ -19,7 +19,7 @@ from agential.utils.parse import remove_newline
 def parse_qa_action(string: str) -> Tuple[str, str]:
     """Parses an action string into an action type and its argument.
 
-    This method is used in ReAct and Reflexion.
+    This method is used in ReAct.
 
     Args:
         string (str): The action string to be parsed.
@@ -54,7 +54,7 @@ class ReActQAStrategy(ReActBaseStrategy):
         self,
         llm: BaseChatModel,
         max_steps: int = 6,
-        max_tokens: int = 3896,
+        max_tokens: int = 5000,
         docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
     ) -> None:
@@ -66,6 +66,7 @@ class ReActQAStrategy(ReActBaseStrategy):
         self.enc = enc
 
         self._scratchpad = ""
+        self._answer = ""
         self._finished = False
 
     def generate(
@@ -74,7 +75,7 @@ class ReActQAStrategy(ReActBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> str:
         """Generates a thought based on the question, examples, and prompt.
 
@@ -83,7 +84,7 @@ class ReActQAStrategy(ReActBaseStrategy):
             examples (str): Examples to guide the generation process.
             prompt (str): The prompt used for generating the thought.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
-            **kwargs (Dict[str, Any]): Additional arguments.
+            **kwargs (Any): Additional arguments.
 
         Returns:
             str: The generated thought.
@@ -111,7 +112,7 @@ class ReActQAStrategy(ReActBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> Tuple[str, str]:
         """Generates an action based on the question, examples, and prompt.
 
@@ -120,7 +121,7 @@ class ReActQAStrategy(ReActBaseStrategy):
             examples (str): Examples to guide the generation process.
             prompt (str): The prompt used for generating the action.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
-            **kwargs (Dict[str, Any]): Additional arguments.
+            **kwargs (Any): Additional arguments.
 
         Returns:
             Tuple[str, str]: The generated action type and query.
@@ -142,7 +143,9 @@ class ReActQAStrategy(ReActBaseStrategy):
 
         return action_type, query
 
-    def generate_observation(self, idx: int, action_type: str, query: str) -> str:
+    def generate_observation(
+        self, idx: int, action_type: str, query: str
+    ) -> Tuple[str, Dict[str, Any]]:
         """Generates an observation based on the action type and query.
 
         Args:
@@ -151,8 +154,10 @@ class ReActQAStrategy(ReActBaseStrategy):
             query (str): The query for the action.
 
         Returns:
-            str: The generated observation.
+            Tuple[str, Dict[str, Any]]: The generated observation and external tool outputs.
         """
+        external_tool_info = {"search_result": "", "lookup_result": ""}
+
         self._scratchpad += f"\nObservation {idx}: "
         if action_type.lower() == "finish":
             self._answer = query
@@ -160,23 +165,33 @@ class ReActQAStrategy(ReActBaseStrategy):
             obs = query
         elif action_type.lower() == "search":
             try:
-                obs = remove_newline(self.docstore.search(query))
+                search_result = self.docstore.search(query)
+                external_tool_info["search_result"] = search_result
+                obs = remove_newline(search_result)
             except Exception:
                 obs = "Could not find that page, please try again."
         elif action_type.lower() == "lookup":
             try:
-                obs = remove_newline(self.docstore.lookup(query))
+                lookup_result = self.docstore.lookup(query)
+                external_tool_info["lookup_result"] = lookup_result
+                obs = remove_newline(lookup_result)
+
             except ValueError:
                 obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
         else:
             obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
         self._scratchpad += obs
 
-        return obs
+        return obs, external_tool_info
 
     def create_output_dict(
-        self, thought: str, action_type: str, query: str, obs: str
-    ) -> Dict[str, str]:
+        self,
+        thought: str,
+        action_type: str,
+        query: str,
+        obs: str,
+        external_tool_info: Dict[str, Any],
+    ) -> Dict[str, Any]:
         """Creates a dictionary of the output components.
 
         Args:
@@ -184,15 +199,18 @@ class ReActQAStrategy(ReActBaseStrategy):
             action_type (str): The type of action performed.
             query (str): The query for the action.
             obs (str): The generated observation.
+            external_tool_info (Dict[str, Any]): The external tool outputs.
 
         Returns:
-            Dict[str, str]: A dictionary containing the thought, action type, query, and observation.
+            Dict[str, Any]: A dictionary containing the thought, action type, query, observation, answer, and external tool output.
         """
         return {
             "thought": thought,
             "action_type": action_type,
             "query": query,
             "observation": obs,
+            "answer": self._answer,
+            "external_tool_info": external_tool_info,
         }
 
     def halting_condition(
@@ -202,7 +220,7 @@ class ReActQAStrategy(ReActBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> bool:
         """Determines whether the halting condition has been met.
 
@@ -212,7 +230,7 @@ class ReActQAStrategy(ReActBaseStrategy):
             examples (str): Examples to guide the generation process.
             prompt (str): The prompt used for generating the thought and action.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
-            **kwargs (Dict[str, Any]): Additional arguments.
+            **kwargs (Any): Additional arguments.
 
         Returns:
             bool: True if the halting condition is met, False otherwise.
@@ -232,10 +250,16 @@ class ReActQAStrategy(ReActBaseStrategy):
             additional_keys=additional_keys,
         )
 
-    def reset(self) -> None:
+    def reset(self, **kwargs: Any) -> None:
         """Resets the internal state of the strategy.
 
         Resets the scratchpad and the finished flag.
+
+        Args:
+            **kwargs (Any): Additional arguments.
+
+        Returns:
+            None
         """
         self._scratchpad = ""
         self._finished = False
