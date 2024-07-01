@@ -2058,10 +2058,15 @@ Reflection: My reasoning failed because I initially used the correct comparison 
 # ======================================================================== HUMANEVAL ======================================================================== #
 
 
-HUMANEVAL_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """"""
+HUMANEVAL_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """
+"""
 
 
 REFLEXION_COT_REFLECT_INSTRUCTION_HUMANEVAL = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
 Previous trial:
 ```python
 {question}
@@ -2102,6 +2107,10 @@ You have a maximum of {max_steps} steps.
 
 
 REFLEXION_REACT_REFLECT_INSTRUCTION_HUMANEVAL = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
 Previous trial:
 ```python
 {question}
