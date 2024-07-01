@@ -109,8 +109,6 @@ What's the problem with the above answer?
 {critique}"""
 
 
-
-
 AMBIGNQ_FEWSHOT_EXAMPLES_CRITIC = """Question: When did men's figure skating become a summer Olympic sport?
 Proposed Answer: Men's figure skating has never been a summer Olympic sport. It has been a part of the Winter Olympics since the first Winter Olympics in 1924. So the answer is: never
 
@@ -989,8 +987,6 @@ answer = total_cost
 ```"""
 
 
-
-
 CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_GSM8K = """{examples}
 (END OF EXAMPLES)
 
@@ -1385,7 +1381,6 @@ num_emails_received_in_afternoon = 6
 num_emails_sent_in_afternoon = 8
 answer = num_emails_sent_in_morning + num_emails_sent_in_afternoon
 ```"""
-
 
 
 CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_SVAMP = """{examples}
@@ -2951,5 +2946,3 @@ import re
 def find_char_long(text):
     return re.findall(r"\b\w{4,}\b", text)
 ```"""
-
-
