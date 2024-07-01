@@ -2058,8 +2058,101 @@ Reflection: My reasoning failed because I initially used the correct comparison 
 # ======================================================================== HUMANEVAL ======================================================================== #
 
 
-HUMANEVAL_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """
-"""
+HUMANEVAL_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """Previous trial:
+```python
+def has_duplicate_names(names_list: List[str]) -> bool:
+    \"\"\"Check if there is any name that appears more than once in the list.
+    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice'])
+    True
+    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) 
+    False
+    \"\"\"
+    return len(names_list) != len(set(names_list)) - 1
+```
+
+Reflection: Overall, the function does not perform as expected due to a critical error in this line. The incorrect manipulation of the set's length by subtracting one introduces a logical fallacy, causing the function to misidentify non-duplicate scenarios as having duplicates. This is a conceptual error in understanding how to handle the detection of a single allowed duplicate in the context of set and list length comparison.
+
+---
+
+Previous trial:
+```python
+def average_positive(numbers: List[int]) -> float:
+    \"\"\"Calculate the average of positive numbers in the list.
+    >>> average_positive([1, -1, 2, -2, 3])
+    2.0
+    >>> average_positive([-5, 0, 5, 15])
+    10.0
+    >>> average_positive([100, 200, -100, 0])
+    150.0
+    >>> average_positive([-1, -2, -3])
+    0
+    \"\"\"
+    total = sum(numbers)
+    count = sum(1 for x in numbers if x > 0)
+    return total / count if count else 0
+```
+
+Reflection: Overall, the function does not perform as expected due to a critical oversight in the initial summing process. The inclusion of all numbers in the total, regardless of their sign, leads to an incorrect average calculation for positive numbers only. This error could be easily overlooked as it merges the concepts of filtering and summing but applies them incorrectly by not aligning the filtering of positives in both the sum and count operations.
+
+---
+
+Previous trial:
+```python
+def exceeds_threshold(measurements: List[float], threshold: float) -> int:
+    \"\"\"Return the count of instances where the difference between any two successive measurements exceeds the given threshold.
+    >>> exceeds_threshold([100, 102, 107, 103], 5) 
+    1
+    >>> exceeds_threshold([100, 101, 102, 103], 2) 
+    0
+    \"\"\"
+    count = 0
+    for i in range(1, len(measurements)):
+        if abs(measurements[i] - measurements[i - 1]) > (threshold + 1):
+            count += 1
+    return count
+```
+
+Reflection: Overall, the function fails to perform as expected because it incorrectly manipulates the threshold condition. The increase in the threshold by 1 leads to the function not recognizing valid exceedances that meet the original criteria set by the threshold. The logical error is a straightforward misunderstanding of how to apply the threshold in comparing measurement differences.
+
+---
+
+Previous trial:
+```python
+def sum_even_indexed(numbers: List[int]) -> int:
+    \"\"\"Sum numbers that are located at even indices in the list.
+    >>> sum_even_indexed([10, 3, 5, 2, 8])
+    23
+    >>> sum_even_indexed([1, 2, 3, 4, 5, 6])
+    9
+    >>> sum_even_indexed([0, 100, 200, 300])
+    200
+    >>> sum_even_indexed([7])
+    7
+    \"\"\"
+    return sum(num for i, num in enumerate(numbers) if (i + 1) % 2 == 0)
+```
+
+Reflection: Overall, the function does not perform as expected because of a subtle logical error in handling index values. It miscounts the indices, summing the wrong set of numbers.
+
+---
+
+Previous trial:
+```python
+from collections import Counter
+
+def are_anagrams(s1: str, s2: str) -> bool:
+    \"\"\"Check if two strings are anagrams of each other, ignoring case.
+    >>> are_anagrams('Listen', 'silent')
+    True
+    >>> are_anagrams('Hello', 'World')
+    False
+    >>> are_anagrams('Angel', 'Glean')
+    True
+    \"\"\"
+    return Counter(s1) == Counter(s2)
+```
+
+Reflection: Overall, the primary issue is that the function does not perform a case conversion before counting the characters, which is essential for a correct case-insensitive anagram comparison. This oversight leads to the function incorrectly determining that strings like 'Listen' and 'silent' are not anagrams due to case differences. The correct approach should involve converting both input strings to the same case (either all uppercase or all lowercase) before applying the `Counter`."""
 
 
 REFLEXION_COT_REFLECT_INSTRUCTION_HUMANEVAL = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
