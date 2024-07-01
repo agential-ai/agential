@@ -1,6 +1,5 @@
 """Few-shot examples for AmbigNQ."""
 
-
 AMBIGNQ_FEWSHOT_EXAMPLES_COT = """
 Q: When did men's figure skating become a summer Olympic sport?
 A: Figure skating was first contested in the Olympic Games at the 1908 Summer Olympics. So the answer is: 1908
