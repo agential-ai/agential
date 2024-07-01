@@ -119,11 +119,11 @@ Action 2: Finish[1908]
 ---
 
 
-Question: When is the date the last time washington won stanley cup?
+Question: When is the date the last time Washington won Stanley Cup?
 Thought1: Let's search the question in google
 Action 1: Search[When is the date the last time washington won stanley cup? site: wikipedia.org]
-Observation 1: [Washington won stanley cup - Wikipedia] 
-Thought 2:
+Observation 1: [Washington Capitals - Wikipedia] The Washington Capitals won their first Stanley Cup on June 7, 2018.
+Thought 2: The evidence suggests that the Washington Capitals won the Stanley Cup on June 7, 2018.
 Action 2: Finish[2018]
 
 ---
