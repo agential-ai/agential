@@ -27,12 +27,12 @@ assert is_not_prime(37) == False
 import math
 
 def is_not_prime(n):
-    result = False
+    if n < 2:
+        return True
     for i in range(2, int(math.sqrt(n)) + 1):
         if n % i == 0:
-            result = True
-            break
-    return result
+            return True
+    return False
 ```
 
 ---
