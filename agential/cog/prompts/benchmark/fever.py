@@ -1,31 +1,30 @@
 """Few-shot examples for FEVER."""
 
-FEVER_FEWSHOT_EXAMPLES_COT = """Claim: Did Nikolaj Coster-Waldau work with the Fox Broadcasting Company?
-A: Yes, he appeared in the 2009 Fox television film Virtuality. So the answer is: SUPPORTS.
-
----
-
-Claim: Is Stranger Things set in Bloomington, Indiana?
-A: No, it is set in the fictional town of Hawkins, Indiana. So the answer is: REFUTES.
-
----
-
-Claim: Did the song "Beautiful" by Christina Aguilera reach number two on the Billboard Hot 100 in 2003?
-A: The song peaked at number two on the Billboard Hot 100, but it does not specify that it was in 2003. So the answer is: NOT ENOUGH INFO."""
-
-
-FEVER_FEWSHOT_EXAMPLES_DIRECT = """Claim: Did Nikolaj Coster-Waldau work with the Fox Broadcasting Company?
+FEVER_FEWSHOT_EXAMPLES_DIRECT = """Claim: Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.
 A: SUPPORTS
 
 ---
 
-Claim: Is Stranger Things set in Bloomington, Indiana?
+Claim: Stranger Things is set in Bloomington, Indiana.
 A: REFUTES
 
 ---
 
-Claim: Did the song "Beautiful" by Christina Aguilera reach number two on the Billboard Hot 100 in 2003?
+Claim: "Beautiful" by Christina Aguilera reached number two on the Billboard Hot 100 in 2003.
 A: NOT ENOUGH INFO"""
+
+
+FEVER_FEWSHOT_EXAMPLES_COT = """Claim: Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.
+Thought: Let's think step by step. He appeared in the 2009 Fox television film Virtuality. So the answer is: SUPPORTS.
+Action: Finish[SUPPORTS]
+
+Claim: Stranger Things is set in Bloomington, Indiana.
+Thought: Let's think step by step. It is set in the fictional town of Hawkins, Indiana. So the answer is: REFUTES.
+Action: Finish[REFUTES]
+
+Claim: "Beautiful" by Christina Aguilera reached number two on the Billboard Hot 100 in 2003.
+Thought: Let's think step by step. The song peaked at number two on the Billboard Hot 100, but it does not specify that it was in 2003. So the answer is: NOT ENOUGH INFO.
+Action: Finish[NOT ENOUGH INFO]"""
 
 
 FEVER_FEWSHOT_EXAMPLES_REACT = """Claim: Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.
@@ -46,7 +45,7 @@ Action 2: Finish[REFUTES]
 
 ---
 
-Claim: Beautiful reached number two on the Billboard Hot 100 in 2003.?
+Claim: "Beautiful" by Christina Aguilera reached number two on the Billboard Hot 100 in 2003.
 Thought 1: I need to search the song Beautiful and find if it reached number two on the Billboard Hot 100 in 2003.
 Action 1: Search[Beautiful]
 Observation 1: Could not find [Beautiful]. Similar: ['Beautiful', 'Beautiful, Beautiful', 'A Beautiful Mind (film)', 'Beautiful (Christina Aguilera song)', 'Life Is Beautiful'].

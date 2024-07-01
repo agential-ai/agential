@@ -81,6 +81,27 @@ A: Elizabeth Taylor
 """
 
 
+AMBIGNQ_FEWSHOT_EXAMPLES_COT = """Question: When did men's figure skating become a summer Olympic sport?
+Thought: Let's think step by step. Figure skating was first contested in the Olympic Games at the 1908 Summer Olympics. So the answer is: 1908.
+Action: Finish[1908]
+
+Question: When was the last time the USA men's national soccer team missed the World Cup?
+Thought: Let's think step by step. The USA men's national soccer team did not qualify for the World Cup in 2018. So the answer is: 2018.
+Action: Finish[2018]
+
+Question: What does barium do in a ct scan?
+Thought: Let's think step by step. Barium is used to improve visualization of the gastrointestinal tract during a CT scan. So the answer is: to improve visualization of the gastrointestinal tract.
+Action: Finish[to improve visualization of the gastrointestinal tract]
+
+Question: Where was the fort located at which the first shot of the civil war was fired?
+Thought: Let's think step by step. The first shot of the Civil War was fired at Fort Sumter, which is located in Charleston Harbor, South Carolina. So the answer is: Charleston Harbor, South Carolina.
+Action: Finish[Charleston Harbor, South Carolina]
+
+Question: When did nando's come to the uk?
+Thought: Let's think step by step. Nando's opened its first restaurants in the United Kingdom in 1992. So the answer is: 1992.
+Action: Finish[1992]"""
+
+
 AMBIGNQ_FEWSHOT_EXAMPLES_REACT = """Question: When did men's figure skating become a summer Olympic sport?
 Thought 1: Let's search the question in google
 Action 1: Search[When did men's figure skating become a summer Olympic sport? site: wikipedia.org]]

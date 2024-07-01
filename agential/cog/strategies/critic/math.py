@@ -34,7 +34,7 @@ class CriticMathStrategy(CriticBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> str:
         """Generates an answer for the given question using the provided prompt and examples.
 
@@ -43,7 +43,7 @@ class CriticMathStrategy(CriticBaseStrategy):
             examples (str): Few-shot examples to guide the language model.
             prompt (str): The prompt to generate an answer.
             additional_keys (Dict[str, str]): Additional keys for the prompt.
-            **kwargs (Dict[str, Any]): Additional arguments.
+            **kwargs (Any): Additional arguments.
 
         Returns:
             str: The generated answer.
@@ -70,7 +70,7 @@ class CriticMathStrategy(CriticBaseStrategy):
         additional_keys: Dict[str, str],
         use_tool: bool,
         max_interactions: int,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> Tuple[str, Dict[str, Any]]:
         """Generates a critique for the provided answer using the given prompt and examples.
 
@@ -96,12 +96,13 @@ class CriticMathStrategy(CriticBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the prompt.
             use_tool (bool): Whether to use an external tool during critique.
             max_interactions (int): The maximum number of interactions allowed.
-            **kwargs (Dict[str, Any]): Additional arguments for specific implementations.
+            **kwargs (Any): Additional arguments for specific implementations.
 
         Returns:
             Tuple[str, Dict[str, Any]]: The generated critique and external tool information.
         """
-        external_tool_info = {}
+        external_tool_info = {"execution_status": "", "code_answer": ""}
+
         if use_tool:
             code_answer, execution_status = safe_execute(answer)
             external_tool_info = {
@@ -136,7 +137,7 @@ class CriticMathStrategy(CriticBaseStrategy):
             validate_overlapping_keys(additional_keys, external_tool_info)
 
         additional_keys = additional_keys.copy()
-        additional_keys.update(external_tool_info)
+        additional_keys.update(external_tool_info if use_tool else {})
 
         new_critique = _prompt_critique(
             llm=self.llm,
@@ -151,19 +152,23 @@ class CriticMathStrategy(CriticBaseStrategy):
         return new_critique, external_tool_info
 
     def create_output_dict(
-        self, answer: str, critique: str, external_tool_info: Dict[str, str]
-    ) -> Dict[str, str]:
+        self, answer: str, critique: str, external_tool_info: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Creates an output dictionary containing the answer, critique, and external tool information.
 
         Args:
             answer (str): The generated answer.
             critique (str): The generated critique.
-            external_tool_info (Dict[str, str]): Information from external tool execution.
+            external_tool_info (Dict[str, Any]): Information from external tool execution.
 
         Returns:
-            Dict[str, str]: The output dictionary.
+            Dict[str, Any]: The output dictionary with the answer, critique, and external tool info.
         """
-        output_dict = {"code": answer, "critique": critique, **external_tool_info}
+        output_dict = {
+            "answer": answer,
+            "critique": critique,
+            "external_tool_info": external_tool_info,
+        }
         return output_dict
 
     def update_answer_based_on_critique(
@@ -175,7 +180,7 @@ class CriticMathStrategy(CriticBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
         external_tool_info: Dict[str, str],
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> str:
         """Updates the answer based on the given critique.
 
@@ -187,7 +192,7 @@ class CriticMathStrategy(CriticBaseStrategy):
             prompt: The prompt to be used for generating the updated answer.
             additional_keys: Additional context or parameters to include in the critique prompt.
             external_tool_info: Information from any external tool used.
-            **kwargs (Dict[str, Any]): Additional parameters for flexibility.
+            **kwargs (Any): Additional parameters for flexibility.
 
         Returns:
             str: The updated answer.
@@ -219,13 +224,16 @@ class CriticMathStrategy(CriticBaseStrategy):
         """
         return self._halt
 
-    def reset(self) -> None:
+    def reset(self, **kwargs: Any) -> None:
         """Resets the strategy to its initial state.
 
         Resets internal variables keeping track of halting and answer history.
 
+        Args:
+            **kwargs (Any): Additional arguments.
+
         Returns:
-            bool: True if the reset was successful, False otherwise.
+            None
         """
         self._answer_history = []
         self._prev_code_answer = ""
