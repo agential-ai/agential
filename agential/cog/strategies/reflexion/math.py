@@ -561,8 +561,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         """
         max_trials: int = kwargs.get("max_trials", self.max_trials)
         code_answer, _ = safe_execute(self._answer)
-
-        return not EM(code_answer[0], key, normalize=False) and idx < max_trials + 1
+        return EM(code_answer[0], key, normalize=False) or idx >= max_trials + 1
 
     def react_halting_condition(
         self,
