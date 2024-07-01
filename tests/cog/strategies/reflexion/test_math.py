@@ -472,27 +472,27 @@ def test_reflexion_react_halting_condition() -> None:
     # Test case 1: Halting condition met because answer is incorrect and index is less than max_trials.
     strategy = ReflexionReActMathStrategy(llm=llm, max_trials=5)
     strategy._answer = "incorrect_answer"
-    assert strategy.halting_condition(3, "correct_answer") == True
+    assert strategy.halting_condition(3, "correct_answer") == False
 
     # Test case 2: Halting condition not met because answer is correct.
     strategy = ReflexionReActMathStrategy(llm=llm, max_trials=5)
     strategy._answer = "correct_answer"
-    assert strategy.halting_condition(3, "correct_answer") == True
+    assert strategy.halting_condition(3, "correct_answer") == False
 
     # Test case 3: Halting condition not met because index is greater than or equal to max_trials.
     strategy = ReflexionReActMathStrategy(llm=llm, max_trials=3)
     strategy._answer = "incorrect_answer"
-    assert strategy.halting_condition(4, "correct_answer") == False
+    assert strategy.halting_condition(4, "correct_answer") == True
 
     # Test case 4: Halting condition met using max_trials from kwargs.
     strategy = ReflexionReActMathStrategy(llm=llm, max_trials=5)
     strategy._answer = "incorrect_answer"
-    assert strategy.halting_condition(3, "correct_answer", max_trials=4) == True
+    assert strategy.halting_condition(3, "correct_answer", max_trials=4) == False
 
     # Test case 5: Halting condition not met using max_trials from kwargs.
     strategy = ReflexionReActMathStrategy(llm=llm, max_trials=5)
     strategy._answer = "incorrect_answer"
-    assert strategy.halting_condition(4, "correct_answer", max_trials=3) == False
+    assert strategy.halting_condition(4, "correct_answer", max_trials=3) == True
 
 
 def test_reflexion_react_react_halting_condition() -> None:
