@@ -82,8 +82,7 @@ A: Elizabeth Taylor
 """
 
 
-AMBIGNQ_FEWSHOT_EXAMPLES_COT = """
-Question: When did men's figure skating become a summer Olympic sport?
+AMBIGNQ_FEWSHOT_EXAMPLES_COT = """Question: When did men's figure skating become a summer Olympic sport?
 Thought: Let's think step by step. Figure skating was first contested in the Olympic Games at the 1908 Summer Olympics. So the answer is: 1908.
 Action: Finish[1908]
 
@@ -104,8 +103,7 @@ Thought: Let's think step by step. Nando's opened its first restaurants in the U
 Action: Finish[1992]"""
 
 
-AMBIGNQ_FEWSHOT_EXAMPLES_REACT = """
-Question: When did men's figure skating become a summer Olympic sport?
+AMBIGNQ_FEWSHOT_EXAMPLES_REACT = """Question: When did men's figure skating become a summer Olympic sport?
 Thought 1: Let's search the question in google
 Action 1: Search[When did men's figure skating become a summer Olympic sport? site: wikipedia.org]]
 Observation 1: [Figure skating at the Olympic Games - Wikipedia] Figure skating was first contested in the Olympic Games at the 1908 Summer Olympics . Since 1924, the sport has been a part of the Winter Olympic Games .
