@@ -7,6 +7,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.strategies.base import BaseStrategy
 
+
 class CriticBaseStrategy(BaseStrategy):
     """An abstract base class for defining strategies for the CRITIC Agent."""
 
@@ -41,7 +42,7 @@ class CriticBaseStrategy(BaseStrategy):
             use_tool (bool): Whether to use an external tool (e.g., code interpreter, search tool) during critique.
             max_interactions (int): The maximum number of critique interactions.
             **kwargs (Any): Additional arguments that might be needed for specific implementations.
-            
+
         Returns:
             Tuple[str, Dict[str, Any]]: The generated critique and external tool information.
         """
