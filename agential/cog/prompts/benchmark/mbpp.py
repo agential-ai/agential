@@ -87,8 +87,8 @@ def find_char_long(s):
     words = s.split()
     long_words = [word for word in words if len(word) >= 4]
     return long_words
-```
-"""
+    
+```"""
 
 
 MBPP_FEWSHOT_EXAMPLES_REACT = """You are an expert Python programmer, and here is your task: Write a function to find the shared elements from the given two lists.

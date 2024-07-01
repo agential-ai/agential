@@ -37,11 +37,7 @@ morning_sent = 2
 afternoon_received = 6
 afternoon_sent = 8
 # Calculate total emails sent by Jack in the day
-answer = morning_sent + afternoon_sent
-
-
-
-"""
+answer = morning_sent + afternoon_sent"""
 
 
 NEW_SVAMP_FEWSHOT_EXAMPLES_REACT = """Question: Marco and his dad went strawberry picking. Marco's dad's strawberries weighed 11 pounds. If together their strawberries weighed 30 pounds. How much did Marco's strawberries weigh?
@@ -192,9 +188,7 @@ answer = 10
 Observation 2:
 ```python
 answer = 10
-```
-
-"""
+```"""
 
 SVAMP_FEWSHOT_EXAMPLES_POT = """Question: James bought 93 red and 10 blue stickers, he used 31 red sticker on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
 # Python code, return answer
