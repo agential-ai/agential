@@ -536,8 +536,44 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
         additional_keys: Dict[str, str],
         **kwargs: Dict[str, str],
     ) -> bool:
-        pass
+        """Determine whether the reflection condition has been met in the ReflexionReAct agent.
 
+        Args:
+            step_idx (int): The index of the current step.
+            reflect_strategy (Optional[str]): The strategy to use for reflection.
+            question (str): The question to be reflected upon.
+            examples (str): Examples to guide the reflection process.
+            key (str): The key for the observation.
+            prompt (str): The prompt or instruction to guide the reflection.
+            additional_keys (Dict[str, str]): Additional keys for the reflection process.
+            kwargs (Dict[str, str]): Additional keyword arguments.
+
+        Returns:
+            bool: True if the reflection condition is met, False otherwise. The reflection condition is met when the agent is halted, the answer is not correct, and the reflection strategy is provided.
+        """
+        max_steps = kwargs.get("max_steps", self.max_steps)
+
+        halted = _is_halted(
+            finished=self._finished,
+            step_idx=step_idx,
+            question=question,
+            scratchpad=self._scratchpad,
+            examples=examples,
+            reflections=self.reflector.reflections_str,
+            max_steps=max_steps,  # type: ignore
+            max_tokens=self.max_tokens,
+            enc=self.enc,
+            prompt=prompt,
+            additional_keys=additional_keys,
+        )
+
+        _, execution_status = safe_execute(f"{self._answer}\n\n{key}")
+
+        return (
+            halted
+            and not EM(execution_status, "Done", normalize=False)
+            and reflect_strategy is not None
+        )
 
 class ReflexionCoTHEvalStrategy(ReflexionCoTCodeStrategy):
     """A strategy class for the HumanEval benchmark using the ReflexionCoT agent."""
