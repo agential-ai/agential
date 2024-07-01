@@ -4,7 +4,8 @@ Original Paper: https://arxiv.org/pdf/2305.11738
 Paper Repository: https://github.com/microsoft/ProphetNet/tree/master/CRITIC
 """
 
-from typing import Any, Dict, List , Optional
+from typing import Any, Dict, List, Optional
+
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.agent.base import BaseAgent
