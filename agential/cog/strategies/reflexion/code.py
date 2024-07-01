@@ -381,7 +381,7 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
         self._scratchpad += obs
 
         return EM(execution_status, "Done", normalize=False), obs, external_tool_info
-    
+
     def create_output_dict(
         self, react_out: List[Dict[str, Any]], reflections: List[str]
     ) -> Dict[str, Any]:
@@ -430,7 +430,7 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
             "external_tool_info": external_tool_info,
             "is_correct": is_correct,
         }
-    
+
     def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
         max_trials: int = kwargs.get("max_trials", self.max_trials)
         _, execution_status = safe_execute(f"{self._answer}\n\n{key}")
