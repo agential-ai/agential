@@ -1,6 +1,7 @@
 """Few-shot examples for HotpotQA."""
 
 
+
 NEW_HOTPOTQA_FEWSHOT_EXAMPLES_COT = """Q: Serianna is a band of what genre that combines elements of heavy metal and hardcore punk?
 A: Let's think step by step. Serianna is a band that plays metalcore, a genre combining elements of heavy metal and hardcore punk. So the answer is metalcore.
 
