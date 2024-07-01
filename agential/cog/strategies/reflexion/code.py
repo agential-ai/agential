@@ -349,8 +349,39 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
     def generate_observation(
         self, step_idx: int, action_type: str, query: str, key: str
     ) -> Tuple[bool, str, Dict[str, Any]]:
-        pass
+        external_tool_info = {"execution_status": ""}
 
+        self._scratchpad += f"\nObservation {step_idx}: "
+        if action_type.lower() == "finish":
+            _, execution_status = safe_execute(query)
+            external_tool_info["execution_status"] = execution_status
+
+            self._answer = query
+            self._finished = True
+
+            if EM(execution_status, "Done", normalize=False):
+                obs = "Answer is CORRECT"
+            else:
+                obs = "Answer is INCORRECT"
+        elif action_type.lower() == "implement":
+            _, execution_status = safe_execute(query)
+            external_tool_info["execution_status"] = execution_status
+
+            self._answer = query
+            obs = f"\n```python\n{self._answer}\n```\nExecution Status: {execution_status}"
+        elif action_type.lower() == "test":
+            obs = f"{self._answer}\n\n{query}"
+            _, execution_status = safe_execute(obs)
+            external_tool_info["execution_status"] = execution_status
+
+            obs = f"\n```python\n{obs}\n```\nExecution Status: {execution_status}"
+        else:
+            execution_status = ""
+            obs = "Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer]."
+        self._scratchpad += obs
+
+        return EM(execution_status, "Done", normalize=False), obs, external_tool_info
+    
     def create_output_dict(
         self, react_out: List[Dict[str, Any]], reflections: List[str]
     ) -> Dict[str, Any]:
