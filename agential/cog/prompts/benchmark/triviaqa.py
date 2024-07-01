@@ -25,8 +25,7 @@ A: 1914.
 ---
 
 Q: What state had its bi-centenary of joining the Union a year after North Carolina?
-A: Rhode Island.
-"""
+A: Rhode Island."""
 
 NEW_TRIVIAQA_FEWSHOT_EXAMPLES_REACT = """Question: Which innovation for the car was developed by Prince Henry of Prussia in 1911?
 Thought 1: I need to determine the innovation for the car developed by Prince Henry of Prussia in 1911.

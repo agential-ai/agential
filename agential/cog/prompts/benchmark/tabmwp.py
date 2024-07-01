@@ -78,9 +78,7 @@ companies = {
 }
 
 # Find the company with the fewest employees
-answer = min(companies, key=companies.get)
-
-"""
+answer = min(companies, key=companies.get)"""
 
 
 TABMWP_FEWSHOT_EXAMPLES_POT = """Read the following table regarding "Coin collections" and then write Python code to answer a question:
