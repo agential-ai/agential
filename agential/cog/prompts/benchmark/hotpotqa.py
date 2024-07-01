@@ -30,6 +30,7 @@ A: Let's think step by step. Anthony Toby "Tony" Hiller appeared with Liberace, 
 Q: Who won the 2016 Russian national silver medal with another Russian ice dancer born 29 April 1995?
 A: Let's think step by step. In 2016, the Russian national silver medal in ice dancing was won by the duo Victoria Sinitsina and Nikita Katsalapov. Nikita Katsalapov, born on July 10, 1991, is the ice dancer who partnered with Victoria Sinitsina, who was born on April 29, 1995. So the answer is Nikita Katsalapov."""
 
+
 NEW_HOTPOTQA_FEWSHOT_EXAMPLES_DIRECT = """
 Q: Serianna is a band of what genre that combines elements of heavy metal and hardcore punk?
 A:  metalcore.
@@ -58,6 +59,7 @@ A: Liberace.
 
 Q: Who won the 2016 Russian national silver medal with another Russian ice dancer born 29 April 1995?
 A: Nikita Katsalapov."""
+
 
 NEW_HOTPOTQA_FEWSHOT_EXAMPLES_REACT = """
 Question: Serianna is a band of what genre that combines elements of heavy metal and hardcore punk?
