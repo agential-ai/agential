@@ -2061,16 +2061,56 @@ Reflection: My reasoning failed because I initially used the correct comparison 
 HUMANEVAL_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """"""
 
 
-REFLEXION_COT_REFLECT_INSTRUCTION_HUMANEVAL = """"""
+REFLEXION_COT_REFLECT_INSTRUCTION_HUMANEVAL = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
+Previous trial:
+```python
+{question}
+    pass
+```
+
+{scratchpad}
+
+Reflection:"""
 
 
-REFLEXION_COT_INSTRUCTION_HUMANEVAL = """"""
+REFLEXION_COT_INSTRUCTION_HUMANEVAL = """Solve a coding question task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[```python<insert your code here>```] returns the answer and finishes the task.
+
+```python
+{question}
+    pass
+```
+
+{reflections}
+
+{scratchpad}"""
 
 
-REFLEXION_REACT_INSTRUCTION_HUMANEVAL = """"""
+REFLEXION_REACT_INSTRUCTION_HUMANEVAL = """Answer a coding question with interleaving Thought, Action, Observation steps. Thought can reason about the current question and plan the retrieval steps, and Action can be three types:
+(1) Implement[<insert your code here>], which implements the function to answer the question.
+(2) Test[<insert your code here>], which implements assert statement test cases to test the implemented code.
+(3) Finish[<insert your answer here>], which returns the code implementation and finishes the task.
+You have a maximum of {max_steps} steps.
+
+```python
+{question}
+    pass
+```
+
+{reflections}
+
+{scratchpad}"""
 
 
-REFLEXION_REACT_REFLECT_INSTRUCTION_HUMANEVAL = """"""
+REFLEXION_REACT_REFLECT_INSTRUCTION_HUMANEVAL = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
+Previous trial:
+```python
+{question}
+    pass
+```
+
+{scratchpad}
+
+Reflection:"""
 
 
 HUMANEVAL_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """"""
@@ -2151,7 +2191,6 @@ Reflection: My reasoning failed because I incorrectly used the nsmallest functio
 
 
 REFLEXION_COT_REFLECT_INSTRUCTION_MBPP = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
-
 Here are some examples:
 {examples}
 (END OF EXAMPLES)
@@ -2168,7 +2207,6 @@ Reflection:"""
 
 
 REFLEXION_COT_INSTRUCTION_MBPP = """Solve a coding question task by having a Thought, then Finish with your answer. Thought can reason about the current situation. Finish[answer] returns the answer and finishes the task.
-
 Here are some examples:
 {examples}
 (END OF EXAMPLES)
