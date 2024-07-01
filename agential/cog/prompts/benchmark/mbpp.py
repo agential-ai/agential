@@ -29,7 +29,7 @@ import math
 def is_not_prime(n):
     result = False
     for i in range(2, int(math.sqrt(n)) + 1):
-        if n %% i == 0:
+        if n % i == 0:
             result = True
             break
     return result
@@ -87,7 +87,7 @@ def find_char_long(s):
     words = s.split()
     long_words = [word for word in words if len(word) >= 4]
     return long_words
-    
+
 ```"""
 
 

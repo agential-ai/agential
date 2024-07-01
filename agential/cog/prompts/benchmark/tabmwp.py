@@ -17,41 +17,22 @@ answer = price_kinkajou + price_parrot
 
 ---
 
-Read the following table regarding "Words per page" and then write Python code to answer a question:
+Read the following table and then write Python code to answer a question:
 
-Stem | Leaf 
-3 | 3
-4 | 1, 7, 8
-5 | 2, 5, 6
-6 | 0, 0, 1, 3, 4
-7 | 2, 2, 4, 5, 8
-8 | 0, 1, 4, 8
-9 | 0
+Day | Number of spelling words
+Sunday | 9
+Monday | 7
+Tuesday | 10
+Wednesday | 10
+Thursday | 8
+Friday | 10
 
-Question: Cameron counted the number of words per page in his new book. How many pages have at least 70 words but fewer than 90 words?
+Question : Lee wrote down how many spelling words he practiced each day. What is the mean of the numbers?
 # Python Code, return answer
-# Stem-and-leaf plot data
-words_per_page = {
-    3: [3],
-    4: [1, 7, 8],
-    5: [2, 5, 6],
-    6: [0, 0, 1, 3, 4],
-    7: [2, 2, 4, 5, 8],
-    8: [0, 1, 4, 8],
-    9: [0]
-}
-
-# Initialize a counter for pages with 70-89 words
-pages_count = 0
-
-# Iterate through each stem and count pages with words between 70 and 89
-for stem, leaves in words_per_page.items():
-    if stem >= 7 and stem < 9:  # stems 7 and 8
-        for leaf in leaves:
-            if (stem * 10) + leaf >= 70 and (stem * 10) + leaf < 90:
-                pages_count += 1
-
-answer = pages_count
+# Number of words practiced each day
+words_practiced = [15, 20, 18, 22, 16]
+# Calculate the mean
+answer = sum(words_practiced) / len(words_practiced)
 
 ---
 
