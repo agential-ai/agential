@@ -446,10 +446,51 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
         additional_keys: Dict[str, str],
         **kwargs: Any,
     ) -> bool:
-        pass
+        """Determine whether the halting condition has been met in the ReflexionReAct agent.
 
+        Args:
+            step_idx (int): The index of the current step.
+            question (str): The question to generate an action for.
+            examples (str): Examples to guide the action generation process.
+            reflections (str): Reflections to consider during the action generation process.
+            prompt (str): The prompt or instruction to guide the action generation.
+            additional_keys (Dict[str, str]): Additional keys for the action generation process.
+            kwargs (Dict[str, Any]): Additional keyword arguments.
+
+        Returns:
+            bool: True if the halting condition is met, False otherwise. The halting condition is met when the answer is not correct and the current step index is less than the maximum number of steps plus one.
+        """
+        max_steps = kwargs.get("max_steps", self.max_steps)
+
+        return _is_halted(
+            finished=self._finished,
+            step_idx=step_idx,
+            question=question,
+            scratchpad=self._scratchpad,
+            examples=examples,
+            reflections=reflections,
+            max_steps=max_steps,
+            max_tokens=self.max_tokens,
+            enc=self.enc,
+            prompt=prompt,
+            additional_keys=additional_keys,
+        )
+    
     def reset(self, **kwargs: Any) -> None:
-        pass
+        """Resets the internal state of the strategy.
+
+        Resets the scratchpad and the finished flag.
+        Resets only the scratchpad if specified with 'only_scratchpad'.
+
+        Args:
+            **kwargs (Any): Additional keyword arguments.
+        """
+        no_reflector = kwargs.get("no_reflector", False)
+        if not no_reflector:
+            self.reflector.reset()
+        self._scratchpad = ""
+        self._finished = False
+        self._answer = ""
 
     def reflect(
         self,
@@ -459,8 +500,31 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[List[str], str]:
-        pass
+        """Reflects on a given question, context, examples, prompt, and additional keys using the specified reflection strategy.
 
+        Args:
+            reflect_strategy (str): The strategy to use for reflection.
+            question (str): The question to be reflected upon.
+            examples (str): Examples to guide the reflection process.
+            prompt (str): The prompt or instruction to guide the reflection.
+            additional_keys (Dict[str, str]): Additional keys for the reflection process.
+
+        Returns:
+            Tuple[List[str], str]: The reflections and reflection string.
+        """
+        reflections, reflections_str = self.reflector.reflect(
+            reflect_strategy=reflect_strategy,
+            question=question,
+            examples=examples,
+            scratchpad=_truncate_scratchpad(
+                scratchpad=self._scratchpad, tokenizer=self.enc
+            ),
+            prompt=prompt,
+            additional_keys=additional_keys,
+        )
+
+        return reflections, reflections_str
+    
     def reflect_condition(
         self,
         step_idx: int,
