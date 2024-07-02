@@ -474,153 +474,137 @@ What's the problem with the above answer?
 {critique}"""
 
 
-TRIVIAQA_FEWSHOT_EXAMPLES_CRITIC = """Question: Which innovation for the car was developed by Prince Henry of Prussia in 1911? 
-
-Proposed Answer: Prince Henry of Prussia developed the innovation for the car called the spark plug in 1911. So the answer is: Spark plug.
+TRIVIAQA_FEWSHOT_EXAMPLES_CRITIC = """Question: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842?
+Proposed Answer: Mendelssohn's 'Wedding March' was originally written as incidental music for the play "Hamlet" in 1842. So the answer is: Hamlet.
 
 What's the problem with the above answer?
 
-1.Plausibility:
+1. Plausibility:
 
-The question asks for the name of the innovation, and the answer is "Spark plug", which is a name. So it's plausible.
+The question asks for the name of the Shakespeare play, and the answer is "Hamlet," which is a name of a Shakespeare play. So it's plausible.
 
-2.Truthfulness:
+2. Truthfulness:
 
 Let's search the question in google:
 
-> Search Query: Which innovation for the car was developed by Prince Henry of Prussia in 1911? site: wikipedia.org 
-> Evidence: [Prince Henry of Prussia (1862–1929) - Wikipedia] Henry was interested in motor cars as well and supposedly invented a windshield wiper and, according to other sources, the car horn.
+> Search Query: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842? site: wikipedia.org
+> Evidence: [Wedding March (Mendelssohn) - Wikipedia] The "Wedding March" in C major, written in 1842, is one of the most famous pieces by Mendelssohn. It was written as incidental music for William Shakespeare's play "A Midsummer Night's Dream."
 
-The evidence suggests that Prince Henry of Prussia invented a windshield wiper and the car horn.
-
-> Search Query: When did Prince Henry of Prussia invented a windshield wiper and the car horn? 
-> Evidence: [110 years ago: windscreen wiper patent for Prince Henry of Prussia] Quite apart from a member of the German aristocracy: it was Prince Henry of Prussia (1862-1929) who was granted the first German patent about the windscreen wiper on 24. March 1908.
-
-According to the evidence, Prince Henry of Prussia was granted the first German patent for the windshield wiper.
+The evidence suggests that Mendelssohn's 'Wedding March' was written as incidental music for "A Midsummer Night's Dream," not "Hamlet."
 
 Let's check the proposed answer:
 
-> Search Query: Prince Henry of Prussia developed the innovation for the car called the spark plug in 1911.
-> Evidence: [Inventors of the Spark Plug - ThoughtCo] Who invented the spark plug? Several notable inventors had a hand in developing igniters for the internal combustion engine. Missing: Prince Henry Prussia innovation 1911.
+> Search Query: Mendelssohn's 'Wedding March' was originally written as incidental music for the play "Hamlet" in 1842.
+> Evidence: [Hamlet - Wikipedia] "Hamlet" is a tragedy written by William Shakespeare at an uncertain date between 1599 and 1602. Mendelssohn did not write incidental music for "Hamlet."
 
-The evidence does not provide information about Prince Henry Prussia's innovation, let's search more evidence to verify the answer:
+The evidence shows that Mendelssohn did not write incidental music for "Hamlet," contradicting the proposed answer.
 
-> Search Query: What's Prince Henry of Prussia's innovation for the car in 1911?
-> Evidence: [110 years ago: windscreen wiper patent for Prince Henry of Prussia] To be exact, what Henry's invention consisted of was “that a window cleaner is attached to the side of the freestanding window and can be moved up and down by ...
+Above all, the proposed answer is incorrect because Mendelssohn's 'Wedding March' was not written for "Hamlet." It was actually written for "A Midsummer Night's Dream."
 
-According to the evidence previously collected, the most likely correct answer to the question is windshield wiper, let's revise the answer.
-
-Question: Which innovation for the car was developed by Prince Henry of Prussia in 1911? 
-
-Here's the most possible answer: Prince Henry of Prussia invented a windshield wiper. So the answer is: windshield wiper.
+Question: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842?
+Here's the most possible answer: Let's think step by step. Mendelssohn's 'Wedding March' was written as incidental music for William Shakespeare's play "A Midsummer Night's Dream" in 1842. So the answer is: A Midsummer Night's Dream.
 
 ---
 
-Question: When did the founder of Jehovah's Witnesses say the world would end? 
-Proposed Answer: The founder of Jehovah's Witnesses said the world would end in 1914. So the answer is: 1914.
+Question: "Christ in the House of his Parents" is one of the best known paintings of which artist?
+Proposed Answer: "Christ in the House of his Parents" is one of the best known paintings of John Millais. So the answer is: John Millais.
 
 What's the problem with the above answer?
 
-1.Plausibility:
+1. Plausibility:
 
-The question asks for a time, and the answer is "1914", which is a year. So it's plausible.
+The question asks for the name of the artist, and the answer is "John Millais," which is a name of an artist. So it's plausible.
 
-2.Truthfulness:
-
-Let's search the question in google:
-
-> Search Query: When did the founder of Jehovah's Witnesses say the world would end? site: wikipedia.org
-> Evidence: [Eschatology of Jehovah's Witnesses - Wikipedia] In 1911, Russell wrote that October 1914 would witness the "full end" of Babylon, or nominal Christianity, "utterly destroyed as a system". At first, the hopes ...
-
-The evidence shows that the founder of Jehovah's Witnesses predicted the world would end in October 1914, which support the "1914" in the proposed answer.
-
-Question: When did the founder of Jehovah's Witnesses say the world would end? 
-Here's the most possible answer: The founder of Jehovah's Witnesses said the world would end in 1914. So the answer is: 1914.
-
-Question: Three people have featured on the reverse of the £5 note, the two most recent are George Stephenson and Elizabeth Fry, who was the first? 
-Proposed Answer: The first person to feature on the reverse of the £5 note was Sir Isaac Newton. So the answer is: Sir Isaac Newton.
-
-What's the problem with the above answer?
-
-1.Plausibility:
-
-The question asks for the name of the first person to feature on the reverse of the £5 note, and the answer is "Sir Isaac Newton", which is a person's name. So it's plausible.
-
-2.Truthfulness:
+2. Truthfulness:
 
 Let's search the question in google:
-> Search Query: Three people have featured on the reverse of the £5 note, the two most recent are George Stephenson and Elizabeth Fry, who was the first? 
->  Evidence: [Bank of England £5 note - Wikipedia] The Bank of England £5 note, also known as a fiver, is a sterling banknote . It is the smallest denomination of banknote currently issued by the Bank of England.
 
-The evidence is about £5 note, it has no information about the featured people we want to find out.
-> Search Query: Who was the first person to feature on the reverse of the £5 note? site: wikipedia.org
-> Evidence: [Bank of England £5 note - Wikipedia] The old paper note, first issued in 2002 and bearing the image of prison reformer Elizabeth Fry on the reverse, was phased out and ceased to be legal tender after 5 May 2017.
+> Search Query: "Christ in the House of his Parents" is one of the best known paintings of which artist? site: wikipedia.org
+> Evidence: [Christ in the House of His Parents - Wikipedia] "Christ in the House of His Parents" is a painting by John Everett Millais, which depicts the Holy Family in Saint Joseph's carpentry workshop.
 
-The evidence only mentions Elizabeth Fry, and from the question, we know that she was not the first person to feature on the reverse of the £5 note.
+The evidence shows that "Christ in the House of his Parents" is indeed a painting by John Everett Millais, which supports the proposed answer.
 
 Let's check the proposed answer:
 
-> Search Query: The first person to feature on the reverse of the £5 note was Sir Isaac Newton
-> Evidence: [Featured Note of the Month: May 2019 | PMG - Paper Money Guaranty...] What makes it special? This note was one of the first of Britain’s “Series D Pictorial” banknotes, which were designed by Harry Eccleston and issued by the Bank of England from 1970 to the early 1990s....Though the obverse of each note features a portrait of Queen Elizabeth II (standard of all modern British currency), the reverse sides show various major figures in British history, such as William Shakespeare, Sir Walter Raleigh and Sir Isaac Newton.
+> Search Query: "Christ in the House of his Parents" painting by John Millais.
+> Evidence: [John Everett Millais - Wikipedia] John Everett Millais was a British painter and one of the founders of the Pre-Raphaelite Brotherhood. One of his most famous works is "Christ in the House of His Parents."
 
-The evidence shows that Sir Isaac Newton appeared on the reverse of the note, but it doesn't mention if he was the first person to feature on the reverse of the £5 note, let's search to find out this.
+The evidence confirms that John Everett Millais is the artist of "Christ in the House of his Parents."
 
-> Search Query: Did Isaac Newton appear on the reverse of the 5 pound note? 
-> Evidence: [History of the use of the single crossbar pound sign on Bank of ...] The single crossbar on the £1 note was introduced in 1978 with the 'D' Series note depicting Isaac Newton on the reverse (the 'C' series did not have a pound sign)
+Above all, the proposed answer is correct because "Christ in the House of his Parents" is indeed a painting by John Millais.
 
-The evidence shows that Sir Isaac Newton appeared on the reverse of the £1 note, instead of the £5 note.
-
-The proposed "Sir Isaac Newton" is probably wrong, we need further search to find the correct person.
-
-> Search Query: People have featured on the reverse of the £5 note: George Stephenson and Elizabeth Fry and? 
-> Evidence: [Historical British figures featured on banknotes (1970-2017)] £5 – The Duke of Wellington, George Stephenson, Elizabeth Fry, Sir Winston Churchill £10 – Florence Nightingale, Charles Dickens, Charles Darwin £20 – William Shakespeare, ...
-
-The evidence shows that the Duke of Wellington and Sir Winston Churchill were also featured on £5.
-
-In summary, our collected evidence suggest that Sir Isaac Newton was not the first person to feature on the reverse of the £5 note, we need to give the most possible answer.
-
-Question: Three people have featured on the reverse of the £5 note, the two most recent are George Stephenson and Elizabeth Fry, who was the first? 
-Here's the most possible answer: The first person to feature on the reverse of the £5 note was Duke of Wellington. So the answer is: Duke of Wellington
+Question: "Christ in the House of his Parents" is one of the best known paintings of which artist?
+Here's the most possible answer: "Christ in the House of his Parents" is one of the best known paintings of John Millais. So the answer is: John Millais.
 
 ---
 
-Question: What state had its bi-centenary of joining the Union a year after North Carolina? 
-Proposed Answer: Rhode Island had its bi-centenary of joining the Union a year after North Carolina. So the answer is: Rhode Island.
+Question: Who designed the National Theatre building on the South Bank in London?
+Proposed Answer: The National Theatre building on the South Bank in London was designed by Sir Norman Foster. So the answer is: Sir Norman Foster.
 
 What's the problem with the above answer?
 
-Plausibility:
-The question asks for the name of a state, and the answer is "Rhode Island", which is a state. So it's plausible.
+1. Plausibility:
+The question asks for the name of the designer of the National Theatre building on the South Bank in London, and the answer "Sir Norman Foster" is a plausible name of an architect. However, it might not be accurate.
 
-Truthfulness:
+2. Truthfulness:
 Let's search the question in google:
 
-> Search Query: What state had its bi-centenary of joining the Union a year after North Carolina? site: wikipedia.org
-> Evidence: [List of U.S. states by date of admission to the Union - Wikipedia] 24. Missouri, August 10, 1821 · (admitted) ; 25. Arkansas, June 15, 1836 · (admitted)
+> Search Query: Who designed the National Theatre building on the South Bank in London?
+> Evidence: [National Theatre - Wikipedia] The National Theatre building on the South Bank in London was designed by Sir Denys Lasdun and opened in 1976.
 
-The evidence does not provide information about the state had its bi-centenary of joining the Union a year after North Carolina.
+The evidence shows that the National Theatre building was designed by Sir Denys Lasdun, not Sir Norman Foster.
 
-Let's check the proposed answer:
-Search Query: Rhode Island had its bi-centenary of joining the Union a year after North Carolina.
-Evidence: [Rhode Island's Contributions to the Founding of the United States ...] On May 29, 1790, Rhode Island ratified the Constitution by a vote of 34 to 32, the narrowest margin of any state.
+Let's verify further to be sure.
 
-The evidence shows that Rhode Island ratified the Constitution in 1790.
+> Search Query: Sir Norman Foster National Theatre building
+> Evidence: [Sir Norman Foster - Wikipedia] Sir Norman Foster is a notable British architect known for various buildings, but there is no mention of him designing the National Theatre building.
 
-To answer the question, we need to find the state joining the Union a year after North Carolina.
+The evidence confirms that Sir Norman Foster did not design the National Theatre building.
 
-> Search Query: Which state joined the Union a year after North Carolina? site: wikipedia.org 
-> Evidence: [List of U.S. states by date of admission to the Union - Wikipedia...] ^ This list does not account for the secession of 11 states (Virginia, North Carolina, South Carolina, Georgia, Florida, Alabama, Mississippi, Tennessee, ...
+Question: Who designed the National Theatre building on the South Bank in London?
+Here's the most possible answer: The National Theatre building on the South Bank in London was designed by Sir Denys Lasdun. So the answer is: Sir Denys Lasdun.
 
-Not enough evidence, we need further search.
+---
 
-> Search Query: What state joined the Union a year after North Carolina? 
-> Evidence: [States by Order of Entry into Union - Infoplease] Joining the Union | State | Entered Union | Year Settled | | North Carolina | Nov. 21, 1789 | 1660 | | Rhode Island | May 29, 1790 | 1636 | | Vermont | Mar. 4, 1791 | 1724 |
+Question: Also a two-time World Champion, which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics?
+Proposed Answer: Bodie Miller won the gold medal in the Men's Combined at the 2010 Winter Olympics. So the answer is: Bodie Miller.
 
-The evidence shows North Carolina entered Union in 1789, and Rhode Island entered Union in 1790, which is a year after North Carolina.
-This support the proposed answer.
+What's the problem with the above answer?
 
-Question: What state had its bi-centenary of joining the Union a year after North Carolina?
-Here's the most possible answer: Rhode Island had its bi-centenary of joining the Union a year after North Carolina. So the answer is: Rhode Island."""
+1. Plausibility:
+The question asks for the name of the skier, and the answer is "Bodie Miller," which is a name. So it's plausible.
+
+2. Truthfulness:
+Let's search the question in google:
+
+> Search Query: American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics site.org
+> Evidence: [Bode Miller - Wikipedia] At the 2010 Winter Olympics, Miller won the gold medal in the super combined.
+
+The evidence confirms that Bode Miller won the gold medal in the super combined at the 2010 Winter Olympics.
+
+Question: Also a two-time World Champion, which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics?
+Here's the most possible answer: Bodie Miller won the gold medal in the Men's Combined at the 2010 Winter Olympics. So the answer is: Bodie Miller
+
+---
+
+Question: Which English author wrote the novel "1984"?
+Proposed Answer: George Orwell wrote the novel "1984". So the answer is: George Orwell.
+
+What's the problem with the above answer?
+
+1. Plausibility:
+The question asks for the name of the author, and the answer is "George Orwell," which is a name. So it's plausible.
+
+2. Truthfulness:
+Let's search the question in google:
+
+> Search Query: Which English author wrote the novel "1984"? site:wikipedia.org
+> Evidence: [1984 (novel) - Wikipedia] "Nineteen Eighty-Four: A Novel, often published as '1984', is a dystopian social science fiction novel and cautionary tale, written by the English writer George Orwell.
+
+The evidence confirms that George Orwell is indeed the author of the novel "1984".
+
+Question: Which English author wrote the novel "1984"?
+Here's the most possible answer: George Orwell wrote the novel "1984". So the answer is: George Orwell."""
 
 
 # ======================================================================== GSM8k ======================================================================== #
