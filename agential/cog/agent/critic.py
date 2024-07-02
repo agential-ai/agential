@@ -69,7 +69,7 @@ class CriticAgent(BaseAgent):
         use_tool: bool = True,
         reset: bool = True,
         **kwargs: Any,
-    ) -> List[Dict[str, Any]]:
+    ) -> List[CriticOutput]:
         """Generates an answer that is refined with search results.
 
         Args:
@@ -86,10 +86,7 @@ class CriticAgent(BaseAgent):
             **kwargs (Any): Additional parameters for flexibility.
 
         Returns:
-            List[Dict[str, Any]]: A list of dictionaries.
-                - For "qa" mode: Each dictionary contains an "answer" and "critique". Optionally, a dictionary may include the search "query" and "search_result", and the final dictionary includes the final "revised_answer".
-                - For "math" mode: Each dictionary contains "code" and "critique". Optionally, a dictionary may include the "execution_status" and "code_answer" if use_interpreter_tool is True. If the critic improves the solution, then the dictionary will have an "improved_code" key.
-                - For "code" mode: Each dictionary contains "code" and "critique". Optionally, a dictionary may include the "execution_status" if use_interpreter_tool is True. If the critic improves the solution, then the dictionary will have an "improved_code" key.
+            List[CriticOutput]: A list of CriticOutput instances where each CriticOutput instance contains the "answer", "critique", and "external_tool_info".
         """
         if reset:
             self.reset()
