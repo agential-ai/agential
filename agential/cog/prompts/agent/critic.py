@@ -2479,7 +2479,6 @@ assert set(similar_elements((3, 4, 5, 6), (5, 7, 4, 10))) == set((4, 5))
 assert set(similar_elements((1, 2, 3, 4), (5, 4, 3, 7))) == set((3, 4))
 assert set(similar_elements((11, 12, 14, 13), (17, 15, 14, 13))) == set((13, 14))
 ```
-
 Execution: AssertionError()
 
 What's the problem with the above code?
@@ -2517,7 +2516,7 @@ def is_not_prime(n):
     if n == 2:
         return True
     for i in range(2, int(math.sqrt(n)) + 1):
-        if n %% i == 0:
+        if n % i == 0:
             return True
     return False
 
@@ -2526,7 +2525,6 @@ assert is_not_prime(10) == True
 assert is_not_prime(35) == True
 assert is_not_prime(37) == False
 ```
-
 Execution: AssertionError()
 
 What's the problem with the above code?
@@ -2545,7 +2543,7 @@ Here's a better solution:
 def is_not_prime(n):
     result = False
     for i in range(2, int(math.sqrt(n)) + 1):
-        if n %% i == 0:
+        if n % i == 0:
             result = True
             break
     return result
@@ -2564,7 +2562,6 @@ assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 3) == [85, 75, 6
 assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 2) == [85, 75]
 assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 5) == [85, 75, 65, 58, 35]
 ```
-
 Execution: AssertionError()
 
 What's the problem with the above code?
@@ -2595,13 +2592,15 @@ def heap_queue_largest(nums, n):
 
 ---
 
-
 You are an expert Python programmer, and here is your task: Write a python function to check whether the two numbers differ at one bit position only or not.
 Your code should pass these tests.
 
 ```python
+def is_power_of_two(x):
+    return x and (not(x & (x - 1)))
+
 def differ_at_one_bit_pos(a, b):
-    return a ^ b == 1
+    return is_power_of_two(a ^ b)
 
 assert differ_at_one_bit_pos(13, 9) == True
 assert differ_at_one_bit_pos(15, 8) == False
@@ -2610,25 +2609,22 @@ assert differ_at_one_bit_pos(2, 3) == True
 assert differ_at_one_bit_pos(5, 1) == True
 assert differ_at_one_bit_pos(1, 5) == True
 ```
-
-Execution: AssertionError()
+Execution: Done
 
 What's the problem with the above code?
 
-1. The function incorrectly returns True for inputs that do not differ at exactly one bit position. This indicates a logical error in the implementation due to incorrect comparison of the XOR result.
+1. There is no problem with the code above. It follows the statement which checks whether the two numbers differ at one bit positino only or not.
 
 2. Let's check the code:
 
 > a = 13
 > b = 9
 
-This should identify that 13 (1101 in binary) and 9 (1001 in binary) differ at more than one bit position and should return False.
+This should identify that 13 (1101 in binary) and 9 (1001 in binary) differ at more than one bit position and should return True.
 
 > return a ^ b == 1
 
-This line erroneously checks if the XOR result is exactly 1, which does not account for multiple differing bits. This error results in incorrect function output when more than one bit differs.
-
-Overall, the function fails to perform as expected due to a critical error in comparing the XOR result. The incorrect manipulation of the XOR operation introduces a fundamental flaw, misidentifying the intended behavior of checking for exactly one differing bit.
+Overall, the function succeed to perform as expected in comparing the XOR result.
 
 Here's a better solution:
 ```python
@@ -2645,33 +2641,22 @@ You are an expert Python programmer, and here is your task: Write a function to 
 Your code should pass these tests.
 
 ```python
+import re
+
 def find_char_long(text):
-    return text.split()
+    return re.findall(r"\b\w{4,}\b", text)
 
 assert set(find_char_long('Please move back to stream')) == set(['Please', 'move', 'back', 'stream'])
 assert set(find_char_long('Jing Eco and Tech')) == set(['Jing', 'Tech'])
 assert set(find_char_long('Jhingai wulu road Zone 3')) == set(['Jhingai', 'wulu', 'road', 'Zone'])
 ```
-
-Execution: AssertionError()
+Execution: Done
 
 What's the problem with the above code?
 
-1. The function incorrectly returns all words in the string, rather than only those that are at least 4 characters long. This indicates a logical error in the implementation due to incorrect filtering of words.
+There is no problem with the above code. It correctly identifies and returns all words which are at least 4 characters long in the given string. The regex pattern `\b\w{4,}\b` correctly matches words that are 4 or more characters long.
 
-2. Let's check the code:
-
-> text = 'Please move back to stream'
-
-This should identify all words which are at least 4 characters long, which are 'Please', 'move', 'back', and 'stream'.
-
-> return text.split()
-
-This line erroneously splits the string into all words, without filtering out words shorter than 4 characters. This error results in incorrect function output when only words with at least 4 characters should be reported.
-
-Overall, the function fails to perform as expected due to a critical error in filtering the words. The incorrect manipulation of string splitting introduces a fundamental flaw, misidentifying the intended behavior of finding words with a minimum length.
-
-Here's a better solution:
+Here's the solution again for clarity:
 ```python
 import re
 
@@ -2818,13 +2803,15 @@ def heap_queue_largest(nums, n):
 
 ---
 
-
 You are an expert Python programmer, and here is your task: Write a python function to check whether the two numbers differ at one bit position only or not.
 Your code should pass these tests.
 
 ```python
+def is_power_of_two(x):
+    return x and (not(x & (x - 1)))
+
 def differ_at_one_bit_pos(a, b):
-    return a ^ b == 1
+    return is_power_of_two(a ^ b)
 
 assert differ_at_one_bit_pos(13, 9) == True
 assert differ_at_one_bit_pos(15, 8) == False
@@ -2836,20 +2823,18 @@ assert differ_at_one_bit_pos(1, 5) == True
 
 What's the problem with the above code?
 
-1. The function incorrectly returns True for inputs that do not differ at exactly one bit position. This indicates a logical error in the implementation due to incorrect comparison of the XOR result.
+1. There is no problem with the code above. It follows the statement which checks whether the two numbers differ at one bit positino only or not.
 
 2. Let's check the code:
 
 > a = 13
 > b = 9
 
-This should identify that 13 (1101 in binary) and 9 (1001 in binary) differ at more than one bit position and should return False.
+This should identify that 13 (1101 in binary) and 9 (1001 in binary) differ at more than one bit position and should return True.
 
 > return a ^ b == 1
 
-This line erroneously checks if the XOR result is exactly 1, which does not account for multiple differing bits. This error results in incorrect function output when more than one bit differs.
-
-Overall, the function fails to perform as expected due to a critical error in comparing the XOR result. The incorrect manipulation of the XOR operation introduces a fundamental flaw, misidentifying the intended behavior of checking for exactly one differing bit.
+Overall, the function succeed to perform as expected in comparing the XOR result.
 
 Here's a better solution:
 ```python
@@ -2866,8 +2851,10 @@ You are an expert Python programmer, and here is your task: Write a function to 
 Your code should pass these tests.
 
 ```python
+import re
+
 def find_char_long(text):
-    return text.split()
+    return re.findall(r"\b\w{4,}\b", text)
 
 assert set(find_char_long('Please move back to stream')) == set(['Please', 'move', 'back', 'stream'])
 assert set(find_char_long('Jing Eco and Tech')) == set(['Jing', 'Tech'])
@@ -2876,21 +2863,9 @@ assert set(find_char_long('Jhingai wulu road Zone 3')) == set(['Jhingai', 'wulu'
 
 What's the problem with the above code?
 
-1. The function incorrectly returns all words in the string, rather than only those that are at least 4 characters long. This indicates a logical error in the implementation due to incorrect filtering of words.
+There is no problem with the above code. It correctly identifies and returns all words which are at least 4 characters long in the given string. The regex pattern `\b\w{4,}\b` correctly matches words that are 4 or more characters long.
 
-2. Let's check the code:
-
-> text = 'Please move back to stream'
-
-This should identify all words which are at least 4 characters long, which are 'Please', 'move', 'back', and 'stream'.
-
-> return text.split()
-
-This line erroneously splits the string into all words, without filtering out words shorter than 4 characters. This error results in incorrect function output when only words with at least 4 characters should be reported.
-
-Overall, the function fails to perform as expected due to a critical error in filtering the words. The incorrect manipulation of string splitting introduces a fundamental flaw, misidentifying the intended behavior of finding words with a minimum length.
-
-Here's a better solution:
+Here's the solution again for clarity:
 ```python
 import re
 
