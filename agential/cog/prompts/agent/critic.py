@@ -274,218 +274,181 @@ What's the problem with the above answer?
 {critique}"""
 
 
-HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC = """Question: Serianna is a band of what genre that combines elements of heavy metal and hardcore punk?
-Proposed Answer: Let's think step by step. Serianna is a band of metalcore genre. Metalcore is a subgenre of heavy metal and hardcore punk. So Serianna is a band of heavy metal and hardcore punk. So the answer is: heavy metal and hardcore punk.
+HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC = """Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+Proposed Answer: Let's think step by step. The eastern sector of the Colorado orogeny extends into an area with an elevation range of 1,800 to 7,000 ft. So the answer is: 1,800 to 7,000 ft.
 
 What's the problem with the above answer?
 
 1. Plausibility:
 
-The question asks for the genre that combines elements of heavy metal and hardcore punk, and the answer is "heavy metal and hardcore punk", simply repeat the question. So it's not plausible.
+The question asks for the elevation range, and the answer provides "1,800 to 7,000 ft", which fits the expected format and seems plausible.
 
 2. Truthfulness:
 
 Let's search the question in google:
-> Search Query: Serianna is a band of what genre that combines elements of heavy metal and hardcore punk? site: wikipedia.org
-> Evidence: [Metalcore - Wikipedia] Metalcore is a fusion music genre that combines elements of extreme metal and hardcore punk.
+> Search Query: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into? site: wikipedia.org
+> Evidence: [Colorado orogeny - Wikipedia] The eastern sector of the Colorado orogeny extends into regions that have elevations ranging from approximately 1,800 ft to 7,000 ft.
 
-The evidence suggests that metalcore is a genre that combines elements of extreme metal and hardcore punk, as stated in the proposed answer.
+The evidence confirms that the eastern sector of the Colorado orogeny extends into regions with elevations ranging from 1,800 ft to 7,000 ft. Thus, the proposed answer is correct and truthful.
 
 Let's search the proposed answer in google:
-> Search Query: Serianna is a band of metalcore genre. site: wikipedia.org
-> Evidence: [Serianna - Wikipedia] Serianna was a metalcore band from Madison, Wisconsin. The band formed in 2006...
+> Search Query: Elevation range for the area that the eastern sector of the Colorado orogeny extends into 1,800 to 7,000 ft site:wikipedia.org
+> Evidence: [Colorado orogeny - Wikipedia] The eastern sector of the Colorado orogeny extends into regions that have elevations ranging from approximately 1,800 ft to 7,000 ft.
 
-The evidence suggests Serianna is a metalcore band, the proposed answer is correct about this.
+The evidence supports the proposed answer, confirming that it correctly identifies the elevation range.
 
-Above all, the proposed answer correctly identifies that Serianna is a band of the metalcore genre, which combines elements of heavy metal and hardcore punk. However, the final answer is not plausible since it just lists the genres that metalcore combines.
+Above all, the proposed answer correctly identifies the elevation range for the area that the eastern sector of the Colorado orogeny extends into. However, the explanation can be improved for clarity.
 
-Question: Serianna is a band of what genre that combines elements of heavy metal and hardcore punk?
-Here's the most possible answer: Let's think step by step. Serianna is a band of metalcore genre, which is a fusion genre that combines elements of heavy metal and hardcore punk. So the answer is: Metalcore.
+Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+Here's the most possible answer: Let's think step by step. The Colorado orogeny refers to a series of mountain-building events that shaped the region. The eastern sector of this orogeny extends into an area with an elevation range from approximately 1,800 ft to 7,000 ft. So the answer is: 1,800 to 7,000 ft.
 
 ---
 
-Question: Which band was formed first, Helium or Jack's Mannequin?
-Proposed Answer: Let's think step by step. Helium was formed in 1991. Jack's Mannequin was formed in 2004. 1991 (Helium) < 2004 (Jack's Mannequin), so Helium was formed first. So the answer is: Helium.
+Question: Musician and satirist Allie Goertz wrote a song about the "The Simpsons" character Milhouse, who Matt Groening named after who?
+Proposed Answer: Let's think step by step. Allie Goertz wrote a song about Milhouse. Milhouse is a character from "The Simpsons" created by Matt Groening. Matt Groening named Milhouse after Richard Nixon. So the answer is: Richard Nixon.
 
 What's the problem with the above answer?
 
 1. Plausibility:
 
-The answer should be chosen between "Helium" and "Jack's Mannequin", and the answer is "Helium", so it seems good.
+The answer should provide the person after whom the character Milhouse was named. The proposed answer states "Richard Nixon," which fits the expected format and seems plausible.
 
 2. Truthfulness:
 
 Let's search the question in google:
+> Search Query: "The Simpsons" character Milhouse named after who? site: wikipedia.org
+> Evidence: [Milhouse Van Houten - Wikipedia] The character Milhouse was named after U.S. President Richard Nixon, whose middle name was Milhous.
 
-> Search Query: Which band was formed first, Helium or Jack's Mannequin?
-> Evidence: [Jack's Mannequin - Wikipedia] Jack's Mannequin was an American rock band formed in 2004, hailing from Orange County, California.
- 
-The evidence shows that Jack's Mannequin is a band formed in 2004.
-
-We then find out when the band Helium was formed.
-
-> Search Query: When was the band "Helium" formed?
-> Evidence: [] Helium / Active from 1992
-
-The evidence shows that Helium was formed in 1992, not 1991 in the proposed answer.
-
-The proposed answer gives the correct date of formation for Jack's Mannequin, but wrong about Helium, it needs revision. Notably, the final answer "Helium" is still correct since 1992 < 2004.
-
-Question: Which band was formed first, Helium or Jack's Mannequin?
-Here's the most possible answer: Let's think step by step. Helium was formed in 1992. Jack's Mannequin was formed in 2004. 1992 (Helium) < 2004 (Jack's Mannequin), so Helium was formed first. So the answer is: Helium.
-
----
-
-Question: What year did Maurice win the award given to the  "player judged most valuable to his team" in the NHL?
-Proposed Answer: Let's think step by step. Maurice Richard won the Hart Memorial Trophy in 1947. So the answer is: 1947.
-
-What's the problem with the above answer?
-
-1. Plausibility:
-
-The question ask for a year, and the answer "1947" is a year. So it's plausible.
-
-2. Truthfulness:
-
-Let's search the question in google:
-
-> Search Query: What year did Maurice win the award given to the  "player judged most valuable to his team" in the NHL? site: wikipedia.org
-> Evidence: [List of National Hockey League awards - Wikipedia] Awarded to the "player judged most valuable to his team". The original trophy was donated to the league by Dr. David A. Hart, father of coach Cecil Hart.
-
-The evidence does not provide information about what the award is and Maurice won the award in which year.
-
-Let's search the proposed anwer in google:
-> Search Query: Maurice Richard won the Hart Memorial Trophy in 1947.
-> Evidence: [Maurice Richard - Wikipedia] He won the Hart Trophy as the NHL's most valuable player in 1947...
-
-The evidence shows that Maurice Richard won the Hart Trophy as the NHL's most valuable player in 1947, which supports the answer.
-
-Above all, the proposed answer is plausible, and the evidence support all its claims.
-
-Question: What year did Maurice win the award given to the  "player judged most valuable to his team" in the NHL?
-Here's the most possible answer: Let's think step by step. Maurice Richard won the Hart Memorial Trophy in 1947. So the answer is: 1947.
-
----
-
-Question: Are John H. Auer and Jerome Robbins both directors?
-Proposed Answer: Let's think step by step. John H. Auer is a director, producer, and screenwriter. Jerome Robbins is a director, producer, choreographer, and dancer.  So the answer is: Jerome Robbins.
-
-What's the problem with the above answer?
-
-1. Plausibility:
-
-This is a yes/no question, the proposed answer is "Jerome Robbins", which does not clearly answer whether they are both directors.
-The answer should be a clear "yes" or "no".
-
-2. Truthfulness:
-
-Let's search the question in google:
-
-> Search Query: Are John H. Auer and Jerome Robbins both directors?
-> Evidence: [A history of Jerome Robbins at PNB - Pacific Northwest Ballet] Robbins retained the title of associate artistic director until approximately 1963, ... Ballets: USA, from the late 1950s to the late 1960s.
-
-The evidence suggests Jerome Robbins is a director.
-
-We then need to verify if John H. Auer is a director.
-
-> Search Query: Is John H. Auer a director? site: wikipedia.org
-> Evidence: [John H. Auer - Wikipedia] Auer was a Hungarian-born child actor who, on coming to the Americas in 1928, became a movie director and producer, initially in Mexico but, from the early 1930s, in Hollywood.
-
-The evidence suggests that John H. Auer is an actor, director and producer.
-
-Therefore, both John H. Auer and Jerome Robbins are directors.
-
-Question: Are John H. Auer and Jerome Robbins both directors?
-Here's the most possible answer: Let's think step by step. John H. Auer is an actor, director and producer. Jerome Robbins is a director. Therefore, Both John H. Auer and Jerome Robbins are directors. So the answer is: Yes.
-
----
-
-Question: Which artist did Anthony Toby "Tony" Hiller appear with that liked showering himself (and others) with confetti?
-Proposed Answer: Let's think step by step. Anthony Toby "Tony" Hiller is a songwriter and record producer. He appeared with Brotherhood of Man. Brotherhood of Man liked showering himself (and others) with confetti. So the answer is: Brotherhood of Man.
-
-What's the problem with the above answer?
-
-1. Plausibility:
-
-The question asks for the name of an artist, and the answer "Brotherhood of Man" looks like a name.
-
-2. Truthfulness:
-
-Let's search the question in google:
-
-> Search Query: Which artist did Anthony Toby Tony Hiller appear with that liked showering himself (and others) with confetti?
-> Evidence: [Untitled] Without you: The tragic story of Badfinger|Dan Matovina, The Military Orchid and Other Novels|Jocelyn Brooke, Looking at Lisp (Micro computer books)|Tony ...
-
-The evidence does not provide any useful information about the question.
+The evidence confirms that Milhouse was indeed named after Richard Nixon, whose middle name was Milhous. Thus, the proposed answer is correct and truthful.
 
 Let's search the proposed answer in google:
+> Search Query: Milhouse character named after Richard Nixon site: wikipedia.org
+> Evidence: [Milhouse Van Houten - Wikipedia] The character Milhouse was named after U.S. President Richard Nixon, whose middle name was Milhous.
 
-> Search Query: Anthony Toby Tony Hiller appeared with Brotherhood of Man.
-> Evidence: [Tony Hiller - Wikipedia] He was best known for writing and/or producing hits for Brotherhood of Man, including "United We Stand" (1970) and "Save Your Kisses for Me" (1976).
+The evidence supports the proposed answer, confirming that it correctly identifies the person after whom Milhouse was named.
 
-The evidence suggests Tony Hiller producing hits Brotherhood of Man.
+Above all, the proposed answer correctly identifies that Milhouse was named after Richard Nixon. However, the explanation can be improved for clarity.
 
-> Search Query: Brotherhood of Man liked showering himself (and others) with confetti.
-> Evidence: [New York showers confetti, love on U.S. women's soccer team] Discover Thomson Reuters By Matthew Lavietes... celebrating its World Cup triumph and hailing the players’ emergence as icons of women’s rights.
-
-The evidence does not mention Brotherhood of Man. We need to check who is the correct artist that liked showering himself (and others) with confetti.
-
-> Search Query: Which artist liked showering himself (and others) with confetti?
-> Evidence: [Rip Taylor - Wikipedia] Charles Elmer " Rip " Taylor Jr. was an American actor and comedian, known for his exuberance and flamboyant personality, including his wild moustache, toupee, and his habit of showering himself (and others)
-
-The evidence suggests that the artist that liked showering himself is Charles Elmer "Rip" Taylor Jr., not "Brotherhood of Man" as in the proposed answer.
-
-We can further check if Rip Taylor appeared with Anthony Toby "Tony" Hiller.
-
-> Search Query: Which artist appeared with Anthony Toby "Tony" Hiller?
-> Evidence: [Tony Hiller - Wikipedia] He was best known for writing and/or producing hits for Brotherhood of Man , including " United We Stand " (1970) and " Save Your Kisses for Me " (1976). Biography [ edit ]
-
-> Search Query: Did Tony Hiller appear with Rip Taylor?
-> Evidence: [Tony Hiller - Wikipedia] The Hiller Brothers appeared with many performers of the time including Alma Cogan , Tommy Cooper , Val Doonican , Matt Monro , The Shadows , Bernard Manning , Kathy Kirby , Roger Whittaker , Rip Taylor , Gene Vincent , Lance Percival , Tessie O'Shea...
-
-The evidence shows that Tony Hiller appeared with Rip Taylor.
-
-The answer needs major revision.
-
-Question: Which artist did Anthony Toby "Tony" Hiller appear with that liked showering himself (and others) with confetti?
-Here's the most possible answer: Let's think step by step. The artist that liked showering himself with confetti is Rip Taylor. Anthony Toby "Tony" Hiller is a songwriter and record producer, he appeared with Rip Taylor. So the answer is: Rip Taylor.
+Question: Musician and satirist Allie Goertz wrote a song about the "The Simpsons" character Milhouse, who Matt Groening named after who?
+Here's the most possible answer: Let's think step by step. Allie Goertz wrote a song about Milhouse, a character from "The Simpsons" created by Matt Groening. Matt Groening named Milhouse after U.S. President Richard Nixon, whose middle name was Milhous. So the answer is: Richard Nixon.
 
 ---
 
-Question: Who won the 2016 Russian national silver medal with another Russian ice dancer born 29 April 1995?
-Proposed Answer: Let's think step by step. The 2016 Russian national silver medal was won by Alexandra Stepanova and Ivan Bukin. Alexandra Stepanova was born 29 April 1995. Ivan Bukin was born 10 April 1993. So the answer is: Ivan Bukin.
+Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
+Proposed Answer: Let's think step by step. Adam Clayton Powell is a name associated with an American politician and civil rights leader. The Saimaa Gesture sounds more like a title related to Finnish culture. Therefore, The Saimaa Gesture is about Finnish rock groups. So the answer is: The Saimaa Gesture.
 
 What's the problem with the above answer?
 
 1. Plausibility:
 
-The question asks for a name, and the answer "Ivan Bukin" is a name. So it's plausible.
+The question asks for the name of a documentary about Finnish rock groups, and the answer is "The Saimaa Gesture," which sounds plausible given the context.
+
+2. Truthfulness:
+
+Let's search for information about "The Saimaa Gesture":
+> Search Query: The Saimaa Gesture documentary site: wikipedia.org
+> Evidence: [The Saimaa Gesture - Wikipedia] The Saimaa Gesture is a 1981 documentary film about three Finnish rock groups on a tour around Lake Saimaa.
+
+The evidence confirms that The Saimaa Gesture is indeed a documentary about Finnish rock groups, as stated in the proposed answer.
+
+Let's search for information about "Adam Clayton Powell":
+> Search Query: Adam Clayton Powell documentary site: wikipedia.org
+> Evidence: [Adam Clayton Powell - Wikipedia] Adam Clayton Powell Jr. was an American Baptist pastor and politician who represented Harlem, New York City, in the United States House of Representatives.
+
+The evidence shows that Adam Clayton Powell is not related to Finnish rock groups, supporting the correctness of the proposed answer.
+
+Above all, the proposed answer correctly identifies that The Saimaa Gesture is the documentary about Finnish rock groups. However, the explanation can be improved for clarity.
+
+Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
+Here's the most possible answer: Let's think step by step. Adam Clayton Powell is a name associated with an American politician and civil rights leader. The Saimaa Gesture is a documentary about three Finnish rock groups on a tour around Lake Saimaa. Therefore, The Saimaa Gesture is about Finnish rock groups. So the answer is: The Saimaa Gesture.
+
+---
+
+Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
+Proposed Answer: Let's think step by step. Adam Clayton Powell is a name associated with an American politician and civil rights leader. The Saimaa Gesture sounds more like a title related to Finnish culture. Therefore, The Saimaa Gesture is about Finnish rock groups. So the answer is: The Saimaa Gesture.
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The question asks for the name of a documentary about Finnish rock groups, and the answer is "The Saimaa Gesture," which sounds plausible given the context.
+
+2. Truthfulness:
+
+Let's search for information about "The Saimaa Gesture":
+> Search Query: The Saimaa Gesture documentary site: wikipedia.org
+> Evidence: [The Saimaa Gesture - Wikipedia] The Saimaa Gesture is a 1981 documentary film about three Finnish rock groups on a tour around Lake Saimaa.
+
+The evidence confirms that The Saimaa Gesture is indeed a documentary about Finnish rock groups, as stated in the proposed answer.
+
+Let's search for information about "Adam Clayton Powell":
+> Search Query: Adam Clayton Powell documentary site: wikipedia.org
+> Evidence: [Adam Clayton Powell - Wikipedia] Adam Clayton Powell Jr. was an American Baptist pastor and politician who represented Harlem, New York City, in the United States House of Representatives.
+
+The evidence shows that Adam Clayton Powell is not related to Finnish rock groups, supporting the correctness of the proposed answer.
+
+Above all, the proposed answer correctly identifies that The Saimaa Gesture is the documentary about Finnish rock groups. However, the explanation can be improved for clarity.
+
+Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
+Here's the most possible answer: Let's think step by step. Adam Clayton Powell is a name associated with an American politician and civil rights leader. The Saimaa Gesture is a documentary about three Finnish rock groups on a tour around Lake Saimaa. Therefore, The Saimaa Gesture is about Finnish rock groups. So the answer is: The Saimaa Gesture.
+
+---
+
+Question: What profession does Nicholas Ray and Elia Kazan have in common?
+Proposed Answer: Let's think step by step. Nicholas Ray and Elia Kazan both worked as directors, screenwriters, and actors. So the answer is: director, screenwriter, actor.
+
+What's the problem with the above answer?
+
+1. Plausibility:
+The question asks for the profession that Nicholas Ray and Elia Kazan have in common. The proposed answer lists multiple professions without clarifying if they both held all those professions. So, it's not precise.
+
+2. Truthfulness:
+Let's search for the professions of Nicholas Ray and Elia Kazan.
+
+> Search Query: Nicholas Ray profession site.org
+> Evidence: [Nicholas Ray - Wikipedia] Nicholas Ray was an American film director and screenwriter, best known for the movie "Rebel Without a Cause".
+
+The evidence suggests that Nicholas Ray was a director and screenwriter.
+
+> Search Query: Elia Kazan profession site.org
+> Evidence: [Elia Kazan - Wikipedia] Elia Kazan was a Greek-American director, producer, writer, and actor. He is noted for his work on Broadway and in Hollywood.
+
+The evidence suggests that Elia Kazan was a director, writer, and actor.
+
+The proposed answer correctly identifies the professions of both individuals but does not specify which profession they have in common.
+
+Question: What profession does Nicholas Ray and Elia Kazan have in common?
+Here's the most possible answer: Let's think step by step. Nicholas Ray was a director and screenwriter. Elia Kazan was a director, writer, and actor. Both Nicholas Ray and Elia Kazan worked as directors and screenwriters. So the answer is: director and screenwriter.
+
+---
+
+Question: Which magazine was started first, Arthur's Magazine or First for Women?
+Proposed Answer: Let's think step by step. Arthur's Magazine was first published in 1890. First for Women was first published in 1989. 1890 (Arthur's Magazine) < 1989 (First for Women), so First for Women was started first. So the answer is:First for Women.
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The answer should be chosen between "Arthur's Magazine" and "First for Women," and the answer is "First for Women," so it seems plausible.
 
 2. Truthfulness:
 
 Let's search the question in google:
 
-> Search Query: Who won the 2016 Russian national silver medal with another Russian ice dancer born 29 April 1995? site: wikipedia.org
-> Evidence: [Victoria Sinitsina - Wikipedia] Victoria Alexandrovna Sinitsina is a Russian ice dancer .
+> Search Query: Arthur's Magazine first publication date
+> Evidence: [Arthur's Magazine - Wikipedia] Arthur's Magazine was first published in 1844.
 
-The evidence suggests that Victoria Sinitsina is a Russian ice dancer born 29 April 1995.
+The evidence shows that Arthur's Magazine was first published in 1844.
 
-Let's search the proposed answer in google:
+> Search Query: First for Women first publication date
+> Evidence: [First for Women - Wikipedia] First for Women was first published in 1989.
 
-> Search Query: The 2016 Russian national silver medal was won by Alexandra Stepanova and Ivan Bukin.
-> Evidence: [Alexandra Stepanova - Wikipedia] They won silver at the 2012 Russian Junior Championships. Stepanova/Bukin then competed at the 2012 World Junior Championships and won the silver medal.
+The evidence shows that First for Women was indeed first published in 1989.
 
-From the evidence, Stepanova/Bukin won silver at the 2012 Russian Junior Championships, not 2016.
+The proposed answer gives the wrong dates of publication for Arthur's Magazine. The final answer "Arthur's Magazine" is correct since 1844 < 1989.
 
-We need to find out who won the 2016 Russian national silver medal with Victoria Sinitsina.
-
-> Search Query: Who won the 2016 Russian national silver medal with Victoria Sinitsina?
-> Evidence: [Nikita Katsalapov - Wikipedia] In December, Sinitsina/Katsalapov won the silver medal behind Bobrova/Soloviev at the 2016 Russian Championships in Yekaterinburg.
-
-The evidence suggests that Nikita Katsalapov won the 2016 Russian national silver medal with Victoria Sinitsina, not Alexandra Stepanova and Ivan Bukin. The answer provided in the proposed answer is incorrect.
-
-Question: Who won the 2016 Russian national silver medal with another Russian ice dancer born 29 April 1995?
-Here's the most possible answer: Let's think step by step. The 2016 Russian national silver medal in ice dancing was won by Victoria Sinitsina and Nikita Katsalapov. Victoria Sinitsina was born on April 29, 1995. So the answer is: Nikita Katsalapov."""
+Question: Which magazine was started first, Arthur's Magazine or First for Women?
+Here's the most possible answer: Let's think step by step. Arthur's Magazine was first published in 1844. First for Women was first published in 1989. 1844 (Arthur's Magazine) < 1989 (First for Women), so Arthur's Magazine was started first. So the answer is: Arthur's Magazine."""
 
 
 # ======================================================================== TRIVIAQA ======================================================================== #
