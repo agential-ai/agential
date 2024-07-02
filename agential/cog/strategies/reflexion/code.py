@@ -582,7 +582,45 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
 class ReflexionCoTHEvalStrategy(ReflexionCoTCodeStrategy):
     """A strategy class for the HumanEval benchmark using the ReflexionCoT agent."""
 
-    pass
+    def generate_action(
+        self,
+        question: str,
+        examples: str,
+        reflections: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+        **kwargs: Any,
+    ) -> Tuple[str, str]:
+        """Generates an action based on the question, examples, and prompt.
+
+        Args:
+            question (str): The question to be answered.
+            examples (str): Examples to guide the generation process.
+            reflections (str): Reflections to consider during generation.
+            prompt (str): The prompt used for generating the action.
+            additional_keys (Dict[str, str]): Additional keys for the generation process.
+            **kwargs (Any): Additional arguments.
+
+        Returns:
+            Tuple[str, str]: The generated action type and query.
+        """
+        self._scratchpad += "\nAction:"
+        action = _prompt_cot_agent(
+            llm=self.llm,
+            examples=examples,
+            reflections=reflections,
+            question=question,
+            scratchpad=self._scratchpad,
+            prompt=prompt,
+            additional_keys=additional_keys,
+        )
+        action = action.split("Observation")[0].strip()
+
+        query = action.split("```python")[-1].split("```")[0]
+        action_type = "Finish"
+        self._scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
+
+        return action_type, query
 
 
 class ReflexionCoTMBPPStrategy(ReflexionCoTCodeStrategy):
