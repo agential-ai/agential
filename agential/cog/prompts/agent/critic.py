@@ -84,7 +84,47 @@ The answer "NOT ENOUGH INFO" is appropriate as it reflects the uncertainty due t
 Given that the year 2003 is not verified in the available evidence, the proposed answer correctly reflects the uncertainty regarding the exact year of the chart position.
 
 Claim: "Beautiful" by Christina Aguilera reach number two on the Billboard Hot 100 in 2003.
-Here's the most possible answer: The song "Beautiful" by Christina Aguilera peaked at number two on the Billboard Hot 100, but there is no specific evidence confirming this occurred in 2003. So the answer is: NOT ENOUGH INFO."""
+Here's the most possible answer: The song "Beautiful" by Christina Aguilera peaked at number two on the Billboard Hot 100, but there is no specific evidence confirming this occurred in 2003. So the answer is: NOT ENOUGH INFO.
+
+---
+
+Claim: Tim Burton didn't direct the film "Edward Scissorhands."
+Proposed Answer: REFUTES
+
+What's the problem with the above answer?
+
+1. Plausibility:
+The answer "REFUTES" incorrectly negates the claim without supporting details.
+
+2. Truthfulness:
+> Search Query: Did Tim Burton direct the film "Edward Scissorhands"?
+> Evidence: [Edward Scissorhands - IMDb] The film "Edward Scissorhands" was directed by Tim Burton and released in 1990.
+
+The evidence supports the claim, confirming that Tim Burton directed "Edward Scissorhands."
+
+Claim: Tim Burton didn't direct the film "Edward Scissorhands."
+Here's the most possible answer: No. Tim Burton directed the film "Edward Scissorhands," which was released in 1990. So the answer is: REFUTES.
+
+---
+
+Claim: "The Great Gatsby" was written by F. Scott Fitzgerald.
+Proposed Answer: SUPPORTS
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The answer "SUPPORTS" is appropriate as it reflects the accuracy of the claim about the authorship of "The Great Gatsby".
+
+2. Truthfulness:
+
+> Search Query: Author of "The Great Gatsby"
+> Evidence: [The Great Gatsby - Wikipedia] "The Great Gatsby is a 1925 novel written by American author F. Scott Fitzgerald that follows a cast of characters living in the fictional towns of West Egg and East Egg on prosperous Long Island in the summer of 1922."
+
+The evidence confirms that F. Scott Fitzgerald is indeed the author of "The Great Gatsby".
+
+Claim: "The Great Gatsby" was written by F. Scott Fitzgerald.
+Here's the most possible answer: The novel "The Great Gatsby" was written by F. Scott Fitzgerald, as confirmed by reliable sources. So the answer is: SUPPORTS."""
 
 
 # ======================================================================== AMBIGNQ ======================================================================== #
