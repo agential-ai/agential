@@ -27,12 +27,12 @@ assert is_not_prime(37) == False
 import math
 
 def is_not_prime(n):
-    if n < 2:
-        return True
+    result = False
     for i in range(2, int(math.sqrt(n)) + 1):
         if n % i == 0:
-            return True
-    return False
+            result = True
+            break
+    return result
 ```
 
 ---
@@ -50,44 +50,6 @@ import heapq as hq
 def heap_queue_largest(nums, n):
     largest_nums = hq.nlargest(n, nums)
     return largest_nums
-```
-
----
-
-You are an expert Python programmer, and here is your task: Write a python function to check whether the two numbers differ at one bit position only or not.
-Your code should pass these tests.
-
-assert differ_at_one_bit_pos(13, 9) == True
-assert differ_at_one_bit_pos(15, 8) == False
-assert differ_at_one_bit_pos(2, 4) == False
-assert differ_at_one_bit_pos(2, 3) == True
-assert differ_at_one_bit_pos(5, 1) == True
-assert differ_at_one_bit_pos(1, 5) == True
-
-```python
-def differ_at_one_bit_pos(a, b):
-    # XOR the two numbers; the result will have exactly one bit set if they differ by one bit position.
-    xor_result = a ^ b
-    # Check if xor_result has exactly one bit set by confirming it's a power of 2.
-    return xor_result & (xor_result - 1) == 0 and xor_result != 0
-```
-
----
-
-You are an expert Python programmer, and here is your task: Write a function to find all words which are at least 4 characters long in a string.
-Your code should pass these tests.
-
-assert set(find_char_long('Please move back to stream')) == set(['Please', 'move', 'back', 'stream'])
-assert set(find_char_long('Jing Eco and Tech')) == set(['Jing', 'Tech'])
-assert set(find_char_long('Jhingai wulu road Zone 3')) == set(['Jhingai', 'wulu', 'road', 'Zone'])
-
-```python
-def find_char_long(s):
-    # Split the string into words and filter words that are at least 4 characters long.
-    words = s.split()
-    long_words = [word for word in words if len(word) >= 4]
-    return long_words
-
 ```"""
 
 
