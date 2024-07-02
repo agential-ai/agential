@@ -1149,132 +1149,150 @@ What's the problem with the above code?
 
 {critique}"""
 
-SVAMP_FEWSHOT_EXAMPLES_CRITIC = """Question: Marco and his dad went strawberry picking. Marco's dad's strawberries weighed 11 pounds. If together their strawberries weighed 30 pounds. How much did Marco's strawberries weigh?
+SVAMP_FEWSHOT_EXAMPLES_CRITIC = """Question: James bought 93 red and 10 blue stickers, he used 31 red stickers on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
 ```python
-num_strawberries_dad_picked = 11
-num_strawberries_marco_picked = 30
-answer = num_strawberries_dad_picked + num_strawberries_marco_picked
+original_red_stickers = 93
+used_red_stickers = 31
+original_blue_stickers = 10
+used_blue_stickers = 7
+answer = (original_red_stickers - used_red_stickers) + (original_blue_stickers - used_blue_stickers)
 ```
 Execution: Done
-Output: answer = 41.0
+Output: answer = 65
 
 What's the problem with the above code?
 
-1. The weight of straberries should be positive, 41.0 > 0, it's reasonable.
+1. The number of stickers should be positive, 65 > 0, it's reasonable.
 2. Let's check the code:
 
-> answer = num_strawberries_dad_picked + num_strawberries_marco_picked
+> answer = (original_red_stickers - used_red_stickers) + (original_blue_stickers - used_blue_stickers)
 
-The above code calculates the total weight of strawberries picked by both Marco and his dad, instead of finding the weight of strawberries picked by Marco alone.
+The above code incorrectly combines the count of red and blue stickers. The question only asks for the number of red stickers James has left, so the calculation involving blue stickers is unnecessary and incorrect.
 
-According to the question, the total weight of strawberries picked by both Marco and his dad is 30 pounds, and Marco's dad's strawberries weighed 11 pounds. To find the weight of Marco's strawberries, we need to subtract the weight of his dad's strawberries from the total weight.
+According to the question, James initially bought 93 red stickers and used 31 of them. To find the remaining number of red stickers, we only need to subtract the used red stickers from the original red stickers.
 
 Here's a better solution:
 ```python
-total_weight = 30
-dad_weight = 11
+original_red_stickers = 93
+used_red_stickers = 31
 
-# Calculate the weight of Marco's strawberries
-marco_weight = total_weight - dad_weight
-answer = marco_weight
+# Calculate the number of red stickers James has left
+remaining_red_stickers = original_red_stickers - used_red_stickers
+answer = remaining_red_stickers
 ```
 
 ---
 
-Question: Zachary did 46 push-ups and 58 crunches in gym class today. David did 38 more push-ups but 62 less crunches than zachary. How many more crunches than push-ups did Zachary do?
+Question: Allen went to supermarket to buy eggs, each egg costs 80 dollars, if the discount is 29 dollars. How much do you have to pay to buy for each egg?
 ```python
-zachary_push_ups = 46
-zachary_crunches = 58
-zachary_diff = zachary_crunches - zachary_push_ups
-answer = zachary_diff
+original_egg_price_in_dollars = 80
+discount_dollars = 29
+answer = original_egg_price_in_dollars - discount_dollars
 ```
 Execution: Done
-Output: answer = 12
+Output: answer = 51
 
 What's the problem with the above code?
 
-1. The answer, 12, is a reasonable result.
+1. The answer, 51, is a reasonable result.
 2. Let's check the code:
 
-> zachary_diff = zachary_crunches - zachary_push_ups
+> answer = original_egg_price_in_dollars - discount_dollars
 
-The code calculates the difference between the number of crunches and push-ups that Zachary did, it is correct.
+The code correctly calculates the final price of each egg after applying the discount. There is no problem with the above code.
 
-The information about David is not relevant to the question and does not need to be considered in the calculation. There is no problem with the above code. 
+The proposed answer is correct and accurately computes the discounted price of each egg.
 
-Here's a better solution:
+Question: Allen went to supermarket to buy eggs, each egg costs 80 dollars, if the discount is 29 dollars. How much do you have to pay to buy for each egg?
+Here's the most possible answer:
 ```python
-zachary_push_ups = 46
-zachary_crunches = 58
-
-# Calculate the difference between Zachary's crunches and push-ups
-zachary_diff = zachary_crunches - zachary_push_ups
-answer = zachary_diff
+original_egg_price_in_dollars = 80
+discount_dollars = 29
+final_price = original_egg_price_in_dollars - discount_dollars
+answer = final_price
 ```
 
 ---
 
-Question: Faye had 35 packs of pencils each one having 4 pencils. She was placing her pencils into rows with 2 pencils in each row. How many rows could she make?
+Question: Dianna collects both cases and books. He bought 22 cases and 5 books from the store. Now he has 57 cases and 25 books. How many books did danny have at first?
 ```python
-num_packs_of_pencils = 35
-num_pencils_in_each_pack = 4
-answer = num_packs_of_pencils * num_pencils_in_each_pack
+num_books_bought_at_store = 5
+num_books_now = 25
+answer = num_books_now + num_books_bought_at_store
 ```
 Execution: Done
-Output: answer = 140.0
+Output: answer = 30
 
 What's the problem with the above code?
 
-1. The answer rows 140 > 0, it's reasonable.
+1. The answer, 30, is not reasonable given the context.
 2. Let's check the code:
 
-> answer = num_packs_of_pencils * num_pencils_in_each_pack
+> answer = num_books_now + num_books_bought_at_store
 
-The code calculates the total number of pencils Faye has, but it does not calculate the number of rows she can make. It needs to be modified to take into account the fact that she is placing 2 pencils in each row.
+The code incorrectly calculates the number of books Danny had initially by adding the number of books bought at the store to the total number of books he has now. The correct approach is to subtract the number of books bought from the total number of books he has now.
 
 Here's a better solution:
 ```python
-num_packs_of_pencils = 35
-num_pencils_in_each_pack = 4
+num_books_bought_at_store = 5
+num_books_now = 25
 
-# Calculate the total number of pencils
-total_pencils = num_packs_of_pencils * num_pencils_in_each_pack
-
-# Calculate the number of rows with 2 pencils in each row
-num_pencils_in_each_row = 2
-num_rows = total_pencils // num_pencils_in_each_row
-answer = num_rows
+# Calculate the number of books Dianna had at first
+num_books_initially = num_books_now - num_books_bought_at_store
+answer = num_books_initially
 ```
 
 ---
 
-Question: Jack received 4 emails and sent 2 emails in the morning. He then received 6 emails and sent 8 emails in the afternoon. How many emails did Jack send in the day?
+Question: There were 108 chickens and 20 sheeps at the farm, some of chickens and sheeps were sold. There are 87 chickens and 18 sheeps left now. How many chickens were sold?
 ```python
-num_emails_received_in_morning = 4
-num_emails_sent_in_morning = 2
-num_emails_received_in_afternoon = 6
-num_emails_sent_in_afternoon = 8
-answer = num_emails_sent_in_morning + num_emails_sent_in_afternoon
+num_chicken_before = 108
+num_chicken_now = 87
+answer = num_chicken_before - num_chicken_now
 ```
 Execution: Done
-Output: answer = 10.0
+Output: answer = 21
 
 What's the problem with the above code?
 
-1. The answer, 10, is a reasonable result.
+1. The answer, 21, is a reasonable result.
 2. Let's check the code:
 
-> answer = num_emails_sent_in_morning + num_emails_sent_in_afternoon
+> answer = num_chicken_before - num_chicken_now
 
-The code calculates the total number of emails Jack sent during the day by adding the number of emails he sent in the morning to the number of emails he sent in the afternoon. There is no problem with the above code. 
+The code calculates the number of chicken sold by subtracting the original number of chicken from the number of chicken left. There is no problem with the above code. 
 
 Here's a better solution:
 ```python
-num_emails_received_in_morning = 4
-num_emails_sent_in_morning = 2
-num_emails_received_in_afternoon = 6
-num_emails_sent_in_afternoon = 8
-answer = num_emails_sent_in_morning + num_emails_sent_in_afternoon
+num_chicken_before = 108
+num_chicken_now = 87
+answer = num_chicken_before - num_chicken_now
+```
+
+---
+
+Question: Katty scored 2 goals on monday, 8 goals on tuesday and 9 goals on wednesday. How many did Katty score on monday and wednesday?
+```python
+num_goals_on_monday = 2
+num_goals_on_wednesday = 9
+answer = num_goals_on_monday + num_goals_on_wednesday
+```
+Execution: Done
+Output: answer = 11
+
+What's the problem with the above code?
+
+1. The answer, 11, is a reasonable result.
+2. Let's check the code:
+
+> answer = num_goals_on_monday + num_goals_on_wednesday
+The code calculates the total number of goals , scored by Katty on monday and wednesday by adding the number of goals on monday and number of goals on wednesday. There is no problem with the above code.
+
+Here's a better solution:
+```python
+num_goals_on_monday = 2
+num_goals_on_wednesday = 9
+answer = num_goals_on_monday + num_goals_on_wednesday
 ```"""
 
 
@@ -1291,124 +1309,140 @@ What's the problem with the above code?
 {critique}"""
 
 
-SVAMP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL = """Question: Marco and his dad went strawberry picking. Marco's dad's strawberries weighed 11 pounds. If together their strawberries weighed 30 pounds. How much did Marco's strawberries weigh?
+SVAMP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL = """Question: James bought 93 red and 10 blue stickers, he used 31 red stickers on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
 ```python
-num_strawberries_dad_picked = 11
-num_strawberries_marco_picked = 30
-answer = num_strawberries_dad_picked + num_strawberries_marco_picked
+original_red_stickers = 93
+used_red_stickers = 31
+original_blue_stickers = 10
+used_blue_stickers = 7
+answer = (original_red_stickers - used_red_stickers) + (original_blue_stickers - used_blue_stickers)
 ```
 
 What's the problem with the above code?
 
-1. The weight of straberries should be positive, 41.0 > 0, it's reasonable.
+1. The number of stickers should be positive, 65 > 0, it's reasonable.
 2. Let's check the code:
 
-> answer = num_strawberries_dad_picked + num_strawberries_marco_picked
+> answer = (original_red_stickers - used_red_stickers) + (original_blue_stickers - used_blue_stickers)
 
-The above code calculates the total weight of strawberries picked by both Marco and his dad, instead of finding the weight of strawberries picked by Marco alone.
+The above code incorrectly combines the count of red and blue stickers. The question only asks for the number of red stickers James has left, so the calculation involving blue stickers is unnecessary and incorrect.
 
-According to the question, the total weight of strawberries picked by both Marco and his dad is 30 pounds, and Marco's dad's strawberries weighed 11 pounds. To find the weight of Marco's strawberries, we need to subtract the weight of his dad's strawberries from the total weight.
+According to the question, James initially bought 93 red stickers and used 31 of them. To find the remaining number of red stickers, we only need to subtract the used red stickers from the original red stickers.
 
 Here's a better solution:
 ```python
-total_weight = 30
-dad_weight = 11
+original_red_stickers = 93
+used_red_stickers = 31
 
-# Calculate the weight of Marco's strawberries
-marco_weight = total_weight - dad_weight
-answer = marco_weight
+# Calculate the number of red stickers James has left
+remaining_red_stickers = original_red_stickers - used_red_stickers
+answer = remaining_red_stickers
 ```
 
 ---
 
-Question: Zachary did 46 push-ups and 58 crunches in gym class today. David did 38 more push-ups but 62 less crunches than zachary. How many more crunches than push-ups did Zachary do?
+Question: Allen went to supermarket to buy eggs, each egg costs 80 dollars, if the discount is 29 dollars. How much do you have to pay to buy for each egg?
 ```python
-zachary_push_ups = 46
-zachary_crunches = 58
-zachary_diff = zachary_crunches - zachary_push_ups
-answer = zachary_diff
+original_egg_price_in_dollars = 80
+discount_dollars = 29
+answer = original_egg_price_in_dollars - discount_dollars
 ```
 
 What's the problem with the above code?
 
-1. The answer, 12, is a reasonable result.
+1. The answer, 51, is a reasonable result.
 2. Let's check the code:
 
-> zachary_diff = zachary_crunches - zachary_push_ups
+> answer = original_egg_price_in_dollars - discount_dollars
 
-The code calculates the difference between the number of crunches and push-ups that Zachary did, it is correct.
+The code correctly calculates the final price of each egg after applying the discount. There is no problem with the above code.
 
-The information about David is not relevant to the question and does not need to be considered in the calculation. There is no problem with the above code. 
+The proposed answer is correct and accurately computes the discounted price of each egg.
 
-Here's a better solution:
+Question: Allen went to supermarket to buy eggs, each egg costs 80 dollars, if the discount is 29 dollars. How much do you have to pay to buy for each egg?
+Here's the most possible answer:
 ```python
-zachary_push_ups = 46
-zachary_crunches = 58
-
-# Calculate the difference between Zachary's crunches and push-ups
-zachary_diff = zachary_crunches - zachary_push_ups
-answer = zachary_diff
+original_egg_price_in_dollars = 80
+discount_dollars = 29
+final_price = original_egg_price_in_dollars - discount_dollars
+answer = final_price
 ```
 
 ---
 
-Question: Faye had 35 packs of pencils each one having 4 pencils. She was placing her pencils into rows with 2 pencils in each row. How many rows could she make?
+Question: Dianna collects both cases and books. He bought 22 cases and 5 books from the store. Now he has 57 cases and 25 books. How many books did danny have at first?
 ```python
-num_packs_of_pencils = 35
-num_pencils_in_each_pack = 4
-answer = num_packs_of_pencils * num_pencils_in_each_pack
+num_books_bought_at_store = 5
+num_books_now = 25
+answer = num_books_now + num_books_bought_at_store
 ```
 
 What's the problem with the above code?
 
-1. The answer rows 140 > 0, it's reasonable.
+1. The answer, 30, is not reasonable given the context.
 2. Let's check the code:
 
-> answer = num_packs_of_pencils * num_pencils_in_each_pack
+> answer = num_books_now + num_books_bought_at_store
 
-The code calculates the total number of pencils Faye has, but it does not calculate the number of rows she can make. It needs to be modified to take into account the fact that she is placing 2 pencils in each row.
+The code incorrectly calculates the number of books Danny had initially by adding the number of books bought at the store to the total number of books he has now. The correct approach is to subtract the number of books bought from the total number of books he has now.
 
 Here's a better solution:
 ```python
-num_packs_of_pencils = 35
-num_pencils_in_each_pack = 4
+num_books_bought_at_store = 5
+num_books_now = 25
 
-# Calculate the total number of pencils
-total_pencils = num_packs_of_pencils * num_pencils_in_each_pack
-
-# Calculate the number of rows with 2 pencils in each row
-num_pencils_in_each_row = 2
-num_rows = total_pencils // num_pencils_in_each_row
-answer = num_rows
+# Calculate the number of books Dianna had at first
+num_books_initially = num_books_now - num_books_bought_at_store
+answer = num_books_initially
 ```
 
 ---
 
-Question: Jack received 4 emails and sent 2 emails in the morning. He then received 6 emails and sent 8 emails in the afternoon. How many emails did Jack send in the day?
+Question: There were 108 chickens and 20 sheeps at the farm, some of chickens and sheeps were sold. There are 87 chickens and 18 sheeps left now. How many chickens were sold?
 ```python
-num_emails_received_in_morning = 4
-num_emails_sent_in_morning = 2
-num_emails_received_in_afternoon = 6
-num_emails_sent_in_afternoon = 8
-answer = num_emails_sent_in_morning + num_emails_sent_in_afternoon
+num_chicken_before = 108
+num_chicken_now = 87
+answer = num_chicken_before - num_chicken_now
 ```
 
 What's the problem with the above code?
 
-1. The answer, 10, is a reasonable result.
+1. The answer, 21, is a reasonable result.
 2. Let's check the code:
 
-> answer = num_emails_sent_in_morning + num_emails_sent_in_afternoon
+> answer = num_chicken_before - num_chicken_now
 
-The code calculates the total number of emails Jack sent during the day by adding the number of emails he sent in the morning to the number of emails he sent in the afternoon. There is no problem with the above code. 
+The code calculates the number of chicken sold by subtracting the original number of chicken from the number of chicken left. There is no problem with the above code. 
 
 Here's a better solution:
 ```python
-num_emails_received_in_morning = 4
-num_emails_sent_in_morning = 2
-num_emails_received_in_afternoon = 6
-num_emails_sent_in_afternoon = 8
-answer = num_emails_sent_in_morning + num_emails_sent_in_afternoon
+num_chicken_before = 108
+num_chicken_now = 87
+answer = num_chicken_before - num_chicken_now
+```
+
+---
+
+Question: Katty scored 2 goals on monday, 8 goals on tuesday and 9 goals on wednesday. How many did Katty score on monday and wednesday?
+```python
+num_goals_on_monday = 2
+num_goals_on_wednesday = 9
+answer = num_goals_on_monday + num_goals_on_wednesday
+```
+
+What's the problem with the above code?
+
+1. The answer, 11, is a reasonable result.
+2. Let's check the code:
+
+> answer = num_goals_on_monday + num_goals_on_wednesday
+The code calculates the total number of goals , scored by Katty on monday and wednesday by adding the number of goals on monday and number of goals on wednesday. There is no problem with the above code.
+
+Here's a better solution:
+```python
+num_goals_on_monday = 2
+num_goals_on_wednesday = 9
+answer = num_goals_on_monday + num_goals_on_wednesday
 ```"""
 
 
