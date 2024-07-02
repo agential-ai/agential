@@ -134,20 +134,6 @@ Here's the most possible answer: Men's figure skating became a part of the Olymp
 
 ---
 
-Question: When is the date the last time washington won stanley cup?
-Proposed Answer: The Washington Capitals won the Stanley Cup in 2018. So the answer is: 2018
-
-What's the problem with the above answer?
-
-1. Plausibility:
-
-The question asks for a date, and the answer is "2018", which is a year but not a specific date. So it's not plausible. The answer should be a specific date.
-
-Question: When is the date the last time washington won stanley cup?
-Here's the most possible answer: The Washington Capitals won the Stanley Cup on June 7, 2018. So the answer is: June 7, 2018.
-
----
-
 Question: When was the last time the USA men's national soccer team missed the World Cup?
 Proposed Answer: The last time the USA men's national soccer team missed the World Cup was in 1986. So the answer is: 1986
 
@@ -173,19 +159,6 @@ Above all, the USA men's national soccer team did miss the World Cup in 1986, bu
 
 Question: When was the last time the USA men's national soccer team missed the World Cup?
 Here's the most possible answer: The last time the USA men's national soccer team missed the World Cup was in 2018. So the answer is: 2018.
-
----
-
-Question: Where was tin pan alley in new york city?
-Proposed Answer: Tin Pan Alley was a nickname for the collection of New York City music publishers and songwriters who dominated the popular music of the United States in the late 19th century and early 20th century. So the answer is: New York City
-
-What's the problem with the above answer?
-
-1. Plausibility:
-
-The question asks for the location of Tin Pan Alley in new york specifically, and the answer is "New York City", which is too broad and does not provide a specific location. So it's not plausible. The answer should be a specific location in new york.
-
-Here's the most possible answer: Tin Pan Alley was located on West 28th Street between Fifth and Sixth Avenues in the Flower District of Manhattan, New York City. So the answer is: West 28th Street between Fifth and Sixth Avenues in Manhattan.
 
 ---
 
@@ -275,44 +248,7 @@ Let's search the question in google:
 The evidence suggests that Nando's first opened in the UK in 1992, which is consistent with the proposed answer. We can provide more detailed information in the answer.
 
 Question: When did nando's come to the uk?
-Here's the most possible answer: Nando's first opened its restaurants within the United Kingdom in 1992, specifically in the west London suburbs of Ealing and Earls Court. So the answer is: 1992
-
----
-
-Question: Who plays wilmas mom in the flintstones movie?
-Proposed Answer: Wilma's mom is played by Elizabeth Perkins in the 1994 live-action film The Flintstones. So the answer is: Elizabeth Perkins
-
-What's the problem with the above answer?
-
-1. Plausibility:
-
-The question asks for the name of the actor who plays wilmas mom, and the answer is "Elizabeth Perkins", which is a name. So it's plausible.
-
-2. Truthfulness:
-
-Let's search the question in google:
-
-> Search Query: Who played Wilma's mom in the flintstones movie? site: wikipedia.org
-> Evidence: [Elizabeth Perkins - Wikipedia] Elizabeth Ann Perkins (born November 18, 1960 ) is an American actress.
-
-The evidence does not mention Wilma's mom in the flintstones movie.
-
-Let's search the proposed answer:
-
-> Search Query: Wilma's mom is played by Elizabeth Perkins in the 1994 live-action film The Flintstones.
-> Evidence: [The Flintstones (film) - Wikipedia] The film stars John Goodman as Fred Flintstone, Rick Moranis as Barney Rubble, Elizabeth Perkins as Wilma Flintstone, and Rosie O'Donnell as Betty Rubble, along with Kyle MacLachlan as Cliff Vandercave, a villainous executive-vice president of Fred's company, Halle Berry as Sharon Stone, his seductive secretary, and Elizabeth Taylor (in her final theatrical film appearance), as Pearl Slaghoople, Wilma's mother.
-
-The evidence shows that Elizabeth Perkins did appear in The Flintstones movie as Wilma Flintstone, but not as Wilma's mother. And Elizabeth Taylor played as Pearl Slaghoople, the role of Wilma's mother in The Flintstones movie.
-
-> Search Query: Who played Wilma's mom in the flintstones movie?
-> Evidence: [] The Flintstones / Wilma Flintstone / Mother / Played by Elizabeth Taylor
-
-The evidence shows that Elizabeth Taylor played the role of Wilma's mother, which contradicts the "Elizabeth Perkins" in the proposed answer.
-
-Considering all above evidence, we need to correct the answer.
-
-Question: Who plays wilmas mom in the flintstones movie?
-Here's the most possible answer: Elizabeth Taylor played the role of Wilma's mother (ie., Pearl Slaghoople) in the 1994 live-action film The Flintstones. So the answer is: Elizabeth Taylor."""
+Here's the most possible answer: Nando's first opened its restaurants within the United Kingdom in 1992, specifically in the west London suburbs of Ealing and Earls Court. So the answer is: 1992"""
 
 
 # ======================================================================== HOTPOTQA ======================================================================== #
