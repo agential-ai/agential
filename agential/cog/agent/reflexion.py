@@ -122,7 +122,6 @@ class ReflexionCoTAgent(BaseAgent):
         idx, patience_cnt = 0, 0
         out = []
         while not self.strategy.halting_condition(idx=idx, key=key, **kwargs):
-
             # Reflect if possible.
             reflections: List[str] = []
             reflections_str = ""
