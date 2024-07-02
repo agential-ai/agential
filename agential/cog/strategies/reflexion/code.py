@@ -368,7 +368,9 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
         elif action_type.lower() == "implement":
             _, execution_status = safe_execute(query)
             external_tool_info["execution_status"] = execution_status
-            execution_status = ""  # Execution status may be done, but not necessarily correct.
+            execution_status = (
+                ""  # Execution status may be done, but not necessarily correct.
+            )
 
             self._answer = query
             obs = f"\n```python\n{self._answer}\n```\nExecution Status: {execution_status}"
