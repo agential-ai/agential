@@ -73,7 +73,7 @@ class CriticBaseStrategy(BaseStrategy):
         critique: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        external_tool_info: Dict[str, str],
+        external_tool_info: Dict[str, Any],
         **kwargs: Any,
     ) -> str:
         """Updates the answer based on the provided critique using the given language model and question.
@@ -85,7 +85,7 @@ class CriticBaseStrategy(BaseStrategy):
             critique (str): The critique of the original answer.
             prompt (str): The instruction template used to prompt the language model for the update.
             additional_keys (Dict[str, str]): Additional keys to format the update prompt.
-            external_tool_info (Dict[str, str]): Information from any external tools used during the critique.
+            external_tool_info (Dict[str, Any]): Information from any external tools used during the critique.
             **kwargs (Any): Additional arguments that might be needed for specific implementations.
 
         Returns:
