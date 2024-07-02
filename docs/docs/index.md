@@ -87,6 +87,59 @@
 | CRITIC                   |          |         |            |
 | LATS                     |          |         |            |
 
+## Types of errors
+
+### CRITIC
+
+Sure! Here's the section on CRITIC errors organized into a table for better readability:
+
+## Types of errors
+
+### CRITIC
+
+| Dataset  | Example | Error Type                         |
+|----------|---------|------------------------------------|
+| MBPP     | 1       | Logical error                      |
+| MBPP     | 2       | Logical error                      |
+| MBPP     | 3       | Logical error                      |
+| MBPP     | 4       | No error                           |
+| MBPP     | 5       | No error                           |
+| GSM8K    | 1       | Code efficiency                    |
+| GSM8K    | 2       | NameError (var not defined)        |
+| GSM8K    | 3       | Logical error                      |
+| GSM8K    | 4       | Logical error                      |
+| GSM8K    | 5       | Logical error                      |
+| SVAMP    | 1       | Logical error                      |
+| SVAMP    | 2       | No error                           |
+| SVAMP    | 3       | Logical error                      |
+| SVAMP    | 4       | No error                           |
+| SVAMP    | 5       | No error                           |
+| TabMWP   | 1       | Incorrect answer format            |
+| TabMWP   | 2       | NameError (var not defined)        |
+| TabMWP   | 3       | No error                           |
+| TabMWP   | 4       | Incorrect answer format            |
+| TabMWP   | 5       | No error                           |
+| AMBIGNQ  | 1       | No error                           |
+| AMBIGNQ  | 2       | No error                           |
+| AMBIGNQ  | 3       | Incorrect answer/answer format     |
+| AMBIGNQ  | 4       | No error                           |
+| AMBIGNQ  | 5       | Incorrect answer/answer format     |
+| HOTPOTQA | 1       | No error                           |
+| HOTPOTQA | 2       | No error                           |
+| HOTPOTQA | 3       | No error                           |
+| HOTPOTQA | 4       | Incorrect answer/answer format     |
+| HOTPOTQA | 5       | Incorrect answer/answer format     |
+| TRIVIAQA | 1       | Incorrect answer                   |
+| TRIVIAQA | 2       | No error                           |
+| TRIVIAQA | 3       | Incorrect answer                   |
+| TRIVIAQA | 4       | No error                           |
+| TRIVIAQA | 5       | No error                           |
+| FEVER    | 1       | Incorrect answer                   |
+| FEVER    | 2       | Incorrect answer format            |
+| FEVER    | 3       | No error                           |
+| FEVER    | 4       | No error                           |
+| FEVER    | 5       | No error                           |
+
 For full documentation visit [mkdocs.org](https://www.mkdocs.org).
 
 ## Commands
