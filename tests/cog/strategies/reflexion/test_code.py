@@ -306,6 +306,23 @@ def test_reflexion_cot_reset() -> None:
 
 def test_reflexion_cot_reflect() -> None:
     """Tests ReflexionCoTCodeStrategy reflect."""
+    question = "Write a python function to find the first repeated character in a given string."
+    key = """assert first_repeated_char("abcabc") == "a"
+    assert first_repeated_char("abc") == None
+    assert first_repeated_char("123123") == "1\""""
+
+    llm = FakeListChatModel(responses=[])
+    strategy = ReflexionCoTCodeStrategy(llm=llm, max_trials=3)
+
+    gt_out = 'You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: Write a python function to find the first repeated character in a given string.\n\n(END PREVIOUS TRIAL)\n'
+    _, out = strategy.reflect(
+        reflect_strategy="last_attempt",
+        question=question,
+        examples=MBPP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
+        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_MBPP,
+        additional_keys={"tests": key},
+    )
+    assert out == gt_out
 
 
 def test_reflexion_cot_reflect_condition() -> None:
