@@ -2,19 +2,20 @@
 
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
+
 from agential.cog.modules.reflect.reflexion import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )
 from agential.cog.strategies.reflexion.code import (
-    parse_code_action_cot,
-    parse_code_action_react,
     ReflexionCoTCodeStrategy,
     ReflexionCoTHEvalStrategy,
     ReflexionCoTMBPPStrategy,
     ReflexionReActCodeStrategy,
     ReflexionReActHEvalStrategy,
     ReflexionReActMBPPStrategy,
+    parse_code_action_cot,
+    parse_code_action_react,
 )
 
 
@@ -127,7 +128,7 @@ def test_reflexion_cot_instantiate_strategies() -> None:
 
     assert isinstance(humaneval_strategy, ReflexionCoTHEvalStrategy)
     assert isinstance(mbpp_strategy, ReflexionCoTMBPPStrategy)
-    
+
 
 def test_reflexion_react_init() -> None:
     """Tests ReflexionReActCodeStrategy init."""
