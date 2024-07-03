@@ -204,11 +204,27 @@ Thought 1: I need to determine the final price of each egg after applying the di
 Action 1: Calculate[
 ```python
 original_egg_price_in_dollars = 80
-discount_dollars = 29
+discount_price = 29
 answer = original_egg_price_in_dollars + discount_dollars
 ```
 ]
 Observation 1: 
+```python
+original_egg_price_in_dollars = 80
+discount_price = 29
+answer = original_egg_price_in_dollars + discount_dollars
+```
+Execution Status: NameError("name 'discount_dollars' is not defined")
+Output: answer = None
+Thought 2: The above code causes the "NameError" because it use the variable `discount_dollars` before it is defined.
+Action 2: Calculate[
+```python
+original_egg_price_in_dollars = 80
+discount_dollars = 29
+answer = original_egg_price_in_dollars + discount_dollars
+```
+]
+Observation 2:
 ```python
 original_egg_price_in_dollars = 80
 discount_dollars = 29
@@ -216,15 +232,15 @@ answer = original_egg_price_in_dollars + discount_dollars
 ```
 Execution Status: Done
 Output: answer = 109
-Thought 2: The answer is incorrect. I need to subtract the discount from the original price to get the correct answer.
-Action 2: Calculate[
+Thought 3: The answer is incorrect. I need to subtract the discount from the original price to get the correct answer.
+Action 3: Calculate[
 ```python
 original_egg_price_in_dollars = 80
 discount_dollars = 29
 answer = original_egg_price_in_dollars - discount_dollars
 ```
 ]
-Observation 2: 
+Observation 3: 
 ```python
 original_egg_price_in_dollars = 80
 discount_dollars = 29
@@ -232,13 +248,13 @@ answer = original_egg_price_in_dollars - discount_dollars
 ```
 Execution Status: Done
 Output: answer = 51
-Thought 3: Each egg costs 51 dollars after the discount.
-Action 3: Finish[
+Thought 4: Each egg costs 51 dollars after the discount.
+Action 4: Finish[
 ```python
 answer = 51
 ```
 ]
-Observation 3: 
+Observation 4: 
 ```python
 answer = 51
 ```
@@ -336,8 +352,40 @@ answer = 11
 ---
 
 Question: There are 5 girls and 4 boys in the Masquerade, 12 more girls and 7 more boys joined. How many more girls than boys are in the Masquerade?
-Thought 1: I need to calculate the total number of girls and boys in the Masquerade and find the difference between them.
+Thought 1: I need to calculate the total number of girls in the Masquerade.
 Action 1: Calculate[
+```python
+num_girls_before = 5
+num_girls_joined = 12
+answer = num_girls_before + num_girls_joined
+```
+]
+Observation 1: 
+```python
+num_girls_before = 5
+num_girls_joined = 12
+answer = num_girls_before + num_girls_joined
+```
+Execution Status: Done
+Output: answer = 17
+Thought 2: I need to calculate the total number of boys in the Masquerade.
+Action 2: Calculate[
+```python
+num_boys_before = 4
+num_boys_joined = 7
+answer = num_boys_before + num_boys_joined
+```
+]
+Observation 2:
+```python
+num_boys_before = 4
+num_boys_joined = 7
+answer = num_boys_before + num_boys_joined
+```
+Execution Status: Done
+Output: answer = 11
+Thought 3: I need to calculate the total number of girls and boys in the Masquerade and find the difference between them.
+Action 3: Calculate[
 ```python
 num_girls_before = 5
 num_girls_joined = 12
@@ -348,7 +396,7 @@ total_boys = num_boys_before + num_boys_joined
 answer = total_girls - total_boys
 ```
 ]
-Observation 1: 
+Observation 3: 
 ```python
 num_girls_before = 5
 num_girls_joined = 12
@@ -360,13 +408,13 @@ answer = total_girls - total_boys
 ```
 Execution Status: Done
 Output: answer = 6
-Thought 2: There are 6 more girls than boys in the Masquerade.
-Action 2: Finish[
+Thought 4: There are 6 more girls than boys in the Masquerade.
+Action 4: Finish[
 ```python
 answer = 6
 ```
 ]
-Observation 2: 
+Observation 4: 
 ```python
 answer = 6
 ```
