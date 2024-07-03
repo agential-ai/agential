@@ -25,6 +25,7 @@ from agential.cog.strategies.reflexion.math import (
     ReflexionCoTSVAMPStrategy,
     ReflexionCoTTabMWPStrategy,
     ReflexionReActMathStrategy,
+    ReflexionReActGSM8KStrategy,
     ReflexionReActSVAMPStrategy,
     ReflexionReActTabMWPStrategy,
     parse_math_action_cot,
@@ -66,7 +67,7 @@ def test_parse_math_action_react() -> None:
 def test_reflexion_cot_init() -> None:
     """Tests ReflexionCoTMathStrategy init."""
     llm = FakeListChatModel(responses=[])
-    strategy = ReflexionCoTGSM8KStrategy(llm=llm)
+    strategy = ReflexionCoTMathStrategy(llm=llm)
     assert isinstance(strategy.llm, BaseChatModel)
     assert isinstance(strategy.reflector, ReflexionCoTReflector)
     assert strategy.max_reflections == 3
@@ -561,10 +562,10 @@ def test_reflexion_react_reflect_condition() -> None:
 def test_reflexion_react_instantiate_strategies() -> None:
     """Tests ReflexionReActMathStrategy instantiate strategies."""
     llm = FakeListChatModel(responses=[])
-    gsm8k_strategy = ReflexionReActMathStrategy(llm=llm)
+    gsm8k_strategy = ReflexionReActGSM8KStrategy(llm=llm)
     svamp_strategy = ReflexionReActSVAMPStrategy(llm=llm)
     tabmwp_strategy = ReflexionReActTabMWPStrategy(llm=llm)
 
-    assert isinstance(gsm8k_strategy, ReflexionReActMathStrategy)
+    assert isinstance(gsm8k_strategy, ReflexionReActGSM8KStrategy)
     assert isinstance(svamp_strategy, ReflexionReActSVAMPStrategy)
     assert isinstance(tabmwp_strategy, ReflexionReActTabMWPStrategy)

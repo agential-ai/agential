@@ -1,8 +1,19 @@
 """Unit tests for Reflexion Code strategies."""
 
+from langchain_community.chat_models.fake import FakeListChatModel
+from langchain_core.language_models.chat_models import BaseChatModel
+from agential.cog.modules.reflect.reflexion import (
+    ReflexionCoTReflector,
+    ReflexionReActReflector,
+)
 from agential.cog.strategies.reflexion.code import (
     parse_code_action_cot,
     parse_code_action_react,
+    ReflexionCoTCodeStrategy,
+    ReflexionCoTHEvalStrategy,
+    ReflexionCoTMBPPStrategy,
+    ReflexionReActCodeStrategy,
+    
 )
 
 
@@ -60,7 +71,15 @@ def test_parse_code_action_react() -> None:
 
 def test_reflexion_cot_init() -> None:
     """Tests ReflexionCoTMathStrategy init."""
-
+    llm = FakeListChatModel(responses=[])
+    strategy = ReflexionCoTCodeStrategy(llm=llm)
+    assert isinstance(strategy.llm, BaseChatModel)
+    assert isinstance(strategy.reflector, ReflexionCoTReflector)
+    assert strategy.max_reflections == 3
+    assert strategy.max_trials == 1
+    assert strategy._scratchpad == ""
+    assert strategy._finished == False
+    assert strategy._answer == ""
 
 def test_reflexion_cot_generate() -> None:
     """Tests ReflexionCoTMathStrategy generate."""
