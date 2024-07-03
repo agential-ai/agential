@@ -13,7 +13,8 @@ from agential.cog.strategies.reflexion.code import (
     ReflexionCoTHEvalStrategy,
     ReflexionCoTMBPPStrategy,
     ReflexionReActCodeStrategy,
-    
+    ReflexionReActHEvalStrategy,
+    ReflexionReActMBPPStrategy,
 )
 
 
@@ -80,6 +81,7 @@ def test_reflexion_cot_init() -> None:
     assert strategy._scratchpad == ""
     assert strategy._finished == False
     assert strategy._answer == ""
+
 
 def test_reflexion_cot_generate() -> None:
     """Tests ReflexionCoTMathStrategy generate."""
