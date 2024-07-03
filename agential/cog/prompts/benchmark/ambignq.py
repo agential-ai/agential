@@ -55,7 +55,7 @@ Action 2: Finish[1908]
 ---
 
 Question: When was the last time the USA men's national soccer team missed the World Cup?
-Thought1: Let's search the question in google
+Thought 1: Let's search the question in google
 Action 1: Search[When was the last time the USA men's national soccer team missed the World Cup? site: wikipedia.org]
 Observation 1: [United States at the FIFA World Cup - Wikipedia] The United States participated in every World Cup from 1990 through 2014, but did not qualify in 2018, marking first time the team had missed a World Cup since 1986. They returned to the World Cup by qualifying for the 2022 edition .
 Thought 2: The evidence suggests that the USA men's national soccer team did not qualify for the World Cup in 2018, but qualify for 2022, 2018 > 1986, so the last time the USA men's national soccer team missed the World Cup was in 2018.
