@@ -220,6 +220,47 @@ def test_reflexion_cot_generate_observation() -> None:
 
 def test_reflexion_cot_create_output_dict() -> None:
     """Tests ReflexionCoTCodeStrategy create_output_dict."""
+    strategy = ReflexionCoTCodeStrategy(llm=FakeListChatModel(responses=[]))
+
+    # Setting a dummy answer for testing.
+    strategy._answer = "correct_answer"
+
+    # Test case 1: Correct answer.
+    output = strategy.create_output_dict(
+        thought="This is a thought.",
+        action_type="Finish",
+        obs="Observation: Answer is CORRECT",
+        is_correct=True,
+        reflections=[],
+    )
+    expected_output = {
+        "thought": "This is a thought.",
+        "action_type": "Finish",
+        "observation": "Observation: Answer is CORRECT",
+        "answer": "correct_answer",
+        "is_correct": True,
+        "reflections": [],
+    }
+    assert output == expected_output
+
+    # Test case 2: Incorrect answer.
+    strategy._answer = "incorrect_answer"
+    output = strategy.create_output_dict(
+        thought="This is a thought.",
+        action_type="Finish",
+        obs="Observation: Answer is INCORRECT",
+        is_correct=False,
+        reflections=[],
+    )
+    expected_output = {
+        "thought": "This is a thought.",
+        "action_type": "Finish",
+        "observation": "Observation: Answer is INCORRECT",
+        "answer": "incorrect_answer",
+        "is_correct": False,
+        "reflections": [],
+    }
+    assert output == expected_output
 
 
 def test_reflexion_cot_halting_condition() -> None:
