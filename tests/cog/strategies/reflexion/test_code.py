@@ -374,7 +374,29 @@ def test_reflexion_react_init() -> None:
 
 def test_reflexion_react_generate() -> None:
     """Tests ReflexionReActCodeStrategy generate."""
+    question = "Write a python function to find the first repeated character in a given string."
+    key = """assert first_repeated_char("abcabc") == "a"
+    assert first_repeated_char("abc") == None
+    assert first_repeated_char("123123") == "1\""""
 
+    gt_scratchpad = "\nThought: Let's think step by step. We need to iterate through the string and keep track of characters we have seen so far. Once we encounter a character that has already been seen, we return it as the first repeated character."
+    gt_out = "Let's think step by step. We need to iterate through the string and keep track of characters we have seen so far. Once we encounter a character that has already been seen, we return it as the first repeated character."
+    responses = [
+        "Let's think step by step. We need to iterate through the string and keep track of characters we have seen so far. Once we encounter a character that has already been seen, we return it as the first repeated character.\nAction: Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]"
+    ]
+    llm = FakeListChatModel(responses=responses)
+    strategy = ReflexionReActCodeStrategy(llm=llm)
+    out = strategy.generate(
+        question=question,
+        examples=MBPP_FEWSHOT_EXAMPLES_COT,
+        reflections="",
+        prompt=REFLEXION_COT_INSTRUCTION_MBPP,
+        additional_keys={"tests": key},
+    )
+    assert out == gt_out
+    assert strategy._scratchpad == gt_scratchpad
+    assert strategy._finished == False
+    assert strategy._answer == ""
 
 def test_reflexion_react_generate_action() -> None:
     """Tests ReflexionReActCodeStrategy generate_action."""
