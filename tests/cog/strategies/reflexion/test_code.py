@@ -398,6 +398,7 @@ def test_reflexion_react_generate() -> None:
     assert strategy._finished == False
     assert strategy._answer == ""
 
+
 def test_reflexion_react_generate_action() -> None:
     """Tests ReflexionReActCodeStrategy generate_action."""
 
