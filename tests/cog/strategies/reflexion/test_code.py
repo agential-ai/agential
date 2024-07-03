@@ -1,10 +1,10 @@
 """Unit tests for Reflexion Code strategies."""
 
-
 from agential.cog.strategies.reflexion.code import (
     parse_code_action_cot,
     parse_code_action_react,
 )
+
 
 def test_parse_code_action_cot() -> None:
     """Tests parse_code_action_cot."""
@@ -61,68 +61,90 @@ def test_parse_code_action_react() -> None:
 def test_reflexion_cot_init() -> None:
     """Tests ReflexionCoTMathStrategy init."""
 
+
 def test_reflexion_cot_generate() -> None:
     """Tests ReflexionCoTMathStrategy generate."""
+
 
 def test_reflexion_cot_generate_action() -> None:
     """Tests ReflexionCoTMathStrategy generate_action."""
 
+
 def test_reflexion_cot_generate_observation() -> None:
     """Tests ReflexionCoTMathStrategy generate_observation."""
+
 
 def test_reflexion_cot_create_output_dict() -> None:
     """Tests ReflexionCoTMathStrategy create_output_dict."""
 
+
 def test_reflexion_cot_halting_condition() -> None:
     """Tests ReflexionCoTMathStrategy halting_condition."""
+
 
 def test_reflexion_cot_reset() -> None:
     """Tests ReflexionCoTMathStrategy reset."""
 
+
 def test_reflexion_cot_reflect() -> None:
     """Tests ReflexionCoTMathStrategy reflect."""
+
 
 def test_reflexion_cot_reflect_condition() -> None:
     """Tests ReflexionCoTMathStrategy reflect_condition."""
 
+
 def test_reflexion_cot_instantiate_strategies() -> None:
     """Tests ReflexionCoTMathStrategy instantiate strategies."""
+
 
 def test_reflexion_react_init() -> None:
     """Tests ReflexionReActMathStrategy init."""
 
+
 def test_reflexion_react_generate() -> None:
     """Tests ReflexionReActMathStrategy generate."""
+
 
 def test_reflexion_react_generate_action() -> None:
     """Tests ReflexionReActMathStrategy generate_action."""
 
+
 def test_reflexion_cot_generate_action_humaneval() -> None:
     """Tests ReflexionCoTHEvalStrategy generate_action."""
+
 
 def test_reflexion_react_generate_observation() -> None:
     """Tests ReflexionReActMathStrategy generate_observation."""
 
+
 def test_reflexion_react_create_output_dict() -> None:
     """Tests ReflexionReActMathStrategy create_output_dict."""
+
 
 def test_reflexion_react_react_create_output_dict() -> None:
     """Tests ReflexionReActMathStrategy react_create_output_dict."""
 
+
 def test_reflexion_react_halting_condition() -> None:
     """Tests ReflexionReActMathStrategy halting_condition."""
+
 
 def test_reflexion_react_react_halting_condition() -> None:
     """Tests ReflexionReActMathStrategy react_halting_condition."""
 
+
 def test_reflexion_react_reset() -> None:
     """Tests ReflexionReActMathStrategy reset."""
+
 
 def test_reflexion_react_reflect() -> None:
     """Tests ReflexionReActMathStrategy reflect."""
 
+
 def test_reflexion_react_reflect_condition() -> None:
     """Tests ReflexionReActMathStrategy reflect_condition."""
+
 
 def test_reflexion_react_instantiate_strategies() -> None:
     """Tests ReflexionReActMathStrategy instantiate strategies."""
