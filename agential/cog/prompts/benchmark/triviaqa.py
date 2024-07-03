@@ -40,8 +40,11 @@ TRIVIAQA_FEWSHOT_EXAMPLES_REACT = """Question: Mendelssohn's 'Wedding March' was
 Thought 1: Let's search the question in google
 Action 1: Search[Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842? site:wikipedia.org]
 Observation 1: [Wedding March (Mendelssohn) - Wikipedia] Mendelssohn's 'Wedding March' was originally written as incidental music for A Midsummer Night's Dream in 1842.
-Thought 2: The evidence suggests that Mendelssohn's 'Wedding March' was originally written as incidental music for A Midsummer Night's Dream in 1842.
-Action 2: Finish[A Midsummer Night's Dream]
+Thought 2: The evidence suggests that Mendelssohn's 'Wedding March' was originally written as incidental music for A Midsummer Night's Dream in 1842. Let's verify this with another source.
+Action 2: Search[Mendelssohn's 'Wedding March' A Midsummer Night's Dream 1842]
+Observation 2: [Britannica - Wedding March] Felix Mendelssohn composed his 'Wedding March' as part of his incidental music for William Shakespeare's play A Midsummer Night's Dream in 1842.
+Thought 3: Since multiple sources confirm that Mendelssohn's 'Wedding March' was originally written as incidental music for A Midsummer Night's Dream in 1842, it is likely accurate.
+Action 3: Finish[A Midsummer Night's Dream]
 
 ---
 
