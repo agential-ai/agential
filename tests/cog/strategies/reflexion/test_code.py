@@ -182,6 +182,40 @@ def test_reflexion_cot_generate_action_humaneval() -> None:
 
 def test_reflexion_cot_generate_observation() -> None:
     """Tests ReflexionCoTCodeStrategy generate_observation."""
+    llm = FakeListChatModel(responses=[])
+
+    # Case 1: action_type is "Finish" and answer is correct.
+    strategy = ReflexionCoTCodeStrategy(llm=llm)
+    is_correct, obs = strategy.generate_observation(
+        action_type="Finish",
+        query="print('Hello World!')",
+        key="print('Hi World!')",
+    )
+    assert is_correct == True
+    assert obs == "Answer is CORRECT"
+    assert "Observation: Answer is CORRECT" in strategy._scratchpad
+    
+    # Case 2: action_type is "Finish" and answer is incorrect.
+    strategy = ReflexionCoTCodeStrategy(llm=llm)
+    is_correct, obs = strategy.generate_observation(
+        action_type="Finish",
+        query="correct_answer",
+        key="correct_answer",
+    )
+    assert is_correct == False
+    assert obs == "Answer is INCORRECT"
+    assert "Observation: Answer is INCORRECT" in strategy._scratchpad
+
+    # Case 3: action_type is not "Finish".
+    strategy = ReflexionCoTCodeStrategy(llm=llm)
+    is_correct, obs = strategy.generate_observation(
+        action_type="Calculate",
+        query="some_query",
+        key="correct_answer",
+    )
+    assert is_correct == False
+    assert obs == 'Invalid action type, please try again. Valid action is Finish[```python<code>```]'
+    assert "Observation: Invalid action type, please try again." in strategy._scratchpad
 
 
 def test_reflexion_cot_create_output_dict() -> None:
