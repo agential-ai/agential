@@ -401,12 +401,44 @@ def test_reflexion_react_generate() -> None:
 
 def test_reflexion_react_generate_action() -> None:
     """Tests ReflexionReActCodeStrategy generate_action."""
+    question = "Write a python function to find the first repeated character in a given string."
+    key = """assert first_repeated_char("abcabc") == "a"
+    assert first_repeated_char("abc") == None
+    assert first_repeated_char("123123") == "1\""""
+
+    gt_scratchpad = '\nAction: Implement[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]'
+    gt_query = 'def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None'
+    responses = [
+        'Implement[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]'
+    ]
+    llm = FakeListChatModel(responses=responses)
+    strategy = ReflexionReActCodeStrategy(llm=llm)
+    action_type, query = strategy.generate_action(
+        question=question,
+        examples=MBPP_FEWSHOT_EXAMPLES_REACT,
+        reflections="",
+        prompt=REFLEXION_REACT_INSTRUCTION_MBPP,
+        additional_keys={"tests": key},
+    )
+    assert action_type == "Implement"
+    assert query == gt_query
+    assert strategy._scratchpad == gt_scratchpad
+    assert strategy._finished == False
+    assert strategy._answer == ""
 
 
 def test_reflexion_react_generate_observation() -> None:
     """Tests ReflexionReActCodeStrategy generate_observation."""
+    llm = FakeListChatModel(responses=[])
+    strategy = ReflexionReActCodeStrategy(llm=llm)
+    is_correct, obs, external_tool_info = strategy.generate_observation(
+        step_idx=1,
+        action_type="Calculate",
+        query="eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income",
+        key=-9867630,
+    )
 
-
+    
 def test_reflexion_react_create_output_dict() -> None:
     """Tests ReflexionReActCodeStrategy create_output_dict."""
 
