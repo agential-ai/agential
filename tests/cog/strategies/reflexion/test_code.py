@@ -483,7 +483,8 @@ def test_reflexion_react_generate_observation() -> None:
     assert is_correct
     print(repr(obs))
     assert (
-        obs == '\n```python\nanswer = 5\n\nassert answer == 5\n```\nExecution Status: Done'  
+        obs
+        == "\n```python\nanswer = 5\n\nassert answer == 5\n```\nExecution Status: Done"
     )
     assert external_tool_info == {"execution_status": "Done"}
 
@@ -524,6 +525,7 @@ def test_reflexion_react_create_output_dict() -> None:
         "reflections": reflections,
     }
     assert output == expected_output
+
 
 def test_reflexion_react_react_create_output_dict() -> None:
     """Tests ReflexionReActCodeStrategy react_create_output_dict."""
