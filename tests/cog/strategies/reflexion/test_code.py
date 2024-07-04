@@ -483,7 +483,7 @@ def test_reflexion_react_generate_observation() -> None:
     assert is_correct
     print(repr(obs))
     assert (
-        obs == "\n```python\nanswer = 5\n\nassert answer == 5\n```\nExecution Status: "
+        obs == '\n```python\nanswer = 5\n\nassert answer == 5\n```\nExecution Status: Done'  
     )
     assert external_tool_info == {"execution_status": ""}
 
