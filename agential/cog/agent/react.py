@@ -124,7 +124,7 @@ class ReActAgent(BaseAgent):
 
             out.append(
                 ReActOutput(
-                    self.strategy.create_output_dict(
+                    **self.strategy.create_output_dict(
                         thought=thought,
                         action_type=action_type,
                         query=query,
