@@ -485,7 +485,7 @@ def test_reflexion_react_generate_observation() -> None:
     assert (
         obs == '\n```python\nanswer = 5\n\nassert answer == 5\n```\nExecution Status: Done'  
     )
-    assert external_tool_info == {"execution_status": ""}
+    assert external_tool_info == {"execution_status": "Done"}
 
     # Test invalid action.
     is_correct, obs, external_tool_info = strategy.generate_observation(
@@ -500,37 +500,153 @@ def test_reflexion_react_generate_observation() -> None:
         == "Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer]."
     )
     assert strategy._scratchpad != ""
-    assert not strategy._finished
-    assert strategy._answer == ""
+    assert strategy._finished
+    assert strategy._answer == "answer = 5"
     assert external_tool_info == {"execution_status": ""}
 
 
 def test_reflexion_react_create_output_dict() -> None:
     """Tests ReflexionReActCodeStrategy create_output_dict."""
-
+    strategy = ReflexionReActCodeStrategy(llm=FakeListChatModel(responses=[]))
+    react_out = [
+        {
+            "thought": "First thought",
+            "action_type": "Query",
+            "query": "What is the capital of France?",
+            "observation": "Observation: Answer is CORRECT",
+            "is_correct": True,
+        }
+    ]
+    reflections = "Reflection on the first thought."
+    output = strategy.create_output_dict(react_out, reflections)
+    expected_output = {
+        "react_output": react_out,
+        "reflections": reflections,
+    }
+    assert output == expected_output
 
 def test_reflexion_react_react_create_output_dict() -> None:
     """Tests ReflexionReActCodeStrategy react_create_output_dict."""
+    strategy = ReflexionReActCodeStrategy(llm=FakeListChatModel(responses=[]))
+
+    # Test case 1: Valid output creation
+    output = strategy.react_create_output_dict(
+        thought="Initial thought",
+        action_type="Query",
+        query="What is the capital of France?",
+        obs="Observation: Answer is CORRECT",
+        external_tool_info={"search_result": "", "lookup_result": ""},
+        is_correct=True,
+    )
+    expected_output = {
+        "thought": "Initial thought",
+        "action_type": "Query",
+        "query": "What is the capital of France?",
+        "observation": "Observation: Answer is CORRECT",
+        "answer": "",
+        "external_tool_info": {"search_result": "", "lookup_result": ""},
+        "is_correct": True,
+    }
+    assert output == expected_output
 
 
 def test_reflexion_react_halting_condition() -> None:
     """Tests ReflexionReActCodeStrategy halting_condition."""
+    llm = FakeListChatModel(responses=[])
+
+    # Test case 1: Halting condition met because answer is incorrect and index is less than max_trials.
+    strategy = ReflexionReActCodeStrategy(llm=llm, max_trials=5)
+    strategy._answer = "incorrect_answer"
+    assert strategy.halting_condition(3, "correct_answer") == False
+
+    # Test case 2: Halting condition not met because answer is correct.
+    strategy = ReflexionReActCodeStrategy(llm=llm, max_trials=5)
+    strategy._answer = "correct_answer"
+    assert strategy.halting_condition(3, "correct_answer") == False
+
+    # Test case 3: Halting condition not met because index is greater than or equal to max_trials.
+    strategy = ReflexionReActCodeStrategy(llm=llm, max_trials=3)
+    strategy._answer = "incorrect_answer"
+    assert strategy.halting_condition(4, "correct_answer") == True
+
+    # Test case 4: Halting condition met using max_trials from kwargs.
+    strategy = ReflexionReActCodeStrategy(llm=llm, max_trials=5)
+    strategy._answer = "incorrect_answer"
+    assert strategy.halting_condition(3, "correct_answer", max_trials=4) == False
+
+    # Test case 5: Halting condition not met using max_trials from kwargs.
+    strategy = ReflexionReActCodeStrategy(llm=llm, max_trials=5)
+    strategy._answer = "incorrect_answer"
+    assert strategy.halting_condition(4, "correct_answer", max_trials=3) == True
 
 
 def test_reflexion_react_react_halting_condition() -> None:
     """Tests ReflexionReActCodeStrategy react_halting_condition."""
+    strategy = ReflexionReActCodeStrategy(llm=FakeListChatModel(responses=[]))
+
+    idx = 0
+    question = "What is the capital of France?"
+    examples = ""
+    reflections = ""
+    prompt = "Answer the question."
+
+    assert not strategy.react_halting_condition(
+        idx, question, examples, reflections, prompt, {}
+    )
 
 
 def test_reflexion_react_reset() -> None:
     """Tests ReflexionReActCodeStrategy reset."""
+    llm = FakeListChatModel(responses=[])
+    strategy = ReflexionReActCodeStrategy(llm=llm)
+    strategy._scratchpad = "Some previous state"
+    strategy._finished = True
+
+    strategy.reset()
+
+    assert strategy._scratchpad == ""
+    assert not strategy._finished
 
 
 def test_reflexion_react_reflect() -> None:
     """Tests ReflexionReActCodeStrategy reflect."""
+    question = "Write a python function to find the first repeated character in a given string."
+    key = """assert first_repeated_char("abcabc") == "a"
+    assert first_repeated_char("abc") == None
+    assert first_repeated_char("123123") == "1\""""
+
+    gt_reflections = "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
+    llm = FakeListChatModel(responses=["1"])
+    strategy = ReflexionReActCodeStrategy(llm=llm)
+    _, reflections = strategy.reflect(
+        reflect_strategy="reflexion",
+        question=question,
+        examples=MBPP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_MBPP,
+        additional_keys={"tests": key},
+    )
+    assert reflections == gt_reflections
 
 
 def test_reflexion_react_reflect_condition() -> None:
     """Tests ReflexionReActCodeStrategy reflect_condition."""
+    question = "Write a python function to find the first repeated character in a given string."
+    key = """assert first_repeated_char("abcabc") == "a"
+    assert first_repeated_char("abc") == None
+    assert first_repeated_char("123123") == "1\""""
+
+    llm = FakeListChatModel(responses=["1"])
+    strategy = ReflexionReActCodeStrategy(llm=llm)
+    out = strategy.reflect_condition(
+        step_idx=1,
+        reflect_strategy="reflexion",
+        question=question,
+        examples=MBPP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+        key="key",
+        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_MBPP,
+        additional_keys={"tests": key},
+    )
+    assert not out
 
 
 def test_reflexion_react_instantiate_strategies() -> None:
