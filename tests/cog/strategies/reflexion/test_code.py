@@ -406,10 +406,10 @@ def test_reflexion_react_generate_action() -> None:
     assert first_repeated_char("abc") == None
     assert first_repeated_char("123123") == "1\""""
 
-    gt_scratchpad = '\nAction: Implement[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]'
-    gt_query = 'def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None'
+    gt_scratchpad = "\nAction: Implement[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]"
+    gt_query = "def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None"
     responses = [
-        'Implement[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]'
+        "Implement[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]"
     ]
     llm = FakeListChatModel(responses=responses)
     strategy = ReflexionReActCodeStrategy(llm=llm)
@@ -431,14 +431,80 @@ def test_reflexion_react_generate_observation() -> None:
     """Tests ReflexionReActCodeStrategy generate_observation."""
     llm = FakeListChatModel(responses=[])
     strategy = ReflexionReActCodeStrategy(llm=llm)
+
+    # Test Implement.
     is_correct, obs, external_tool_info = strategy.generate_observation(
         step_idx=1,
-        action_type="Calculate",
-        query="eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income",
-        key=-9867630,
+        action_type="Implement",
+        query="x = 1 + 1\nanswer = x",
+        key="key1",
     )
+    assert not is_correct
+    assert obs == "\n```python\nx = 1 + 1\nanswer = x\n```\nExecution Status: "
+    assert external_tool_info == {"execution_status": "Done"}
 
-    
+    # Test Finish incorrect.
+    is_correct, obs, external_tool_info = strategy.generate_observation(
+        step_idx=2,
+        action_type="Finish",
+        query="answer = 5",
+        key="key2",
+    )
+    assert not is_correct
+    assert obs == "Answer is INCORRECT"
+    assert strategy._scratchpad != ""
+    assert strategy._finished
+    assert strategy._answer == "answer = 5"
+    assert external_tool_info == {
+        "execution_status": "NameError(\"name 'key2' is not defined\")"
+    }
+
+    # Test Finish correct.
+    is_correct, obs, external_tool_info = strategy.generate_observation(
+        step_idx=3,
+        action_type="Finish",
+        query="answer = 5",
+        key="print('Hello world')",
+    )
+    assert is_correct
+    assert obs == "Answer is CORRECT"
+    assert strategy._scratchpad != ""
+    assert strategy._finished
+    assert strategy._answer == "answer = 5"
+    assert external_tool_info == {"execution_status": "Done"}
+
+    # Test Test action.
+    is_correct, obs, external_tool_info = strategy.generate_observation(
+        step_idx=4,
+        action_type="Test",
+        query="assert answer == 5",
+        key="key4",
+    )
+    assert is_correct
+    print(repr(obs))
+    assert (
+        obs == "\n```python\nanswer = 5\n\nassert answer == 5\n```\nExecution Status: "
+    )
+    assert external_tool_info == {"execution_status": ""}
+
+    # Test invalid action.
+    is_correct, obs, external_tool_info = strategy.generate_observation(
+        step_idx=5,
+        action_type="Invalid",
+        query="answer = 5",
+        key="key5",
+    )
+    assert not is_correct
+    assert (
+        obs
+        == "Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer]."
+    )
+    assert strategy._scratchpad != ""
+    assert not strategy._finished
+    assert strategy._answer == ""
+    assert external_tool_info == {"execution_status": ""}
+
+
 def test_reflexion_react_create_output_dict() -> None:
     """Tests ReflexionReActCodeStrategy create_output_dict."""
 
