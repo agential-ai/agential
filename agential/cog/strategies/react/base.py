@@ -64,7 +64,7 @@ class ReActBaseStrategy(BaseStrategy):
         query: str,
         obs: str,
         external_tool_info: Dict[str, Any],
-    ) -> Dict[str, str]:
+    ) -> Dict[str, Any]:
         """Creates a dictionary of the output components.
 
         Args:

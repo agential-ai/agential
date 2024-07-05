@@ -71,7 +71,7 @@ class ReActAgent(BaseAgent):
         additional_keys: Dict[str, str] = {},
         reset: bool = True,
         **kwargs: Any,
-    ) -> List[Dict[str, str]]:
+    ) -> List[ReActOutput]:
         """Processes a given question through ReAct.
 
         Iteratively applies the think-act-observe cycle to generate an answer for the question.
@@ -86,8 +86,8 @@ class ReActAgent(BaseAgent):
             **kwargs (Any): Additional parameters for flexibility.
 
         Returns:
-            List[Dict[str, str]]: The list of accumulated output from the ReAct process,
-                each dictionary consists of a thought, action type/query, observation, and answer.
+            List[ReActOutput]: The list of accumulated output from the ReAct process,
+                each ReActOutput consists of a thought, action type/query, observation, answer, and external tool info.
         """
         if reset:
             self.reset()
