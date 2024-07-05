@@ -95,7 +95,7 @@ def gather_experience(
         )
 
         reflections = [
-            trial["reflections"] for trial in trajectory if trial["reflections"]
+            trial.reflections for trial in trajectory if trial.reflections
         ]
         reflections = list(set(list(chain.from_iterable(reflections))))
         experiences["idxs"].append(idx)
