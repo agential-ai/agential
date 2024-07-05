@@ -302,12 +302,12 @@ class ExpeLAgent(BaseAgent):
 
                 # Compare the successful trial with all previous failed trials.
                 success_trial = "".join(
-                    f"Thought: {step['thought']}\nAction: {step['action_type']}[{step['query']}]\nObservation: {step['observation']}\n"
+                    f"Thought: {step.thought}\nAction: {step.action_type}[{step.query}]\nObservation: {step.observation}\n"
                     for step in trajectory[-1]["react_output"]
                 )
                 for failed_trial in trajectory[:-1]:
                     failed_trial = "".join(
-                        f"Thought: {step['thought']}\nAction: {step['action_type']}[{step['query']}]\nObservation: {step['observation']}\n"
+                        f"Thought: {step.thought}\nAction: {step.action_type}[{step.query}]\nObservation: {step.observation}\n"
                         for step in failed_trial["react_output"]
                     )
                     insights = self.insight_memory.load_memories()["insights"]
@@ -334,10 +334,8 @@ class ExpeLAgent(BaseAgent):
                     concat_success_trajs = [
                         f"{experiences['questions'][idx]}\n"
                         + "".join(
-                            f"Thought: {step['thought']}\nAction: {step['action_type']}[{step['query']}]\nObservation: {step['observation']}\n"
-                            for step in experiences["trajectories"][idx][0][
-                                "react_output"
-                            ]
+                            f"Thought: {step.thought}\nAction: {step.action_type}[{step.query}]\nObservation: {step.observation}\n"
+                            for step in experiences["trajectories"][idx][0].react_output
                         )
                         for idx in success_idxs
                     ]

@@ -149,6 +149,8 @@ class ExpeLExperienceMemory(BaseMemory):
                 )
 
                 # Add all trajectory actions.
+                print(steps[0])
+
                 self.success_traj_docs.extend(
                     [
                         Document(
@@ -324,7 +326,7 @@ class ExpeLExperienceMemory(BaseMemory):
         """
         task_idx = fewshot_doc.metadata["task_idx"]
         trajectory = self.experiences["trajectories"][task_idx]
-        steps = trajectory[0]["react_output"]  # A successful trial.
+        steps = trajectory[0].react_output  # A successful trial.
         steps_str = ""
         for step in steps:
             step = f"Thought: {step.thought}\nAction: {step.action_type}[{step.query}]\nObservation: {step.observation}\n"

@@ -12,6 +12,7 @@ from agential.cog.modules.memory.expel import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
+from agential.cog.agent.reflexion import ReflexionReActStepOutput
 from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 
 fewshot_questions = re.findall(r"Question: (.+?)\n", HOTPOTQA_FEWSHOT_EXAMPLES_REACT)
@@ -21,41 +22,61 @@ fewshot_keys = re.findall(
 
 fewshot_examples = [
     [
-        {
-            "thought": "I need to search Colorado orogeny, find the area that the eastern sector of the Colorado orogeny extends into, then find the elevation range of the area.",
-            "action_type": "Search",
-            "query": "Colorado orogeny",
-            "observation": "The Colorado orogeny was an episode of mountain building (an orogeny) in Colorado and surrounding areas.",
-            "is_correct": False,
-        },
-        {
-            "thought": "It does not mention the eastern sector. So I need to look up eastern sector.",
-            "action_type": "Lookup",
-            "query": "eastern sector",
-            "observation": "(Result 1 / 1) The eastern sector extends into the High Plains and is called the Central Plains orogeny.",
-            "is_correct": False,
-        },
-        {
-            "thought": "The eastern sector of Colorado orogeny extends into the High Plains. So I need to search High Plains and find its elevation range.",
-            "action_type": "Search",
-            "query": "High Plains",
-            "observation": "High Plains refers to one of two distinct land regions:",
-            "is_correct": False,
-        },
-        {
-            "thought": "I need to instead search High Plains (United States).",
-            "action_type": "Search",
-            "query": "High Plains (United States)",
-            "observation": "The High Plains are a subregion of the Great Plains. From east to west, the High Plains rise in elevation from around 1,800 to 7,000 ft (550 to 2,130 m).[3]",
-            "is_correct": False,
-        },
-        {
-            "thought": "High Plains rise in elevation from around 1,800 to 7,000 ft, so the answer is 1,800 to 7,000 ft.",
-            "action_type": "Finish",
-            "query": "1,800 to 7,000 ft",
-            "observation": "1,800 to 7,000 ft",
-            "is_correct": True,
-        },
+        ReflexionReActStepOutput(
+            **{
+                "thought": "I need to search Colorado orogeny, find the area that the eastern sector of the Colorado orogeny extends into, then find the elevation range of the area.",
+                "action_type": "Search",
+                "query": "Colorado orogeny",
+                "observation": "The Colorado orogeny was an episode of mountain building (an orogeny) in Colorado and surrounding areas.",
+                "answer": "",
+                "external_tool_info": {"search_result": "The Colorado orogeny was an episode of mountain building (an orogeny) in Colorado and surrounding areas.", "lookup_result": ""},
+                "is_correct": False,
+            }
+        ),
+        ReflexionReActStepOutput(
+            **{
+                "thought": "It does not mention the eastern sector. So I need to look up eastern sector.",
+                "action_type": "Lookup",
+                "query": "eastern sector",
+                "observation": "(Result 1 / 1) The eastern sector extends into the High Plains and is called the Central Plains orogeny.",
+                "answer": "",
+                "external_tool_info": {"search_result": "", "lookup_result": "(Result 1 / 1) The eastern sector extends into the High Plains and is called the Central Plains orogeny."},
+                "is_correct": False,
+            }
+        ),
+        ReflexionReActStepOutput(
+            **{
+                "thought": "The eastern sector of Colorado orogeny extends into the High Plains. So I need to search High Plains and find its elevation range.",
+                "action_type": "Search",
+                "query": "High Plains",
+                "observation": "High Plains refers to one of two distinct land regions:",
+                "answer": "",
+                "external_tool_info": {"search_result": "High Plains refers to one of two distinct land regions:", "lookup_result": ""},
+                "is_correct": False,
+            }
+        ),
+        ReflexionReActStepOutput(
+            **{
+                "thought": "I need to instead search High Plains (United States).",
+                "action_type": "Search",
+                "query": "High Plains (United States)",
+                "observation": "The High Plains are a subregion of the Great Plains. From east to west, the High Plains rise in elevation from around 1,800 to 7,000 ft (550 to 2,130 m).[3]",
+                "answer": "",
+                "external_tool_info": {"search_result": "The High Plains are a subregion of the Great Plains. From east to west, the High Plains rise in elevation from around 1,800 to 7,000 ft (550 to 2,130 m).[3]", "lookup_result": ""},
+                "is_correct": False,
+            },
+        ),
+        ReflexionReActStepOutput(
+            **{
+                "thought": "High Plains rise in elevation from around 1,800 to 7,000 ft, so the answer is 1,800 to 7,000 ft.",
+                "action_type": "Finish",
+                "query": "1,800 to 7,000 ft",
+                "observation": "1,800 to 7,000 ft",
+                "answer": "1,800 to 7,000 ft",
+                "external_tool_info": {"search_result": "", "lookup_result": ""},
+                "is_correct": True,
+            }
+        )
     ]
     for _ in range(6)
 ]
@@ -93,7 +114,7 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
     assert memory.strategy == "task"
     assert isinstance(memory.embedder, Embeddings)
     assert isinstance(memory.encoder, Encoding)
-    assert len(memory.success_traj_docs) == 10
+    assert len(memory.success_traj_docs) == 13
     assert memory.vectorstore
 
     success_traj_doc_types = [
@@ -101,11 +122,11 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
         "action",
         "action",
         "action",
+        "action",
         "thought",
         "thought",
         "thought",
-        "step",
-        "step",
+        "thought",
         "step",
     ]
 
@@ -160,7 +181,7 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
     assert isinstance(memory.embedder, Embeddings)
     assert isinstance(memory.encoder, Encoding)
 
-    assert len(memory.success_traj_docs) == 106
+    assert len(memory.success_traj_docs) == 109
     assert memory.vectorstore
 
 
@@ -222,7 +243,7 @@ def test_expel_experience_memory_add_memories(
     assert memory.experiences["keys"][0] == success_keys[0]
     assert memory.experiences["trajectories"][0] == success_trajectories[0]
     assert memory.experiences["reflections"][0] == success_reflections[0]
-    assert len(memory.success_traj_docs) == 10
+    assert len(memory.success_traj_docs) == 13
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
     assert memory.vectorstore
 
@@ -236,7 +257,7 @@ def test_expel_experience_memory_add_memories(
     assert memory.experiences["keys"][1] == success_keys[0]
     assert memory.experiences["trajectories"][1] == success_trajectories[0]
     assert memory.experiences["reflections"][1] == success_reflections[0]
-    assert len(memory.success_traj_docs) == 20
+    assert len(memory.success_traj_docs) == 26
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
     assert memory.success_traj_docs[-1].metadata["task_idx"] == 1
     assert memory.vectorstore
@@ -465,7 +486,7 @@ def test_expel_experience_memory_show_memories(
         "vectorstore",
     ]
     assert memory.experiences == memory_dict["experiences"]
-    assert len(memory_dict["success_traj_docs"]) == 10
+    assert len(memory_dict["success_traj_docs"]) == 13
     assert memory_dict["vectorstore"]
 
 
