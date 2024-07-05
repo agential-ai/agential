@@ -1,6 +1,6 @@
 """Unit tests for Reflexion eval."""
 
-from agential.cog.eval.reflexion import EM
+from agential.cog.eval.em import EM
 
 
 def test_em() -> None:
