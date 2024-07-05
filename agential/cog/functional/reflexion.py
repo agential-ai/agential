@@ -178,13 +178,6 @@ def _prompt_cot_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print(
-        "<PROMPT AGENT===============================================================>"
-    )
-    print(prompt)
-    print(
-        "<PROMPT AGENT===============================================================>"
-    )
     out = llm(
         [
             HumanMessage(
@@ -192,9 +185,6 @@ def _prompt_cot_agent(
             )
         ]
     ).content
-    print("<OUT AGENT===============================================================>")
-    print(repr(out))
-    print("<OUT AGENT===============================================================>")
     assert isinstance(out, str)
     return out
 
@@ -262,13 +252,6 @@ def _prompt_cot_reflection(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print(
-        "<PROMPT REFLECT===============================================================>"
-    )
-    print(prompt)
-    print(
-        "<PROMPT REFLECT===============================================================>"
-    )
     out = llm(
         [
             HumanMessage(
@@ -276,13 +259,6 @@ def _prompt_cot_reflection(
             )
         ]
     ).content
-    print(
-        "<OUT REFLECT===============================================================>"
-    )
-    print(repr(out))
-    print(
-        "<OUT REFLECT===============================================================>"
-    )
     assert isinstance(out, str)
     return out
 
@@ -520,13 +496,6 @@ def _prompt_react_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print(
-        "<PROMPT AGENT===============================================================>"
-    )
-    print(prompt)
-    print(
-        "<PROMPT AGENT===============================================================>"
-    )
     out = llm(
         [
             HumanMessage(
@@ -534,9 +503,6 @@ def _prompt_react_agent(
             )
         ]
     ).content
-    print("<OUT AGENT===============================================================>")
-    print(repr(out))
-    print("<OUT AGENT===============================================================>")
     assert isinstance(out, str)
     return out
 
@@ -658,13 +624,6 @@ def _prompt_react_reflection(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print(
-        "<PROMPT REFLECT===============================================================>"
-    )
-    print(prompt)
-    print(
-        "<PROMPT REFLECT===============================================================>"
-    )
     out = llm(
         [
             HumanMessage(
@@ -672,13 +631,6 @@ def _prompt_react_reflection(
             )
         ]
     ).content
-    print(
-        "<OUT REFLECT===============================================================>"
-    )
-    print(repr(out))
-    print(
-        "<OUT REFLECT===============================================================>"
-    )
     assert isinstance(out, str)
     return out
 
