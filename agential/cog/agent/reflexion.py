@@ -373,7 +373,7 @@ class ReflexionReActAgent(BaseAgent):
         patience: int = 1,
         reset: bool = True,
         **kwargs: Any,
-    ) -> List[Dict[str, Any]]:
+    ) -> List[ReflexionReActOutput]:
         """Processes a given question through ReAct and reflects using Reflexion strategies when possible.
 
         Iteratively applies the think-act-observe cycle to generate an answer for the question.
@@ -397,8 +397,8 @@ class ReflexionReActAgent(BaseAgent):
             **kwargs (Any): Additional keyword arguments for the strategy.
 
         Returns:
-            result (List[Dict[str, Any]]): List of dictionaries containing the ReAct output as a List[Dict[str, str]] and
-                the reflection at the end of each trial.
+            result (List[ReflexionReActOutput]): List of ReflexionReActOutput where each ReflexionReActOutput contains the ReAct output and
+                the reflections at the end of the trial.
         """
         # Reset.
         if reset:
