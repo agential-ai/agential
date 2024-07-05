@@ -6,7 +6,11 @@ from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.agent.expel import ExpeLAgent
-from agential.cog.agent.reflexion import ReflexionReActAgent
+from agential.cog.agent.reflexion import (
+    ReflexionReActAgent,
+    ReflexionReActOutput,
+    ReflexionReActStepOutput,
+)
 from agential.cog.modules.memory.expel import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
@@ -138,59 +142,59 @@ def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
         "keys": ["Oneida Limited"],
         "trajectories": [
             [
-                {
-                    "react_output": [
-                        {
-                            "thought": "I need to search for the giant silverware company that was started as a religious Utopian group and was run by Pierrepont Noyes.",
-                            "action_type": "Search",
-                            "query": "giant silverware company started as religious Utopian group Pierrepont Noyes",
-                            "observation": "Search result",
-                            "answer": "",
-                            "external_tool_info": {
+                ReflexionReActOutput(
+                    react_output=[
+                        ReflexionReActStepOutput(
+                            thought="I need to search for the giant silverware company that was started as a religious Utopian group and was run by Pierrepont Noyes.",
+                            action_type="Search",
+                            query="giant silverware company started as religious Utopian group Pierrepont Noyes",
+                            observation="Search result",
+                            answer="",
+                            external_tool_info={
                                 "search_result": "Search result",
                                 "lookup_result": "",
                             },
-                            "is_correct": False,
-                        },
-                        {
-                            "thought": "The search query was too specific. I should try searching for the silverware company and then look for information about its history and founder.",
-                            "action_type": "Search",
-                            "query": "silverware company Pierrepont Noyes",
-                            "observation": "Search result",
-                            "answer": "",
-                            "external_tool_info": {
+                            is_correct=False,
+                        ),
+                        ReflexionReActStepOutput(
+                            thought="The search query was too specific. I should try searching for the silverware company and then look for information about its history and founder.",
+                            action_type="Search",
+                            query="silverware company Pierrepont Noyes",
+                            observation="Search result",
+                            answer="",
+                            external_tool_info={
                                 "search_result": "Search result",
                                 "lookup_result": "",
                             },
-                            "is_correct": False,
-                        },
-                        {
-                            "thought": "Pierrepont Noyes was the head of Oneida Limited, a silverware company. I need to confirm if Oneida Limited was indeed started as a religious Utopian group.",
-                            "action_type": "Search",
-                            "query": "Oneida Limited religious Utopian group",
-                            "observation": "Search result",
-                            "answer": "",
-                            "external_tool_info": {
+                            is_correct=False,
+                        ),
+                        ReflexionReActStepOutput(
+                            thought="Pierrepont Noyes was the head of Oneida Limited, a silverware company. I need to confirm if Oneida Limited was indeed started as a religious Utopian group.",
+                            action_type="Search",
+                            query="Oneida Limited religious Utopian group",
+                            observation="Search result",
+                            answer="",
+                            external_tool_info={
                                 "search_result": "Search result",
                                 "lookup_result": "",
                             },
-                            "is_correct": False,
-                        },
-                        {
-                            "thought": "Oneida Limited was indeed started as a religious Utopian group. The answer to the question is Oneida Limited.",
-                            "action_type": "Finish",
-                            "query": "Oneida Limited",
-                            "observation": "Answer is CORRECT",
-                            "answer": "Oneida Limited",
-                            "external_tool_info": {
+                            is_correct=False,
+                        ),
+                        ReflexionReActStepOutput(
+                            thought="Oneida Limited was indeed started as a religious Utopian group. The answer to the question is Oneida Limited.",
+                            action_type="Finish",
+                            query="Oneida Limited",
+                            observation="Answer is CORRECT",
+                            answer="Oneida Limited",
+                            external_tool_info={
                                 "search_result": "",
                                 "lookup_result": "",
                             },
-                            "is_correct": True,
-                        },
+                            is_correct=True,
+                        ),
                     ],
-                    "reflections": [],
-                }
+                    reflections=[],
+                )
             ]
         ],
         "reflections": [[]],
