@@ -149,8 +149,6 @@ class ExpeLExperienceMemory(BaseMemory):
                 )
 
                 # Add all trajectory actions.
-                print(steps[0])
-
                 self.success_traj_docs.extend(
                     [
                         Document(
