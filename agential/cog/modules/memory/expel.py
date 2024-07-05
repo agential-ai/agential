@@ -5,7 +5,7 @@ Paper Repository: https://github.com/LeapLabTHU/ExpeL
 """
 
 from copy import deepcopy
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 import tiktoken
 
@@ -16,6 +16,7 @@ from langchain_core.embeddings import Embeddings
 from scipy.spatial.distance import cosine
 from tiktoken.core import Encoding
 
+from agential.cog.agent.reflexion import ReflexionReActOutput, ReflexionReActStepOutput
 from agential.cog.modules.memory.base import BaseMemory
 
 
@@ -214,7 +215,7 @@ class ExpeLExperienceMemory(BaseMemory):
         self,
         questions: List[str],
         keys: List[str],
-        trajectories: List[List[Dict[str, Any]]],
+        trajectories: List[List[ReflexionReActOutput]],
         reflections: Optional[List[List[str]]] = [],
     ) -> None:
         """Adds new experiences to the memory, including associated questions, keys, trajectories, and optional reflections.
@@ -222,8 +223,8 @@ class ExpeLExperienceMemory(BaseMemory):
         Args:
             questions (List[str]): Questions related to the experiences being added.
             keys (List[str]): Answers corresponding to the provided questions.
-            trajectories (List[List[Dict[str, Any]]]): A list of trajectories where each
-                trajectory is a list of dictionaries, each one a trial.
+            trajectories (List[List[ReflexionReActOutput]]): A list of trajectories where each
+                trajectory is a list of ReflexionReActOutput; each one is a trial.
             reflections (Optional[List[List[str]]], default=[]): A list of additional reflective notes on the experiences.
         """
         assert len(questions) == len(keys) == len(trajectories)
