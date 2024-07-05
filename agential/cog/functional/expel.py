@@ -130,9 +130,7 @@ def categorize_experiences(experiences: Dict[str, List]) -> Dict[str, List]:
 
     for idx in experiences["idxs"]:  # Index for a particular task.
         trajectory = experiences["trajectories"][idx]  # type: ignore
-        trials_are_correct = [
-            trial.react_output[-1].is_correct for trial in trajectory
-        ]
+        trials_are_correct = [trial.react_output[-1].is_correct for trial in trajectory]
 
         # Success.
         if (
