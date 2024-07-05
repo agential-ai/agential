@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
+from agential.cog.agent.reflexion import ReflexionReActStepOutput
 from agential.cog.strategies.base import BaseStrategy
 
 
@@ -191,12 +192,12 @@ class ReflexionReActBaseStrategy(BaseStrategy):
 
     @abstractmethod
     def create_output_dict(
-        self, react_out: List[Dict[str, Any]], reflections: List[str]
+        self, react_out: List[ReflexionReActStepOutput], reflections: List[str]
     ) -> Dict[str, Any]:
         """Creates a dictionary of the output components.
 
         Args:
-            react_out (List[Dict[str, Any]]): The output from the ReAct agent.
+            react_out (List[ReflexionReActStepOutput]): The output from the ReAct agent.
             reflections (List[str]): The output from the ReAct reflections.
 
         Returns:
