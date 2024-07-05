@@ -481,7 +481,6 @@ def test_reflexion_react_generate_observation() -> None:
         key="key4",
     )
     assert is_correct
-    print(repr(obs))
     assert (
         obs
         == "\n```python\nanswer = 5\n\nassert answer == 5\n```\nExecution Status: Done"

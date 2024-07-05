@@ -318,59 +318,59 @@ def test_generate(expel_experiences_10_fake_path: str) -> None:
         "keys": ["Oneida Limited"],
         "trajectories": [
             [
-                {
-                    "react_output": [
-                        {
-                            "thought": "I need to find out the name of the giant silverware company that was started as a religious Utopian group and was run by Pierrepont Noyes for many years. I should search for the company's name and its history to gather more information.",
-                            "action_type": "Search",
-                            "query": "giant silverware company religious Utopian group Pierrepont Noyes",
-                            "observation": "Search result",
-                            "answer": "",
-                            "external_tool_info": {
+                ReflexionReActOutput(
+                    react_output=[
+                        ReflexionReActStepOutput(
+                            thought="I need to find out the name of the giant silverware company that was started as a religious Utopian group and was run by Pierrepont Noyes for many years. I should search for the company's name and its history to gather more information.",
+                            action_type="Search",
+                            query="giant silverware company religious Utopian group Pierrepont Noyes",
+                            observation="Search result",
+                            answer="",
+                            external_tool_info={
                                 "search_result": "Search result",
                                 "lookup_result": "",
                             },
-                            "is_correct": False,
-                        },
-                        {
-                            "thought": "I need to search for more information about Oneida Limited to see if it matches the description of a giant silverware company that was started as a religious Utopian group and was run by Pierrepont Noyes. I should look for details about the company's history and any relevant connections to Noyes.",
-                            "action_type": "Search",
-                            "query": "Oneida Limited giant silverware company religious Utopian group Pierrepont Noyes",
-                            "observation": "Search result",
-                            "answer": "",
-                            "external_tool_info": {
+                            is_correct=False,
+                        ),
+                        ReflexionReActStepOutput(
+                            thought="I need to search for more information about Oneida Limited to see if it matches the description of a giant silverware company that was started as a religious Utopian group and was run by Pierrepont Noyes. I should look for details about the company's history and any relevant connections to Noyes.",
+                            action_type="Search",
+                            query="Oneida Limited giant silverware company religious Utopian group Pierrepont Noyes",
+                            observation="Search result",
+                            answer="",
+                            external_tool_info={
                                 "search_result": "Search result",
                                 "lookup_result": "",
                             },
-                            "is_correct": False,
-                        },
-                        {
-                            "thought": 'It seems like the search results are not providing specific information about Oneida Limited as a giant silverware company. I should try to look up the keyword "silverware" in the last passage successfully found and see if it provides any relevant details about Oneida Limited\'s products.',
-                            "action_type": "Lookup",
-                            "query": "silverware",
-                            "observation": "Lookup result",
-                            "answer": "",
-                            "external_tool_info": {
+                            is_correct=False,
+                        ),
+                        ReflexionReActStepOutput(
+                            thought='It seems like the search results are not providing specific information about Oneida Limited as a giant silverware company. I should try to look up the keyword "silverware" in the last passage successfully found and see if it provides any relevant details about Oneida Limited\'s products.',
+                            action_type="Lookup",
+                            query="silverware",
+                            observation="Lookup result",
+                            answer="",
+                            external_tool_info={
                                 "search_result": "",
                                 "lookup_result": "Lookup result",
                             },
-                            "is_correct": False,
-                        },
-                        {
-                            "thought": "The passage mentions that Oneida Limited specialized in silverware and stainless steel cutlery under Pierrepont Noyes' leadership. This aligns with the description of a giant silverware company. I can confidently conclude that Oneida Limited is the giant silverware company started as a religious Utopian group and run by Pierrepont Noyes for many years. I need to finish with this answer.",
-                            "action_type": "Finish",
-                            "query": "Oneida Limited",
-                            "observation": "Answer is CORRECT",
-                            "answer": "Oneida Limited",
-                            "external_tool_info": {
+                            is_correct=False,
+                        ),
+                        ReflexionReActStepOutput(
+                            thought="The passage mentions that Oneida Limited specialized in silverware and stainless steel cutlery under Pierrepont Noyes' leadership. This aligns with the description of a giant silverware company. I can confidently conclude that Oneida Limited is the giant silverware company started as a religious Utopian group and run by Pierrepont Noyes for many years. I need to finish with this answer.",
+                            action_type="Finish",
+                            query="Oneida Limited",
+                            observation="Answer is CORRECT",
+                            answer="Oneida Limited",
+                            external_tool_info={
                                 "search_result": "",
                                 "lookup_result": "",
                             },
-                            "is_correct": True,
-                        },
+                            is_correct=True,
+                        ),
                     ],
-                    "reflections": [],
-                }
+                    reflections=[],
+                )
             ]
         ],
         "reflections": [[]],
@@ -419,5 +419,5 @@ def test_generate(expel_experiences_10_fake_path: str) -> None:
     assert agent.experience_memory.experiences["keys"][5] == key
     assert agent.experience_memory.experiences["reflections"][5] == []
     assert agent.insight_memory.insights == gt_insights
-    assert len(agent.experience_memory.success_traj_docs) == 23
+    assert len(agent.experience_memory.success_traj_docs) == 26
     assert agent.experience_memory.vectorstore

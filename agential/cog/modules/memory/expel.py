@@ -126,16 +126,15 @@ class ExpeLExperienceMemory(BaseMemory):
         # If including fewshot examples in experiences.
         if fewshot_questions and fewshot_keys and fewshot_examples:
             # Update self.experiences.
-            for question, key, steps in zip(
+            for question, key, trajectory in zip(
                 fewshot_questions, fewshot_keys, fewshot_examples
             ):
                 idx = max(self.experiences["idxs"], default=-1) + 1
 
-                trajectory = [{"react_output": steps, "reflections": []}]
                 self.experiences["idxs"].append(idx)
                 self.experiences["questions"].append(question)
                 self.experiences["keys"].append(key)
-                self.experiences["trajectories"].append(trajectory)
+                self.experiences["trajectories"].append([trajectory])
                 self.experiences["reflections"].append([])
 
                 # Update self.success_traj_docs.
@@ -155,7 +154,7 @@ class ExpeLExperienceMemory(BaseMemory):
                             page_content=f"Action: {step.action_type}[{step.query}]",
                             metadata={"type": "action", "task_idx": idx},
                         )
-                        for step in steps
+                        for step in trajectory.react_output
                     ]
                 )
 
@@ -166,12 +165,12 @@ class ExpeLExperienceMemory(BaseMemory):
                             page_content=f"Thought: {step.thought}",
                             metadata={"type": "thought", "task_idx": idx},
                         )
-                        for step in steps
+                        for step in trajectory.react_output
                     ]
                 )
 
                 # Add each step.
-                for step in steps:
+                for step in trajectory.react_output:
                     step = f"Thought: {step.thought}\nAction: {step.action_type}[{step.query}]\nObservation: {step.observation}\n"
                     self.success_traj_docs.append(
                         Document(

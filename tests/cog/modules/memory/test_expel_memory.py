@@ -8,11 +8,11 @@ import pytest
 from langchain_core.embeddings import Embeddings
 from tiktoken.core import Encoding
 
+from agential.cog.agent.reflexion import ReflexionReActOutput, ReflexionReActStepOutput
 from agential.cog.modules.memory.expel import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
-from agential.cog.agent.reflexion import ReflexionReActStepOutput
 from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 
 fewshot_questions = re.findall(r"Question: (.+?)\n", HOTPOTQA_FEWSHOT_EXAMPLES_REACT)
@@ -21,63 +21,83 @@ fewshot_keys = re.findall(
 )
 
 fewshot_examples = [
-    [
-        ReflexionReActStepOutput(
-            **{
-                "thought": "I need to search Colorado orogeny, find the area that the eastern sector of the Colorado orogeny extends into, then find the elevation range of the area.",
-                "action_type": "Search",
-                "query": "Colorado orogeny",
-                "observation": "The Colorado orogeny was an episode of mountain building (an orogeny) in Colorado and surrounding areas.",
-                "answer": "",
-                "external_tool_info": {"search_result": "The Colorado orogeny was an episode of mountain building (an orogeny) in Colorado and surrounding areas.", "lookup_result": ""},
-                "is_correct": False,
-            }
-        ),
-        ReflexionReActStepOutput(
-            **{
-                "thought": "It does not mention the eastern sector. So I need to look up eastern sector.",
-                "action_type": "Lookup",
-                "query": "eastern sector",
-                "observation": "(Result 1 / 1) The eastern sector extends into the High Plains and is called the Central Plains orogeny.",
-                "answer": "",
-                "external_tool_info": {"search_result": "", "lookup_result": "(Result 1 / 1) The eastern sector extends into the High Plains and is called the Central Plains orogeny."},
-                "is_correct": False,
-            }
-        ),
-        ReflexionReActStepOutput(
-            **{
-                "thought": "The eastern sector of Colorado orogeny extends into the High Plains. So I need to search High Plains and find its elevation range.",
-                "action_type": "Search",
-                "query": "High Plains",
-                "observation": "High Plains refers to one of two distinct land regions:",
-                "answer": "",
-                "external_tool_info": {"search_result": "High Plains refers to one of two distinct land regions:", "lookup_result": ""},
-                "is_correct": False,
-            }
-        ),
-        ReflexionReActStepOutput(
-            **{
-                "thought": "I need to instead search High Plains (United States).",
-                "action_type": "Search",
-                "query": "High Plains (United States)",
-                "observation": "The High Plains are a subregion of the Great Plains. From east to west, the High Plains rise in elevation from around 1,800 to 7,000 ft (550 to 2,130 m).[3]",
-                "answer": "",
-                "external_tool_info": {"search_result": "The High Plains are a subregion of the Great Plains. From east to west, the High Plains rise in elevation from around 1,800 to 7,000 ft (550 to 2,130 m).[3]", "lookup_result": ""},
-                "is_correct": False,
-            },
-        ),
-        ReflexionReActStepOutput(
-            **{
-                "thought": "High Plains rise in elevation from around 1,800 to 7,000 ft, so the answer is 1,800 to 7,000 ft.",
-                "action_type": "Finish",
-                "query": "1,800 to 7,000 ft",
-                "observation": "1,800 to 7,000 ft",
-                "answer": "1,800 to 7,000 ft",
-                "external_tool_info": {"search_result": "", "lookup_result": ""},
-                "is_correct": True,
-            }
-        )
-    ]
+    ReflexionReActOutput(
+        **{
+            "react_output": [
+                ReflexionReActStepOutput(
+                    **{
+                        "thought": "I need to search Colorado orogeny, find the area that the eastern sector of the Colorado orogeny extends into, then find the elevation range of the area.",
+                        "action_type": "Search",
+                        "query": "Colorado orogeny",
+                        "observation": "The Colorado orogeny was an episode of mountain building (an orogeny) in Colorado and surrounding areas.",
+                        "answer": "",
+                        "external_tool_info": {
+                            "search_result": "The Colorado orogeny was an episode of mountain building (an orogeny) in Colorado and surrounding areas.",
+                            "lookup_result": "",
+                        },
+                        "is_correct": False,
+                    }
+                ),
+                ReflexionReActStepOutput(
+                    **{
+                        "thought": "It does not mention the eastern sector. So I need to look up eastern sector.",
+                        "action_type": "Lookup",
+                        "query": "eastern sector",
+                        "observation": "(Result 1 / 1) The eastern sector extends into the High Plains and is called the Central Plains orogeny.",
+                        "answer": "",
+                        "external_tool_info": {
+                            "search_result": "",
+                            "lookup_result": "(Result 1 / 1) The eastern sector extends into the High Plains and is called the Central Plains orogeny.",
+                        },
+                        "is_correct": False,
+                    }
+                ),
+                ReflexionReActStepOutput(
+                    **{
+                        "thought": "The eastern sector of Colorado orogeny extends into the High Plains. So I need to search High Plains and find its elevation range.",
+                        "action_type": "Search",
+                        "query": "High Plains",
+                        "observation": "High Plains refers to one of two distinct land regions:",
+                        "answer": "",
+                        "external_tool_info": {
+                            "search_result": "High Plains refers to one of two distinct land regions:",
+                            "lookup_result": "",
+                        },
+                        "is_correct": False,
+                    }
+                ),
+                ReflexionReActStepOutput(
+                    **{
+                        "thought": "I need to instead search High Plains (United States).",
+                        "action_type": "Search",
+                        "query": "High Plains (United States)",
+                        "observation": "The High Plains are a subregion of the Great Plains. From east to west, the High Plains rise in elevation from around 1,800 to 7,000 ft (550 to 2,130 m).[3]",
+                        "answer": "",
+                        "external_tool_info": {
+                            "search_result": "The High Plains are a subregion of the Great Plains. From east to west, the High Plains rise in elevation from around 1,800 to 7,000 ft (550 to 2,130 m).[3]",
+                            "lookup_result": "",
+                        },
+                        "is_correct": False,
+                    },
+                ),
+                ReflexionReActStepOutput(
+                    **{
+                        "thought": "High Plains rise in elevation from around 1,800 to 7,000 ft, so the answer is 1,800 to 7,000 ft.",
+                        "action_type": "Finish",
+                        "query": "1,800 to 7,000 ft",
+                        "observation": "1,800 to 7,000 ft",
+                        "answer": "1,800 to 7,000 ft",
+                        "external_tool_info": {
+                            "search_result": "",
+                            "lookup_result": "",
+                        },
+                        "is_correct": True,
+                    }
+                ),
+            ],
+            "reflections": [],
+        }
+    )
     for _ in range(6)
 ]
 
@@ -271,9 +291,9 @@ def test_expel_experience_memory_add_memories(
     assert memory.experiences["keys"][2] == success_keys[0]
     assert memory.experiences["trajectories"][2] == success_trajectories[0]
     assert memory.experiences["reflections"][2] == success_reflections[0]
-    assert len(memory.success_traj_docs) == 30
+    assert len(memory.success_traj_docs) == 39
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
-    assert memory.success_traj_docs[20].metadata["task_idx"] == 2
+    assert memory.success_traj_docs[20].metadata["task_idx"] == 1
     assert memory.success_traj_docs[-1].metadata["task_idx"] == 2
     assert memory.vectorstore
 
@@ -288,9 +308,9 @@ def test_expel_experience_memory_add_memories(
     assert memory.experiences["trajectories"][4] == fail_trajectories[1]
     assert memory.experiences["reflections"][3] == fail_reflections[0]
     assert memory.experiences["reflections"][4] == fail_reflections[1]
-    assert len(memory.success_traj_docs) == 30
+    assert len(memory.success_traj_docs) == 39
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
-    assert memory.success_traj_docs[20].metadata["task_idx"] == 2
+    assert memory.success_traj_docs[20].metadata["task_idx"] == 1
     assert memory.vectorstore
 
     # Test with a mix of failed and successful trajectories.
@@ -313,9 +333,9 @@ def test_expel_experience_memory_add_memories(
     assert memory.experiences["reflections"][5] == success_reflections[0]
     assert memory.experiences["reflections"][6] == fail_reflections[0]
     assert memory.experiences["reflections"][7] == fail_reflections[1]
-    assert len(memory.success_traj_docs) == 40
+    assert len(memory.success_traj_docs) == 52
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
-    assert memory.success_traj_docs[20].metadata["task_idx"] == 2
+    assert memory.success_traj_docs[20].metadata["task_idx"] == 1
     assert memory.vectorstore
 
 
