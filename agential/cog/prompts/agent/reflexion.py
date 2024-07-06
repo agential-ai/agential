@@ -54,16 +54,7 @@ Thought: Let's think step by step. First for Women sounds more established and o
 Action: Finish[First for Women]
 Observation: Answer is INCORRECT
 
-Reflection: My reasoning failed because I relied on the perceived establishment of the magazine names rather than researching their actual start dates. In the future, I should look up the publication history of each magazine to determine which one was started first.
-
----
-
-Question: Were Pavel Urysohn and Leonid Levin known for the same type of work?
-Thought: Let's think step by step. Pavel Urysohn and Leonid Levin worked in different fields; Urysohn in mathematics and Levin in computer science, so the answer must be No.
-Action: Finish[No]
-Observation: Answer is INCORRECT
-
-Reflection: My reasoning failed because I did not recognize the overlap in their fields of study. In the future, I should consider the broader context of their work and understand that both were known for contributions in theoretical and applied mathematics, making the correct answer Yes."""
+Reflection: My reasoning failed because I relied on the perceived establishment of the magazine names rather than researching their actual start dates. In the future, I should look up the publication history of each magazine to determine which one was started first."""
 
 
 REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
