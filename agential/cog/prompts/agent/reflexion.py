@@ -469,14 +469,17 @@ Reflection:"""
 
 AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """Previous Trial:
 Question: When did men's figure skating become a summer Olympic sport?
-Thought 1: Let's search the question in google
+Thought 1: Let's search the question in google.
 Action 1: Search[When did men's figure skating become a summer Olympic sport?]
-Observation 1: [Figure skating at the Olympic Games - Wikipedia] Figure skating was first contested in the Olympic Games at the 1908 Summer Olympics. Since 1924, the sport has been a part of the Winter Olympic Games.
-Thought 2: The evidence suggests Figure skating became an Olympic sport at the 1908 Summer Olympics, but considering it's known as a winter sport, it must have been a mistake to list it as part of the Summer Olympics.
-Action 2: Finish[1924]
-Observation 2: Answer is INCORRECT
+Observation 1: [Figure skating at the Olympic Games - Wikipedia] According to some sources, men's figure skating became a summer Olympic sport during the 1912 Stockholm Olympics.
+Thought 2: The claim about the 1912 Stockholm Olympics seems plausible, as it was a notable event in Olympic history.
+Action 2: Lookup[1912 Stockholm Olympics figure skating]
+Observation 2: Further research suggests that men's figure skating was included in the 1912 Stockholm Olympics, but as part of the Winter Olympic program, not the Summer Olympics.
+Thought 3: Despite the association with the Winter Olympics, the claim might still hold if there was an exception or a unique circumstance in 1912.
+Action 3: Finish[1912 Stockholm Olympics]
+Observation 3: Answer is INCORRECT
 
-Reflection: My reasoning failed because I disregarded clear historical evidence and allowed my assumptions about the nature of the sport to influence my conclusion. In the future, I should rely more on the provided evidence and verify unusual historical facts rather than dismissing them based on preconceived notions.
+Reflection: My reasoning failed because I accepted an unverified claim without checking reliable sources thoroughly. In the future, I should ensure to verify information from trusted sources and not assume exceptions without clear evidence.
 
 ---
 
@@ -519,6 +522,8 @@ Action 2: Finish[South Carolina]
 Observation 2: Answer is INCORRECT
 
 Reflection: My reasoning failed because I ignored the specific information provided about the location of Fort Sumter in Charleston Harbor, South Carolina. In the future, I should ensure to use precise details from reliable sources and not make assumptions about geographical locations.
+
+---
 
 Previous Trial:
 Question: When did Nando's come to the UK?
