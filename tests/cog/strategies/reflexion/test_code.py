@@ -16,10 +16,10 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_INSTRUCTION_MBPP,
     REFLEXION_REACT_REFLECT_INSTRUCTION_MBPP,
 )
-from agential.cog.prompts.benchmark.humaneval import (
+from agential.fewshots.humaneval import (
     HUMANEVAL_FEWSHOT_EXAMPLES_COT,
 )
-from agential.cog.prompts.benchmark.mbpp import (
+from agential.fewshots.mbpp import (
     MBPP_FEWSHOT_EXAMPLES_COT,
     MBPP_FEWSHOT_EXAMPLES_REACT,
 )

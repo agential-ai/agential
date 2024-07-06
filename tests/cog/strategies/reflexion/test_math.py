@@ -15,7 +15,7 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_INSTRUCTION_GSM8K,
     REFLEXION_REACT_REFLECT_INSTRUCTION_GSM8K,
 )
-from agential.cog.prompts.benchmark.gsm8k import (
+from agential.fewshots.gsm8k import (
     GSM8K_FEWSHOT_EXAMPLES_COT,
     GSM8K_FEWSHOT_EXAMPLES_REACT,
 )

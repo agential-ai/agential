@@ -2,10 +2,10 @@
 
 import pytest
 
-from agential.cog.prompts.benchmark.hotpotqa import (
+from agential.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
 )
-from agential.cog.prompts.manager import FewShotType, get_fewshot_examples
+from agential.fewshots.manager import FewShotType, get_fewshot_examples
 
 
 def test_get_fewshot_examples() -> None:

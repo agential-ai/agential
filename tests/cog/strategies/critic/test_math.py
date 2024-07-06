@@ -10,7 +10,7 @@ from agential.cog.critic.prompts import (
     GSM8K_FEWSHOT_EXAMPLES_CRITIC,
     GSM8K_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
 )
-from agential.cog.prompts.benchmark.gsm8k import (
+from agential.fewshots.gsm8k import (
     GSM8K_FEWSHOT_EXAMPLES_POT,
 )
 from agential.cog.critic.strategies.math import (
