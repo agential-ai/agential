@@ -3,7 +3,7 @@
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 
-from agential.cog.agent.react import (
+from agential.cog.react.agent import (
     ReActAgent,
 )
 from agential.cog.prompts.agent.react import (
