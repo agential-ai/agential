@@ -58,7 +58,7 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActHotQAStrategy,
     ReflexionReActTriviaQAStrategy,
 )
-from agential.cog.strategies.strategy_factory import (
+from agential.cog.strategy_factory import (
     CriticStrategyFactory,
     ReActStrategyFactory,
     ReflexionCoTStrategyFactory,
