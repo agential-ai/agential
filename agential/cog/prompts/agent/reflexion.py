@@ -1468,7 +1468,37 @@ else:
 ]
 Observation: Answer is INCORRECT
 
-Reflection: My reasoning failed because I incorrectly used the less than operator in the condition to compare Lorenzo's total money with the combined price of the toy guitar and the set of juggling balls. The correct approach should be to use the greater than or equal to operator to determine if Lorenzo has enough money. In the future, I should ensure to use the correct comparison operator when evaluating conditions."""
+Reflection: My reasoning failed because I incorrectly used the less than operator in the condition to compare Lorenzo's total money with the combined price of the toy guitar and the set of juggling balls. The correct approach should be to use the greater than or equal to operator to determine if Lorenzo has enough money. In the future, I should ensure to use the correct comparison operator when evaluating conditions.
+
+---
+
+Got it. Here is the response following the provided format:
+
+---
+
+Read the following table and then write Python code to answer a question:
+
+Number of apple trees | Number of apples harvested
+1 | 50
+2 | 100
+3 | 150
+4 | 200
+5 | 250
+6 | ?
+
+Question: Each apple tree yields 50 apples. How many apples are harvested from 6 apple trees?
+Thought: Let's think step by step. We need to multiply the number of apple trees by the yield per tree to find the total number of apples harvested.
+Action: Finish[
+```python
+apples_per_tree = 50
+number_of_trees = 6
+answer = apples_per_tree / number_of_trees
+answer
+```
+]
+Observation: Answer is INCORRECT
+
+Reflection: My reasoning failed because I incorrectly used division instead of multiplication to calculate the total number of apples harvested. In the future, I should ensure to use the correct arithmetic operation when solving such problems."""
 
 
 REFLEXION_COT_REFLECT_INSTRUCTION_TABMWP = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
