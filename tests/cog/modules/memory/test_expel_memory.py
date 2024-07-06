@@ -506,7 +506,7 @@ def test_expel_experience_memory_show_memories(
         "vectorstore",
     ]
     assert memory.experiences == memory_dict["experiences"]
-    assert len(memory_dict["success_traj_docs"]) == 13
+    assert len(memory_dict["success_traj_docs"]) == 23
     assert memory_dict["vectorstore"]
 
 
