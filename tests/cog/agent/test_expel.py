@@ -6,7 +6,7 @@ from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.agent.expel import ExpeLAgent
-from agential.cog.agent.reflexion import (
+from agential.cog.reflexion.agent import (
     ReflexionReActAgent,
     ReflexionReActOutput,
     ReflexionReActStepOutput,

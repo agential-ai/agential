@@ -10,7 +10,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
 from langchain_core.prompts.prompt import PromptTemplate
 
-from agential.cog.agent.reflexion import ReflexionReActAgent
+from agential.cog.reflexion.agent import ReflexionReActAgent
 from agential.cog.prompts.agent.expel import (
     CRITIQUE_SUMMARY_SUFFIX_FULL,
     CRITIQUE_SUMMARY_SUFFIX_NOT_FULL,

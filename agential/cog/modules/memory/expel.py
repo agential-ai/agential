@@ -17,7 +17,7 @@ from scipy.spatial.distance import cosine
 from tiktoken.core import Encoding
 
 from agential.cog.modules.memory.base import BaseMemory
-from agential.cog.output.reflexion import ReflexionReActOutput, ReflexionReActStepOutput
+from agential.cog.reflexion.output import ReflexionReActOutput, ReflexionReActStepOutput
 
 
 class ExpeLExperienceMemory(BaseMemory):

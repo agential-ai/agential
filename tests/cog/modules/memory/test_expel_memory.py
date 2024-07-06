@@ -8,7 +8,7 @@ import pytest
 from langchain_core.embeddings import Embeddings
 from tiktoken.core import Encoding
 
-from agential.cog.agent.reflexion import ReflexionReActOutput, ReflexionReActStepOutput
+from agential.cog.reflexion.agent import ReflexionReActOutput, ReflexionReActStepOutput
 from agential.cog.modules.memory.expel import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
