@@ -768,59 +768,7 @@ answer = golf_balls_left
 ]
 Observation: Answer is INCORRECT
 
-Reflection: My reasoning failed because I incorrectly added the total number of golf balls lost to the initial number of golf balls instead of subtracting it. In the future, I should ensure to use the correct operation (subtraction) to find the remaining number of items.
-
----
-
-Question: If there are 3 cars in the parking lot and 2 more cars arrive, how many cars are in the parking lot?
-Thought: Let's think step by step. Initially, there are 3 cars in the parking lot. When 2 more cars arrive, the total number of cars is 3 - 2 = 1.
-Action: Finish[
-```python
-cars_initial = 3
-cars_arrived = 2
-total_cars = cars_initial - cars_arrived
-answer = total_cars
-```
-]
-Observation: Answer is INCORRECT
-
-Reflection: My reasoning failed because I incorrectly subtracted the number of cars that arrived from the initial number of cars instead of adding them. In the future, I should ensure to use the correct operation (addition) when calculating the total number of items after more items arrive.
-
----
-
-Question: Olivia has $23. She bought five bagels for $3 each. How much money does she have left?
-Thought: Let's think step by step. Olivia had $23 initially. She bought 5 bagels for $3 each. The total cost of the bagels is 5 * 3 = $15. So, the money she has left is 23 + 15 = $38.
-Action: Finish[
-```python
-money_initial = 23
-bagels = 5
-bagel_cost = 3
-money_spent = bagels * bagel_cost
-money_left = money_initial + money_spent
-answer = money_left
-```
-]
-Observation: Answer is INCORRECT
-
-Reflection: My reasoning failed because I incorrectly added the total cost of the bagels to the initial amount of money instead of subtracting it. In the future, I should ensure to use the correct operation (subtraction) when calculating the remaining amount of money after a purchase.
-
----
-
-Question: Leah had 32 chocolates and her sister had 42. If they ate 35, how many pieces do they have left in total?
-Thought: Let's think step by step. Leah had 32 chocolates and her sister had 42 chocolates. Together they had 32 + 42 = 74 chocolates. They ate 35 chocolates, so the number of chocolates left is 74 + 35 = 109.
-Action: Finish[
-```python
-leah_chocolates = 32
-sister_chocolates = 42
-total_chocolates = leah_chocolates + sister_chocolates
-chocolates_eaten = 35
-chocolates_left = total_chocolates + chocolates_eaten
-answer = chocolates_left
-```
-]
-Observation: Answer is INCORRECT
-
-Reflection: My reasoning failed because I incorrectly added the number of chocolates eaten to the total number of chocolates instead of subtracting it. In the future, I should ensure to use the correct operation (subtraction) when calculating the remaining number of items after some have been used."""
+Reflection: My reasoning failed because I incorrectly added the total number of golf balls lost to the initial number of golf balls instead of subtracting it. In the future, I should ensure to use the correct operation (subtraction) to find the remaining number of items."""
 
 
 REFLEXION_COT_REFLECT_INSTRUCTION_GSM8K = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
