@@ -635,14 +635,18 @@ Reflection:"""
 
 TRIVIAQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """Previous Trial:
 Question: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842?
-Thought 1: Let's search the question in google
-Action 1: Search[Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842? site:wikipedia.org]
+Thought 1: Let's search the question in Google to find the answer.
+Action 1: Search[Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842? site
+.org]
 Observation 1: [Wedding March (Mendelssohn) - Wikipedia] Mendelssohn's 'Wedding March' was originally written as incidental music for A Midsummer Night's Dream in 1842.
-Thought 2: The evidence suggests that Mendelssohn's 'Wedding March' was originally written as incidental music for A Midsummer Night's Dream in 1842, but considering its popularity in weddings, it might have been for a more romantic play like Romeo and Juliet.
-Action 2: Finish[Romeo and Juliet]
-Observation 2: Answer is INCORRECT
+Thought 2: The evidence clearly states that Mendelssohn's 'Wedding March' was originally written for A Midsummer Night's Dream in 1842. However, due to its association with weddings, I wonder if there's another play where it might have been intended.
+Action 2: Lookup[other Shakespeare plays]
+Observation 2: There is no evidence linking Mendelssohn's 'Wedding March' to any other Shakespeare play apart from A Midsummer Night's Dream.
+Thought 3: Despite the clear evidence, I still have doubts about its original intention. Perhaps there's a lesser-known play where it could have been intended.
+Action 3: Finish[Romeo and Juliet]
+Observation 3: Answer is INCORRECT
 
-Reflection: My reasoning failed because I doubted the clear evidence provided by the source and made an incorrect assumption based on the romantic nature of the piece. In the future, I should rely on the provided evidence rather than making unsupported assumptions.
+Reflection: My reasoning failed because I questioned the clear evidence provided by the source and made an incorrect assumption based on the nature of the piece. In the future, I should rely on verified information and avoid speculating without factual basis.
 
 ---
 
@@ -681,7 +685,22 @@ Thought 2: The evidence suggests that Bode Miller is the only American skier who
 Action 2: Finish[Lindsey Vonn]
 Observation 2: Answer is INCORRECT
 
-Reflection: My reasoning failed because I doubted the clear evidence provided by the source and made an incorrect assumption based on the fame of another skier. In the future, I should rely on the provided evidence rather than making unsupported assumptions."""
+Reflection: My reasoning failed because I doubted the clear evidence provided by the source and made an incorrect assumption based on the fame of another skier. In the future, I should rely on the provided evidence rather than making unsupported assumptions.
+
+---
+
+Question: Which English author wrote the novel "1984"?
+Thought 1: Let's search the question in google.
+Action 1: Search[Which English author wrote the novel "1984"? site:wikipedia.org]
+Observation 1: [1984 (novel) - Wikipedia] The novel "1984" was written by George Orwell, an English author known for his dystopian works.
+Thought 2: The evidence suggests that George Orwell is the author of "1984," but I should verify if there are any other authors commonly associated with this novel.
+Action 2: Lookup[authors commonly associated with 1984 novel]
+Observation 2: The search confirms that George Orwell is the primary author associated with "1984."
+Thought 3: Although the search confirms George Orwell, I still feel there might be a connection with Aldous Huxley due to the similar dystopian themes. I should double-check to avoid any mistake.
+Action 3: Finish[Aldous Huxley]
+Observation 3: Answer is INCORRECT
+
+Reflection: My reasoning failed because I doubted the clear evidence provided by multiple sources and made an incorrect assumption based on thematic similarity with another author's work. In the future, I should rely on the provided evidence and avoid overcomplicating the verification process."""
 
 
 # ======================================================================== GSM8K ======================================================================== #
