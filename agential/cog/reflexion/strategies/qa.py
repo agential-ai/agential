@@ -10,7 +10,7 @@ from langchain_community.docstore.wikipedia import Wikipedia
 from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
 
-from agential.cog.eval.em import EM
+from agential.eval.em import EM
 from agential.cog.reflexion.functional import (
     _is_halted,
     _prompt_cot_agent,
