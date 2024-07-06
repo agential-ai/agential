@@ -23,10 +23,10 @@ from agential.cog.critic.prompts import (
     HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
     MBPP_FEWSHOT_EXAMPLES_CRITIC,
 )
-from agential.cog.prompts.benchmark.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
-from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
-from agential.cog.prompts.benchmark.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_POT
-from agential.cog.prompts.benchmark.mbpp import MBPP_FEWSHOT_EXAMPLES_POT
+from agential.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
+from agential.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
+from agential.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_POT
+from agential.fewshots.mbpp import MBPP_FEWSHOT_EXAMPLES_POT
 
 
 def test_init() -> None:

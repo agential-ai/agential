@@ -5,7 +5,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
 
 from agential.cog.react.prompts import REACT_INSTRUCTION_GSM8K
-from agential.cog.prompts.benchmark.gsm8k import GSM8K_FEWSHOT_EXAMPLES_REACT
+from agential.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_REACT
 from agential.cog.react.strategies.math import (
     ReActGSM8KStrategy,
     ReActMathStrategy,

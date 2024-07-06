@@ -13,7 +13,7 @@ from agential.cog.critic.prompts import (
     CRITIC_INSTRUCTION_HOTPOTQA,
     HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
 )
-from agential.cog.prompts.benchmark.hotpotqa import (
+from agential.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
 )
 from agential.cog.critic.strategies.qa import (

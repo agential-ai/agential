@@ -10,8 +10,8 @@ from agential.cog.react.prompts import (
     REACT_INSTRUCTION_HOTPOTQA,
     REACT_INSTRUCTION_HUMANEVAL,
 )
-from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.cog.prompts.benchmark.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
+from agential.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+from agential.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
 from agential.cog.react.strategies.base import ReActBaseStrategy
 
 
