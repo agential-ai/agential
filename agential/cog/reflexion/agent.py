@@ -22,7 +22,7 @@ from agential.cog.reflexion.output import (
     ReflexionReActOutput,
     ReflexionReActStepOutput,
 )
-from agential.cog.strategies.strategy_factory import (
+from agential.cog.strategy_factory import (
     ReflexionCoTStrategyFactory,
     ReflexionReActStrategyFactory,
 )
