@@ -1,4 +1,4 @@
-"""ReAct Agent strategies for QA."""
+"""ReAct Agent strategies for Code."""
 
 import re
 
@@ -6,47 +6,50 @@ from typing import Any, Dict, Tuple
 
 import tiktoken
 
-from langchain_community.docstore.wikipedia import Wikipedia
 from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken.core import Encoding
 
 from agential.cog.react.functional import _is_halted, _prompt_agent
-from agential.cog.strategies.react.base import ReActBaseStrategy
-from agential.utils.docstore import DocstoreExplorer
+from agential.cog.react.strategies.base import ReActBaseStrategy
+from agential.utils.general import safe_execute
 from agential.utils.parse import remove_newline
 
 
-def parse_qa_action(string: str) -> Tuple[str, str]:
-    """Parses an action string into an action type and its argument.
+def parse_math_action(action: str) -> Tuple[str, str]:
+    """Parses an action string to extract the action type and code content.
 
-    This method is used in ReAct.
+    Identifies action types (`Finish`, `Calculate`) and extracts the
+    corresponding code content enclosed within Markdown-style code blocks.
+    The action type is case-insensitive and the code content is trimmed of
+    leading and trailing whitespace.
 
     Args:
-        string (str): The action string to be parsed.
+        action (str): The action string containing the action type and code content.
 
     Returns:
-        Tuple[str, str]: A tuple containing the action type and argument.
+        Tuple[str, str]: A tuple containing the extracted action type (capitalized)
+        and the extracted code content.
     """
-    pattern = r"^(\w+)\[(.+)\]$"
-    match = re.match(pattern, string)
+    action_split = action.split("```python", maxsplit=1)
+    match = re.search(r"\b(Finish|Calculate)\b", action_split[0], re.IGNORECASE)
 
-    if match:
-        action_type = match.group(1)
-        argument = match.group(2)
-    else:
+    action_type = match.group(0).lower().capitalize() if match else ""
+    try:
+        query = action_split[1].split("```")[0].strip() if action_type else ""
+    except:
         action_type = ""
-        argument = ""
-    return action_type, argument
+        query = ""
+
+    return action_type, query
 
 
-class ReActQAStrategy(ReActBaseStrategy):
-    """A strategy class for QA benchmarks using the ReAct agent.
+class ReActMathStrategy(ReActBaseStrategy):
+    """A strategy class for Math benchmarks using the ReAct agent.
 
     Attributes:
         llm (BaseChatModel): The language model used for generating answers and critiques.
         max_steps (int): The maximum number of steps the agent can take.
         max_tokens (int): The maximum number of tokens allowed for a response.
-        docstore (DocstoreExplorer): The document store used for searching and looking up information.
         enc (Encoding): The encoding used for the language model.
     """
 
@@ -55,14 +58,12 @@ class ReActQAStrategy(ReActBaseStrategy):
         llm: BaseChatModel,
         max_steps: int = 6,
         max_tokens: int = 5000,
-        docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
     ) -> None:
         """Initialization."""
         super().__init__(llm)
         self.max_steps = max_steps
         self.max_tokens = max_tokens
-        self.docstore = docstore
         self.enc = enc
 
         self._scratchpad = ""
@@ -124,7 +125,7 @@ class ReActQAStrategy(ReActBaseStrategy):
             **kwargs (Any): Additional arguments.
 
         Returns:
-            Tuple[str, str]: The generated action type and query.
+            Tuple[str, str]: The generated action type and code.
         """
         max_steps = kwargs.get("max_steps", self.max_steps)
         self._scratchpad += "\nAction:"
@@ -137,9 +138,10 @@ class ReActQAStrategy(ReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        action = remove_newline(action).split("Observation")[0]
-        self._scratchpad += " " + action
-        action_type, query = parse_qa_action(action)
+        action = action.split("Observation")[0].strip()
+
+        action_type, query = parse_math_action(action)
+        self._scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
 
         return action_type, query
 
@@ -156,30 +158,27 @@ class ReActQAStrategy(ReActBaseStrategy):
         Returns:
             Tuple[str, Dict[str, Any]]: The generated observation and external tool outputs.
         """
-        external_tool_info = {"search_result": "", "lookup_result": ""}
+        external_tool_info = {"execution_status": "", "code_answer": ""}
+        code_answer, execution_status = safe_execute(query)
 
         self._scratchpad += f"\nObservation {idx}: "
         if action_type.lower() == "finish":
+            external_tool_info["code_answer"] = code_answer[0]
+            external_tool_info["execution_status"] = execution_status
+
             self._answer = query
             self._finished = True
-            obs = query
-        elif action_type.lower() == "search":
-            try:
-                search_result = self.docstore.search(query)
-                external_tool_info["search_result"] = search_result
-                obs = remove_newline(search_result)
-            except Exception:
-                obs = "Could not find that page, please try again."
-        elif action_type.lower() == "lookup":
-            try:
-                lookup_result = self.docstore.lookup(query)
-                external_tool_info["lookup_result"] = lookup_result
-                obs = remove_newline(lookup_result)
+            obs = f"\n```python\n{self._answer}\n```"
+        elif action_type.lower() == "calculate":
+            external_tool_info["code_answer"] = code_answer[0]
+            external_tool_info["execution_status"] = execution_status
 
-            except ValueError:
-                obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
+            self._answer = query
+            obs = f"\n```python\n{self._answer}\n```\nExecution Status: {execution_status}\nOutput: answer = {code_answer[0]}"
         else:
-            obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
+            obs = (
+                "Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
+            )
         self._scratchpad += obs
 
         return obs, external_tool_info
@@ -253,7 +252,7 @@ class ReActQAStrategy(ReActBaseStrategy):
     def reset(self, **kwargs: Any) -> None:
         """Resets the internal state of the strategy.
 
-        Resets the scratchpad and the finished flag.
+        Resets the current answer, scratchpad, and the finished flag.
 
         Args:
             **kwargs (Any): Additional arguments.
@@ -261,29 +260,24 @@ class ReActQAStrategy(ReActBaseStrategy):
         Returns:
             None
         """
+        self._answer = ""
         self._scratchpad = ""
         self._finished = False
 
 
-class ReActHotQAStrategy(ReActQAStrategy):
-    """A strategy class for the HotpotQA benchmark using the ReAct agent."""
+class ReActGSM8KStrategy(ReActMathStrategy):
+    """A strategy class for the GSM8K benchmark using the ReAct agent."""
 
     pass
 
 
-class ReActTriviaQAStrategy(ReActQAStrategy):
-    """A strategy class for the TriviaQA benchmark using the ReAct agent."""
+class ReActSVAMPStrategy(ReActMathStrategy):
+    """A strategy class for the SVAMP benchmark using the ReAct agent."""
 
     pass
 
 
-class ReActAmbigNQStrategy(ReActQAStrategy):
-    """A strategy class for the AmbigNQ benchmark using the ReAct agent."""
-
-    pass
-
-
-class ReActFEVERStrategy(ReActQAStrategy):
-    """A strategy class for the FEVER benchmark using the ReAct agent."""
+class ReActTabMWPStrategy(ReActMathStrategy):
+    """A strategy class for the TabMWP benchmark using the ReAct agent."""
 
     pass

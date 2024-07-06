@@ -10,15 +10,15 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken.core import Encoding
 
 from agential.cog.react.functional import _is_halted, _prompt_agent
-from agential.cog.strategies.react.base import ReActBaseStrategy
+from agential.cog.react.strategies.base import ReActBaseStrategy
 from agential.utils.general import safe_execute
 from agential.utils.parse import remove_newline
 
 
-def parse_math_action(action: str) -> Tuple[str, str]:
+def parse_code_action(action: str) -> Tuple[str, str]:
     """Parses an action string to extract the action type and code content.
 
-    Identifies action types (`Finish`, `Calculate`) and extracts the
+    Identifies action types (`Finish`, `Implement`, or `Test`) and extracts the
     corresponding code content enclosed within Markdown-style code blocks.
     The action type is case-insensitive and the code content is trimmed of
     leading and trailing whitespace.
@@ -31,7 +31,7 @@ def parse_math_action(action: str) -> Tuple[str, str]:
         and the extracted code content.
     """
     action_split = action.split("```python", maxsplit=1)
-    match = re.search(r"\b(Finish|Calculate)\b", action_split[0], re.IGNORECASE)
+    match = re.search(r"\b(Finish|Test|Implement)\b", action_split[0], re.IGNORECASE)
 
     action_type = match.group(0).lower().capitalize() if match else ""
     try:
@@ -43,8 +43,8 @@ def parse_math_action(action: str) -> Tuple[str, str]:
     return action_type, query
 
 
-class ReActMathStrategy(ReActBaseStrategy):
-    """A strategy class for Math benchmarks using the ReAct agent.
+class ReActCodeStrategy(ReActBaseStrategy):
+    """A strategy class for Code benchmarks using the ReAct agent.
 
     Attributes:
         llm (BaseChatModel): The language model used for generating answers and critiques.
@@ -140,7 +140,7 @@ class ReActMathStrategy(ReActBaseStrategy):
         )
         action = action.split("Observation")[0].strip()
 
-        action_type, query = parse_math_action(action)
+        action_type, query = parse_code_action(action)
         self._scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
 
         return action_type, query
@@ -158,27 +158,30 @@ class ReActMathStrategy(ReActBaseStrategy):
         Returns:
             Tuple[str, Dict[str, Any]]: The generated observation and external tool outputs.
         """
-        external_tool_info = {"execution_status": "", "code_answer": ""}
-        code_answer, execution_status = safe_execute(query)
+        external_tool_info = {"execution_status": ""}
 
         self._scratchpad += f"\nObservation {idx}: "
         if action_type.lower() == "finish":
-            external_tool_info["code_answer"] = code_answer[0]
+            _, execution_status = safe_execute(query)
             external_tool_info["execution_status"] = execution_status
 
             self._answer = query
             self._finished = True
             obs = f"\n```python\n{self._answer}\n```"
-        elif action_type.lower() == "calculate":
-            external_tool_info["code_answer"] = code_answer[0]
+        elif action_type.lower() == "implement":
+            _, execution_status = safe_execute(query)
             external_tool_info["execution_status"] = execution_status
 
             self._answer = query
-            obs = f"\n```python\n{self._answer}\n```\nExecution Status: {execution_status}\nOutput: answer = {code_answer[0]}"
+            obs = f"\n```python\n{self._answer}\n```\nExecution Status: {execution_status}"
+        elif action_type.lower() == "test":
+            obs = f"{self._answer}\n\n{query}"
+            _, execution_status = safe_execute(obs)
+            external_tool_info["execution_status"] = execution_status
+
+            obs = f"\n```python\n{obs}\n```\nExecution Status: {execution_status}"
         else:
-            obs = (
-                "Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
-            )
+            obs = "Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer]."
         self._scratchpad += obs
 
         return obs, external_tool_info
@@ -265,19 +268,13 @@ class ReActMathStrategy(ReActBaseStrategy):
         self._finished = False
 
 
-class ReActGSM8KStrategy(ReActMathStrategy):
-    """A strategy class for the GSM8K benchmark using the ReAct agent."""
+class ReActMBPPStrategy(ReActCodeStrategy):
+    """A strategy class for the MBPP benchmark using the ReAct agent."""
 
     pass
 
 
-class ReActSVAMPStrategy(ReActMathStrategy):
-    """A strategy class for the SVAMP benchmark using the ReAct agent."""
-
-    pass
-
-
-class ReActTabMWPStrategy(ReActMathStrategy):
-    """A strategy class for the TabMWP benchmark using the ReAct agent."""
+class ReActHEvalStrategy(ReActCodeStrategy):
+    """A strategy class for the HumanEval benchmark using the ReAct agent."""
 
     pass

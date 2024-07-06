@@ -22,13 +22,13 @@ from agential.cog.strategies.critic.qa import (
     CritHotQAStrategy,
     CritTriviaQAStrategy,
 )
-from agential.cog.strategies.react.code import ReActHEvalStrategy, ReActMBPPStrategy
-from agential.cog.strategies.react.math import (
+from agential.cog.react.strategies.code import ReActHEvalStrategy, ReActMBPPStrategy
+from agential.cog.react.strategies.math import (
     ReActGSM8KStrategy,
     ReActSVAMPStrategy,
     ReActTabMWPStrategy,
 )
-from agential.cog.strategies.react.qa import (
+from agential.cog.react.strategies.qa import (
     ReActAmbigNQStrategy,
     ReActFEVERStrategy,
     ReActHotQAStrategy,

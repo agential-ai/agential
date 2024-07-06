@@ -8,7 +8,7 @@ from agential.cog.react.prompts import (
     REACT_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.cog.strategies.react.qa import (
+from agential.cog.react.strategies.qa import (
     ReActAmbigNQStrategy,
     ReActFEVERStrategy,
     ReActHotQAStrategy,
