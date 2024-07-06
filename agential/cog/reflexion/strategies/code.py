@@ -9,7 +9,7 @@ import tiktoken
 from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken.core import Encoding
 
-from agential.cog.eval.em import EM
+from agential.eval.em import EM
 from agential.cog.reflexion.functional import (
     _is_halted,
     _prompt_cot_agent,
