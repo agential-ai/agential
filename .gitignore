@@ -21,6 +21,8 @@ data/*
 
 # Environments
 .env
+.plandex/
+.idea/
 
 # mypy
 .mypy_cache/
