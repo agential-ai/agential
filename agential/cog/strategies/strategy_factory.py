@@ -2,17 +2,17 @@
 
 from typing import Any, Dict
 
-from agential.cog.strategies.critic.base import CriticBaseStrategy
-from agential.cog.strategies.critic.code import (
+from agential.cog.critic.strategies.base import CriticBaseStrategy
+from agential.cog.critic.strategies.code import (
     CritHEvalCodeStrategy,
     CritMBPPCodeStrategy,
 )
-from agential.cog.strategies.critic.math import (
+from agential.cog.critic.strategies.math import (
     CritGSM8KStrategy,
     CritSVAMPStrategy,
     CritTabMWPStrategy,
 )
-from agential.cog.strategies.critic.qa import (
+from agential.cog.critic.strategies.qa import (
     CritAmbigNQStrategy,
     CritFEVERStrategy,
     CritHotQAStrategy,

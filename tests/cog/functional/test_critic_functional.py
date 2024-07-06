@@ -9,7 +9,7 @@ from agential.cog.critic.functional import (
     _prompt_critique,
     remove_comment,
 )
-from agential.cog.prompts.agent.critic import (
+from agential.cog.critic.prompts import (
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
     CRITIC_INSTRUCTION_HOTPOTQA,
 )

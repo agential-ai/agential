@@ -6,7 +6,7 @@ from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.critic.functional import _prompt_agent, _prompt_critique
-from agential.cog.strategies.critic.base import CriticBaseStrategy
+from agential.cog.critic.strategies.base import CriticBaseStrategy
 
 
 class CriticQAStrategy(CriticBaseStrategy):
