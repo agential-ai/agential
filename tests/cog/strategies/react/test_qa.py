@@ -4,7 +4,7 @@ from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
 
-from agential.cog.prompts.agent.react import (
+from agential.cog.react.prompts import (
     REACT_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT

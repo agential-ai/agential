@@ -6,7 +6,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from agential.cog.react.agent import (
     ReActAgent,
 )
-from agential.cog.prompts.agent.react import (
+from agential.cog.react.prompts import (
     REACT_INSTRUCTION_HOTPOTQA,
     REACT_INSTRUCTION_HUMANEVAL,
 )
