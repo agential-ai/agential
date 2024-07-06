@@ -235,7 +235,25 @@ Thought: Christina Aguilera is a popular artist, but I don't recall this specifi
 Action: Finish[REFUTES]
 Observation: Answer is INCORRECT
 
-Reflection: My reasoning failed because I relied on memory rather than checking the chart history. In the future, I should verify chart positions from reliable music chart sources to ensure accuracy."""
+Reflection: My reasoning failed because I relied on memory rather than checking the chart history. In the future, I should verify chart positions from reliable music chart sources to ensure accuracy.
+
+---
+
+Claim: Tim Burton didn't direct the film "Edward Scissorhands."
+Thought: Tim Burton is known for his distinctive film style, and "Edward Scissorhands" is often associated with his work. However, I don't recall if he was the director.
+Action: Finish[SUPPORTS]
+Observation: Answer is INCORRECT
+
+Reflection: My reasoning failed because I relied on memory rather than verifying the film's directorial credits. In the future, I should cross-check claims about film directors with credible sources like IMDb or official movie databases to ensure accuracy.
+
+---
+
+Claim: "The Great Gatsby" was written by F. Scott Fitzgerald.
+Thought: F. Scott Fitzgerald is a renowned author, and "The Great Gatsby" is one of his most famous works. However, I should confirm the authorship to be certain.
+Action: Finish[NOT ENOUGH INFO]
+Observation: Answer is INCORRECT
+
+Reflection: My reasoning failed because I relied on my general knowledge rather than verifying the authorship. In the future, I should confirm claims about literary works with credible sources such as literary databases or official author biographies to ensure accuracy."""
 
 
 REFLEXION_COT_REFLECT_INSTRUCTION_FEVER = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
