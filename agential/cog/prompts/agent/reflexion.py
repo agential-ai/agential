@@ -2293,7 +2293,51 @@ def heap_queue_largest(nums, n):
 ]
 Observation: Answer is INCORRECT
 
-Reflection: My reasoning failed because I incorrectly used the nsmallest function instead of the nlargest function to find the largest numbers in the list. In the future, I should ensure to use the correct heapq function to obtain the desired results."""
+Reflection: My reasoning failed because I incorrectly used the nsmallest function instead of the nlargest function to find the largest numbers in the list. In the future, I should ensure to use the correct heapq function to obtain the desired results.
+
+---
+
+You are an expert Python programmer, and here is your task: Write a Python function to check whether the two numbers differ at one bit position only or not.
+Your code should pass these tests:
+
+assert differ_at_one_bit_pos(13, 9) == True
+assert differ_at_one_bit_pos(15, 8) == False
+assert differ_at_one_bit_pos(2, 4) == False
+assert differ_at_one_bit_pos(2, 3) == True
+assert differ_at_one_bit_pos(5, 1) == True
+assert differ_at_one_bit_pos(1, 5) == True
+
+Thought: Let's think step by step. We need to determine if two numbers differ at exactly one bit position.
+Action: Finish[
+```python
+def differ_at_one_bit_pos(x, y):
+    differing_bits = x ^ y
+    return differing_bits & (differing_bits + 1) == 0 and differing_bits != 0
+```
+]
+Observation: Answer is INCORRECT
+
+Reflection: My reasoning failed because I used the expression differing_bits + 1 instead of differing_bits - 1 to check if only one bit is set in the result. This led to incorrect results for the test cases. In the future, I should ensure to correctly implement the logic to verify if exactly one bit position differs between two numbers.
+
+---
+
+You are an expert Python programmer, and here is your task: Write a function to find all words which are at least 4 characters long in a string.
+Your code should pass these tests:
+
+assert set(find_char_long('Please move back to stream')) == set(['Please', 'move', 'back', 'stream'])
+assert set(find_char_long('Jing Eco and Tech')) == set(['Jing', 'Tech'])
+assert set(find_char_long('Jhingai wulu road Zone 3')) == set(['Jhingai', 'wulu', 'road', 'Zone'])
+
+Thought: Let's think step by step. We need to extract words from the string and return only those which are at least 4 characters long.
+Action: Finish[
+```python
+def find_char_long(s):
+  	return [word for word in s.split() if len(word) > 4]
+```
+]
+Observation: Answer is INCORRECT
+
+Reflection: My reasoning failed because I incorrectly used the greater than operator (>) instead of the greater than or equal to operator (>=) to filter words that are at least 4 characters long. In the future, I should ensure to use the correct comparison operator when setting conditions for filtering data."""
 
 
 REFLEXION_COT_REFLECT_INSTRUCTION_MBPP = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
