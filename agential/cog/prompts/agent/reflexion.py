@@ -572,7 +572,16 @@ Thought: Let's think step by step. Lindsey Vonn is a famous American skier, so s
 Action: Finish[Lindsey Vonn]
 Observation: Answer is INCORRECT
 
-Reflection: My reasoning failed because I didn't consider that Lindsey Vonn is a female skier and the question asked about the Men's Combined event. In the future, I should pay closer attention to the specifics of the question and verify the correct athlete based on those details."""
+Reflection: My reasoning failed because I didn't consider that Lindsey Vonn is a female skier and the question asked about the Men's Combined event. In the future, I should pay closer attention to the specifics of the question and verify the correct athlete based on those details.
+
+---
+
+Question: Which English author wrote the novel "1984"?
+Thought: Let's think step by step. George Orwell is a well-known English author, but I think the novel "1984" might have been written by Aldous Huxley since he wrote "Brave New World," which is a similar dystopian novel.
+Action: Finish[Aldous Huxley]
+Observation: Answer is INCORRECT
+
+Reflection: My reasoning failed because I incorrectly attributed the novel to another author known for dystopian literature. In the future, I should verify the authorship of literary works through reliable literary sources to ensure accuracy."""
 
 
 REFLEXION_COT_REFLECT_INSTRUCTION_TRIVIAQA = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
