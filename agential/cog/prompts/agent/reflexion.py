@@ -2588,4 +2588,77 @@ def heap_queue_largest(nums, n):
 ]
 Observation 3: Answer is INCORRECT
 
-Reflection: My reasoning failed because I incorrectly used the `nsmallest` function instead of the `nlargest` function to find the largest numbers. In the future, I should ensure to use the correct function for finding the n largest elements in a list."""
+Reflection: My reasoning failed because I incorrectly used the `nsmallest` function instead of the `nlargest` function to find the largest numbers. In the future, I should ensure to use the correct function for finding the n largest elements in a list.
+
+---
+
+You are an expert Python programmer, and here is your task: Write a Python function to check whether the two numbers differ at one bit position only or not.
+Your code should pass these tests:
+
+python
+assert differ_at_one_bit_pos(13, 9) == True
+assert differ_at_one_bit_pos(15, 8) == False
+assert differ_at_one_bit_pos(2, 4) == False
+assert differ_at_one_bit_pos(2, 3) == True
+assert differ_at_one_bit_pos(5, 1) == True
+assert differ_at_one_bit_pos(1, 5) == True
+
+Thought 1: I need to write a function that determines if two numbers differ at exactly one bit position. This involves using bitwise operations.
+Action 1: Implement[
+```python
+def differ_at_one_bit_pos(x, y):
+    differing_bits = x ^ y
+    return differing_bits & (differing_bits + 1) == 0 and differing_bits != 0
+```
+]
+Observation 1:
+```python
+def differ_at_one_bit_pos(x, y):
+    differing_bits = x ^ y
+    return differing_bits & (differing_bits + 1) == 0 and differing_bits != 0
+```
+Execution Status: Done
+Thought 2: The function uses XOR to find differing bits and checks if exactly one bit is set.
+Action 2: Finish[
+```python
+def differ_at_one_bit_pos(x, y):
+    differing_bits = x ^ y
+    return differing_bits & (differing_bits + 1) == 0 and differing_bits != 0
+```
+]
+Observation 2: Answer is INCORRECT
+
+Reflection: My reasoning failed because the condition (differing_bits + 1) is incorrect for checking if exactly one bit is set. This approach does not correctly identify the single differing bit position. Instead, I should be checking if differing_bits has only one bit set to 1 using a different method. In the future, I should ensure to use the correct bitwise operations to accurately determine the difference at one bit position.
+
+---
+
+You are an expert Python programmer, and here is your task: Write a function to find all words which are at least 4 characters long in a string.
+Your code should pass these tests:
+
+assert set(find_char_long('Please move back to stream')) == set(['Please', 'move', 'back', 'stream'])
+assert set(find_char_long('Jing Eco and Tech')) == set(['Jing', 'Tech'])
+assert set(find_char_long('Jhingai wulu road Zone 3')) == set(['Jhingai', 'wulu', 'road', 'Zone'])
+
+Thought 1: I need to write a function that accepts a string and finds all words which are at least 4 characters long. I will split the string into words and filter based on length.
+Action 1: Implement[
+```python
+def find_char_long(s):
+return [word for word in s.split() if len(word) > 4]
+```
+]
+Observation 1:
+```python
+def find_char_long(s):
+    return [word for word in s.split() if len(word) > 4]
+```
+Execution Status: Done
+Thought 2: The function correctly identifies the words with at least 4 characters.
+Action 2: Finish[
+```python
+def find_char_long(s):
+    return [word for word in s.split() if len(word) > 4]
+```
+]
+Observation 2: Answer is INCORRECT
+
+Reflection: My reasoning failed because I incorrectly used the greater than operator (>) instead of the greater than or equal to operator (>=) to filter words that are at least 4 characters long. In the future, I should ensure to use the correct comparison operator when setting conditions for filtering data."""
