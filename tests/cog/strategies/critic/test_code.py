@@ -16,15 +16,15 @@ from agential.cog.critic.prompts import (
     MBPP_FEWSHOT_EXAMPLES_CRITIC,
     MBPP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
 )
-from agential.fewshots.humaneval import (
-    HUMANEVAL_FEWSHOT_EXAMPLES_POT,
-)
-from agential.fewshots.mbpp import MBPP_FEWSHOT_EXAMPLES_POT
 from agential.cog.critic.strategies.code import (
     CritHEvalCodeStrategy,
     CriticCodeStrategy,
     CritMBPPCodeStrategy,
 )
+from agential.fewshots.humaneval import (
+    HUMANEVAL_FEWSHOT_EXAMPLES_POT,
+)
+from agential.fewshots.mbpp import MBPP_FEWSHOT_EXAMPLES_POT
 
 
 def test_init() -> None:

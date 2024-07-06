@@ -3,10 +3,6 @@
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 
-from agential.cog.reflexion.reflect import (
-    ReflexionCoTReflector,
-    ReflexionReActReflector,
-)
 from agential.cog.reflexion.prompts import (
     GSM8K_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     GSM8K_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
@@ -15,9 +11,9 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_INSTRUCTION_GSM8K,
     REFLEXION_REACT_REFLECT_INSTRUCTION_GSM8K,
 )
-from agential.fewshots.gsm8k import (
-    GSM8K_FEWSHOT_EXAMPLES_COT,
-    GSM8K_FEWSHOT_EXAMPLES_REACT,
+from agential.cog.reflexion.reflect import (
+    ReflexionCoTReflector,
+    ReflexionReActReflector,
 )
 from agential.cog.reflexion.strategies.math import (
     ReflexionCoTGSM8KStrategy,
@@ -30,6 +26,10 @@ from agential.cog.reflexion.strategies.math import (
     ReflexionReActTabMWPStrategy,
     parse_math_action_cot,
     parse_math_action_react,
+)
+from agential.fewshots.gsm8k import (
+    GSM8K_FEWSHOT_EXAMPLES_COT,
+    GSM8K_FEWSHOT_EXAMPLES_REACT,
 )
 
 

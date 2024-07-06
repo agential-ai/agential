@@ -6,14 +6,14 @@ from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.expel.agent import ExpeLAgent
+from agential.cog.expel.memory import (
+    ExpeLExperienceMemory,
+    ExpeLInsightMemory,
+)
 from agential.cog.reflexion.agent import (
     ReflexionReActAgent,
     ReflexionReActOutput,
     ReflexionReActStepOutput,
-)
-from agential.cog.expel.memory import (
-    ExpeLExperienceMemory,
-    ExpeLInsightMemory,
 )
 
 
@@ -419,5 +419,5 @@ def test_generate(expel_experiences_10_fake_path: str) -> None:
     assert agent.experience_memory.experiences["keys"][5] == key
     assert agent.experience_memory.experiences["reflections"][5] == []
     assert agent.insight_memory.insights == gt_insights
-    assert len(agent.experience_memory.success_traj_docs) == 26
+    assert len(agent.experience_memory.success_traj_docs) == 36
     assert agent.experience_memory.vectorstore

@@ -10,14 +10,14 @@ from agential.cog.critic.prompts import (
     GSM8K_FEWSHOT_EXAMPLES_CRITIC,
     GSM8K_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
 )
-from agential.fewshots.gsm8k import (
-    GSM8K_FEWSHOT_EXAMPLES_POT,
-)
 from agential.cog.critic.strategies.math import (
     CritGSM8KStrategy,
     CriticMathStrategy,
     CritSVAMPStrategy,
     CritTabMWPStrategy,
+)
+from agential.fewshots.gsm8k import (
+    GSM8K_FEWSHOT_EXAMPLES_POT,
 )
 
 

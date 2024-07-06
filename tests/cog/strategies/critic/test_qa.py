@@ -13,15 +13,15 @@ from agential.cog.critic.prompts import (
     CRITIC_INSTRUCTION_HOTPOTQA,
     HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
 )
-from agential.fewshots.hotpotqa import (
-    HOTPOTQA_FEWSHOT_EXAMPLES_COT,
-)
 from agential.cog.critic.strategies.qa import (
     CritAmbigNQStrategy,
     CritFEVERStrategy,
     CritHotQAStrategy,
     CriticQAStrategy,
     CritTriviaQAStrategy,
+)
+from agential.fewshots.hotpotqa import (
+    HOTPOTQA_FEWSHOT_EXAMPLES_COT,
 )
 
 
