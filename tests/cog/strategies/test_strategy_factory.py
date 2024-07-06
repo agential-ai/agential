@@ -7,16 +7,16 @@ import pytest
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 
-from agential.cog.strategies.critic.code import (
+from agential.cog.critic.strategies.code import (
     CritHEvalCodeStrategy,
     CritMBPPCodeStrategy,
 )
-from agential.cog.strategies.critic.math import (
+from agential.cog.critic.strategies.math import (
     CritGSM8KStrategy,
     CritSVAMPStrategy,
     CritTabMWPStrategy,
 )
-from agential.cog.strategies.critic.qa import (
+from agential.cog.critic.strategies.qa import (
     CritAmbigNQStrategy,
     CritFEVERStrategy,
     CritHotQAStrategy,

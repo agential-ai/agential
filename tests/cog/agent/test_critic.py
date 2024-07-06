@@ -7,7 +7,7 @@ from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.critic.agent import CriticAgent
-from agential.cog.prompts.agent.critic import (
+from agential.cog.critic.prompts import (
     CRITIC_CRITIQUE_INSTRUCTION_GSM8K,
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
     CRITIC_CRITIQUE_INSTRUCTION_MBPP,

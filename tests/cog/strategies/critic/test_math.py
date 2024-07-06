@@ -3,7 +3,7 @@
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 
-from agential.cog.prompts.agent.critic import (
+from agential.cog.critic.prompts import (
     CRITIC_CRITIQUE_INSTRUCTION_GSM8K,
     CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_GSM8K,
     CRITIC_POT_INSTRUCTION_GSM8K,
@@ -13,7 +13,7 @@ from agential.cog.prompts.agent.critic import (
 from agential.cog.prompts.benchmark.gsm8k import (
     GSM8K_FEWSHOT_EXAMPLES_POT,
 )
-from agential.cog.strategies.critic.math import (
+from agential.cog.critic.strategies.math import (
     CritGSM8KStrategy,
     CriticMathStrategy,
     CritSVAMPStrategy,
