@@ -1,4 +1,4 @@
-"""Unit tests for Reflexion eval."""
+"""Unit tests for EM evaluation metric."""
 
 from agential.eval.em import EM
 
