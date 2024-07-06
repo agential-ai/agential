@@ -4,7 +4,7 @@ from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
 
-from agential.cog.prompts.agent.react import REACT_INSTRUCTION_GSM8K
+from agential.cog.react.prompts import REACT_INSTRUCTION_GSM8K
 from agential.cog.prompts.benchmark.gsm8k import GSM8K_FEWSHOT_EXAMPLES_REACT
 from agential.cog.strategies.react.math import (
     ReActGSM8KStrategy,

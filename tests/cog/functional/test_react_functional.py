@@ -9,7 +9,7 @@ from agential.cog.react.functional import (
     _is_halted,
     _prompt_agent,
 )
-from agential.cog.prompts.agent.react import REACT_INSTRUCTION_HOTPOTQA
+from agential.cog.react.prompts import REACT_INSTRUCTION_HOTPOTQA
 from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 
 
