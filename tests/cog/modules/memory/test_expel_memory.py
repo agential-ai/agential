@@ -9,7 +9,7 @@ from langchain_core.embeddings import Embeddings
 from tiktoken.core import Encoding
 
 from agential.cog.reflexion.agent import ReflexionReActOutput, ReflexionReActStepOutput
-from agential.cog.modules.memory.expel import (
+from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )

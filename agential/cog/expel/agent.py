@@ -10,7 +10,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.agent import BaseAgent
 from agential.cog.reflexion.agent import ReflexionReActAgent
-from agential.cog.functional.expel import (
+from agential.cog.expel.functional import (
     categorize_experiences,
     gather_experience,
     get_folds,
@@ -18,11 +18,11 @@ from agential.cog.functional.expel import (
     get_operations_success,
     retrieve_insight_index,
 )
-from agential.cog.modules.memory.expel import (
+from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
-from agential.cog.prompts.agent.expel import (
+from agential.cog.expel.prompts import (
     END_OF_EXAMPLES_DELIMITER,
     EXPEL_REFLEXION_REACT_INSTRUCTION,
     RULE_PREFIX,
