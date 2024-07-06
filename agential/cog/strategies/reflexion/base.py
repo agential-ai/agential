@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.output.reflexion import ReflexionReActStepOutput
-from agential.cog.strategies.base import BaseStrategy
+from agential.base.strategies import BaseStrategy
 
 
 class ReflexionCoTBaseStrategy(BaseStrategy):
