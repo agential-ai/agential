@@ -1118,43 +1118,7 @@ answer = total_goals
 ]
 Observation: Answer is INCORRECT
 
-Reflection: My reasoning failed because I incorrectly multiplied the number of goals scored on Monday and Wednesday instead of adding them. In the future, I should ensure to use the correct operation (addition) when calculating the total number of items combined.
-
----
-
-Question: There are 5 girls and 4 boys in the Masquerade. 12 more girls and 7 more boys joined. How many more girls than boys are in the Masquerade?
-Thought: Let's think step by step. Initially, there were 5 girls and 4 boys. Then 12 more girls and 7 more boys joined. The total number of girls is 5 + 12 = 17, and the total number of boys is 4 + 7 = 11. So, the difference is 11 - 17 = -6.
-Action: Finish[
-```python
-num_girls_before = 5
-num_girls_joined = 12
-num_boys_before = 4
-num_boys_joined = 7
-total_girls = num_girls_before + num_girls_joined
-total_boys = num_boys_before + num_boys_joined
-difference = total_boys - total_girls
-answer = difference
-```
-]
-Observation: Answer is INCORRECT
-
-Reflection: My reasoning failed because I incorrectly subtracted the total number of girls from the total number of boys instead of the other way around. In the future, I should ensure to use the correct order when calculating the difference between two quantities.
-
----
-
-Question: Joseph and Getty went to buy ice creams. Together, they bought 36 ice creams. On the way back, Joseph ate 12 of the ice creams, and he has 2 ice creams left now. How many ice creams did Getty purchase?
-Thought: Let's think step by step. Joseph ate 12 ice creams and has 2 left, so he initially had 12 + 2 = 14 ice creams. Together, they bought 36 ice creams, so the number of ice creams Getty purchased is 36 + 14 = 50.
-Action: Finish[
-```python
-num_ice_creams_bought_by_joseph = 2 + 12
-total_ice_creams = 36
-ice_creams_bought_by_getty = total_ice_creams + num_ice_creams_bought_by_joseph
-answer = ice_creams_bought_by_getty
-```
-]
-Observation: Answer is INCORRECT
-
-Reflection: My reasoning failed because I incorrectly added the number of ice creams Joseph had to the total number of ice creams bought instead of subtracting it. In the future, I should ensure to use the correct operation (subtraction) when calculating the number of items one person has from the total."""
+Reflection: My reasoning failed because I incorrectly multiplied the number of goals scored on Monday and Wednesday instead of adding them. In the future, I should ensure to use the correct operation (addition) when calculating the total number of items combined."""
 
 
 REFLEXION_COT_REFLECT_INSTRUCTION_SVAMP = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>] or there is a phrasing discrepancy with your provided answer and the answer key. In a few sentences, Diagnose a possible reason for failure or phrasing discrepancy and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.
