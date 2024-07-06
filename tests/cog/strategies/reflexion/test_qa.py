@@ -3,10 +3,6 @@
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 
-from agential.cog.reflexion.reflect import (
-    ReflexionCoTReflector,
-    ReflexionReActReflector,
-)
 from agential.cog.reflexion.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
@@ -15,9 +11,9 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
-from agential.fewshots.hotpotqa import (
-    HOTPOTQA_FEWSHOT_EXAMPLES_COT,
-    HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+from agential.cog.reflexion.reflect import (
+    ReflexionCoTReflector,
+    ReflexionReActReflector,
 )
 from agential.cog.reflexion.strategies.qa import (
     ReflexionCoTAmbigNQStrategy,
@@ -31,6 +27,10 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActQAStrategy,
     ReflexionReActTriviaQAStrategy,
     parse_qa_action,
+)
+from agential.fewshots.hotpotqa import (
+    HOTPOTQA_FEWSHOT_EXAMPLES_COT,
+    HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
 )
 
 

@@ -9,22 +9,22 @@ import tiktoken
 from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken.core import Encoding
 
-from agential.eval.em import EM
 from agential.cog.reflexion.functional import (
     _is_halted,
     _prompt_cot_agent,
     _prompt_react_agent,
     _truncate_scratchpad,
 )
+from agential.cog.reflexion.output import ReflexionReActStepOutput
 from agential.cog.reflexion.reflect import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )
-from agential.cog.reflexion.output import ReflexionReActStepOutput
 from agential.cog.reflexion.strategies.base import (
     ReflexionCoTBaseStrategy,
     ReflexionReActBaseStrategy,
 )
+from agential.eval.em import EM
 from agential.utils.general import safe_execute
 from agential.utils.parse import remove_newline
 

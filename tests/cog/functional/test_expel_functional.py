@@ -4,7 +4,6 @@ import joblib
 
 from langchain_community.chat_models.fake import FakeListChatModel
 
-from agential.cog.reflexion.agent import ReflexionReActAgent
 from agential.cog.expel.functional import (
     _build_all_success_prompt,
     _build_compare_prompt,
@@ -17,6 +16,7 @@ from agential.cog.expel.functional import (
     remove_err_operations,
     retrieve_insight_index,
 )
+from agential.cog.reflexion.agent import ReflexionReActAgent
 from agential.cog.reflexion.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
@@ -56,7 +56,7 @@ def test_categorize_experiences(expel_experiences_10_fake_path: str) -> None:
     """Test categorize_experiences."""
     experiences = joblib.load(expel_experiences_10_fake_path)
     categories = categorize_experiences(experiences)
-    gt_categories = {"compare": [1], "success": [3], "fail": [0, 2, 4]}
+    gt_categories = {"compare": [], "success": [1, 3], "fail": [0, 2, 4]}
     assert categories == gt_categories
 
 

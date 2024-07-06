@@ -13,14 +13,14 @@ from typing import Any, Dict, List, Optional, Tuple
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.agent import BaseAgent
-from agential.cog.reflexion.reflect import (
-    ReflexionCoTReflector,
-    ReflexionReActReflector,
-)
 from agential.cog.reflexion.output import (
     ReflexionCoTOutput,
     ReflexionReActOutput,
     ReflexionReActStepOutput,
+)
+from agential.cog.reflexion.reflect import (
+    ReflexionCoTReflector,
+    ReflexionReActReflector,
 )
 from agential.cog.strategy_factory import (
     ReflexionCoTStrategyFactory,

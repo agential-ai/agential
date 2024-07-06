@@ -5,13 +5,13 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
 
 from agential.cog.react.prompts import REACT_INSTRUCTION_MBPP
-from agential.fewshots.mbpp import MBPP_FEWSHOT_EXAMPLES_REACT
 from agential.cog.react.strategies.code import (
     ReActCodeStrategy,
     ReActHEvalStrategy,
     ReActMBPPStrategy,
     parse_code_action,
 )
+from agential.fewshots.mbpp import MBPP_FEWSHOT_EXAMPLES_REACT
 
 
 def test_parse_code_action() -> None:

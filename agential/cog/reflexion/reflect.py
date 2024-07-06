@@ -4,13 +4,13 @@ from typing import Dict, List, Optional, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
+from agential.base.reflect import BaseReflector
 from agential.cog.reflexion.functional import (
     _format_last_attempt,
     _format_reflections,
     cot_reflect,
     react_reflect,
 )
-from agential.base.reflect import BaseReflector
 from agential.cog.reflexion.prompts import (
     REFLECTION_AFTER_LAST_TRIAL_HEADER,
 )

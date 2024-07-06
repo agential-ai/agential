@@ -7,7 +7,6 @@ from tiktoken import Encoding
 from agential.cog.react.prompts import (
     REACT_INSTRUCTION_HOTPOTQA,
 )
-from agential.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.react.strategies.qa import (
     ReActAmbigNQStrategy,
     ReActFEVERStrategy,
@@ -16,6 +15,7 @@ from agential.cog.react.strategies.qa import (
     ReActTriviaQAStrategy,
     parse_qa_action,
 )
+from agential.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.utils.docstore import DocstoreExplorer
 
 

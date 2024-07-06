@@ -8,12 +8,12 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from agential.cog.reflexion.functional import (
     _format_reflections,
 )
+from agential.cog.reflexion.prompts import (
+    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+)
 from agential.cog.reflexion.reflect import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
-)
-from agential.cog.reflexion.prompts import (
-    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 
 
