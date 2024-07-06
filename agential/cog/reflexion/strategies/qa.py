@@ -1,4 +1,4 @@
-"""Reflexion Agent strategies for Math."""
+"""Reflexion Agent strategies for QA."""
 
 import re
 
@@ -6,87 +6,55 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import tiktoken
 
+from langchain_community.docstore.wikipedia import Wikipedia
 from langchain_core.language_models.chat_models import BaseChatModel
-from tiktoken.core import Encoding
+from tiktoken import Encoding
 
 from agential.cog.eval.em import EM
-from agential.cog.functional.reflexion import (
+from agential.cog.reflexion.functional import (
     _is_halted,
     _prompt_cot_agent,
     _prompt_react_agent,
     _truncate_scratchpad,
 )
-from agential.cog.modules.reflect.reflexion import (
+from agential.cog.reflexion.reflect import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )
-from agential.cog.output.reflexion import ReflexionReActStepOutput
-from agential.cog.strategies.reflexion.base import (
+from agential.cog.reflexion.output import ReflexionReActStepOutput
+from agential.cog.reflexion.strategies.base import (
     ReflexionCoTBaseStrategy,
     ReflexionReActBaseStrategy,
 )
-from agential.utils.general import safe_execute
+from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
 
 
-def parse_math_action_cot(action: str) -> Tuple[str, str]:
-    """Parses an action string to extract the action type and code content.
+def parse_qa_action(string: str) -> Tuple[str, str]:
+    """Parses an action string into an action type and its argument.
 
-    Identifies action types (`Finish`) and extracts the
-    corresponding code content enclosed within Markdown-style code blocks.
-    The action type is case-insensitive and the code content is trimmed of
-    leading and trailing whitespace.
+    This method is used in ReAct and Reflexion.
 
     Args:
-        action (str): The action string containing the action type and code content.
+        string (str): The action string to be parsed.
 
     Returns:
-        Tuple[str, str]: A tuple containing the extracted action type (capitalized)
-        and the extracted code content.
+        Tuple[str, str]: A tuple containing the action type and argument.
     """
-    action_split = action.split("```python", maxsplit=1)
-    match = re.search(r"\b(Finish)\b", action_split[0], re.IGNORECASE)
+    pattern = r"^(\w+)\[(.+)\]$"
+    match = re.match(pattern, string)
 
-    action_type = match.group(0).lower().capitalize() if match else ""
-    try:
-        query = action_split[1].split("```")[0].strip() if action_type else ""
-    except:
+    if match:
+        action_type = match.group(1)
+        argument = match.group(2)
+    else:
         action_type = ""
-        query = ""
-
-    return action_type, query
-
-
-def parse_math_action_react(action: str) -> Tuple[str, str]:
-    """Parses an action string to extract the action type and code content.
-
-    Identifies action types (`Finish`, `Calculate`) and extracts the
-    corresponding code content enclosed within Markdown-style code blocks.
-    The action type is case-insensitive and the code content is trimmed of
-    leading and trailing whitespace.
-
-    Args:
-        action (str): The action string containing the action type and code content.
-
-    Returns:
-        Tuple[str, str]: A tuple containing the extracted action type (capitalized)
-        and the extracted code content.
-    """
-    action_split = action.split("```python", maxsplit=1)
-    match = re.search(r"\b(Finish|Calculate)\b", action_split[0], re.IGNORECASE)
-
-    action_type = match.group(0).lower().capitalize() if match else ""
-    try:
-        query = action_split[1].split("```")[0].strip() if action_type else ""
-    except:
-        action_type = ""
-        query = ""
-
-    return action_type, query
+        argument = ""
+    return action_type, argument
 
 
-class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
-    """A strategy class for Math benchmarks using the ReflexionCoT agent.
+class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
+    """A strategy class for QA benchmarks using the ReflexionCoT agent.
 
     Attributes:
         llm (BaseChatModel): The language model used for generating answers and critiques.
@@ -185,10 +153,9 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        action = action.split("Observation")[0].strip()
-
-        action_type, query = parse_math_action_cot(action)
-        self._scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
+        action = remove_newline(action).strip()
+        self._scratchpad += " " + action
+        action_type, query = parse_qa_action(action)
 
         return action_type, query
 
@@ -205,13 +172,11 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
         Returns:
             Tuple[bool, str]: A boolean indicating correctness and the generated observation.
         """
-        answer, _ = safe_execute(query)
-
         self._scratchpad += f"\nObservation: "
         if action_type.lower() == "finish":
             self._finished = True
             self._answer = query
-            if EM(answer[0], key, normalize=False):
+            if EM(self._answer, key):
                 obs = "Answer is CORRECT"
             else:
                 obs = "Answer is INCORRECT"
@@ -219,7 +184,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
             obs = "Invalid action type, please try again."
         self._scratchpad += obs
 
-        return EM(answer[0], key, normalize=False), obs
+        return EM(self._answer, key), obs
 
     def create_output_dict(
         self,
@@ -250,7 +215,12 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
             "reflections": reflections,
         }
 
-    def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
+    def halting_condition(
+        self,
+        idx: int,
+        key: str,
+        **kwargs: Any,
+    ) -> bool:
         """Determines whether the halting condition has been met.
 
         Args:
@@ -262,8 +232,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
             bool: True if the halting condition is met, False otherwise.
         """
         max_trials = kwargs.get("max_trials", self.max_trials)
-        answer, _ = safe_execute(self._answer)
-        return EM(answer[0], key, normalize=False) or idx >= max_trials
+        return EM(self._answer, key) or idx >= max_trials
 
     def reset(self, **kwargs: Any) -> None:
         """Resets the internal state of the strategy.
@@ -314,7 +283,10 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
         return reflections, reflections_str
 
     def reflect_condition(
-        self, idx: int, reflect_strategy: Optional[str], key: str
+        self,
+        idx: int,
+        reflect_strategy: Optional[str],
+        key: str,
     ) -> bool:
         """Determines whether the reflection condition has been met.
 
@@ -326,16 +298,11 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
         Returns:
             bool: True if the reflection condition is met, False otherwise.
         """
-        answer, _ = safe_execute(self._answer)
-        return (
-            idx > 0
-            and not EM(answer[0], key, normalize=False)
-            and reflect_strategy is not None
-        )
+        return idx > 0 and not EM(self._answer, key) and reflect_strategy is not None
 
 
-class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
-    """A strategy class for Math benchmarks using the ReflexionReAct agent.
+class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
+    """A strategy class for QA benchmarks using the ReflexionReAct agent.
 
     Attributes:
         llm (BaseChatModel): The language model used for generating answers and critiques.
@@ -344,6 +311,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         max_trials (int): The maximum number of trials allowed. Defaults to 1.
         max_steps (int): The maximum number of steps allowed. Defaults to 6.
         max_tokens (int): The maximum number of tokens allowed. Defaults to 5000.
+        docstore (DocstoreExplorer): The document store explorer for retrieving relevant documents. Defaults to Wikipedia.
         enc (Encoding): The encoding for tokenization. Defaults to gpt-3.5-turbo.
     """
 
@@ -355,21 +323,24 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         max_trials: int = 1,
         max_steps: int = 6,
         max_tokens: int = 5000,
+        docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
     ) -> None:
         """Initialization."""
         super().__init__(llm)
         self.max_reflections = max_reflections
         self.max_trials = max_trials
-        self.max_steps = max_steps
-        self.max_tokens = max_tokens
-        self.enc = enc
 
         if not reflector:
             reflector = ReflexionReActReflector(
                 llm=llm, max_reflections=max_reflections
             )
         self.reflector = reflector
+
+        self.max_steps = max_steps
+        self.max_tokens = max_tokens
+        self.docstore = docstore
+        self.enc = enc
 
         self._finished = False
         self._answer = ""
@@ -449,15 +420,18 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        action = action.split("Observation")[0].strip()
-
-        action_type, query = parse_math_action_react(action)
-        self._scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
+        action = remove_newline(action).split("Observation")[0]
+        self._scratchpad += " " + action
+        action_type, query = parse_qa_action(action)
 
         return action_type, query
 
     def generate_observation(
-        self, step_idx: int, action_type: str, query: str, key: str
+        self,
+        step_idx: int,
+        action_type: str,
+        query: str,
+        key: str,
     ) -> Tuple[bool, str, Dict[str, Any]]:
         """Generate an observation based on the action type and query.
 
@@ -471,37 +445,40 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
             Tuple[bool, str, Dict[str, Any]]: A tuple containing a boolean indicating whether the answer is correct, a string representing the observation,
                 and a dictionary of the external tool outputs.
         """
-        external_tool_info = {"execution_status": "", "code_answer": ""}
-        code_answer, execution_status = safe_execute(query)
+        external_tool_info = {"search_result": "", "lookup_result": ""}
 
         self._scratchpad += f"\nObservation {step_idx}: "
         if action_type.lower() == "finish":
-            external_tool_info["code_answer"] = code_answer[0]
-            external_tool_info["execution_status"] = execution_status
-
             self._answer = query
             self._finished = True
-
-            if EM(code_answer[0], key, normalize=False):
+            if EM(self._answer, key):
                 obs = "Answer is CORRECT"
             else:
                 obs = "Answer is INCORRECT"
-        elif action_type.lower() == "calculate":
-            external_tool_info["code_answer"] = code_answer[0]
-            external_tool_info["execution_status"] = execution_status
-
-            self._answer = query
-            obs = f"\n```python\n{self._answer}\n```\nExecution Status: {execution_status}\nOutput: answer = {code_answer[0]}"
+        elif action_type.lower() == "search":
+            try:
+                search_result = self.docstore.search(query)
+                external_tool_info["search_result"] = search_result
+                obs = remove_newline(search_result)
+            except Exception:
+                obs = "Could not find that page, please try again."
+        elif action_type.lower() == "lookup":
+            try:
+                lookup_result = self.docstore.lookup(query)
+                external_tool_info["lookup_result"] = lookup_result
+                obs = remove_newline(lookup_result)
+            except ValueError:
+                obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
         else:
-            obs = (
-                "Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
-            )
+            obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
         self._scratchpad += obs
 
-        return EM(code_answer[0], key, normalize=False), obs, external_tool_info
+        return EM(self._answer, key), obs, external_tool_info
 
     def create_output_dict(
-        self, react_out: List[ReflexionReActStepOutput], reflections: List[str]
+        self,
+        react_out: List[ReflexionReActStepOutput],
+        reflections: List[str],
     ) -> Dict[str, Any]:
         """Create a dictionary containing the output of the ReflexionReAct agent.
 
@@ -561,8 +538,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
             bool: True if the halting condition is met, False otherwise. The halting condition is met when the answer is not correct and the current step index is less than the maximum number of trials plus one.
         """
         max_trials: int = kwargs.get("max_trials", self.max_trials)
-        code_answer, _ = safe_execute(self._answer)
-        return EM(code_answer[0], key, normalize=False) or idx >= max_trials + 1
+        return EM(self._answer, key) or idx >= max_trials + 1
 
     def react_halting_condition(
         self,
@@ -695,46 +671,52 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
             additional_keys=additional_keys,
         )
 
-        code_answer, _ = safe_execute(self._answer)
-
-        return (
-            halted
-            and not EM(code_answer[0], key, normalize=False)
-            and reflect_strategy is not None
-        )
+        return halted and not EM(self._answer, key) and reflect_strategy is not None
 
 
-class ReflexionCoTGSM8KStrategy(ReflexionCoTMathStrategy):
-    """A strategy class for the GSM8K benchmark using the ReflexionCoT agent."""
+class ReflexionCoTHotQAStrategy(ReflexionCoTQAStrategy):
+    """A strategy class for the HotpotQA benchmark using the ReflexionCoT agent."""
 
     pass
 
 
-class ReflexionCoTSVAMPStrategy(ReflexionCoTMathStrategy):
-    """A strategy class for the SVAMP benchmark using the ReflexionCoT agent."""
+class ReflexionCoTTriviaQAStrategy(ReflexionCoTQAStrategy):
+    """A strategy class for the TriviaQA benchmark using the ReflexionCoT agent."""
 
     pass
 
 
-class ReflexionCoTTabMWPStrategy(ReflexionCoTMathStrategy):
-    """A strategy class for the TabMWP benchmark using the ReflexionCoT agent."""
+class ReflexionCoTAmbigNQStrategy(ReflexionCoTQAStrategy):
+    """A strategy class for the AmbigNQ benchmark using the ReflexionCoT agent."""
 
     pass
 
 
-class ReflexionReActGSM8KStrategy(ReflexionReActMathStrategy):
-    """A strategy class for the GSM8K benchmark using the ReflexionReAct agent."""
+class ReflexionCoTFEVERStrategy(ReflexionCoTQAStrategy):
+    """A strategy class for the FEVER benchmark using the ReflexionCoT agent."""
 
     pass
 
 
-class ReflexionReActSVAMPStrategy(ReflexionReActMathStrategy):
-    """A strategy class for the SVAMP benchmark using the ReflexionReAct agent."""
+class ReflexionReActHotQAStrategy(ReflexionReActQAStrategy):
+    """A strategy class for the HotpotQA benchmark using the ReflexionReAct agent."""
 
     pass
 
 
-class ReflexionReActTabMWPStrategy(ReflexionReActMathStrategy):
-    """A strategy class for the TabMWP benchmark using the ReflexionReAct agent."""
+class ReflexionReActTriviaQAStrategy(ReflexionReActQAStrategy):
+    """A strategy class for the TriviaQA benchmark using the ReflexionReAct agent."""
+
+    pass
+
+
+class ReflexionReActAmbigNQStrategy(ReflexionReActQAStrategy):
+    """A strategy class for the AmbigNQ benchmark using the ReflexionReAct agent."""
+
+    pass
+
+
+class ReflexionReActFEVERStrategy(ReflexionReActQAStrategy):
+    """A strategy class for the FEVER benchmark using the ReflexionReAct agent."""
 
     pass

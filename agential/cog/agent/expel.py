@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.agent import BaseAgent
-from agential.cog.agent.reflexion import ReflexionReActAgent
+from agential.cog.reflexion.agent import ReflexionReActAgent
 from agential.cog.functional.expel import (
     categorize_experiences,
     gather_experience,
@@ -27,7 +27,7 @@ from agential.cog.prompts.agent.expel import (
     EXPEL_REFLEXION_REACT_INSTRUCTION,
     RULE_PREFIX,
 )
-from agential.cog.prompts.agent.reflexion import (
+from agential.cog.reflexion.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,

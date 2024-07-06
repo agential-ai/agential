@@ -5,7 +5,7 @@ import tiktoken
 
 from langchain_community.chat_models.fake import FakeListChatModel
 
-from agential.cog.functional.reflexion import (
+from agential.cog.reflexion.functional import (
     _build_cot_agent_prompt,
     _build_cot_reflection_prompt,
     _build_react_agent_prompt,
@@ -27,7 +27,7 @@ from agential.cog.functional.reflexion import (
     react_reflect_last_attempt_and_reflexion,
     react_reflect_reflexion,
 )
-from agential.cog.prompts.agent.reflexion import (
+from agential.cog.reflexion.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     REFLEXION_COT_INSTRUCTION_HOTPOTQA,

@@ -9,7 +9,7 @@ from langchain_core.messages.human import HumanMessage
 from langchain_core.prompts.prompt import PromptTemplate
 from tiktoken.core import Encoding
 
-from agential.cog.prompts.agent.reflexion import (
+from agential.cog.reflexion.prompts import (
     LAST_TRIAL_HEADER,
     REFLECTION_HEADER,
 )

@@ -5,14 +5,14 @@ import pytest
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 
-from agential.cog.functional.reflexion import (
+from agential.cog.reflexion.functional import (
     _format_reflections,
 )
-from agential.cog.modules.reflect.reflexion import (
+from agential.cog.reflexion.reflect import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )
-from agential.cog.prompts.agent.reflexion import (
+from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 
