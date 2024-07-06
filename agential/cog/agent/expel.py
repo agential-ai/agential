@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
-from agential.cog.agent.base import BaseAgent
+from agential.base.base import BaseAgent
 from agential.cog.agent.reflexion import ReflexionReActAgent
 from agential.cog.functional.expel import (
     categorize_experiences,

@@ -12,7 +12,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
-from agential.cog.agent.base import BaseAgent
+from agential.base.base import BaseAgent
 from agential.cog.modules.reflect.reflexion import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
