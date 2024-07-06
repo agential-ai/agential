@@ -12,7 +12,7 @@ from agential.cog.react.prompts import (
 )
 from agential.cog.prompts.benchmark.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.prompts.benchmark.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
-from agential.cog.strategies.react.base import ReActBaseStrategy
+from agential.cog.react.strategies.base import ReActBaseStrategy
 
 
 def test_init() -> None:
