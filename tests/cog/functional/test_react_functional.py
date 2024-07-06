@@ -4,7 +4,7 @@ import tiktoken
 
 from langchain_community.chat_models.fake import FakeListChatModel
 
-from agential.cog.functional.react import (
+from agential.cog.react.functional import (
     _build_agent_prompt,
     _is_halted,
     _prompt_agent,
