@@ -9,7 +9,7 @@ from typing import Any, Dict, List
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.agent import BaseAgent
-from agential.cog.output.critic import CriticOutput
+from agential.cog.critic.output import CriticOutput
 from agential.cog.strategies.strategy_factory import CriticStrategyFactory
 
 
