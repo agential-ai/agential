@@ -1,6 +1,7 @@
 """ReAct prompts and fewshot examples selector."""
 
 from typing import Dict
+
 from agential.base.selector import BaseSelector
 from agential.cog.react.prompts import (
     REACT_INSTRUCTION_AMBIGNQ,
@@ -14,7 +15,6 @@ from agential.cog.react.prompts import (
     REACT_INSTRUCTION_TRIVIAQA,
 )
 from agential.manager import Benchmarks
-
 
 REACT_PROMPTS = {
     Benchmarks.HOTPOTQA: {
@@ -43,7 +43,7 @@ REACT_PROMPTS = {
     },
     Benchmarks.MBPP: {
         "prompt": REACT_INSTRUCTION_MBPP,
-    }
+    },
 }
 
 
