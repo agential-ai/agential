@@ -126,7 +126,7 @@ BENCHMARK_FEWSHOTS = {
 }
 
 
-def get_fewshot_examples(benchmark: str, fewshot_type: str) -> str:
+def get_benchmark_fewshots(benchmark: str, fewshot_type: str) -> str:
     """Retrieve few-shot examples for a given benchmark and few-shot type.
 
     Available Benchmarks:
