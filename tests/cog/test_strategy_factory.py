@@ -59,292 +59,199 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActTriviaQAStrategy,
 )
 from agential.strategy_factory import (
-    CriticStrategyFactory,
-    ReActStrategyFactory,
-    ReflexionCoTStrategyFactory,
-    ReflexionReActStrategyFactory,
+    Agents,
+    Benchmarks,
+    StrategyFactory
 )
+import pytest
 
 
-def test_react_strategy_factory_get_strategy() -> None:
-    """Tests ReActStrategyFactory get_strategy method."""
+from agential.strategy_factory import StrategyFactory
+
+def test_strategy_factory_get_strategy() -> None:
+    """Tests StrategyFactory get_strategy method."""
     llm = FakeListChatModel(responses=[])
 
-    # QA benchmarks.
+    # QA benchmarks for ReAct agent.
     assert isinstance(
-        ReActStrategyFactory.get_strategy("hotpotqa", llm=llm),
+        StrategyFactory.get_strategy(Agents.REACT, Benchmarks.HOTPOTQA, llm=llm),
         ReActHotQAStrategy,
     )
     assert isinstance(
-        ReActStrategyFactory.get_strategy("triviaqa", llm=llm),
+        StrategyFactory.get_strategy(Agents.REACT, Benchmarks.TRIVIAQA, llm=llm),
         ReActTriviaQAStrategy,
     )
     assert isinstance(
-        ReActStrategyFactory.get_strategy("ambignq", llm=llm),
+        StrategyFactory.get_strategy(Agents.REACT, Benchmarks.AMBIGNQ, llm=llm),
         ReActAmbigNQStrategy,
     )
     assert isinstance(
-        ReActStrategyFactory.get_strategy("fever", llm=llm),
+        StrategyFactory.get_strategy(Agents.REACT, Benchmarks.FEVER, llm=llm),
         ReActFEVERStrategy,
     )
 
-    # Test kwargs for QA strategy.
-    strategy = ReActStrategyFactory.get_strategy("hotpotqa", llm=llm)
-    assert isinstance(strategy, ReActHotQAStrategy)
-    assert strategy.llm == llm
-
-    # Math benchmarks.
+    # Math benchmarks for ReAct agent.
     assert isinstance(
-        ReActStrategyFactory.get_strategy("gsm8k", llm=llm),
+        StrategyFactory.get_strategy(Agents.REACT, Benchmarks.GSM8K, llm=llm),
         ReActGSM8KStrategy,
     )
     assert isinstance(
-        ReActStrategyFactory.get_strategy("svamp", llm=llm),
+        StrategyFactory.get_strategy(Agents.REACT, Benchmarks.SVAMP, llm=llm),
         ReActSVAMPStrategy,
     )
     assert isinstance(
-        ReActStrategyFactory.get_strategy("tabmwp", llm=llm),
+        StrategyFactory.get_strategy(Agents.REACT, Benchmarks.TABMWP, llm=llm),
         ReActTabMWPStrategy,
     )
 
-    # Test kwargs for Math strategy.
-    strategy = ReActStrategyFactory.get_strategy("gsm8k", llm=llm, max_tokens=123)
-    assert isinstance(strategy, ReActGSM8KStrategy)
-    assert strategy.llm == llm
-    assert strategy.max_tokens == 123
-
-    # Code benchmarks.
+    # Code benchmarks for ReAct agent.
     assert isinstance(
-        ReActStrategyFactory.get_strategy("humaneval", llm=llm),
+        StrategyFactory.get_strategy(Agents.REACT, Benchmarks.HUMANEVAL, llm=llm),
         ReActHEvalStrategy,
     )
-
     assert isinstance(
-        ReActStrategyFactory.get_strategy("mbpp", llm=llm),
+        StrategyFactory.get_strategy(Agents.REACT, Benchmarks.MBPP, llm=llm),
         ReActMBPPStrategy,
     )
 
-    # Test kwargs for Code strategy.
-    strategy = ReActStrategyFactory.get_strategy("mbpp", llm=llm, max_tokens=123)
-    assert isinstance(strategy, ReActMBPPStrategy)
-    assert strategy.llm == llm
-    assert strategy.max_tokens == 123
-
-    # Unsupported benchmarks.
-    with pytest.raises(ValueError, match="Unsupported benchmark: unknown"):
-        ReActStrategyFactory.get_strategy("unknown")
-
-
-def test_reflexioncot_strategy_factory_get_strategy() -> None:
-    """Tests ReflexionCoTStrategyFactory get_strategy method."""
-    llm = FakeListChatModel(responses=[])
-
-    # QA benchmarks.
+    # QA benchmarks for ReflexionCoT agent.
     assert isinstance(
-        ReflexionCoTStrategyFactory.get_strategy({"qa": "hotpotqa"}, llm=llm),
+        StrategyFactory.get_strategy(Agents.REFLEXION_COT, Benchmarks.HOTPOTQA, llm=llm),
         ReflexionCoTHotQAStrategy,
     )
     assert isinstance(
-        ReflexionCoTStrategyFactory.get_strategy({"qa": "triviaqa"}, llm=llm),
+        StrategyFactory.get_strategy(Agents.REFLEXION_COT, Benchmarks.TRIVIAQA, llm=llm),
         ReflexionCoTTriviaQAStrategy,
     )
     assert isinstance(
-        ReflexionCoTStrategyFactory.get_strategy({"qa": "ambignq"}, llm=llm),
+        StrategyFactory.get_strategy(Agents.REFLEXION_COT, Benchmarks.AMBIGNQ, llm=llm),
         ReflexionCoTAmbigNQStrategy,
     )
     assert isinstance(
-        ReflexionCoTStrategyFactory.get_strategy({"qa": "fever"}, llm=llm),
+        StrategyFactory.get_strategy(Agents.REFLEXION_COT, Benchmarks.FEVER, llm=llm),
         ReflexionCoTFEVERStrategy,
     )
 
-    # Math benchmarks.
+    # Math benchmarks for ReflexionCoT agent.
     assert isinstance(
-        ReflexionCoTStrategyFactory.get_strategy({"math": "gsm8k"}, llm=llm),
+        StrategyFactory.get_strategy(Agents.REFLEXION_COT, Benchmarks.GSM8K, llm=llm),
         ReflexionCoTGSM8KStrategy,
     )
     assert isinstance(
-        ReflexionCoTStrategyFactory.get_strategy({"math": "svamp"}, llm=llm),
+        StrategyFactory.get_strategy(Agents.REFLEXION_COT, Benchmarks.SVAMP, llm=llm),
         ReflexionCoTSVAMPStrategy,
     )
     assert isinstance(
-        ReflexionCoTStrategyFactory.get_strategy({"math": "tabmwp"}, llm=llm),
+        StrategyFactory.get_strategy(Agents.REFLEXION_COT, Benchmarks.TABMWP, llm=llm),
         ReflexionCoTTabMWPStrategy,
     )
 
-    # Code benchmarks.
+    # Code benchmarks for ReflexionCoT agent.
     assert isinstance(
-        ReflexionCoTStrategyFactory.get_strategy({"code": "humaneval"}, llm=llm),
+        StrategyFactory.get_strategy(Agents.REFLEXION_COT, Benchmarks.HUMANEVAL, llm=llm),
         ReflexionCoTHEvalStrategy,
     )
     assert isinstance(
-        ReflexionCoTStrategyFactory.get_strategy({"code": "mbpp"}, llm=llm),
+        StrategyFactory.get_strategy(Agents.REFLEXION_COT, Benchmarks.MBPP, llm=llm),
         ReflexionCoTMBPPStrategy,
     )
 
-    # Test kwargs for QA strategy.
-    strategy = ReflexionCoTStrategyFactory.get_strategy(
-        {"qa": "hotpotqa"}, llm=llm, max_reflections=1
-    )
-    assert isinstance(strategy, ReflexionCoTHotQAStrategy)
-    assert strategy.llm == llm
-    assert strategy.max_reflections == 1
-
-    # Unsupported benchmarks.
-    with pytest.raises(ValueError, match="Unsupported QA benchmark: unknown"):
-        ReflexionCoTStrategyFactory.get_strategy({"qa": "unknown"})
-
-    with pytest.raises(ValueError, match="Unsupported Math benchmark: unknown"):
-        ReflexionCoTStrategyFactory.get_strategy({"math": "unknown"})
-
-    with pytest.raises(ValueError, match="Unsupported Code benchmark: unknown"):
-        ReflexionCoTStrategyFactory.get_strategy({"code": "unknown"})
-
-    with pytest.raises(ValueError, match="Unsupported mode: {}"):
-        ReflexionCoTStrategyFactory.get_strategy({})
-
-
-def test_reflexionreact_strategy_factory_get_strategy() -> None:
-    """Tests ReflexionReActStrategyFactory get_strategy method."""
-    llm = FakeListChatModel(responses=[])
-
-    # QA benchmarks.
+    # QA benchmarks for ReflexionReAct agent.
     assert isinstance(
-        ReflexionReActStrategyFactory.get_strategy({"qa": "hotpotqa"}, llm=llm),
+        StrategyFactory.get_strategy(Agents.REFLEXION_REACT, Benchmarks.HOTPOTQA, llm=llm),
         ReflexionReActHotQAStrategy,
     )
     assert isinstance(
-        ReflexionReActStrategyFactory.get_strategy({"qa": "triviaqa"}, llm=llm),
+        StrategyFactory.get_strategy(Agents.REFLEXION_REACT, Benchmarks.TRIVIAQA, llm=llm),
         ReflexionReActTriviaQAStrategy,
     )
     assert isinstance(
-        ReflexionReActStrategyFactory.get_strategy({"qa": "ambignq"}, llm=llm),
+        StrategyFactory.get_strategy(Agents.REFLEXION_REACT, Benchmarks.AMBIGNQ, llm=llm),
         ReflexionReActAmbigNQStrategy,
     )
     assert isinstance(
-        ReflexionReActStrategyFactory.get_strategy({"qa": "fever"}, llm=llm),
+        StrategyFactory.get_strategy(Agents.REFLEXION_REACT, Benchmarks.FEVER, llm=llm),
         ReflexionReActFEVERStrategy,
     )
 
-    # Math benchmarks.
+    # Math benchmarks for ReflexionReAct agent.
     assert isinstance(
-        ReflexionReActStrategyFactory.get_strategy({"math": "gsm8k"}, llm=llm),
+        StrategyFactory.get_strategy(Agents.REFLEXION_REACT, Benchmarks.GSM8K, llm=llm),
         ReflexionReActGSM8KStrategy,
     )
     assert isinstance(
-        ReflexionReActStrategyFactory.get_strategy({"math": "svamp"}, llm=llm),
+        StrategyFactory.get_strategy(Agents.REFLEXION_REACT, Benchmarks.SVAMP, llm=llm),
         ReflexionReActSVAMPStrategy,
     )
     assert isinstance(
-        ReflexionReActStrategyFactory.get_strategy({"math": "tabmwp"}, llm=llm),
+        StrategyFactory.get_strategy(Agents.REFLEXION_REACT, Benchmarks.TABMWP, llm=llm),
         ReflexionReActTabMWPStrategy,
     )
 
-    # Code benchmarks.
+    # Code benchmarks for ReflexionReAct agent.
     assert isinstance(
-        ReflexionReActStrategyFactory.get_strategy({"code": "humaneval"}, llm=llm),
+        StrategyFactory.get_strategy(Agents.REFLEXION_REACT, Benchmarks.HUMANEVAL, llm=llm),
         ReflexionReActHEvalStrategy,
     )
     assert isinstance(
-        ReflexionReActStrategyFactory.get_strategy({"code": "mbpp"}, llm=llm),
+        StrategyFactory.get_strategy(Agents.REFLEXION_REACT, Benchmarks.MBPP, llm=llm),
         ReflexionReActMBPPStrategy,
     )
 
-    # Test kwargs for QA strategy.
-    strategy = ReflexionReActStrategyFactory.get_strategy(
-        {"qa": "hotpotqa"}, llm=llm, max_reflections=1
-    )
-    assert isinstance(strategy, ReflexionReActHotQAStrategy)
-    assert strategy.llm == llm
-    assert strategy.max_reflections == 1
-
-    # Unsupported benchmarks.
-    with pytest.raises(ValueError, match="Unsupported QA benchmark: unknown"):
-        ReflexionReActStrategyFactory.get_strategy({"qa": "unknown"})
-
-    with pytest.raises(ValueError, match="Unsupported Math benchmark: unknown"):
-        ReflexionReActStrategyFactory.get_strategy({"math": "unknown"})
-
-    with pytest.raises(ValueError, match="Unsupported Code benchmark: unknown"):
-        ReflexionReActStrategyFactory.get_strategy({"code": "unknown"})
-
-    with pytest.raises(ValueError, match="Unsupported mode: {}"):
-        ReflexionReActStrategyFactory.get_strategy({})
-
-
-def test_critic_strategy_factory_get_strategy() -> None:
-    """Tests CriticStrategyFactory get_strategy method."""
-    search = MagicMock(spec=GoogleSerperAPIWrapper)
-
-    llm = FakeListChatModel(responses=[])
-
-    # QA benchmarks.
+    # QA benchmarks for Critic agent.
     assert isinstance(
-        CriticStrategyFactory.get_strategy({"qa": "hotpotqa"}, llm=llm),
+        StrategyFactory.get_strategy(Agents.CRITIC, Benchmarks.HOTPOTQA, llm=llm),
         CritHotQAStrategy,
     )
     assert isinstance(
-        CriticStrategyFactory.get_strategy({"qa": "triviaqa"}, llm=llm),
+        StrategyFactory.get_strategy(Agents.CRITIC, Benchmarks.TRIVIAQA, llm=llm),
         CritTriviaQAStrategy,
     )
     assert isinstance(
-        CriticStrategyFactory.get_strategy({"qa": "ambignq"}, llm=llm),
+        StrategyFactory.get_strategy(Agents.CRITIC, Benchmarks.AMBIGNQ, llm=llm),
         CritAmbigNQStrategy,
     )
     assert isinstance(
-        CriticStrategyFactory.get_strategy({"qa": "fever"}, llm=llm), CritFEVERStrategy
+        StrategyFactory.get_strategy(Agents.CRITIC, Benchmarks.FEVER, llm=llm),
+        CritFEVERStrategy,
     )
 
-    # Test kwargs for QA strategy.
-    strategy = CriticStrategyFactory.get_strategy(
-        {"qa": "fever"}, llm=llm, search=search, evidence_length=500, num_results=10
-    )
-    assert isinstance(strategy, CritFEVERStrategy)
-    assert strategy.llm == llm
-    assert isinstance(strategy.search, GoogleSerperAPIWrapper)
-    assert strategy.evidence_length == 500
-    assert strategy.num_results == 10
-
-    # Math benchmarks.
+    # Math benchmarks for Critic agent.
     assert isinstance(
-        CriticStrategyFactory.get_strategy({"math": "gsm8k"}, llm=llm),
+        StrategyFactory.get_strategy(Agents.CRITIC, Benchmarks.GSM8K, llm=llm),
         CritGSM8KStrategy,
     )
     assert isinstance(
-        CriticStrategyFactory.get_strategy({"math": "svamp"}, llm=llm),
+        StrategyFactory.get_strategy(Agents.CRITIC, Benchmarks.SVAMP, llm=llm),
         CritSVAMPStrategy,
     )
     assert isinstance(
-        CriticStrategyFactory.get_strategy({"math": "tabmwp"}, llm=llm),
+        StrategyFactory.get_strategy(Agents.CRITIC, Benchmarks.TABMWP, llm=llm),
         CritTabMWPStrategy,
     )
 
-    # Test kwargs for Math strategy.
-    strategy = CriticStrategyFactory.get_strategy(
-        {"math": "gsm8k"}, llm=llm, patience=3
-    )
-    assert isinstance(strategy, CritGSM8KStrategy)
-    assert strategy.llm == llm
-    assert strategy.patience == 3
-
-    # Code benchmarks.
+    # Code benchmarks for Critic agent.
     assert isinstance(
-        CriticStrategyFactory.get_strategy({"code": "mbpp"}, llm=llm),
-        CritMBPPCodeStrategy,
-    )
-    assert isinstance(
-        CriticStrategyFactory.get_strategy({"code": "humaneval"}, llm=llm),
+        StrategyFactory.get_strategy(Agents.CRITIC, Benchmarks.HUMANEVAL, llm=llm),
         CritHEvalCodeStrategy,
+    )
+    assert isinstance(
+        StrategyFactory.get_strategy(Agents.CRITIC, Benchmarks.MBPP, llm=llm),
+        CritMBPPCodeStrategy,
     )
 
     # Unsupported benchmarks.
-    with pytest.raises(ValueError, match="Unsupported QA benchmark: unknown"):
-        CriticStrategyFactory.get_strategy({"qa": "unknown"})
+    with pytest.raises(ValueError, match="Unsupported benchmark: unknown for agent react"):
+        StrategyFactory.get_strategy(Agents.REACT, "unknown", llm=llm)
 
-    with pytest.raises(ValueError, match="Unsupported Math benchmark: unknown"):
-        CriticStrategyFactory.get_strategy({"math": "unknown"})
+    with pytest.raises(ValueError, match="Unsupported benchmark: unknown for agent reflexion_cot"):
+        StrategyFactory.get_strategy(Agents.REFLEXION_COT, "unknown", llm=llm)
 
-    with pytest.raises(ValueError, match="Unsupported Code benchmark: unknown"):
-        CriticStrategyFactory.get_strategy({"code": "unknown"})
+    with pytest.raises(ValueError, match="Unsupported benchmark: unknown for agent reflexion_react"):
+        StrategyFactory.get_strategy(Agents.REFLEXION_REACT, "unknown", llm=llm)
 
-    with pytest.raises(ValueError, match="Unsupported mode: {}"):
-        CriticStrategyFactory.get_strategy({})
+    with pytest.raises(ValueError, match="Unsupported benchmark: unknown for agent critic"):
+        StrategyFactory.get_strategy(Agents.CRITIC, "unknown", llm=llm)
+
+    with pytest.raises(ValueError, match="Unsupported agent: unknown"):
+        StrategyFactory.get_strategy("unknown", Benchmarks.HOTPOTQA, llm=llm)
