@@ -3,6 +3,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict
 
+
 class BaseSelector(ABC):
     """An abstract base class for auto-selecting prompts and few-shot examples."""
 
@@ -11,11 +12,7 @@ class BaseSelector(ABC):
         pass
 
     @abstractmethod
-    def get_fewshots(
-        self,
-        benchmark: str,
-        **kwargs: Any
-    ) -> Dict[str, str]:
+    def get_fewshots(self, benchmark: str, **kwargs: Any) -> Dict[str, str]:
         """Retrieve few-shot examples based on the benchmark.
 
         Args:

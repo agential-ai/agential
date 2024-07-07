@@ -108,9 +108,7 @@ def test_react_strategy_factory_get_strategy() -> None:
     )
 
     # Test kwargs for Math strategy.
-    strategy = ReActStrategyFactory.get_strategy(
-        "gsm8k", llm=llm, max_tokens=123
-    )
+    strategy = ReActStrategyFactory.get_strategy("gsm8k", llm=llm, max_tokens=123)
     assert isinstance(strategy, ReActGSM8KStrategy)
     assert strategy.llm == llm
     assert strategy.max_tokens == 123
@@ -127,9 +125,7 @@ def test_react_strategy_factory_get_strategy() -> None:
     )
 
     # Test kwargs for Code strategy.
-    strategy = ReActStrategyFactory.get_strategy(
-        "mbpp", llm=llm, max_tokens=123
-    )
+    strategy = ReActStrategyFactory.get_strategy("mbpp", llm=llm, max_tokens=123)
     assert isinstance(strategy, ReActMBPPStrategy)
     assert strategy.llm == llm
     assert strategy.max_tokens == 123
