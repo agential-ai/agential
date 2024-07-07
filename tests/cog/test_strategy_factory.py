@@ -66,129 +66,50 @@ from agential.cog.strategy_factory import (
 )
 
 
-def test_critic_strategy_factory_get_strategy() -> None:
-    """Tests CriticStrategyFactory get_strategy method."""
-    search = MagicMock(spec=GoogleSerperAPIWrapper)
-
-    llm = FakeListChatModel(responses=[])
-
-    # QA benchmarks.
-    assert isinstance(
-        CriticStrategyFactory.get_strategy({"qa": "hotpotqa"}, llm=llm),
-        CritHotQAStrategy,
-    )
-    assert isinstance(
-        CriticStrategyFactory.get_strategy({"qa": "triviaqa"}, llm=llm),
-        CritTriviaQAStrategy,
-    )
-    assert isinstance(
-        CriticStrategyFactory.get_strategy({"qa": "ambignq"}, llm=llm),
-        CritAmbigNQStrategy,
-    )
-    assert isinstance(
-        CriticStrategyFactory.get_strategy({"qa": "fever"}, llm=llm), CritFEVERStrategy
-    )
-
-    # Test kwargs for QA strategy.
-    strategy = CriticStrategyFactory.get_strategy(
-        {"qa": "fever"}, llm=llm, search=search, evidence_length=500, num_results=10
-    )
-    assert isinstance(strategy, CritFEVERStrategy)
-    assert strategy.llm == llm
-    assert isinstance(strategy.search, GoogleSerperAPIWrapper)
-    assert strategy.evidence_length == 500
-    assert strategy.num_results == 10
-
-    # Math benchmarks.
-    assert isinstance(
-        CriticStrategyFactory.get_strategy({"math": "gsm8k"}, llm=llm),
-        CritGSM8KStrategy,
-    )
-    assert isinstance(
-        CriticStrategyFactory.get_strategy({"math": "svamp"}, llm=llm),
-        CritSVAMPStrategy,
-    )
-    assert isinstance(
-        CriticStrategyFactory.get_strategy({"math": "tabmwp"}, llm=llm),
-        CritTabMWPStrategy,
-    )
-
-    # Test kwargs for Math strategy.
-    strategy = CriticStrategyFactory.get_strategy(
-        {"math": "gsm8k"}, llm=llm, patience=3
-    )
-    assert isinstance(strategy, CritGSM8KStrategy)
-    assert strategy.llm == llm
-    assert strategy.patience == 3
-
-    # Code benchmarks.
-    assert isinstance(
-        CriticStrategyFactory.get_strategy({"code": "mbpp"}, llm=llm),
-        CritMBPPCodeStrategy,
-    )
-    assert isinstance(
-        CriticStrategyFactory.get_strategy({"code": "humaneval"}, llm=llm),
-        CritHEvalCodeStrategy,
-    )
-
-    # Unsupported benchmarks.
-    with pytest.raises(ValueError, match="Unsupported QA benchmark: unknown"):
-        CriticStrategyFactory.get_strategy({"qa": "unknown"})
-
-    with pytest.raises(ValueError, match="Unsupported Math benchmark: unknown"):
-        CriticStrategyFactory.get_strategy({"math": "unknown"})
-
-    with pytest.raises(ValueError, match="Unsupported Code benchmark: unknown"):
-        CriticStrategyFactory.get_strategy({"code": "unknown"})
-
-    with pytest.raises(ValueError, match="Unsupported mode: {}"):
-        CriticStrategyFactory.get_strategy({})
-
-
 def test_react_strategy_factory_get_strategy() -> None:
     """Tests ReActStrategyFactory get_strategy method."""
     llm = FakeListChatModel(responses=[])
 
     # QA benchmarks.
     assert isinstance(
-        ReActStrategyFactory.get_strategy({"qa": "hotpotqa"}, llm=llm),
+        ReActStrategyFactory.get_strategy("hotpotqa", llm=llm),
         ReActHotQAStrategy,
     )
     assert isinstance(
-        ReActStrategyFactory.get_strategy({"qa": "triviaqa"}, llm=llm),
+        ReActStrategyFactory.get_strategy("triviaqa", llm=llm),
         ReActTriviaQAStrategy,
     )
     assert isinstance(
-        ReActStrategyFactory.get_strategy({"qa": "ambignq"}, llm=llm),
+        ReActStrategyFactory.get_strategy("ambignq", llm=llm),
         ReActAmbigNQStrategy,
     )
     assert isinstance(
-        ReActStrategyFactory.get_strategy({"qa": "fever"}, llm=llm),
+        ReActStrategyFactory.get_strategy("fever", llm=llm),
         ReActFEVERStrategy,
     )
 
     # Test kwargs for QA strategy.
-    strategy = ReActStrategyFactory.get_strategy({"qa": "hotpotqa"}, llm=llm)
+    strategy = ReActStrategyFactory.get_strategy("hotpotqa", llm=llm)
     assert isinstance(strategy, ReActHotQAStrategy)
     assert strategy.llm == llm
 
     # Math benchmarks.
     assert isinstance(
-        ReActStrategyFactory.get_strategy({"math": "gsm8k"}, llm=llm),
+        ReActStrategyFactory.get_strategy("gsm8k", llm=llm),
         ReActGSM8KStrategy,
     )
     assert isinstance(
-        ReActStrategyFactory.get_strategy({"math": "svamp"}, llm=llm),
+        ReActStrategyFactory.get_strategy("svamp", llm=llm),
         ReActSVAMPStrategy,
     )
     assert isinstance(
-        ReActStrategyFactory.get_strategy({"math": "tabmwp"}, llm=llm),
+        ReActStrategyFactory.get_strategy("tabmwp", llm=llm),
         ReActTabMWPStrategy,
     )
 
     # Test kwargs for Math strategy.
     strategy = ReActStrategyFactory.get_strategy(
-        {"math": "gsm8k"}, llm=llm, max_tokens=123
+        "gsm8k", llm=llm, max_tokens=123
     )
     assert isinstance(strategy, ReActGSM8KStrategy)
     assert strategy.llm == llm
@@ -196,35 +117,26 @@ def test_react_strategy_factory_get_strategy() -> None:
 
     # Code benchmarks.
     assert isinstance(
-        ReActStrategyFactory.get_strategy({"code": "humaneval"}, llm=llm),
+        ReActStrategyFactory.get_strategy("humaneval", llm=llm),
         ReActHEvalStrategy,
     )
 
     assert isinstance(
-        ReActStrategyFactory.get_strategy({"code": "mbpp"}, llm=llm),
+        ReActStrategyFactory.get_strategy("mbpp", llm=llm),
         ReActMBPPStrategy,
     )
 
     # Test kwargs for Code strategy.
     strategy = ReActStrategyFactory.get_strategy(
-        {"code": "mbpp"}, llm=llm, max_tokens=123
+        "mbpp", llm=llm, max_tokens=123
     )
     assert isinstance(strategy, ReActMBPPStrategy)
     assert strategy.llm == llm
     assert strategy.max_tokens == 123
 
     # Unsupported benchmarks.
-    with pytest.raises(ValueError, match="Unsupported QA benchmark: unknown"):
-        ReActStrategyFactory.get_strategy({"qa": "unknown"})
-
-    with pytest.raises(ValueError, match="Unsupported Math benchmark: unknown"):
-        ReActStrategyFactory.get_strategy({"math": "unknown"})
-
-    with pytest.raises(ValueError, match="Unsupported Code benchmark: unknown"):
-        ReActStrategyFactory.get_strategy({"code": "unknown"})
-
-    with pytest.raises(ValueError, match="Unsupported mode: {}"):
-        ReActStrategyFactory.get_strategy({})
+    with pytest.raises(ValueError, match="Unsupported benchmark: unknown"):
+        ReActStrategyFactory.get_strategy("unknown")
 
 
 def test_reflexioncot_strategy_factory_get_strategy() -> None:
@@ -361,3 +273,82 @@ def test_reflexionreact_strategy_factory_get_strategy() -> None:
 
     with pytest.raises(ValueError, match="Unsupported mode: {}"):
         ReflexionReActStrategyFactory.get_strategy({})
+
+
+def test_critic_strategy_factory_get_strategy() -> None:
+    """Tests CriticStrategyFactory get_strategy method."""
+    search = MagicMock(spec=GoogleSerperAPIWrapper)
+
+    llm = FakeListChatModel(responses=[])
+
+    # QA benchmarks.
+    assert isinstance(
+        CriticStrategyFactory.get_strategy({"qa": "hotpotqa"}, llm=llm),
+        CritHotQAStrategy,
+    )
+    assert isinstance(
+        CriticStrategyFactory.get_strategy({"qa": "triviaqa"}, llm=llm),
+        CritTriviaQAStrategy,
+    )
+    assert isinstance(
+        CriticStrategyFactory.get_strategy({"qa": "ambignq"}, llm=llm),
+        CritAmbigNQStrategy,
+    )
+    assert isinstance(
+        CriticStrategyFactory.get_strategy({"qa": "fever"}, llm=llm), CritFEVERStrategy
+    )
+
+    # Test kwargs for QA strategy.
+    strategy = CriticStrategyFactory.get_strategy(
+        {"qa": "fever"}, llm=llm, search=search, evidence_length=500, num_results=10
+    )
+    assert isinstance(strategy, CritFEVERStrategy)
+    assert strategy.llm == llm
+    assert isinstance(strategy.search, GoogleSerperAPIWrapper)
+    assert strategy.evidence_length == 500
+    assert strategy.num_results == 10
+
+    # Math benchmarks.
+    assert isinstance(
+        CriticStrategyFactory.get_strategy({"math": "gsm8k"}, llm=llm),
+        CritGSM8KStrategy,
+    )
+    assert isinstance(
+        CriticStrategyFactory.get_strategy({"math": "svamp"}, llm=llm),
+        CritSVAMPStrategy,
+    )
+    assert isinstance(
+        CriticStrategyFactory.get_strategy({"math": "tabmwp"}, llm=llm),
+        CritTabMWPStrategy,
+    )
+
+    # Test kwargs for Math strategy.
+    strategy = CriticStrategyFactory.get_strategy(
+        {"math": "gsm8k"}, llm=llm, patience=3
+    )
+    assert isinstance(strategy, CritGSM8KStrategy)
+    assert strategy.llm == llm
+    assert strategy.patience == 3
+
+    # Code benchmarks.
+    assert isinstance(
+        CriticStrategyFactory.get_strategy({"code": "mbpp"}, llm=llm),
+        CritMBPPCodeStrategy,
+    )
+    assert isinstance(
+        CriticStrategyFactory.get_strategy({"code": "humaneval"}, llm=llm),
+        CritHEvalCodeStrategy,
+    )
+
+    # Unsupported benchmarks.
+    with pytest.raises(ValueError, match="Unsupported QA benchmark: unknown"):
+        CriticStrategyFactory.get_strategy({"qa": "unknown"})
+
+    with pytest.raises(ValueError, match="Unsupported Math benchmark: unknown"):
+        CriticStrategyFactory.get_strategy({"math": "unknown"})
+
+    with pytest.raises(ValueError, match="Unsupported Code benchmark: unknown"):
+        CriticStrategyFactory.get_strategy({"code": "unknown"})
+
+    with pytest.raises(ValueError, match="Unsupported mode: {}"):
+        CriticStrategyFactory.get_strategy({})
