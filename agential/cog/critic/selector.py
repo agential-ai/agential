@@ -147,7 +147,14 @@ class CriticSelector(BaseSelector):
 
         use_tool = kwargs.get("use_tool")
         if not use_tool:
-            raise ValueError("`use_tool` not specified ")
+            raise ValueError("`use_tool` not specified.")
 
-        return CRITIC_PROMPTS[benchmark]
-    
+        if use_tool:
+            return {
+                "prompt": CRITIC_PROMPTS[benchmark]["prompt"],
+                "critique_prompt": CRITIC_PROMPTS[benchmark]["critique_prompt"]
+            }
+        return {
+            "prompt": CRITIC_PROMPTS[benchmark]["prompt"],
+            "critique_prompt": CRITIC_PROMPTS[benchmark]["critique_prompt_no_tool"]
+        }    
