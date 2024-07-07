@@ -277,22 +277,12 @@ class Agents:
 
 
 AGENT_FEWSHOTS = {
-    Agents.REACT: {
-        Benchmarks.qa.HOTPOTQA: HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        Benchmarks.qa.FEVER: FEVER_FEWSHOT_EXAMPLES_REACT,
-        Benchmarks.qa.TRIVIAQA: TRIVIAQA_FEWSHOT_EXAMPLES_REACT,
-        Benchmarks.qa.AMBIGNQ: AMBIGNQ_FEWSHOT_EXAMPLES_REACT,
-        Benchmarks.math.GSM8K: GSM8K_FEWSHOT_EXAMPLES_REACT,
-        Benchmarks.math.SVAMP: SVAMP_FEWSHOT_EXAMPLES_REACT,
-        Benchmarks.math.TABMWP: TABMWP_FEWSHOT_EXAMPLES_REACT,
-        Benchmarks.code.HUMANEVAL: HUMANEVAL_FEWSHOT_EXAMPLES_REACT,
-        Benchmarks.code.MBPP: MBPP_FEWSHOT_EXAMPLES_REACT,
-    },
+    Agents.REACT: {},
     Agents.REFLEXION_COT: {
         Benchmarks.qa.HOTPOTQA: HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-        Benchmarks.qa.FEVER: FEVER_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
         Benchmarks.qa.TRIVIAQA: TRIVIAQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
         Benchmarks.qa.AMBIGNQ: AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
+        Benchmarks.qa.FEVER: FEVER_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
         Benchmarks.math.GSM8K: GSM8K_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
         Benchmarks.math.SVAMP: SVAMP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
         Benchmarks.math.TABMWP: TABMWP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
@@ -301,9 +291,9 @@ AGENT_FEWSHOTS = {
     },
     Agents.REFLEXION_REACT: {
         Benchmarks.qa.HOTPOTQA: HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-        Benchmarks.qa.FEVER: FEVER_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         Benchmarks.qa.TRIVIAQA: TRIVIAQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         Benchmarks.qa.AMBIGNQ: AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+        Benchmarks.qa.FEVER: FEVER_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         Benchmarks.math.GSM8K: GSM8K_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         Benchmarks.math.SVAMP: SVAMP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         Benchmarks.math.TABMWP: TABMWP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
@@ -311,82 +301,198 @@ AGENT_FEWSHOTS = {
         Benchmarks.code.MBPP: MBPP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     },
     Agents.CRITIC: {
-        Benchmarks.qa.HOTPOTQA: HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
-        Benchmarks.qa.FEVER: FEVER_FEWSHOT_EXAMPLES_CRITIC,
-        Benchmarks.qa.TRIVIAQA: TRIVIAQA_FEWSHOT_EXAMPLES_CRITIC,
-        Benchmarks.qa.AMBIGNQ: AMBIGNQ_FEWSHOT_EXAMPLES_CRITIC,
-        Benchmarks.math.GSM8K: GSM8K_FEWSHOT_EXAMPLES_CRITIC,
-        Benchmarks.math.SVAMP: SVAMP_FEWSHOT_EXAMPLES_CRITIC,
-        Benchmarks.math.TABMWP: TABMWP_FEWSHOT_EXAMPLES_CRITIC,
-        Benchmarks.code.HUMANEVAL: HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC,
-        Benchmarks.code.MBPP: MBPP_FEWSHOT_EXAMPLES_CRITIC,
-        "gsm8k_no_tool": GSM8K_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
-        "svamp_no_tool": SVAMP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
-        "tabmwp_no_tool": TABMWP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
-        "humaneval_no_tool": HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
-        "mbpp_no_tool": MBPP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
+        Benchmarks.qa.HOTPOTQA: {
+            "tool": HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
+            "no_tool": HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
+        },
+        Benchmarks.qa.FEVER: {
+            "tool": FEVER_FEWSHOT_EXAMPLES_CRITIC,
+            "no_tool": FEVER_FEWSHOT_EXAMPLES_CRITIC,
+        },
+        Benchmarks.qa.TRIVIAQA: {
+            "tool": TRIVIAQA_FEWSHOT_EXAMPLES_CRITIC,
+            "no_tool": TRIVIAQA_FEWSHOT_EXAMPLES_CRITIC,
+        },
+        Benchmarks.qa.AMBIGNQ: {
+            "tool": AMBIGNQ_FEWSHOT_EXAMPLES_CRITIC,
+            "no_tool": AMBIGNQ_FEWSHOT_EXAMPLES_CRITIC,
+        },
+        Benchmarks.math.GSM8K: {
+            "tool": GSM8K_FEWSHOT_EXAMPLES_CRITIC,
+            "no_tool": GSM8K_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
+        },
+        Benchmarks.math.SVAMP: {
+            "tool": SVAMP_FEWSHOT_EXAMPLES_CRITIC,
+            "no_tool": SVAMP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
+        },
+        Benchmarks.math.TABMWP: {
+            "tool": TABMWP_FEWSHOT_EXAMPLES_CRITIC,
+            "no_tool": TABMWP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
+        },
+        Benchmarks.code.HUMANEVAL: {
+            "tool": HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC,
+            "no_tool": HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
+        },
+        Benchmarks.code.MBPP: {
+            "tool": MBPP_FEWSHOT_EXAMPLES_CRITIC,
+            "no_tool": MBPP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
+        },
     }
 }
 
 
 AGENT_PROMPTS = {
     Agents.REACT: {
-        Benchmarks.qa.HOTPOTQA: REACT_INSTRUCTION_HOTPOTQA,
-        Benchmarks.qa.FEVER: REACT_INSTRUCTION_FEVER,
-        Benchmarks.qa.TRIVIAQA: REACT_INSTRUCTION_TRIVIAQA,
-        Benchmarks.qa.AMBIGNQ: REACT_INSTRUCTION_AMBIGNQ,
-        Benchmarks.math.GSM8K: REACT_INSTRUCTION_GSM8K,
-        Benchmarks.math.SVAMP: REACT_INSTRUCTION_SVAMP,
-        Benchmarks.math.TABMWP: REACT_INSTRUCTION_TABMWP,
-        Benchmarks.code.HUMANEVAL: REACT_INSTRUCTION_HUMANEVAL,
-        Benchmarks.code.MBPP: REACT_INSTRUCTION_MBPP,
+        Benchmarks.qa.HOTPOTQA: {
+            "prompt": REACT_INSTRUCTION_HOTPOTQA,
+        },
+        Benchmarks.qa.FEVER: {
+            "prompt": REACT_INSTRUCTION_FEVER,
+        },
+        Benchmarks.qa.TRIVIAQA: {
+            "prompt": REACT_INSTRUCTION_TRIVIAQA,
+        },
+        Benchmarks.qa.AMBIGNQ: {
+            "prompt": REACT_INSTRUCTION_AMBIGNQ,
+        },
+        Benchmarks.math.GSM8K: {
+            "prompt": REACT_INSTRUCTION_GSM8K,
+        },
+        Benchmarks.math.SVAMP: {
+            "prompt": REACT_INSTRUCTION_SVAMP,
+        },
+        Benchmarks.math.TABMWP: {
+            "prompt": REACT_INSTRUCTION_TABMWP,
+        },
+        Benchmarks.code.HUMANEVAL: {
+            "prompt": REACT_INSTRUCTION_HUMANEVAL,
+        },
+        Benchmarks.code.MBPP: {
+            "prompt": REACT_INSTRUCTION_MBPP,
+        },
     },
     Agents.REFLEXION_COT: {
-        Benchmarks.qa.HOTPOTQA: REFLEXION_COT_INSTRUCTION_HOTPOTQA,
-        Benchmarks.qa.FEVER: REFLEXION_COT_INSTRUCTION_FEVER,
-        Benchmarks.qa.TRIVIAQA: REFLEXION_COT_INSTRUCTION_TRIVIAQA,
-        Benchmarks.qa.AMBIGNQ: REFLEXION_COT_INSTRUCTION_AMBIGNQ,
-        Benchmarks.math.GSM8K: REFLEXION_COT_INSTRUCTION_GSM8K,
-        Benchmarks.math.SVAMP: REFLEXION_COT_INSTRUCTION_SVAMP,
-        Benchmarks.math.TABMWP: REFLEXION_COT_INSTRUCTION_TABMWP,
-        Benchmarks.code.HUMANEVAL: REFLEXION_COT_INSTRUCTION_HUMANEVAL,
-        Benchmarks.code.MBPP: REFLEXION_COT_INSTRUCTION_MBPP,
+        Benchmarks.qa.HOTPOTQA: {
+            "prompt": REFLEXION_COT_INSTRUCTION_HOTPOTQA,
+            "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
+        },
+        Benchmarks.qa.FEVER: {
+            "prompt": REFLEXION_COT_INSTRUCTION_FEVER,
+            "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_FEVER,
+        },
+        Benchmarks.qa.TRIVIAQA: {
+            "prompt": REFLEXION_COT_INSTRUCTION_TRIVIAQA,
+            "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_TRIVIAQA,
+        },
+        Benchmarks.qa.AMBIGNQ: {
+            "prompt": REFLEXION_COT_INSTRUCTION_AMBIGNQ,
+            "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_AMBIGNQ,
+        },
+        Benchmarks.math.GSM8K: {
+            "prompt": REFLEXION_COT_INSTRUCTION_GSM8K,
+            "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_GSM8K,
+        },
+        Benchmarks.math.SVAMP: {
+            "prompt": REFLEXION_COT_INSTRUCTION_SVAMP,
+            "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_SVAMP,
+        },
+        Benchmarks.math.TABMWP: {
+            "prompt": REFLEXION_COT_INSTRUCTION_TABMWP,
+            "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_TABMWP,
+        },
+        Benchmarks.code.HUMANEVAL: {
+            "prompt": REFLEXION_COT_INSTRUCTION_HUMANEVAL,
+            "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_HUMANEVAL,
+        },
+        Benchmarks.code.MBPP: {
+            "prompt": REFLEXION_COT_INSTRUCTION_MBPP,
+            "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_MBPP,
+        },
     },
     Agents.REFLEXION_REACT: {
-        Benchmarks.qa.HOTPOTQA: REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-        Benchmarks.qa.FEVER: REFLEXION_REACT_INSTRUCTION_FEVER,
-        Benchmarks.qa.TRIVIAQA: REFLEXION_REACT_INSTRUCTION_TRIVIAQA,
-        Benchmarks.qa.AMBIGNQ: REFLEXION_REACT_INSTRUCTION_AMBIGNQ,
-        Benchmarks.math.GSM8K: REFLEXION_REACT_INSTRUCTION_GSM8K,
-        Benchmarks.math.SVAMP: REFLEXION_REACT_INSTRUCTION_SVAMP,
-        Benchmarks.math.TABMWP: REFLEXION_REACT_INSTRUCTION_TABMWP,
-        Benchmarks.code.HUMANEVAL: REFLEXION_REACT_INSTRUCTION_HUMANEVAL,
-        Benchmarks.code.MBPP: REFLEXION_REACT_INSTRUCTION_MBPP,
+        Benchmarks.qa.HOTPOTQA: {
+            "prompt": REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+            "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+        },
+        Benchmarks.qa.FEVER: {
+            "prompt": REFLEXION_REACT_INSTRUCTION_FEVER,
+            "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_FEVER,
+        },
+        Benchmarks.qa.TRIVIAQA: {
+            "prompt": REFLEXION_REACT_INSTRUCTION_TRIVIAQA,
+            "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_TRIVIAQA,
+        },
+        Benchmarks.qa.AMBIGNQ: {
+            "prompt": REFLEXION_REACT_INSTRUCTION_AMBIGNQ,
+            "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_AMBIGNQ,
+        },
+        Benchmarks.math.GSM8K: {
+            "prompt": REFLEXION_REACT_INSTRUCTION_GSM8K,
+            "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_GSM8K,
+        },
+        Benchmarks.math.SVAMP: {
+            "prompt": REFLEXION_REACT_INSTRUCTION_SVAMP,
+            "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_SVAMP,
+        },
+        Benchmarks.math.TABMWP: {
+            "prompt": REFLEXION_REACT_INSTRUCTION_TABMWP,
+            "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_TABMWP,
+        },
+        Benchmarks.code.HUMANEVAL: {
+            "prompt": REFLEXION_REACT_INSTRUCTION_HUMANEVAL,
+            "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_HUMANEVAL,
+        },
+        Benchmarks.code.MBPP: {
+            "prompt": REFLEXION_REACT_INSTRUCTION_MBPP,
+            "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_MBPP,
+        },
     },
     Agents.CRITIC: {
-        Benchmarks.qa.HOTPOTQA: CRITIC_INSTRUCTION_HOTPOTQA,
-        Benchmarks.qa.FEVER: CRITIC_INSTRUCTION_FEVER,
-        Benchmarks.qa.TRIVIAQA: CRITIC_INSTRUCTION_TRIVIAQA,
-        Benchmarks.qa.AMBIGNQ: CRITIC_INSTRUCTION_AMBIGNQ,
-        Benchmarks.math.GSM8K: CRITIC_POT_INSTRUCTION_GSM8K,
-        Benchmarks.math.SVAMP: CRITIC_POT_INSTRUCTION_SVAMP,
-        Benchmarks.math.TABMWP: CRITIC_POT_INSTRUCTION_TABMWP,
-        Benchmarks.code.HUMANEVAL: CRITIC_POT_INSTRUCTION_HUMANEVAL,
-        Benchmarks.code.MBPP: CRITIC_POT_INSTRUCTION_MBPP,
-        "fever_critique": CRITIC_CRITIQUE_INSTRUCTION_FEVER,
-        "hotpotqa_critique": CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
-        "ambignq_critique": CRITIC_CRITIQUE_INSTRUCTION_AMBIGNQ,
-        "triviaqa_critique": CRITIC_CRITIQUE_INSTRUCTION_TRIVIAQA,
-        "gsm8k_critique": CRITIC_CRITIQUE_INSTRUCTION_GSM8K,
-        "svamp_critique": CRITIC_CRITIQUE_INSTRUCTION_SVAMP,
-        "tabmwp_critique": CRITIC_CRITIQUE_INSTRUCTION_TABMWP,
-        "humaneval_critique": CRITIC_CRITIQUE_INSTRUCTION_HUMANEVAL,
-        "mbpp_critique": CRITIC_CRITIQUE_INSTRUCTION_MBPP,
-        "gsm8k_no_tool_critique": CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_GSM8K,
-        "svamp_no_tool_critique": CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_SVAMP,
-        "tabmwp_no_tool_critique": CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_TABMWP,
-        "humaneval_no_tool_critique": CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_HUMANEVAL,
-        "mbpp_no_tool_critique": CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_MBPP,
+        Benchmarks.qa.HOTPOTQA: {
+            "prompt": CRITIC_INSTRUCTION_HOTPOTQA,
+            "critique_prompt": CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
+            "critique_prompt_no_tool": CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
+        },
+        Benchmarks.qa.FEVER: {
+            "prompt": CRITIC_INSTRUCTION_FEVER,
+            "critique_prompt": CRITIC_CRITIQUE_INSTRUCTION_FEVER,
+            "critique_prompt_no_tool": CRITIC_CRITIQUE_INSTRUCTION_FEVER,
+        },
+        Benchmarks.qa.TRIVIAQA: {
+            "prompt": CRITIC_INSTRUCTION_TRIVIAQA,
+            "critique_prompt": CRITIC_CRITIQUE_INSTRUCTION_TRIVIAQA,
+            "critique_prompt_no_tool": CRITIC_CRITIQUE_INSTRUCTION_TRIVIAQA,
+        },
+        Benchmarks.qa.AMBIGNQ: {
+            "prompt": CRITIC_INSTRUCTION_AMBIGNQ,
+            "critique_prompt": CRITIC_CRITIQUE_INSTRUCTION_AMBIGNQ,
+            "critique_prompt_no_tool": CRITIC_CRITIQUE_INSTRUCTION_AMBIGNQ,
+        },
+        Benchmarks.math.GSM8K: {
+            "prompt": CRITIC_POT_INSTRUCTION_GSM8K,
+            "critique_prompt": CRITIC_CRITIQUE_INSTRUCTION_GSM8K,
+            "critique_prompt_no_tool": CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_GSM8K,
+        },
+        Benchmarks.math.SVAMP: {
+            "prompt": CRITIC_POT_INSTRUCTION_SVAMP,
+            "critique_prompt": CRITIC_CRITIQUE_INSTRUCTION_SVAMP,
+            "critique_prompt_no_tool": CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_SVAMP,
+        },
+        Benchmarks.math.TABMWP: {
+            "prompt": CRITIC_POT_INSTRUCTION_TABMWP,
+            "critique_prompt": CRITIC_CRITIQUE_INSTRUCTION_TABMWP,
+            "critique_prompt_no_tool": CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_TABMWP,
+        },
+        Benchmarks.code.HUMANEVAL: {
+            "prompt": CRITIC_POT_INSTRUCTION_HUMANEVAL,
+            "critique_prompt": CRITIC_CRITIQUE_INSTRUCTION_HUMANEVAL,
+            "critique_prompt_no_tool": CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_HUMANEVAL,
+        },
+        Benchmarks.code.MBPP: {
+            "prompt": CRITIC_POT_INSTRUCTION_MBPP,
+            "critique_prompt": CRITIC_CRITIQUE_INSTRUCTION_MBPP,
+            "critique_prompt_no_tool": CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_MBPP,
+        },
     }
 }
 
