@@ -282,224 +282,122 @@ def get_benchmark_fewshots(benchmark: str, fewshot_type: str) -> str:
     return examples
 
 
-class ReActStrategyFactory:
-    """A factory class for creating instances of different ReAct strategies based on the specified mode and benchmark.
-
-    Methods:
-        get_strategy(benchmark: str, **strategy_kwargs) -> ReActBaseStrategy:
-            Returns an instance of the appropriate ReAct strategy based on the provided mode and benchmark.
-    """
+class StrategyFactory:
+    """A factory class for creating instances of different strategies based on the specified agent and benchmark."""
 
     @staticmethod
-    def get_strategy(mode: str, **strategy_kwargs: Any) -> ReActBaseStrategy:
-        """Returns an instance of the appropriate ReAct strategy based on the provided mode and benchmark.
+    def get_strategy(agent: str, benchmark: str, **strategy_kwargs: Any) -> Any:
+        """Returns an instance of the appropriate strategy based on the provided agent and benchmark.
 
-        Available modes:
+        Available agents:
+            - react
+            - reflexion_cot
+            - reflexion_react
+            - critic
+
+        Available benchmarks:
             - qa: "hotpotqa", "triviaqa", "ambignq", "fever"
             - math: "gsm8k", "svamp", "tabmwp"
             - code: "mbpp", "humaneval"
 
         Args:
-            mode (str): A string specifying the benchmark.
+            agent (str): The agent type.
+            benchmark (str): The benchmark name.
             **strategy_kwargs (Dict[str, Any]): Additional keyword arguments to pass to the strategy's constructor.
 
         Returns:
-            ReActBaseStrategy: An instance of the appropriate ReAct strategy.
+            Any: An instance of the appropriate strategy.
 
         Raises:
-            ValueError: If the mode or benchmark is unsupported.
+            ValueError: If the agent or benchmark is unsupported.
         """
-        if mode == "hotpotqa":
-            return ReActHotQAStrategy(**strategy_kwargs)
-        elif mode == "triviaqa":
-            return ReActTriviaQAStrategy(**strategy_kwargs)
-        elif mode == "ambignq":
-            return ReActAmbigNQStrategy(**strategy_kwargs)
-        elif mode == "fever":
-            return ReActFEVERStrategy(**strategy_kwargs)
-        elif mode["math"] == "gsm8k":
-            return ReActGSM8KStrategy(**strategy_kwargs)
-        elif mode["math"] == "svamp":
-            return ReActSVAMPStrategy(**strategy_kwargs)
-        elif mode["math"] == "tabmwp":
-            return ReActTabMWPStrategy(**strategy_kwargs)
-        elif mode["code"] == "humaneval":
-            return ReActHEvalStrategy(**strategy_kwargs)
-        elif mode["code"] == "mbpp":
-            return ReActMBPPStrategy(**strategy_kwargs)
-        else:
-            raise ValueError(f"Unsupported benchmark: {mode}")
+        if agent == Agents.REACT:
+            if benchmark == Benchmarks.HOTPOTQA:
+                return ReActHotQAStrategy(**strategy_kwargs)
+            elif benchmark == Benchmarks.TRIVIAQA:
+                return ReActTriviaQAStrategy(**strategy_kwargs)
+            elif benchmark == Benchmarks.AMBIGNQ:
+                return ReActAmbigNQStrategy(**strategy_kwargs)
+            elif benchmark == Benchmarks.FEVER:
+                return ReActFEVERStrategy(**strategy_kwargs)
+            elif benchmark == Benchmarks.GSM8K:
+                return ReActGSM8KStrategy(**strategy_kwargs)
+            elif benchmark == Benchmarks.SVAMP:
+                return ReActSVAMPStrategy(**strategy_kwargs)
+            elif benchmark == Benchmarks.TABMWP:
+                return ReActTabMWPStrategy(**strategy_kwargs)
+            elif benchmark == Benchmarks.HUMANEVAL:
+                return ReActHEvalStrategy(**strategy_kwargs)
+            elif benchmark == Benchmarks.MBPP:
+                return ReActMBPPStrategy(**strategy_kwargs)
+            else:
+                raise ValueError(f"Unsupported benchmark: {benchmark} for agent {agent}")
 
+        elif agent == Agents.REFLEXION_COT:
+            if benchmark == Benchmarks.HOTPOTQA:
+                return ReflexionCoTHotQAStrategy(**strategy_kwargs)
+            elif benchmark == Benchmarks.TRIVIAQA:
+                return ReflexionCoTTriviaQAStrategy(**strategy_kwargs)
+            elif benchmark == Benchmarks.AMBIGNQ:
+                return ReflexionCoTAmbigNQStrategy(**strategy_kwargs)
+            elif benchmark == Benchmarks.FEVER:
+                return ReflexionCoTFEVERStrategy(**strategy_kwargs)
+            elif benchmark == Benchmarks.GSM8K:
+                return ReflexionCoTGSM8KStrategy(**strategy_kwargs)
+            elif benchmark == Benchmarks.SVAMP:
+                return ReflexionCoTSVAMPStrategy(**strategy_kwargs)
+            elif benchmark == Benchmarks.TABMWP:
+                return ReflexionCoTTabMWPStrategy(**strategy_kwargs)
+            elif benchmark == Benchmarks.HUMANEVAL:
+                return ReflexionCoTHEvalStrategy(**strategy_kwargs)
+            elif benchmark == Benchmarks.MBPP:
+                return ReflexionCoTMBPPStrategy(**strategy_kwargs)
+            else:
+                raise ValueError(f"Unsupported benchmark: {benchmark} for agent {agent}")
 
-class ReflexionCoTStrategyFactory:
-    """A factory class for creating instances of different ReflexionCoT strategies based on the specified mode and benchmark.
-
-    Methods:
-        get_strategy(mode: Dict[str, str], **strategy_kwargs) -> ReflexionCoTBaseStrategy:
-            Returns an instance of the appropriate ReflexionCoT strategy based on the provided mode and benchmark.
-    """
-
-    @staticmethod
-    def get_strategy(
-        mode: Dict[str, str], **strategy_kwargs: Any
-    ) -> ReflexionCoTBaseStrategy:
-        """Returns an instance of the appropriate ReflexionCoT strategy based on the provided mode and benchmark.
-
-        Available modes:
-            - qa: "hotpotqa", "triviaqa", "ambignq", "fever"
-            - math: "gsm8k", "svamp", "tabmwp"
-            - code: "mbpp", "humaneval"
-
-        Args:
-            mode (Dict[str, str]): A dictionary specifying the mode and benchmark.
-                Example: {"qa": "hotpotqa"}, {"math": "gsm8k"}, {"code": "mbpp"}.
-            **strategy_kwargs (Dict[str, Any]): Additional keyword arguments to pass to the strategy's constructor.
-
-        Returns:
-            ReflexionCoTBaseStrategy: An instance of the appropriate ReflexionCoT strategy.
-
-        Raises:
-            ValueError: If the mode or benchmark is unsupported.
-        """
-        if mode["qa"] == "hotpotqa":
-            return ReflexionCoTHotQAStrategy(**strategy_kwargs)
-        elif mode["qa"] == "triviaqa":
-            return ReflexionCoTTriviaQAStrategy(**strategy_kwargs)
-        elif mode["qa"] == "ambignq":
-            return ReflexionCoTAmbigNQStrategy(**strategy_kwargs)
-        elif mode["qa"] == "fever":
-            return ReflexionCoTFEVERStrategy(**strategy_kwargs)
-        elif mode["math"] == "gsm8k":
-            return ReflexionCoTGSM8KStrategy(**strategy_kwargs)
-        elif mode["math"] == "svamp":
-            return ReflexionCoTSVAMPStrategy(**strategy_kwargs)
-        elif mode["math"] == "tabmwp":
-            return ReflexionCoTTabMWPStrategy(**strategy_kwargs)
-        elif mode["code"] == "humaneval":
-            return ReflexionCoTHEvalStrategy(**strategy_kwargs)
-        elif mode["code"] == "mbpp":
-            return ReflexionCoTMBPPStrategy(**strategy_kwargs)
-        else:
-            raise ValueError(f"Unsupported mode: {mode}")
-
-
-class ReflexionReActStrategyFactory:
-    """A factory class for creating instances of different ReflexionReAct strategies based on the specified mode and benchmark.
-
-    Methods:
-        get_strategy(mode: Dict[str, str], **strategy_kwargs) -> ReflexionReActBaseStrategy:
-            Returns an instance of the appropriate ReflexionReAct strategy based on the provided mode and benchmark.
-    """
-
-    @staticmethod
-    def get_strategy(
-        mode: Dict[str, str], **strategy_kwargs: Any
-    ) -> ReflexionReActBaseStrategy:
-        """Returns an instance of the appropriate ReflexionReAct strategy based on the provided mode and benchmark.
-
-        Available modes:
-            - qa: "hotpotqa", "triviaqa", "ambignq", "fever"
-            - math: "gsm8k", "svamp", "tabmwp"
-            - code: "mbpp", "humaneval"
-
-        Args:
-            mode (Dict[str, str]): A dictionary specifying the mode and benchmark.
-                Example: {"qa": "hotpotqa"}, {"math": "gsm8k"}, {"code": "mbpp"}.
-            **strategy_kwargs (Dict[str, Any]): Additional keyword arguments to pass to the strategy's constructor.
-
-        Returns:
-            ReflexionReActBaseStrategy: An instance of the appropriate ReflexionReAct strategy.
-
-        Raises:
-            ValueError: If the mode or benchmark is unsupported.
-        """
-        if "qa" in mode:
-            if mode["qa"] == "hotpotqa":
+        elif agent == Agents.REFLEXION_REACT:
+            if benchmark == Benchmarks.HOTPOTQA:
                 return ReflexionReActHotQAStrategy(**strategy_kwargs)
-            elif mode["qa"] == "triviaqa":
+            elif benchmark == Benchmarks.TRIVIAQA:
                 return ReflexionReActTriviaQAStrategy(**strategy_kwargs)
-            elif mode["qa"] == "ambignq":
+            elif benchmark == Benchmarks.AMBIGNQ:
                 return ReflexionReActAmbigNQStrategy(**strategy_kwargs)
-            elif mode["qa"] == "fever":
+            elif benchmark == Benchmarks.FEVER:
                 return ReflexionReActFEVERStrategy(**strategy_kwargs)
-            else:
-                raise ValueError(f"Unsupported QA benchmark: {mode['qa']}")
-        elif "math" in mode:
-            if mode["math"] == "gsm8k":
+            elif benchmark == Benchmarks.GSM8K:
                 return ReflexionReActGSM8KStrategy(**strategy_kwargs)
-            elif mode["math"] == "svamp":
+            elif benchmark == Benchmarks.SVAMP:
                 return ReflexionReActSVAMPStrategy(**strategy_kwargs)
-            elif mode["math"] == "tabmwp":
+            elif benchmark == Benchmarks.TABMWP:
                 return ReflexionReActTabMWPStrategy(**strategy_kwargs)
-            else:
-                raise ValueError(f"Unsupported Math benchmark: {mode['math']}")
-        elif "code" in mode:
-            if mode["code"] == "humaneval":
+            elif benchmark == Benchmarks.HUMANEVAL:
                 return ReflexionReActHEvalStrategy(**strategy_kwargs)
-            elif mode["code"] == "mbpp":
+            elif benchmark == Benchmarks.MBPP:
                 return ReflexionReActMBPPStrategy(**strategy_kwargs)
             else:
-                raise ValueError(f"Unsupported Code benchmark: {mode['code']}")
-        else:
-            raise ValueError(f"Unsupported mode: {mode}")
+                raise ValueError(f"Unsupported benchmark: {benchmark} for agent {agent}")
 
-
-class CriticStrategyFactory:
-    """A factory class for creating instances of different CRITIC strategies based on the specified mode and benchmark.
-
-    Methods:
-        get_strategy(mode: Dict[str, str], **strategy_kwargs) -> CriticBaseStrategy:
-            Returns an instance of the appropriate Critic strategy based on the provided mode and benchmark.
-    """
-
-    @staticmethod
-    def get_strategy(
-        mode: Dict[str, str], **strategy_kwargs: Any
-    ) -> CriticBaseStrategy:
-        """Returns an instance of the appropriate Critic strategy based on the provided mode and benchmark.
-
-        Available modes:
-            - qa: "hotpotqa", "triviaqa", "ambignq", "fever"
-            - math: "gsm8k", "svamp", "tabmwp"
-            - code: "mbpp", "humaneval"
-
-        Args:
-            mode (Dict[str, str]): A dictionary specifying the mode and benchmark.
-                Example: {"qa": "hotpotqa"}, {"math": "gsm8k"}, {"code": "mbpp"}.
-            **strategy_kwargs (Dict[str, Any]): Additional keyword arguments to pass to the strategy's constructor.
-
-        Returns:
-            CriticBaseStrategy: An instance of the appropriate Critic strategy.
-
-        Raises:
-            ValueError: If the mode or benchmark is unsupported.
-        """
-        if "qa" in mode:
-            if mode["qa"] == "hotpotqa":
+        elif agent == Agents.CRITIC:
+            if benchmark == Benchmarks.HOTPOTQA:
                 return CritHotQAStrategy(**strategy_kwargs)
-            elif mode["qa"] == "triviaqa":
+            elif benchmark == Benchmarks.TRIVIAQA:
                 return CritTriviaQAStrategy(**strategy_kwargs)
-            elif mode["qa"] == "ambignq":
+            elif benchmark == Benchmarks.AMBIGNQ:
                 return CritAmbigNQStrategy(**strategy_kwargs)
-            elif mode["qa"] == "fever":
+            elif benchmark == Benchmarks.FEVER:
                 return CritFEVERStrategy(**strategy_kwargs)
-            else:
-                raise ValueError(f"Unsupported QA benchmark: {mode['qa']}")
-        elif "math" in mode:
-            if mode["math"] == "gsm8k":
+            elif benchmark == Benchmarks.GSM8K:
                 return CritGSM8KStrategy(**strategy_kwargs)
-            elif mode["math"] == "svamp":
+            elif benchmark == Benchmarks.SVAMP:
                 return CritSVAMPStrategy(**strategy_kwargs)
-            elif mode["math"] == "tabmwp":
+            elif benchmark == Benchmarks.TABMWP:
                 return CritTabMWPStrategy(**strategy_kwargs)
-            else:
-                raise ValueError(f"Unsupported Math benchmark: {mode['math']}")
-        elif "code" in mode:
-            if mode["code"] == "humaneval":
+            elif benchmark == Benchmarks.HUMANEVAL:
                 return CritHEvalCodeStrategy(**strategy_kwargs)
-            elif mode["code"] == "mbpp":
+            elif benchmark == Benchmarks.MBPP:
                 return CritMBPPCodeStrategy(**strategy_kwargs)
             else:
-                raise ValueError(f"Unsupported Code benchmark: {mode['code']}")
+                raise ValueError(f"Unsupported benchmark: {benchmark} for agent {agent}")
+
         else:
-            raise ValueError(f"Unsupported mode: {mode}")
+            raise ValueError(f"Unsupported agent: {agent}")
