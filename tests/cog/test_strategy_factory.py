@@ -58,15 +58,8 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActHotQAStrategy,
     ReflexionReActTriviaQAStrategy,
 )
-from agential.strategy_factory import (
-    Agents,
-    Benchmarks,
-    StrategyFactory
-)
-import pytest
+from agential.strategy_factory import Agents, Benchmarks, StrategyFactory
 
-
-from agential.strategy_factory import StrategyFactory
 
 def test_strategy_factory_get_strategy() -> None:
     """Tests StrategyFactory get_strategy method."""
@@ -116,11 +109,15 @@ def test_strategy_factory_get_strategy() -> None:
 
     # QA benchmarks for ReflexionCoT agent.
     assert isinstance(
-        StrategyFactory.get_strategy(Agents.REFLEXION_COT, Benchmarks.HOTPOTQA, llm=llm),
+        StrategyFactory.get_strategy(
+            Agents.REFLEXION_COT, Benchmarks.HOTPOTQA, llm=llm
+        ),
         ReflexionCoTHotQAStrategy,
     )
     assert isinstance(
-        StrategyFactory.get_strategy(Agents.REFLEXION_COT, Benchmarks.TRIVIAQA, llm=llm),
+        StrategyFactory.get_strategy(
+            Agents.REFLEXION_COT, Benchmarks.TRIVIAQA, llm=llm
+        ),
         ReflexionCoTTriviaQAStrategy,
     )
     assert isinstance(
@@ -148,7 +145,9 @@ def test_strategy_factory_get_strategy() -> None:
 
     # Code benchmarks for ReflexionCoT agent.
     assert isinstance(
-        StrategyFactory.get_strategy(Agents.REFLEXION_COT, Benchmarks.HUMANEVAL, llm=llm),
+        StrategyFactory.get_strategy(
+            Agents.REFLEXION_COT, Benchmarks.HUMANEVAL, llm=llm
+        ),
         ReflexionCoTHEvalStrategy,
     )
     assert isinstance(
@@ -158,15 +157,21 @@ def test_strategy_factory_get_strategy() -> None:
 
     # QA benchmarks for ReflexionReAct agent.
     assert isinstance(
-        StrategyFactory.get_strategy(Agents.REFLEXION_REACT, Benchmarks.HOTPOTQA, llm=llm),
+        StrategyFactory.get_strategy(
+            Agents.REFLEXION_REACT, Benchmarks.HOTPOTQA, llm=llm
+        ),
         ReflexionReActHotQAStrategy,
     )
     assert isinstance(
-        StrategyFactory.get_strategy(Agents.REFLEXION_REACT, Benchmarks.TRIVIAQA, llm=llm),
+        StrategyFactory.get_strategy(
+            Agents.REFLEXION_REACT, Benchmarks.TRIVIAQA, llm=llm
+        ),
         ReflexionReActTriviaQAStrategy,
     )
     assert isinstance(
-        StrategyFactory.get_strategy(Agents.REFLEXION_REACT, Benchmarks.AMBIGNQ, llm=llm),
+        StrategyFactory.get_strategy(
+            Agents.REFLEXION_REACT, Benchmarks.AMBIGNQ, llm=llm
+        ),
         ReflexionReActAmbigNQStrategy,
     )
     assert isinstance(
@@ -184,13 +189,17 @@ def test_strategy_factory_get_strategy() -> None:
         ReflexionReActSVAMPStrategy,
     )
     assert isinstance(
-        StrategyFactory.get_strategy(Agents.REFLEXION_REACT, Benchmarks.TABMWP, llm=llm),
+        StrategyFactory.get_strategy(
+            Agents.REFLEXION_REACT, Benchmarks.TABMWP, llm=llm
+        ),
         ReflexionReActTabMWPStrategy,
     )
 
     # Code benchmarks for ReflexionReAct agent.
     assert isinstance(
-        StrategyFactory.get_strategy(Agents.REFLEXION_REACT, Benchmarks.HUMANEVAL, llm=llm),
+        StrategyFactory.get_strategy(
+            Agents.REFLEXION_REACT, Benchmarks.HUMANEVAL, llm=llm
+        ),
         ReflexionReActHEvalStrategy,
     )
     assert isinstance(
@@ -241,16 +250,24 @@ def test_strategy_factory_get_strategy() -> None:
     )
 
     # Unsupported benchmarks.
-    with pytest.raises(ValueError, match="Unsupported benchmark: unknown for agent react"):
+    with pytest.raises(
+        ValueError, match="Unsupported benchmark: unknown for agent react"
+    ):
         StrategyFactory.get_strategy(Agents.REACT, "unknown", llm=llm)
 
-    with pytest.raises(ValueError, match="Unsupported benchmark: unknown for agent reflexion_cot"):
+    with pytest.raises(
+        ValueError, match="Unsupported benchmark: unknown for agent reflexion_cot"
+    ):
         StrategyFactory.get_strategy(Agents.REFLEXION_COT, "unknown", llm=llm)
 
-    with pytest.raises(ValueError, match="Unsupported benchmark: unknown for agent reflexion_react"):
+    with pytest.raises(
+        ValueError, match="Unsupported benchmark: unknown for agent reflexion_react"
+    ):
         StrategyFactory.get_strategy(Agents.REFLEXION_REACT, "unknown", llm=llm)
 
-    with pytest.raises(ValueError, match="Unsupported benchmark: unknown for agent critic"):
+    with pytest.raises(
+        ValueError, match="Unsupported benchmark: unknown for agent critic"
+    ):
         StrategyFactory.get_strategy(Agents.CRITIC, "unknown", llm=llm)
 
     with pytest.raises(ValueError, match="Unsupported agent: unknown"):

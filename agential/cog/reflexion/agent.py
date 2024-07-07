@@ -77,10 +77,10 @@ class ReflexionCoTAgent(BaseAgent):
 
         self.strategy = StrategyFactory().get_strategy(
             agent="reflexion_cot",
-            benchmark=self.benchmark, 
-            llm=self.llm, 
-            reflector=reflector, 
-            **strategy_kwargs
+            benchmark=self.benchmark,
+            llm=self.llm,
+            reflector=reflector,
+            **strategy_kwargs,
         )
 
     def generate(
@@ -229,10 +229,10 @@ class ReflexionReActAgent(BaseAgent):
 
         self.strategy = StrategyFactory().get_strategy(
             agent="reflexion_react",
-            benchmark=self.benchmark, 
-            llm=self.llm, 
-            reflector=reflector, 
-            **strategy_kwargs
+            benchmark=self.benchmark,
+            llm=self.llm,
+            reflector=reflector,
+            **strategy_kwargs,
         )
 
     def _generate_react(
