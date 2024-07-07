@@ -49,7 +49,7 @@ REACT_PROMPTS = {
 
 class ReActSelector(BaseSelector):
     @staticmethod
-    def get_fewshots(self, **kwargs) -> Dict[str, str]:
+    def get_fewshots(self, benchmark: str, **kwargs) -> Dict[str, str]:
         return {}
 
     @staticmethod
