@@ -22,10 +22,7 @@ from agential.cog.reflexion.reflect import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )
-from agential.strategy_factory import (
-    ReflexionCoTStrategyFactory,
-    ReflexionReActStrategyFactory,
-)
+from agential.strategy_factory import StrategyFactory
 
 
 def parse_action(string: str) -> Tuple[str, str]:
@@ -56,7 +53,7 @@ class ReflexionCoTAgent(BaseAgent):
 
     Attributes:
         llm (BaseChatModel): The language model used to generate responses.
-        mode (Dict[str, str]): The mode of the agent.
+        benchmark (str): The benchmark.
         reflector (Optional[ReflexionCoTReflector]): An optional reflector module for guided self-reflection.
         **strategy_kwargs (Dict[str, Any]): Additional keyword arguments for the strategy.
 
@@ -68,7 +65,7 @@ class ReflexionCoTAgent(BaseAgent):
     def __init__(
         self,
         llm: BaseChatModel,
-        mode: Dict[str, str],
+        benchmark: str,
         reflector: Optional[ReflexionCoTReflector] = None,
         **strategy_kwargs: Dict[str, Any],
     ) -> None:
@@ -76,10 +73,14 @@ class ReflexionCoTAgent(BaseAgent):
         super().__init__()
 
         self.llm = llm
-        self.mode = mode
+        self.benchmark = benchmark
 
-        self.strategy = ReflexionCoTStrategyFactory().get_strategy(
-            mode=self.mode, llm=self.llm, reflector=reflector, **strategy_kwargs
+        self.strategy = StrategyFactory().get_strategy(
+            agent="reflexion_cot",
+            benchmark=self.benchmark, 
+            llm=self.llm, 
+            reflector=reflector, 
+            **strategy_kwargs
         )
 
     def generate(
@@ -204,7 +205,7 @@ class ReflexionReActAgent(BaseAgent):
 
     Attributes:
         llm (BaseChatModel): The language model used to generate responses.
-        mode (Dict[str, str]): The mode of the agent.
+        benchmark (str): The benchmark.
         reflector (Optional[ReflexionReActReflector]): An optional reflector module for guided self-reflection. Defaults to None.
         **strategy_kwargs (Dict[str, Any]): Additional keyword arguments for the strategy.
 
@@ -216,7 +217,7 @@ class ReflexionReActAgent(BaseAgent):
     def __init__(
         self,
         llm: BaseChatModel,
-        mode: Dict[str, str],
+        benchmark: str,
         reflector: Optional[ReflexionReActReflector] = None,
         **strategy_kwargs: Dict[str, Any],
     ) -> None:
@@ -224,10 +225,14 @@ class ReflexionReActAgent(BaseAgent):
         super().__init__()
 
         self.llm = llm
-        self.mode = mode
+        self.benchmark = benchmark
 
-        self.strategy = ReflexionReActStrategyFactory().get_strategy(
-            mode=self.mode, llm=self.llm, reflector=reflector, **strategy_kwargs
+        self.strategy = StrategyFactory().get_strategy(
+            agent="reflexion_react",
+            benchmark=self.benchmark, 
+            llm=self.llm, 
+            reflector=reflector, 
+            **strategy_kwargs
         )
 
     def _generate_react(
