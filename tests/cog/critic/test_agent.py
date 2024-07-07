@@ -33,7 +33,7 @@ def test_init() -> None:
     """Test initialization."""
     llm = FakeListChatModel(responses=["1"])
     search = MagicMock(spec=GoogleSerperAPIWrapper)
-    agent = CriticAgent(llm=llm, mode={"qa": "hotpotqa"}, search=search)
+    agent = CriticAgent(llm=llm, benchmark="hotpotqa", search=search)
     assert isinstance(agent.llm, BaseChatModel)
     assert isinstance(search, GoogleSerperAPIWrapper)
 
@@ -51,7 +51,7 @@ def test_generate() -> None:
         "the most possible answer: The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Unfortunately, without further information or evidence, it is not possible to determine the correct answer to this question.",
     ]
     agent = CriticAgent(
-        llm=FakeListChatModel(responses=responses), mode={"qa": "hotpotqa"}
+        llm=FakeListChatModel(responses=responses), benchmark="hotpotqa"
     )
     out = agent.generate(
         question=question,
@@ -82,7 +82,7 @@ def test_generate() -> None:
     ]
     agent = CriticAgent(
         llm=FakeListChatModel(responses=responses),
-        mode={"qa": "hotpotqa"},
+        benchmark="hotpotqa",
         search=search,
     )
     out = agent.generate(
@@ -111,7 +111,7 @@ def test_generate() -> None:
     ]
     agent = CriticAgent(
         llm=FakeListChatModel(responses=responses),
-        mode={"math": "gsm8k"},
+        benchmark="gsm8k",
     )
     out = agent.generate(
         question=question,
@@ -137,7 +137,7 @@ def test_generate() -> None:
     ]
     agent = CriticAgent(
         llm=FakeListChatModel(responses=responses),
-        mode={"math": "gsm8k"},
+        benchmark="gsm8k",
     )
     out = agent.generate(
         question=question,
@@ -175,7 +175,7 @@ def test_generate() -> None:
     ]
     agent = CriticAgent(
         llm=FakeListChatModel(responses=responses),
-        mode={"code": "humaneval"},
+        benchmark="humaneval",
     )
     out = agent.generate(
         question=question,
@@ -201,7 +201,7 @@ def test_generate() -> None:
         "There is no problem with the above code. The function `first_repeated_char` correctly iterates through the characters of the input string, keeping track of seen characters in a set. If a character is encountered that is already in the set, it is returned as the first repeated character. Otherwise, if no repeated characters are found, the function returns None. The function passes the provided test cases successfully.",
     ]
     agent = CriticAgent(
-        llm=FakeListChatModel(responses=responses), mode={"code": "mbpp"}
+        llm=FakeListChatModel(responses=responses), benchmark="mbpp"
     )
     out = agent.generate(
         question=question,
