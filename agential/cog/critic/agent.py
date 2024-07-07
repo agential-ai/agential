@@ -10,7 +10,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.agent import BaseAgent
 from agential.cog.critic.output import CriticOutput
-from agential.strategy_factory import CriticStrategyFactory
+from agential.strategy_factory import StrategyFactory
 
 
 class CriticAgent(BaseAgent):
@@ -19,25 +19,27 @@ class CriticAgent(BaseAgent):
     Attributes:
         llm (BaseChatModel): An instance of a language model used for generating initial answers
             and critiques.
-        mode (Dict[str, str]): A dictionary specifying the CRITIC agent's mode and the benchmark.
-            For example, {"qa": "hotpotqa"}, {"math": "gsm8k"}, or {"code": "mbpp"}.
+        benchmark (str): The benchmark.
         **strategy_kwargs (Dict[str, Any]): Additional strategy-specific arguments.
     """
 
     def __init__(
         self,
         llm: BaseChatModel,
-        mode: Dict[str, str],
+        benchmark: str,
         **strategy_kwargs: Dict[str, Any],
     ) -> None:
         """Initialization."""
         super().__init__()
 
         self.llm = llm
-        self.mode = mode
+        self.benchmark = benchmark
 
-        self.strategy = CriticStrategyFactory().get_strategy(
-            mode=self.mode, llm=self.llm, **strategy_kwargs
+        self.strategy = StrategyFactory().get_strategy(
+            agent="critic",
+            benchmark=self.benchmark, 
+            llm=self.llm, 
+            **strategy_kwargs
         )
 
     def generate(
