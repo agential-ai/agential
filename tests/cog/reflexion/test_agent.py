@@ -23,18 +23,18 @@ def test_reflexion_cot_init() -> None:
     """Test initialization."""
     agent = ReflexionCoTAgent(
         llm=FakeListChatModel(responses=["1"]),
-        mode={"qa": "hotpotqa"},
+        benchmark="hotpotqa",
     )
     assert isinstance(agent, ReflexionCoTAgent)
     assert isinstance(agent.llm, BaseChatModel)
-    assert agent.mode == {"qa": "hotpotqa"}
+    assert agent.benchmark == "hotpotqa"
 
 
 def test_reflexion_cot_reset() -> None:
     """Test reset method."""
     agent = ReflexionCoTAgent(
         llm=FakeListChatModel(responses=["1"]),
-        mode={"qa": "hotpotqa"},
+        benchmark="hotpotqa",
     )
     agent.strategy._scratchpad = "cat"
     agent.strategy._finished = True
@@ -61,7 +61,7 @@ def test_reflexion_cot_generate() -> None:
     ]
     agent = ReflexionCoTAgent(
         llm=FakeListChatModel(responses=responses),
-        mode={"qa": "hotpotqa"},
+        benchmark="hotpotqa",
         max_trials=1,
     )
 
@@ -84,7 +84,7 @@ def test_reflexion_cot_generate() -> None:
     ]
     agent = ReflexionCoTAgent(
         llm=FakeListChatModel(responses=responses),
-        mode={"qa": "hotpotqa"},
+        benchmark="hotpotqa",
         max_trials=1,
     )
 
@@ -107,7 +107,7 @@ def test_reflexion_cot_generate() -> None:
     ]
     agent = ReflexionCoTAgent(
         llm=FakeListChatModel(responses=responses),
-        mode={"qa": "hotpotqa"},
+        benchmark="hotpotqa",
         max_trials=1,
     )
 
@@ -130,7 +130,7 @@ def test_reflexion_cot_generate() -> None:
     ]
     agent = ReflexionCoTAgent(
         llm=FakeListChatModel(responses=responses),
-        mode={"qa": "hotpotqa"},
+        benchmark="hotpotqa",
         max_trials=1,
     )
     out = agent.generate(
@@ -155,7 +155,7 @@ def test_reflexion_cot_generate() -> None:
     ]
     agent = ReflexionCoTAgent(
         llm=FakeListChatModel(responses=responses),
-        mode={"qa": "hotpotqa"},
+        benchmark="hotpotqa",
         max_trials=2,
     )
     out = agent.generate(
@@ -181,7 +181,7 @@ def test_reflexion_cot_generate() -> None:
     ]
     agent = ReflexionCoTAgent(
         llm=FakeListChatModel(responses=responses),
-        mode={"qa": "hotpotqa"},
+        benchmark="hotpotqa",
         max_trials=3,
     )
     out = agent.generate(
@@ -206,7 +206,7 @@ def test_reflexion_cot_generate() -> None:
     ]
     agent = ReflexionCoTAgent(
         llm=FakeListChatModel(responses=responses),
-        mode={"qa": "hotpotqa"},
+        benchmark="hotpotqa",
         max_trials=1,
     )
     out = agent.generate(
@@ -242,10 +242,10 @@ def test_reflexion_react_init() -> None:
     llm = FakeListChatModel(responses=["1"])
     agent = ReflexionReActAgent(
         llm=llm,
-        mode={"qa": "hotpotqa"},
+        benchmark="hotpotqa",
     )
     assert isinstance(agent.llm, BaseChatModel)
-    assert agent.mode == {"qa": "hotpotqa"}
+    assert agent.benchmark == "hotpotqa"
     assert isinstance(agent.strategy, ReflexionReActBaseStrategy)
 
 
@@ -253,7 +253,7 @@ def test_reflexion_react_reset() -> None:
     """Test reset method."""
     agent = ReflexionReActAgent(
         llm=FakeListChatModel(responses=["1"]),
-        mode={"qa": "hotpotqa"},
+        benchmark="hotpotqa",
     )
     agent.strategy._finished = True
     agent.strategy._answer = "cat"
@@ -288,7 +288,7 @@ def test_reflexion_react_generate() -> None:
     ]
     agent = ReflexionReActAgent(
         llm=FakeListChatModel(responses=responses),
-        mode={"qa": "hotpotqa"},
+        benchmark="hotpotqa",
         max_trials=1,
     )
     agent.strategy.docstore.search = lambda x: "Search result"
@@ -334,7 +334,7 @@ def test_reflexion_react_generate() -> None:
         "Search[VIVA Media AG interview 2004]",
     ]
     llm = FakeListChatModel(responses=responses)
-    agent = ReflexionReActAgent(llm=llm, mode={"qa": "hotpotqa"}, max_trials=1)
+    agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa", max_trials=1)
     agent.strategy.docstore.search = lambda x: "Search result"
     agent.strategy.docstore.lookup = lambda x: "Lookup result"
     out = agent.generate(
@@ -404,7 +404,7 @@ def test_reflexion_react_generate() -> None:
     llm = FakeListChatModel(responses=responses)
     agent = ReflexionReActAgent(
         llm=llm,
-        mode={"qa": "hotpotqa"},
+        benchmark="hotpotqa",
         max_trials=2,
     )
     agent.strategy.docstore.search = lambda x: "Search result"
@@ -451,7 +451,7 @@ def test_reflexion_react_generate() -> None:
         "Search[VIVA Media AG rebranding 2004]",
     ]
     llm = FakeListChatModel(responses=responses)
-    agent = ReflexionReActAgent(llm=llm, mode={"qa": "hotpotqa"})
+    agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
     agent.strategy.docstore.search = lambda x: "Search result"
     agent.strategy.docstore.lookup = lambda x: "Lookup result"
     out = agent.generate(
@@ -487,7 +487,7 @@ def test_reflexion_react_generate() -> None:
         "Search[VIVA Media AG acronym]",
     ]
     llm = FakeListChatModel(responses=responses)
-    agent = ReflexionReActAgent(llm=llm, mode={"qa": "hotpotqa"})
+    agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
     agent.strategy.docstore.search = lambda x: "Search result"
     agent.strategy.docstore.lookup = lambda x: "Lookup result"
     out = agent.generate(
@@ -510,7 +510,7 @@ def test_reflexion_react_generate() -> None:
     assert agent.strategy.reflector.reflections_str == ""
 
     # In a subsequent run, answer correctly (reset defaults to True). Output is non-empty if patience is correctly reset.
-    agent = ReflexionReActAgent(llm=llm, mode={"qa": "hotpotqa"})
+    agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
     agent.strategy.docstore.search = lambda x: "Search result"
     agent.strategy.docstore.lookup = lambda x: "Lookup result"
     out = agent.generate(

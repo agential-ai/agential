@@ -290,10 +290,10 @@ class StrategyFactory:
         """Returns an instance of the appropriate strategy based on the provided agent and benchmark.
 
         Available agents:
-            - react
-            - reflexion_cot
-            - reflexion_react
-            - critic
+            - "react"
+            - "reflexion_cot"
+            - "reflexion_react"
+            - "critic"
 
         Available benchmarks:
             - qa: "hotpotqa", "triviaqa", "ambignq", "fever"
