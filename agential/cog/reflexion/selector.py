@@ -1,5 +1,6 @@
 """Reflexion prompts and fewshot examples selector."""
 
+from typing import Dict
 from agential.base.selector import BaseSelector
 from agential.cog.reflexion.prompts import (
     # Few-shots.
@@ -63,93 +64,112 @@ from agential.fewshots.manager import Benchmarks
 
 
 REFLEXION_COT_PROMPTS = {
-        Benchmarks.qa.HOTPOTQA: {
-            "prompt": REFLEXION_COT_INSTRUCTION_HOTPOTQA,
-            "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
-        },
-        Benchmarks.qa.FEVER: {
-            "prompt": REFLEXION_COT_INSTRUCTION_FEVER,
-            "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_FEVER,
-        },
-        Benchmarks.qa.TRIVIAQA: {
-            "prompt": REFLEXION_COT_INSTRUCTION_TRIVIAQA,
-            "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_TRIVIAQA,
-        },
-        Benchmarks.qa.AMBIGNQ: {
-            "prompt": REFLEXION_COT_INSTRUCTION_AMBIGNQ,
-            "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_AMBIGNQ,
-        },
-        Benchmarks.math.GSM8K: {
-            "prompt": REFLEXION_COT_INSTRUCTION_GSM8K,
-            "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_GSM8K,
-        },
-        Benchmarks.math.SVAMP: {
-            "prompt": REFLEXION_COT_INSTRUCTION_SVAMP,
-            "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_SVAMP,
-        },
-        Benchmarks.math.TABMWP: {
-            "prompt": REFLEXION_COT_INSTRUCTION_TABMWP,
-            "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_TABMWP,
-        },
-        Benchmarks.code.HUMANEVAL: {
-            "prompt": REFLEXION_COT_INSTRUCTION_HUMANEVAL,
-            "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_HUMANEVAL,
-        },
-        Benchmarks.code.MBPP: {
-            "prompt": REFLEXION_COT_INSTRUCTION_MBPP,
-            "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_MBPP,
-        },
+    Benchmarks.HOTPOTQA: {
+        "prompt": REFLEXION_COT_INSTRUCTION_HOTPOTQA,
+        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
+    },
+    Benchmarks.FEVER: {
+        "prompt": REFLEXION_COT_INSTRUCTION_FEVER,
+        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_FEVER,
+    },
+    Benchmarks.TRIVIAQA: {
+        "prompt": REFLEXION_COT_INSTRUCTION_TRIVIAQA,
+        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_TRIVIAQA,
+    },
+    Benchmarks.AMBIGNQ: {
+        "prompt": REFLEXION_COT_INSTRUCTION_AMBIGNQ,
+        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_AMBIGNQ,
+    },
+    Benchmarks.GSM8K: {
+        "prompt": REFLEXION_COT_INSTRUCTION_GSM8K,
+        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_GSM8K,
+    },
+    Benchmarks.SVAMP: {
+        "prompt": REFLEXION_COT_INSTRUCTION_SVAMP,
+        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_SVAMP,
+    },
+    Benchmarks.TABMWP: {
+        "prompt": REFLEXION_COT_INSTRUCTION_TABMWP,
+        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_TABMWP,
+    },
+    Benchmarks.HUMANEVAL: {
+        "prompt": REFLEXION_COT_INSTRUCTION_HUMANEVAL,
+        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_HUMANEVAL,
+    },
+    Benchmarks.MBPP: {
+        "prompt": REFLEXION_COT_INSTRUCTION_MBPP,
+        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_MBPP,
+    },
 }
 REFLEXION_REACT_PROMPTS = {
-        Benchmarks.qa.HOTPOTQA: {
-            "prompt": REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-            "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-        },
-        Benchmarks.qa.FEVER: {
-            "prompt": REFLEXION_REACT_INSTRUCTION_FEVER,
-            "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_FEVER,
-        },
-        Benchmarks.qa.TRIVIAQA: {
-            "prompt": REFLEXION_REACT_INSTRUCTION_TRIVIAQA,
-            "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_TRIVIAQA,
-        },
-        Benchmarks.qa.AMBIGNQ: {
-            "prompt": REFLEXION_REACT_INSTRUCTION_AMBIGNQ,
-            "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_AMBIGNQ,
-        },
-        Benchmarks.math.GSM8K: {
-            "prompt": REFLEXION_REACT_INSTRUCTION_GSM8K,
-            "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_GSM8K,
-        },
-        Benchmarks.math.SVAMP: {
-            "prompt": REFLEXION_REACT_INSTRUCTION_SVAMP,
-            "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_SVAMP,
-        },
-        Benchmarks.math.TABMWP: {
-            "prompt": REFLEXION_REACT_INSTRUCTION_TABMWP,
-            "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_TABMWP,
-        },
-        Benchmarks.code.HUMANEVAL: {
-            "prompt": REFLEXION_REACT_INSTRUCTION_HUMANEVAL,
-            "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_HUMANEVAL,
-        },
-        Benchmarks.code.MBPP: {
-            "prompt": REFLEXION_REACT_INSTRUCTION_MBPP,
-            "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_MBPP,
-        },
+    Benchmarks.HOTPOTQA: {
+        "prompt": REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+    },
+    Benchmarks.FEVER: {
+        "prompt": REFLEXION_REACT_INSTRUCTION_FEVER,
+        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_FEVER,
+    },
+    Benchmarks.TRIVIAQA: {
+        "prompt": REFLEXION_REACT_INSTRUCTION_TRIVIAQA,
+        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_TRIVIAQA,
+    },
+    Benchmarks.AMBIGNQ: {
+        "prompt": REFLEXION_REACT_INSTRUCTION_AMBIGNQ,
+        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_AMBIGNQ,
+    },
+    Benchmarks.GSM8K: {
+        "prompt": REFLEXION_REACT_INSTRUCTION_GSM8K,
+        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_GSM8K,
+    },
+    Benchmarks.SVAMP: {
+        "prompt": REFLEXION_REACT_INSTRUCTION_SVAMP,
+        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_SVAMP,
+    },
+    Benchmarks.TABMWP: {
+        "prompt": REFLEXION_REACT_INSTRUCTION_TABMWP,
+        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_TABMWP,
+    },
+    Benchmarks.HUMANEVAL: {
+        "prompt": REFLEXION_REACT_INSTRUCTION_HUMANEVAL,
+        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_HUMANEVAL,
+    },
+    Benchmarks.MBPP: {
+        "prompt": REFLEXION_REACT_INSTRUCTION_MBPP,
+        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_MBPP,
+    },
 }
 
 REFLEXION_COT_FEWSHOTS = {
-    Benchmarks.HOTPOTQA: HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    Benchmarks.TRIVIAQA: TRIVIAQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    Benchmarks.AMBIGNQ: AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    Benchmarks.FEVER: FEVER_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    Benchmarks.GSM8K: GSM8K_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    Benchmarks.SVAMP: SVAMP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    Benchmarks.TABMWP: TABMWP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    Benchmarks.HUMANEVAL: HUMANEVAL_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    Benchmarks.MBPP: MBPP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-},
+    Benchmarks.HOTPOTQA: {
+        "reflect_prompt": HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
+    },
+    Benchmarks.TRIVIAQA: {
+        "reflect_prompt": TRIVIAQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
+    },
+    Benchmarks.AMBIGNQ: {
+        "reflect_prompt": AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
+    },
+    Benchmarks.FEVER: {
+        "reflect_prompt": FEVER_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
+    },
+    Benchmarks.GSM8K: {
+        "reflect_prompt": GSM8K_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
+    },
+    Benchmarks.SVAMP: {
+        "reflect_prompt": SVAMP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
+    },
+    Benchmarks.TABMWP: {
+        "reflect_prompt": TABMWP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
+    },
+    Benchmarks.HUMANEVAL: {
+        "reflect_prompt": HUMANEVAL_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
+    },
+    Benchmarks.MBPP: {
+        "reflect_prompt": MBPP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
+    }
+}
+
 REFLEXION_REACT_FEWSHOTS = {
     Benchmarks.HOTPOTQA: HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     Benchmarks.TRIVIAQA: TRIVIAQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
@@ -160,17 +180,20 @@ REFLEXION_REACT_FEWSHOTS = {
     Benchmarks.TABMWP: TABMWP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     Benchmarks.HUMANEVAL: HUMANEVAL_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     Benchmarks.MBPP: MBPP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-},
+}
 
 
-class ReActSelector(BaseSelector):
+class ReflexionCoTSelector(BaseSelector):
     @staticmethod
-    def get_fewshots(self) -> str:
-        return ""
+    def get_fewshots(self, benchmark: str) -> Dict[str, str]:
+        if benchmark not in REFLEXION_COT_FEWSHOTS:
+            raise ValueError(f"Benchmark '{benchmark}' few-shots not found for ReflexionCoT.")
+
+        return REFLEXION_COT_FEWSHOTS[benchmark]
 
     @staticmethod
     def get_prompt(self, benchmark: str) -> str:
-        if benchmark not in REACT_PROMPTS:
-            raise ValueError(f"Benchmark '{benchmark}' not supported for ReAct.")
+        if benchmark not in REFLEXION_COT_PROMPTS:
+            raise ValueError(f"Benchmark '{benchmark}' prompt not found for ReflexionCoT.")
 
-        return REACT_PROMPTS[benchmark]
+        return REFLEXION_COT_PROMPTS[benchmark]
