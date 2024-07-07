@@ -19,14 +19,14 @@ class ReActAgent(BaseAgent):
     Attributes:
         llm (BaseChatModel): An instance of a language model used for generating initial answers
             and critiques.
-        benchmark (Dict[str, str]): The benchmark.
+        benchmark (str): The benchmark.
         **strategy_kwargs (Dict[str, Any]): Additional strategy-specific arguments.
     """
 
     def __init__(
         self,
         llm: BaseChatModel,
-        benchmark: Dict[str, str],
+        benchmark: str,
         **strategy_kwargs: Dict[str, Any],
     ) -> None:
         """Initialization."""
@@ -35,6 +35,7 @@ class ReActAgent(BaseAgent):
         self.benchmark = benchmark
 
         self.strategy = StrategyFactory().get_strategy(
+            agent="react",
             benchmark=self.benchmark, 
             llm=self.llm, 
             **strategy_kwargs

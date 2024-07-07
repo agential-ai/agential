@@ -18,10 +18,10 @@ from agential.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
 def test_init() -> None:
     """Test initialization."""
     llm = FakeListChatModel(responses=[])
-    agent = ReActAgent(llm=llm, mode={"qa": "hotpotqa"})
+    agent = ReActAgent(llm=llm, benchmark="hotpotqa")
     assert isinstance(agent, ReActAgent)
     assert isinstance(agent.llm, BaseChatModel)
-    assert agent.mode == {"qa": "hotpotqa"}
+    assert agent.benchmark == "hotpotqa"
     assert isinstance(agent.strategy, ReActBaseStrategy)
 
 
@@ -39,7 +39,7 @@ def test_generate() -> None:
         "Search[kickboxing controversies crimes famous]",
     ]
     llm = FakeListChatModel(responses=responses)
-    agent = ReActAgent(llm=llm, mode={"qa": "hotpotqa"})
+    agent = ReActAgent(llm=llm, benchmark="hotpotqa")
     agent.strategy.docstore.search = (
         lambda x: "Buakaw Banchamek has faced several controversies and legal issues."
     )
@@ -74,7 +74,7 @@ def test_generate() -> None:
         "Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]",
     ]
     llm = FakeListChatModel(responses=responses)
-    agent = ReActAgent(llm=llm, mode={"code": "humaneval"})
+    agent = ReActAgent(llm=llm, benchmark="humaneval")
     out = agent.generate(
         question=question,
         examples=HUMANEVAL_FEWSHOT_EXAMPLES_REACT,
