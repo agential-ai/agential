@@ -544,18 +544,3 @@ def get_fewshot_examples(mode: Dict[str, str], fewshot_type: str) -> str:
         )
 
     return examples
-
-
-
-
-def get_agent_prompts(agent: str) -> Dict[str, str]:
-    if agent == "react":
-        pass
-    elif agent == "reflexion":
-        pass
-    elif agent == "critic":
-        pass
-    elif agent == "expel":
-        pass
-    else:
-        raise ValueError(f"Agent '{agent}' not found.") 
