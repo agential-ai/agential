@@ -60,7 +60,7 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_INSTRUCTION_MBPP,
     REFLEXION_REACT_REFLECT_INSTRUCTION_MBPP,
 )
-from agential.fewshots.manager import Benchmarks
+from agential.manager import Benchmarks
 
 
 REFLEXION_COT_PROMPTS = {

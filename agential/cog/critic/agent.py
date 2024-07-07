@@ -10,7 +10,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.agent import BaseAgent
 from agential.cog.critic.output import CriticOutput
-from agential.cog.strategy_factory import CriticStrategyFactory
+from agential.strategy_factory import CriticStrategyFactory
 
 
 class CriticAgent(BaseAgent):
