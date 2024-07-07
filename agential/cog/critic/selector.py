@@ -91,43 +91,43 @@ CRITIC_PROMPTS = {
         "critique_prompt_no_tool": CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_MBPP,
     },
 }
-
+ 
 CRITIC_FEWSHOTS = {
     Benchmarks.HOTPOTQA: {
-        "tool": HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
-        "no_tool": HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
+        "critique_examples": HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
+        "critique_examples_no_tool": HOTPOTQA_FEWSHOT_EXAMPLES_CRITIC,
     },
     Benchmarks.FEVER: {
-        "tool": FEVER_FEWSHOT_EXAMPLES_CRITIC,
-        "no_tool": FEVER_FEWSHOT_EXAMPLES_CRITIC,
+        "critique_examples": FEVER_FEWSHOT_EXAMPLES_CRITIC,
+        "critique_examples_no_tool": FEVER_FEWSHOT_EXAMPLES_CRITIC,
     },
     Benchmarks.TRIVIAQA: {
-        "tool": TRIVIAQA_FEWSHOT_EXAMPLES_CRITIC,
-        "no_tool": TRIVIAQA_FEWSHOT_EXAMPLES_CRITIC,
+        "critique_examples": TRIVIAQA_FEWSHOT_EXAMPLES_CRITIC,
+        "critique_examples_no_tool": TRIVIAQA_FEWSHOT_EXAMPLES_CRITIC,
     },
     Benchmarks.AMBIGNQ: {
-        "tool": AMBIGNQ_FEWSHOT_EXAMPLES_CRITIC,
-        "no_tool": AMBIGNQ_FEWSHOT_EXAMPLES_CRITIC,
+        "critique_examples": AMBIGNQ_FEWSHOT_EXAMPLES_CRITIC,
+        "critique_examples_no_tool": AMBIGNQ_FEWSHOT_EXAMPLES_CRITIC,
     },
     Benchmarks.GSM8K: {
-        "tool": GSM8K_FEWSHOT_EXAMPLES_CRITIC,
-        "no_tool": GSM8K_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
+        "critique_examples": GSM8K_FEWSHOT_EXAMPLES_CRITIC,
+        "critique_examples_no_tool": GSM8K_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
     },
     Benchmarks.SVAMP: {
-        "tool": SVAMP_FEWSHOT_EXAMPLES_CRITIC,
-        "no_tool": SVAMP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
+        "critique_examples": SVAMP_FEWSHOT_EXAMPLES_CRITIC,
+        "critique_examples_no_tool": SVAMP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
     },
     Benchmarks.TABMWP: {
-        "tool": TABMWP_FEWSHOT_EXAMPLES_CRITIC,
-        "no_tool": TABMWP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
+        "critique_examples": TABMWP_FEWSHOT_EXAMPLES_CRITIC,
+        "critique_examples_no_tool": TABMWP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
     },
     Benchmarks.HUMANEVAL: {
-        "tool": HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC,
-        "no_tool": HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
+        "critique_examples": HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC,
+        "critique_examples_no_tool": HUMANEVAL_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
     },
     Benchmarks.MBPP: {
-        "tool": MBPP_FEWSHOT_EXAMPLES_CRITIC,
-        "no_tool": MBPP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
+        "critique_examples": MBPP_FEWSHOT_EXAMPLES_CRITIC,
+        "critique_examples_no_tool": MBPP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
     },
 }
 
@@ -138,7 +138,17 @@ class CriticSelector(BaseSelector):
         if benchmark not in CRITIC_FEWSHOTS:
             raise ValueError(f"Benchmark '{benchmark}' few-shots not found for CRITIC.")
 
-        return CRITIC_FEWSHOTS[benchmark]
+        use_tool = kwargs.get("use_tool")
+        if not use_tool:
+            raise ValueError("`use_tool` not specified.")
+
+        if use_tool:
+            return {
+                "critique_examples": CRITIC_FEWSHOTS[benchmark]["critique_examples"]
+            }
+        return {
+            "critique_examples": CRITIC_FEWSHOTS[benchmark]["critique_examples_no_tool"]
+        }
 
     @staticmethod
     def get_prompt(self, benchmark: str, **kwargs) -> str:

@@ -205,7 +205,6 @@ REFLEXION_REACT_FEWSHOTS = {
 }
 
 
-
 class ReflexionCoTSelector(BaseSelector):
     @staticmethod
     def get_fewshots(self, benchmark: str, **kwargs) -> Dict[str, str]:
