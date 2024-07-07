@@ -1,7 +1,5 @@
 """Main file for managing benchmark prompts/few-shot examples."""
 
-from typing import Dict
-
 from agential.fewshots.ambignq import (
     AMBIGNQ_FEWSHOT_EXAMPLES_COT,
     AMBIGNQ_FEWSHOT_EXAMPLES_DIRECT,
