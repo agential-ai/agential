@@ -331,7 +331,9 @@ class StrategyFactory:
             elif benchmark == Benchmarks.MBPP:
                 return ReActMBPPStrategy(**strategy_kwargs)
             else:
-                raise ValueError(f"Unsupported benchmark: {benchmark} for agent {agent}")
+                raise ValueError(
+                    f"Unsupported benchmark: {benchmark} for agent {agent}"
+                )
 
         elif agent == Agents.REFLEXION_COT:
             if benchmark == Benchmarks.HOTPOTQA:
@@ -353,7 +355,9 @@ class StrategyFactory:
             elif benchmark == Benchmarks.MBPP:
                 return ReflexionCoTMBPPStrategy(**strategy_kwargs)
             else:
-                raise ValueError(f"Unsupported benchmark: {benchmark} for agent {agent}")
+                raise ValueError(
+                    f"Unsupported benchmark: {benchmark} for agent {agent}"
+                )
 
         elif agent == Agents.REFLEXION_REACT:
             if benchmark == Benchmarks.HOTPOTQA:
@@ -375,7 +379,9 @@ class StrategyFactory:
             elif benchmark == Benchmarks.MBPP:
                 return ReflexionReActMBPPStrategy(**strategy_kwargs)
             else:
-                raise ValueError(f"Unsupported benchmark: {benchmark} for agent {agent}")
+                raise ValueError(
+                    f"Unsupported benchmark: {benchmark} for agent {agent}"
+                )
 
         elif agent == Agents.CRITIC:
             if benchmark == Benchmarks.HOTPOTQA:
@@ -397,7 +403,9 @@ class StrategyFactory:
             elif benchmark == Benchmarks.MBPP:
                 return CritMBPPCodeStrategy(**strategy_kwargs)
             else:
-                raise ValueError(f"Unsupported benchmark: {benchmark} for agent {agent}")
+                raise ValueError(
+                    f"Unsupported benchmark: {benchmark} for agent {agent}"
+                )
 
         else:
             raise ValueError(f"Unsupported agent: {agent}")
