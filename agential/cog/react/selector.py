@@ -13,7 +13,7 @@ from agential.cog.react.prompts import (
     REACT_INSTRUCTION_TABMWP,
     REACT_INSTRUCTION_TRIVIAQA,
 )
-from agential.fewshots.manager import Benchmarks
+from agential.manager import Benchmarks
 
 
 REACT_PROMPTS = {

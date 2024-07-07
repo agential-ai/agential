@@ -5,7 +5,7 @@ import pytest
 from agential.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
 )
-from agential.fewshots.manager import FewShotType, get_benchmark_fewshots
+from agential.manager import FewShotType, get_benchmark_fewshots
 
 
 def test_get_benchmark_fewshots() -> None:

@@ -61,6 +61,81 @@ from agential.cog.reflexion.strategies.qa import (
 )
 
 
+class Benchmarks:
+    """Supported benchmarks."""
+
+    # QA.
+    HOTPOTQA = "hotpotqa"
+    FEVER = "fever"
+    TRIVIAQA = "triviaqa"
+    AMBIGNQ = "ambignq"
+    
+    # Math.
+    GSM8K = "gsm8k"
+    SVAMP = "svamp"
+    TABMWP = "tabmwp"
+
+    # Code.
+    HUMANEVAL = "humaneval"
+    MBPP = "mbpp"
+
+class Agents:
+    """Supported agents."""
+
+    REACT = "react"
+    REFLEXION_COT = "reflexion_cot"
+    REFLEXION_REACT = "reflexion_react"
+    CRITIC = "critic"
+
+
+STRATEGIES = {
+    Agents.REACT: {
+        Benchmarks.HOTPOTQA: ReActHotQAStrategy,
+        Benchmarks.FEVER: ReActFEVERStrategy,
+        Benchmarks.TRIVIAQA: ReActTriviaQAStrategy,
+        Benchmarks.AMBIGNQ: ReActAmbigNQStrategy,
+        Benchmarks.GSM8K: ReActGSM8KStrategy,
+        Benchmarks.SVAMP: ReActSVAMPStrategy,
+        Benchmarks.TABMWP: ReActTabMWPStrategy,
+        Benchmarks.HUMANEVAL: ReActHEvalStrategy,
+        Benchmarks.MBPP: ReActMBPPStrategy,
+    },
+    Agents.REFLEXION_COT: {
+        Benchmarks.HOTPOTQA: ReflexionCoTHotQAStrategy,
+        Benchmarks.FEVER: ReflexionCoTFEVERStrategy,
+        Benchmarks.TRIVIAQA: ReflexionCoTTriviaQAStrategy,
+        Benchmarks.AMBIGNQ: ReflexionCoTAmbigNQStrategy,
+        Benchmarks.GSM8K: ReflexionCoTGSM8KStrategy,
+        Benchmarks.SVAMP: ReflexionCoTSVAMPStrategy,
+        Benchmarks.TABMWP: ReflexionCoTTabMWPStrategy,
+        Benchmarks.HUMANEVAL: ReflexionCoTHEvalStrategy,
+        Benchmarks.MBPP: ReflexionCoTMBPPStrategy,
+    },
+    Agents.REFLEXION_REACT: {
+        Benchmarks.HOTPOTQA: ReflexionReActHotQAStrategy,
+        Benchmarks.FEVER: ReflexionReActFEVERStrategy,
+        Benchmarks.TRIVIAQA: ReflexionReActTriviaQAStrategy,
+        Benchmarks.AMBIGNQ: ReflexionReActAmbigNQStrategy,
+        Benchmarks.GSM8K: ReflexionReActGSM8KStrategy,
+        Benchmarks.SVAMP: ReflexionReActSVAMPStrategy,
+        Benchmarks.TABMWP: ReflexionReActTabMWPStrategy,
+        Benchmarks.HUMANEVAL: ReflexionReActHEvalStrategy,
+        Benchmarks.MBPP: ReflexionReActMBPPStrategy,
+    },
+    Agents.CRITIC: {
+        Benchmarks.HOTPOTQA: CritHotQAStrategy,
+        Benchmarks.FEVER: CritFEVERStrategy,
+        Benchmarks.TRIVIAQA: CritTriviaQAStrategy,
+        Benchmarks.AMBIGNQ: CritAmbigNQStrategy,
+        Benchmarks.GSM8K: CritGSM8KStrategy,
+        Benchmarks.SVAMP: CritSVAMPStrategy,
+        Benchmarks.TABMWP: CritTabMWPStrategy,
+        Benchmarks.HUMANEVAL: CritHEvalCodeStrategy,
+        Benchmarks.MBPP: CritMBPPCodeStrategy,
+    }
+}
+
+
 class ReActStrategyFactory:
     """A factory class for creating instances of different ReAct strategies based on the specified mode and benchmark.
 
@@ -88,13 +163,13 @@ class ReActStrategyFactory:
         Raises:
             ValueError: If the mode or benchmark is unsupported.
         """
-        if mode["qa"] == "hotpotqa":
+        if mode == "hotpotqa":
             return ReActHotQAStrategy(**strategy_kwargs)
-        elif mode["qa"] == "triviaqa":
+        elif mode == "triviaqa":
             return ReActTriviaQAStrategy(**strategy_kwargs)
-        elif mode["qa"] == "ambignq":
+        elif mode == "ambignq":
             return ReActAmbigNQStrategy(**strategy_kwargs)
-        elif mode["qa"] == "fever":
+        elif mode == "fever":
             return ReActFEVERStrategy(**strategy_kwargs)
         elif mode["math"] == "gsm8k":
             return ReActGSM8KStrategy(**strategy_kwargs)
@@ -140,33 +215,24 @@ class ReflexionCoTStrategyFactory:
         Raises:
             ValueError: If the mode or benchmark is unsupported.
         """
-        if "qa" in mode:
-            if mode["qa"] == "hotpotqa":
-                return ReflexionCoTHotQAStrategy(**strategy_kwargs)
-            elif mode["qa"] == "triviaqa":
-                return ReflexionCoTTriviaQAStrategy(**strategy_kwargs)
-            elif mode["qa"] == "ambignq":
-                return ReflexionCoTAmbigNQStrategy(**strategy_kwargs)
-            elif mode["qa"] == "fever":
-                return ReflexionCoTFEVERStrategy(**strategy_kwargs)
-            else:
-                raise ValueError(f"Unsupported QA benchmark: {mode['qa']}")
-        elif "math" in mode:
-            if mode["math"] == "gsm8k":
-                return ReflexionCoTGSM8KStrategy(**strategy_kwargs)
-            elif mode["math"] == "svamp":
-                return ReflexionCoTSVAMPStrategy(**strategy_kwargs)
-            elif mode["math"] == "tabmwp":
-                return ReflexionCoTTabMWPStrategy(**strategy_kwargs)
-            else:
-                raise ValueError(f"Unsupported Math benchmark: {mode['math']}")
-        elif "code" in mode:
-            if mode["code"] == "humaneval":
-                return ReflexionCoTHEvalStrategy(**strategy_kwargs)
-            elif mode["code"] == "mbpp":
-                return ReflexionCoTMBPPStrategy(**strategy_kwargs)
-            else:
-                raise ValueError(f"Unsupported Code benchmark: {mode['code']}")
+        if mode["qa"] == "hotpotqa":
+            return ReflexionCoTHotQAStrategy(**strategy_kwargs)
+        elif mode["qa"] == "triviaqa":
+            return ReflexionCoTTriviaQAStrategy(**strategy_kwargs)
+        elif mode["qa"] == "ambignq":
+            return ReflexionCoTAmbigNQStrategy(**strategy_kwargs)
+        elif mode["qa"] == "fever":
+            return ReflexionCoTFEVERStrategy(**strategy_kwargs)
+        elif mode["math"] == "gsm8k":
+            return ReflexionCoTGSM8KStrategy(**strategy_kwargs)
+        elif mode["math"] == "svamp":
+            return ReflexionCoTSVAMPStrategy(**strategy_kwargs)
+        elif mode["math"] == "tabmwp":
+            return ReflexionCoTTabMWPStrategy(**strategy_kwargs)
+        elif mode["code"] == "humaneval":
+            return ReflexionCoTHEvalStrategy(**strategy_kwargs)
+        elif mode["code"] == "mbpp":
+            return ReflexionCoTMBPPStrategy(**strategy_kwargs)
         else:
             raise ValueError(f"Unsupported mode: {mode}")
 

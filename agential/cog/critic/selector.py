@@ -42,7 +42,7 @@ from agential.cog.critic.prompts import (
     CRITIC_CRITIQUE_INSTRUCTION_MBPP,
     CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_MBPP,
 )
-from agential.fewshots.manager import Benchmarks
+from agential.manager import Benchmarks
 
 CRITIC_PROMPTS = {
     Benchmarks.HOTPOTQA: {
