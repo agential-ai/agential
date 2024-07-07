@@ -55,6 +55,6 @@ class ReActSelector(BaseSelector):
     @staticmethod
     def get_prompt(self, benchmark: str) -> Dict[str, str]:
         if benchmark not in REACT_PROMPTS:
-            raise ValueError(f"Benchmark '{benchmark}' not supported for ReAct.")
+            raise ValueError(f"Benchmark '{benchmark}' prompt not found for ReAct.")
 
         return REACT_PROMPTS[benchmark]
