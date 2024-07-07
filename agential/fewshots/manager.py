@@ -162,30 +162,20 @@ from agential.cog.critic.prompts import (
 class Benchmarks:
     """Supported benchmarks."""
 
-    QA = "qa"
-    MATH = "math"
-    CODE = "code"
+    # QA.
+    HOTPOTQA = "hotpotqa"
+    FEVER = "fever"
+    TRIVIAQA = "triviaqa"
+    AMBIGNQ = "ambignq"
+    
+    # Math.
+    GSM8K = "gsm8k"
+    SVAMP = "svamp"
+    TABMWP = "tabmwp"
 
-    class qa:
-        """qa benchmarks."""
-
-        HOTPOTQA = "hotpotqa"
-        FEVER = "fever"
-        TRIVIAQA = "triviaqa"
-        AMBIGNQ = "ambignq"
-
-    class math:
-        """math benchmarks."""
-
-        GSM8K = "gsm8k"
-        SVAMP = "svamp"
-        TABMWP = "tabmwp"
-
-    class code:
-        """code benchmarks."""
-
-        HUMANEVAL = "humaneval"
-        MBPP = "mbpp"
+    # Code.
+    HUMANEVAL = "humaneval"
+    MBPP = "mbpp"
 
 
 class FewShotType:

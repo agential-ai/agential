@@ -1,5 +1,41 @@
 """ReAct prompts and fewshot examples selector."""
 
+from agential.base.selector import BaseSelector
+from agential.cog.react.prompts import (
+    REACT_INSTRUCTION_AMBIGNQ,
+    REACT_INSTRUCTION_FEVER,
+    REACT_INSTRUCTION_GSM8K,
+    REACT_INSTRUCTION_HOTPOTQA,
+    REACT_INSTRUCTION_HUMANEVAL,
+    REACT_INSTRUCTION_MBPP,
+    REACT_INSTRUCTION_SVAMP,
+    REACT_INSTRUCTION_TABMWP,
+    REACT_INSTRUCTION_TRIVIAQA,
+)
+from agential.fewshots.manager import Benchmarks
 
 
-class 
+REACT_PROMPTS = {
+    Benchmarks.HOTPOTQA: REACT_INSTRUCTION_HOTPOTQA,
+    Benchmarks.FEVER: REACT_INSTRUCTION_FEVER,
+    Benchmarks.TRIVIAQA: REACT_INSTRUCTION_TRIVIAQA,
+    Benchmarks.AMBIGNQ: REACT_INSTRUCTION_AMBIGNQ,
+    Benchmarks.GSM8K: REACT_INSTRUCTION_GSM8K,
+    Benchmarks.SVAMP: REACT_INSTRUCTION_SVAMP,
+    Benchmarks.TABMWP: REACT_INSTRUCTION_TABMWP,
+    Benchmarks.HUMANEVAL: REACT_INSTRUCTION_HUMANEVAL,
+    Benchmarks.MBPP: REACT_INSTRUCTION_MBPP,
+}
+
+
+class ReActSelector(BaseSelector):
+    @staticmethod
+    def get_fewshots(self) -> str:
+        return ""
+
+    @staticmethod
+    def get_prompt(self, benchmark: str) -> str:
+        if benchmark not in REACT_PROMPTS:
+            raise ValueError(f"Benchmark '{benchmark}' not supported for ReAct.")
+
+        return REACT_PROMPTS[benchmark]
