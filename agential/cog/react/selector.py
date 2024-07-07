@@ -2,8 +2,4 @@
 
 
 
-AGENT_FEWSHOTS = {
-    Agents.REACT: {},
-}
-
-def get_react_prompts():
+class 
