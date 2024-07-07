@@ -49,11 +49,11 @@ REACT_PROMPTS = {
 
 class ReActSelector(BaseSelector):
     @staticmethod
-    def get_fewshots(self) -> Dict[str, str]:
+    def get_fewshots(self, **kwargs) -> Dict[str, str]:
         return {}
 
     @staticmethod
-    def get_prompt(self, benchmark: str) -> Dict[str, str]:
+    def get_prompt(self, benchmark: str, **kwargs) -> Dict[str, str]:
         if benchmark not in REACT_PROMPTS:
             raise ValueError(f"Benchmark '{benchmark}' prompt not found for ReAct.")
 

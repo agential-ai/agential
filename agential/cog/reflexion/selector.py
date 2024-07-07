@@ -185,14 +185,14 @@ REFLEXION_REACT_FEWSHOTS = {
 
 class ReflexionCoTSelector(BaseSelector):
     @staticmethod
-    def get_fewshots(self, benchmark: str) -> Dict[str, str]:
+    def get_fewshots(self, benchmark: str, **kwargs) -> Dict[str, str]:
         if benchmark not in REFLEXION_COT_FEWSHOTS:
             raise ValueError(f"Benchmark '{benchmark}' few-shots not found for ReflexionCoT.")
 
         return REFLEXION_COT_FEWSHOTS[benchmark]
 
     @staticmethod
-    def get_prompt(self, benchmark: str) -> str:
+    def get_prompt(self, benchmark: str, **kwargs) -> str:
         if benchmark not in REFLEXION_COT_PROMPTS:
             raise ValueError(f"Benchmark '{benchmark}' prompt not found for ReflexionCoT.")
 
@@ -201,14 +201,14 @@ class ReflexionCoTSelector(BaseSelector):
 
 class ReflexionReActSelector(BaseSelector):
     @staticmethod
-    def get_fewshots(self, benchmark: str) -> Dict[str, str]:
+    def get_fewshots(self, benchmark: str, **kwargs) -> Dict[str, str]:
         if benchmark not in REFLEXION_REACT_FEWSHOTS:
             raise ValueError(f"Benchmark '{benchmark}' few-shots not found for ReflexionReAct.")
 
         return REFLEXION_REACT_FEWSHOTS[benchmark]
 
     @staticmethod
-    def get_prompt(self, benchmark: str) -> str:
+    def get_prompt(self, benchmark: str, **kwargs) -> str:
         if benchmark not in REFLEXION_REACT_PROMPTS:
             raise ValueError(f"Benchmark '{benchmark}' prompt not found for ReflexionReAct.")
 
