@@ -1,7 +1,7 @@
 """Generic base Selector class."""
 
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Dict
 
 
 class BaseSelector(ABC):
@@ -15,11 +15,11 @@ class BaseSelector(ABC):
         self,
         *args: Any,
         **kwargs: Any,
-    ) -> str:
+    ) -> Dict[str, str]:
         """Gets the few-shot examples."""
         pass
 
     @abstractmethod
-    def get_prompt(self, *args: Any, **kwargs: Any) -> str:
+    def get_prompt(self, *args: Any, **kwargs: Any) -> Dict[str, str]:
         """Gets the prompt instruction."""
         pass
