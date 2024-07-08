@@ -58,8 +58,14 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActHotQAStrategy,
     ReflexionReActTriviaQAStrategy,
 )
-from agential.strategy_factory import Agents, Benchmarks, FewShotType, get_benchmark_fewshots, StrategyFactory
 from agential.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
+from agential.strategy_factory import (
+    Agents,
+    Benchmarks,
+    FewShotType,
+    StrategyFactory,
+    get_benchmark_fewshots,
+)
 
 
 def test_strategy_factory_get_strategy() -> None:

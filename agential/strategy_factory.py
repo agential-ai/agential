@@ -278,7 +278,9 @@ class StrategyFactory:
     """A factory class for creating instances of different strategies based on the specified agent and benchmark."""
 
     @staticmethod
-    def get_strategy(agent: str, benchmark: str, **strategy_kwargs: Any) -> BaseStrategy:
+    def get_strategy(
+        agent: str, benchmark: str, **strategy_kwargs: Any
+    ) -> BaseStrategy:
         """Returns an instance of the appropriate strategy based on the provided agent and benchmark.
 
         Available agents:

@@ -36,10 +36,7 @@ class CriticAgent(BaseAgent):
         self.benchmark = benchmark
 
         self.strategy = StrategyFactory().get_strategy(
-            agent="critic",
-            benchmark=self.benchmark, 
-            llm=self.llm, 
-            **strategy_kwargs
+            agent="critic", benchmark=self.benchmark, llm=self.llm, **strategy_kwargs
         )
 
     def generate(
