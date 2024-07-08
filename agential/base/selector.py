@@ -6,11 +6,11 @@ from typing import Any, Dict
 from agential.base.strategies import BaseStrategy
 
 
-class BaseSelector(ABC):
-    """An abstract base class for auto-selecting prompts and few-shot examples."""
+class BaseFactory(ABC):
+    """Base factory class for creating strategy instances and auto-selecting prompts and few-shot examples."""
 
     def __init__(self) -> None:
-        """Initialize the BaseSelector class."""
+        """Initialize the BaseFactory class."""
         pass
 
     @abstractmethod
@@ -37,14 +37,6 @@ class BaseSelector(ABC):
         Returns:
             Dict[str, str]: A dictionary of prompt instructions.
         """
-        pass
-
-
-class BaseStrategyFactory(ABC):
-    """Base factory class for creating strategy instances."""
-
-    def __init__(self) -> None:
-        """Initialize the BaseStrategyFactory class."""
         pass
 
     @abstractmethod
