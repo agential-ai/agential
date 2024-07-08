@@ -2,8 +2,8 @@
 
 from typing import Any
 
-from agential.manager.strategy_mapping import STRATEGIES
 from agential.base.strategies import BaseStrategy
+from agential.manager.strategy_mapping import STRATEGIES
 
 
 class StrategyFactory:

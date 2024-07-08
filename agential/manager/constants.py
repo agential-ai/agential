@@ -1,5 +1,6 @@
 """Constants for supported benchmarks, few-shot types, and agents."""
 
+
 class Benchmarks:
     """Supported benchmarks."""
 
@@ -18,6 +19,7 @@ class Benchmarks:
     HUMANEVAL = "humaneval"
     MBPP = "mbpp"
 
+
 class FewShotType:
     """Few-shot types."""
 
@@ -25,6 +27,7 @@ class FewShotType:
     DIRECT = "direct"
     REACT = "react"
     POT = "pot"
+
 
 class Agents:
     """Supported agents."""
