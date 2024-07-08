@@ -29,6 +29,7 @@ from agential.cog.react.strategies.qa import (
 )
 from agential.manager.constants import Benchmarks
 
+
 REACT_PROMPTS = {
     Benchmarks.HOTPOTQA: {
         "prompt": REACT_INSTRUCTION_HOTPOTQA,
@@ -58,7 +59,17 @@ REACT_PROMPTS = {
         "prompt": REACT_INSTRUCTION_MBPP,
     },
 }
-
+REACT_FEWSHOTS = {
+    Benchmarks.HOTPOTQA: {},
+    Benchmarks.FEVER: {},
+    Benchmarks.TRIVIAQA: {},
+    Benchmarks.AMBIGNQ: {},
+    Benchmarks.GSM8K: {},
+    Benchmarks.SVAMP: {},
+    Benchmarks.TABMWP: {},
+    Benchmarks.HUMANEVAL: {},
+    Benchmarks.MBPP: {},
+}
 REACT_STRATEGIES = {
     Benchmarks.HOTPOTQA: ReActHotQAStrategy,
     Benchmarks.FEVER: ReActFEVERStrategy,
@@ -86,6 +97,9 @@ class ReActFactory(BaseFactory):
         Returns:
             Dict[str, str]: A dictionary of few-shot examples.
         """
+        if benchmark not in REACT_FEWSHOTS:
+            raise ValueError(f"Benchmark '{benchmark}' few-shots not found for ReAct.")
+
         return {}
 
     @staticmethod
