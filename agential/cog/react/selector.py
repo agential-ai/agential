@@ -1,6 +1,6 @@
 """ReAct prompts and fewshot examples selector."""
 
-from typing import Dict, Any
+from typing import Any, Dict
 
 from agential.base.selector import BaseSelector
 from agential.cog.react.prompts import (
@@ -14,6 +14,7 @@ from agential.cog.react.prompts import (
     REACT_INSTRUCTION_TABMWP,
     REACT_INSTRUCTION_TRIVIAQA,
 )
+from agential.cog.react.strategies.base import ReActBaseStrategy
 from agential.cog.react.strategies.code import ReActHEvalStrategy, ReActMBPPStrategy
 from agential.cog.react.strategies.math import (
     ReActGSM8KStrategy,
@@ -26,7 +27,6 @@ from agential.cog.react.strategies.qa import (
     ReActHotQAStrategy,
     ReActTriviaQAStrategy,
 )
-from agential.cog.react.strategies.base import ReActBaseStrategy
 from agential.manager.constants import Benchmarks
 
 REACT_PROMPTS = {
@@ -71,6 +71,7 @@ REACT_STRATEGIES = {
     Benchmarks.MBPP: ReActMBPPStrategy,
 }
 
+
 class ReActSelector(BaseSelector):
     @staticmethod
     def get_fewshots(self, benchmark: str, **kwargs) -> Dict[str, str]:
@@ -91,6 +92,6 @@ class ReactStrategyFactory:
     def get_strategy(benchmark: str, **strategy_kwargs: Any) -> ReActBaseStrategy:
         if benchmark not in REACT_STRATEGIES:
             raise ValueError(f"Unsupported benchmark: {benchmark} for agent ReAct")
-        
+
         strategy = REACT_STRATEGIES[benchmark]
         return strategy(**strategy_kwargs)

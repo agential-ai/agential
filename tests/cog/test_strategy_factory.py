@@ -4,21 +4,7 @@ import pytest
 
 from langchain_community.chat_models.fake import FakeListChatModel
 
-from agential.cog.critic.strategies.code import (
-    CritHEvalCodeStrategy,
-    CritMBPPCodeStrategy,
-)
-from agential.cog.critic.strategies.math import (
-    CritGSM8KStrategy,
-    CritSVAMPStrategy,
-    CritTabMWPStrategy,
-)
-from agential.cog.critic.strategies.qa import (
-    CritAmbigNQStrategy,
-    CritFEVERStrategy,
-    CritHotQAStrategy,
-    CritTriviaQAStrategy,
-)
+
 from agential.cog.react.strategies.code import ReActHEvalStrategy, ReActMBPPStrategy
 from agential.cog.react.strategies.math import (
     ReActGSM8KStrategy,
@@ -61,214 +47,166 @@ from agential.manager.strategy_factory import (
 )
 
 
-def test_strategy_factory_get_strategy() -> None:
-    """Tests StrategyFactory get_strategy method."""
+import pytest
+from agential.manager.constants import Agents, Benchmarks
+from agential.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
+from agential.manager.strategy_factory import (
+    ReactStrategyFactory,
+    ReflexionCoTStrategyFactory,
+    ReflexionReActStrategyFactory,
+    CriticStrategyFactory
+)
+
+def test_react_strategy_factory_get_strategy() -> None:
+    """Tests ReActStrategyFactory get_strategy method."""
     llm = FakeListChatModel(responses=[])
 
-    # QA benchmarks for ReAct agent.
+    # QA benchmarks.
     assert isinstance(
-        StrategyFactory.get_strategy(Agents.REACT, Benchmarks.HOTPOTQA, llm=llm),
+        ReactStrategyFactory.get_strategy(Benchmarks.HOTPOTQA, llm=llm),
         ReActHotQAStrategy,
     )
     assert isinstance(
-        StrategyFactory.get_strategy(Agents.REACT, Benchmarks.TRIVIAQA, llm=llm),
+        ReactStrategyFactory.get_strategy(Benchmarks.TRIVIAQA, llm=llm),
         ReActTriviaQAStrategy,
     )
     assert isinstance(
-        StrategyFactory.get_strategy(Agents.REACT, Benchmarks.AMBIGNQ, llm=llm),
+        ReactStrategyFactory.get_strategy(Benchmarks.AMBIGNQ, llm=llm),
         ReActAmbigNQStrategy,
     )
     assert isinstance(
-        StrategyFactory.get_strategy(Agents.REACT, Benchmarks.FEVER, llm=llm),
+        ReactStrategyFactory.get_strategy(Benchmarks.FEVER, llm=llm),
         ReActFEVERStrategy,
     )
 
-    # Math benchmarks for ReAct agent.
+    # Math benchmarks.
     assert isinstance(
-        StrategyFactory.get_strategy(Agents.REACT, Benchmarks.GSM8K, llm=llm),
+        ReactStrategyFactory.get_strategy(Benchmarks.GSM8K, llm=llm),
         ReActGSM8KStrategy,
     )
     assert isinstance(
-        StrategyFactory.get_strategy(Agents.REACT, Benchmarks.SVAMP, llm=llm),
+        ReactStrategyFactory.get_strategy(Benchmarks.SVAMP, llm=llm),
         ReActSVAMPStrategy,
     )
     assert isinstance(
-        StrategyFactory.get_strategy(Agents.REACT, Benchmarks.TABMWP, llm=llm),
+        ReactStrategyFactory.get_strategy(Benchmarks.TABMWP, llm=llm),
         ReActTabMWPStrategy,
     )
 
-    # Code benchmarks for ReAct agent.
+    # Code benchmarks.
     assert isinstance(
-        StrategyFactory.get_strategy(Agents.REACT, Benchmarks.HUMANEVAL, llm=llm),
+        ReactStrategyFactory.get_strategy(Benchmarks.HUMANEVAL, llm=llm),
         ReActHEvalStrategy,
     )
     assert isinstance(
-        StrategyFactory.get_strategy(Agents.REACT, Benchmarks.MBPP, llm=llm),
+        ReactStrategyFactory.get_strategy(Benchmarks.MBPP, llm=llm),
         ReActMBPPStrategy,
     )
 
-    # QA benchmarks for ReflexionCoT agent.
+    # Unsupported benchmark.
+    with pytest.raises(ValueError, match="Unsupported benchmark: unknown for agent ReAct"):
+        ReactStrategyFactory.get_strategy("unknown", llm=llm)
+
+
+def test_reflexion_cot_strategy_factory_get_strategy() -> None:
+    """Tests ReflexionCoTStrategyFactory get_strategy method."""
+    llm = FakeListChatModel(responses=[])
+
+    # QA benchmarks.
     assert isinstance(
-        StrategyFactory.get_strategy(
-            Agents.REFLEXION_COT, Benchmarks.HOTPOTQA, llm=llm
-        ),
+        ReflexionCoTStrategyFactory.get_strategy(Benchmarks.HOTPOTQA, llm=llm),
         ReflexionCoTHotQAStrategy,
     )
     assert isinstance(
-        StrategyFactory.get_strategy(
-            Agents.REFLEXION_COT, Benchmarks.TRIVIAQA, llm=llm
-        ),
+        ReflexionCoTStrategyFactory.get_strategy(Benchmarks.TRIVIAQA, llm=llm),
         ReflexionCoTTriviaQAStrategy,
     )
     assert isinstance(
-        StrategyFactory.get_strategy(Agents.REFLEXION_COT, Benchmarks.AMBIGNQ, llm=llm),
+        ReflexionCoTStrategyFactory.get_strategy(Benchmarks.AMBIGNQ, llm=llm),
         ReflexionCoTAmbigNQStrategy,
     )
     assert isinstance(
-        StrategyFactory.get_strategy(Agents.REFLEXION_COT, Benchmarks.FEVER, llm=llm),
+        ReflexionCoTStrategyFactory.get_strategy(Benchmarks.FEVER, llm=llm),
         ReflexionCoTFEVERStrategy,
     )
 
-    # Math benchmarks for ReflexionCoT agent.
+    # Math benchmarks.
     assert isinstance(
-        StrategyFactory.get_strategy(Agents.REFLEXION_COT, Benchmarks.GSM8K, llm=llm),
+        ReflexionCoTStrategyFactory.get_strategy(Benchmarks.GSM8K, llm=llm),
         ReflexionCoTGSM8KStrategy,
     )
     assert isinstance(
-        StrategyFactory.get_strategy(Agents.REFLEXION_COT, Benchmarks.SVAMP, llm=llm),
+        ReflexionCoTStrategyFactory.get_strategy(Benchmarks.SVAMP, llm=llm),
         ReflexionCoTSVAMPStrategy,
     )
     assert isinstance(
-        StrategyFactory.get_strategy(Agents.REFLEXION_COT, Benchmarks.TABMWP, llm=llm),
+        ReflexionCoTStrategyFactory.get_strategy(Benchmarks.TABMWP, llm=llm),
         ReflexionCoTTabMWPStrategy,
     )
 
-    # Code benchmarks for ReflexionCoT agent.
+    # Code benchmarks.
     assert isinstance(
-        StrategyFactory.get_strategy(
-            Agents.REFLEXION_COT, Benchmarks.HUMANEVAL, llm=llm
-        ),
+        ReflexionCoTStrategyFactory.get_strategy(Benchmarks.HUMANEVAL, llm=llm),
         ReflexionCoTHEvalStrategy,
     )
     assert isinstance(
-        StrategyFactory.get_strategy(Agents.REFLEXION_COT, Benchmarks.MBPP, llm=llm),
+        ReflexionCoTStrategyFactory.get_strategy(Benchmarks.MBPP, llm=llm),
         ReflexionCoTMBPPStrategy,
     )
 
-    # QA benchmarks for ReflexionReAct agent.
+    # Unsupported benchmark.
+    with pytest.raises(ValueError, match="Unsupported benchmark: unknown for agent ReflexionCoT"):
+        ReflexionCoTStrategyFactory.get_strategy("unknown", llm=llm)
+
+
+def test_reflexion_react_strategy_factory_get_strategy() -> None:
+    """Tests ReflexionReActStrategyFactory get_strategy method."""
+    llm = FakeListChatModel(responses=[])
+
+    # QA benchmarks.
     assert isinstance(
-        StrategyFactory.get_strategy(
-            Agents.REFLEXION_REACT, Benchmarks.HOTPOTQA, llm=llm
-        ),
+        ReflexionReActStrategyFactory.get_strategy(Benchmarks.HOTPOTQA, llm=llm),
         ReflexionReActHotQAStrategy,
     )
     assert isinstance(
-        StrategyFactory.get_strategy(
-            Agents.REFLEXION_REACT, Benchmarks.TRIVIAQA, llm=llm
-        ),
+        ReflexionReActStrategyFactory.get_strategy(Benchmarks.TRIVIAQA, llm=llm),
         ReflexionReActTriviaQAStrategy,
     )
     assert isinstance(
-        StrategyFactory.get_strategy(
-            Agents.REFLEXION_REACT, Benchmarks.AMBIGNQ, llm=llm
-        ),
+        ReflexionReActStrategyFactory.get_strategy(Benchmarks.AMBIGNQ, llm=llm),
         ReflexionReActAmbigNQStrategy,
     )
     assert isinstance(
-        StrategyFactory.get_strategy(Agents.REFLEXION_REACT, Benchmarks.FEVER, llm=llm),
+        ReflexionReActStrategyFactory.get_strategy(Benchmarks.FEVER, llm=llm),
         ReflexionReActFEVERStrategy,
     )
 
-    # Math benchmarks for ReflexionReAct agent.
+    # Math benchmarks.
     assert isinstance(
-        StrategyFactory.get_strategy(Agents.REFLEXION_REACT, Benchmarks.GSM8K, llm=llm),
+        ReflexionReActStrategyFactory.get_strategy(Benchmarks.GSM8K, llm=llm),
         ReflexionReActGSM8KStrategy,
     )
     assert isinstance(
-        StrategyFactory.get_strategy(Agents.REFLEXION_REACT, Benchmarks.SVAMP, llm=llm),
+        ReflexionReActStrategyFactory.get_strategy(Benchmarks.SVAMP, llm=llm),
         ReflexionReActSVAMPStrategy,
     )
     assert isinstance(
-        StrategyFactory.get_strategy(
-            Agents.REFLEXION_REACT, Benchmarks.TABMWP, llm=llm
-        ),
+        ReflexionReActStrategyFactory.get_strategy(Benchmarks.TABMWP, llm=llm),
         ReflexionReActTabMWPStrategy,
     )
 
-    # Code benchmarks for ReflexionReAct agent.
+    # Code benchmarks.
     assert isinstance(
-        StrategyFactory.get_strategy(
-            Agents.REFLEXION_REACT, Benchmarks.HUMANEVAL, llm=llm
-        ),
+        ReflexionReActStrategyFactory.get_strategy(Benchmarks.HUMANEVAL, llm=llm),
         ReflexionReActHEvalStrategy,
     )
     assert isinstance(
-        StrategyFactory.get_strategy(Agents.REFLEXION_REACT, Benchmarks.MBPP, llm=llm),
+        ReflexionReActStrategyFactory.get_strategy(Benchmarks.MBPP, llm=llm),
         ReflexionReActMBPPStrategy,
     )
 
-    # QA benchmarks for Critic agent.
-    assert isinstance(
-        StrategyFactory.get_strategy(Agents.CRITIC, Benchmarks.HOTPOTQA, llm=llm),
-        CritHotQAStrategy,
-    )
-    assert isinstance(
-        StrategyFactory.get_strategy(Agents.CRITIC, Benchmarks.TRIVIAQA, llm=llm),
-        CritTriviaQAStrategy,
-    )
-    assert isinstance(
-        StrategyFactory.get_strategy(Agents.CRITIC, Benchmarks.AMBIGNQ, llm=llm),
-        CritAmbigNQStrategy,
-    )
-    assert isinstance(
-        StrategyFactory.get_strategy(Agents.CRITIC, Benchmarks.FEVER, llm=llm),
-        CritFEVERStrategy,
-    )
+    # Unsupported benchmark.
+    with pytest.raises(ValueError, match="Unsupported benchmark: unknown for agent ReflexionReAct"):
+        ReflexionReActStrategyFactory.get_strategy("unknown", llm=llm)
 
-    # Math benchmarks for Critic agent.
-    assert isinstance(
-        StrategyFactory.get_strategy(Agents.CRITIC, Benchmarks.GSM8K, llm=llm),
-        CritGSM8KStrategy,
-    )
-    assert isinstance(
-        StrategyFactory.get_strategy(Agents.CRITIC, Benchmarks.SVAMP, llm=llm),
-        CritSVAMPStrategy,
-    )
-    assert isinstance(
-        StrategyFactory.get_strategy(Agents.CRITIC, Benchmarks.TABMWP, llm=llm),
-        CritTabMWPStrategy,
-    )
 
-    # Code benchmarks for Critic agent.
-    assert isinstance(
-        StrategyFactory.get_strategy(Agents.CRITIC, Benchmarks.HUMANEVAL, llm=llm),
-        CritHEvalCodeStrategy,
-    )
-    assert isinstance(
-        StrategyFactory.get_strategy(Agents.CRITIC, Benchmarks.MBPP, llm=llm),
-        CritMBPPCodeStrategy,
-    )
-
-    # Unsupported benchmarks.
-    with pytest.raises(
-        ValueError, match="Unsupported benchmark: unknown for agent react"
-    ):
-        StrategyFactory.get_strategy(Agents.REACT, "unknown", llm=llm)
-
-    with pytest.raises(
-        ValueError, match="Unsupported benchmark: unknown for agent reflexion_cot"
-    ):
-        StrategyFactory.get_strategy(Agents.REFLEXION_COT, "unknown", llm=llm)
-
-    with pytest.raises(
-        ValueError, match="Unsupported benchmark: unknown for agent reflexion_react"
-    ):
-        StrategyFactory.get_strategy(Agents.REFLEXION_REACT, "unknown", llm=llm)
-
-    with pytest.raises(
-        ValueError, match="Unsupported benchmark: unknown for agent critic"
-    ):
-        StrategyFactory.get_strategy(Agents.CRITIC, "unknown", llm=llm)
-
-    with pytest.raises(ValueError, match="Unsupported agent: unknown"):
-        StrategyFactory.get_strategy("unknown", Benchmarks.HOTPOTQA, llm=llm)

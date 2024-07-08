@@ -2,6 +2,7 @@
 
 from abc import ABC, abstractmethod
 from typing import Any, Dict
+
 from agential.base.strategies import BaseStrategy
 
 
@@ -52,7 +53,7 @@ class BaseStrategyFactory(ABC):
 
         Args:
             benchmark (str): The benchmark name.
-            **strategy_kwargs (Dict[str, Any]): Additional keyword arguments to pass to 
+            **strategy_kwargs (Dict[str, Any]): Additional keyword arguments to pass to
                 the strategy's constructor.
 
         Returns:
