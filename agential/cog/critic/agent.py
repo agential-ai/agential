@@ -10,7 +10,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.agent import BaseAgent
 from agential.cog.critic.output import CriticOutput
-from agential.manager.strategy_factory import StrategyFactory
+from agential.cog.critic.selector import CriticFactory
 
 
 class CriticAgent(BaseAgent):
@@ -35,7 +35,7 @@ class CriticAgent(BaseAgent):
         self.llm = llm
         self.benchmark = benchmark
 
-        self.strategy = StrategyFactory().get_strategy(
+        self.strategy = CriticFactory().get_strategy(
             agent="critic", benchmark=self.benchmark, llm=self.llm, **strategy_kwargs
         )
 

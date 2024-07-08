@@ -22,7 +22,7 @@ from agential.cog.reflexion.reflect import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )
-from agential.manager.strategy_factory import StrategyFactory
+from agential.cog.reflexion.selector import ReflexionCoTFactory, ReflexionReActFactory
 
 
 def parse_action(string: str) -> Tuple[str, str]:
@@ -75,7 +75,7 @@ class ReflexionCoTAgent(BaseAgent):
         self.llm = llm
         self.benchmark = benchmark
 
-        self.strategy = StrategyFactory().get_strategy(
+        self.strategy = ReflexionCoTFactory().get_strategy(
             agent="reflexion_cot",
             benchmark=self.benchmark,
             llm=self.llm,
@@ -227,7 +227,7 @@ class ReflexionReActAgent(BaseAgent):
         self.llm = llm
         self.benchmark = benchmark
 
-        self.strategy = StrategyFactory().get_strategy(
+        self.strategy = ReflexionReActFactory().get_strategy(
             agent="reflexion_react",
             benchmark=self.benchmark,
             llm=self.llm,
