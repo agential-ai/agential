@@ -276,5 +276,5 @@ class StrategyFactory:
         if benchmark not in agent_strategies:
             raise ValueError(f"Unsupported benchmark: {benchmark} for agent {agent}")
 
-        strategy_class = agent_strategies[benchmark]
-        return strategy_class(**strategy_kwargs)
+        strategy = agent_strategies[benchmark]
+        return strategy(**strategy_kwargs)
