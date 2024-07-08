@@ -7,7 +7,7 @@ from agential.base.strategies import BaseStrategy
 
 
 class BaseFactory(ABC):
-    """Base factory class for creating strategy instances and auto-selecting prompts and few-shot examples."""
+    """Base factory class for creating strategy instances, auto-selecting prompts and few-shot examples."""
 
     def __init__(self) -> None:
         """Initialize the BaseFactory class."""
@@ -40,12 +40,12 @@ class BaseFactory(ABC):
         pass
 
     @abstractmethod
-    def get_strategy(self, benchmark: str, **strategy_kwargs: Any) -> BaseStrategy:
+    def get_strategy(self, benchmark: str, **kwargs: Any) -> BaseStrategy:
         """Returns an instance of the appropriate strategy based on the provided benchmark.
 
         Args:
             benchmark (str): The benchmark name.
-            **strategy_kwargs (Dict[str, Any]): Additional keyword arguments to pass to
+            **kwargs (Dict[str, Any]): Additional keyword arguments to pass to
                 the strategy's constructor.
 
         Returns:
