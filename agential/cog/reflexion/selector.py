@@ -341,7 +341,7 @@ class ReflexionReActFactory(BaseFactory):
         return REFLEXION_REACT_FEWSHOTS[benchmark]
 
     @staticmethod
-    def get_prompt(benchmark: str, **kwargs) -> str:
+    def get_prompt(benchmark: str, **kwargs) -> Dict[str, str]:
         """Retrieve the prompt instruction based on the benchmark.
 
         Args:
@@ -349,7 +349,7 @@ class ReflexionReActFactory(BaseFactory):
             **kwargs (Any): Additional arguments.
 
         Returns:
-            str: The prompt instruction.
+            Dict[str, str]: The prompt instructions.
         """
         if benchmark not in REFLEXION_REACT_PROMPTS:
             raise ValueError(
@@ -360,13 +360,13 @@ class ReflexionReActFactory(BaseFactory):
 
     @staticmethod
     def get_strategy(
-        benchmark: str, **strategy_kwargs: Any
+        benchmark: str, **kwargs: Any
     ) -> ReflexionReActBaseStrategy:
         """Returns an instance of the appropriate ReflexionReAct strategy based on the provided benchmark.
 
         Args:
             benchmark (str): The benchmark name.
-            **strategy_kwargs (Dict[str, Any]): Additional keyword arguments to pass to
+            **kwargs (Any): Additional keyword arguments to pass to
                 the strategy's constructor.
 
         Returns:
@@ -378,4 +378,4 @@ class ReflexionReActFactory(BaseFactory):
             )
 
         strategy = REFLEXION_REACT_STRATEGIES[benchmark]
-        return strategy(**strategy_kwargs)
+        return strategy(**kwargs)
