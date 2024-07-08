@@ -124,7 +124,7 @@ class ReActFactory(BaseFactory):
 
         Args:
             benchmark (str): The benchmark name.
-            **kwargs (Dict[str, Any]): Additional keyword arguments to pass to
+            **kwargs (Any): Additional keyword arguments to pass to
                 the strategy's constructor.
 
         Returns:
