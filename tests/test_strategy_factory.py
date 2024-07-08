@@ -59,7 +59,7 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActTriviaQAStrategy,
 )
 from agential.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
-from agential.manager import (
+from agential.manager.strategy_factory import (
     Agents,
     Benchmarks,
     FewShotType,

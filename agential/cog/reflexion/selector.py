@@ -61,7 +61,7 @@ from agential.cog.reflexion.prompts import (
     TRIVIAQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     TRIVIAQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
 )
-from agential.manager import Benchmarks
+from agential.manager.constants import Benchmarks
 
 REFLEXION_COT_PROMPTS = {
     Benchmarks.HOTPOTQA: {

@@ -44,7 +44,7 @@ from agential.cog.critic.prompts import (
     TABMWP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
     TRIVIAQA_FEWSHOT_EXAMPLES_CRITIC,
 )
-from agential.manager import Benchmarks
+from agential.manager.constants import Benchmarks
 
 CRITIC_PROMPTS = {
     Benchmarks.HOTPOTQA: {
