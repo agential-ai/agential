@@ -33,7 +33,14 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActTriviaQAStrategy,
 )
 from agential.manager.constants import Benchmarks
-
+from agential.cog.reflexion.prompts import (
+    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
+    REFLEXION_COT_INSTRUCTION_HOTPOTQA,
+    REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
+    REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT
+)
 
 def test_reflexion_cot_strategy_factory_get_strategy() -> None:
     """Tests ReflexionCoTFactory get_strategy method."""
@@ -147,6 +154,9 @@ def test_reflexion_cot_factory_get_fewshots() -> None:
     benchmark = Benchmarks.HOTPOTQA
     fewshots = ReflexionCoTFactory.get_fewshots(benchmark)
     assert isinstance(fewshots, dict)
+    assert fewshots == {
+        "reflect_examples": HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
+    }
 
     # Unsupported benchmark.
     with pytest.raises(ValueError, match="Benchmark 'unknown' few-shots not found for ReflexionCoT."):
@@ -159,6 +169,10 @@ def test_reflexion_cot_factory_get_prompt() -> None:
     benchmark = Benchmarks.HOTPOTQA
     prompt = ReflexionCoTFactory.get_prompt(benchmark)
     assert isinstance(prompt, dict)
+    assert prompt == {
+        "prompt": REFLEXION_COT_INSTRUCTION_HOTPOTQA,
+        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
+    }
 
     # Unsupported benchmark.
     with pytest.raises(ValueError, match="Benchmark 'unknown' prompt not found for ReflexionCoT."):
@@ -171,6 +185,9 @@ def test_reflexion_react_factory_get_fewshots() -> None:
     benchmark = Benchmarks.HOTPOTQA
     fewshots = ReflexionReActFactory.get_fewshots(benchmark)
     assert isinstance(fewshots, dict)
+    assert fewshots == {
+        "reflect_examples": HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+    }
 
     # Unsupported benchmark.
     with pytest.raises(ValueError, match="Benchmark 'unknown' few-shots not found for ReflexionReAct."):
@@ -183,6 +200,10 @@ def test_reflexion_react_factory_get_prompt() -> None:
     benchmark = Benchmarks.HOTPOTQA
     prompt = ReflexionReActFactory.get_prompt(benchmark)
     assert isinstance(prompt, dict)
+    assert prompt == {
+        "prompt": REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+    }
 
     # Unsupported benchmark.
     with pytest.raises(ValueError, match="Benchmark 'unknown' prompt not found for ReflexionReAct."):
