@@ -1,11 +1,8 @@
 """Unit tests for strategy factory classes."""
 
-from unittest.mock import MagicMock
-
 import pytest
 
 from langchain_community.chat_models.fake import FakeListChatModel
-from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 
 from agential.cog.critic.strategies.code import (
     CritHEvalCodeStrategy,

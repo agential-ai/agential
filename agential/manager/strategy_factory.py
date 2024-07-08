@@ -268,101 +268,13 @@ class StrategyFactory:
         Raises:
             ValueError: If the agent or benchmark is unsupported.
         """
-        if agent == Agents.REACT:
-            if benchmark == Benchmarks.HOTPOTQA:
-                return ReActHotQAStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.TRIVIAQA:
-                return ReActTriviaQAStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.AMBIGNQ:
-                return ReActAmbigNQStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.FEVER:
-                return ReActFEVERStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.GSM8K:
-                return ReActGSM8KStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.SVAMP:
-                return ReActSVAMPStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.TABMWP:
-                return ReActTabMWPStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.HUMANEVAL:
-                return ReActHEvalStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.MBPP:
-                return ReActMBPPStrategy(**strategy_kwargs)
-            else:
-                raise ValueError(
-                    f"Unsupported benchmark: {benchmark} for agent {agent}"
-                )
-
-        elif agent == Agents.REFLEXION_COT:
-            if benchmark == Benchmarks.HOTPOTQA:
-                return ReflexionCoTHotQAStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.TRIVIAQA:
-                return ReflexionCoTTriviaQAStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.AMBIGNQ:
-                return ReflexionCoTAmbigNQStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.FEVER:
-                return ReflexionCoTFEVERStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.GSM8K:
-                return ReflexionCoTGSM8KStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.SVAMP:
-                return ReflexionCoTSVAMPStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.TABMWP:
-                return ReflexionCoTTabMWPStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.HUMANEVAL:
-                return ReflexionCoTHEvalStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.MBPP:
-                return ReflexionCoTMBPPStrategy(**strategy_kwargs)
-            else:
-                raise ValueError(
-                    f"Unsupported benchmark: {benchmark} for agent {agent}"
-                )
-
-        elif agent == Agents.REFLEXION_REACT:
-            if benchmark == Benchmarks.HOTPOTQA:
-                return ReflexionReActHotQAStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.TRIVIAQA:
-                return ReflexionReActTriviaQAStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.AMBIGNQ:
-                return ReflexionReActAmbigNQStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.FEVER:
-                return ReflexionReActFEVERStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.GSM8K:
-                return ReflexionReActGSM8KStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.SVAMP:
-                return ReflexionReActSVAMPStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.TABMWP:
-                return ReflexionReActTabMWPStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.HUMANEVAL:
-                return ReflexionReActHEvalStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.MBPP:
-                return ReflexionReActMBPPStrategy(**strategy_kwargs)
-            else:
-                raise ValueError(
-                    f"Unsupported benchmark: {benchmark} for agent {agent}"
-                )
-
-        elif agent == Agents.CRITIC:
-            if benchmark == Benchmarks.HOTPOTQA:
-                return CritHotQAStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.TRIVIAQA:
-                return CritTriviaQAStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.AMBIGNQ:
-                return CritAmbigNQStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.FEVER:
-                return CritFEVERStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.GSM8K:
-                return CritGSM8KStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.SVAMP:
-                return CritSVAMPStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.TABMWP:
-                return CritTabMWPStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.HUMANEVAL:
-                return CritHEvalCodeStrategy(**strategy_kwargs)
-            elif benchmark == Benchmarks.MBPP:
-                return CritMBPPCodeStrategy(**strategy_kwargs)
-            else:
-                raise ValueError(
-                    f"Unsupported benchmark: {benchmark} for agent {agent}"
-                )
-
-        else:
+        if agent not in STRATEGIES:
             raise ValueError(f"Unsupported agent: {agent}")
+
+        agent_strategies = STRATEGIES[agent]
+
+        if benchmark not in agent_strategies:
+            raise ValueError(f"Unsupported benchmark: {benchmark} for agent {agent}")
+
+        strategy_class = agent_strategies[benchmark]
+        return strategy_class(**strategy_kwargs)

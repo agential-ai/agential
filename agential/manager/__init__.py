@@ -1,0 +1,1 @@
+"""Manager module for strategies."""
