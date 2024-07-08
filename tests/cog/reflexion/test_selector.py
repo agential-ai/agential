@@ -1,5 +1,15 @@
 """Unit tests for Reflexion selector & factory."""
+
 import pytest
+
+from langchain_community.chat_models.fake import FakeListChatModel
+
+from agential.cog.reflexion.selector import (
+    ReflexionCoTSelector,
+    ReflexionCoTStrategyFactory,
+    ReflexionReActSelector,
+    ReflexionReActStrategyFactory,
+)
 from agential.cog.reflexion.strategies.code import (
     ReflexionCoTHEvalStrategy,
     ReflexionCoTMBPPStrategy,
@@ -24,9 +34,7 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActHotQAStrategy,
     ReflexionReActTriviaQAStrategy,
 )
-from langchain_community.chat_models.fake import FakeListChatModel
 from agential.manager.constants import Benchmarks
-from agential.cog.reflexion.selector import ReflexionCoTSelector, ReflexionReActSelector, ReflexionCoTStrategyFactory, ReflexionReActStrategyFactory
 
 
 def test_reflexion_cot_strategy_factory_get_strategy() -> None:
@@ -76,7 +84,9 @@ def test_reflexion_cot_strategy_factory_get_strategy() -> None:
     )
 
     # Unsupported benchmark.
-    with pytest.raises(ValueError, match="Unsupported benchmark: unknown for agent ReflexionCoT"):
+    with pytest.raises(
+        ValueError, match="Unsupported benchmark: unknown for agent ReflexionCoT"
+    ):
         ReflexionCoTStrategyFactory.get_strategy("unknown", llm=llm)
 
 
@@ -127,7 +137,7 @@ def test_reflexion_react_strategy_factory_get_strategy() -> None:
     )
 
     # Unsupported benchmark.
-    with pytest.raises(ValueError, match="Unsupported benchmark: unknown for agent ReflexionReAct"):
+    with pytest.raises(
+        ValueError, match="Unsupported benchmark: unknown for agent ReflexionReAct"
+    ):
         ReflexionReActStrategyFactory.get_strategy("unknown", llm=llm)
-
-
