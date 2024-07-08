@@ -1,7 +1,10 @@
 """Unit tests for ReAct selector & factory."""
+
 import pytest
+
 from langchain_community.chat_models.fake import FakeListChatModel
-from agential.manager.constants import Benchmarks
+
+from agential.cog.react.selector import ReActSelector, ReactStrategyFactory
 from agential.cog.react.strategies.code import (
     ReActHEvalStrategy,
     ReActMBPPStrategy,
@@ -17,7 +20,7 @@ from agential.cog.react.strategies.qa import (
     ReActHotQAStrategy,
     ReActTriviaQAStrategy,
 )
-from agential.cog.react.selector import ReActSelector, ReactStrategyFactory
+from agential.manager.constants import Benchmarks
 
 
 def test_react_strategy_factory_get_strategy() -> None:
@@ -67,5 +70,7 @@ def test_react_strategy_factory_get_strategy() -> None:
     )
 
     # Unsupported benchmark.
-    with pytest.raises(ValueError, match="Unsupported benchmark: unknown for agent ReAct"):
+    with pytest.raises(
+        ValueError, match="Unsupported benchmark: unknown for agent ReAct"
+    ):
         ReactStrategyFactory.get_strategy("unknown", llm=llm)
