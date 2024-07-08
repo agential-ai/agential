@@ -141,6 +141,18 @@ def test_reflexion_react_strategy_factory_get_strategy() -> None:
         ReflexionReActFactory.get_strategy("unknown", llm=llm)
 
 
+def test_reflexion_cot_factory_get_fewshots() -> None:
+    """Tests ReflexionCoTFactory get_fewshots method."""
+    # Valid benchmark.
+    benchmark = Benchmarks.HOTPOTQA
+    fewshots = ReflexionCoTFactory.get_fewshots(benchmark)
+    assert isinstance(fewshots, dict)
+
+    # Unsupported benchmark.
+    with pytest.raises(ValueError, match="Benchmark 'unknown' few-shots not found for ReflexionCoT."):
+        ReflexionCoTFactory.get_fewshots("unknown")
+
+
 def test_reflexion_cot_factory_get_prompt() -> None:
     """Tests ReflexionCoTFactory get_prompt method."""
     # Valid benchmark.
@@ -170,7 +182,7 @@ def test_reflexion_react_factory_get_prompt() -> None:
     # Valid benchmark.
     benchmark = Benchmarks.HOTPOTQA
     prompt = ReflexionReActFactory.get_prompt(benchmark)
-    assert isinstance(prompt, str)
+    assert isinstance(prompt, dict)
 
     # Unsupported benchmark.
     with pytest.raises(ValueError, match="Benchmark 'unknown' prompt not found for ReflexionReAct."):

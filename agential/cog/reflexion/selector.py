@@ -279,7 +279,7 @@ class ReflexionCoTFactory(BaseFactory):
         return REFLEXION_COT_FEWSHOTS[benchmark]
 
     @staticmethod
-    def get_prompt(benchmark: str, **kwargs) -> str:
+    def get_prompt(benchmark: str, **kwargs) -> Dict[str, str]:
         """Retrieve the prompt instruction based on the benchmark.
 
         Args:
@@ -287,7 +287,7 @@ class ReflexionCoTFactory(BaseFactory):
             **kwargs (Any): Additional arguments.
 
         Returns:
-            str: The prompt instruction.
+            Dict[str, str]: The prompt instructions.
         """
         if benchmark not in REFLEXION_COT_PROMPTS:
             raise ValueError(
@@ -304,7 +304,7 @@ class ReflexionCoTFactory(BaseFactory):
 
         Args:
             benchmark (str): The benchmark name.
-            **strategy_kwargs (Dict[str, Any]): Additional keyword arguments to pass to
+            **strategy_kwargs (Any): Additional keyword arguments to pass to
                 the strategy's constructor.
 
         Returns:
