@@ -2,7 +2,7 @@
 
 from typing import Any, Dict
 
-from agential.base.selector import BaseSelector
+from agential.base.factory import BaseFactory
 from agential.cog.reflexion.prompts import (
     AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
@@ -257,7 +257,7 @@ REFLEXION_REACT_STRATEGIES = {
 }
 
 
-class ReflexionCoTSelector(BaseSelector):
+class ReflexionCoTSelector(BaseFactory):
     @staticmethod
     def get_fewshots(self, benchmark: str, **kwargs) -> Dict[str, str]:
         if benchmark not in REFLEXION_COT_FEWSHOTS:
@@ -277,7 +277,7 @@ class ReflexionCoTSelector(BaseSelector):
         return REFLEXION_COT_PROMPTS[benchmark]
 
 
-class ReflexionReActSelector(BaseSelector):
+class ReflexionReActSelector(BaseFactory):
     @staticmethod
     def get_fewshots(self, benchmark: str, **kwargs) -> Dict[str, str]:
         if benchmark not in REFLEXION_REACT_FEWSHOTS:

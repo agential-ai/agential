@@ -2,7 +2,7 @@
 
 from typing import Any, Dict
 
-from agential.base.selector import BaseSelector
+from agential.base.factory import BaseFactory
 from agential.cog.critic.prompts import (
     AMBIGNQ_FEWSHOT_EXAMPLES_CRITIC,
     CRITIC_CRITIQUE_INSTRUCTION_AMBIGNQ,
@@ -162,7 +162,7 @@ CRITIC_STRATEGIES = {
 }
 
 
-class CriticSelector(BaseSelector):
+class CriticSelector(BaseFactory):
     @staticmethod
     def get_fewshots(self, benchmark: str, **kwargs) -> Dict[str, str]:
         if benchmark not in CRITIC_FEWSHOTS:

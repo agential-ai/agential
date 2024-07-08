@@ -2,7 +2,7 @@
 
 from typing import Any, Dict
 
-from agential.base.selector import BaseSelector
+from agential.base.factory import BaseFactory
 from agential.cog.react.prompts import (
     REACT_INSTRUCTION_AMBIGNQ,
     REACT_INSTRUCTION_FEVER,
@@ -72,7 +72,7 @@ REACT_STRATEGIES = {
 }
 
 
-class ReActSelector(BaseSelector):
+class ReActSelector(BaseFactory):
     @staticmethod
     def get_fewshots(self, benchmark: str, **kwargs) -> Dict[str, str]:
         return {}
