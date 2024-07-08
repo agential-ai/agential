@@ -1,9 +1,11 @@
 """Unit tests for few-shot factory."""
 
 import pytest
-from agential.manager.constants import FewShotType
+
 from agential.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
+from agential.manager.constants import FewShotType
 from agential.manager.fewshot_factory import FewShotFactory
+
 
 def test_fewshot_factory_get_strategy() -> None:
     """Test FewShotFactory get_benchmark_fewshots."""
@@ -22,11 +24,16 @@ def test_fewshot_factory_get_strategy() -> None:
     # Test invalid few-shot type.
     benchmark = "hotpotqa"
     fewshot_type = "invalid_fewshot"
-    with pytest.raises(ValueError, match="Few-shot type 'invalid_fewshot' not found for benchmark 'hotpotqa'."):
+    with pytest.raises(
+        ValueError,
+        match="Few-shot type 'invalid_fewshot' not found for benchmark 'hotpotqa'.",
+    ):
         FewShotFactory.get_benchmark_fewshots(benchmark, fewshot_type)
 
     # Test invalid few-shot type for the given benchmark.
     benchmark = "hotpotqa"
     fewshot_type = FewShotType.POT
-    with pytest.raises(ValueError, match="Few-shot type 'pot' not found for benchmark 'hotpotqa'."):
+    with pytest.raises(
+        ValueError, match="Few-shot type 'pot' not found for benchmark 'hotpotqa'."
+    ):
         FewShotFactory.get_benchmark_fewshots(benchmark, fewshot_type)

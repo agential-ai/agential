@@ -1,7 +1,5 @@
 """Strategy mapping."""
 
-from agential.manager.constants import Benchmarks, Agents
-
 from agential.cog.critic.strategies.code import (
     CritHEvalCodeStrategy,
     CritMBPPCodeStrategy,
@@ -53,7 +51,7 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActHotQAStrategy,
     ReflexionReActTriviaQAStrategy,
 )
-
+from agential.manager.constants import Agents, Benchmarks
 
 STRATEGIES = {
     Agents.REACT: {
