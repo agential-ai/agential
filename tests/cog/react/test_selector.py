@@ -84,6 +84,7 @@ def test_react_factory_get_fewshots() -> None:
     benchmark = Benchmarks.HOTPOTQA
     result = ReActFactory.get_fewshots(benchmark)
     assert isinstance(result, dict)
+    assert result == {}
 
     # Test unsupported benchmark.
     with pytest.raises(ValueError, match="Benchmark 'unknown' few-shots not found for ReAct."):
