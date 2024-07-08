@@ -29,7 +29,6 @@ from agential.cog.react.strategies.qa import (
 )
 from agential.manager.constants import Benchmarks
 
-
 REACT_PROMPTS = {
     Benchmarks.HOTPOTQA: {
         "prompt": REACT_INSTRUCTION_HOTPOTQA,
