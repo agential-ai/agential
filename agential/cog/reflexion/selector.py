@@ -61,6 +61,30 @@ from agential.cog.reflexion.prompts import (
     TRIVIAQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     TRIVIAQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
 )
+from agential.cog.reflexion.strategies.code import (
+    ReflexionCoTHEvalStrategy,
+    ReflexionCoTMBPPStrategy,
+    ReflexionReActHEvalStrategy,
+    ReflexionReActMBPPStrategy,
+)
+from agential.cog.reflexion.strategies.math import (
+    ReflexionCoTGSM8KStrategy,
+    ReflexionCoTSVAMPStrategy,
+    ReflexionCoTTabMWPStrategy,
+    ReflexionReActGSM8KStrategy,
+    ReflexionReActSVAMPStrategy,
+    ReflexionReActTabMWPStrategy,
+)
+from agential.cog.reflexion.strategies.qa import (
+    ReflexionCoTAmbigNQStrategy,
+    ReflexionCoTFEVERStrategy,
+    ReflexionCoTHotQAStrategy,
+    ReflexionCoTTriviaQAStrategy,
+    ReflexionReActAmbigNQStrategy,
+    ReflexionReActFEVERStrategy,
+    ReflexionReActHotQAStrategy,
+    ReflexionReActTriviaQAStrategy,
+)
 from agential.manager.constants import Benchmarks
 
 REFLEXION_COT_PROMPTS = {
@@ -204,6 +228,29 @@ REFLEXION_REACT_FEWSHOTS = {
     },
 }
 
+REFLEXION_COT_STRATEGIES = {
+    Benchmarks.HOTPOTQA: ReflexionCoTHotQAStrategy,
+    Benchmarks.FEVER: ReflexionCoTFEVERStrategy,
+    Benchmarks.TRIVIAQA: ReflexionCoTTriviaQAStrategy,
+    Benchmarks.AMBIGNQ: ReflexionCoTAmbigNQStrategy,
+    Benchmarks.GSM8K: ReflexionCoTGSM8KStrategy,
+    Benchmarks.SVAMP: ReflexionCoTSVAMPStrategy,
+    Benchmarks.TABMWP: ReflexionCoTTabMWPStrategy,
+    Benchmarks.HUMANEVAL: ReflexionCoTHEvalStrategy,
+    Benchmarks.MBPP: ReflexionCoTMBPPStrategy,
+}
+
+REFLEXION_REACT_STRATEGIES = {
+    Benchmarks.HOTPOTQA: ReflexionReActHotQAStrategy,
+    Benchmarks.FEVER: ReflexionReActFEVERStrategy,
+    Benchmarks.TRIVIAQA: ReflexionReActTriviaQAStrategy,
+    Benchmarks.AMBIGNQ: ReflexionReActAmbigNQStrategy,
+    Benchmarks.GSM8K: ReflexionReActGSM8KStrategy,
+    Benchmarks.SVAMP: ReflexionReActSVAMPStrategy,
+    Benchmarks.TABMWP: ReflexionReActTabMWPStrategy,
+    Benchmarks.HUMANEVAL: ReflexionReActHEvalStrategy,
+    Benchmarks.MBPP: ReflexionReActMBPPStrategy,
+}
 
 class ReflexionCoTSelector(BaseSelector):
     @staticmethod

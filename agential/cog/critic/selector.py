@@ -44,6 +44,21 @@ from agential.cog.critic.prompts import (
     TABMWP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
     TRIVIAQA_FEWSHOT_EXAMPLES_CRITIC,
 )
+from agential.cog.critic.strategies.code import (
+    CritHEvalCodeStrategy,
+    CritMBPPCodeStrategy,
+)
+from agential.cog.critic.strategies.math import (
+    CritGSM8KStrategy,
+    CritSVAMPStrategy,
+    CritTabMWPStrategy,
+)
+from agential.cog.critic.strategies.qa import (
+    CritAmbigNQStrategy,
+    CritFEVERStrategy,
+    CritHotQAStrategy,
+    CritTriviaQAStrategy,
+)
 from agential.manager.constants import Benchmarks
 
 CRITIC_PROMPTS = {
@@ -133,6 +148,17 @@ CRITIC_FEWSHOTS = {
     },
 }
 
+CRITIC_STRATEGIES = {
+    Benchmarks.HOTPOTQA: CritHotQAStrategy,
+    Benchmarks.FEVER: CritFEVERStrategy,
+    Benchmarks.TRIVIAQA: CritTriviaQAStrategy,
+    Benchmarks.AMBIGNQ: CritAmbigNQStrategy,
+    Benchmarks.GSM8K: CritGSM8KStrategy,
+    Benchmarks.SVAMP: CritSVAMPStrategy,
+    Benchmarks.TABMWP: CritTabMWPStrategy,
+    Benchmarks.HUMANEVAL: CritHEvalCodeStrategy,
+    Benchmarks.MBPP: CritMBPPCodeStrategy,
+}
 
 class CriticSelector(BaseSelector):
     @staticmethod
