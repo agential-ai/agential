@@ -1,6 +1,6 @@
 """Few-sshot factory class."""
 
-from agential.manager.fewshot_mapping import BENCHMARK_FEWSHOTS
+from agential.manager.mapping.fewshot_mapping import BENCHMARK_FEWSHOTS
 
 
 class FewShotFactory:
