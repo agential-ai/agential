@@ -257,9 +257,20 @@ REFLEXION_REACT_STRATEGIES = {
 }
 
 
-class ReflexionCoTSelector(BaseFactory):
+class ReflexionCoTFactory(BaseFactory):
+    """A factory class for creating instances of ReflexionCoT strategies and selecting prompts and few-shot examples."""
+
     @staticmethod
-    def get_fewshots(self, benchmark: str, **kwargs) -> Dict[str, str]:
+    def get_fewshots(benchmark: str, **kwargs) -> Dict[str, str]:
+        """Retrieve few-shot examples based on the benchmark.
+
+        Args:
+            benchmark (str): The benchmark name.
+            **kwargs (Any): Additional arguments.
+
+        Returns:
+            Dict[str, str]: A dictionary of few-shot examples.
+        """
         if benchmark not in REFLEXION_COT_FEWSHOTS:
             raise ValueError(
                 f"Benchmark '{benchmark}' few-shots not found for ReflexionCoT."
@@ -268,7 +279,16 @@ class ReflexionCoTSelector(BaseFactory):
         return REFLEXION_COT_FEWSHOTS[benchmark]
 
     @staticmethod
-    def get_prompt(self, benchmark: str, **kwargs) -> str:
+    def get_prompt(benchmark: str, **kwargs) -> str:
+        """Retrieve the prompt instruction based on the benchmark.
+
+        Args:
+            benchmark (str): The benchmark name.
+            **kwargs (Any): Additional arguments.
+
+        Returns:
+            str: The prompt instruction.
+        """
         if benchmark not in REFLEXION_COT_PROMPTS:
             raise ValueError(
                 f"Benchmark '{benchmark}' prompt not found for ReflexionCoT."
@@ -276,34 +296,20 @@ class ReflexionCoTSelector(BaseFactory):
 
         return REFLEXION_COT_PROMPTS[benchmark]
 
-
-class ReflexionReActSelector(BaseFactory):
-    @staticmethod
-    def get_fewshots(self, benchmark: str, **kwargs) -> Dict[str, str]:
-        if benchmark not in REFLEXION_REACT_FEWSHOTS:
-            raise ValueError(
-                f"Benchmark '{benchmark}' few-shots not found for ReflexionReAct."
-            )
-
-        return REFLEXION_REACT_FEWSHOTS[benchmark]
-
-    @staticmethod
-    def get_prompt(self, benchmark: str, **kwargs) -> str:
-        if benchmark not in REFLEXION_REACT_PROMPTS:
-            raise ValueError(
-                f"Benchmark '{benchmark}' prompt not found for ReflexionReAct."
-            )
-
-        return REFLEXION_REACT_PROMPTS[benchmark]
-
-
-class ReflexionCoTStrategyFactory:
-    """A factory class for creating instances of ReflexionCoT strategies."""
-
     @staticmethod
     def get_strategy(
         benchmark: str, **strategy_kwargs: Any
     ) -> ReflexionCoTBaseStrategy:
+        """Returns an instance of the appropriate ReflexionCoT strategy based on the provided benchmark.
+
+        Args:
+            benchmark (str): The benchmark name.
+            **strategy_kwargs (Dict[str, Any]): Additional keyword arguments to pass to
+                the strategy's constructor.
+
+        Returns:
+            ReflexionCoTBaseStrategy: An instance of the appropriate ReflexionCoT strategy.
+        """
         if benchmark not in REFLEXION_COT_STRATEGIES:
             raise ValueError(
                 f"Unsupported benchmark: {benchmark} for agent ReflexionCoT"
@@ -313,13 +319,59 @@ class ReflexionCoTStrategyFactory:
         return strategy(**strategy_kwargs)
 
 
-class ReflexionReActStrategyFactory:
-    """A factory class for creating instances of ReflexionReAct strategies."""
+class ReflexionReActFactory(BaseFactory):
+    """A factory class for creating instances of ReflexionReAct strategies and selecting prompts and few-shot examples."""
+
+    @staticmethod
+    def get_fewshots(benchmark: str, **kwargs) -> Dict[str, str]:
+        """Retrieve few-shot examples based on the benchmark.
+
+        Args:
+            benchmark (str): The benchmark name.
+            **kwargs (Any): Additional arguments.
+
+        Returns:
+            Dict[str, str]: A dictionary of few-shot examples.
+        """
+        if benchmark not in REFLEXION_REACT_FEWSHOTS:
+            raise ValueError(
+                f"Benchmark '{benchmark}' few-shots not found for ReflexionReAct."
+            )
+
+        return REFLEXION_REACT_FEWSHOTS[benchmark]
+
+    @staticmethod
+    def get_prompt(benchmark: str, **kwargs) -> str:
+        """Retrieve the prompt instruction based on the benchmark.
+
+        Args:
+            benchmark (str): The benchmark name.
+            **kwargs (Any): Additional arguments.
+
+        Returns:
+            str: The prompt instruction.
+        """
+        if benchmark not in REFLEXION_REACT_PROMPTS:
+            raise ValueError(
+                f"Benchmark '{benchmark}' prompt not found for ReflexionReAct."
+            )
+
+        return REFLEXION_REACT_PROMPTS[benchmark]
 
     @staticmethod
     def get_strategy(
         benchmark: str, **strategy_kwargs: Any
     ) -> ReflexionReActBaseStrategy:
+        """Returns an instance of the appropriate ReflexionReAct strategy based on the provided benchmark.
+
+        Args:
+            benchmark (str): The benchmark name.
+            **strategy_kwargs (Dict[str, Any]): Additional keyword arguments to pass to
+                the strategy's constructor.
+
+        Returns:
+            ReflexionReActBaseStrategy: An instance of the appropriate ReflexionReAct strategy.
+        """
         if benchmark not in REFLEXION_REACT_STRATEGIES:
             raise ValueError(
                 f"Unsupported benchmark: {benchmark} for agent ReflexionReAct"
