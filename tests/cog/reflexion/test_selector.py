@@ -4,6 +4,14 @@ import pytest
 
 from langchain_community.chat_models.fake import FakeListChatModel
 
+from agential.cog.reflexion.prompts import (
+    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
+    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+    REFLEXION_COT_INSTRUCTION_HOTPOTQA,
+    REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
+    REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+)
 from agential.cog.reflexion.selector import (
     ReflexionCoTFactory,
     ReflexionReActFactory,
@@ -33,14 +41,7 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActTriviaQAStrategy,
 )
 from agential.manager.constants import Benchmarks
-from agential.cog.reflexion.prompts import (
-    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    REFLEXION_COT_INSTRUCTION_HOTPOTQA,
-    REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
-    REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT
-)
+
 
 def test_reflexion_cot_strategy_factory_get_strategy() -> None:
     """Tests ReflexionCoTFactory get_strategy method."""
@@ -159,7 +160,9 @@ def test_reflexion_cot_factory_get_fewshots() -> None:
     }
 
     # Unsupported benchmark.
-    with pytest.raises(ValueError, match="Benchmark 'unknown' few-shots not found for ReflexionCoT."):
+    with pytest.raises(
+        ValueError, match="Benchmark 'unknown' few-shots not found for ReflexionCoT."
+    ):
         ReflexionCoTFactory.get_fewshots("unknown")
 
 
@@ -175,7 +178,9 @@ def test_reflexion_cot_factory_get_prompt() -> None:
     }
 
     # Unsupported benchmark.
-    with pytest.raises(ValueError, match="Benchmark 'unknown' prompt not found for ReflexionCoT."):
+    with pytest.raises(
+        ValueError, match="Benchmark 'unknown' prompt not found for ReflexionCoT."
+    ):
         ReflexionCoTFactory.get_prompt("unknown")
 
 
@@ -190,7 +195,9 @@ def test_reflexion_react_factory_get_fewshots() -> None:
     }
 
     # Unsupported benchmark.
-    with pytest.raises(ValueError, match="Benchmark 'unknown' few-shots not found for ReflexionReAct."):
+    with pytest.raises(
+        ValueError, match="Benchmark 'unknown' few-shots not found for ReflexionReAct."
+    ):
         ReflexionReActFactory.get_fewshots("unknown")
 
 
@@ -206,5 +213,7 @@ def test_reflexion_react_factory_get_prompt() -> None:
     }
 
     # Unsupported benchmark.
-    with pytest.raises(ValueError, match="Benchmark 'unknown' prompt not found for ReflexionReAct."):
+    with pytest.raises(
+        ValueError, match="Benchmark 'unknown' prompt not found for ReflexionReAct."
+    ):
         ReflexionReActFactory.get_prompt("unknown")

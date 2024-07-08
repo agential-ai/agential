@@ -4,6 +4,13 @@ import pytest
 
 from langchain_community.chat_models.fake import FakeListChatModel
 
+from agential.cog.critic.prompts import (
+    CRITIC_CRITIQUE_INSTRUCTION_GSM8K,
+    CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_GSM8K,
+    CRITIC_POT_INSTRUCTION_GSM8K,
+    GSM8K_FEWSHOT_EXAMPLES_CRITIC,
+    GSM8K_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
+)
 from agential.cog.critic.selector import CriticFactory
 from agential.cog.critic.strategies.code import (
     CritHEvalCodeStrategy,
@@ -21,13 +28,6 @@ from agential.cog.critic.strategies.qa import (
     CritTriviaQAStrategy,
 )
 from agential.manager.constants import Benchmarks
-from agential.cog.critic.prompts import (
-    GSM8K_FEWSHOT_EXAMPLES_CRITIC,
-    GSM8K_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
-    CRITIC_POT_INSTRUCTION_GSM8K,
-    CRITIC_CRITIQUE_INSTRUCTION_GSM8K,
-    CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_GSM8K
-)
 
 
 def test_critic_strategy_factory_get_strategy() -> None:
@@ -89,9 +89,7 @@ def test_critic_factory_get_fewshots() -> None:
     benchmark = Benchmarks.GSM8K
     fewshots = CriticFactory.get_fewshots(benchmark, use_tool=True)
     assert "critique_examples" in fewshots
-    assert fewshots == {
-        "critique_examples": GSM8K_FEWSHOT_EXAMPLES_CRITIC
-    }
+    assert fewshots == {"critique_examples": GSM8K_FEWSHOT_EXAMPLES_CRITIC}
 
     # Valid benchmark without tool usage.
     fewshots = CriticFactory.get_fewshots(benchmark, use_tool=False)

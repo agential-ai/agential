@@ -359,9 +359,7 @@ class ReflexionReActFactory(BaseFactory):
         return REFLEXION_REACT_PROMPTS[benchmark]
 
     @staticmethod
-    def get_strategy(
-        benchmark: str, **kwargs: Any
-    ) -> ReflexionReActBaseStrategy:
+    def get_strategy(benchmark: str, **kwargs: Any) -> ReflexionReActBaseStrategy:
         """Returns an instance of the appropriate ReflexionReAct strategy based on the provided benchmark.
 
         Args:
