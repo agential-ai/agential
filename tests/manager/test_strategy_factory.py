@@ -1,4 +1,4 @@
-"""Unit tests for strategy factory classes."""
+"""Unit tests for strategy factory class."""
 
 import pytest
 
@@ -55,12 +55,10 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActHotQAStrategy,
     ReflexionReActTriviaQAStrategy,
 )
-from agential.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
 from agential.manager.strategy_factory import (
     StrategyFactory,
-    get_benchmark_fewshots,
 )
-from agential.manager.constants import Agents, Benchmarks, FewShotType
+from agential.manager.constants import Agents, Benchmarks
 
 
 def test_strategy_factory_get_strategy() -> None:
@@ -274,30 +272,3 @@ def test_strategy_factory_get_strategy() -> None:
 
     with pytest.raises(ValueError, match="Unsupported agent: unknown"):
         StrategyFactory.get_strategy("unknown", Benchmarks.HOTPOTQA, llm=llm)
-
-
-def test_get_benchmark_fewshots() -> None:
-    """Test get_benchmark_fewshots."""
-    # Test valid input.
-    benchmark = "hotpotqa"
-    fewshot_type = FewShotType.COT
-    result = get_benchmark_fewshots(benchmark, fewshot_type)
-    assert result == HOTPOTQA_FEWSHOT_EXAMPLES_COT
-
-    # Test invalid benchmark.
-    benchmark = "invalid_benchmark"
-    fewshot_type = FewShotType.COT
-    with pytest.raises(ValueError):
-        result = get_benchmark_fewshots(benchmark, fewshot_type)
-
-    # Test invalid few-shot type.
-    benchmark = "hotpotqa"
-    fewshot_type = "invalid_fewshot"
-    with pytest.raises(ValueError):
-        result = get_benchmark_fewshots(benchmark, fewshot_type)
-
-    # Test invalid few-shot type for the given benchmark.
-    benchmark = "hotpotqa"
-    fewshot_type = FewShotType.POT
-    with pytest.raises(ValueError):
-        result = get_benchmark_fewshots(benchmark, fewshot_type)
