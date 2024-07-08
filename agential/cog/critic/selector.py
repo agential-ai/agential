@@ -1,6 +1,6 @@
 """CRITIC prompts and fewshot examples selector."""
 
-from typing import Dict, Any
+from typing import Any, Dict
 
 from agential.base.selector import BaseSelector
 from agential.cog.critic.prompts import (
@@ -44,6 +44,7 @@ from agential.cog.critic.prompts import (
     TABMWP_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
     TRIVIAQA_FEWSHOT_EXAMPLES_CRITIC,
 )
+from agential.cog.critic.strategies.base import CriticBaseStrategy
 from agential.cog.critic.strategies.code import (
     CritHEvalCodeStrategy,
     CritMBPPCodeStrategy,
@@ -59,7 +60,6 @@ from agential.cog.critic.strategies.qa import (
     CritHotQAStrategy,
     CritTriviaQAStrategy,
 )
-from agential.cog.critic.strategies.base import CriticBaseStrategy
 from agential.manager.constants import Benchmarks
 
 CRITIC_PROMPTS = {
@@ -161,6 +161,7 @@ CRITIC_STRATEGIES = {
     Benchmarks.MBPP: CritMBPPCodeStrategy,
 }
 
+
 class CriticSelector(BaseSelector):
     @staticmethod
     def get_fewshots(self, benchmark: str, **kwargs) -> Dict[str, str]:
@@ -206,6 +207,6 @@ class CriticStrategyFactory:
     def get_strategy(benchmark: str, **strategy_kwargs: Any) -> CriticBaseStrategy:
         if benchmark not in CRITIC_STRATEGIES:
             raise ValueError(f"Unsupported benchmark: {benchmark} for agent Critic")
-        
+
         strategy = CRITIC_STRATEGIES[benchmark]
         return strategy(**strategy_kwargs)
