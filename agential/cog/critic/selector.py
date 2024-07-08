@@ -162,14 +162,25 @@ CRITIC_STRATEGIES = {
 }
 
 
-class CriticSelector(BaseFactory):
+class CriticFactory(BaseFactory):
+    """A factory class for creating instances of Critic strategies and selecting prompts and few-shot examples."""
+
     @staticmethod
-    def get_fewshots(self, benchmark: str, **kwargs) -> Dict[str, str]:
+    def get_fewshots(benchmark: str, **kwargs) -> Dict[str, str]:
+        """Retrieve few-shot examples based on the benchmark.
+
+        Args:
+            benchmark (str): The benchmark name.
+            **kwargs (Any): Additional arguments.
+
+        Returns:
+            Dict[str, str]: A dictionary of few-shot examples.
+        """
         if benchmark not in CRITIC_FEWSHOTS:
-            raise ValueError(f"Benchmark '{benchmark}' few-shots not found for CRITIC.")
+            raise ValueError(f"Benchmark '{benchmark}' few-shots not found for Critic.")
 
         use_tool = kwargs.get("use_tool")
-        if not use_tool:
+        if use_tool is None:
             raise ValueError("`use_tool` not specified.")
 
         if use_tool:
@@ -181,12 +192,21 @@ class CriticSelector(BaseFactory):
         }
 
     @staticmethod
-    def get_prompt(self, benchmark: str, **kwargs) -> str:
+    def get_prompt(benchmark: str, **kwargs) -> Dict[str, str]:
+        """Retrieve the prompt instruction based on the benchmark.
+
+        Args:
+            benchmark (str): The benchmark name.
+            **kwargs (Any): Additional arguments.
+
+        Returns:
+            Dict[str, str]: The prompt instructions.
+        """
         if benchmark not in CRITIC_PROMPTS:
-            raise ValueError(f"Benchmark '{benchmark}' prompt not found for CRITIC.")
+            raise ValueError(f"Benchmark '{benchmark}' prompt not found for Critic.")
 
         use_tool = kwargs.get("use_tool")
-        if not use_tool:
+        if use_tool is None:
             raise ValueError("`use_tool` not specified.")
 
         if use_tool:
@@ -199,14 +219,20 @@ class CriticSelector(BaseFactory):
             "critique_prompt": CRITIC_PROMPTS[benchmark]["critique_prompt_no_tool"],
         }
 
-
-class CriticStrategyFactory:
-    """A factory class for creating instances of Critic strategies."""
-
     @staticmethod
-    def get_strategy(benchmark: str, **strategy_kwargs: Any) -> CriticBaseStrategy:
+    def get_strategy(benchmark: str, **kwargs: Any) -> CriticBaseStrategy:
+        """Returns an instance of the appropriate Critic strategy based on the provided benchmark.
+
+        Args:
+            benchmark (str): The benchmark name.
+            **kwargs (Any): Additional keyword arguments to pass to
+                the strategy's constructor.
+
+        Returns:
+            CriticBaseStrategy: An instance of the appropriate Critic strategy.
+        """
         if benchmark not in CRITIC_STRATEGIES:
             raise ValueError(f"Unsupported benchmark: {benchmark} for agent Critic")
 
         strategy = CRITIC_STRATEGIES[benchmark]
-        return strategy(**strategy_kwargs)
+        return strategy(**kwargs)
