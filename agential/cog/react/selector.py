@@ -72,26 +72,52 @@ REACT_STRATEGIES = {
 }
 
 
-class ReActSelector(BaseFactory):
+class ReActFactory(BaseFactory):
+    """A factory class for creating instances of ReAct strategies and selecting prompts and few-shot examples."""
+
     @staticmethod
-    def get_fewshots(self, benchmark: str, **kwargs) -> Dict[str, str]:
+    def get_fewshots(benchmark: str, **kwargs: Any) -> Dict[str, str]:
+        """Retrieve few-shot examples based on the benchmark.
+
+        Args:
+            benchmark (str): The benchmark name.
+            **kwargs (Any): Additional arguments.
+
+        Returns:
+            Dict[str, str]: A dictionary of few-shot examples.
+        """
         return {}
 
     @staticmethod
-    def get_prompt(self, benchmark: str, **kwargs) -> Dict[str, str]:
+    def get_prompt(benchmark: str, **kwargs: Any) -> Dict[str, str]:
+        """Retrieve the prompt instruction based on the benchmark.
+
+        Args:
+            benchmark (str): The benchmark name.
+            **kwargs (Any): Additional arguments.
+
+        Returns:
+            Dict[str, str]: A dictionary of prompt instructions.
+        """
         if benchmark not in REACT_PROMPTS:
             raise ValueError(f"Benchmark '{benchmark}' prompt not found for ReAct.")
 
         return REACT_PROMPTS[benchmark]
 
-
-class ReactStrategyFactory:
-    """A factory class for creating instances of ReAct strategies."""
-
     @staticmethod
-    def get_strategy(benchmark: str, **strategy_kwargs: Any) -> ReActBaseStrategy:
+    def get_strategy(benchmark: str, **kwargs: Any) -> ReActBaseStrategy:
+        """Returns an instance of the appropriate ReAct strategy based on the provided benchmark.
+
+        Args:
+            benchmark (str): The benchmark name.
+            **kwargs (Dict[str, Any]): Additional keyword arguments to pass to
+                the strategy's constructor.
+
+        Returns:
+            ReActBaseStrategy: An instance of the appropriate ReAct strategy.
+        """
         if benchmark not in REACT_STRATEGIES:
             raise ValueError(f"Unsupported benchmark: {benchmark} for agent ReAct")
 
         strategy = REACT_STRATEGIES[benchmark]
-        return strategy(**strategy_kwargs)
+        return strategy(**kwargs)
