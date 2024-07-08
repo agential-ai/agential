@@ -14,7 +14,7 @@ from agential.cog.react.prompts import (
     REACT_INSTRUCTION_TABMWP,
     REACT_INSTRUCTION_TRIVIAQA,
 )
-from agential.manager import Benchmarks
+from agential.manager.constants import Benchmarks
 
 REACT_PROMPTS = {
     Benchmarks.HOTPOTQA: {
