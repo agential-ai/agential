@@ -22,7 +22,7 @@ from agential.cog.reflexion.reflect import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )
-from agential.manager.factory.strategy_factory import StrategyFactory
+from agential.cog.strategy_factory import StrategyFactory
 
 
 def parse_action(string: str) -> Tuple[str, str]:

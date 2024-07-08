@@ -4,7 +4,7 @@ import pytest
 
 from agential.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
 from agential.manager.constants import FewShotType
-from agential.manager.factory.fewshot_factory import FewShotFactory
+from agential.fewshots.fewshot_factory import FewShotFactory
 
 
 def test_fewshot_factory_get_strategy() -> None:

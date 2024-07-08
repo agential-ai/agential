@@ -56,7 +56,7 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActTriviaQAStrategy,
 )
 from agential.manager.constants import Agents, Benchmarks
-from agential.manager.factory.strategy_factory import (
+from agential.cog.strategy_factory import (
     StrategyFactory,
 )
 
