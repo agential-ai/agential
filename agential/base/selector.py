@@ -2,6 +2,7 @@
 
 from abc import ABC, abstractmethod
 from typing import Any, Dict
+from agential.base.strategies import BaseStrategy
 
 
 class BaseSelector(ABC):
@@ -34,5 +35,27 @@ class BaseSelector(ABC):
 
         Returns:
             Dict[str, str]: A dictionary of prompt instructions.
+        """
+        pass
+
+
+class BaseStrategyFactory(ABC):
+    """Base factory class for creating strategy instances."""
+
+    def __init__(self) -> None:
+        """Initialize the BaseStrategyFactory class."""
+        pass
+
+    @abstractmethod
+    def get_strategy(self, benchmark: str, **strategy_kwargs: Any) -> BaseStrategy:
+        """Returns an instance of the appropriate strategy based on the provided benchmark.
+
+        Args:
+            benchmark (str): The benchmark name.
+            **strategy_kwargs (Dict[str, Any]): Additional keyword arguments to pass to 
+                the strategy's constructor.
+
+        Returns:
+            BaseStrategy: An instance of the appropriate strategy.
         """
         pass
