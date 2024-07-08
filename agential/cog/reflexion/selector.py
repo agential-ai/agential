@@ -1,6 +1,6 @@
 """Reflexion prompts and fewshot examples selector."""
 
-from typing import Dict
+from typing import Dict, Any
 
 from agential.base.selector import BaseSelector
 from agential.cog.reflexion.prompts import (
@@ -85,6 +85,7 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActHotQAStrategy,
     ReflexionReActTriviaQAStrategy,
 )
+from agential.cog.reflexion.strategies.base import ReflexionCoTBaseStrategy, ReflexionReActBaseStrategy
 from agential.manager.constants import Benchmarks
 
 REFLEXION_COT_PROMPTS = {
@@ -290,3 +291,27 @@ class ReflexionReActSelector(BaseSelector):
             )
 
         return REFLEXION_REACT_PROMPTS[benchmark]
+
+
+class ReflexionCoTStrategyFactory:
+    """A factory class for creating instances of ReflexionCoT strategies."""
+
+    @staticmethod
+    def get_strategy(benchmark: str, **strategy_kwargs: Any) -> ReflexionCoTBaseStrategy:
+        if benchmark not in REFLEXION_COT_STRATEGIES:
+            raise ValueError(f"Unsupported benchmark: {benchmark} for agent ReflexionCoT")
+        
+        strategy = REFLEXION_COT_STRATEGIES[benchmark]
+        return strategy(**strategy_kwargs)
+
+
+class ReflexionReActStrategyFactory:
+    """A factory class for creating instances of ReflexionReAct strategies."""
+
+    @staticmethod
+    def get_strategy(benchmark: str, **strategy_kwargs: Any) -> ReflexionReActBaseStrategy:
+        if benchmark not in REFLEXION_REACT_STRATEGIES:
+            raise ValueError(f"Unsupported benchmark: {benchmark} for agent ReflexionReAct")
+        
+        strategy = REFLEXION_REACT_STRATEGIES[benchmark]
+        return strategy(**strategy_kwargs)
