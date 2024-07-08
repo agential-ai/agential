@@ -200,9 +200,7 @@ def test_generate() -> None:
         'def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        char_set.add(char)\n    return None\n\n# Testing the function with the provided test cases\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"',
         "There is no problem with the above code. The function `first_repeated_char` correctly iterates through the characters of the input string, keeping track of seen characters in a set. If a character is encountered that is already in the set, it is returned as the first repeated character. Otherwise, if no repeated characters are found, the function returns None. The function passes the provided test cases successfully.",
     ]
-    agent = CriticAgent(
-        llm=FakeListChatModel(responses=responses), benchmark="mbpp"
-    )
+    agent = CriticAgent(llm=FakeListChatModel(responses=responses), benchmark="mbpp")
     out = agent.generate(
         question=question,
         examples=MBPP_FEWSHOT_EXAMPLES_POT,

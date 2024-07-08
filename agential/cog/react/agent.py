@@ -35,10 +35,7 @@ class ReActAgent(BaseAgent):
         self.benchmark = benchmark
 
         self.strategy = StrategyFactory().get_strategy(
-            agent="react",
-            benchmark=self.benchmark, 
-            llm=self.llm, 
-            **strategy_kwargs
+            agent="react", benchmark=self.benchmark, llm=self.llm, **strategy_kwargs
         )
 
     def generate(
