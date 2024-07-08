@@ -1,8 +1,8 @@
 """Strategy factory classes."""
 
-from typing import Any, Dict
+from typing import Any
 
-from agential.cog.critic.strategies.base import CriticBaseStrategy
+from agential.base.strategies import BaseStrategy
 from agential.cog.critic.strategies.code import (
     CritHEvalCodeStrategy,
     CritMBPPCodeStrategy,
@@ -18,7 +18,6 @@ from agential.cog.critic.strategies.qa import (
     CritHotQAStrategy,
     CritTriviaQAStrategy,
 )
-from agential.cog.react.strategies.base import ReActBaseStrategy
 from agential.cog.react.strategies.code import ReActHEvalStrategy, ReActMBPPStrategy
 from agential.cog.react.strategies.math import (
     ReActGSM8KStrategy,
@@ -30,10 +29,6 @@ from agential.cog.react.strategies.qa import (
     ReActFEVERStrategy,
     ReActHotQAStrategy,
     ReActTriviaQAStrategy,
-)
-from agential.cog.reflexion.strategies.base import (
-    ReflexionCoTBaseStrategy,
-    ReflexionReActBaseStrategy,
 )
 from agential.cog.reflexion.strategies.code import (
     ReflexionCoTHEvalStrategy,
@@ -286,7 +281,7 @@ class StrategyFactory:
     """A factory class for creating instances of different strategies based on the specified agent and benchmark."""
 
     @staticmethod
-    def get_strategy(agent: str, benchmark: str, **strategy_kwargs: Any) -> Any:
+    def get_strategy(agent: str, benchmark: str, **strategy_kwargs: Any) -> BaseStrategy:
         """Returns an instance of the appropriate strategy based on the provided agent and benchmark.
 
         Available agents:
@@ -306,7 +301,7 @@ class StrategyFactory:
             **strategy_kwargs (Dict[str, Any]): Additional keyword arguments to pass to the strategy's constructor.
 
         Returns:
-            Any: An instance of the appropriate strategy.
+            BaseStrategy: An instance of the appropriate strategy.
 
         Raises:
             ValueError: If the agent or benchmark is unsupported.
