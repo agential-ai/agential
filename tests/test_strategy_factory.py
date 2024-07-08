@@ -60,12 +60,10 @@ from agential.cog.reflexion.strategies.qa import (
 )
 from agential.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
 from agential.manager.strategy_factory import (
-    Agents,
-    Benchmarks,
-    FewShotType,
     StrategyFactory,
     get_benchmark_fewshots,
 )
+from agential.manager.constants import Agents, Benchmarks, FewShotType
 
 
 def test_strategy_factory_get_strategy() -> None:
