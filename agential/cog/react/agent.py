@@ -10,7 +10,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.agent import BaseAgent
 from agential.cog.react.output import ReActOutput
-from agential.strategy_factory import StrategyFactory
+from agential.manager import StrategyFactory
 
 
 class ReActAgent(BaseAgent):
