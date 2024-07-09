@@ -16,7 +16,7 @@ from agential.cog.critic.strategies.math import (
     CritSVAMPStrategy,
     CritTabMWPStrategy,
 )
-from agential.fewshots.gsm8k import (
+from agential.cog.fewshots.gsm8k import (
     GSM8K_FEWSHOT_EXAMPLES_POT,
 )
 

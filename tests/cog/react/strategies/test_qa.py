@@ -15,7 +15,7 @@ from agential.cog.react.strategies.qa import (
     ReActTriviaQAStrategy,
     parse_qa_action,
 )
-from agential.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.utils.docstore import DocstoreExplorer
 
 

@@ -3,47 +3,47 @@
 from typing import Dict
 
 from agential.base.constants import Benchmarks, FewShotType
-from agential.fewshots.ambignq import (
+from agential.cog.fewshots.ambignq import (
     AMBIGNQ_FEWSHOT_EXAMPLES_COT,
     AMBIGNQ_FEWSHOT_EXAMPLES_DIRECT,
     AMBIGNQ_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.fewshots.fever import (
+from agential.cog.fewshots.fever import (
     FEVER_FEWSHOT_EXAMPLES_COT,
     FEVER_FEWSHOT_EXAMPLES_DIRECT,
     FEVER_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.fewshots.gsm8k import (
+from agential.cog.fewshots.gsm8k import (
     GSM8K_FEWSHOT_EXAMPLES_COT,
     GSM8K_FEWSHOT_EXAMPLES_POT,
     GSM8K_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.fewshots.hotpotqa import (
+from agential.cog.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
     HOTPOTQA_FEWSHOT_EXAMPLES_DIRECT,
     HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.fewshots.humaneval import (
+from agential.cog.fewshots.humaneval import (
     HUMANEVAL_FEWSHOT_EXAMPLES_COT,
     HUMANEVAL_FEWSHOT_EXAMPLES_POT,
     HUMANEVAL_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.fewshots.mbpp import (
+from agential.cog.fewshots.mbpp import (
     MBPP_FEWSHOT_EXAMPLES_COT,
     MBPP_FEWSHOT_EXAMPLES_POT,
     MBPP_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.fewshots.svamp import (
+from agential.cog.fewshots.svamp import (
     SVAMP_FEWSHOT_EXAMPLES_COT,
     SVAMP_FEWSHOT_EXAMPLES_POT,
     SVAMP_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.fewshots.tabmwp import (
+from agential.cog.fewshots.tabmwp import (
     TABMWP_FEWSHOT_EXAMPLES_COT,
     TABMWP_FEWSHOT_EXAMPLES_POT,
     TABMWP_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.fewshots.triviaqa import (
+from agential.cog.fewshots.triviaqa import (
     TRIVIAQA_FEWSHOT_EXAMPLES_COT,
     TRIVIAQA_FEWSHOT_EXAMPLES_DIRECT,
     TRIVIAQA_FEWSHOT_EXAMPLES_REACT,

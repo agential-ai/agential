@@ -27,7 +27,7 @@ from agential.cog.reflexion.strategies.math import (
     parse_math_action_cot,
     parse_math_action_react,
 )
-from agential.fewshots.gsm8k import (
+from agential.cog.fewshots.gsm8k import (
     GSM8K_FEWSHOT_EXAMPLES_COT,
     GSM8K_FEWSHOT_EXAMPLES_REACT,
 )

@@ -11,7 +11,7 @@ from agential.cog.react.strategies.code import (
     ReActMBPPStrategy,
     parse_code_action,
 )
-from agential.fewshots.mbpp import MBPP_FEWSHOT_EXAMPLES_REACT
+from agential.cog.fewshots.mbpp import MBPP_FEWSHOT_EXAMPLES_REACT
 
 
 def test_parse_code_action() -> None:

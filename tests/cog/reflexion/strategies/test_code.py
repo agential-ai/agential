@@ -26,10 +26,10 @@ from agential.cog.reflexion.strategies.code import (
     parse_code_action_cot,
     parse_code_action_react,
 )
-from agential.fewshots.humaneval import (
+from agential.cog.fewshots.humaneval import (
     HUMANEVAL_FEWSHOT_EXAMPLES_COT,
 )
-from agential.fewshots.mbpp import (
+from agential.cog.fewshots.mbpp import (
     MBPP_FEWSHOT_EXAMPLES_COT,
     MBPP_FEWSHOT_EXAMPLES_REACT,
 )
