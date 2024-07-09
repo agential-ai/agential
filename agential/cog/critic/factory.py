@@ -2,7 +2,7 @@
 
 from typing import Any, Dict
 
-from agential.cog.constants import Benchmarks
+from agential.cog.constants import Benchmarks, BENCHMARK_FEWSHOTS
 from agential.base.factory import BaseFactory
 from agential.cog.critic.prompts import (
     AMBIGNQ_FEWSHOT_EXAMPLES_CRITIC,
@@ -61,6 +61,27 @@ from agential.cog.critic.strategies.qa import (
     CritHotQAStrategy,
     CritTriviaQAStrategy,
 )
+
+CRITIC_BENCHMARK_FEWSHOTS = {
+    Benchmarks.HOTPOTQA: {
+    },
+    Benchmarks.FEVER: {
+    },
+    Benchmarks.TRIVIAQA: {
+    },
+    Benchmarks.AMBIGNQ: {
+    },
+    Benchmarks.GSM8K: {
+    },
+    Benchmarks.SVAMP: {
+    },
+    Benchmarks.TABMWP: {
+    },
+    Benchmarks.HUMANEVAL: {
+    },
+    Benchmarks.MBPP: {
+    },
+}
 
 CRITIC_PROMPTS = {
     Benchmarks.HOTPOTQA: {
