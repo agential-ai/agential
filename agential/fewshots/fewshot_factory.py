@@ -1,5 +1,6 @@
 """Few-shot factory class."""
 
+from agential.base.constants import Benchmarks, FewShotType
 from agential.fewshots.ambignq import (
     AMBIGNQ_FEWSHOT_EXAMPLES_COT,
     AMBIGNQ_FEWSHOT_EXAMPLES_DIRECT,
@@ -45,7 +46,6 @@ from agential.fewshots.triviaqa import (
     TRIVIAQA_FEWSHOT_EXAMPLES_DIRECT,
     TRIVIAQA_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.base.constants import Benchmarks, FewShotType
 
 BENCHMARK_FEWSHOTS = {
     Benchmarks.HOTPOTQA: {

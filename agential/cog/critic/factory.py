@@ -2,6 +2,7 @@
 
 from typing import Any, Dict
 
+from agential.base.constants import Benchmarks
 from agential.base.factory import BaseFactory
 from agential.cog.critic.prompts import (
     AMBIGNQ_FEWSHOT_EXAMPLES_CRITIC,
@@ -60,7 +61,6 @@ from agential.cog.critic.strategies.qa import (
     CritHotQAStrategy,
     CritTriviaQAStrategy,
 )
-from agential.base.constants import Benchmarks
 
 CRITIC_PROMPTS = {
     Benchmarks.HOTPOTQA: {

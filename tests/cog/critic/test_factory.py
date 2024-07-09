@@ -4,6 +4,8 @@ import pytest
 
 from langchain_community.chat_models.fake import FakeListChatModel
 
+from agential.base.constants import Benchmarks
+from agential.cog.critic.factory import CriticFactory
 from agential.cog.critic.prompts import (
     CRITIC_CRITIQUE_INSTRUCTION_GSM8K,
     CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_GSM8K,
@@ -11,7 +13,6 @@ from agential.cog.critic.prompts import (
     GSM8K_FEWSHOT_EXAMPLES_CRITIC,
     GSM8K_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
 )
-from agential.cog.critic.factory import CriticFactory
 from agential.cog.critic.strategies.code import (
     CritHEvalCodeStrategy,
     CritMBPPCodeStrategy,
@@ -27,7 +28,6 @@ from agential.cog.critic.strategies.qa import (
     CritHotQAStrategy,
     CritTriviaQAStrategy,
 )
-from agential.base.constants import Benchmarks
 
 
 def test_critic_factory_get_strategy() -> None:
