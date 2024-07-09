@@ -5,6 +5,9 @@ import pytest
 from langchain_community.chat_models.fake import FakeListChatModel
 
 from agential.cog.constants import Benchmarks
+from agential.cog.fewshots.hotpotqa import (
+    HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+)
 from agential.cog.react.factory import ReActFactory
 from agential.cog.react.prompts import REACT_INSTRUCTION_HOTPOTQA
 from agential.cog.react.strategies.code import (
@@ -22,9 +25,7 @@ from agential.cog.react.strategies.qa import (
     ReActHotQAStrategy,
     ReActTriviaQAStrategy,
 )
-from agential.cog.fewshots.hotpotqa import (
-    HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-)
+
 
 def test_react_factory_get_strategy() -> None:
     """Tests ReActFactory get_strategy method."""
@@ -98,6 +99,7 @@ def test_react_factory_get_fewshots() -> None:
         ValueError, match="Benchmark 'hotpotqa' few-shot type not supported for ReAct."
     ):
         ReActFactory.get_fewshots("hotpotqa", fewshot_type="pot")
+
 
 def test_react_factory_get_prompts() -> None:
     """Tests ReActFactory get_prompts method."""
