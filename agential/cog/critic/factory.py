@@ -166,7 +166,7 @@ class CriticFactory(BaseFactory):
     """A factory class for creating instances of Critic strategies and selecting prompts and few-shot examples."""
 
     @staticmethod
-    def get_fewshots(benchmark: str, **kwargs) -> Dict[str, str]:
+    def get_fewshots(benchmark: str, **kwargs: Any) -> Dict[str, str]:
         """Retrieve few-shot examples based on the benchmark.
 
         Args:
@@ -192,7 +192,7 @@ class CriticFactory(BaseFactory):
         }
 
     @staticmethod
-    def get_prompt(benchmark: str, **kwargs) -> Dict[str, str]:
+    def get_prompt(benchmark: str, **kwargs: Any) -> Dict[str, str]:
         """Retrieve the prompt instruction based on the benchmark.
 
         Args:

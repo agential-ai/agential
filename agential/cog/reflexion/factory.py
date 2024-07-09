@@ -261,7 +261,7 @@ class ReflexionCoTFactory(BaseFactory):
     """A factory class for creating instances of ReflexionCoT strategies and selecting prompts and few-shot examples."""
 
     @staticmethod
-    def get_fewshots(benchmark: str, **kwargs) -> Dict[str, str]:
+    def get_fewshots(benchmark: str, **kwargs: Any) -> Dict[str, str]:
         """Retrieve few-shot examples based on the benchmark.
 
         Args:
@@ -279,7 +279,7 @@ class ReflexionCoTFactory(BaseFactory):
         return REFLEXION_COT_FEWSHOTS[benchmark]
 
     @staticmethod
-    def get_prompt(benchmark: str, **kwargs) -> Dict[str, str]:
+    def get_prompt(benchmark: str, **kwargs: Any) -> Dict[str, str]:
         """Retrieve the prompt instruction based on the benchmark.
 
         Args:
@@ -298,13 +298,13 @@ class ReflexionCoTFactory(BaseFactory):
 
     @staticmethod
     def get_strategy(
-        benchmark: str, **strategy_kwargs: Any
+        benchmark: str, **kwargs: Any
     ) -> ReflexionCoTBaseStrategy:
         """Returns an instance of the appropriate ReflexionCoT strategy based on the provided benchmark.
 
         Args:
             benchmark (str): The benchmark name.
-            **strategy_kwargs (Any): Additional keyword arguments to pass to
+            **kwargs (Any): Additional keyword arguments to pass to
                 the strategy's constructor.
 
         Returns:
@@ -316,14 +316,14 @@ class ReflexionCoTFactory(BaseFactory):
             )
 
         strategy = REFLEXION_COT_STRATEGIES[benchmark]
-        return strategy(**strategy_kwargs)
+        return strategy(**kwargs)
 
 
 class ReflexionReActFactory(BaseFactory):
     """A factory class for creating instances of ReflexionReAct strategies and selecting prompts and few-shot examples."""
 
     @staticmethod
-    def get_fewshots(benchmark: str, **kwargs) -> Dict[str, str]:
+    def get_fewshots(benchmark: str, **kwargs: Any) -> Dict[str, str]:
         """Retrieve few-shot examples based on the benchmark.
 
         Args:
@@ -341,7 +341,7 @@ class ReflexionReActFactory(BaseFactory):
         return REFLEXION_REACT_FEWSHOTS[benchmark]
 
     @staticmethod
-    def get_prompt(benchmark: str, **kwargs) -> Dict[str, str]:
+    def get_prompt(benchmark: str, **kwargs: Any) -> Dict[str, str]:
         """Retrieve the prompt instruction based on the benchmark.
 
         Args:
