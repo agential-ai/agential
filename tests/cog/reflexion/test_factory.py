@@ -166,11 +166,11 @@ def test_reflexion_cot_factory_get_fewshots() -> None:
         ReflexionCoTFactory.get_fewshots("unknown")
 
 
-def test_reflexion_cot_factory_get_prompt() -> None:
-    """Tests ReflexionCoTFactory get_prompt method."""
+def test_reflexion_cot_factory_get_prompts() -> None:
+    """Tests ReflexionCoTFactory get_prompts method."""
     # Valid benchmark.
     benchmark = Benchmarks.HOTPOTQA
-    prompt = ReflexionCoTFactory.get_prompt(benchmark)
+    prompt = ReflexionCoTFactory.get_prompts(benchmark)
     assert isinstance(prompt, dict)
     assert prompt == {
         "prompt": REFLEXION_COT_INSTRUCTION_HOTPOTQA,
@@ -181,7 +181,7 @@ def test_reflexion_cot_factory_get_prompt() -> None:
     with pytest.raises(
         ValueError, match="Benchmark 'unknown' prompt not found for ReflexionCoT."
     ):
-        ReflexionCoTFactory.get_prompt("unknown")
+        ReflexionCoTFactory.get_prompts("unknown")
 
 
 def test_reflexion_react_factory_get_fewshots() -> None:
@@ -201,11 +201,11 @@ def test_reflexion_react_factory_get_fewshots() -> None:
         ReflexionReActFactory.get_fewshots("unknown")
 
 
-def test_reflexion_react_factory_get_prompt() -> None:
-    """Tests ReflexionReActFactory get_prompt method."""
+def test_reflexion_react_factory_get_prompts() -> None:
+    """Tests ReflexionReActFactory get_prompts method."""
     # Valid benchmark.
     benchmark = Benchmarks.HOTPOTQA
-    prompt = ReflexionReActFactory.get_prompt(benchmark)
+    prompt = ReflexionReActFactory.get_prompts(benchmark)
     assert isinstance(prompt, dict)
     assert prompt == {
         "prompt": REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
@@ -216,4 +216,4 @@ def test_reflexion_react_factory_get_prompt() -> None:
     with pytest.raises(
         ValueError, match="Benchmark 'unknown' prompt not found for ReflexionReAct."
     ):
-        ReflexionReActFactory.get_prompt("unknown")
+        ReflexionReActFactory.get_prompts("unknown")

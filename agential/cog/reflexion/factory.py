@@ -279,7 +279,7 @@ class ReflexionCoTFactory(BaseFactory):
         return REFLEXION_COT_FEWSHOTS[benchmark]
 
     @staticmethod
-    def get_prompt(benchmark: str, **kwargs: Any) -> Dict[str, str]:
+    def get_prompts(benchmark: str, **kwargs: Any) -> Dict[str, str]:
         """Retrieve the prompt instruction based on the benchmark.
 
         Args:
@@ -339,7 +339,7 @@ class ReflexionReActFactory(BaseFactory):
         return REFLEXION_REACT_FEWSHOTS[benchmark]
 
     @staticmethod
-    def get_prompt(benchmark: str, **kwargs: Any) -> Dict[str, str]:
+    def get_prompts(benchmark: str, **kwargs: Any) -> Dict[str, str]:
         """Retrieve the prompt instruction based on the benchmark.
 
         Args:
