@@ -2,7 +2,7 @@
 
 from typing import Any, Dict
 
-from agential.cog.constants import Benchmarks, BENCHMARK_FEWSHOTS
+from agential.cog.constants import Benchmarks, FewShotType, BENCHMARK_FEWSHOTS
 from agential.base.factory import BaseFactory
 from agential.cog.critic.prompts import (
     AMBIGNQ_FEWSHOT_EXAMPLES_CRITIC,
@@ -63,25 +63,43 @@ from agential.cog.critic.strategies.qa import (
 )
 
 CRITIC_BENCHMARK_FEWSHOTS = {
-    Benchmarks.HOTPOTQA: {
-    },
-    Benchmarks.FEVER: {
-    },
-    Benchmarks.TRIVIAQA: {
-    },
-    Benchmarks.AMBIGNQ: {
-    },
-    Benchmarks.GSM8K: {
-    },
-    Benchmarks.SVAMP: {
-    },
-    Benchmarks.TABMWP: {
-    },
-    Benchmarks.HUMANEVAL: {
-    },
-    Benchmarks.MBPP: {
-    },
+    Benchmarks.HOTPOTQA: [
+        FewShotType.COT, 
+        FewShotType.DIRECT, 
+        FewShotType.REACT
+    ],
+    Benchmarks.FEVER: [
+        FewShotType.COT, 
+        FewShotType.DIRECT, 
+        FewShotType.REACT
+    ],
+    Benchmarks.TRIVIAQA: [
+        FewShotType.COT, 
+        FewShotType.DIRECT, 
+        FewShotType.REACT
+    ],
+    Benchmarks.AMBIGNQ: [
+        FewShotType.COT, 
+        FewShotType.DIRECT, 
+        FewShotType.REACT
+    ],
+    Benchmarks.GSM8K: [
+        FewShotType.POT
+    ],
+    Benchmarks.SVAMP: [
+        FewShotType.POT
+    ],
+    Benchmarks.TABMWP: [
+        FewShotType.POT
+    ],
+    Benchmarks.HUMANEVAL: [
+        FewShotType.POT
+    ],
+    Benchmarks.MBPP: [
+        FewShotType.POT
+    ],
 }
+
 
 CRITIC_PROMPTS = {
     Benchmarks.HOTPOTQA: {
