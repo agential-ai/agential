@@ -13,7 +13,7 @@ def test_fewshot_factory_get_strategy() -> None:
     benchmark = "hotpotqa"
     fewshot_type = FewShotType.COT
     result = FewShotFactory.get_benchmark_fewshots(benchmark, fewshot_type)
-    assert result == HOTPOTQA_FEWSHOT_EXAMPLES_COT
+    assert result == {"examples": HOTPOTQA_FEWSHOT_EXAMPLES_COT}
 
     # Test invalid benchmark.
     benchmark = "invalid_benchmark"
