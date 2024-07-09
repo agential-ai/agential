@@ -79,7 +79,7 @@ class ExpeLAgent(BaseAgent):
         if not reflexion_react_agent:
             self.reflexion_react_agent = ReflexionReActAgent(
                 llm=llm,
-                mode=benchmark,
+                benchmark=benchmark,
                 **reflexion_react_strategy_kwargs,
             )
         else:
