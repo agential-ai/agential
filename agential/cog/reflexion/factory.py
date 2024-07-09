@@ -3,7 +3,7 @@
 from typing import Any, Dict
 
 from agential.base.factory import BaseFactory
-from agential.cog.constants import Benchmarks, FewShotType, BENCHMARK_FEWSHOTS
+from agential.cog.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
 from agential.cog.reflexion.prompts import (
     AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
@@ -284,7 +284,9 @@ class ReflexionCoTFactory(BaseFactory):
     """A factory class for creating instances of ReflexionCoT strategies and selecting prompts and few-shot examples."""
 
     @staticmethod
-    def get_fewshots(benchmark: str, fewshot_type: str, **kwargs: Any) -> Dict[str, str]:
+    def get_fewshots(
+        benchmark: str, fewshot_type: str, **kwargs: Any
+    ) -> Dict[str, str]:
         """Retrieve few-shot examples based on the benchmark.
 
         Args:
@@ -299,7 +301,7 @@ class ReflexionCoTFactory(BaseFactory):
             raise ValueError(
                 f"Benchmark '{benchmark}' few-shots not found for ReflexionCoT."
             )
-        
+
         if fewshot_type not in REFLEXION_COT_BENCHMARK_FEWSHOTS[benchmark]:
             raise ValueError(
                 f"Benchmark '{benchmark}' few-shot type not supported for ReflexionCoT."
@@ -307,10 +309,7 @@ class ReflexionCoTFactory(BaseFactory):
 
         benchmark_fewshots = BENCHMARK_FEWSHOTS[benchmark][fewshot_type]
 
-        return {
-            "examples": benchmark_fewshots,
-            **REFLEXION_COT_FEWSHOTS[benchmark]
-        }
+        return {"examples": benchmark_fewshots, **REFLEXION_COT_FEWSHOTS[benchmark]}
 
     @staticmethod
     def get_prompts(benchmark: str, **kwargs: Any) -> Dict[str, str]:
@@ -355,7 +354,9 @@ class ReflexionReActFactory(BaseFactory):
     """A factory class for creating instances of ReflexionReAct strategies and selecting prompts and few-shot examples."""
 
     @staticmethod
-    def get_fewshots(benchmark: str, fewshot_type: str, **kwargs: Any) -> Dict[str, str]:
+    def get_fewshots(
+        benchmark: str, fewshot_type: str, **kwargs: Any
+    ) -> Dict[str, str]:
         """Retrieve few-shot examples based on the benchmark.
 
         Args:
@@ -378,10 +379,7 @@ class ReflexionReActFactory(BaseFactory):
 
         benchmark_fewshots = BENCHMARK_FEWSHOTS[benchmark][fewshot_type]
 
-        return {
-            "examples": benchmark_fewshots,
-            **REFLEXION_REACT_FEWSHOTS[benchmark]
-        }
+        return {"examples": benchmark_fewshots, **REFLEXION_REACT_FEWSHOTS[benchmark]}
 
     @staticmethod
     def get_prompts(benchmark: str, **kwargs: Any) -> Dict[str, str]:
