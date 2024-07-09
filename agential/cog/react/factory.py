@@ -3,7 +3,7 @@
 from typing import Any, Dict
 
 from agential.base.factory import BaseFactory
-from agential.cog.constants import Benchmarks
+from agential.cog.constants import Benchmarks, FewShotType, BENCHMARK_FEWSHOTS
 from agential.cog.react.prompts import (
     REACT_INSTRUCTION_AMBIGNQ,
     REACT_INSTRUCTION_FEVER,
@@ -28,6 +28,18 @@ from agential.cog.react.strategies.qa import (
     ReActHotQAStrategy,
     ReActTriviaQAStrategy,
 )
+
+REACT_BENCHMARK_FEWSHOTS = {
+    Benchmarks.HOTPOTQA: [FewShotType.REACT],
+    Benchmarks.FEVER: [FewShotType.REACT],
+    Benchmarks.TRIVIAQA: [FewShotType.REACT],
+    Benchmarks.AMBIGNQ: [FewShotType.REACT],
+    Benchmarks.GSM8K: [FewShotType.REACT],
+    Benchmarks.SVAMP: [FewShotType.REACT],
+    Benchmarks.TABMWP: [FewShotType.REACT],
+    Benchmarks.HUMANEVAL: [FewShotType.REACT],
+    Benchmarks.MBPP: [FewShotType.REACT],
+}
 
 REACT_PROMPTS = {
     Benchmarks.HOTPOTQA: {
@@ -86,11 +98,12 @@ class ReActFactory(BaseFactory):
     """A factory class for creating instances of ReAct strategies and selecting prompts and few-shot examples."""
 
     @staticmethod
-    def get_fewshots(benchmark: str, **kwargs: Any) -> Dict[str, str]:
+    def get_fewshots(benchmark: str, fewshot_type: str, **kwargs: Any) -> Dict[str, str]:
         """Retrieve few-shot examples based on the benchmark.
 
         Args:
             benchmark (str): The benchmark name.
+            fewshot_type (str): The benchmark few-shot type.
             **kwargs (Any): Additional arguments.
 
         Returns:
@@ -99,7 +112,14 @@ class ReActFactory(BaseFactory):
         if benchmark not in REACT_FEWSHOTS:
             raise ValueError(f"Benchmark '{benchmark}' few-shots not found for ReAct.")
 
-        return {}
+        if fewshot_type not in REACT_BENCHMARK_FEWSHOTS[benchmark]:
+            raise ValueError(
+                f"Benchmark '{benchmark}' few-shot type not supported for ReAct."
+            )
+
+        benchmark_fewshots = BENCHMARK_FEWSHOTS[benchmark][fewshot_type]
+
+        return {"examples": benchmark_fewshots}
 
     @staticmethod
     def get_prompts(benchmark: str, **kwargs: Any) -> Dict[str, str]:
