@@ -2,7 +2,7 @@
 
 from typing import Any, Dict
 
-from agential.base.constants import Benchmarks
+from agential.cog.constants import Benchmarks
 from agential.base.factory import BaseFactory
 from agential.cog.react.prompts import (
     REACT_INSTRUCTION_AMBIGNQ,

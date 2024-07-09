@@ -4,7 +4,7 @@ import pytest
 
 from langchain_community.chat_models.fake import FakeListChatModel
 
-from agential.base.constants import Benchmarks
+from agential.cog.constants import Benchmarks
 from agential.cog.critic.factory import CriticFactory
 from agential.cog.critic.prompts import (
     CRITIC_CRITIQUE_INSTRUCTION_GSM8K,

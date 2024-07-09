@@ -4,7 +4,7 @@ import pytest
 
 from langchain_community.chat_models.fake import FakeListChatModel
 
-from agential.base.constants import Benchmarks
+from agential.cog.constants import Benchmarks
 from agential.cog.reflexion.factory import (
     ReflexionCoTFactory,
     ReflexionReActFactory,
