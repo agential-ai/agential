@@ -90,7 +90,10 @@ def test_critic_factory_get_fewshots() -> None:
     benchmark = Benchmarks.GSM8K
     fewshots = CriticFactory.get_fewshots(benchmark, fewshot_type="pot", use_tool=True)
     assert "critique_examples" in fewshots
-    assert fewshots == {"examples": GSM8K_FEWSHOT_EXAMPLES_POT, "critique_examples": GSM8K_FEWSHOT_EXAMPLES_CRITIC}
+    assert fewshots == {
+        "examples": GSM8K_FEWSHOT_EXAMPLES_POT,
+        "critique_examples": GSM8K_FEWSHOT_EXAMPLES_CRITIC,
+    }
 
     # Valid benchmark without tool usage.
     fewshots = CriticFactory.get_fewshots(benchmark, fewshot_type="pot", use_tool=False)

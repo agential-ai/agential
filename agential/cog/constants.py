@@ -1,4 +1,5 @@
 """Constants for supported benchmarks, few-shot types, and agents."""
+
 from agential.cog.fewshots.ambignq import (
     AMBIGNQ_FEWSHOT_EXAMPLES_COT,
     AMBIGNQ_FEWSHOT_EXAMPLES_DIRECT,
@@ -44,6 +45,7 @@ from agential.cog.fewshots.triviaqa import (
     TRIVIAQA_FEWSHOT_EXAMPLES_DIRECT,
     TRIVIAQA_FEWSHOT_EXAMPLES_REACT,
 )
+
 
 class Benchmarks:
     """Supported benchmarks."""

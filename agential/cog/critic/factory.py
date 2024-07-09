@@ -2,8 +2,8 @@
 
 from typing import Any, Dict
 
-from agential.cog.constants import Benchmarks, FewShotType, BENCHMARK_FEWSHOTS
 from agential.base.factory import BaseFactory
+from agential.cog.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
 from agential.cog.critic.prompts import (
     AMBIGNQ_FEWSHOT_EXAMPLES_CRITIC,
     CRITIC_CRITIQUE_INSTRUCTION_AMBIGNQ,
@@ -63,41 +63,15 @@ from agential.cog.critic.strategies.qa import (
 )
 
 CRITIC_BENCHMARK_FEWSHOTS = {
-    Benchmarks.HOTPOTQA: [
-        FewShotType.COT, 
-        FewShotType.DIRECT, 
-        FewShotType.REACT
-    ],
-    Benchmarks.FEVER: [
-        FewShotType.COT, 
-        FewShotType.DIRECT, 
-        FewShotType.REACT
-    ],
-    Benchmarks.TRIVIAQA: [
-        FewShotType.COT, 
-        FewShotType.DIRECT, 
-        FewShotType.REACT
-    ],
-    Benchmarks.AMBIGNQ: [
-        FewShotType.COT, 
-        FewShotType.DIRECT, 
-        FewShotType.REACT
-    ],
-    Benchmarks.GSM8K: [
-        FewShotType.POT
-    ],
-    Benchmarks.SVAMP: [
-        FewShotType.POT
-    ],
-    Benchmarks.TABMWP: [
-        FewShotType.POT
-    ],
-    Benchmarks.HUMANEVAL: [
-        FewShotType.POT
-    ],
-    Benchmarks.MBPP: [
-        FewShotType.POT
-    ],
+    Benchmarks.HOTPOTQA: [FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT],
+    Benchmarks.FEVER: [FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT],
+    Benchmarks.TRIVIAQA: [FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT],
+    Benchmarks.AMBIGNQ: [FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT],
+    Benchmarks.GSM8K: [FewShotType.POT],
+    Benchmarks.SVAMP: [FewShotType.POT],
+    Benchmarks.TABMWP: [FewShotType.POT],
+    Benchmarks.HUMANEVAL: [FewShotType.POT],
+    Benchmarks.MBPP: [FewShotType.POT],
 }
 
 
@@ -205,22 +179,29 @@ class CriticFactory(BaseFactory):
     """A factory class for creating instances of Critic strategies and selecting prompts and few-shot examples."""
 
     @staticmethod
-    def get_fewshots(benchmark: str, fewshot_type: str, **kwargs: Any) -> Dict[str, str]:
+    def get_fewshots(
+        benchmark: str, fewshot_type: str, **kwargs: Any
+    ) -> Dict[str, str]:
         """Retrieve few-shot examples based on the benchmark.
 
         Args:
             benchmark (str): The benchmark name.
-            fewshot_type (str): The benchmark few-shot type. 
+            fewshot_type (str): The benchmark few-shot type.
             **kwargs (Any): Additional arguments.
 
         Returns:
             Dict[str, str]: A dictionary of few-shot examples.
         """
-        if benchmark not in CRITIC_FEWSHOTS or benchmark not in CRITIC_BENCHMARK_FEWSHOTS:
+        if (
+            benchmark not in CRITIC_FEWSHOTS
+            or benchmark not in CRITIC_BENCHMARK_FEWSHOTS
+        ):
             raise ValueError(f"Benchmark '{benchmark}' few-shots not found for Critic.")
 
         if fewshot_type not in CRITIC_BENCHMARK_FEWSHOTS[benchmark]:
-            raise ValueError(f"Benchmark '{benchmark}' few-shot type not supported for Critic.")
+            raise ValueError(
+                f"Benchmark '{benchmark}' few-shot type not supported for Critic."
+            )
 
         benchmark_fewshots = BENCHMARK_FEWSHOTS[benchmark][fewshot_type]
 
@@ -231,11 +212,13 @@ class CriticFactory(BaseFactory):
         if use_tool:
             return {
                 "examples": benchmark_fewshots,
-                "critique_examples": CRITIC_FEWSHOTS[benchmark]["critique_examples"]
+                "critique_examples": CRITIC_FEWSHOTS[benchmark]["critique_examples"],
             }
         return {
             "examples": benchmark_fewshots,
-            "critique_examples": CRITIC_FEWSHOTS[benchmark]["critique_examples_no_tool"]
+            "critique_examples": CRITIC_FEWSHOTS[benchmark][
+                "critique_examples_no_tool"
+            ],
         }
 
     @staticmethod
