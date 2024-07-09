@@ -4,6 +4,11 @@ import pytest
 
 from langchain_community.chat_models.fake import FakeListChatModel
 
+from agential.base.constants import Benchmarks
+from agential.cog.reflexion.factory import (
+    ReflexionCoTFactory,
+    ReflexionReActFactory,
+)
 from agential.cog.reflexion.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
@@ -11,10 +16,6 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-)
-from agential.cog.reflexion.factory import (
-    ReflexionCoTFactory,
-    ReflexionReActFactory,
 )
 from agential.cog.reflexion.strategies.code import (
     ReflexionCoTHEvalStrategy,
@@ -40,7 +41,6 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActHotQAStrategy,
     ReflexionReActTriviaQAStrategy,
 )
-from agential.base.constants import Benchmarks
 
 
 def test_reflexion_cot_factory_get_strategy() -> None:

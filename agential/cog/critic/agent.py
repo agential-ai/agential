@@ -9,8 +9,8 @@ from typing import Any, Dict, List
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.agent import BaseAgent
-from agential.cog.critic.output import CriticOutput
 from agential.cog.critic.factory import CriticFactory
+from agential.cog.critic.output import CriticOutput
 
 
 class CriticAgent(BaseAgent):

@@ -9,8 +9,8 @@ from typing import Any, Dict, List
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.agent import BaseAgent
-from agential.cog.react.output import ReActOutput
 from agential.cog.react.factory import ReActFactory
+from agential.cog.react.output import ReActOutput
 
 
 class ReActAgent(BaseAgent):

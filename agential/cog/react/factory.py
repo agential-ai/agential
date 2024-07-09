@@ -2,6 +2,7 @@
 
 from typing import Any, Dict
 
+from agential.base.constants import Benchmarks
 from agential.base.factory import BaseFactory
 from agential.cog.react.prompts import (
     REACT_INSTRUCTION_AMBIGNQ,
@@ -27,7 +28,6 @@ from agential.cog.react.strategies.qa import (
     ReActHotQAStrategy,
     ReActTriviaQAStrategy,
 )
-from agential.base.constants import Benchmarks
 
 REACT_PROMPTS = {
     Benchmarks.HOTPOTQA: {
