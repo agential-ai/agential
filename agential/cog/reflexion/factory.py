@@ -3,7 +3,7 @@
 from typing import Any, Dict
 
 from agential.base.factory import BaseFactory
-from agential.cog.constants import Benchmarks
+from agential.cog.constants import Benchmarks, FewShotType, BENCHMARK_FEWSHOTS
 from agential.cog.reflexion.prompts import (
     AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
@@ -91,6 +91,29 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActTriviaQAStrategy,
 )
 
+REFLEXION_COT_BENCHMARK_FEWSHOTS = {
+    Benchmarks.HOTPOTQA: [FewShotType.COT],
+    Benchmarks.FEVER: [FewShotType.COT],
+    Benchmarks.TRIVIAQA: [FewShotType.COT],
+    Benchmarks.AMBIGNQ: [FewShotType.COT],
+    Benchmarks.GSM8K: [FewShotType.COT],
+    Benchmarks.SVAMP: [FewShotType.COT],
+    Benchmarks.TABMWP: [FewShotType.COT],
+    Benchmarks.HUMANEVAL: [FewShotType.COT],
+    Benchmarks.MBPP: [FewShotType.COT],
+}
+
+REFLEXION_REACT_BENCHMARK_FEWSHOTS = {
+    Benchmarks.HOTPOTQA: [FewShotType.REACT],
+    Benchmarks.FEVER: [FewShotType.REACT],
+    Benchmarks.TRIVIAQA: [FewShotType.REACT],
+    Benchmarks.AMBIGNQ: [FewShotType.REACT],
+    Benchmarks.GSM8K: [FewShotType.REACT],
+    Benchmarks.SVAMP: [FewShotType.REACT],
+    Benchmarks.TABMWP: [FewShotType.REACT],
+    Benchmarks.HUMANEVAL: [FewShotType.REACT],
+    Benchmarks.MBPP: [FewShotType.REACT],
+}
 REFLEXION_COT_PROMPTS = {
     Benchmarks.HOTPOTQA: {
         "prompt": REFLEXION_COT_INSTRUCTION_HOTPOTQA,
