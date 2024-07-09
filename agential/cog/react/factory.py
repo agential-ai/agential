@@ -58,7 +58,7 @@ REACT_PROMPTS = {
         "prompt": REACT_INSTRUCTION_MBPP,
     },
 }
-REACT_FEWSHOTS = {
+REACT_FEWSHOTS: Dict[str, Dict] = {
     Benchmarks.HOTPOTQA: {},
     Benchmarks.FEVER: {},
     Benchmarks.TRIVIAQA: {},

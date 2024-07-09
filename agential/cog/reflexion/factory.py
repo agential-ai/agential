@@ -297,9 +297,7 @@ class ReflexionCoTFactory(BaseFactory):
         return REFLEXION_COT_PROMPTS[benchmark]
 
     @staticmethod
-    def get_strategy(
-        benchmark: str, **kwargs: Any
-    ) -> ReflexionCoTBaseStrategy:
+    def get_strategy(benchmark: str, **kwargs: Any) -> ReflexionCoTBaseStrategy:
         """Returns an instance of the appropriate ReflexionCoT strategy based on the provided benchmark.
 
         Args:
@@ -316,7 +314,7 @@ class ReflexionCoTFactory(BaseFactory):
             )
 
         strategy = REFLEXION_COT_STRATEGIES[benchmark]
-        return strategy(**kwargs)
+        return strategy(**kwargs)  # type: ignore
 
 
 class ReflexionReActFactory(BaseFactory):
