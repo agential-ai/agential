@@ -3,7 +3,7 @@
 from typing import Any, Dict
 
 from agential.base.factory import BaseFactory
-from agential.cog.constants import Benchmarks, FewShotType, BENCHMARK_FEWSHOTS
+from agential.cog.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
 from agential.cog.react.prompts import (
     REACT_INSTRUCTION_AMBIGNQ,
     REACT_INSTRUCTION_FEVER,
@@ -98,7 +98,9 @@ class ReActFactory(BaseFactory):
     """A factory class for creating instances of ReAct strategies and selecting prompts and few-shot examples."""
 
     @staticmethod
-    def get_fewshots(benchmark: str, fewshot_type: str, **kwargs: Any) -> Dict[str, str]:
+    def get_fewshots(
+        benchmark: str, fewshot_type: str, **kwargs: Any
+    ) -> Dict[str, str]:
         """Retrieve few-shot examples based on the benchmark.
 
         Args:
