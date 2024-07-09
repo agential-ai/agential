@@ -284,11 +284,12 @@ class ReflexionCoTFactory(BaseFactory):
     """A factory class for creating instances of ReflexionCoT strategies and selecting prompts and few-shot examples."""
 
     @staticmethod
-    def get_fewshots(benchmark: str, **kwargs: Any) -> Dict[str, str]:
+    def get_fewshots(benchmark: str, fewshot_type: str, **kwargs: Any) -> Dict[str, str]:
         """Retrieve few-shot examples based on the benchmark.
 
         Args:
             benchmark (str): The benchmark name.
+            fewshot_type (str): The benchmark few-shot type.
             **kwargs (Any): Additional arguments.
 
         Returns:
@@ -298,8 +299,18 @@ class ReflexionCoTFactory(BaseFactory):
             raise ValueError(
                 f"Benchmark '{benchmark}' few-shots not found for ReflexionCoT."
             )
+        
+        if fewshot_type not in REFLEXION_COT_BENCHMARK_FEWSHOTS[benchmark]:
+            raise ValueError(
+                f"Benchmark '{benchmark}' few-shot type not supported for ReflexionCoT."
+            )
 
-        return REFLEXION_COT_FEWSHOTS[benchmark]
+        benchmark_fewshots = BENCHMARK_FEWSHOTS[benchmark][fewshot_type]
+
+        return {
+            "examples": benchmark_fewshots,
+            **REFLEXION_COT_FEWSHOTS[benchmark]
+        }
 
     @staticmethod
     def get_prompts(benchmark: str, **kwargs: Any) -> Dict[str, str]:
@@ -344,11 +355,12 @@ class ReflexionReActFactory(BaseFactory):
     """A factory class for creating instances of ReflexionReAct strategies and selecting prompts and few-shot examples."""
 
     @staticmethod
-    def get_fewshots(benchmark: str, **kwargs: Any) -> Dict[str, str]:
+    def get_fewshots(benchmark: str, fewshot_type: str, **kwargs: Any) -> Dict[str, str]:
         """Retrieve few-shot examples based on the benchmark.
 
         Args:
             benchmark (str): The benchmark name.
+            fewshot_type (str): The benchmark few-shot type.
             **kwargs (Any): Additional arguments.
 
         Returns:
@@ -359,7 +371,17 @@ class ReflexionReActFactory(BaseFactory):
                 f"Benchmark '{benchmark}' few-shots not found for ReflexionReAct."
             )
 
-        return REFLEXION_REACT_FEWSHOTS[benchmark]
+        if fewshot_type not in REFLEXION_REACT_FEWSHOTS[benchmark]:
+            raise ValueError(
+                f"Benchmark '{benchmark}' few-shot type not supported for ReflexionReAct."
+            )
+
+        benchmark_fewshots = BENCHMARK_FEWSHOTS[benchmark][fewshot_type]
+
+        return {
+            "examples": benchmark_fewshots,
+            **REFLEXION_REACT_FEWSHOTS[benchmark]
+        }
 
     @staticmethod
     def get_prompts(benchmark: str, **kwargs: Any) -> Dict[str, str]:
