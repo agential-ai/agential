@@ -3,8 +3,8 @@
 import pytest
 
 from agential.base.constants import FewShotType
-from agential.fewshots.fewshot_factory import FewShotFactory
-from agential.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
+from agential.cog.fewshot_factory import FewShotFactory
+from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
 
 
 def test_fewshot_factory_get_strategy() -> None:

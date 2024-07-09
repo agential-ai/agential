@@ -20,7 +20,7 @@ from agential.cog.critic.strategies.qa import (
     CriticQAStrategy,
     CritTriviaQAStrategy,
 )
-from agential.fewshots.hotpotqa import (
+from agential.cog.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
 )
 

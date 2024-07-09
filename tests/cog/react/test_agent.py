@@ -11,8 +11,8 @@ from agential.cog.react.prompts import (
     REACT_INSTRUCTION_HUMANEVAL,
 )
 from agential.cog.react.strategies.base import ReActBaseStrategy
-from agential.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
+from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+from agential.cog.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
 
 
 def test_init() -> None:
