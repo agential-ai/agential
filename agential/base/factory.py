@@ -28,7 +28,7 @@ class BaseFactory(ABC):
 
     @abstractmethod
     def get_prompts(self, benchmark: str, **kwargs: Any) -> Dict[str, str]:
-        """Retrieve the prompt instruction based on the benchmark.
+        """Retrieve the prompt instructions based on the benchmark.
 
         Args:
             benchmark (str): The benchmark name.
