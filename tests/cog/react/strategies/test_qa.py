@@ -4,6 +4,7 @@ from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
 
+from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.react.prompts import (
     REACT_INSTRUCTION_HOTPOTQA,
 )
@@ -15,7 +16,6 @@ from agential.cog.react.strategies.qa import (
     ReActTriviaQAStrategy,
     parse_qa_action,
 )
-from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.utils.docstore import DocstoreExplorer
 
 

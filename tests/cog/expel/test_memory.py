@@ -12,8 +12,8 @@ from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
-from agential.cog.reflexion.agent import ReflexionReActOutput, ReflexionReActStepOutput
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+from agential.cog.reflexion.agent import ReflexionReActOutput, ReflexionReActStepOutput
 
 fewshot_questions = re.findall(r"Question: (.+?)\n", HOTPOTQA_FEWSHOT_EXAMPLES_REACT)
 fewshot_keys = re.findall(
