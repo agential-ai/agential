@@ -28,7 +28,7 @@ from agential.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 def test_gather_experience() -> None:
     """Test gather_experience."""
     agent = ReflexionReActAgent(
-        llm=FakeListChatModel(responses=[]), mode={"qa": "hotpotqa"}
+        llm=FakeListChatModel(responses=[]), benchmark="hotpotqa"
     )
     questions = [""]
     keys = [""]
