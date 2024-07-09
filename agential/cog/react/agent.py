@@ -42,8 +42,8 @@ class ReActAgent(BaseAgent):
     def generate(
         self,
         question: str,
-        examples: str,
-        prompt: str,
+        examples: str = "",
+        prompt: str = "",
         additional_keys: Dict[str, str] = {},
         fewshot_type: str = FewShotType.REACT,
         reset: bool = True,
@@ -56,8 +56,8 @@ class ReActAgent(BaseAgent):
 
         Args:
             question (str): The question to be processed.
-            examples (str, optional): Fewshot examples.
-            prompt (str, optional): Prompt template string.
+            examples (str, optional): Fewshot examples. Defaults to "".
+            prompt (str, optional): Prompt template string. Defaults to "".
             additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
             fewshot_type (str): The type of few-shot examples to use. Defaults to FewShotType.REACT.
             reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.

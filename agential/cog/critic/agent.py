@@ -71,6 +71,18 @@ class CriticAgent(BaseAgent):
         Returns:
             List[CriticOutput]: A list of CriticOutput instances where each CriticOutput instance contains the "answer", "critique", and "external_tool_info".
         """
+        if not prompt or not critique_prompt or not examples or not critique_examples:
+            agent_fewshots = CriticFactory.get_fewshots(
+                benchmark=self.benchmark, use_tool=use_tool
+            )
+            prompts = CriticFactory.get_prompt(
+                benchmark=self.benchmark, use_tool=use_tool
+            )
+            examples = agent_fewshots.get("examples", "")
+            critique_examples = agent_fewshots.get("critique_examples", "")
+            prompt = prompts.get("prompt", "")
+            critique_prompt = prompts.get("critique_prompt", "")
+
         if reset:
             self.reset()
 
