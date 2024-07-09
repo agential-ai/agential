@@ -9,7 +9,7 @@ from typing import Any, Dict, List
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.agent import BaseAgent
-from agential.cog.react.factory import ReActFactory
+from agential.cog.react.factory import ReActFactory, REACT_BENCHMARK_FEWSHOTS
 from agential.cog.react.output import ReActOutput
 from agential.cog.constants import FewShotType
 
@@ -45,7 +45,7 @@ class ReActAgent(BaseAgent):
         examples: str = "",
         prompt: str = "",
         additional_keys: Dict[str, str] = {},
-        fewshot_type: str = FewShotType.REACT,
+        fewshot_type: str = "",
         reset: bool = True,
         **kwargs: Any,
     ) -> List[ReActOutput]:
@@ -59,7 +59,7 @@ class ReActAgent(BaseAgent):
             examples (str, optional): Fewshot examples. Defaults to "".
             prompt (str, optional): Prompt template string. Defaults to "".
             additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
-            fewshot_type (str): The type of few-shot examples to use. Defaults to FewShotType.REACT.
+            fewshot_type (str): The type of few-shot examples to use. Defaults to "".
             reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
             **kwargs (Any): Additional parameters for flexibility.
 
@@ -68,6 +68,8 @@ class ReActAgent(BaseAgent):
                 each ReActOutput consists of a thought, action type/query, observation, answer, and external tool info.
         """
         if not prompt or not examples:
+            if not fewshot_type:
+                fewshot_type = REACT_BENCHMARK_FEWSHOTS[self.benchmark][0]
             fewshots = ReActFactory().get_fewshots(
                 benchmark=self.benchmark, fewshot_type=fewshot_type
             )
