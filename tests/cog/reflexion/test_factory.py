@@ -41,6 +41,7 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActHotQAStrategy,
     ReflexionReActTriviaQAStrategy,
 )
+from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT, HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 
 
 def test_reflexion_cot_factory_get_strategy() -> None:
@@ -153,9 +154,10 @@ def test_reflexion_cot_factory_get_fewshots() -> None:
     """Tests ReflexionCoTFactory get_fewshots method."""
     # Valid benchmark.
     benchmark = Benchmarks.HOTPOTQA
-    fewshots = ReflexionCoTFactory.get_fewshots(benchmark)
+    fewshots = ReflexionCoTFactory.get_fewshots(benchmark, fewshot_type='cot')
     assert isinstance(fewshots, dict)
     assert fewshots == {
+        "examples": HOTPOTQA_FEWSHOT_EXAMPLES_COT,
         "reflect_examples": HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     }
 
@@ -163,7 +165,13 @@ def test_reflexion_cot_factory_get_fewshots() -> None:
     with pytest.raises(
         ValueError, match="Benchmark 'unknown' few-shots not found for ReflexionCoT."
     ):
-        ReflexionCoTFactory.get_fewshots("unknown")
+        ReflexionCoTFactory.get_fewshots("unknown", fewshot_type="cot")
+
+    # Unsupported fewshot_type.
+    with pytest.raises(
+        ValueError, match="Benchmark 'hotpotqa' few-shot type not supported for ReflexionCoT."
+    ):
+        ReflexionCoTFactory.get_fewshots("hotpotqa", fewshot_type="react")
 
 
 def test_reflexion_cot_factory_get_prompts() -> None:
@@ -188,9 +196,10 @@ def test_reflexion_react_factory_get_fewshots() -> None:
     """Tests ReflexionReActFactory get_fewshots method."""
     # Valid benchmark.
     benchmark = Benchmarks.HOTPOTQA
-    fewshots = ReflexionReActFactory.get_fewshots(benchmark)
+    fewshots = ReflexionReActFactory.get_fewshots(benchmark, fewshot_type="react")
     assert isinstance(fewshots, dict)
     assert fewshots == {
+        "examples": HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         "reflect_examples": HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     }
 
@@ -198,7 +207,13 @@ def test_reflexion_react_factory_get_fewshots() -> None:
     with pytest.raises(
         ValueError, match="Benchmark 'unknown' few-shots not found for ReflexionReAct."
     ):
-        ReflexionReActFactory.get_fewshots("unknown")
+        ReflexionReActFactory.get_fewshots("unknown", fewshot_type="cot")
+
+    # Unsupported fewshot_type.
+    with pytest.raises(
+        ValueError, match="Benchmark 'hotpotqa' few-shot type not supported for ReflexionReAct."
+    ):
+        ReflexionReActFactory.get_fewshots("hotpotqa", fewshot_type="cot")
 
 
 def test_reflexion_react_factory_get_prompts() -> None:

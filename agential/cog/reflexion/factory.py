@@ -371,7 +371,7 @@ class ReflexionReActFactory(BaseFactory):
                 f"Benchmark '{benchmark}' few-shots not found for ReflexionReAct."
             )
 
-        if fewshot_type not in REFLEXION_REACT_FEWSHOTS[benchmark]:
+        if fewshot_type not in REFLEXION_REACT_BENCHMARK_FEWSHOTS[benchmark]:
             raise ValueError(
                 f"Benchmark '{benchmark}' few-shot type not supported for ReflexionReAct."
             )
