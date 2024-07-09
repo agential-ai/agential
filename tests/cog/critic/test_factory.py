@@ -109,11 +109,11 @@ def test_critic_factory_get_fewshots() -> None:
         CriticFactory.get_fewshots(benchmark)
 
 
-def test_critic_factory_get_prompt() -> None:
-    """Tests CriticFactory get_prompt method."""
+def test_critic_factory_get_prompts() -> None:
+    """Tests CriticFactory get_prompts method."""
     # Valid benchmark with tool usage.
     benchmark = Benchmarks.GSM8K
-    prompts = CriticFactory.get_prompt(benchmark, use_tool=True)
+    prompts = CriticFactory.get_prompts(benchmark, use_tool=True)
     assert "prompt" in prompts
     assert "critique_prompt" in prompts
     assert prompts == {
@@ -122,7 +122,7 @@ def test_critic_factory_get_prompt() -> None:
     }
 
     # Valid benchmark without tool usage.
-    prompts = CriticFactory.get_prompt(benchmark, use_tool=False)
+    prompts = CriticFactory.get_prompts(benchmark, use_tool=False)
     assert "prompt" in prompts
     assert "critique_prompt" in prompts
     assert prompts == {
@@ -134,8 +134,8 @@ def test_critic_factory_get_prompt() -> None:
     with pytest.raises(
         ValueError, match="Benchmark 'unknown' prompt not found for Critic."
     ):
-        CriticFactory.get_prompt("unknown", use_tool=True)
+        CriticFactory.get_prompts("unknown", use_tool=True)
 
     # Missing use_tool argument.
     with pytest.raises(ValueError, match="`use_tool` not specified."):
-        CriticFactory.get_prompt(benchmark)
+        CriticFactory.get_prompts(benchmark)

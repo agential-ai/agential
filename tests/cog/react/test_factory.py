@@ -92,15 +92,15 @@ def test_react_factory_get_fewshots() -> None:
         ReActFactory.get_fewshots("unknown")
 
 
-def test_react_factory_get_prompt() -> None:
-    """Tests ReActFactory get_prompt method."""
+def test_react_factory_get_prompts() -> None:
+    """Tests ReActFactory get_prompts method."""
     # Test valid input.
     benchmark = Benchmarks.HOTPOTQA
-    result = ReActFactory.get_prompt(benchmark)
+    result = ReActFactory.get_prompts(benchmark)
     assert result == {"prompt": REACT_INSTRUCTION_HOTPOTQA}
 
     # Test unsupported benchmark.
     with pytest.raises(
         ValueError, match="Benchmark 'unknown' prompt not found for ReAct."
     ):
-        ReActFactory.get_prompt("unknown")
+        ReActFactory.get_prompts("unknown")
