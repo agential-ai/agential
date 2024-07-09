@@ -2,8 +2,8 @@
 
 from typing import Any, Dict
 
-from agential.cog.constants import Benchmarks
 from agential.base.factory import BaseFactory
+from agential.cog.constants import Benchmarks
 from agential.cog.react.prompts import (
     REACT_INSTRUCTION_AMBIGNQ,
     REACT_INSTRUCTION_FEVER,
