@@ -22,7 +22,9 @@ from agential.cog.react.strategies.qa import (
     ReActHotQAStrategy,
     ReActTriviaQAStrategy,
 )
-
+from agential.cog.fewshots.hotpotqa import (
+    HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+)
 
 def test_react_factory_get_strategy() -> None:
     """Tests ReActFactory get_strategy method."""
@@ -81,16 +83,21 @@ def test_react_factory_get_fewshots() -> None:
     """Tests ReActFactory get_fewshots method."""
     # Test valid input.
     benchmark = Benchmarks.HOTPOTQA
-    result = ReActFactory.get_fewshots(benchmark)
+    result = ReActFactory.get_fewshots(benchmark, fewshot_type="react")
     assert isinstance(result, dict)
-    assert result == {}
+    assert result == {"examples": HOTPOTQA_FEWSHOT_EXAMPLES_REACT}
 
     # Test unsupported benchmark.
     with pytest.raises(
         ValueError, match="Benchmark 'unknown' few-shots not found for ReAct."
     ):
-        ReActFactory.get_fewshots("unknown")
+        ReActFactory.get_fewshots("unknown", fewshot_type="react")
 
+    # Test unsupported fewshot_type.
+    with pytest.raises(
+        ValueError, match="Benchmark 'unknown' few-shot type not supported for ReAct."
+    ):
+        ReActFactory.get_fewshots("hotpotqa", fewshot_type="pot")
 
 def test_react_factory_get_prompts() -> None:
     """Tests ReActFactory get_prompts method."""
