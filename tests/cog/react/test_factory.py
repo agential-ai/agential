@@ -95,7 +95,7 @@ def test_react_factory_get_fewshots() -> None:
 
     # Test unsupported fewshot_type.
     with pytest.raises(
-        ValueError, match="Benchmark 'unknown' few-shot type not supported for ReAct."
+        ValueError, match="Benchmark 'hotpotqa' few-shot type not supported for ReAct."
     ):
         ReActFactory.get_fewshots("hotpotqa", fewshot_type="pot")
 
