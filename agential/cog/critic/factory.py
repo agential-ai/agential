@@ -205,18 +205,24 @@ class CriticFactory(BaseFactory):
     """A factory class for creating instances of Critic strategies and selecting prompts and few-shot examples."""
 
     @staticmethod
-    def get_fewshots(benchmark: str, **kwargs: Any) -> Dict[str, str]:
+    def get_fewshots(benchmark: str, fewshot_type: str, **kwargs: Any) -> Dict[str, str]:
         """Retrieve few-shot examples based on the benchmark.
 
         Args:
             benchmark (str): The benchmark name.
+            fewshot_type (str): The benchmark few-shot type. 
             **kwargs (Any): Additional arguments.
 
         Returns:
             Dict[str, str]: A dictionary of few-shot examples.
         """
-        if benchmark not in CRITIC_FEWSHOTS:
+        if benchmark not in CRITIC_FEWSHOTS or benchmark not in CRITIC_BENCHMARK_FEWSHOTS:
             raise ValueError(f"Benchmark '{benchmark}' few-shots not found for Critic.")
+
+        if fewshot_type not in CRITIC_BENCHMARK_FEWSHOTS[benchmark]:
+            raise ValueError(f"Benchmark '{benchmark}' few-shot type not supported for Critic.")
+
+        benchmark_fewshots = BENCHMARK_FEWSHOTS[benchmark][fewshot_type]
 
         use_tool = kwargs.get("use_tool")
         if use_tool is None:
@@ -224,9 +230,11 @@ class CriticFactory(BaseFactory):
 
         if use_tool:
             return {
+                "examples": benchmark_fewshots,
                 "critique_examples": CRITIC_FEWSHOTS[benchmark]["critique_examples"]
             }
         return {
+            "examples": benchmark_fewshots,
             "critique_examples": CRITIC_FEWSHOTS[benchmark]["critique_examples_no_tool"]
         }
 
