@@ -1,6 +1,7 @@
 """Few-shot factory class."""
 
 from typing import Dict
+
 from agential.base.constants import Benchmarks, FewShotType
 from agential.fewshots.ambignq import (
     AMBIGNQ_FEWSHOT_EXAMPLES_COT,
@@ -95,7 +96,6 @@ BENCHMARK_FEWSHOTS = {
         FewShotType.COT: {"examples": MBPP_FEWSHOT_EXAMPLES_COT},
     },
 }
-
 
 
 class FewShotFactory:
