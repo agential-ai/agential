@@ -9,8 +9,9 @@ from typing import Any, Dict, List
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.agent import BaseAgent
-from agential.cog.critic.factory import CriticFactory
+from agential.cog.critic.factory import CriticFactory, CRITIC_BENCHMARK_FEWSHOTS
 from agential.cog.critic.output import CriticOutput
+from agential.cog.constants import FewShotType
 
 
 class CriticAgent(BaseAgent):
@@ -42,12 +43,13 @@ class CriticAgent(BaseAgent):
     def generate(
         self,
         question: str,
-        examples: str,
-        prompt: str,
-        critique_examples: str,
-        critique_prompt: str,
+        examples: str = "",
+        prompt: str = "",
+        critique_examples: str = "",
+        critique_prompt: str = "",
         additional_keys: Dict[str, str] = {},
         critique_additional_keys: Dict[str, str] = {},
+        fewshot_type: str = "",
         max_interactions: int = 7,
         use_tool: bool = True,
         reset: bool = True,
@@ -57,12 +59,13 @@ class CriticAgent(BaseAgent):
 
         Args:
             question (str): The question to be answered.
-            examples (str): Few-shot examples to guide the language model in generating the initial answer.
-            prompt (str): The instruction template used to prompt the language model for the initial answer.
-            critique_examples (str): Few-shot examples to guide the language model in generating critiques.
-            critique_prompt (str): The instruction template for generating critiques.
+            examples (str): Few-shot examples to guide the language model in generating the initial answer. Defaults to "".
+            prompt (str): The instruction template used to prompt the language model for the initial answer. Defaults to "".
+            critique_examples (str): Few-shot examples to guide the language model in generating critiques. Defaults to "".
+            critique_prompt (str): The instruction template for generating critiques. Defaults to "".
             additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
             critique_additional_keys (Dict[str, str]): Additional keys to format the critique_prompt. Defaults to {}.
+            fewshot_type (str): The type of few-shot examples to use. Defaults to "".
             max_interactions (int): The maximum number of critique cycles. Defaults to 7.
             use_tool (bool): Use the external tool. Flag to decide whether to use the interpreter tool for math/code execution, or search tool for QA. Defaults to True.
             reset (bool): Resets the agent's state. Defaults to True.
@@ -72,16 +75,18 @@ class CriticAgent(BaseAgent):
             List[CriticOutput]: A list of CriticOutput instances where each CriticOutput instance contains the "answer", "critique", and "external_tool_info".
         """
         if not prompt or not critique_prompt or not examples or not critique_examples:
-            agent_fewshots = CriticFactory.get_fewshots(
+            if not fewshot_type:
+                fewshot_type = CRITIC_BENCHMARK_FEWSHOTS[self.benchmark][0]
+            fewshots = CriticFactory.get_fewshots(
+                benchmark=self.benchmark, fewshot_type=fewshot_type, use_tool=use_tool
+            )
+            prompts = CriticFactory.get_prompts(
                 benchmark=self.benchmark, use_tool=use_tool
             )
-            prompts = CriticFactory.get_prompt(
-                benchmark=self.benchmark, use_tool=use_tool
-            )
-            examples = agent_fewshots.get("examples", "")
-            critique_examples = agent_fewshots.get("critique_examples", "")
-            prompt = prompts.get("prompt", "")
-            critique_prompt = prompts.get("critique_prompt", "")
+            examples = fewshots['examples']
+            prompt = prompts['prompt']
+            critique_examples = fewshots["critique_examples"]
+            critique_prompt = prompts['critique_prompt']
 
         if reset:
             self.reset()
