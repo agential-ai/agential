@@ -1,4 +1,4 @@
-"""Unit tests for CRITIC selector & factory."""
+"""Unit tests for CRITIC factory."""
 
 import pytest
 
@@ -11,7 +11,7 @@ from agential.cog.critic.prompts import (
     GSM8K_FEWSHOT_EXAMPLES_CRITIC,
     GSM8K_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
 )
-from agential.cog.critic.selector import CriticFactory
+from agential.cog.critic.factory import CriticFactory
 from agential.cog.critic.strategies.code import (
     CritHEvalCodeStrategy,
     CritMBPPCodeStrategy,
@@ -30,7 +30,7 @@ from agential.cog.critic.strategies.qa import (
 from agential.base.constants import Benchmarks
 
 
-def test_critic_strategy_factory_get_strategy() -> None:
+def test_critic_factory_get_strategy() -> None:
     """Tests CriticFactory get_strategy method."""
     llm = FakeListChatModel(responses=[])
 

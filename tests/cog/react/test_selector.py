@@ -1,11 +1,11 @@
-"""Unit tests for ReAct selector & factory."""
+"""Unit tests for ReAct factory."""
 
 import pytest
 
 from langchain_community.chat_models.fake import FakeListChatModel
 
 from agential.cog.react.prompts import REACT_INSTRUCTION_HOTPOTQA
-from agential.cog.react.selector import ReActFactory
+from agential.cog.react.factory import ReActFactory
 from agential.cog.react.strategies.code import (
     ReActHEvalStrategy,
     ReActMBPPStrategy,
@@ -24,8 +24,8 @@ from agential.cog.react.strategies.qa import (
 from agential.base.constants import Benchmarks
 
 
-def test_react_strategy_factory_get_strategy() -> None:
-    """Tests ReActStrategyFactory get_strategy method."""
+def test_react_factory_get_strategy() -> None:
+    """Tests ReActFactory get_strategy method."""
     llm = FakeListChatModel(responses=[])
 
     # QA benchmarks.

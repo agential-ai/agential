@@ -1,4 +1,4 @@
-"""Unit tests for Reflexion selector & factory."""
+"""Unit tests for Reflexion factory."""
 
 import pytest
 
@@ -12,7 +12,7 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
-from agential.cog.reflexion.selector import (
+from agential.cog.reflexion.factory import (
     ReflexionCoTFactory,
     ReflexionReActFactory,
 )
@@ -43,7 +43,7 @@ from agential.cog.reflexion.strategies.qa import (
 from agential.base.constants import Benchmarks
 
 
-def test_reflexion_cot_strategy_factory_get_strategy() -> None:
+def test_reflexion_cot_factory_get_strategy() -> None:
     """Tests ReflexionCoTFactory get_strategy method."""
     llm = FakeListChatModel(responses=[])
 
@@ -96,7 +96,7 @@ def test_reflexion_cot_strategy_factory_get_strategy() -> None:
         ReflexionCoTFactory.get_strategy("unknown", llm=llm)
 
 
-def test_reflexion_react_strategy_factory_get_strategy() -> None:
+def test_reflexion_react_factory_get_strategy() -> None:
     """Tests ReflexionReActFactory get_strategy method."""
     llm = FakeListChatModel(responses=[])
 
