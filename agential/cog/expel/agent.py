@@ -41,7 +41,8 @@ class ExpeLAgent(BaseAgent):
 
     Attributes:
         llm (BaseChatModel): Primary language model for general tasks.
-        reflexion_react_kwargs (Optional[Dict[str, Any]]): Configuration options for the ReflexionReAct agent.
+        benchmark (str): The benchmark name.
+        reflexion_react_strategy_kwargs (Dict[str, Any]): Configuration options for the ReflexionReAct agent.
             Defaults max_steps=7 and max_trials=3 for the ReflexionReActAgent.
         reflexion_react_agent (Optional[ReflexionReActAgent]): The ReflexionReAct agent. Optional.
         experience_memory (Optional[ExpeLExperienceMemory]): Memory module for storing experiences.
@@ -60,7 +61,7 @@ class ExpeLAgent(BaseAgent):
     def __init__(
         self,
         llm: BaseChatModel,
-        mode: Dict[str, str] = {},
+        benchmark: str,
         reflexion_react_strategy_kwargs: Dict[str, Any] = {
             "max_steps": 7,
             "max_trials": 3,
@@ -78,7 +79,7 @@ class ExpeLAgent(BaseAgent):
         if not reflexion_react_agent:
             self.reflexion_react_agent = ReflexionReActAgent(
                 llm=llm,
-                mode=mode,
+                mode=benchmark,
                 **reflexion_react_strategy_kwargs,
             )
         else:
