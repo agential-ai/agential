@@ -27,12 +27,3 @@ class FewShotType:
     DIRECT = "direct"
     REACT = "react"
     POT = "pot"
-
-
-class Agents:
-    """Supported agents."""
-
-    REACT = "react"
-    REFLEXION_COT = "reflexion_cot"
-    REFLEXION_REACT = "reflexion_react"
-    CRITIC = "critic"
