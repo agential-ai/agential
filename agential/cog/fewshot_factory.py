@@ -2,7 +2,7 @@
 
 from typing import Dict
 
-from agential.base.constants import Benchmarks, FewShotType
+from agential.cog.constants import Benchmarks, FewShotType
 from agential.cog.fewshots.ambignq import (
     AMBIGNQ_FEWSHOT_EXAMPLES_COT,
     AMBIGNQ_FEWSHOT_EXAMPLES_DIRECT,

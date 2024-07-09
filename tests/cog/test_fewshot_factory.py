@@ -2,7 +2,7 @@
 
 import pytest
 
-from agential.base.constants import FewShotType
+from agential.cog.constants import FewShotType
 from agential.cog.fewshot_factory import FewShotFactory
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
 
