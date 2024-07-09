@@ -59,10 +59,10 @@ class CriticAgent(BaseAgent):
 
         Args:
             question (str): The question to be answered.
-            examples (str): Few-shot examples to guide the language model in generating the initial answer. Defaults to "".
-            prompt (str): The instruction template used to prompt the language model for the initial answer. Defaults to "".
-            critique_examples (str): Few-shot examples to guide the language model in generating critiques. Defaults to "".
-            critique_prompt (str): The instruction template for generating critiques. Defaults to "".
+            examples (str, optional): Few-shot examples to guide the language model in generating the initial answer. Defaults to "".
+            prompt (str, optional): The instruction template used to prompt the language model for the initial answer. Defaults to "".
+            critique_examples (str, optional): Few-shot examples to guide the language model in generating critiques. Defaults to "".
+            critique_prompt (str, optional): The instruction template for generating critiques. Defaults to "".
             additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
             critique_additional_keys (Dict[str, str]): Additional keys to format the critique_prompt. Defaults to {}.
             fewshot_type (str): The type of few-shot examples to use. Defaults to "".
