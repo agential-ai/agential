@@ -104,11 +104,17 @@ def test_critic_factory_get_fewshots() -> None:
     with pytest.raises(
         ValueError, match="Benchmark 'unknown' few-shots not found for Critic."
     ):
-        CriticFactory.get_fewshots("unknown", use_tool=True)
+        CriticFactory.get_fewshots("unknown", fewshot_type="pot", use_tool=True)
+
+    # Invalid fewshot_type.
+    with pytest.raises(
+        ValueError, match="Benchmark 'hotpotqa' few-shot type not supported for Critic."
+    ):
+        CriticFactory.get_fewshots("hotpotqa", fewshot_type="pot", use_tool=True)
 
     # Missing use_tool argument.
     with pytest.raises(ValueError, match="`use_tool` not specified."):
-        CriticFactory.get_fewshots(benchmark)
+        CriticFactory.get_fewshots(benchmark, fewshot_type="pot")
 
 
 def test_critic_factory_get_prompts() -> None:
