@@ -11,6 +11,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from agential.base.agent import BaseAgent
 from agential.cog.react.factory import ReActFactory
 from agential.cog.react.output import ReActOutput
+from agential.cog.constants import FewShotType
 
 
 class ReActAgent(BaseAgent):
@@ -44,6 +45,7 @@ class ReActAgent(BaseAgent):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str] = {},
+        fewshot_type: str = FewShotType.REACT,
         reset: bool = True,
         **kwargs: Any,
     ) -> List[ReActOutput]:
@@ -57,6 +59,7 @@ class ReActAgent(BaseAgent):
             examples (str, optional): Fewshot examples.
             prompt (str, optional): Prompt template string.
             additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
+            fewshot_type (str): The type of few-shot examples to use. Defaults to FewShotType.REACT.
             reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
             **kwargs (Any): Additional parameters for flexibility.
 
@@ -64,6 +67,16 @@ class ReActAgent(BaseAgent):
             List[ReActOutput]: The list of accumulated output from the ReAct process,
                 each ReActOutput consists of a thought, action type/query, observation, answer, and external tool info.
         """
+        if not prompt or not examples:
+            fewshots = ReActFactory().get_fewshots(
+                benchmark=self.benchmark, fewshot_type=fewshot_type
+            )
+            prompts = ReActFactory().get_prompts(
+                benchmark=self.benchmark
+            )
+            examples = fewshots['examples']
+            prompt = prompts['prompt']
+
         if reset:
             self.reset()
 
