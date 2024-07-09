@@ -21,7 +21,7 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
     """Test initialization."""
     llm = FakeListChatModel(responses=[])
 
-    agent = ExpeLAgent(llm=llm, mode={"qa": "hotpotqa"})
+    agent = ExpeLAgent(llm=llm, benchmark="hotpotqa")
     assert isinstance(agent.llm, BaseChatModel)
     assert isinstance(agent.reflexion_react_agent, ReflexionReActAgent)
     assert isinstance(agent.experience_memory, ExpeLExperienceMemory)
@@ -41,7 +41,7 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
     # Test with all parameters specified except experience memory and reflexion_react_agent.
     agent = ExpeLAgent(
         llm=llm,
-        mode={"qa": "hotpotqa"},
+        benchmark="hotpotqa",
         reflexion_react_strategy_kwargs={"max_steps": 3},
         insight_memory=ExpeLInsightMemory(
             insights=[{"insight": "blah blah", "score": 10}]
@@ -67,11 +67,12 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
     # Test with custom reflexion_react_agent (verify it overrides reflexion_react_kwargs)
     agent = ExpeLAgent(
         llm=llm,
+        benchmark="hotpotqa",
         reflexion_react_strategy_kwargs={"max_steps": 100},
-        reflexion_react_agent=ReflexionReActAgent(llm=llm, mode={"qa": "hotpotqa"}),
+        reflexion_react_agent=ReflexionReActAgent(llm=llm, benchmark="hotpotqa"),
     )
     assert isinstance(agent.reflexion_react_agent, ReflexionReActAgent)
-    assert agent.reflexion_react_agent.mode == {"qa": "hotpotqa"}
+    assert agent.reflexion_react_agent.benchmark == "hotpotqa"
 
     # Test with custom experience memory (verify correct initialization).
     experiences = joblib.load(expel_experiences_10_fake_path)
@@ -79,7 +80,7 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
 
     agent = ExpeLAgent(
         llm=llm,
-        mode={"qa": "hotpotqa"},
+        benchmark="hotpotqa",
         experience_memory=ExpeLExperienceMemory(experiences),
     )
     assert agent.experience_memory.experiences == experiences
@@ -90,7 +91,7 @@ def test_reset() -> None:
     """Test reset."""
     llm = FakeListChatModel(responses=["1"])
 
-    agent = ExpeLAgent(llm=llm, mode={"qa": "hotpotqa"})
+    agent = ExpeLAgent(llm=llm, benchmark="hotpotqa")
     agent.reflexion_react_agent.strategy._scratchpad == "cat"
     agent.experience_memory.experiences == "dog"
     agent.insight_memory.insights = ["turtle"]
@@ -110,7 +111,7 @@ def test_retrieve() -> None:
     """Test retrieve."""
     llm = FakeListChatModel(responses=["1"])
 
-    agent = ExpeLAgent(llm=llm, mode={"qa": "hotpotqa"})
+    agent = ExpeLAgent(llm=llm, benchmark="hotpotqa")
     memory = agent.retrieve()
     assert list(memory.keys()) == [
         "experiences",
@@ -211,7 +212,7 @@ def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
         "Finish[Oneida Limited]",
     ]
     llm = FakeListChatModel(responses=action_responses)
-    agent = ExpeLAgent(llm=llm, mode={"qa": "hotpotqa"})
+    agent = ExpeLAgent(llm=llm, benchmark="hotpotqa")
     agent.reflexion_react_agent.strategy.docstore.search = lambda x: "Search result"
     agent.reflexion_react_agent.strategy.docstore.lookup = lambda x: "Lookup result"
     new_experiences = agent.gather_experience(
@@ -233,7 +234,7 @@ def test_update_insights() -> None:
     ]
     memory = ExpeLInsightMemory(insights, max_num_insights=3)
     llm = FakeListChatModel(responses=[])
-    agent = ExpeLAgent(llm=llm, mode={"qa": "hotpotqa"}, insight_memory=memory)
+    agent = ExpeLAgent(llm=llm, benchmark="hotpotqa", insight_memory=memory)
 
     # Valid remove.
     gt_insights = [{"insight": "Test 2", "score": 2}, {"insight": "Test 3", "score": 3}]
@@ -299,7 +300,7 @@ def test_extract_insights(expel_experiences_10_fake_path: str) -> None:
         "ADD 11: Always try multiple variations of search terms when looking for specific information.\nADD 12: If unable to find relevant information through initial searches, consider looking for official announcements or press releases from the company.\nREMOVE 3: Always use the exact search term provided in the question, do not try variations.\nEDIT 7: Make sure to exhaust all possible search options before concluding that the information is unavailable.",
     ]
     llm = FakeListChatModel(responses=responses)
-    agent = ExpeLAgent(llm=llm, mode={"qa": "hotpotqa"})
+    agent = ExpeLAgent(llm=llm, benchmark="hotpotqa")
     agent.extract_insights(selected_dict)
     assert agent.insight_memory.insights == gt_insights
 
@@ -407,7 +408,7 @@ def test_generate(expel_experiences_10_fake_path: str) -> None:
 
     agent = ExpeLAgent(
         llm=FakeListChatModel(responses=responses),
-        mode={"qa": "hotpotqa"},
+        benchmark="hotpotqa",
         experience_memory=ExpeLExperienceMemory(experiences),
     )
     agent.reflexion_react_agent.strategy.docstore.search = lambda x: "Search result"
