@@ -3,6 +3,8 @@
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 
+from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+from agential.cog.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
 from agential.cog.react.agent import (
     ReActAgent,
 )
@@ -11,8 +13,6 @@ from agential.cog.react.prompts import (
     REACT_INSTRUCTION_HUMANEVAL,
 )
 from agential.cog.react.strategies.base import ReActBaseStrategy
-from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.cog.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
 
 
 def test_init() -> None:

@@ -5,6 +5,10 @@ import tiktoken
 
 from langchain_community.chat_models.fake import FakeListChatModel
 
+from agential.cog.fewshots.hotpotqa import (
+    HOTPOTQA_FEWSHOT_EXAMPLES_COT,
+    HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+)
 from agential.cog.reflexion.functional import (
     _build_cot_agent_prompt,
     _build_cot_reflection_prompt,
@@ -34,10 +38,6 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-)
-from agential.cog.fewshots.hotpotqa import (
-    HOTPOTQA_FEWSHOT_EXAMPLES_COT,
-    HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
 )
 
 
