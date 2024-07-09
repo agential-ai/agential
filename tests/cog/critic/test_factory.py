@@ -28,6 +28,7 @@ from agential.cog.critic.strategies.qa import (
     CritHotQAStrategy,
     CritTriviaQAStrategy,
 )
+from agential.cog.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
 
 
 def test_critic_factory_get_strategy() -> None:
@@ -87,14 +88,15 @@ def test_critic_factory_get_fewshots() -> None:
     """Tests CriticFactory get_fewshots method."""
     # Valid benchmark with tool usage.
     benchmark = Benchmarks.GSM8K
-    fewshots = CriticFactory.get_fewshots(benchmark, use_tool=True)
+    fewshots = CriticFactory.get_fewshots(benchmark, fewshot_type="pot", use_tool=True)
     assert "critique_examples" in fewshots
-    assert fewshots == {"critique_examples": GSM8K_FEWSHOT_EXAMPLES_CRITIC}
+    assert fewshots == {"examples": GSM8K_FEWSHOT_EXAMPLES_POT, "critique_examples": GSM8K_FEWSHOT_EXAMPLES_CRITIC}
 
     # Valid benchmark without tool usage.
-    fewshots = CriticFactory.get_fewshots(benchmark, use_tool=False)
+    fewshots = CriticFactory.get_fewshots(benchmark, fewshot_type="pot", use_tool=False)
     assert "critique_examples" in fewshots
     assert fewshots == {
+        "examples": GSM8K_FEWSHOT_EXAMPLES_POT,
         "critique_examples": GSM8K_FEWSHOT_EXAMPLES_CRITIC_NO_TOOL,
     }
 
