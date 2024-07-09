@@ -89,7 +89,7 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActHotQAStrategy,
     ReflexionReActTriviaQAStrategy,
 )
-from agential.manager.constants import Benchmarks
+from agential.base.constants import Benchmarks
 
 REFLEXION_COT_PROMPTS = {
     Benchmarks.HOTPOTQA: {

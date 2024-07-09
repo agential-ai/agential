@@ -40,7 +40,7 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActHotQAStrategy,
     ReflexionReActTriviaQAStrategy,
 )
-from agential.manager.constants import Benchmarks
+from agential.base.constants import Benchmarks
 
 
 def test_reflexion_cot_strategy_factory_get_strategy() -> None:

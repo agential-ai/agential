@@ -21,7 +21,7 @@ from agential.cog.react.strategies.qa import (
     ReActHotQAStrategy,
     ReActTriviaQAStrategy,
 )
-from agential.manager.constants import Benchmarks
+from agential.base.constants import Benchmarks
 
 
 def test_react_strategy_factory_get_strategy() -> None:

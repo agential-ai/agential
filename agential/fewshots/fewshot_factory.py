@@ -45,7 +45,7 @@ from agential.fewshots.triviaqa import (
     TRIVIAQA_FEWSHOT_EXAMPLES_DIRECT,
     TRIVIAQA_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.manager.constants import Benchmarks, FewShotType
+from agential.base.constants import Benchmarks, FewShotType
 
 BENCHMARK_FEWSHOTS = {
     Benchmarks.HOTPOTQA: {

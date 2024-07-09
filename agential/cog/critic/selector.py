@@ -60,7 +60,7 @@ from agential.cog.critic.strategies.qa import (
     CritHotQAStrategy,
     CritTriviaQAStrategy,
 )
-from agential.manager.constants import Benchmarks
+from agential.base.constants import Benchmarks
 
 CRITIC_PROMPTS = {
     Benchmarks.HOTPOTQA: {

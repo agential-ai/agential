@@ -27,7 +27,7 @@ from agential.cog.critic.strategies.qa import (
     CritHotQAStrategy,
     CritTriviaQAStrategy,
 )
-from agential.manager.constants import Benchmarks
+from agential.base.constants import Benchmarks
 
 
 def test_critic_strategy_factory_get_strategy() -> None:
