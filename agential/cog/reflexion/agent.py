@@ -76,7 +76,6 @@ class ReflexionCoTAgent(BaseAgent):
         self.benchmark = benchmark
 
         self.strategy = ReflexionCoTFactory().get_strategy(
-            agent="reflexion_cot",
             benchmark=self.benchmark,
             llm=self.llm,
             reflector=reflector,
@@ -228,7 +227,6 @@ class ReflexionReActAgent(BaseAgent):
         self.benchmark = benchmark
 
         self.strategy = ReflexionReActFactory().get_strategy(
-            agent="reflexion_react",
             benchmark=self.benchmark,
             llm=self.llm,
             reflector=reflector,
