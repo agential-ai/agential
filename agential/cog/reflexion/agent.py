@@ -13,7 +13,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.agent import BaseAgent
-from agential.cog.reflexion.factory import ReflexionCoTFactory, ReflexionReActFactory
+from agential.cog.reflexion.factory import ReflexionCoTFactory, ReflexionReActFactory, REFLEXION_COT_BENCHMARK_FEWSHOTS, REFLEXION_REACT_BENCHMARK_FEWSHOTS
 from agential.cog.reflexion.output import (
     ReflexionCoTOutput,
     ReflexionReActOutput,
@@ -86,11 +86,11 @@ class ReflexionCoTAgent(BaseAgent):
         self,
         question: str,
         key: str,
-        examples: str,
-        prompt: str,
-        reflect_examples: str,
-        reflect_prompt: str,
-        reflect_strategy: str,
+        examples: str = "",
+        prompt: str = "",
+        reflect_examples: str = "",
+        reflect_prompt: str = "",
+        reflect_strategy: str = "reflexion",
         additional_keys: Dict[str, str] = {},
         reflect_additional_keys: Dict[str, str] = {},
         patience: int = 1,
@@ -105,12 +105,12 @@ class ReflexionCoTAgent(BaseAgent):
         Args:
             question (str): The question to answer.
             key (str): The key to evaluate the correctness of the answer.
-            examples (str, optional): Fewshot examples.
-            prompt (str, optional): Prompt template string.
-            reflect_examples (str, optional): Reflection fewshot examples.
-            reflect_prompt (str, optional): Reflect prompt template string.
+            examples (str, optional): Fewshot examples. Defaults to "".
+            prompt (str, optional): Prompt template string. Defaults to "".
+            reflect_examples (str, optional): Reflection fewshot examples. Defaults to "".
+            reflect_prompt (str, optional): Reflect prompt template string. Defaults to "".
             reflect_strategy (str): The strategy to use for reflection. Can be one of "last_attempt",
-                "reflexion", or "last_attempt_and_reflexion".
+                "reflexion", or "last_attempt_and_reflexion". Defaults to "reflexion".
             additional_keys (Dict[str, str], optional): Additional keys for the prompt. Defaults to {}.
             reflect_additional_keys (Dict[str, str], optional): Additional keys for the reflect prompt. Defaults to {}.
             patience (int, optional): The patience for the agent. Defaults to 1.
@@ -120,6 +120,20 @@ class ReflexionCoTAgent(BaseAgent):
         Returns:
             result (List[ReflexionCoTOutput]): A list of ReflexionCoTOutput containing the thought, action, observation, is_correct, and reflections.
         """
+        if not prompt or not reflect_prompt or not examples or not reflect_examples:
+            if not fewshot_type:
+                fewshot_type = REFLEXION_COT_BENCHMARK_FEWSHOTS[self.benchmark][0]
+            fewshots = ReflexionCoTFactory.get_fewshots(
+                benchmark=self.benchmark, fewshot_type=fewshot_type
+            )
+            prompts = ReflexionCoTFactory.get_prompts(
+                benchmark=self.benchmark
+            )
+            examples = fewshots['examples']
+            prompt = prompts['prompt']
+            reflect_examples = fewshots["reflect_examples"]
+            reflect_prompt = prompts['reflect_prompt']
+
         # Reset.
         if reset:
             self.reset()
@@ -304,11 +318,11 @@ class ReflexionReActAgent(BaseAgent):
         self,
         question: str,
         key: str,
-        examples: str,
-        prompt: str,
-        reflect_examples: str,
-        reflect_prompt: str,
-        reflect_strategy: Optional[str] = None,
+        examples: str = "",
+        prompt: str = "",
+        reflect_examples: str = "",
+        reflect_prompt: str = "",
+        reflect_strategy: str = "reflexion",
         additional_keys: Dict[str, str] = {},
         reflect_additional_keys: Dict[str, str] = {},
         patience: int = 1,
@@ -323,24 +337,38 @@ class ReflexionReActAgent(BaseAgent):
         Args:
             question (str): The question to be processed.
             key (str): The answer to the question.
-            examples (str, optional): Fewshot examples.
-            reflect_strategy (Optional[str]): The reflection strategy. Can be of 3 types. Defaults to None.
+            examples (str, optional): Fewshot examples. Defaults to "".
+            prompt (str, optional): Prompt template string. Defaults to "".
+            reflect_examples (str, optional): Reflection fewshot examples. Defaults to "".
+            reflect_prompt (str, optional): Reflect prompt template string. Defaults to "".
+            reflect_strategy (Optional[str]): The reflection strategy. Can be of 3 types. Defaults to "reflexion".
                 - "last_attempt": This strategy uses only 'question' and 'scratchpad'. The 'reflections' list is updated with the current scratchpad.
                 - "reflexion": This strategy uses all the parameters. It adds a new reflexion generated by the language model to the 'reflections' list.
                 - "last_attempt_and_reflexion": This strategy combines the 'last_attempt' and 'reflexion' strategies.
-            reset (bool): Whether to reset the internal state before processing. Defaults to True.
-            prompt (str, optional): Prompt template string.
-            reflect_examples (str, optional): Reflection fewshot examples.
-            reflect_prompt (str, optional): Reflect prompt template string.
             additional_keys (Dict[str, str], optional): Additional keys for the prompt. Defaults to {}.
             reflect_additional_keys (Dict[str, str], optional): Additional keys for the reflect prompt. Defaults to {}.
             patience (int, optional): The patience for the agent. Defaults to 1.
+            reset (bool): Whether to reset the internal state before processing. Defaults to True.
             **kwargs (Any): Additional keyword arguments for the strategy.
 
         Returns:
             result (List[ReflexionReActOutput]): List of ReflexionReActOutput where each ReflexionReActOutput contains the ReAct output and
                 the reflections at the end of the trial.
         """
+        if not prompt or not reflect_prompt or not examples or not reflect_examples:
+            if not fewshot_type:
+                fewshot_type = REFLEXION_REACT_BENCHMARK_FEWSHOTS[self.benchmark][0]
+            fewshots = ReflexionReActFactory.get_fewshots(
+                benchmark=self.benchmark, fewshot_type=fewshot_type
+            )
+            prompts = ReflexionReActFactory.get_prompts(
+                benchmark=self.benchmark
+            )
+            examples = fewshots['examples']
+            prompt = prompts['prompt']
+            reflect_examples = fewshots["reflect_examples"]
+            reflect_prompt = prompts['reflect_prompt']
+
         # Reset.
         if reset:
             self.reset()
