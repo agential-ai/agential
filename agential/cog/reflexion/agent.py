@@ -129,7 +129,7 @@ class ReflexionCoTAgent(BaseAgent):
         """
         if not prompt or not reflect_prompt or not examples or not reflect_examples:
             if not fewshot_type:
-                fewshot_type: str = REFLEXION_COT_BENCHMARK_FEWSHOTS[self.benchmark][0]
+                fewshot_type = REFLEXION_COT_BENCHMARK_FEWSHOTS[self.benchmark][0]  # type: ignore
             fewshots = ReflexionCoTFactory.get_fewshots(
                 benchmark=self.benchmark, fewshot_type=fewshot_type
             )
@@ -364,7 +364,7 @@ class ReflexionReActAgent(BaseAgent):
         """
         if not prompt or not reflect_prompt or not examples or not reflect_examples:
             if not fewshot_type:
-                fewshot_type = REFLEXION_REACT_BENCHMARK_FEWSHOTS[self.benchmark][0]
+                fewshot_type = REFLEXION_REACT_BENCHMARK_FEWSHOTS[self.benchmark][0]  # type: ignore
             fewshots = ReflexionReActFactory.get_fewshots(
                 benchmark=self.benchmark, fewshot_type=fewshot_type
             )
