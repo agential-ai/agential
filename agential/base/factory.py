@@ -14,11 +14,12 @@ class BaseFactory(ABC):
         pass
 
     @abstractmethod
-    def get_fewshots(self, benchmark: str, **kwargs: Any) -> Dict[str, str]:
+    def get_fewshots(self, benchmark: str, fewshot_type: str, **kwargs: Any) -> Dict[str, str]:
         """Retrieve few-shot examples based on the benchmark.
 
         Args:
             benchmark (str): The benchmark name.
+            fewshot_type (str): The benchmark few-shot type.
             **kwargs (Any): Additional arguments.
 
         Returns:
