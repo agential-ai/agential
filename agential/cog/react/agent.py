@@ -69,10 +69,10 @@ class ReActAgent(BaseAgent):
         if not prompt or not examples:
             if not fewshot_type:
                 fewshot_type = REACT_BENCHMARK_FEWSHOTS[self.benchmark][0]
-            fewshots = ReActFactory().get_fewshots(
+            fewshots = ReActFactory.get_fewshots(
                 benchmark=self.benchmark, fewshot_type=fewshot_type
             )
-            prompts = ReActFactory().get_prompts(benchmark=self.benchmark)
+            prompts = ReActFactory.get_prompts(benchmark=self.benchmark)
             examples = fewshots["examples"]
             prompt = prompts["prompt"]
 
