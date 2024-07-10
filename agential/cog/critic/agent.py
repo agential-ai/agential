@@ -9,9 +9,9 @@ from typing import Any, Dict, List
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.agent import BaseAgent
-from agential.cog.critic.factory import CriticFactory, CRITIC_BENCHMARK_FEWSHOTS
-from agential.cog.critic.output import CriticOutput
 from agential.cog.constants import FewShotType
+from agential.cog.critic.factory import CRITIC_BENCHMARK_FEWSHOTS, CriticFactory
+from agential.cog.critic.output import CriticOutput
 
 
 class CriticAgent(BaseAgent):
@@ -83,10 +83,10 @@ class CriticAgent(BaseAgent):
             prompts = CriticFactory.get_prompts(
                 benchmark=self.benchmark, use_tool=use_tool
             )
-            examples = fewshots['examples']
-            prompt = prompts['prompt']
+            examples = fewshots["examples"]
+            prompt = prompts["prompt"]
             critique_examples = fewshots["critique_examples"]
-            critique_prompt = prompts['critique_prompt']
+            critique_prompt = prompts["critique_prompt"]
 
         if reset:
             self.reset()
