@@ -345,6 +345,94 @@ def test_reflexion_react_generate() -> None:
     question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
     key = "Gesellschaft mit beschränkter Haftung"
 
+    # Test auto-select prompts and few-shots.
+    responses = [
+        "I need to search for VIVA Media AG and find out what their new acronym stands for.",
+        "Search[VIVA Media AG]",
+        "The search for VIVA Media AG did not yield any results. I should try searching for their new acronym instead.",
+        "Search[new acronym for VIVA Media AG]",
+        "The search for the new acronym for VIVA Media AG also did not yield any results. I should try looking for any information about the name change in 2004 and see if it mentions the new acronym.",
+        "Lookup[name change of VIVA Media AG in 2004]",
+        "The lookup for the name change of VIVA Media AG in 2004 did not yield any results either. I should try searching for any news articles or press releases about the company's name change in 2004.",
+        "Search[VIVA Media AG name change 2004 news articles]",
+        "The search for information about VIVA Media AG's name change in 2004 did not yield any results. It seems that there is limited information available on this topic. Without further information, I am unable to determine what their new acronym stands for.",
+        "Finish[unable to determine]",
+    ]
+    agent = ReflexionReActAgent(
+        llm=FakeListChatModel(responses=responses),
+        benchmark="hotpotqa",
+        max_trials=1,
+    )
+    out = agent.generate(
+        question=question,
+        key=key,
+        reflect_strategy=None,
+        patience=2,
+    )
+    assert isinstance(out, list)
+    assert len(out) == 1
+
+    # Test auto-select prompts and few-shots.
+    responses = [
+        "I need to search for VIVA Media AG and find out what their new acronym stands for.",
+        "Search[VIVA Media AG]",
+        "The search for VIVA Media AG did not yield any results. I should try searching for their new acronym instead.",
+        "Search[new acronym for VIVA Media AG]",
+        "The search for the new acronym for VIVA Media AG also did not yield any results. I should try looking for any information about the name change in 2004 and see if it mentions the new acronym.",
+        "Lookup[name change of VIVA Media AG in 2004]",
+        "The lookup for the name change of VIVA Media AG in 2004 did not yield any results either. I should try searching for any news articles or press releases about the company's name change in 2004.",
+        "Search[VIVA Media AG name change 2004 news articles]",
+        "The search for information about VIVA Media AG's name change in 2004 did not yield any results. It seems that there is limited information available on this topic. Without further information, I am unable to determine what their new acronym stands for.",
+        "Finish[unable to determine]",
+    ]
+    agent = ReflexionReActAgent(
+        llm=FakeListChatModel(responses=responses),
+        benchmark="hotpotqa",
+        max_trials=1,
+    )
+    out = agent.generate(
+        question=question,
+        key=key,
+        fewshot_type='react',
+        reflect_strategy=None,
+        patience=2,
+    )
+    assert isinstance(out, list)
+    assert len(out) == 1
+
+
+    # Test auto-select prompts and few-shots.
+    responses = [
+        "I need to search for VIVA Media AG and find out what their new acronym stands for.",
+        "Search[VIVA Media AG]",
+        "The search for VIVA Media AG did not yield any results. I should try searching for their new acronym instead.",
+        "Search[new acronym for VIVA Media AG]",
+        "The search for the new acronym for VIVA Media AG also did not yield any results. I should try looking for any information about the name change in 2004 and see if it mentions the new acronym.",
+        "Lookup[name change of VIVA Media AG in 2004]",
+        "The lookup for the name change of VIVA Media AG in 2004 did not yield any results either. I should try searching for any news articles or press releases about the company's name change in 2004.",
+        "Search[VIVA Media AG name change 2004 news articles]",
+        "The search for information about VIVA Media AG's name change in 2004 did not yield any results. It seems that there is limited information available on this topic. Without further information, I am unable to determine what their new acronym stands for.",
+        "Finish[unable to determine]",
+    ]
+    agent = ReflexionReActAgent(
+        llm=FakeListChatModel(responses=responses),
+        benchmark="hotpotqa",
+        max_trials=1
+    )
+    with pytest.raises(
+        ValueError,
+        match="Benchmark 'hotpotqa' few-shot type not supported for ReflexionReAct.",
+    ):
+        out = agent.generate(
+            question=question,
+            key=key,
+            fewshot_type='reflexion',
+            reflect_strategy=None,
+            patience=2,
+        )
+    assert isinstance(out, list)
+    assert len(out) == 1
+
     # General generate.
     responses = [
         "I need to search for VIVA Media AG and find out what their new acronym stands for.",
