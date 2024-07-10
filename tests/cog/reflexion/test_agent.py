@@ -1,5 +1,7 @@
 """Unit tests for Reflexion."""
 
+import pytest
+
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -55,9 +57,74 @@ def test_reflexion_cot_generate() -> None:
     key = "Gesellschaft mit beschränkter Haftung"
 
     # Test auto-select prompts and few-shots.
+    responses = [
+        'The context provided states that VIVA Media AG changed its name to VIVA Media GmbH in 2004. Based on the information given, the new acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with limited liability]',
+        "Finish[Company with limited liability]",
+        'Upon reflection, the phrasing discrepancy in my answer may have been the reason for it being marked incorrect. While I provided the correct translation of "GmbH" in English, the question specifically asked for the acronym\'s meaning in German. To mitigate this failure in the future, I should provide the answer in the same language as requested in the question, which in this case would be "Gesellschaft mit beschränkter Haftung". This will ensure alignment between the question and my response.',
+        'The reflection provided valuable insight into the previous mistake. To align with the question\'s request for the meaning of the new acronym in German, I should provide the answer in German, which is "Gesellschaft mit beschränkter Haftung". This will ensure accuracy and avoid repeating the previous error.\n\nAction: Finish[Gesellschaft mit beschränkter Haftung]',
+        "Finish[Gesellschaft mit beschränkter Haftung]",
+    ]
     agent = ReflexionCoTAgent(
-        
+        llm=FakeListChatModel(responses=responses),
+        benchmark="hotpotqa",
+        max_trials=2,
     )
+    out = agent.generate(
+        question=question,
+        key=key,
+        reflect_strategy="reflexion",
+        patience=2,
+    )
+    assert isinstance(out, list)
+    assert len(out) == 2
+
+    # Test auto-select prompts and few-shots and specify fewshot_type.
+    responses = [
+        'The context provided states that VIVA Media AG changed its name to VIVA Media GmbH in 2004. Based on the information given, the new acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with limited liability]',
+        "Finish[Company with limited liability]",
+        'Upon reflection, the phrasing discrepancy in my answer may have been the reason for it being marked incorrect. While I provided the correct translation of "GmbH" in English, the question specifically asked for the acronym\'s meaning in German. To mitigate this failure in the future, I should provide the answer in the same language as requested in the question, which in this case would be "Gesellschaft mit beschränkter Haftung". This will ensure alignment between the question and my response.',
+        'The reflection provided valuable insight into the previous mistake. To align with the question\'s request for the meaning of the new acronym in German, I should provide the answer in German, which is "Gesellschaft mit beschränkter Haftung". This will ensure accuracy and avoid repeating the previous error.\n\nAction: Finish[Gesellschaft mit beschränkter Haftung]',
+        "Finish[Gesellschaft mit beschränkter Haftung]",
+    ]
+    agent = ReflexionCoTAgent(
+        llm=FakeListChatModel(responses=responses),
+        benchmark="hotpotqa",
+        max_trials=2,
+    )
+    out = agent.generate(
+        question=question,
+        key=key,
+        reflect_strategy="reflexion",
+        fewshot_type="cot",
+        patience=2,
+    )
+    assert isinstance(out, list)
+    assert len(out) == 2
+
+    # Test auto-select prompts and few-shots and specify fewshot_type.
+    responses = [
+        'The context provided states that VIVA Media AG changed its name to VIVA Media GmbH in 2004. Based on the information given, the new acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with limited liability]',
+        "Finish[Company with limited liability]",
+        'Upon reflection, the phrasing discrepancy in my answer may have been the reason for it being marked incorrect. While I provided the correct translation of "GmbH" in English, the question specifically asked for the acronym\'s meaning in German. To mitigate this failure in the future, I should provide the answer in the same language as requested in the question, which in this case would be "Gesellschaft mit beschränkter Haftung". This will ensure alignment between the question and my response.',
+        'The reflection provided valuable insight into the previous mistake. To align with the question\'s request for the meaning of the new acronym in German, I should provide the answer in German, which is "Gesellschaft mit beschränkter Haftung". This will ensure accuracy and avoid repeating the previous error.\n\nAction: Finish[Gesellschaft mit beschränkter Haftung]',
+        "Finish[Gesellschaft mit beschränkter Haftung]",
+    ]
+    agent = ReflexionCoTAgent(
+        llm=FakeListChatModel(responses=responses),
+        benchmark="hotpotqa",
+        max_trials=2,
+    )
+    with pytest.raises(
+        ValueError,
+        match="Benchmark 'hotpotqa' few-shot type not supported for ReflexionCoT.",
+    ):
+        out = agent.generate(
+            question=question,
+            key=key,
+            reflect_strategy="reflexion",
+            fewshot_type="invalid_input",
+            patience=2,
+        )
 
     # Incorrect.
     responses = [
