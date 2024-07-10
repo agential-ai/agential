@@ -2,6 +2,8 @@
 
 from unittest.mock import MagicMock
 
+import pytest
+
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 from langchain_core.language_models.chat_models import BaseChatModel
@@ -41,6 +43,58 @@ def test_init() -> None:
 def test_generate() -> None:
     """Test generate method."""
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
+
+    # Test "qa" mode without search tool and auto-select.
+    responses = [
+        "Let's think step by step. The person described in the question is Mike Tyson, who was once considered the best kickboxer in the world but has been involved in controversies and crimes of violence. So the answer is: Mike Tyson.",
+        'The question specifies that the individual was once considered the best kickboxer in the world, however, Mike Tyson is not a kickboxer, he is a former professional boxer. So the answer is not plausible.\n\n2. Truthfulness:\n\nLet\'s search the question in google:\n\n> Search Query: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring\n> Evidence: There is no relevant information available in the search results to confirm the accuracy of the proposed answer.\n\nGiven that the proposed answer incorrectly identifies Mike Tyson as a kickboxer, it is not truthful.\n\nQuestion: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring\nHere\'s the most possible answer: The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Without further information, it is not possible to determine the correct answer.',
+        "There is no specific evidence found for this question.\n\nLet's search the proposed answer in google:\n\n> Search Query: Mike Tyson kickboxing\n> Evidence: [Mike Tyson - Wikipedia] Tyson made his professional kickboxing debut on May 20, 2006, against Jonathan Paredes in a three-round exhibition. Tyson knocked Paredes down in the first round with a right hook.\n\nThe evidence shows that Mike Tyson did participate in kickboxing, but he is primarily known as a boxer, not a kickboxer. \n\nTherefore, the proposed answer is not accurate in terms of the sport, and it should be revised to reflect the correct sport. \n\nQuestion: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his \"unsportsmanlike conducts\" in the sport and crimes of violence outside of the ring?\nHere's the revised answer: The person described in the question is Mike Tyson, who was once considered one of the best professional boxers in the world but has been involved in controversies and crimes of violence. So the answer is: Mike Tyson.",
+        "\n> Evidence: [Mike Tyson - Wikipedia] Mike Tyson is not primarily known for kickboxing. He is a former professional boxer who competed from 1985 to 2005.\n\nThe evidence confirms that Mike Tyson is not a kickboxer but a former professional boxer.\n\nTherefore, the proposed answer is incorrect and needs revision.\n\nQuestion: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his \"unsportsmanlike conducts\" in the sport and crimes of violence outside of the ring?\nHere's the most possible answer: Let's think step by step. The individual described in the question is not Mike Tyson, who is a former professional boxer, not a kickboxer. The correct answer needs further research to identify the kickboxer matching the description provided.",
+        "the most possible answer: The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Unfortunately, without further information or evidence, it is not possible to determine the correct answer to this question.",
+    ]
+    agent = CriticAgent(
+        llm=FakeListChatModel(responses=responses), benchmark="hotpotqa"
+    )
+    out = agent.generate(
+        question=question,
+        max_interactions=7,
+        use_tool=False,
+    )
+    assert isinstance(out, list)
+    assert len(out) == 2
+
+    # Test "qa" mode without search tool and auto-select, specifying fewshot_type.
+    responses = [
+        "Let's think step by step. The person described in the question is Mike Tyson, who was once considered the best kickboxer in the world but has been involved in controversies and crimes of violence. So the answer is: Mike Tyson.",
+        'The question specifies that the individual was once considered the best kickboxer in the world, however, Mike Tyson is not a kickboxer, he is a former professional boxer. So the answer is not plausible.\n\n2. Truthfulness:\n\nLet\'s search the question in google:\n\n> Search Query: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring\n> Evidence: There is no relevant information available in the search results to confirm the accuracy of the proposed answer.\n\nGiven that the proposed answer incorrectly identifies Mike Tyson as a kickboxer, it is not truthful.\n\nQuestion: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring\nHere\'s the most possible answer: The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Without further information, it is not possible to determine the correct answer.',
+        "There is no specific evidence found for this question.\n\nLet's search the proposed answer in google:\n\n> Search Query: Mike Tyson kickboxing\n> Evidence: [Mike Tyson - Wikipedia] Tyson made his professional kickboxing debut on May 20, 2006, against Jonathan Paredes in a three-round exhibition. Tyson knocked Paredes down in the first round with a right hook.\n\nThe evidence shows that Mike Tyson did participate in kickboxing, but he is primarily known as a boxer, not a kickboxer. \n\nTherefore, the proposed answer is not accurate in terms of the sport, and it should be revised to reflect the correct sport. \n\nQuestion: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his \"unsportsmanlike conducts\" in the sport and crimes of violence outside of the ring?\nHere's the revised answer: The person described in the question is Mike Tyson, who was once considered one of the best professional boxers in the world but has been involved in controversies and crimes of violence. So the answer is: Mike Tyson.",
+        "\n> Evidence: [Mike Tyson - Wikipedia] Mike Tyson is not primarily known for kickboxing. He is a former professional boxer who competed from 1985 to 2005.\n\nThe evidence confirms that Mike Tyson is not a kickboxer but a former professional boxer.\n\nTherefore, the proposed answer is incorrect and needs revision.\n\nQuestion: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his \"unsportsmanlike conducts\" in the sport and crimes of violence outside of the ring?\nHere's the most possible answer: Let's think step by step. The individual described in the question is not Mike Tyson, who is a former professional boxer, not a kickboxer. The correct answer needs further research to identify the kickboxer matching the description provided.",
+        "the most possible answer: The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Unfortunately, without further information or evidence, it is not possible to determine the correct answer to this question.",
+    ]
+    agent = CriticAgent(
+        llm=FakeListChatModel(responses=responses), benchmark="hotpotqa"
+    )
+    out = agent.generate(
+        question=question,
+        fewshot_type="cot",
+        max_interactions=7,
+        use_tool=False,
+    )
+    assert isinstance(out, list)
+    assert len(out) == 2
+
+    # Test "qa" mode without search tool and auto-select, specifying incorrect fewshot_type.
+    agent = CriticAgent(llm=FakeListChatModel(responses=[]), benchmark="hotpotqa")
+    with pytest.raises(
+        ValueError,
+        match="Benchmark 'hotpotqa' few-shot type not supported for Critic.",
+    ):
+        out = agent.generate(
+            question=question,
+            fewshot_type="invalid_input",
+            max_interactions=7,
+            use_tool=False,
+        )
 
     # Test "qa" mode without search tool.
     responses = [
