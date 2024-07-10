@@ -98,6 +98,7 @@ class ReflexionCoTAgent(BaseAgent):
         reflect_strategy: str = "reflexion",
         additional_keys: Dict[str, str] = {},
         reflect_additional_keys: Dict[str, str] = {},
+        fewshot_type: str = "",
         patience: int = 1,
         reset: bool = True,
         **kwargs: Any,
@@ -118,6 +119,7 @@ class ReflexionCoTAgent(BaseAgent):
                 "reflexion", or "last_attempt_and_reflexion". Defaults to "reflexion".
             additional_keys (Dict[str, str], optional): Additional keys for the prompt. Defaults to {}.
             reflect_additional_keys (Dict[str, str], optional): Additional keys for the reflect prompt. Defaults to {}.
+            fewshot_type (str): The type of few-shot examples to use. Defaults to "".
             patience (int, optional): The patience for the agent. Defaults to 1.
             reset (bool, optional): Whether to reset the agent's memory. Defaults to True.
             **kwargs (Dict[str, Any], optional): Additional keyword arguments for the strategy.
@@ -127,7 +129,7 @@ class ReflexionCoTAgent(BaseAgent):
         """
         if not prompt or not reflect_prompt or not examples or not reflect_examples:
             if not fewshot_type:
-                fewshot_type = REFLEXION_COT_BENCHMARK_FEWSHOTS[self.benchmark][0]
+                fewshot_type: str = REFLEXION_COT_BENCHMARK_FEWSHOTS[self.benchmark][0]
             fewshots = ReflexionCoTFactory.get_fewshots(
                 benchmark=self.benchmark, fewshot_type=fewshot_type
             )
@@ -328,6 +330,7 @@ class ReflexionReActAgent(BaseAgent):
         reflect_strategy: str = "reflexion",
         additional_keys: Dict[str, str] = {},
         reflect_additional_keys: Dict[str, str] = {},
+        fewshot_type: str = "",
         patience: int = 1,
         reset: bool = True,
         **kwargs: Any,
@@ -350,6 +353,7 @@ class ReflexionReActAgent(BaseAgent):
                 - "last_attempt_and_reflexion": This strategy combines the 'last_attempt' and 'reflexion' strategies.
             additional_keys (Dict[str, str], optional): Additional keys for the prompt. Defaults to {}.
             reflect_additional_keys (Dict[str, str], optional): Additional keys for the reflect prompt. Defaults to {}.
+            fewshot_type (str): The type of few-shot examples to use. Defaults to "".
             patience (int, optional): The patience for the agent. Defaults to 1.
             reset (bool): Whether to reset the internal state before processing. Defaults to True.
             **kwargs (Any): Additional keyword arguments for the strategy.
