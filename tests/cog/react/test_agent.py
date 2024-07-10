@@ -1,5 +1,7 @@
 """Unit tests for ReAct."""
 
+import pytest
+
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -81,5 +83,57 @@ def test_generate() -> None:
         prompt=REACT_INSTRUCTION_HUMANEVAL,
         max_steps=3,
     )
+    assert isinstance(out, list)
+    assert len(out) == 3
+
+    # Test auto-select prompts and few-shots.
+    responses = [
+        "To implement this function, we need to iterate through the list of numbers and check if the absolute difference between any two numbers is less than the given threshold.\n\nAction: Implement\n\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nObservation:",
+        "Implement\n\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
+        "We should test the implemented function with different test cases to verify its correctness.\nAction: Test[\n```python\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n```\n]\nObservation 2: \n```python\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n```\nExecution Status: Done\nThought: The implemented function passed the test cases successfully. We can now finish the task.\nAction: Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]",
+        "Test[\n```python\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\nassert has_close_elements([1.0, 2.0, 3.0, 4.0], 0.1) == True\nassert has_close_elements([1.0, 2.0, 3.0, 4.0], 0.01) == False\n```\n]\nObservation 2: \n```python\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\nassert has_close_elements([1.0, 2.0, 3.0, 4.0], 0.1) == True\nassert has_close_elements([1.0, 2.0, 3.0, 4.0], 0.01) == False\n```\nExecution Status: Done\nThought: The function implementation is correct and the test cases have passed. We can finalize the implementation.\nAction: Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]",
+        "The implemented function has passed the test cases, and it correctly identifies if there are any two numbers in the list that are closer to each other than the given threshold. \nAction: Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]",
+        "Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]",
+    ]
+    llm = FakeListChatModel(responses=responses)
+    agent = ReActAgent(llm=llm, benchmark="humaneval")
+    out = agent.generate(
+        question=question,
+        max_steps=3,
+    )
+    assert isinstance(out, list)
+    assert len(out) == 3
+
+    # Test auto-select prompts and few-shots.
+    responses = [
+        "To implement this function, we need to iterate through the list of numbers and check if the absolute difference between any two numbers is less than the given threshold.\n\nAction: Implement\n\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nObservation:",
+        "Implement\n\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
+        "We should test the implemented function with different test cases to verify its correctness.\nAction: Test[\n```python\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n```\n]\nObservation 2: \n```python\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n```\nExecution Status: Done\nThought: The implemented function passed the test cases successfully. We can now finish the task.\nAction: Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]",
+        "Test[\n```python\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\nassert has_close_elements([1.0, 2.0, 3.0, 4.0], 0.1) == True\nassert has_close_elements([1.0, 2.0, 3.0, 4.0], 0.01) == False\n```\n]\nObservation 2: \n```python\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\nassert has_close_elements([1.0, 2.0, 3.0, 4.0], 0.1) == True\nassert has_close_elements([1.0, 2.0, 3.0, 4.0], 0.01) == False\n```\nExecution Status: Done\nThought: The function implementation is correct and the test cases have passed. We can finalize the implementation.\nAction: Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]",
+        "The implemented function has passed the test cases, and it correctly identifies if there are any two numbers in the list that are closer to each other than the given threshold. \nAction: Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]",
+        "Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]",
+    ]
+    llm = FakeListChatModel(responses=responses)
+    agent = ReActAgent(llm=llm, benchmark="humaneval")
+    out = agent.generate(
+        question=question,
+        fewshot_type="react",
+        max_steps=3,
+    )
+    assert isinstance(out, list)
+    assert len(out) == 3
+
+    # Test auto-select prompts and few-shots.
+    llm = FakeListChatModel(responses=[])
+    agent = ReActAgent(llm=llm, benchmark="humaneval")
+    with pytest.raises(
+        ValueError,
+        match="Benchmark 'humaneval' few-shot type not supported for ReAct.",
+    ):
+        out = agent.generate(
+            question=question,
+            fewshot_type="pot",
+            max_steps=3,
+        )
     assert isinstance(out, list)
     assert len(out) == 3
