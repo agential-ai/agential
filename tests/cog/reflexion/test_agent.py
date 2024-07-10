@@ -101,16 +101,9 @@ def test_reflexion_cot_generate() -> None:
     assert isinstance(out, list)
     assert len(out) == 2
 
-    # Test auto-select prompts and few-shots and specify fewshot_type.
-    responses = [
-        'The context provided states that VIVA Media AG changed its name to VIVA Media GmbH in 2004. Based on the information given, the new acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with limited liability]',
-        "Finish[Company with limited liability]",
-        'Upon reflection, the phrasing discrepancy in my answer may have been the reason for it being marked incorrect. While I provided the correct translation of "GmbH" in English, the question specifically asked for the acronym\'s meaning in German. To mitigate this failure in the future, I should provide the answer in the same language as requested in the question, which in this case would be "Gesellschaft mit beschränkter Haftung". This will ensure alignment between the question and my response.',
-        'The reflection provided valuable insight into the previous mistake. To align with the question\'s request for the meaning of the new acronym in German, I should provide the answer in German, which is "Gesellschaft mit beschränkter Haftung". This will ensure accuracy and avoid repeating the previous error.\n\nAction: Finish[Gesellschaft mit beschränkter Haftung]',
-        "Finish[Gesellschaft mit beschränkter Haftung]",
-    ]
+    # Test auto-select prompts and few-shots and specify incorrect fewshot_type.
     agent = ReflexionCoTAgent(
-        llm=FakeListChatModel(responses=responses),
+        llm=FakeListChatModel(responses=[]),
         benchmark="hotpotqa",
         max_trials=2,
     )
@@ -372,7 +365,7 @@ def test_reflexion_react_generate() -> None:
     assert isinstance(out, list)
     assert len(out) == 1
 
-    # Test auto-select prompts and few-shots.
+    # Test auto-select prompts and few-shots with fewshot_type.
     responses = [
         "I need to search for VIVA Media AG and find out what their new acronym stands for.",
         "Search[VIVA Media AG]",
@@ -400,21 +393,9 @@ def test_reflexion_react_generate() -> None:
     assert isinstance(out, list)
     assert len(out) == 1
 
-    # Test auto-select prompts and few-shots.
-    responses = [
-        "I need to search for VIVA Media AG and find out what their new acronym stands for.",
-        "Search[VIVA Media AG]",
-        "The search for VIVA Media AG did not yield any results. I should try searching for their new acronym instead.",
-        "Search[new acronym for VIVA Media AG]",
-        "The search for the new acronym for VIVA Media AG also did not yield any results. I should try looking for any information about the name change in 2004 and see if it mentions the new acronym.",
-        "Lookup[name change of VIVA Media AG in 2004]",
-        "The lookup for the name change of VIVA Media AG in 2004 did not yield any results either. I should try searching for any news articles or press releases about the company's name change in 2004.",
-        "Search[VIVA Media AG name change 2004 news articles]",
-        "The search for information about VIVA Media AG's name change in 2004 did not yield any results. It seems that there is limited information available on this topic. Without further information, I am unable to determine what their new acronym stands for.",
-        "Finish[unable to determine]",
-    ]
+    # Test auto-select prompts and few-shots with incorrect fewshot_type.
     agent = ReflexionReActAgent(
-        llm=FakeListChatModel(responses=responses), benchmark="hotpotqa", max_trials=1
+        llm=FakeListChatModel(responses=[]), benchmark="hotpotqa", max_trials=1
     )
     with pytest.raises(
         ValueError,
@@ -427,8 +408,6 @@ def test_reflexion_react_generate() -> None:
             reflect_strategy=None,
             patience=2,
         )
-    assert isinstance(out, list)
-    assert len(out) == 1
 
     # General generate.
     responses = [
