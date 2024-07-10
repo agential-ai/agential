@@ -9,9 +9,9 @@ from typing import Any, Dict, List
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.agent import BaseAgent
-from agential.cog.react.factory import ReActFactory, REACT_BENCHMARK_FEWSHOTS
-from agential.cog.react.output import ReActOutput
 from agential.cog.constants import FewShotType
+from agential.cog.react.factory import REACT_BENCHMARK_FEWSHOTS, ReActFactory
+from agential.cog.react.output import ReActOutput
 
 
 class ReActAgent(BaseAgent):
@@ -73,11 +73,9 @@ class ReActAgent(BaseAgent):
             fewshots = ReActFactory().get_fewshots(
                 benchmark=self.benchmark, fewshot_type=fewshot_type
             )
-            prompts = ReActFactory().get_prompts(
-                benchmark=self.benchmark
-            )
-            examples = fewshots['examples']
-            prompt = prompts['prompt']
+            prompts = ReActFactory().get_prompts(benchmark=self.benchmark)
+            examples = fewshots["examples"]
+            prompt = prompts["prompt"]
 
         if reset:
             self.reset()

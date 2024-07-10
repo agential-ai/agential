@@ -13,7 +13,12 @@ from typing import Any, Dict, List, Optional, Tuple
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.agent import BaseAgent
-from agential.cog.reflexion.factory import ReflexionCoTFactory, ReflexionReActFactory, REFLEXION_COT_BENCHMARK_FEWSHOTS, REFLEXION_REACT_BENCHMARK_FEWSHOTS
+from agential.cog.reflexion.factory import (
+    REFLEXION_COT_BENCHMARK_FEWSHOTS,
+    REFLEXION_REACT_BENCHMARK_FEWSHOTS,
+    ReflexionCoTFactory,
+    ReflexionReActFactory,
+)
 from agential.cog.reflexion.output import (
     ReflexionCoTOutput,
     ReflexionReActOutput,
@@ -126,13 +131,11 @@ class ReflexionCoTAgent(BaseAgent):
             fewshots = ReflexionCoTFactory.get_fewshots(
                 benchmark=self.benchmark, fewshot_type=fewshot_type
             )
-            prompts = ReflexionCoTFactory.get_prompts(
-                benchmark=self.benchmark
-            )
-            examples = fewshots['examples']
-            prompt = prompts['prompt']
+            prompts = ReflexionCoTFactory.get_prompts(benchmark=self.benchmark)
+            examples = fewshots["examples"]
+            prompt = prompts["prompt"]
             reflect_examples = fewshots["reflect_examples"]
-            reflect_prompt = prompts['reflect_prompt']
+            reflect_prompt = prompts["reflect_prompt"]
 
         # Reset.
         if reset:
@@ -361,13 +364,11 @@ class ReflexionReActAgent(BaseAgent):
             fewshots = ReflexionReActFactory.get_fewshots(
                 benchmark=self.benchmark, fewshot_type=fewshot_type
             )
-            prompts = ReflexionReActFactory.get_prompts(
-                benchmark=self.benchmark
-            )
-            examples = fewshots['examples']
-            prompt = prompts['prompt']
+            prompts = ReflexionReActFactory.get_prompts(benchmark=self.benchmark)
+            examples = fewshots["examples"]
+            prompt = prompts["prompt"]
             reflect_examples = fewshots["reflect_examples"]
-            reflect_prompt = prompts['reflect_prompt']
+            reflect_prompt = prompts["reflect_prompt"]
 
         # Reset.
         if reset:
