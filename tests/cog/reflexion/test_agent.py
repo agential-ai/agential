@@ -54,6 +54,11 @@ def test_reflexion_cot_generate() -> None:
     question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
     key = "Gesellschaft mit beschränkter Haftung"
 
+    # Test auto-select prompts and few-shots.
+    agent = ReflexionCoTAgent(
+        
+    )
+
     # Incorrect.
     responses = [
         "Let's think step by step. VIVA Media AG changed its name to VGL Group in 2004. VGL Group stands for VIVA GLobilization.\nAction: Finish[VIVA GLobilization]"
