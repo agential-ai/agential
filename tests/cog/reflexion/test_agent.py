@@ -372,7 +372,7 @@ def test_reflexion_react_generate() -> None:
     assert isinstance(out, list)
     assert len(out) == 1
 
-    # Test auto-select prompts and few-shots.
+    # Test auto-select prompts and few-shots with fewshot_type.
     responses = [
         "I need to search for VIVA Media AG and find out what their new acronym stands for.",
         "Search[VIVA Media AG]",
@@ -400,7 +400,7 @@ def test_reflexion_react_generate() -> None:
     assert isinstance(out, list)
     assert len(out) == 1
 
-    # Test auto-select prompts and few-shots.
+    # Test auto-select prompts and few-shots with incorrect fewshot_type.
     responses = [
         "I need to search for VIVA Media AG and find out what their new acronym stands for.",
         "Search[VIVA Media AG]",
