@@ -393,13 +393,12 @@ def test_reflexion_react_generate() -> None:
     out = agent.generate(
         question=question,
         key=key,
-        fewshot_type='react',
+        fewshot_type="react",
         reflect_strategy=None,
         patience=2,
     )
     assert isinstance(out, list)
     assert len(out) == 1
-
 
     # Test auto-select prompts and few-shots.
     responses = [
@@ -415,9 +414,7 @@ def test_reflexion_react_generate() -> None:
         "Finish[unable to determine]",
     ]
     agent = ReflexionReActAgent(
-        llm=FakeListChatModel(responses=responses),
-        benchmark="hotpotqa",
-        max_trials=1
+        llm=FakeListChatModel(responses=responses), benchmark="hotpotqa", max_trials=1
     )
     with pytest.raises(
         ValueError,
@@ -426,7 +423,7 @@ def test_reflexion_react_generate() -> None:
         out = agent.generate(
             question=question,
             key=key,
-            fewshot_type='reflexion',
+            fewshot_type="reflexion",
             reflect_strategy=None,
             patience=2,
         )
