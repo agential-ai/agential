@@ -29,7 +29,7 @@ class SelfRefineAgent(BaseAgent):
     def __init__(
         self,
         llm: BaseChatModel,
-        benchmark: str, 
+        benchmark: str,
         **strategy_kwargs: Dict[str, Any],
     ) -> None:
         """Initialization."""
