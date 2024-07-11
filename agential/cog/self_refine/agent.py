@@ -9,7 +9,7 @@ from typing import Any, Dict, List
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.agent import BaseAgent
-from agential.cog.strategies.strategy_factory import SelfRefineStrategyFactory
+from agential.cog.self_refine.factory import SelfRefineFactory
 
 
 class SelfRefineAgent(BaseAgent):
@@ -38,7 +38,7 @@ class SelfRefineAgent(BaseAgent):
         self.llm = llm
         self.benchmark = benchmark
 
-        self.strategy = SelfRefineStrategyFactory().get_strategy(
+        self.strategy = SelfRefineFactory().get_strategy(
             benchmark=self.benchmark, llm=self.llm, **strategy_kwargs
         )
 
