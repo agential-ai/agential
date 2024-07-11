@@ -2,6 +2,7 @@
 
 from langchain_community.chat_models.fake import FakeListChatModel
 
+from agential.cog.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
 from agential.cog.self_refine.prompts import (
     GSM8K_CRITIQUE_FEWSHOT_EXAMPLES,
     GSM8K_REFINE_FEWSHOT_EXAMPLES,
@@ -9,7 +10,6 @@ from agential.cog.self_refine.prompts import (
     SELF_REFINE_INSTRUCTION_GSM8K,
     SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
 )
-from agential.cog.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
 from agential.cog.self_refine.strategies.math import (
     SelfRefineGSM8KStrategy,
     SelfRefineMathStrategy,

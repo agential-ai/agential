@@ -4,14 +4,14 @@ from typing import Any, Dict
 
 from agential.base.factory import BaseFactory
 from agential.cog.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
-from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
 from agential.cog.self_refine.prompts import (
-    SELF_REFINE_INSTRUCTION_GSM8K,
     GSM8K_CRITIQUE_FEWSHOT_EXAMPLES,
-    SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
     GSM8K_REFINE_FEWSHOT_EXAMPLES,
+    SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
+    SELF_REFINE_INSTRUCTION_GSM8K,
     SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
 )
+from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
 from agential.cog.self_refine.strategies.math import SelfRefineGSM8KStrategy
 
 SELF_REFINE_BENCHMARK_FEWSHOTS = {
@@ -42,7 +42,7 @@ SELF_REFINE_PROMPTS = {
     Benchmarks.GSM8K: {
         "prompt": SELF_REFINE_INSTRUCTION_GSM8K,
         "critique_prompt": SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
-        "refine_prompt": SELF_REFINE_REFINE_INSTRUCTION_GSM8K
+        "refine_prompt": SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
     },
     Benchmarks.SVAMP: {
         "prompt": "",
@@ -65,7 +65,7 @@ SELF_REFINE_FEWSHOTS: Dict[str, Dict] = {
     Benchmarks.AMBIGNQ: {},
     Benchmarks.GSM8K: {
         "critique_examples": GSM8K_CRITIQUE_FEWSHOT_EXAMPLES,
-        "refine_examples": GSM8K_REFINE_FEWSHOT_EXAMPLES
+        "refine_examples": GSM8K_REFINE_FEWSHOT_EXAMPLES,
     },
     Benchmarks.SVAMP: {},
     Benchmarks.TABMWP: {},
@@ -85,6 +85,7 @@ SELF_REFINE_STRATEGIES = {
     Benchmarks.MBPP: None,
 }
 
+
 class SelfRefineFactory(BaseFactory):
     """A factory class for creating instances of Self-Refine strategies and selecting prompts and few-shot examples."""
 
@@ -103,7 +104,9 @@ class SelfRefineFactory(BaseFactory):
             Dict[str, str]: A dictionary of few-shot examples.
         """
         if benchmark not in SELF_REFINE_FEWSHOTS:
-            raise ValueError(f"Benchmark '{benchmark}' few-shots not found for Self-Refine.")
+            raise ValueError(
+                f"Benchmark '{benchmark}' few-shots not found for Self-Refine."
+            )
 
         if fewshot_type not in SELF_REFINE_BENCHMARK_FEWSHOTS[benchmark]:
             raise ValueError(
@@ -112,10 +115,7 @@ class SelfRefineFactory(BaseFactory):
 
         benchmark_fewshots = BENCHMARK_FEWSHOTS[benchmark]
 
-        return {
-            "examples": benchmark_fewshots,
-            **SELF_REFINE_FEWSHOTS[benchmark]
-        }
+        return {"examples": benchmark_fewshots, **SELF_REFINE_FEWSHOTS[benchmark]}
 
     @staticmethod
     def get_prompts(benchmark: str, **kwargs: Any) -> Dict[str, str]:
@@ -129,7 +129,9 @@ class SelfRefineFactory(BaseFactory):
             Dict[str, str]: A dictionary of prompt instructions.
         """
         if benchmark not in SELF_REFINE_PROMPTS:
-            raise ValueError(f"Benchmark '{benchmark}' prompt not found for Self-Refine.")
+            raise ValueError(
+                f"Benchmark '{benchmark}' prompt not found for Self-Refine."
+            )
 
         return SELF_REFINE_PROMPTS[benchmark]
 
@@ -146,7 +148,9 @@ class SelfRefineFactory(BaseFactory):
             SelfRefineBaseStrategy: An instance of the appropriate Self-Refine strategy.
         """
         if benchmark not in SELF_REFINE_STRATEGIES:
-            raise ValueError(f"Unsupported benchmark: {benchmark} for agent Self-Refine")
+            raise ValueError(
+                f"Unsupported benchmark: {benchmark} for agent Self-Refine"
+            )
 
         strategy = SELF_REFINE_STRATEGIES[benchmark]
         if strategy is None:
