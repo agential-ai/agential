@@ -10,7 +10,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.agent import BaseAgent
 from agential.cog.self_refine.factory import SelfRefineFactory
-
+from agential.cog.self_refine.output import SelfRefineOutput
 
 class SelfRefineAgent(BaseAgent):
     """The Self-Refine agent that utilizes the self-refinement process to iteratively improve solutions based on critique.
@@ -56,7 +56,7 @@ class SelfRefineAgent(BaseAgent):
         refine_additional_keys: Dict[str, str] = {},
         max_interactions: int = 3,
         reset: bool = True,
-    ) -> List[Dict[str, str]]:
+    ) -> List[SelfRefineOutput]:
         """Generates a refined solution for a given question through an iterative self-refinement process.
 
         The process includes generating initial solutions, soliciting critique, and refining the solution
@@ -77,7 +77,7 @@ class SelfRefineAgent(BaseAgent):
             reset (bool): Resets the agent's state. Defaults to True.
 
         Returns:
-            str: The final refined solution.
+            List[SelfRefineOutput]: A list of answers and critiques.
         """
         if reset:
             self.reset()
@@ -97,7 +97,7 @@ class SelfRefineAgent(BaseAgent):
                 additional_keys=critique_additional_keys,
             )
 
-            out.append(self.strategy.create_output_dict(answer, critique))
+            out.append(SelfRefineOutput(**self.strategy.create_output_dict(answer, critique)))
 
             if self.strategy.halting_condition():
                 break
