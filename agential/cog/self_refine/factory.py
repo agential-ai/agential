@@ -139,7 +139,7 @@ class SelfRefineFactory(BaseFactory):
 
         benchmark_fewshots = BENCHMARK_FEWSHOTS[benchmark]
 
-        return {"examples": benchmark_fewshots, **SELF_REFINE_FEWSHOTS[benchmark]}
+        return {"examples": benchmark_fewshots, **SELF_REFINE_FEWSHOTS[benchmark]}  # type: ignore
 
     @staticmethod
     def get_prompts(benchmark: str, **kwargs: Any) -> Dict[str, str]:
