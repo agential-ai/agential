@@ -4,7 +4,6 @@
 
 
 SELF_REFINE_INSTRUCTION_HOTPOTQA = """"""
-SELF_REFINE_REFINE_INSTRUCTION_HOTPOTQA = """"""
 
 HOTPOTQA_CRITIQUE_FEWSHOT_EXAMPLES = """Q: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
 A: 1,800 to 7,000 ft
@@ -146,7 +145,7 @@ What's the problem with the above answer?
 
 1. Plausibility:
 
-{critique}"""
+"""
 
 
 HOTPOTQA_REFINE_FEWSHOT_EXAMPLES = """Q: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
@@ -294,6 +293,7 @@ Question: Which magazine was started first, Arthur's Magazine or First for Women
 Here's the most possible answer: Let's think step by step. Arthur's Magazine was first published in 1844. First for Women was first published in 1989. 1844 (Arthur's Magazine) < 1989 (First for Women), so Arthur's Magazine was started first. So the answer is: Arthur's Magazine."""
 
 
+SELF_REFINE_REFINE_INSTRUCTION_HOTPOTQA = """"""
 
 
 
@@ -398,7 +398,25 @@ Let's search the question in google:
 > Search Query: American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics site.org
 > Evidence: [Bode Miller - Wikipedia] At the 2010 Winter Olympics, Miller won the gold medal in the super combined.
 
-The evidence confirms that Bode Miller won the gold medal in the super combined at the 2010 Winter Olympics."""
+The evidence confirms that Bode Miller won the gold medal in the super combined at the 2010 Winter Olympics.
+
+---
+
+Q: Which English author wrote the novel "1984"?
+A: George Orwell wrote the novel "1984". So the answer is: George Orwell.
+
+What's the problem with the above answer?
+
+1. Plausibility:
+The question asks for the name of the author, and the answer is "George Orwell," which is a name. So it's plausible.
+
+2. Truthfulness:
+Let's search the question in google:
+
+> Search Query: Which English author wrote the novel "1984"? site:wikipedia.org
+> Evidence: [1984 (novel) - Wikipedia] "Nineteen Eighty-Four: A Novel, often published as '1984', is a dystopian social science fiction novel and cautionary tale, written by the English writer George Orwell.
+
+The evidence confirms that George Orwell is indeed the author of the novel "1984"."""
 
 
 TRIVIAQA_REFINE_FEWSHOT_EXAMPLES = """Q: Mendelssohn's 'Wedding March' was. originally written as incidental music for which Shakespeare play in 1842?
@@ -510,7 +528,28 @@ Let's search the question in google:
 The evidence confirms that Bode Miller won the gold medal in the super combined at the 2010 Winter Olympics.
 
 Question: Also a two-time World Champion, which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics?
-Here's the most possible answer: Bodie Miller won the gold medal in the Men's Combined at the 2010 Winter Olympics. So the answer is: Bodie Miller"""
+Here's the most possible answer: Bodie Miller won the gold medal in the Men's Combined at the 2010 Winter Olympics. So the answer is: Bodie Miller
+
+---
+
+Q: Which English author wrote the novel "1984"?
+A: George Orwell wrote the novel "1984". So the answer is: George Orwell.
+
+What's the problem with the above answer?
+
+1. Plausibility:
+The question asks for the name of the author, and the answer is "George Orwell," which is a name. So it's plausible.
+
+2. Truthfulness:
+Let's search the question in google:
+
+> Search Query: Which English author wrote the novel "1984"? site:wikipedia.org
+> Evidence: [1984 (novel) - Wikipedia] "Nineteen Eighty-Four: A Novel, often published as '1984', is a dystopian social science fiction novel and cautionary tale, written by the English writer George Orwell.
+
+The evidence confirms that George Orwell is indeed the author of the novel "1984".
+
+Question: Which English author wrote the novel "1984"?
+Here's the most possible answer: George Orwell wrote the novel "1984". So the answer is: George Orwell."""
 
 
 # ======================================================================== AMBIGNQ ======================================================================== #
@@ -786,6 +825,195 @@ Here's the most possible answer: Nando's first opened its restaurants within the
 
 
 # ======================================================================== FEVER ======================================================================== #
+
+
+FEVER_CRITIQUE_FEWSHOT_EXAMPLES = """Claim: Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.
+A: SUPPORTS
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The answer "REFUTES" incorrectly negates the claim without supporting details.
+
+2. Truthfulness:
+
+> Search Query: Did Nikolaj Coster-Waldau work with Fox Broadcasting?
+> Evidence: [Nikolaj Coster-Waldau - IMDb] Nikolaj Coster-Waldau appeared in the 2009 Fox television film Virtuality.
+
+The evidence contradicts the proposed answer, confirming he did work with Fox in the television film Virtuality.
+
+---
+
+Claim: Stranger Things is set in Bloomington, Indiana.
+A: REFUTES
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The answer is correct but lacks specific details that verify the claim.
+
+2. Truthfulness:
+
+> Search Query: Setting of Stranger Things
+> Evidence: Stranger Things is set in the fictional town of Hawkins, Indiana, not Bloomington.
+
+Although the proposed answer is correct, it could be more informative by mentioning the specific setting.
+
+---
+
+Claim: "Beautiful" by Christina Aguilera reached number two on the Billboard Hot 100 in 2003.
+A: NOT ENOUGH INFO
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The answer "NOT ENOUGH INFO" is appropriate as it reflects the uncertainty due to incomplete information about the timing of the chart position.
+
+2. Truthfulness:
+
+> Search Query: Billboard Hot 100 position of "Beautiful" by Christina Aguilera in 2003
+> Evidence: The song peaked at number two on the Billboard Hot 100, but the specific year it achieved this ranking was not directly specified in the sources found.
+
+Given that the year 2003 is not verified in the available evidence, the proposed answer correctly reflects the uncertainty regarding the exact year of the chart position.
+
+---
+
+Claim: Tim Burton didn't direct the film "Edward Scissorhands."
+A: REFUTES
+
+What's the problem with the above answer?
+
+1. Plausibility:
+The answer "REFUTES" incorrectly negates the claim without supporting details.
+
+2. Truthfulness:
+> Search Query: Did Tim Burton direct the film "Edward Scissorhands"?
+> Evidence: [Edward Scissorhands - IMDb] The film "Edward Scissorhands" was directed by Tim Burton and released in 1990.
+
+The evidence supports the claim, confirming that Tim Burton directed "Edward Scissorhands."
+
+---
+
+Claim: "The Great Gatsby" was written by F. Scott Fitzgerald.
+A: SUPPORTS
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The answer "SUPPORTS" is appropriate as it reflects the accuracy of the claim about the authorship of "The Great Gatsby".
+
+2. Truthfulness:
+
+> Search Query: Author of "The Great Gatsby"
+> Evidence: [The Great Gatsby - Wikipedia] "The Great Gatsby is a 1925 novel written by American author F. Scott Fitzgerald that follows a cast of characters living in the fictional towns of West Egg and East Egg on prosperous Long Island in the summer of 1922."
+
+The evidence confirms that F. Scott Fitzgerald is indeed the author of "The Great Gatsby"."""
+
+
+FEVER_REFINE_FEWSHOT_EXAMPLES = """Claim: Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.
+A: SUPPORTS
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The answer "REFUTES" incorrectly negates the claim without supporting details.
+
+2. Truthfulness:
+
+> Search Query: Did Nikolaj Coster-Waldau work with Fox Broadcasting?
+> Evidence: [Nikolaj Coster-Waldau - IMDb] Nikolaj Coster-Waldau appeared in the 2009 Fox television film Virtuality.
+
+The evidence contradicts the proposed answer, confirming he did work with Fox in the television film Virtuality.
+
+Claim: Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.
+Here's the most possible answer: Yes, Nikolaj Coster-Waldau worked with the Fox Broadcasting Company as he appeared in the 2009 Fox television film Virtuality. So the answer is: SUPPORTS.
+
+---
+
+Claim: Stranger Things is set in Bloomington, Indiana.
+A: REFUTES
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The answer is correct but lacks specific details that verify the claim.
+
+2. Truthfulness:
+
+> Search Query: Setting of Stranger Things
+> Evidence: Stranger Things is set in the fictional town of Hawkins, Indiana, not Bloomington.
+
+Although the proposed answer is correct, it could be more informative by mentioning the specific setting.
+
+Claim: Stranger Things is set in Bloomington, Indiana.
+Here's the most possible answer: No, Stranger Things is set in the fictional town of Hawkins, Indiana. So the answer is: REFUTES.
+
+---
+
+Claim: "Beautiful" by Christina Aguilera reached number two on the Billboard Hot 100 in 2003.
+A: NOT ENOUGH INFO
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The answer "NOT ENOUGH INFO" is appropriate as it reflects the uncertainty due to incomplete information about the timing of the chart position.
+
+2. Truthfulness:
+
+> Search Query: Billboard Hot 100 position of "Beautiful" by Christina Aguilera in 2003
+> Evidence: The song peaked at number two on the Billboard Hot 100, but the specific year it achieved this ranking was not directly specified in the sources found.
+
+Given that the year 2003 is not verified in the available evidence, the proposed answer correctly reflects the uncertainty regarding the exact year of the chart position.
+
+Claim: "Beautiful" by Christina Aguilera reach number two on the Billboard Hot 100 in 2003.
+Here's the most possible answer: The song "Beautiful" by Christina Aguilera peaked at number two on the Billboard Hot 100, but there is no specific evidence confirming this occurred in 2003. So the answer is: NOT ENOUGH INFO.
+
+---
+
+Claim: Tim Burton didn't direct the film "Edward Scissorhands."
+A: REFUTES
+
+What's the problem with the above answer?
+
+1. Plausibility:
+The answer "REFUTES" incorrectly negates the claim without supporting details.
+
+2. Truthfulness:
+> Search Query: Did Tim Burton direct the film "Edward Scissorhands"?
+> Evidence: [Edward Scissorhands - IMDb] The film "Edward Scissorhands" was directed by Tim Burton and released in 1990.
+
+The evidence supports the claim, confirming that Tim Burton directed "Edward Scissorhands."
+
+Claim: Tim Burton didn't direct the film "Edward Scissorhands."
+Here's the most possible answer: No. Tim Burton directed the film "Edward Scissorhands," which was released in 1990. So the answer is: REFUTES.
+
+---
+
+Claim: "The Great Gatsby" was written by F. Scott Fitzgerald.
+A: SUPPORTS
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The answer "SUPPORTS" is appropriate as it reflects the accuracy of the claim about the authorship of "The Great Gatsby".
+
+2. Truthfulness:
+
+> Search Query: Author of "The Great Gatsby"
+> Evidence: [The Great Gatsby - Wikipedia] "The Great Gatsby is a 1925 novel written by American author F. Scott Fitzgerald that follows a cast of characters living in the fictional towns of West Egg and East Egg on prosperous Long Island in the summer of 1922."
+
+The evidence confirms that F. Scott Fitzgerald is indeed the author of "The Great Gatsby".
+
+Claim: "The Great Gatsby" was written by F. Scott Fitzgerald.
+Here's the most possible answer: The novel "The Great Gatsby" was written by F. Scott Fitzgerald, as confirmed by reliable sources. So the answer is: SUPPORTS."""
 
 
 # ======================================================================== GSM8K ======================================================================== #
