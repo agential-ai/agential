@@ -33,6 +33,7 @@
 | ReAct                    | :material-check-all: | :material-check-all: | :octicons-check-16:  | :octicons-check-16:  |
 | Reflexion                | :material-check-all: | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
 | CRITIC                   | :material-check-all: | :octicons-check-16:  | :material-check-all: | :material-check-all: |
+| Self-Refine              |                      |                      |                      |                      |
 | LATS                     |                      |                      |                      |                      |
 
 | **Methods / Benchmarks** |        GSM8k         |        SVAMP         |        TabMWP        |
@@ -40,6 +41,7 @@
 | ReAct                    | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
 | Reflexion                | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
 | CRITIC                   | :material-check-all: | :material-check-all: | :material-check-all: |
+| Self-Refine              | :material-check-all: | :material-check-all: | :material-check-all: |
 | LATS                     |                      |                      |                      |
 
 | **Methods / Benchmarks** |         MBPP         |      HumanEval       |
@@ -47,6 +49,7 @@
 | ReAct                    | :octicons-check-16:  | :octicons-check-16:  |
 | Reflexion                | :material-check-all: | :material-check-all: |
 | CRITIC                   | :octicons-check-16:  | :octicons-check-16:  |
+| Self-Refine              |                      |                      |
 | LATS                     |                      |                      |
 
 | **Methods / Benchmarks** | ALFWorld | WebShop | AgentBench |
@@ -54,16 +57,17 @@
 | ReAct                    |          |         |            |
 | Reflexion                |          |         |            |
 | CRITIC                   |          |         |            |
+| Self-Refine              |          |         |            |
 | LATS                     |          |         |            |
 
 ## Experimenting...
-
 
 | **Methods / Benchmarks** | HotpotQA | FEVER | TriviaQA | AmbigNQ |
 | ------------------------ | :------: | :---: | :------: | :-----: |
 | ReAct                    |          |       |          |         |
 | Reflexion                |          |       |          |         |
 | CRITIC                   |          |       |          |         |
+| Self-Refine              |          |       |          |         |
 | LATS                     |          |       |          |         |
 
 | **Methods / Benchmarks** | GSM8k | SVAMP | TabMWP |
@@ -71,6 +75,7 @@
 | ReAct                    |       |       |        |
 | Reflexion                |       |       |        |
 | CRITIC                   |       |       |        |
+| Self-Refine              |       |       |        |
 | LATS                     |       |       |        |
 
 | **Methods / Benchmarks** | MBPP  | HumanEval |
@@ -78,6 +83,7 @@
 | ReAct                    |       |           |
 | Reflexion                |       |           |
 | CRITIC                   |       |           |
+| Self-Refine              |       |           |
 | LATS                     |       |           |
 
 | **Methods / Benchmarks** | ALFWorld | WebShop | AgentBench |
@@ -85,6 +91,7 @@
 | ReAct                    |          |         |            |
 | Reflexion                |          |         |            |
 | CRITIC                   |          |         |            |
+| Self-Refine              |          |         |            |
 | LATS                     |          |         |            |
 
 ## Types of errors
@@ -114,6 +121,20 @@ Certainly! Here's the section organized with each benchmark in a single row and 
 | HOTPOTQA  | 1. No error<br>2. No error<br>3. No error<br>4. Incorrect answer/answer format<br>5. Incorrect answer/answer format      |
 | TRIVIAQA  | 1. Incorrect answer<br>2. No error<br>3. Incorrect answer<br>4. No error<br>5. No error                                  |
 | FEVER     | 1. Incorrect answer<br>2. Incorrect answer format<br>3. No error<br>4. No error<br>5. No error                           |
+
+### Self-Refine
+
+| Dataset   | Error Types                                                                                                              |
+| --------- | ------------------------------------------------------------------------------------------------------------------------ |
+| HUMANEVAL |                                                                                                                          |
+| MBPP      |                                                                                                                          |
+| GSM8K     | 1. Logical error<br>2. Logical error<br>3. No error<br>4. Misinterpretation<br>5. No error                               |
+| SVAMP     | 1. Logical error<br>2. Logical error<br>3. No error<br>4. Misinterpretation<br>5. No error                               |
+| TABMWP    | 1. Logical error<br>2. Logical error<br>3. No error<br>4. Misinterpretation<br>5. No error                               |
+| AMBIGNQ   |                                                                                                                          |
+| HOTPOTQA  |                                                                                                                          |
+| TRIVIAQA  |                                                                                                                          |
+| FEVER     |                                                                                                                          |
 
 For full documentation visit [mkdocs.org](https://www.mkdocs.org).
 
