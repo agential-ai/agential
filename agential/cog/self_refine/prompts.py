@@ -168,6 +168,17 @@ answer = golf_balls_left
 There is no error in the code! It is correct!"""
 
 
+SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K = """{examples}
+(END OF EXAMPLES)
+
+Question: {question}
+```python
+{answer}
+```
+
+# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good."""
+
+
 GSM8K_REFINE_FEWSHOT_EXAMPLES = """Question: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops did Jason give to Denny?
 ```python
 jason_lollipops_initial = 20
@@ -523,6 +534,17 @@ answer = num_goals_on_monday + num_goals_on_wednesday
 # look good
 
 There is no error. The answer is correct!"""
+
+
+SELF_REFINE_CRITIQUE_INSTRUCTION_SVAMP = """{examples}
+(END OF EXAMPLES)
+
+Question: {question}
+```python
+{answer}
+```
+
+# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good."""
 
 
 SVAMP_REFINE_FEWSHOT_EXAMPLES = """Question: James bought 93 red and 10 blue stickers, he used 31 red sticker on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
@@ -909,6 +931,18 @@ number_of_trees = 6
 answer = apples_per_tree / number_of_trees
 
 The answer looks good. There is no error!"""
+
+
+SELF_REFINE_CRITIQUE_INSTRUCTION_TABMWP = """{examples}
+(END OF EXAMPLES)
+
+{question}
+```python
+{answer}
+```
+
+# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good."""
+
 
 
 TABMWP_REFINE_FEWSHOT_EXAMPLES = """Read the following table regarding "Coin collections" and then write Python code to answer a question:

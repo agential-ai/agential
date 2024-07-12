@@ -20,8 +20,8 @@ SELF_REFINE_BENCHMARK_FEWSHOTS = {
     Benchmarks.TRIVIAQA: [],
     Benchmarks.AMBIGNQ: [],
     Benchmarks.GSM8K: [FewShotType.POT],
-    Benchmarks.SVAMP: [],
-    Benchmarks.TABMWP: [],
+    Benchmarks.SVAMP: [FewShotType.POT],
+    Benchmarks.TABMWP: [FewShotType.POT],
     Benchmarks.HUMANEVAL: [],
     Benchmarks.MBPP: [],
 }
