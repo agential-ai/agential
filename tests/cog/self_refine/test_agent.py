@@ -78,5 +78,5 @@ def test_generate() -> None:
 
     assert len(gt_out) == len(out)
     for gt_i, out_i in zip(gt_out, out):
-        assert gt_i["answer"] == out_i["answer"]
-        assert gt_i["critique"] == out_i["critique"]
+        assert gt_i["answer"] == out_i.answer
+        assert gt_i["critique"] == out_i.critique
