@@ -139,9 +139,6 @@ def _prompt_critique(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print("<PROMPT CRITIQUE====================================================>")
-    print(prompt)
-    print("<PROMPT CRITIQUE====================================================>")
     out = llm(
         [
             HumanMessage(
@@ -149,9 +146,6 @@ def _prompt_critique(
             )
         ]
     ).content
-    print("<OUT CRITIQUE====================================================>")
-    print(repr(out))
-    print("<OUT CRITIQUE====================================================>")
     assert isinstance(out, str)
     return out.strip()
 
