@@ -397,6 +397,13 @@ Okay! Here is the rewrite:"""
 # ======================================================================== SVAMP ======================================================================== #
 
 
+SELF_REFINE_INSTRUCTION_SVAMP = """{examples}
+(END OF EXAMPLES)
+
+Question: {question}
+# Python code, return answer"""
+
+
 SVAMP_CRITIQUE_FEWSHOT_EXAMPLES = """Question: James bought 93 red and 10 blue stickers, he used 31 red sticker on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
 ```python
 original_red_stickers = 93
@@ -517,3 +524,165 @@ answer = num_goals_on_monday + num_goals_on_wednesday
 # look good
 
 There is no error. The answer is correct!"""
+
+
+SVAMP_REFINE_FEWSHOT_EXAMPLES = """Question: James bought 93 red and 10 blue stickers, he used 31 red sticker on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
+```python
+original_red_stickers = 93
+used_red_stickers = 31
+answer = original_red_stickers + used_red_stickers
+```
+
+# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+
+# Let us go through the error and check step-by-step
+original_red_stickers = 93
+# looks good
+
+# Let's check the other parts
+used_red_stickers = 31
+# looks good
+
+# Let's check the other parts
+answer = original_red_stickers + used_red_stickers
+# wrong! The code is adding the used stickers instead of subtracting them from the original count.
+
+# The corrected code should be:
+# answer = original_red_stickers - used_red_stickers
+
+Okay! Here is the rewrite:
+
+```python
+original_red_stickers = 93
+used_red_stickers = 31
+answer = original_red_stickers - used_red_stickers
+```
+
+---
+
+Question: Allen went to supermarket to buy eggs, each egg costs 80 dollars, if the discount is 29 dollars. How much do you have to pay to buy for each egg?
+python
+original_egg_price_in_dollars = 80
+discount_dollars = 29
+answer = original_egg_price_in_dollars + discount_dollars
+
+# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+
+# Let us go through the error and check step-by-step
+original_egg_price_in_dollars = 80
+# looks good
+
+# Let's check the other parts
+discount_dollars = 29
+# looks good
+
+# Let's check the other parts
+answer = original_egg_price_in_dollars + discount_dollars
+# wrong! The code is adding the discount to the original price instead of subtracting it.
+
+# The corrected code should be:
+# answer = original_egg_price_in_dollars - discount_dollars
+
+Okay! Here is the rewrite:
+
+```python
+original_egg_price_in_dollars = 80
+discount_dollars = 29
+answer = original_egg_price_in_dollars - discount_dollars
+```
+
+---
+
+Question: Dianna collects both cases and books. He bought 22 cases and 5 books from the store. Now he has 57 cases and 25 books. How many books did danny have at first?
+```python
+num_books_bought_at_store = 5
+num_books_now = 25
+answer = num_books_now - num_books_bought_at_store
+```
+
+# There is no error in the code above. The logic and calculations are correct. Let us verify step-by-step:
+
+# Let us go through the calculation step-by-step
+num_books_bought_at_store = 5
+# looks good
+
+# Let's check the other parts
+num_books_now = 25
+# looks good
+
+# Let's check the other parts
+answer = num_books_now - num_books_bought_at_store
+# looks good
+
+Here is the rewrite (for the sake of completeness):
+
+```python
+num_books_bought_at_store = 5
+num_books_now = 25
+answer = num_books_now - num_books_bought_at_store
+```
+
+---
+
+Question: There were 108 chickens and 20 sheep at the farm, some of the chickens and sheep were sold. There are 87 chickens and 18 sheep left now. How many chickens were sold?
+```python
+num_chicken_before = 108
+num_chicken_now = 87
+answer = num_chicken_before * num_chicken_now
+```
+
+# There is no error in the code above. The logic and calculations are correct. Let us verify step-by-step:
+
+# Let us go through the calculation step-by-step
+num_chicken_before = 108
+# look good
+
+# Let's check the other parts
+num_chicken_now = 87
+# look good
+
+# Let's check the other parts
+answer = num_chicken_before * num_chicken_now
+
+The answer is incorrect because the code multiplies the initial number of chickens by the number of chickens left. This operation does not make sense in the context of finding out how many chickens were sold.
+
+Okay! Here is the rewrite:
+
+```python
+num_chicken_before = 108
+num_chicken_now = 87
+answer = num_chicken_before - num_chicken_now
+```
+
+---
+
+Question: Katty scored 2 goals on monday, 8 goals on tuesday and 9 goals on wednesday. How many did Katty score on monday and wednesday?
+```python
+num_goals_on_monday = 2
+num_goals_on_wednesday = 9
+answer = num_goals_on_monday + num_goals_on_wednesday
+```
+
+# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+
+# Let us go through the error and check step-by-step
+num_goals_on_monday = 2
+#look good
+
+# Let's check the other parts
+num_goals_on_wednesday = 9
+#look good
+
+# Let's check the other parts
+answer = num_goals_on_monday + num_goals_on_wednesday
+# look good
+
+There is no error. The answer is correct!
+
+Here is the rewrite (for the sake of completeness):
+
+```python
+num_goals_on_monday = 2
+num_goals_on_wednesday = 9
+answer = num_goals_on_monday + num_goals_on_wednesday
+```"""
