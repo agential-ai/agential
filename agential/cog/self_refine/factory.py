@@ -10,9 +10,19 @@ from agential.cog.self_refine.prompts import (
     SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K,
     SELF_REFINE_INSTRUCTION_GSM8K,
     SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
+    SVAMP_CRITIQUE_FEWSHOT_EXAMPLES,
+    SVAMP_REFINE_FEWSHOT_EXAMPLES,
+    SELF_REFINE_INSTRUCTION_SVAMP,
+    SELF_REFINE_REFINE_INSTRUCTION_SVAMP,
+    SELF_REFINE_CRITIQUE_INSTRUCTION_SVAMP,
+    TABMWP_CRITIQUE_FEWSHOT_EXAMPLES,
+    TABMWP_REFINE_FEWSHOT_EXAMPLES,
+    SELF_REFINE_INSTRUCTION_TABMWP,
+    SELF_REFINE_REFINE_INSTRUCTION_TABMWP,
+    SELF_REFINE_CRITIQUE_INSTRUCTION_TABMWP
 )
 from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
-from agential.cog.self_refine.strategies.math import SelfRefineGSM8KStrategy
+from agential.cog.self_refine.strategies.math import SelfRefineGSM8KStrategy, SelfRefineSVAMPStrategy, SelfRefineTabMWPStrategy
 
 SELF_REFINE_BENCHMARK_FEWSHOTS = {
     Benchmarks.HOTPOTQA: [],
@@ -45,10 +55,14 @@ SELF_REFINE_PROMPTS = {
         "refine_prompt": SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
     },
     Benchmarks.SVAMP: {
-        "prompt": "",
+        "prompt": SELF_REFINE_INSTRUCTION_SVAMP,
+        "critique_prompt": SELF_REFINE_CRITIQUE_INSTRUCTION_SVAMP,
+        "refine_prompt": SELF_REFINE_REFINE_INSTRUCTION_SVAMP,
     },
     Benchmarks.TABMWP: {
-        "prompt": "",
+        "prompt": SELF_REFINE_INSTRUCTION_TABMWP,
+        "critique_prompt": SELF_REFINE_CRITIQUE_INSTRUCTION_TABMWP,
+        "refine_prompt": SELF_REFINE_REFINE_INSTRUCTION_TABMWP,
     },
     Benchmarks.HUMANEVAL: {
         "prompt": "",
@@ -67,8 +81,14 @@ SELF_REFINE_FEWSHOTS: Dict[str, Dict] = {
         "critique_examples": GSM8K_CRITIQUE_FEWSHOT_EXAMPLES,
         "refine_examples": GSM8K_REFINE_FEWSHOT_EXAMPLES,
     },
-    Benchmarks.SVAMP: {},
-    Benchmarks.TABMWP: {},
+    Benchmarks.SVAMP: {
+        "critique_examples": SVAMP_CRITIQUE_FEWSHOT_EXAMPLES,
+        "refine_examples": SVAMP_REFINE_FEWSHOT_EXAMPLES,
+    },
+    Benchmarks.TABMWP: {
+        "critique_examples": TABMWP_CRITIQUE_FEWSHOT_EXAMPLES,
+        "refine_examples": TABMWP_REFINE_FEWSHOT_EXAMPLES,
+    },
     Benchmarks.HUMANEVAL: {},
     Benchmarks.MBPP: {},
 }
@@ -79,8 +99,8 @@ SELF_REFINE_STRATEGIES = {
     Benchmarks.TRIVIAQA: None,
     Benchmarks.AMBIGNQ: None,
     Benchmarks.GSM8K: SelfRefineGSM8KStrategy,
-    Benchmarks.SVAMP: None,
-    Benchmarks.TABMWP: None,
+    Benchmarks.SVAMP: SelfRefineSVAMPStrategy,
+    Benchmarks.TABMWP: SelfRefineTabMWPStrategy,
     Benchmarks.HUMANEVAL: None,
     Benchmarks.MBPP: None,
 }

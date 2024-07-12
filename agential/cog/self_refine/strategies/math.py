@@ -178,3 +178,15 @@ class SelfRefineGSM8KStrategy(SelfRefineMathStrategy):
     """A strategy class for the GSM8K benchmark using the Self-Refine agent."""
 
     pass
+
+
+class SelfRefineSVAMPStrategy(SelfRefineMathStrategy):
+    """A strategy class for the SVAMP benchmark using the Self-Refine agent."""
+
+    pass
+
+
+class SelfRefineTabMWPStrategy(SelfRefineMathStrategy):
+    """A strategy class for the TABMWP benchmark using the Self-Refine agent."""
+
+    pass
