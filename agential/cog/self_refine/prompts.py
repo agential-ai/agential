@@ -686,3 +686,18 @@ num_goals_on_monday = 2
 num_goals_on_wednesday = 9
 answer = num_goals_on_monday + num_goals_on_wednesday
 ```"""
+
+
+SELF_REFINE_REFINE_INSTRUCTION_SVAMP = """{examples}
+(END OF EXAMPLES)
+
+Question: {question}
+```python
+{answer}
+```
+
+# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good. Provide the improved solution. If there is no error, write out the entire solution again.
+
+{critique}
+
+Okay! Here is the rewrite:"""
