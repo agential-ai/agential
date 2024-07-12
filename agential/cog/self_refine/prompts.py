@@ -944,7 +944,6 @@ SELF_REFINE_CRITIQUE_INSTRUCTION_TABMWP = """{examples}
 # There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good."""
 
 
-
 TABMWP_REFINE_FEWSHOT_EXAMPLES = """Read the following table regarding "Coin collections" and then write Python code to answer a question:
 
 Name | Number of coins
