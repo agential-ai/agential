@@ -165,9 +165,6 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
 
         Args:
             **kwargs (Dict[str, Any]): Additional arguments.
-
-        Returns:
-            None
         """
         self._prev_code_answer = ""
         self.patience_counter = 0
