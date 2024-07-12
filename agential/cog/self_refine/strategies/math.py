@@ -111,7 +111,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
         Returns:
             Dict[str, str]: The output dictionary.
         """
-        return {"code": answer, "critique": critique}
+        return {"answer": answer, "critique": critique}
 
     def update_answer_based_on_critique(
         self,

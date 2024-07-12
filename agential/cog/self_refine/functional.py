@@ -60,6 +60,9 @@ def _prompt_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
+    print("<PROMPT AGENT====================================================>")
+    print(prompt)
+    print("<PROMPT AGENT====================================================>")
     out = llm(
         [
             HumanMessage(
@@ -67,6 +70,9 @@ def _prompt_agent(
             )
         ]
     ).content
+    print("<OUT AGENT====================================================>")
+    print(repr(out))
+    print("<OUT AGENT====================================================>")
     assert isinstance(out, str)
     return out.strip()
 
@@ -133,6 +139,9 @@ def _prompt_critique(
         prompt=prompt,
         additional_keys=additional_keys,
     )
+    print("<PROMPT CRITIQUE====================================================>")
+    print(prompt)
+    print("<PROMPT CRITIQUE====================================================>")
     out = llm(
         [
             HumanMessage(
@@ -140,6 +149,9 @@ def _prompt_critique(
             )
         ]
     ).content
+    print("<OUT CRITIQUE====================================================>")
+    print(repr(out))
+    print("<OUT CRITIQUE====================================================>")
     assert isinstance(out, str)
     return out.strip()
 
@@ -208,6 +220,9 @@ def _prompt_refine(
         prompt=prompt,
         additional_keys=additional_keys,
     )
+    print("<PROMPT REFINE====================================================>")
+    print(prompt)
+    print("<PROMPT REFINE====================================================>")
     out = llm(
         [
             HumanMessage(
@@ -215,5 +230,8 @@ def _prompt_refine(
             )
         ]
     ).content
+    print("<OUT REFINE====================================================>")
+    print(repr(out))
+    print("<OUT REFINE====================================================>")
     assert isinstance(out, str)
     return out.strip()
