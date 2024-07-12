@@ -37,15 +37,15 @@ def test_generate() -> None:
 
     gt_out = [
         {
-            "code": "blue_fiber = 2\nwhite_fiber = blue_fiber / 2\ntotal_bolts = blue_fiber + white_fiber\nanswer = total_bolts",
+            "answer": "blue_fiber = 2\nwhite_fiber = blue_fiber / 2\ntotal_bolts = blue_fiber + white_fiber\nanswer = total_bolts",
             "critique": "The error in the code is in the calculation of the white fiber needed for the robe. Since the robe takes half as much white fiber as blue fiber, the calculation for white fiber should be `white_fiber = blue_fiber / 2`, not `white_fiber = blue_fiber * 2`. This error affects the total number of bolts calculation as well. The correct calculation should be `total_bolts = blue_fiber + white_fiber`.",
         },
         {
-            "code": "blue_fiber = 2\nwhite_fiber = blue_fiber / 2\ntotal_bolts = blue_fiber + white_fiber\nanswer = total_bolts",
+            "answer": "blue_fiber = 2\nwhite_fiber = blue_fiber / 2\ntotal_bolts = blue_fiber + white_fiber\nanswer = total_bolts",
             "critique": "The error in the code is in the calculation of the white fiber needed for the robe. The white fiber needed is not half of the blue fiber, but rather half of the blue fiber bolts. Therefore, the calculation for white fiber should be white_fiber = blue_fiber / 2, not white_fiber = blue_fiber / 2.",
         },
         {
-            "code": "blue_fiber = 2\nwhite_fiber = blue_fiber / 2\ntotal_bolts = blue_fiber + white_fiber\nanswer = total_bolts",
+            "answer": "blue_fiber = 2\nwhite_fiber = blue_fiber / 2\ntotal_bolts = blue_fiber + white_fiber\nanswer = total_bolts",
             "critique": "The error in the code is that it incorrectly calculates the amount of white fiber needed for the robe. The question states that the robe takes half as much white fiber as blue fiber, so the calculation for white fiber should be `white_fiber = blue_fiber / 2` instead of `white_fiber = blue_fiber * 2`.",
         },
     ]
@@ -78,5 +78,5 @@ def test_generate() -> None:
 
     assert len(gt_out) == len(out)
     for gt_i, out_i in zip(gt_out, out):
-        assert gt_i["code"] == out_i["code"]
+        assert gt_i["answer"] == out_i["answer"]
         assert gt_i["critique"] == out_i["critique"]
