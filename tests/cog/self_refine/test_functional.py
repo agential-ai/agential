@@ -93,7 +93,7 @@ def test_create_output_dict() -> None:
     answer = "result = 42"
     critique = "Critique: Your solution is incorrect."
     output_dict = strategy.create_output_dict(answer, critique)
-    assert output_dict == {"code": answer, "critique": critique}
+    assert output_dict == {"answer": answer, "critique": critique}
 
 
 def test_update_answer_based_on_critique() -> None:
