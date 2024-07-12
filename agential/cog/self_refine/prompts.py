@@ -1,5 +1,524 @@
 """Self-Refine prompts and fewshot examples."""
 
+# ======================================================================== HOTPOTQA ======================================================================== #
+
+
+SELF_REFINE_INSTRUCTION_HOTPOTQA = """"""
+SELF_REFINE_REFINE_INSTRUCTION_HOTPOTQA = """"""
+
+HOTPOTQA_CRITIQUE_FEWSHOT_EXAMPLES = """Q: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+A: 1,800 to 7,000 ft
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The question asks for the elevation range, and the answer provides "1,800 to 7,000 ft", which fits the expected format and seems plausible.
+
+2. Truthfulness:
+
+Let's search the question in google:
+> Search Query: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into? site: wikipedia.org
+> Evidence: [Colorado orogeny - Wikipedia] The eastern sector of the Colorado orogeny extends into regions that have elevations ranging from approximately 1,800 ft to 7,000 ft.
+
+The evidence confirms that the eastern sector of the Colorado orogeny extends into regions with elevations ranging from 1,800 ft to 7,000 ft. Thus, the proposed answer is correct and truthful.
+
+Let's search the proposed answer in google:
+> Search Query: Elevation range for the area that the eastern sector of the Colorado orogeny extends into 1,800 to 7,000 ft site:wikipedia.org
+> Evidence: [Colorado orogeny - Wikipedia] The eastern sector of the Colorado orogeny extends into regions that have elevations ranging from approximately 1,800 ft to 7,000 ft.
+
+The evidence supports the proposed answer, confirming that it correctly identifies the elevation range.
+
+Above all, the proposed answer correctly identifies the elevation range for the area that the eastern sector of the Colorado orogeny extends into. However, the explanation can be improved for clarity.
+
+---
+
+Q: Musician and satirist Allie Goertz wrote a song about the \"The Simpsons\" character Milhouse, who Matt Groening named after who?
+A: Richard Nixon
+
+1. Plausibility:
+
+The answer should provide the person after whom the character Milhouse was named. The proposed answer states "Richard Nixon," which fits the expected format and seems plausible.
+
+2. Truthfulness:
+
+Let's search the question in google:
+> Search Query: "The Simpsons" character Milhouse named after who? site: wikipedia.org
+> Evidence: [Milhouse Van Houten - Wikipedia] The character Milhouse was named after U.S. President Richard Nixon, whose middle name was Milhous.
+
+The evidence confirms that Milhouse was indeed named after Richard Nixon, whose middle name was Milhous. Thus, the proposed answer is correct and truthful.
+
+Let's search the proposed answer in google:
+> Search Query: Milhouse character named after Richard Nixon site: wikipedia.org
+> Evidence: [Milhouse Van Houten - Wikipedia] The character Milhouse was named after U.S. President Richard Nixon, whose middle name was Milhous.
+
+The evidence supports the proposed answer, confirming that it correctly identifies the person after whom Milhouse was named.
+
+Above all, the proposed answer correctly identifies that Milhouse was named after Richard Nixon. However, the explanation can be improved for clarity.
+
+---
+
+Q: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
+A: The Saimaa Gesture
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The question asks for the name of a documentary about Finnish rock groups, and the answer is "The Saimaa Gesture," which sounds plausible given the context.
+
+2. Truthfulness:
+
+Let's search for information about "The Saimaa Gesture":
+> Search Query: The Saimaa Gesture documentary site: wikipedia.org
+> Evidence: [The Saimaa Gesture - Wikipedia] The Saimaa Gesture is a 1981 documentary film about three Finnish rock groups on a tour around Lake Saimaa.
+
+The evidence confirms that The Saimaa Gesture is indeed a documentary about Finnish rock groups, as stated in the proposed answer.
+
+Let's search for information about "Adam Clayton Powell":
+> Search Query: Adam Clayton Powell documentary site: wikipedia.org
+> Evidence: [Adam Clayton Powell - Wikipedia] Adam Clayton Powell Jr. was an American Baptist pastor and politician who represented Harlem, New York City, in the United States House of Representatives.
+
+The evidence shows that Adam Clayton Powell is not related to Finnish rock groups, supporting the correctness of the proposed answer.
+
+Above all, the proposed answer correctly identifies that The Saimaa Gesture is the documentary about Finnish rock groups. However, the explanation can be improved for clarity.
+
+---
+
+Q: What profession does Nicholas Ray and Elia Kazan have in common?
+A: director, screenwriter, actor
+
+What's the problem with the above answer?
+
+1. Plausibility:
+The question asks for the profession that Nicholas Ray and Elia Kazan have in common. The proposed answer lists multiple professions without clarifying if they both held all those professions. So, it's not precise.
+
+2. Truthfulness:
+Let's search for the professions of Nicholas Ray and Elia Kazan.
+
+> Search Query: Nicholas Ray profession site.org
+> Evidence: [Nicholas Ray - Wikipedia] Nicholas Ray was an American film director and screenwriter, best known for the movie "Rebel Without a Cause".
+
+The evidence suggests that Nicholas Ray was a director and screenwriter.
+
+> Search Query: Elia Kazan profession site.org
+> Evidence: [Elia Kazan - Wikipedia] Elia Kazan was a Greek-American director, producer, writer, and actor. He is noted for his work on Broadway and in Hollywood.
+
+The evidence suggests that Elia Kazan was a director, writer, and actor.
+
+The proposed answer correctly identifies the professions of both individuals but does not specify which profession they have in common.
+
+---
+
+Q: Which magazine was started first Arthur's Magazine or First for Women?
+A: Arthur's Magazine
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The answer should be chosen between "Arthur's Magazine" and "First for Women," and the answer is "First for Women," so it seems plausible.
+
+2. Truthfulness:
+
+Let's search the question in google:
+
+> Search Query: Arthur's Magazine first publication date
+> Evidence: [Arthur's Magazine - Wikipedia] Arthur's Magazine was first published in 1844.
+
+The evidence shows that Arthur's Magazine was first published in 1844.
+
+> Search Query: First for Women first publication date
+> Evidence: [First for Women - Wikipedia] First for Women was first published in 1989.
+
+The evidence shows that First for Women was indeed first published in 1989.
+
+The proposed answer gives the wrong dates of publication for Arthur's Magazine. The final answer "Arthur's Magazine" is correct since 1844 < 1989."""
+
+
+SELF_REFINE_CRITIQUE_INSTRUCTION_HOTPOTQA = """{examples}
+(END OF EXAMPLES)
+
+Question: {question}
+Proposed Answer: {answer}
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+{critique}"""
+
+
+HOTPOTQA_REFINE_FEWSHOT_EXAMPLES = """Q: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+A: 1,800 to 7,000 ft
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The question asks for the elevation range, and the answer provides "1,800 to 7,000 ft", which fits the expected format and seems plausible.
+
+2. Truthfulness:
+
+Let's search the question in google:
+> Search Query: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into? site: wikipedia.org
+> Evidence: [Colorado orogeny - Wikipedia] The eastern sector of the Colorado orogeny extends into regions that have elevations ranging from approximately 1,800 ft to 7,000 ft.
+
+The evidence confirms that the eastern sector of the Colorado orogeny extends into regions with elevations ranging from 1,800 ft to 7,000 ft. Thus, the proposed answer is correct and truthful.
+
+Let's search the proposed answer in google:
+> Search Query: Elevation range for the area that the eastern sector of the Colorado orogeny extends into 1,800 to 7,000 ft site:wikipedia.org
+> Evidence: [Colorado orogeny - Wikipedia] The eastern sector of the Colorado orogeny extends into regions that have elevations ranging from approximately 1,800 ft to 7,000 ft.
+
+The evidence supports the proposed answer, confirming that it correctly identifies the elevation range.
+
+Above all, the proposed answer correctly identifies the elevation range for the area that the eastern sector of the Colorado orogeny extends into. However, the explanation can be improved for clarity.
+
+Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+Here's the most possible answer: Let's think step by step. The Colorado orogeny refers to a series of mountain-building events that shaped the region. The eastern sector of this orogeny extends into an area with an elevation range from approximately 1,800 ft to 7,000 ft. So the answer is: 1,800 to 7,000 ft.
+
+---
+
+Q: Musician and satirist Allie Goertz wrote a song about the \"The Simpsons\" character Milhouse, who Matt Groening named after who?
+A: Richard Nixon
+
+1. Plausibility:
+
+The answer should provide the person after whom the character Milhouse was named. The proposed answer states "Richard Nixon," which fits the expected format and seems plausible.
+
+2. Truthfulness:
+
+Let's search the question in google:
+> Search Query: "The Simpsons" character Milhouse named after who? site: wikipedia.org
+> Evidence: [Milhouse Van Houten - Wikipedia] The character Milhouse was named after U.S. President Richard Nixon, whose middle name was Milhous.
+
+The evidence confirms that Milhouse was indeed named after Richard Nixon, whose middle name was Milhous. Thus, the proposed answer is correct and truthful.
+
+Let's search the proposed answer in google:
+> Search Query: Milhouse character named after Richard Nixon site: wikipedia.org
+> Evidence: [Milhouse Van Houten - Wikipedia] The character Milhouse was named after U.S. President Richard Nixon, whose middle name was Milhous.
+
+The evidence supports the proposed answer, confirming that it correctly identifies the person after whom Milhouse was named.
+
+Above all, the proposed answer correctly identifies that Milhouse was named after Richard Nixon. However, the explanation can be improved for clarity.
+
+Question: Musician and satirist Allie Goertz wrote a song about the "The Simpsons" character Milhouse, who Matt Groening named after who?
+Here's the most possible answer: Let's think step by step. Allie Goertz wrote a song about Milhouse, a character from "The Simpsons" created by Matt Groening. Matt Groening named Milhouse after U.S. President Richard Nixon, whose middle name was Milhous. So the answer is: Richard Nixon.
+
+---
+
+Q: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
+A: The Saimaa Gesture
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The question asks for the name of a documentary about Finnish rock groups, and the answer is "The Saimaa Gesture," which sounds plausible given the context.
+
+2. Truthfulness:
+
+Let's search for information about "The Saimaa Gesture":
+> Search Query: The Saimaa Gesture documentary site: wikipedia.org
+> Evidence: [The Saimaa Gesture - Wikipedia] The Saimaa Gesture is a 1981 documentary film about three Finnish rock groups on a tour around Lake Saimaa.
+
+The evidence confirms that The Saimaa Gesture is indeed a documentary about Finnish rock groups, as stated in the proposed answer.
+
+Let's search for information about "Adam Clayton Powell":
+> Search Query: Adam Clayton Powell documentary site: wikipedia.org
+> Evidence: [Adam Clayton Powell - Wikipedia] Adam Clayton Powell Jr. was an American Baptist pastor and politician who represented Harlem, New York City, in the United States House of Representatives.
+
+The evidence shows that Adam Clayton Powell is not related to Finnish rock groups, supporting the correctness of the proposed answer.
+
+Above all, the proposed answer correctly identifies that The Saimaa Gesture is the documentary about Finnish rock groups. However, the explanation can be improved for clarity.
+
+Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
+Here's the most possible answer: Let's think step by step. Adam Clayton Powell is a name associated with an American politician and civil rights leader. The Saimaa Gesture is a documentary about three Finnish rock groups on a tour around Lake Saimaa. Therefore, The Saimaa Gesture is about Finnish rock groups. So the answer is: The Saimaa Gesture.
+
+---
+
+Q: What profession does Nicholas Ray and Elia Kazan have in common?
+A: director, screenwriter, actor
+
+What's the problem with the above answer?
+
+1. Plausibility:
+The question asks for the profession that Nicholas Ray and Elia Kazan have in common. The proposed answer lists multiple professions without clarifying if they both held all those professions. So, it's not precise.
+
+2. Truthfulness:
+Let's search for the professions of Nicholas Ray and Elia Kazan.
+
+> Search Query: Nicholas Ray profession site.org
+> Evidence: [Nicholas Ray - Wikipedia] Nicholas Ray was an American film director and screenwriter, best known for the movie "Rebel Without a Cause".
+
+The evidence suggests that Nicholas Ray was a director and screenwriter.
+
+> Search Query: Elia Kazan profession site.org
+> Evidence: [Elia Kazan - Wikipedia] Elia Kazan was a Greek-American director, producer, writer, and actor. He is noted for his work on Broadway and in Hollywood.
+
+The evidence suggests that Elia Kazan was a director, writer, and actor.
+
+The proposed answer correctly identifies the professions of both individuals but does not specify which profession they have in common.
+
+Question: What profession does Nicholas Ray and Elia Kazan have in common?
+Here's the most possible answer: Let's think step by step. Nicholas Ray was a director and screenwriter. Elia Kazan was a director, writer, and actor. Both Nicholas Ray and Elia Kazan worked as directors and screenwriters. So the answer is: director and screenwriter.
+
+---
+
+Q: Which magazine was started first Arthur's Magazine or First for Women?
+A: Arthur's Magazine
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The answer should be chosen between "Arthur's Magazine" and "First for Women," and the answer is "First for Women," so it seems plausible.
+
+2. Truthfulness:
+
+Let's search the question in google:
+
+> Search Query: Arthur's Magazine first publication date
+> Evidence: [Arthur's Magazine - Wikipedia] Arthur's Magazine was first published in 1844.
+
+The evidence shows that Arthur's Magazine was first published in 1844.
+
+> Search Query: First for Women first publication date
+> Evidence: [First for Women - Wikipedia] First for Women was first published in 1989.
+
+The evidence shows that First for Women was indeed first published in 1989.
+
+The proposed answer gives the wrong dates of publication for Arthur's Magazine. The final answer "Arthur's Magazine" is correct since 1844 < 1989.
+
+Question: Which magazine was started first, Arthur's Magazine or First for Women?
+Here's the most possible answer: Let's think step by step. Arthur's Magazine was first published in 1844. First for Women was first published in 1989. 1844 (Arthur's Magazine) < 1989 (First for Women), so Arthur's Magazine was started first. So the answer is: Arthur's Magazine."""
+
+
+
+
+
+
+# ======================================================================== TRIVIAQA ======================================================================== #
+
+
+TRIVIAQA_CRITIQUE_FEWSHOT_EXAMPLES = """Q: Mendelssohn's 'Wedding March' was. originally written as incidental music for which Shakespeare play in 1842?
+A: A Midsummer Night's Dream
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The question asks for the name of the Shakespeare play, and the answer is "Hamlet," which is a name of a Shakespeare play. So it's plausible.
+
+2. Truthfulness:
+
+Let's search the question in google:
+
+> Search Query: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842? site: wikipedia.org
+> Evidence: [Wedding March (Mendelssohn) - Wikipedia] The "Wedding March" in C major, written in 1842, is one of the most famous pieces by Mendelssohn. It was written as incidental music for William Shakespeare's play "A Midsummer Night's Dream."
+
+The evidence suggests that Mendelssohn's 'Wedding March' was written as incidental music for "A Midsummer Night's Dream," not "Hamlet."
+
+Let's check the proposed answer:
+
+> Search Query: Mendelssohn's 'Wedding March' was originally written as incidental music for the play "Hamlet" in 1842.
+> Evidence: [Hamlet - Wikipedia] "Hamlet" is a tragedy written by William Shakespeare at an uncertain date between 1599 and 1602. Mendelssohn did not write incidental music for "Hamlet."
+
+The evidence shows that Mendelssohn did not write incidental music for "Hamlet," contradicting the proposed answer.
+
+Above all, the proposed answer is incorrect because Mendelssohn's 'Wedding March' was not written for "Hamlet." It was actually written for "A Midsummer Night's Dream."
+
+---
+
+Q: \"\"\"Christ in the House of his Parents\"\" is one of the best known paintings of which artist?"
+A: John Millais
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The question asks for the name of the artist, and the answer is "John Millais," which is a name of an artist. So it's plausible.
+
+2. Truthfulness:
+
+Let's search the question in google:
+
+> Search Query: "Christ in the House of his Parents" is one of the best known paintings of which artist? site: wikipedia.org
+> Evidence: [Christ in the House of His Parents - Wikipedia] "Christ in the House of His Parents" is a painting by John Everett Millais, which depicts the Holy Family in Saint Joseph's carpentry workshop.
+
+The evidence shows that "Christ in the House of his Parents" is indeed a painting by John Everett Millais, which supports the proposed answer.
+
+Let's check the proposed answer:
+
+> Search Query: "Christ in the House of his Parents" painting by John Millais.
+> Evidence: [John Everett Millais - Wikipedia] John Everett Millais was a British painter and one of the founders of the Pre-Raphaelite Brotherhood. One of his most famous works is "Christ in the House of His Parents."
+
+The evidence confirms that John Everett Millais is the artist of "Christ in the House of his Parents."
+
+Above all, the proposed answer is correct because "Christ in the House of his Parents" is indeed a painting by John Millais.
+
+---
+
+Q: Who designed the National Theatre building on the South Bank in London ?
+A: Sir Denys Lasdun
+
+What's the problem with the above answer?
+
+1. Plausibility:
+The question asks for the name of the designer of the National Theatre building on the South Bank in London, and the answer "Sir Norman Foster" is a plausible name of an architect. However, it might not be accurate.
+
+2. Truthfulness:
+Let's search the question in google:
+
+> Search Query: Who designed the National Theatre building on the South Bank in London?
+> Evidence: [National Theatre - Wikipedia] The National Theatre building on the South Bank in London was designed by Sir Denys Lasdun and opened in 1976.
+
+The evidence shows that the National Theatre building was designed by Sir Denys Lasdun, not Sir Norman Foster.
+
+Let's verify further to be sure.
+
+> Search Query: Sir Norman Foster National Theatre building
+> Evidence: [Sir Norman Foster - Wikipedia] Sir Norman Foster is a notable British architect known for various buildings, but there is no mention of him designing the National Theatre building.
+
+The evidence confirms that Sir Norman Foster did not design the National Theatre building.
+
+---
+
+Q: Also a two-time World Champion, which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics?
+A: Bodie Miller
+
+What's the problem with the above answer?
+
+1. Plausibility:
+The question asks for the name of the skier, and the answer is "Bodie Miller," which is a name. So it's plausible.
+
+2. Truthfulness:
+Let's search the question in google:
+
+> Search Query: American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics site.org
+> Evidence: [Bode Miller - Wikipedia] At the 2010 Winter Olympics, Miller won the gold medal in the super combined.
+
+The evidence confirms that Bode Miller won the gold medal in the super combined at the 2010 Winter Olympics."""
+
+
+TRIVIAQA_REFINE_FEWSHOT_EXAMPLES = """Q: Mendelssohn's 'Wedding March' was. originally written as incidental music for which Shakespeare play in 1842?
+A: A Midsummer Night's Dream
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The question asks for the name of the Shakespeare play, and the answer is "Hamlet," which is a name of a Shakespeare play. So it's plausible.
+
+2. Truthfulness:
+
+Let's search the question in google:
+
+> Search Query: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842? site: wikipedia.org
+> Evidence: [Wedding March (Mendelssohn) - Wikipedia] The "Wedding March" in C major, written in 1842, is one of the most famous pieces by Mendelssohn. It was written as incidental music for William Shakespeare's play "A Midsummer Night's Dream."
+
+The evidence suggests that Mendelssohn's 'Wedding March' was written as incidental music for "A Midsummer Night's Dream," not "Hamlet."
+
+Let's check the proposed answer:
+
+> Search Query: Mendelssohn's 'Wedding March' was originally written as incidental music for the play "Hamlet" in 1842.
+> Evidence: [Hamlet - Wikipedia] "Hamlet" is a tragedy written by William Shakespeare at an uncertain date between 1599 and 1602. Mendelssohn did not write incidental music for "Hamlet."
+
+The evidence shows that Mendelssohn did not write incidental music for "Hamlet," contradicting the proposed answer.
+
+Above all, the proposed answer is incorrect because Mendelssohn's 'Wedding March' was not written for "Hamlet." It was actually written for "A Midsummer Night's Dream."
+
+Question: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842?
+Here's the most possible answer: Let's think step by step. Mendelssohn's 'Wedding March' was written as incidental music for William Shakespeare's play "A Midsummer Night's Dream" in 1842. So the answer is: A Midsummer Night's Dream.
+
+---
+
+Q: \"\"\"Christ in the House of his Parents\"\" is one of the best known paintings of which artist?"
+A: John Millais
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+The question asks for the name of the artist, and the answer is "John Millais," which is a name of an artist. So it's plausible.
+
+2. Truthfulness:
+
+Let's search the question in google:
+
+> Search Query: "Christ in the House of his Parents" is one of the best known paintings of which artist? site: wikipedia.org
+> Evidence: [Christ in the House of His Parents - Wikipedia] "Christ in the House of His Parents" is a painting by John Everett Millais, which depicts the Holy Family in Saint Joseph's carpentry workshop.
+
+The evidence shows that "Christ in the House of his Parents" is indeed a painting by John Everett Millais, which supports the proposed answer.
+
+Let's check the proposed answer:
+
+> Search Query: "Christ in the House of his Parents" painting by John Millais.
+> Evidence: [John Everett Millais - Wikipedia] John Everett Millais was a British painter and one of the founders of the Pre-Raphaelite Brotherhood. One of his most famous works is "Christ in the House of His Parents."
+
+The evidence confirms that John Everett Millais is the artist of "Christ in the House of his Parents."
+
+Above all, the proposed answer is correct because "Christ in the House of his Parents" is indeed a painting by John Millais.
+
+Question: "Christ in the House of his Parents" is one of the best known paintings of which artist?
+Here's the most possible answer: "Christ in the House of his Parents" is one of the best known paintings of John Millais. So the answer is: John Millais.
+
+---
+
+Q: Who designed the National Theatre building on the South Bank in London ?
+A: Sir Denys Lasdun
+
+What's the problem with the above answer?
+
+1. Plausibility:
+The question asks for the name of the designer of the National Theatre building on the South Bank in London, and the answer "Sir Norman Foster" is a plausible name of an architect. However, it might not be accurate.
+
+2. Truthfulness:
+Let's search the question in google:
+
+> Search Query: Who designed the National Theatre building on the South Bank in London?
+> Evidence: [National Theatre - Wikipedia] The National Theatre building on the South Bank in London was designed by Sir Denys Lasdun and opened in 1976.
+
+The evidence shows that the National Theatre building was designed by Sir Denys Lasdun, not Sir Norman Foster.
+
+Let's verify further to be sure.
+
+> Search Query: Sir Norman Foster National Theatre building
+> Evidence: [Sir Norman Foster - Wikipedia] Sir Norman Foster is a notable British architect known for various buildings, but there is no mention of him designing the National Theatre building.
+
+The evidence confirms that Sir Norman Foster did not design the National Theatre building.
+
+Question: Who designed the National Theatre building on the South Bank in London?
+Here's the most possible answer: The National Theatre building on the South Bank in London was designed by Sir Denys Lasdun. So the answer is: Sir Denys Lasdun.
+
+---
+
+Q: Also a two-time World Champion, which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics?
+A: Bodie Miller
+
+What's the problem with the above answer?
+
+1. Plausibility:
+The question asks for the name of the skier, and the answer is "Bodie Miller," which is a name. So it's plausible.
+
+2. Truthfulness:
+Let's search the question in google:
+
+> Search Query: American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics site.org
+> Evidence: [Bode Miller - Wikipedia] At the 2010 Winter Olympics, Miller won the gold medal in the super combined.
+
+The evidence confirms that Bode Miller won the gold medal in the super combined at the 2010 Winter Olympics.
+
+Question: Also a two-time World Champion, which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics?
+Here's the most possible answer: Bodie Miller won the gold medal in the Men's Combined at the 2010 Winter Olympics. So the answer is: Bodie Miller"""
+
+
+# ======================================================================== AMBIGNQ ======================================================================== #
+
+
+# ======================================================================== FEVER ======================================================================== #
+
+
 # ======================================================================== GSM8K ======================================================================== #
 
 
