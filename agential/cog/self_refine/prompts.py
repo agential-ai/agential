@@ -912,6 +912,253 @@ answer = apples_per_tree / number_of_trees
 The answer looks good. There is no error!""" 
 
 
+TABMWP_REFINE_FEWSHOT_EXAMPLES = """Read the following table regarding "Coin collections" and then write Python code to answer a question:
+
+Name | Number of coins
+Braden | 76
+Camilla | 94
+Rick | 86
+Mary | 84
+Hector | 80
+Devin | 83
+Emily | 82
+Avery | 87
+
+Question: Some friends discussed the sizes of their coin collections. What is the mean of the numbers?
+```python
+number_of_coins_for_different_person = [76, 94, 86, 84, 80, 83, 82, 87]
+mean_number_of_coins = sum(number_of_coins_for_different_person) + len(number_of_coins_for_different_person)
+answer = mean_number_of_coins
+```
+
+# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+
+# Let us go through the error and check step-by-step
+number_of_coins_for_different_person = [76, 94, 86, 84, 80, 83, 82, 87]
+# looks good
+
+# Let's check the other parts
+mean_number_of_coins = sum(number_of_coins_for_different_person) + len(number_of_coins_for_different_person)
+# wrong! To find the mean, we should divide the sum of the numbers by the count, not add them. The correct calculation should be sum(number_of_coins_for_different_person) / len(number_of_coins_for_different_person).
+
+# Let's check the other parts
+answer = mean_number_of_coins
+# looks good
+
+Okay! Here is the rewrite:
+
+```python
+number_of_coins_for_different_person = [76, 94, 86, 84, 80, 83, 82, 87]
+answer = sum(number_of_coins_for_different_person) / len(number_of_coins_for_different_person)
+```
+
+---
+
+Read the following table regarding "Supply and Demand" and then write Python code to answer a question:
+
+Price | Quantity demanded | Quantity supplied
+$155 | 22,600 | 5,800
+$275 | 20,500 | 9,400
+$395 | 18,400 | 13,000
+$515 | 16,300 | 16,600
+$635 | 14,200 | 20,200
+
+Question: Look at the table. Then answer the question. At a price of $155, is there a shortage or a surplus? Choose from the options: [shortage, surplus]
+```python
+quantity_demanded_at_price_155 = 22600
+quantity_supplied_at_price_155 = 5800
+if quantity_demanded_at_price_155 < quantity_supplied_at_price_155:
+    answer = 'shortage'
+else:
+    answer = 'surplus'
+```
+
+# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+
+# Let us go through the error and check step-by-step
+quantity_demanded_at_price_155 = 22600
+# looks good
+
+# Let's check the other parts
+quantity_supplied_at_price_155 = 5800
+# looks good
+
+# Let's check the other parts
+if quantity_demanded_at_price_155 < quantity_supplied_at_price_155:
+answer = 'shortage'
+# wrong! The condition is incorrect. We should check if quantity_demanded_at_price_155 is greater than quantity_supplied_at_price_155 to determine a shortage. The correct condition should be if quantity_demanded_at_price_155 > quantity_supplied_at_price_155.
+
+# Let's check the other parts
+else:
+answer = 'surplus'
+# looks good
+
+# Let's check the other parts
+answer = answer
+# looks good
+
+Okay! Here is the rewrite:
+
+```python
+quantity_demanded_price_155 = 22600
+quantity_supplied_price_155 = 5800
+if quantity_demanded_at_price_155 > quantity_supplied_at_price_155:
+    answer = 'shortage'
+else:
+    answer = 'surplus'
+```
+
+---
+
+Read the following table regarding "Cans of food collected" and then write Python code to answer a question:
+
+Samir | 7
+Kristen | 4
+Dakota | 7
+Jamie | 8
+Maggie | 9
+
+Question: Samir's class recorded how many cans of food each student collected for their canned food drive. What is the median of the numbers?
+```python
+cans = [7, 4, 5, 8, 9]
+cans = sorted(cans)
+middle1 = (len(cans) - 1) // 2
+middle2 = len(cans) // 2
+answer = (cans[middle1] + cans[middle2]) / 2
+```
+
+# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+
+# Let us go through the error and check step-by-step
+cans = [7, 4, 5, 8, 9]
+# looks good
+
+# Let's check the other parts
+cans = sorted(cans)
+# looks good
+
+# Let's check the other parts
+middle1 = (len(cans) - 1) // 2
+# looks good
+
+# Let's check the other parts
+middle2 = len(cans) // 2
+# looks good
+
+# Let's check the other parts
+answer = (cans[middle1] + cans[middle2]) / 2
+
+The answer looks good. There is no error!
+
+Here is the rewrite (for the sake of completeness):
+
+```python
+cans = [7, 4, 5, 8, 9]
+cans = sorted(cans)
+middle1 = (len(cans) - 1) // 2
+middle2 = len(cans) // 2
+answer = (cans[middle1] + cans[middle2]) / 2
+```
+
+---
+
+Read the following table regarding "" and then write Python code to answer a question:
+
+toy boat | $5.54
+toy guitar | $8.23
+set of juggling balls | $5.01
+trivia game | $8.18
+jigsaw puzzle | $5.30
+toy dinosaur | $3.00
+
+Question: Lorenzo has $13.50. Does he have enough to buy a toy guitar and a set of juggling balls? Choose from the the options: ['yes', 'no']
+```python
+guitar_price = 8.23
+juggling_balls = 5.01
+total_money = 13.5
+if total_money > juggling_balls - guitar_price:
+    answer = "yes"
+else:
+    answer = "no"
+```
+
+# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+
+# Let us go through the error and check step-by-step
+guitar_price = 8.23
+# looks good
+
+# Let's check the other parts
+juggling_balls = 5.01
+# looks good
+
+# Let's check the other parts
+total_money = 13.5
+# looks good
+
+# Let's check the other parts
+if total_money > juggling_balls - guitar_price:
+    answer = "yes"
+else:
+    answer = "no"
+
+The answer is incorrect. The logic here mistakenly subtracts the price of the guitar from the price of the juggling balls, which does not make sense in the context of determining if Lorenzo has enough money to buy both items.
+
+Okay! Here is the rewrite:
+
+```python
+guitar_price = 8.23
+juggling_balls = 5.01
+total_money = 13.5
+if total_money >= guitar_price + juggling_balls:
+    answer = "yes"
+else:
+    answer = "no"
+```
+
+---
+
+Read the following table regarding "Apple harvest" and then write Python code to answer a question:
+
+Number of apple trees | Number of apples harvested
+1 | 50
+2 | 100
+3 | 150
+4 | 200
+5 | 250
+6 | ?
+
+Question: Each apple tree yields 50 apples. How many apples are harvested from 6 apple trees?
+``` python
+apples_per_tree = 50
+number_of_trees = 6
+answer = apples_per_tree / number_of_trees
+```
+
+# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+
+# Let us go through the error and check step-by-step
+apples_per_tree = 50
+# looks good
+
+# Let's check the other parts
+number_of_trees = 6
+# looks good
+
+# Let's check the other parts
+answer = apples_per_tree / number_of_trees
+
+The answer looks good. There is no error!
+
+Here is the rewrite (for the sake of completeness):
+
+```python
+apples_per_tree = 50
+number_of_trees = 6
+answer = apples_per_tree / number_of_trees
+```"""
+
+
 SELF_REFINE_REFINE_INSTRUCTION_TABMWP = """{examples}
 (END OF EXAMPLES)
 
