@@ -12,6 +12,7 @@ from agential.base.agent import BaseAgent
 from agential.cog.self_refine.factory import SelfRefineFactory
 from agential.cog.self_refine.output import SelfRefineOutput
 
+
 class SelfRefineAgent(BaseAgent):
     """The Self-Refine agent that utilizes the self-refinement process to iteratively improve solutions based on critique.
 
@@ -97,7 +98,9 @@ class SelfRefineAgent(BaseAgent):
                 additional_keys=critique_additional_keys,
             )
 
-            out.append(SelfRefineOutput(**self.strategy.create_output_dict(answer, critique)))
+            out.append(
+                SelfRefineOutput(**self.strategy.create_output_dict(answer, critique))
+            )
 
             if self.strategy.halting_condition():
                 break

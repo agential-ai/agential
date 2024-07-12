@@ -393,7 +393,6 @@ Question: {question}
 Okay! Here is the rewrite:"""
 
 
-
 # ======================================================================== SVAMP ======================================================================== #
 
 
@@ -909,7 +908,7 @@ number_of_trees = 6
 # Let's check the other parts
 answer = apples_per_tree / number_of_trees
 
-The answer looks good. There is no error!""" 
+The answer looks good. There is no error!"""
 
 
 TABMWP_REFINE_FEWSHOT_EXAMPLES = """Read the following table regarding "Coin collections" and then write Python code to answer a question:
