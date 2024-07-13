@@ -1158,27 +1158,52 @@ GSM8K_CRITIQUE_FEWSHOT_EXAMPLES = """Question: Jason had 20 lollipops. He gave D
 ```python
 jason_lollipops_initial = 20
 jason_lollipops_after = 12
-denny_lollipops = jason_lollipops_initial + jason_lollipops_after
-answer = denny_lollipops
+lollipop_list = [jason_lollipops_initial]
+
+for i in range(jason_lollipops_after):
+lollipop_list.append(-1)
+
+denny_lollipops = 0
+
+for lollipop in lollipop_list:
+denny_lollipops += lollipop
+
+temp_result = jason_lollipops_initial - jason_lollipops_after
+answer = temp_result
 ```
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+What's the problem with the above code?
 
-# Let us go through the error and check step-by-step
-jason_lollipops_initial = 20
-# looks good
+1. The total lollipops Jason initially had and the lollipops left should be positive, 20 and 12 > 0, it's reasonable.
 
-# Let's check the other parts
-jason_lollipops_after = 12
-# looks good
+2. Let's check the code:
 
-# Let's check the other parts
-denny_lollipops = jason_lollipops_initial + jason_lollipops_after
-# wrong! Jason gave some lollipops to Denny, so we need to subtract the lollipops Jason has now from the lollipops he had initially. The correct calculation should be jason_lollipops_initial - jason_lollipops_after.
+> jason_lollipops_initial = 20
+> jason_lollipops_after = 12
+> lollipop_list = [jason_lollipops_initial]
 
-# Let's check the other parts
-answer = denny_lollipops
-# looks good
+This defines the initial lollipops and creates a list starting with the initial count, which is correct.
+
+> for i in range(jason_lollipops_after):
+> lollipop_list.append(-1)
+
+This loop adds negative values to the list to represent the lollipops given away, which is an inefficient approach.
+
+> denny_lollipops = 0
+
+It initializes the count for Denny's lollipops, which is correct.
+
+> for lollipop in lollipop_list:
+> denny_lollipops += lollipop
+
+This loop adds up all the lollipops in the list, which is unnecessary for this task.
+
+> temp_result = jason_lollipops_initial - jason_lollipops_after
+> answer = temp_result
+
+This assigns the correct total to the answer but the approach to calculate it is inefficient.
+
+Overall, the code correctly understands the task but is inefficient and performs unnecessary operations. The correct and efficient approach is to directly subtract the remaining lollipops from the initial count.
 
 ---
 
@@ -1186,27 +1211,15 @@ Question: There are 15 trees in the grove. Grove workers will plant trees in the
 ```python
 trees_initial = 15
 trees_after = 21
-trees_added = trees_initial - trees_after
+trees_added = trees_after - initial_trees
 answer = trees_added
 ```
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+What's the problem with the above code?
 
-# Let us go through the error and check step-by-step
-trees_initial = 15
-# looks good
+1. The above code causes the "NameError" because it use the variable `initial_trees` before it is defined.
 
-# Let's check the other parts
-trees_after = 21
-# looks good
-
-# Let's check the other parts
-trees_added = trees_initial - trees_after
-# wrong! The number of trees added should be calculated by subtracting the initial number of trees from the number of trees after planting. The correct calculation should be trees_after - trees_initial.
-
-# Let's check the other parts
-answer = trees_added
-# looks good
+2. The variable names in the code are a little bit confusing, becase both `trees_after` and "initial_trees" are used.
 
 ---
 
@@ -1216,35 +1229,27 @@ toys_initial = 5
 mom_toys = 2
 dad_toys = 2
 total_received = mom_toys + dad_toys
-total_toys = toys_initial + total_received
+total_toys = toys_initial - total_received
 answer = total_toys
 ```
 
-# There is no error in the code above. The logic and calculations are correct. Let us verify step-by-step:
+What's the problem with the above code?
 
-# Let us go through the calculation step-by-step
-toys_initial = 5
-# looks good
+1. The total of toys should be greater than the initial number of toys, 1 < 5, so the answer is not reasonable. 
 
-# Let's check the other parts
-mom_toys = 2
-# looks good
+2. Let's check the code:
 
-# Let's check the other parts
-dad_toys = 2
-# looks good
+> # the total number of toys received from mom and dad
+> mom_toys = 2
+> dad_toys = 2
+> total_received = mom_toys + dad_toys
 
-# Let's check the other parts
-total_received = mom_toys + dad_toys
-# looks good
+It calculates the total number of received toys `total_received`, that's correct.
 
-# Let's check the other parts
-total_toys = toys_initial + total_received
-# looks good
+> toys_initial = 5
+> total_toys = toys_initial - total_received
 
-# Let's check the other parts
-answer = total_toys
-# looks good
+According to the question, Shawn receives the toys instead of giving , `toys_initial - total_received` means Shawns is giving away his toys, this is wrong.
 
 ---
 
@@ -1253,29 +1258,36 @@ Question: There were nine computers in the server room. Five more computers were
 computers_initial = 9
 computers_per_day = 5
 num_days = 4  # 4 days between Monday and Thursday
-computers_added = computers_per_day + num_days
-computers_total = computers_initial + computers_added
+computers_added = computers_per_day * num_days
+computers_total = computers_initial - computers_added
 answer = computers_total
 ```
 
-There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+What's the problem with the above code?
 
-# Let us go through the error and check step-by-step
-computers_initial = 9
-#looks good
+1. The total number of computers should be a positive number, 9 > 0, it's reasonable.
 
-# Let's check the other parts
-computers_per_day = 5
-# looks good
+2. Let's check the code:
 
-# Let's check the other parts
-num_days = 4 # 4 days between Monday and Thursday
-# looks good
+> computers_initial = 9
+> computers_per_day = 5
+> num_days = 4
 
-#Let's check the other parts
-computers_added = computers_per_day + num_days
+These define the initial number of computers, the number of computers added per day, and the number of days. These are correct.
 
-wrong! The error here is the incorrect addition. We should multiply the number of computers added per day by the number of days, not add them together. This causes the calculation of computers_added to be incorrect.
+> computers_added = computers_per_day * num_days
+
+It calculates the total number of computers added over the 4 days, which is correct.
+
+> computers_total = computers_initial - computers_added
+
+This line incorrectly subtracts the added computers from the initial count, which is wrong.
+
+> answer = computers_total
+
+This assigns the incorrect total to the answer.
+
+Overall, the code correctly calculates the number of added computers but incorrectly subtracts them from the initial count instead of adding them. The correct approach is to add the computers added to the initial count.
 
 ---
 
@@ -1288,28 +1300,24 @@ golf_balls_left = golf_balls_initial - golf_balls_lost_tuesday - golf_balls_lost
 answer = golf_balls_left
 ```
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+What's the problem with the above code?
 
-# Let us go through the error and check step-by-step
-golf_balls_initial = 58
-# looks good
+1. The number of golf ball should be a positive number, 33 > 0, it's reasonable.
 
-# Let's check the other parts
-golf_balls_lost_tuesday = 23
-# looks good
+2. Let's check the code:
 
-# Let's check the other parts
-golf_balls_lost_wednesday = 2
+> golf_balls_initial = 58
+> golf_balls_lost_tuesday = 23
+> golf_balls_lost_wednesday = 2
 
-# Let's check the other parts
-golf_balls_left = golf_balls_initial - golf_balls_lost_tuesday - golf_balls_lost_wednesday
-# looks good
+It defines the golf_balls_lost_wednesday as 2, but the number of golf balls lost on wednesday is 2 more than the number on Tuesday.
 
-#Let's check the other parts
-answer = golf_balls_left
-# looks good
+> golf_balls_left = golf_balls_initial - golf_balls_lost_tuesday - golf_balls_lost_wednesday
+> answer = golf_balls_left
 
-There is no error in the code! It is correct!"""
+The initial number of golf balls subtracts the totla number of golf ball lost on tuesday and wednesday . That's correct.
+
+Overall, the code correctly calculates the number of golf ball left but incorrectly defines the number of golf ball lost on wednesday. The correct approach is to add the lost on tuesday by 2."""
 
 
 SELF_REFINE_CRITIQUE_INSTRUCTION_GSM8K = """{examples}

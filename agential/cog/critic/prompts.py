@@ -764,7 +764,7 @@ answer = trees_added
 ---
 
 Question: Shawn has five toys. For Christmas, he got two toys each from his mom and dad. How many toys does he have now?
-```
+```python
 toys_initial = 5
 mom_toys = 2
 dad_toys = 2
@@ -805,7 +805,6 @@ answer = total_toys
 
 ---
 
-```python
 Question: There were nine computers in the server room. Five more computers were installed each day, from Monday to Thursday. How many computers are now in the server room?
 ```python
 computers_initial = 9
@@ -996,7 +995,7 @@ answer = trees_added
 ---
 
 Question: Shawn has five toys. For Christmas, he got two toys each from his mom and dad. How many toys does he have now?
-```
+```python
 toys_initial = 5
 mom_toys = 2
 dad_toys = 2
@@ -1035,7 +1034,6 @@ answer = total_toys
 
 ---
 
-```python
 Question: There were nine computers in the server room. Five more computers were installed each day, from Monday to Thursday. How many computers are now in the server room?
 ```python
 computers_initial = 9

@@ -108,7 +108,7 @@ Certainly! Here's the section organized with each benchmark in a single row and 
 
 ## Types of errors
 
-### CRITIC
+### CRITIC, Self-Refine
 
 | Dataset   | Error Types                                                                                                              |
 | --------- | ------------------------------------------------------------------------------------------------------------------------ |
@@ -122,19 +122,6 @@ Certainly! Here's the section organized with each benchmark in a single row and 
 | TRIVIAQA  | 1. Incorrect answer<br>2. No error<br>3. Incorrect answer<br>4. No error<br>5. No error                                  |
 | FEVER     | 1. Incorrect answer<br>2. Incorrect answer format<br>3. No error<br>4. No error<br>5. No error                           |
 
-### Self-Refine
-
-| Dataset   | Error Types                                                                                                              |
-| --------- | ------------------------------------------------------------------------------------------------------------------------ |
-| HUMANEVAL |                                                                                                                          |
-| MBPP      |                                                                                                                          |
-| GSM8K     | 1. Logical error<br>2. Logical error<br>3. No error<br>4. Misinterpretation<br>5. No error                               |
-| SVAMP     | 1. Logical error<br>2. Logical error<br>3. No error<br>4. Misinterpretation<br>5. No error                               |
-| TABMWP    | 1. Logical error<br>2. Logical error<br>3. No error<br>4. Misinterpretation<br>5. No error                               |
-| AMBIGNQ   |                                                                                                                          |
-| HOTPOTQA  |                                                                                                                          |
-| TRIVIAQA  |                                                                                                                          |
-| FEVER     |                                                                                                                          |
 
 For full documentation visit [mkdocs.org](https://www.mkdocs.org).
 
