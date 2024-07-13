@@ -9,8 +9,8 @@ from agential.cog.self_refine.functional import (
     _prompt_critique,
     _prompt_refine,
 )
-from agential.eval.em import EM
 from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
+from agential.eval.em import EM
 
 
 class SelfRefineQAStrategy(SelfRefineBaseStrategy):
