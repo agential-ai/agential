@@ -1662,6 +1662,7 @@ CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_TABMWP = """{examples}
 ```
 
 What's the problem with the above code?
+
 {critique}"""
 
 
