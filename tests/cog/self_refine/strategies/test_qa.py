@@ -100,7 +100,22 @@ def test_create_output_dict() -> None:
 
 def test_update_answer_based_on_critique() -> None:
     """Tests SelfRefineQAStrategy update_answer_based_on_critique."""
+    responses = ["1"]
+    llm = FakeListChatModel(responses=responses)
+    strategy = SelfRefineQAStrategy(llm=llm)
+    question = "Sample question"
+    answer = "Mike Tyson"
+    critique = "Critique: Your solution is incorrect."
 
+    new_answer = strategy.update_answer_based_on_critique(
+        question=question,
+        examples=HOTPOTQA_REFINE_FEWSHOT_EXAMPLES,
+        answer=answer,
+        critique=critique,
+        prompt=SELF_REFINE_REFINE_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
+    )
+    assert new_answer == "1"
 
 def test_halting_condition() -> None:
     """Tests SelfRefineQAStrategy halting_condition."""
