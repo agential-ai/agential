@@ -12,9 +12,9 @@ from agential.cog.self_refine.prompts import (
 )
 from agential.cog.self_refine.strategies.math import (
     SelfRefineGSM8KStrategy,
+    SelfRefineMathStrategy,
     SelfRefineSVAMPStrategy,
     SelfRefineTabMWPStrategy,
-    SelfRefineMathStrategy,
 )
 
 

@@ -1,4 +1,5 @@
 """Unit tests for Self-Refine QA strategies."""
+
 from langchain_community.chat_models.fake import FakeListChatModel
 
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
@@ -10,11 +11,11 @@ from agential.cog.self_refine.prompts import (
     SELF_REFINE_REFINE_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.self_refine.strategies.qa import (
-    SelfRefineHotQAStrategy,
-    SelfRefineTriviaQAStrategy,
     SelfRefineAmbigNQStrategy,
     SelfRefineFEVERStrategy,
+    SelfRefineHotQAStrategy,
     SelfRefineQAStrategy,
+    SelfRefineTriviaQAStrategy,
 )
 
 
@@ -28,11 +29,14 @@ def test_init() -> None:
     assert strategy.patience_counter == 0
     assert not strategy._halt
 
+
 def test_generate() -> None:
     """Tests SelfRefineQAStrategy generate."""
 
+
 def test_generate_critique() -> None:
     """Tests SelfRefineQAStrategy generate_critique."""
+
 
 def test_create_output_dict() -> None:
     """Tests SelfRefineQAStrategy create_output_dict."""
@@ -42,8 +46,10 @@ def test_create_output_dict() -> None:
     output_dict = strategy.create_output_dict(answer, critique)
     assert output_dict == {"answer": answer, "critique": critique}
 
+
 def test_update_answer_based_on_critique() -> None:
     """Tests SelfRefineQAStrategy update_answer_based_on_critique."""
+
 
 def test_halting_condition() -> None:
     """Tests SelfRefineQAStrategy halting_condition."""
@@ -57,6 +63,7 @@ def test_halting_condition() -> None:
     strategy._halt = True
     assert strategy.halting_condition() is True
 
+
 def test_reset() -> None:
     """Tests SelfRefineQAStrategy reset."""
     llm = FakeListChatModel(responses=[])
@@ -69,6 +76,7 @@ def test_reset() -> None:
     assert strategy._prev_code_answer == ""
     assert strategy.patience_counter == 0
     assert not strategy._halt
+
 
 def test_instantiate_strategies() -> None:
     """Test instantiate all QA strategies."""
