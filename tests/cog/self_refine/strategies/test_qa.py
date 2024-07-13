@@ -44,12 +44,11 @@ def test_generate() -> None:
     )
     assert answer == "Badr Hari"
 
+
 def test_generate_critique() -> None:
     """Tests SelfRefineQAStrategy generate_critique."""
     gt_critique = "1"
-    responses = [
-        "1"
-    ]
+    responses = ["1"]
     llm = FakeListChatModel(responses=responses)
     strategy = SelfRefineQAStrategy(llm=llm)
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
@@ -70,9 +69,7 @@ def test_generate_critique() -> None:
     # Test early stopping.
     gt_critique = "1"
     answer = "Mike Tyson"
-    responses = [
-        "1"
-    ]
+    responses = ["1"]
     llm = FakeListChatModel(responses=responses)
     strategy = SelfRefineQAStrategy(llm=llm, patience=1)
     strategy._prev_code_answer = "Mike Tyson"
@@ -116,6 +113,7 @@ def test_update_answer_based_on_critique() -> None:
         additional_keys={},
     )
     assert new_answer == "1"
+
 
 def test_halting_condition() -> None:
     """Tests SelfRefineQAStrategy halting_condition."""
