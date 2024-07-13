@@ -9,7 +9,7 @@ from typing import Any, Dict, List
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.agent import BaseAgent
-from agential.cog.self_refine.factory import SelfRefineFactory
+from agential.cog.self_refine.factory import SelfRefineFactory, SELF_REFINE_BENCHMARK_FEWSHOTS
 from agential.cog.self_refine.output import SelfRefineOutput
 
 
@@ -46,15 +46,16 @@ class SelfRefineAgent(BaseAgent):
     def generate(
         self,
         question: str,
-        examples: str,
-        prompt: str,
-        critique_examples: str,
-        critique_prompt: str,
-        refine_examples: str,
-        refine_prompt: str,
+        examples: str = "",
+        prompt: str = "",
+        critique_examples: str = "",
+        critique_prompt: str = "",
+        refine_examples: str = "",
+        refine_prompt: str = "",
         additional_keys: Dict[str, str] = {},
         critique_additional_keys: Dict[str, str] = {},
         refine_additional_keys: Dict[str, str] = {},
+        fewshot_type: str = "",
         max_interactions: int = 3,
         reset: bool = True,
     ) -> List[SelfRefineOutput]:
@@ -65,21 +66,36 @@ class SelfRefineAgent(BaseAgent):
 
         Args:
             question (str): The question or problem to solve.
-            examples (str): Precedent examples to guide initial solution generation.
-            prompt (str): Instructional prompt for initial solution generation.
-            critique_examples (str): Precedent examples to guide critique generation.
-            critique_prompt (str): Instructional prompt for critique generation.
-            refine_examples (str): Precedent examples to guide solution refinement.
-            refine_prompt (str): Instructional prompt for refining the solution.
+            examples (str, optional): Precedent examples to guide initial solution generation. Defaults to "".
+            prompt (str, optional): Instructional prompt for initial solution generation. Defaults to "".
+            critique_examples (str, optional): Precedent examples to guide critique generation. Defaults to "".
+            critique_prompt (str, optional): Instructional prompt for critique generation. Defaults to "".
+            refine_examples (str, optional): Precedent examples to guide solution refinement. Defaults to "".
+            refine_prompt (str, optional): Instructional prompt for refining the solution. Defaults to "".
             additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
             critique_additional_keys (Dict[str, str]): Additional keys to format the critique_prompt. Defaults to {}.
             refine_additional_keys (Dict[str, str]): Additional keys to format the refine_prompt. Defaults to {}.
+            fewshot_type (str): The type of few-shot examples to use. Defaults to "".
             max_interactions (int): Maximum number of refinement iterations.
             reset (bool): Resets the agent's state. Defaults to True.
 
         Returns:
             List[SelfRefineOutput]: A list of answers and critiques.
         """
+        if not prompt or not critique_prompt or not examples or not critique_examples or not refine_examples or not refine_prompt:
+            if not fewshot_type:
+                fewshot_type = SELF_REFINE_BENCHMARK_FEWSHOTS[self.benchmark][0]  # type: ignore
+            fewshots = SelfRefineFactory.get_fewshots(
+                benchmark=self.benchmark, fewshot_type=fewshot_type
+            )
+            prompts = SelfRefineFactory.get_prompts(benchmark=self.benchmark)
+            examples = fewshots["examples"]
+            critique_examples = fewshots["critique_examples"]
+            refine_examples = fewshots["refine_examples"]
+            prompt = prompts["prompt"]
+            critique_prompt = prompts["critique_prompt"]
+            refine_prompt = prompts["refine_prompt"]
+
         if reset:
             self.reset()
 
