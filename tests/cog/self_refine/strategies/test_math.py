@@ -12,6 +12,8 @@ from agential.cog.self_refine.prompts import (
 )
 from agential.cog.self_refine.strategies.math import (
     SelfRefineGSM8KStrategy,
+    SelfRefineSVAMPStrategy,
+    SelfRefineTabMWPStrategy,
     SelfRefineMathStrategy,
 )
 
@@ -147,3 +149,5 @@ def test_instantiate_strategies() -> None:
     """Test instantiate all Math strategies."""
     llm = FakeListChatModel(responses=[])
     assert isinstance(SelfRefineGSM8KStrategy(llm=llm), SelfRefineGSM8KStrategy)
+    assert isinstance(SelfRefineSVAMPStrategy(llm=llm), SelfRefineSVAMPStrategy)
+    assert isinstance(SelfRefineTabMWPStrategy(llm=llm), SelfRefineTabMWPStrategy)
