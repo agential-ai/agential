@@ -3,7 +3,12 @@
 # ======================================================================== HOTPOTQA ======================================================================== #
 
 
-SELF_REFINE_INSTRUCTION_HOTPOTQA = """"""
+SELF_REFINE_INSTRUCTION_HOTPOTQA = """{examples}
+(END OF EXAMPLES)
+
+Q: {question}
+A: """
+
 
 HOTPOTQA_CRITIQUE_FEWSHOT_EXAMPLES = """Q: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
 A: 1,800 to 7,000 ft
@@ -293,9 +298,20 @@ Question: Which magazine was started first, Arthur's Magazine or First for Women
 Here's the most possible answer: Let's think step by step. Arthur's Magazine was first published in 1844. First for Women was first published in 1989. 1844 (Arthur's Magazine) < 1989 (First for Women), so Arthur's Magazine was started first. So the answer is: Arthur's Magazine."""
 
 
-SELF_REFINE_REFINE_INSTRUCTION_HOTPOTQA = """"""
+SELF_REFINE_REFINE_INSTRUCTION_HOTPOTQA = """{examples}
+(END OF EXAMPLES)
 
+Question: {question}
+Proposed Answer: {answer}
 
+What's the problem with the above answer?
+
+1. Plausibility:
+
+{critique}
+
+Question: {question}
+Here's the most possible answer: """
 
 
 # ======================================================================== TRIVIAQA ======================================================================== #
