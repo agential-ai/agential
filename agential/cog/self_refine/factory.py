@@ -183,7 +183,7 @@ class SelfRefineFactory(BaseFactory):
                 f"Benchmark '{benchmark}' few-shot type not supported for Self-Refine."
             )
 
-        benchmark_fewshots = BENCHMARK_FEWSHOTS[benchmark]
+        benchmark_fewshots = BENCHMARK_FEWSHOTS[benchmark][fewshot_type]
 
         return {"examples": benchmark_fewshots, **SELF_REFINE_FEWSHOTS[benchmark]}  # type: ignore
 
@@ -226,4 +226,4 @@ class SelfRefineFactory(BaseFactory):
         if strategy is None:
             raise ValueError(f"No strategy defined for benchmark: {benchmark}")
 
-        return strategy(**kwargs)
+        return strategy(**kwargs)  # type: ignore
