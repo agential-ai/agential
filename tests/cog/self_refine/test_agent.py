@@ -1,5 +1,6 @@
 """Unit tests for Self-Refine."""
 
+import pytest
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -79,3 +80,56 @@ def test_generate() -> None:
     for gt_i, out_i in zip(gt_out, out):
         assert gt_i["answer"] == out_i.answer
         assert gt_i["critique"] == out_i.critique
+
+    # Test auto-select prompts and few-shots.
+    agent = SelfRefineAgent(
+        llm=FakeListChatModel(responses=responses), benchmark="gsm8k"
+    )
+    out = agent.generate(
+        question=question,
+        additional_keys={},
+        critique_additional_keys={},
+        refine_additional_keys={},
+        max_interactions=3,
+        reset=True,
+    )
+
+    for gt_i, out_i in zip(gt_out, out):
+        assert gt_i["answer"] == out_i.answer
+        assert gt_i["critique"] == out_i.critique
+
+    # Test auto-select prompts and few-shots with fewshot_type.
+    agent = SelfRefineAgent(
+        llm=FakeListChatModel(responses=responses), benchmark="gsm8k"
+    )
+    out = agent.generate(
+        question=question,
+        additional_keys={},
+        critique_additional_keys={},
+        refine_additional_keys={},
+        fewshot_type="pot",
+        max_interactions=3,
+        reset=True,
+    )
+
+    for gt_i, out_i in zip(gt_out, out):
+        assert gt_i["answer"] == out_i.answer
+        assert gt_i["critique"] == out_i.critique
+
+    # Test auto-select prompts and few-shots with incorrect fewshot_type.
+    agent = SelfRefineAgent(
+        llm=FakeListChatModel(responses=responses), benchmark="gsm8k"
+    )
+    with pytest.raises(
+        ValueError,
+        match="Benchmark 'gsm8k' few-shot type not supported for Self-Refine.",
+    ):
+        out = agent.generate(
+            question=question,
+            additional_keys={},
+            critique_additional_keys={},
+            refine_additional_keys={},
+            fewshot_type="cot",
+            max_interactions=3,
+            reset=True,
+        )
