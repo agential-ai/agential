@@ -317,6 +317,13 @@ Here's the most possible answer: """
 # ======================================================================== TRIVIAQA ======================================================================== #
 
 
+SELF_REFINE_INSTRUCTION_TRIVIAQA = """{examples}
+(END OF EXAMPLES)
+
+Q: {question}
+A: """
+
+
 TRIVIAQA_CRITIQUE_FEWSHOT_EXAMPLES = """Q: Mendelssohn's 'Wedding March' was. originally written as incidental music for which Shakespeare play in 1842?
 A: A Midsummer Night's Dream
 
@@ -433,6 +440,19 @@ Let's search the question in google:
 > Evidence: [1984 (novel) - Wikipedia] "Nineteen Eighty-Four: A Novel, often published as '1984', is a dystopian social science fiction novel and cautionary tale, written by the English writer George Orwell.
 
 The evidence confirms that George Orwell is indeed the author of the novel "1984"."""
+
+
+SELF_REFINE_CRITIQUE_INSTRUCTION_TRIVIAQA = """{examples}
+(END OF EXAMPLES)
+
+Question: {question}
+Proposed Answer: {answer}
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+"""
 
 
 TRIVIAQA_REFINE_FEWSHOT_EXAMPLES = """Q: Mendelssohn's 'Wedding March' was. originally written as incidental music for which Shakespeare play in 1842?
@@ -568,7 +588,30 @@ Question: Which English author wrote the novel "1984"?
 Here's the most possible answer: George Orwell wrote the novel "1984". So the answer is: George Orwell."""
 
 
+SELF_REFINE_REFINE_INSTRUCTION_TRIVIAQA = """{examples}
+(END OF EXAMPLES)
+
+Question: {question}
+Proposed Answer: {answer}
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+{critique}
+
+Question: {question}
+Here's the most possible answer: """
+
+
 # ======================================================================== AMBIGNQ ======================================================================== #
+
+
+SELF_REFINE_INSTRUCTION_AMBIGNQ = """{examples}
+(END OF EXAMPLES)
+
+Q: {question}
+A: """
 
 
 AMBIGNQ_CRITIQUE_FEWSHOT_EXAMPLES = """Q: When did men's figure skating become a summer Olympic sport?
@@ -696,6 +739,19 @@ Let's search the question in google:
 > Evidence: [Nando's - Wikipedia] Nando's opened its first restaurants within the United Kingdom, in 1992, in the west London suburbs of Ealing and Earls Court, initially focusing on takeaway food.
 
 The evidence suggests that Nando's first opened in the UK in 1992, which is consistent with the proposed answer. We can provide more detailed information in the answer."""
+
+
+SELF_REFINE_CRITIQUE_INSTRUCTION_AMBIGNQ = """{examples}
+(END OF EXAMPLES)
+
+Question: {question}
+Proposed Answer: {answer}
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+"""
 
 
 AMBIGNQ_REFINE_FEWSHOT_EXAMPLES = """Q: When did men's figure skating become a summer Olympic sport?
@@ -840,7 +896,30 @@ Question: When did nando's come to the uk?
 Here's the most possible answer: Nando's first opened its restaurants within the United Kingdom in 1992, specifically in the west London suburbs of Ealing and Earls Court. So the answer is: 1992"""
 
 
+SELF_REFINE_REFINE_INSTRUCTION_AMBIGNQ = """{examples}
+(END OF EXAMPLES)
+
+Question: {question}
+Proposed Answer: {answer}
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+{critique}
+
+Question: {question}
+Here's the most possible answer: """
+
+
 # ======================================================================== FEVER ======================================================================== #
+
+
+SELF_REFINE_INSTRUCTION_FEVER = """{examples}
+(END OF EXAMPLES)
+
+Claim: {question}
+A: """
 
 
 FEVER_CRITIQUE_FEWSHOT_EXAMPLES = """Claim: Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.
@@ -928,6 +1007,19 @@ The answer "SUPPORTS" is appropriate as it reflects the accuracy of the claim ab
 > Evidence: [The Great Gatsby - Wikipedia] "The Great Gatsby is a 1925 novel written by American author F. Scott Fitzgerald that follows a cast of characters living in the fictional towns of West Egg and East Egg on prosperous Long Island in the summer of 1922."
 
 The evidence confirms that F. Scott Fitzgerald is indeed the author of "The Great Gatsby"."""
+
+
+SELF_REFINE_CRITIQUE_INSTRUCTION_FEVER = """{examples}
+(END OF EXAMPLES)
+
+Claim: {question}
+Proposed Answer: {answer}
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+"""
 
 
 FEVER_REFINE_FEWSHOT_EXAMPLES = """Claim: Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.
@@ -1030,6 +1122,22 @@ The evidence confirms that F. Scott Fitzgerald is indeed the author of "The Grea
 
 Claim: "The Great Gatsby" was written by F. Scott Fitzgerald.
 Here's the most possible answer: The novel "The Great Gatsby" was written by F. Scott Fitzgerald, as confirmed by reliable sources. So the answer is: SUPPORTS."""
+
+
+SELF_REFINE_REFINE_INSTRUCTION_FEVER = """{examples}
+(END OF EXAMPLES)
+
+Claim: {question}
+Proposed Answer: {answer}
+
+What's the problem with the above answer?
+
+1. Plausibility:
+
+{critique}
+
+Claim: {question}
+Here's the most possible answer: """
 
 
 # ======================================================================== GSM8K ======================================================================== #
