@@ -92,7 +92,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
         llm (BaseChatModel): The language model used for generating answers and critiques.
         reflector (Optional[ReflexionCoTReflector]): The reflector used for generating reflections. Defaults to None.
         max_reflections (int): The maximum number of reflections allowed. Defaults to 3.
-        max_trials (int): The maximum number of trials allowed. Defaults to 1.
+        max_trials (int): The maximum number of trials allowed. Defaults to 3.
     """
 
     def __init__(
@@ -100,7 +100,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
         llm: BaseChatModel,
         reflector: Optional[ReflexionCoTReflector] = None,
         max_reflections: int = 3,
-        max_trials: int = 1,
+        max_trials: int = 3,
     ) -> None:
         """Initialization."""
         super().__init__(llm)

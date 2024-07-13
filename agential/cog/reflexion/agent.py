@@ -99,7 +99,7 @@ class ReflexionCoTAgent(BaseAgent):
         additional_keys: Dict[str, str] = {},
         reflect_additional_keys: Dict[str, str] = {},
         fewshot_type: str = "",
-        patience: int = 1,
+        patience: int = 3,
         reset: bool = True,
         **kwargs: Any,
     ) -> List[ReflexionCoTOutput]:
@@ -120,7 +120,7 @@ class ReflexionCoTAgent(BaseAgent):
             additional_keys (Dict[str, str], optional): Additional keys for the prompt. Defaults to {}.
             reflect_additional_keys (Dict[str, str], optional): Additional keys for the reflect prompt. Defaults to {}.
             fewshot_type (str): The type of few-shot examples to use. Defaults to "".
-            patience (int, optional): The patience for the agent. Defaults to 1.
+            patience (int, optional): The patience for the agent. Defaults to 3.
             reset (bool, optional): Whether to reset the agent's memory. Defaults to True.
             **kwargs (Dict[str, Any], optional): Additional keyword arguments for the strategy.
 
