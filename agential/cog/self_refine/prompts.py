@@ -1145,7 +1145,9 @@ Here's the most possible answer: """
 # ======================================================================== GSM8K ======================================================================== #
 
 
-SELF_REFINE_INSTRUCTION_GSM8K = """{examples}
+SELF_REFINE_INSTRUCTION_GSM8K = """# Write Python Code to solve the following questions. Store your result as a variable named 'answer'.
+
+{examples}
 (END OF EXAMPLES)
 
 Question: {question}
@@ -1549,7 +1551,9 @@ Okay! Here is the rewrite:"""
 # ======================================================================== SVAMP ======================================================================== #
 
 
-SELF_REFINE_INSTRUCTION_SVAMP = """{examples}
+SELF_REFINE_INSTRUCTION_SVAMP = """Read the following passages to answer questions with Python code, store the result as a 'answer' variable:
+
+{examples}
 (END OF EXAMPLES)
 
 Question: {question}
