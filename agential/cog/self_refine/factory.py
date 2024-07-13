@@ -20,6 +20,26 @@ from agential.cog.self_refine.prompts import (
     SVAMP_REFINE_FEWSHOT_EXAMPLES,
     TABMWP_CRITIQUE_FEWSHOT_EXAMPLES,
     TABMWP_REFINE_FEWSHOT_EXAMPLES,
+    HOTPOTQA_CRITIQUE_FEWSHOT_EXAMPLES,
+    HOTPOTQA_REFINE_FEWSHOT_EXAMPLES,
+    SELF_REFINE_INSTRUCTION_HOTPOTQA,
+    SELF_REFINE_REFINE_INSTRUCTION_HOTPOTQA,
+    SELF_REFINE_CRITIQUE_INSTRUCTION_HOTPOTQA,
+    SELF_REFINE_INSTRUCTION_FEVER,
+    SELF_REFINE_CRITIQUE_INSTRUCTION_FEVER,
+    SELF_REFINE_REFINE_INSTRUCTION_FEVER,
+    SELF_REFINE_INSTRUCTION_TRIVIAQA,
+    SELF_REFINE_CRITIQUE_INSTRUCTION_TRIVIAQA,
+    SELF_REFINE_REFINE_INSTRUCTION_TRIVIAQA,
+    SELF_REFINE_INSTRUCTION_AMBIGNQ,
+    SELF_REFINE_CRITIQUE_INSTRUCTION_AMBIGNQ,
+    SELF_REFINE_REFINE_INSTRUCTION_AMBIGNQ,
+    FEVER_CRITIQUE_FEWSHOT_EXAMPLES,
+    FEVER_REFINE_FEWSHOT_EXAMPLES,
+    TRIVIAQA_CRITIQUE_FEWSHOT_EXAMPLES,
+    TRIVIAQA_REFINE_FEWSHOT_EXAMPLES,
+    AMBIGNQ_CRITIQUE_FEWSHOT_EXAMPLES,
+    AMBIGNQ_REFINE_FEWSHOT_EXAMPLES,
 )
 from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
 from agential.cog.self_refine.strategies.math import (
@@ -27,12 +47,18 @@ from agential.cog.self_refine.strategies.math import (
     SelfRefineSVAMPStrategy,
     SelfRefineTabMWPStrategy,
 )
+from agential.cog.self_refine.strategies.qa import (
+    SelfRefineHotQAStrategy,
+    SelfRefineFEVERStrategy,
+    SelfRefineAmbigNQStrategy,
+    SelfRefineTriviaQAStrategy
+)
 
 SELF_REFINE_BENCHMARK_FEWSHOTS = {
-    Benchmarks.HOTPOTQA: [],
-    Benchmarks.FEVER: [],
-    Benchmarks.TRIVIAQA: [],
-    Benchmarks.AMBIGNQ: [],
+    Benchmarks.HOTPOTQA: [FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT],
+    Benchmarks.FEVER: [FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT],
+    Benchmarks.TRIVIAQA: [FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT],
+    Benchmarks.AMBIGNQ: [FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT],
     Benchmarks.GSM8K: [FewShotType.POT],
     Benchmarks.SVAMP: [FewShotType.POT],
     Benchmarks.TABMWP: [FewShotType.POT],
@@ -42,16 +68,24 @@ SELF_REFINE_BENCHMARK_FEWSHOTS = {
 
 SELF_REFINE_PROMPTS = {
     Benchmarks.HOTPOTQA: {
-        "prompt": "",
+        "prompt": SELF_REFINE_INSTRUCTION_HOTPOTQA,
+        "critique_prompt": SELF_REFINE_CRITIQUE_INSTRUCTION_HOTPOTQA,
+        "refine_prompt": SELF_REFINE_REFINE_INSTRUCTION_HOTPOTQA,
     },
     Benchmarks.FEVER: {
-        "prompt": "",
+        "prompt": SELF_REFINE_INSTRUCTION_FEVER,
+        "critique_prompt": SELF_REFINE_CRITIQUE_INSTRUCTION_FEVER,
+        "refine_prompt": SELF_REFINE_REFINE_INSTRUCTION_FEVER,
     },
     Benchmarks.TRIVIAQA: {
-        "prompt": "",
+        "prompt": SELF_REFINE_INSTRUCTION_TRIVIAQA,
+        "critique_prompt": SELF_REFINE_CRITIQUE_INSTRUCTION_TRIVIAQA,
+        "refine_prompt": SELF_REFINE_REFINE_INSTRUCTION_TRIVIAQA,
     },
     Benchmarks.AMBIGNQ: {
-        "prompt": "",
+        "prompt": SELF_REFINE_INSTRUCTION_AMBIGNQ,
+        "critique_prompt": SELF_REFINE_CRITIQUE_INSTRUCTION_AMBIGNQ,
+        "refine_prompt": SELF_REFINE_REFINE_INSTRUCTION_AMBIGNQ,
     },
     Benchmarks.GSM8K: {
         "prompt": SELF_REFINE_INSTRUCTION_GSM8K,
@@ -77,10 +111,22 @@ SELF_REFINE_PROMPTS = {
 }
 
 SELF_REFINE_FEWSHOTS: Dict[str, Dict] = {
-    Benchmarks.HOTPOTQA: {},
-    Benchmarks.FEVER: {},
-    Benchmarks.TRIVIAQA: {},
-    Benchmarks.AMBIGNQ: {},
+    Benchmarks.HOTPOTQA: {
+        "critique_examples": HOTPOTQA_CRITIQUE_FEWSHOT_EXAMPLES,
+        "refine_examples": HOTPOTQA_REFINE_FEWSHOT_EXAMPLES,
+    },
+    Benchmarks.FEVER: {
+        "critique_examples": FEVER_CRITIQUE_FEWSHOT_EXAMPLES,
+        "refine_examples": FEVER_REFINE_FEWSHOT_EXAMPLES,
+    },
+    Benchmarks.TRIVIAQA: {
+        "critique_examples": TRIVIAQA_CRITIQUE_FEWSHOT_EXAMPLES,
+        "refine_examples": TRIVIAQA_REFINE_FEWSHOT_EXAMPLES,
+    },
+    Benchmarks.AMBIGNQ: {
+        "critique_examples": AMBIGNQ_CRITIQUE_FEWSHOT_EXAMPLES,
+        "refine_examples": AMBIGNQ_REFINE_FEWSHOT_EXAMPLES,
+    },
     Benchmarks.GSM8K: {
         "critique_examples": GSM8K_CRITIQUE_FEWSHOT_EXAMPLES,
         "refine_examples": GSM8K_REFINE_FEWSHOT_EXAMPLES,
@@ -98,10 +144,10 @@ SELF_REFINE_FEWSHOTS: Dict[str, Dict] = {
 }
 
 SELF_REFINE_STRATEGIES = {
-    Benchmarks.HOTPOTQA: None,
-    Benchmarks.FEVER: None,
-    Benchmarks.TRIVIAQA: None,
-    Benchmarks.AMBIGNQ: None,
+    Benchmarks.HOTPOTQA: SelfRefineHotQAStrategy,
+    Benchmarks.FEVER: SelfRefineFEVERStrategy,
+    Benchmarks.TRIVIAQA: SelfRefineTriviaQAStrategy,
+    Benchmarks.AMBIGNQ: SelfRefineAmbigNQStrategy,
     Benchmarks.GSM8K: SelfRefineGSM8KStrategy,
     Benchmarks.SVAMP: SelfRefineSVAMPStrategy,
     Benchmarks.TABMWP: SelfRefineTabMWPStrategy,
