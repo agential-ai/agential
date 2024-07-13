@@ -2351,4 +2351,34 @@ Okay! Here is the rewrite:"""
 # ======================================================================== HUMANEVAL ======================================================================== #
 
 
+SELF_REFINE_INSTRUCTION_HUMANEVAL = """"""
+
+
+HUMANEVAL_CRITIQUE_FEWSHOT_EXAMPLES = """"""
+
+
+SELF_REFINE_CRITIQUE_INSTRUCTION_HUMANEVAL = """"""
+
+
+HUMANEVAL_REFINE_FEWSHOT_EXAMPLES = """"""
+
+
+SELF_REFINE_REFINE_INSTRUCTION_HUMANEVAL = """"""
+
+
 # ======================================================================== MBPP ======================================================================== #
+
+
+SELF_REFINE_INSTRUCTION_MBPP = """"""
+
+
+MBPP_CRITIQUE_FEWSHOT_EXAMPLES = """"""
+
+
+SELF_REFINE_CRITIQUE_INSTRUCTION_MBPP = """"""
+
+
+MBPP_REFINE_FEWSHOT_EXAMPLES = """"""
+
+
+SELF_REFINE_REFINE_INSTRUCTION_MBPP = """"""
