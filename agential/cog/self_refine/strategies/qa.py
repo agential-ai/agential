@@ -19,10 +19,10 @@ class SelfRefineQAStrategy(SelfRefineBaseStrategy):
     Attributes:
         llm (BaseChatModel): The language model used for generating answers and critiques.
         patience (int): The number of interactions to tolerate the same incorrect answer
-            before halting further attempts. Defaults to 2.
+            before halting further attempts. Defaults to 1.
     """
 
-    def __init__(self, llm: BaseChatModel, patience: int = 2) -> None:
+    def __init__(self, llm: BaseChatModel, patience: int = 1) -> None:
         """Initialization."""
         super().__init__(llm)
         self.patience = patience
@@ -92,7 +92,7 @@ class SelfRefineQAStrategy(SelfRefineBaseStrategy):
             additional_keys=additional_keys,
         )
 
-        if EM(answer.strip(), self._prev_code_answer):
+        if EM(answer.strip(), self._prev_code_answer, normalize=False):
             self.patience_counter += 1
             if self.patience_counter == self.patience:
                 self._halt = True
