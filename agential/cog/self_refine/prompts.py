@@ -1328,37 +1328,61 @@ Question: {question}
 {answer}
 ```
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good."""
+What's the problem with the above code?"""
 
 
 GSM8K_REFINE_FEWSHOT_EXAMPLES = """Question: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops did Jason give to Denny?
 ```python
 jason_lollipops_initial = 20
 jason_lollipops_after = 12
-denny_lollipops = jason_lollipops_initial + jason_lollipops_after
-answer = denny_lollipops
+lollipop_list = [jason_lollipops_initial]
+
+for i in range(jason_lollipops_after):
+lollipop_list.append(-1)
+
+denny_lollipops = 0
+
+for lollipop in lollipop_list:
+denny_lollipops += lollipop
+
+temp_result = jason_lollipops_initial - jason_lollipops_after
+answer = temp_result
 ```
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+What's the problem with the above code?
 
-# Let us go through the error and check step-by-step
-jason_lollipops_initial = 20
-# looks good
+1. The total lollipops Jason initially had and the lollipops left should be positive, 20 and 12 > 0, it's reasonable.
 
-# Let's check the other parts
-jason_lollipops_after = 12
-# looks good
+2. Let's check the code:
 
-# Let's check the other parts
-denny_lollipops = jason_lollipops_initial + jason_lollipops_after
-# wrong! Jason gave some lollipops to Denny, so we need to subtract the lollipops Jason has now from the lollipops he had initially. The correct calculation should be jason_lollipops_initial - jason_lollipops_after.
+> jason_lollipops_initial = 20
+> jason_lollipops_after = 12
+> lollipop_list = [jason_lollipops_initial]
 
-# Let's check the other parts
-answer = denny_lollipops
-# looks good
+This defines the initial lollipops and creates a list starting with the initial count, which is correct.
 
-Okay! Here is the rewrite:
+> for i in range(jason_lollipops_after):
+> lollipop_list.append(-1)
 
+This loop adds negative values to the list to represent the lollipops given away, which is an inefficient approach.
+
+> denny_lollipops = 0
+
+It initializes the count for Denny's lollipops, which is correct.
+
+> for lollipop in lollipop_list:
+> denny_lollipops += lollipop
+
+This loop adds up all the lollipops in the list, which is unnecessary for this task.
+
+> temp_result = jason_lollipops_initial - jason_lollipops_after
+> answer = temp_result
+
+This assigns the correct total to the answer but the approach to calculate it is inefficient.
+
+Overall, the code correctly understands the task but is inefficient and performs unnecessary operations. The correct and efficient approach is to directly subtract the remaining lollipops from the initial count.
+
+Here's a better solution:
 ```python
 jason_lollipops_initial = 20
 jason_lollipops_after = 12
@@ -1372,30 +1396,17 @@ Question: There are 15 trees in the grove. Grove workers will plant trees in the
 ```python
 trees_initial = 15
 trees_after = 21
-trees_added = trees_initial - trees_after
+trees_added = trees_after - initial_trees
 answer = trees_added
 ```
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+What's the problem with the above code?
 
-# Let us go through the error and check step-by-step
-trees_initial = 15
-# looks good
+1. The above code causes the "NameError" because it use the variable `initial_trees` before it is defined.
 
-# Let's check the other parts
-trees_after = 21
-# looks good
+2. The variable names in the code are a little bit confusing, becase both `trees_after` and "initial_trees" are used.
 
-# Let's check the other parts
-trees_added = trees_initial - trees_after
-# wrong! The number of trees added should be calculated by subtracting the initial number of trees from the number of trees after planting. The correct calculation should be trees_after - trees_initial.
-
-# Let's check the other parts
-answer = trees_added
-# looks good
-
-Okay! Here is the rewrite:
-
+Here's a better solution:
 ```python
 trees_initial = 15
 trees_after = 21
@@ -1411,40 +1422,29 @@ toys_initial = 5
 mom_toys = 2
 dad_toys = 2
 total_received = mom_toys + dad_toys
-total_toys = toys_initial + total_received
+total_toys = toys_initial - total_received
 answer = total_toys
 ```
 
-# There is no error in the code above. The logic and calculations are correct. Let us verify step-by-step:
+What's the problem with the above code?
 
-# Let us go through the calculation step-by-step
-toys_initial = 5
-# looks good
+1. The total of toys should be greater than the initial number of toys, 1 < 5, so the answer is not reasonable. 
 
-# Let's check the other parts
-mom_toys = 2
-# looks good
+2. Let's check the code:
 
-# Let's check the other parts
-dad_toys = 2
-# looks good
+> # the total number of toys received from mom and dad
+> mom_toys = 2
+> dad_toys = 2
+> total_received = mom_toys + dad_toys
 
-# Let's check the other parts
-total_received = mom_toys + dad_toys
-# looks good
+It calculates the total number of received toys `total_received`, that's correct.
 
-# Let's check the other parts
-total_toys = toys_initial + total_received
-# looks good
+> toys_initial = 5
+> total_toys = toys_initial - total_received
 
-# Let's check the other parts
-answer = total_toys
-# looks good
+According to the question, Shawn receives the toys instead of giving , `toys_initial - total_received` means Shawns is giving away his toys, this is wrong.
 
-There is no error in the code! It is correct! 
-
-Here is the rewrite (for the sake of completeness):
-
+Here's a better solution:
 ```python
 toys_initial = 5
 mom_toys = 2
@@ -1461,36 +1461,42 @@ Question: There were nine computers in the server room. Five more computers were
 computers_initial = 9
 computers_per_day = 5
 num_days = 4  # 4 days between Monday and Thursday
-computers_added = computers_per_day + num_days
-computers_total = computers_initial + computers_added
+computers_added = computers_per_day * num_days
+computers_total = computers_initial - computers_added
 answer = computers_total
 ```
 
-There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+What's the problem with the above code?
 
-# Let us go through the error and check step-by-step
-computers_initial = 9
-#looks good
+1. The total number of computers should be a positive number, 9 > 0, it's reasonable.
 
-# Let's check the other parts
-computers_per_day = 5
-# looks good
+2. Let's check the code:
 
-# Let's check the other parts
-num_days = 4 # 4 days between Monday and Thursday
-# looks good
+> computers_initial = 9
+> computers_per_day = 5
+> num_days = 4
 
-#Let's check the other parts
-computers_added = computers_per_day + num_days
+These define the initial number of computers, the number of computers added per day, and the number of days. These are correct.
 
-wrong! The error here is the incorrect addition. We should multiply the number of computers added per day by the number of days, not add them together. This causes the calculation of computers_added to be incorrect.
+> computers_added = computers_per_day * num_days
 
-Okay! Here is the rewrite:
+It calculates the total number of computers added over the 4 days, which is correct.
 
+> computers_total = computers_initial - computers_added
+
+This line incorrectly subtracts the added computers from the initial count, which is wrong.
+
+> answer = computers_total
+
+This assigns the incorrect total to the answer.
+
+Overall, the code correctly calculates the number of added computers but incorrectly subtracts them from the initial count instead of adding them. The correct approach is to add the computers added to the initial count.
+
+Here's a better solution:
 ```python
 computers_initial = 9
 computers_per_day = 5
-num_days = 4  # 4 days between monday and thursday
+num_days = 4  # 4 days between Monday and Thursday
 computers_added = computers_per_day * num_days
 computers_total = computers_initial + computers_added
 answer = computers_total
@@ -1498,7 +1504,7 @@ answer = computers_total
 
 ---
 
-Question: Michael had 58 golf balls. On Tuesday, he lost 23 golf balls. On Wednesday, he lost 2 more. How many golf balls did he have at the end of Wednesday?
+Question: Michael had 58 golf balls. On tuesday, he lost 23 golf balls. On wednesday, he lost 2 more. How many golf balls did he have at the end of wednesday?
 ```python
 golf_balls_initial = 58
 golf_balls_lost_tuesday = 23
@@ -1507,36 +1513,32 @@ golf_balls_left = golf_balls_initial - golf_balls_lost_tuesday - golf_balls_lost
 answer = golf_balls_left
 ```
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+What's the problem with the above code?
 
-# Let us go through the error and check step-by-step
-golf_balls_initial = 58
-# looks good
+1. The number of golf ball should be a positive number, 33 > 0, it's reasonable.
 
-# Let's check the other parts
-golf_balls_lost_tuesday = 23
-# looks good
+2. Let's check the code:
 
-# Let's check the other parts
-golf_balls_lost_wednesday = 2
+> golf_balls_initial = 58
+> golf_balls_lost_tuesday = 23
+> golf_balls_lost_wednesday = 2
 
-# Let's check the other parts
-golf_balls_left = golf_balls_initial - golf_balls_lost_tuesday - golf_balls_lost_wednesday
-# looks good
+It defines the golf_balls_lost_wednesday as 2, but the number of golf balls lost on wednesday is 2 more than the number on Tuesday.
 
-#Let's check the other parts
-answer = golf_balls_left
-# looks good
+> golf_balls_left = golf_balls_initial - golf_balls_lost_tuesday - golf_balls_lost_wednesday
+> answer = golf_balls_left
 
-There is no error in the code! It is correct!
+The initial number of golf balls subtracts the totla number of golf ball lost on tuesday and wednesday . That's correct.
 
-Here is the rewrite (for the sake of completeness):
+Overall, the code correctly calculates the number of golf ball left but incorrectly defines the number of golf ball lost on wednesday. The correct approach is to add the lost on tuesday by 2.
 
+Here's a better solution:
 ```python
 golf_balls_initial = 58
 golf_balls_lost_tuesday = 23
 golf_balls_lost_wednesday = 2
-golf_balls_left = golf_balls_initial - golf_balls_lost_tuesday - golf_balls_lost_wednesday
+golf_balls_lost_total = golf_balls_lost_tuesday + golf_balls_lost_wednesday
+golf_balls_left = golf_balls_initial + golf_balls_lost_total
 answer = golf_balls_left
 ```"""
 
@@ -1549,11 +1551,11 @@ Question: {question}
 {answer}
 ```
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good. Provide the improved solution. If there is no error, write out the entire solution again.
+What's the problem with the above code?
 
 {critique}
 
-Okay! Here is the rewrite:"""
+Here's a better solution:"""
 
 
 # ======================================================================== SVAMP ======================================================================== #
@@ -1568,54 +1570,45 @@ Question: {question}
 # Python code, return answer"""
 
 
-SVAMP_CRITIQUE_FEWSHOT_EXAMPLES = """Question: James bought 93 red and 10 blue stickers, he used 31 red sticker on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
+SVAMP_CRITIQUE_FEWSHOT_EXAMPLES = """Question: James bought 93 red and 10 blue stickers, he used 31 red stickers on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
 ```python
 original_red_stickers = 93
 used_red_stickers = 31
-answer = original_red_stickers + used_red_stickers
+original_blue_stickers = 10
+used_blue_stickers = 7
+answer = (original_red_stickers - used_red_stickers) + (original_blue_stickers - used_blue_stickers)
 ```
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+What's the problem with the above code?
 
-# Let us go through the error and check step-by-step
-original_red_stickers = 93
-# looks good
+1. The number of stickers should be positive, 65 > 0, it's reasonable.
+2. Let's check the code:
 
-# Let's check the other parts
-used_red_stickers = 31
-# looks good
+> answer = (original_red_stickers - used_red_stickers) + (original_blue_stickers - used_blue_stickers)
 
-# Let's check the other parts
-answer = original_red_stickers + used_red_stickers
-# wrong! The code is adding the used stickers instead of subtracting them from the original count.
+The above code incorrectly combines the count of red and blue stickers. The question only asks for the number of red stickers James has left, so the calculation involving blue stickers is unnecessary and incorrect.
 
-# The corrected code should be:
-# answer = original_red_stickers - used_red_stickers
+According to the question, James initially bought 93 red stickers and used 31 of them. To find the remaining number of red stickers, we only need to subtract the used red stickers from the original red stickers.
 
 ---
 
 Question: Allen went to supermarket to buy eggs, each egg costs 80 dollars, if the discount is 29 dollars. How much do you have to pay to buy for each egg?
-python
+```python
 original_egg_price_in_dollars = 80
 discount_dollars = 29
-answer = original_egg_price_in_dollars + discount_dollars
+answer = original_egg_price_in_dollars - discount_dollars
+```
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+What's the problem with the above code?
 
-# Let us go through the error and check step-by-step
-original_egg_price_in_dollars = 80
-# looks good
+1. The answer, 51, is a reasonable result.
+2. Let's check the code:
 
-# Let's check the other parts
-discount_dollars = 29
-# looks good
+> answer = original_egg_price_in_dollars - discount_dollars
 
-# Let's check the other parts
-answer = original_egg_price_in_dollars + discount_dollars
-# wrong! The code is adding the discount to the original price instead of subtracting it.
+The code correctly calculates the final price of each egg after applying the discount. There is no problem with the above code.
 
-# The corrected code should be:
-# answer = original_egg_price_in_dollars - discount_dollars
+The proposed answer is correct and accurately computes the discounted price of each egg.
 
 ---
 
@@ -1623,46 +1616,35 @@ Question: Dianna collects both cases and books. He bought 22 cases and 5 books f
 ```python
 num_books_bought_at_store = 5
 num_books_now = 25
-answer = num_books_now - num_books_bought_at_store
+answer = num_books_now + num_books_bought_at_store
 ```
 
-# There is no error in the code above. The logic and calculations are correct. Let us verify step-by-step:
+What's the problem with the above code?
 
-# Let us go through the calculation step-by-step
-num_books_bought_at_store = 5
-# looks good
+1. The answer, 30, is not reasonable given the context.
+2. Let's check the code:
 
-# Let's check the other parts
-num_books_now = 25
-# looks good
+> answer = num_books_now + num_books_bought_at_store
 
-# Let's check the other parts
-answer = num_books_now - num_books_bought_at_store
-# looks good
+The code incorrectly calculates the number of books Danny had initially by adding the number of books bought at the store to the total number of books he has now. The correct approach is to subtract the number of books bought from the total number of books he has now.
 
 ---
 
-Question: There were 108 chickens and 20 sheep at the farm, some of the chickens and sheep were sold. There are 87 chickens and 18 sheep left now. How many chickens were sold?
+Question: There were 108 chickens and 20 sheeps at the farm, some of chickens and sheeps were sold. There are 87 chickens and 18 sheeps left now. How many chickens were sold?
 ```python
 num_chicken_before = 108
 num_chicken_now = 87
-answer = num_chicken_before * num_chicken_now
+answer = num_chicken_before - num_chicken_now
 ```
 
-# There is no error in the code above. The logic and calculations are correct. Let us verify step-by-step:
+What's the problem with the above code?
 
-# Let us go through the calculation step-by-step
-num_chicken_before = 108
-# look good
+1. The answer, 21, is a reasonable result.
+2. Let's check the code:
 
-# Let's check the other parts
-num_chicken_now = 87
-# look good
+> answer = num_chicken_before - num_chicken_now
 
-# Let's check the other parts
-answer = num_chicken_before * num_chicken_now
-
-The answer is incorrect because the code multiplies the initial number of chickens by the number of chickens left. This operation does not make sense in the context of finding out how many chickens were sold.
+The code calculates the number of chicken sold by subtracting the original number of chicken from the number of chicken left. There is no problem with the above code. 
 
 ---
 
@@ -1673,21 +1655,13 @@ num_goals_on_wednesday = 9
 answer = num_goals_on_monday + num_goals_on_wednesday
 ```
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+What's the problem with the above code?
 
-# Let us go through the error and check step-by-step
-num_goals_on_monday = 2
-#look good
+1. The answer, 11, is a reasonable result.
+2. Let's check the code:
 
-# Let's check the other parts
-num_goals_on_wednesday = 9
-#look good
-
-# Let's check the other parts
-answer = num_goals_on_monday + num_goals_on_wednesday
-# look good
-
-There is no error. The answer is correct!"""
+> answer = num_goals_on_monday + num_goals_on_wednesday
+The code calculates the total number of goals , scored by Katty on monday and wednesday by adding the number of goals on monday and number of goals on wednesday. There is no problem with the above code."""
 
 
 SELF_REFINE_CRITIQUE_INSTRUCTION_SVAMP = """{examples}
@@ -1698,72 +1672,66 @@ Question: {question}
 {answer}
 ```
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good."""
+What's the problem with the above code?"""
 
 
-SVAMP_REFINE_FEWSHOT_EXAMPLES = """Question: James bought 93 red and 10 blue stickers, he used 31 red sticker on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
+SVAMP_REFINE_FEWSHOT_EXAMPLES = """Question: James bought 93 red and 10 blue stickers, he used 31 red stickers on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
 ```python
 original_red_stickers = 93
 used_red_stickers = 31
-answer = original_red_stickers + used_red_stickers
+original_blue_stickers = 10
+used_blue_stickers = 7
+answer = (original_red_stickers - used_red_stickers) + (original_blue_stickers - used_blue_stickers)
 ```
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+What's the problem with the above code?
 
-# Let us go through the error and check step-by-step
-original_red_stickers = 93
-# looks good
+1. The number of stickers should be positive, 65 > 0, it's reasonable.
+2. Let's check the code:
 
-# Let's check the other parts
-used_red_stickers = 31
-# looks good
+> answer = (original_red_stickers - used_red_stickers) + (original_blue_stickers - used_blue_stickers)
 
-# Let's check the other parts
-answer = original_red_stickers + used_red_stickers
-# wrong! The code is adding the used stickers instead of subtracting them from the original count.
+The above code incorrectly combines the count of red and blue stickers. The question only asks for the number of red stickers James has left, so the calculation involving blue stickers is unnecessary and incorrect.
 
-# The corrected code should be:
-# answer = original_red_stickers - used_red_stickers
+According to the question, James initially bought 93 red stickers and used 31 of them. To find the remaining number of red stickers, we only need to subtract the used red stickers from the original red stickers.
 
-Okay! Here is the rewrite:
-
+Here's a better solution:
 ```python
 original_red_stickers = 93
 used_red_stickers = 31
-answer = original_red_stickers - used_red_stickers
+
+# Calculate the number of red stickers James has left
+remaining_red_stickers = original_red_stickers - used_red_stickers
+answer = remaining_red_stickers
 ```
 
 ---
 
 Question: Allen went to supermarket to buy eggs, each egg costs 80 dollars, if the discount is 29 dollars. How much do you have to pay to buy for each egg?
-python
-original_egg_price_in_dollars = 80
-discount_dollars = 29
-answer = original_egg_price_in_dollars + discount_dollars
-
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
-
-# Let us go through the error and check step-by-step
-original_egg_price_in_dollars = 80
-# looks good
-
-# Let's check the other parts
-discount_dollars = 29
-# looks good
-
-# Let's check the other parts
-answer = original_egg_price_in_dollars + discount_dollars
-# wrong! The code is adding the discount to the original price instead of subtracting it.
-
-# The corrected code should be:
-# answer = original_egg_price_in_dollars - discount_dollars
-
-Okay! Here is the rewrite:
-
 ```python
 original_egg_price_in_dollars = 80
 discount_dollars = 29
 answer = original_egg_price_in_dollars - discount_dollars
+```
+
+What's the problem with the above code?
+
+1. The answer, 51, is a reasonable result.
+2. Let's check the code:
+
+> answer = original_egg_price_in_dollars - discount_dollars
+
+The code correctly calculates the final price of each egg after applying the discount. There is no problem with the above code.
+
+The proposed answer is correct and accurately computes the discounted price of each egg.
+
+Question: Allen went to supermarket to buy eggs, each egg costs 80 dollars, if the discount is 29 dollars. How much do you have to pay to buy for each egg?
+Here's the most possible answer:
+```python
+original_egg_price_in_dollars = 80
+discount_dollars = 29
+final_price = original_egg_price_in_dollars - discount_dollars
+answer = final_price
 ```
 
 ---
@@ -1772,57 +1740,47 @@ Question: Dianna collects both cases and books. He bought 22 cases and 5 books f
 ```python
 num_books_bought_at_store = 5
 num_books_now = 25
-answer = num_books_now - num_books_bought_at_store
+answer = num_books_now + num_books_bought_at_store
 ```
 
-# There is no error in the code above. The logic and calculations are correct. Let us verify step-by-step:
+What's the problem with the above code?
 
-# Let us go through the calculation step-by-step
-num_books_bought_at_store = 5
-# looks good
+1. The answer, 30, is not reasonable given the context.
+2. Let's check the code:
 
-# Let's check the other parts
-num_books_now = 25
-# looks good
+> answer = num_books_now + num_books_bought_at_store
 
-# Let's check the other parts
-answer = num_books_now - num_books_bought_at_store
-# looks good
+The code incorrectly calculates the number of books Danny had initially by adding the number of books bought at the store to the total number of books he has now. The correct approach is to subtract the number of books bought from the total number of books he has now.
 
-Here is the rewrite (for the sake of completeness):
-
+Here's a better solution:
 ```python
 num_books_bought_at_store = 5
 num_books_now = 25
-answer = num_books_now - num_books_bought_at_store
+
+# Calculate the number of books Dianna had at first
+num_books_initially = num_books_now - num_books_bought_at_store
+answer = num_books_initially
 ```
 
 ---
 
-Question: There were 108 chickens and 20 sheep at the farm, some of the chickens and sheep were sold. There are 87 chickens and 18 sheep left now. How many chickens were sold?
+Question: There were 108 chickens and 20 sheeps at the farm, some of chickens and sheeps were sold. There are 87 chickens and 18 sheeps left now. How many chickens were sold?
 ```python
 num_chicken_before = 108
 num_chicken_now = 87
-answer = num_chicken_before * num_chicken_now
+answer = num_chicken_before - num_chicken_now
 ```
 
-# There is no error in the code above. The logic and calculations are correct. Let us verify step-by-step:
+What's the problem with the above code?
 
-# Let us go through the calculation step-by-step
-num_chicken_before = 108
-# look good
+1. The answer, 21, is a reasonable result.
+2. Let's check the code:
 
-# Let's check the other parts
-num_chicken_now = 87
-# look good
+> answer = num_chicken_before - num_chicken_now
 
-# Let's check the other parts
-answer = num_chicken_before * num_chicken_now
+The code calculates the number of chicken sold by subtracting the original number of chicken from the number of chicken left. There is no problem with the above code. 
 
-The answer is incorrect because the code multiplies the initial number of chickens by the number of chickens left. This operation does not make sense in the context of finding out how many chickens were sold.
-
-Okay! Here is the rewrite:
-
+Here's a better solution:
 ```python
 num_chicken_before = 108
 num_chicken_now = 87
@@ -1838,24 +1796,15 @@ num_goals_on_wednesday = 9
 answer = num_goals_on_monday + num_goals_on_wednesday
 ```
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+What's the problem with the above code?
 
-# Let us go through the error and check step-by-step
-num_goals_on_monday = 2
-#look good
+1. The answer, 11, is a reasonable result.
+2. Let's check the code:
 
-# Let's check the other parts
-num_goals_on_wednesday = 9
-#look good
+> answer = num_goals_on_monday + num_goals_on_wednesday
+The code calculates the total number of goals , scored by Katty on monday and wednesday by adding the number of goals on monday and number of goals on wednesday. There is no problem with the above code.
 
-# Let's check the other parts
-answer = num_goals_on_monday + num_goals_on_wednesday
-# look good
-
-There is no error. The answer is correct!
-
-Here is the rewrite (for the sake of completeness):
-
+Here's a better solution:
 ```python
 num_goals_on_monday = 2
 num_goals_on_wednesday = 9
@@ -1871,11 +1820,11 @@ Question: {question}
 {answer}
 ```
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good. Provide the improved solution. If there is no error, write out the entire solution again.
+What's the problem with the above code?
 
 {critique}
 
-Okay! Here is the rewrite:"""
+Here's a better solution:"""
 
 
 # ======================================================================== TABMWP ======================================================================== #
@@ -1903,27 +1852,16 @@ Avery | 87
 Question: Some friends discussed the sizes of their coin collections. What is the mean of the numbers?
 ```python
 number_of_coins_for_different_person = [76, 94, 86, 84, 80, 83, 82, 87]
-mean_number_of_coins = sum(number_of_coins_for_different_person) + len(number_of_coins_for_different_person)
-answer = mean_number_of_coins
+mean = sum(number_of_coins_for_different_person) / len(number_of_coins_for_different_person)
 ```
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+What's the problem with the above code?
 
-# Let us go through the error and check step-by-step
-number_of_coins_for_different_person = [76, 94, 86, 84, 80, 83, 82, 87]
-# looks good
-
-# Let's check the other parts
-mean_number_of_coins = sum(number_of_coins_for_different_person) + len(number_of_coins_for_different_person)
-# wrong! To find the mean, we should divide the sum of the numbers by the count, not add them. The correct calculation should be sum(number_of_coins_for_different_person) / len(number_of_coins_for_different_person).
-
-# Let's check the other parts
-answer = mean_number_of_coins
-# looks good
+The problem with the above code is that it does not assign the result of the calculation to the variable answer. The code correctly calculates the mean of the number of coins, but it does not store the result in the answer variable.
 
 ---
 
-Read the following table regarding "Supply and Demand" and then write Python code to answer a question:
+Read the following table regarding "" and then write Python code to answer a question:
 
 Price | Quantity demanded | Quantity supplied
 $155 | 22,600 | 5,800
@@ -1932,39 +1870,22 @@ $395 | 18,400 | 13,000
 $515 | 16,300 | 16,600
 $635 | 14,200 | 20,200
 
-Question: Look at the table. Then answer the question. At a price of $155, is there a shortage or a surplus? Choose from the options: [shortage, surplus]
+Question: Look at the table. Then answer the question. At a price of $155, is there a shortage or a surplus? Choose from the the options: [shortage, surplus]
 ```python
-quantity_demanded_at_price_155 = 22600
-quantity_supplied_at_price_155 = 5800
-if quantity_demanded_at_price_155 < quantity_supplied_at_price_155:
+quantity_demanded_price_155 = 22600
+quantity_supplied_price_155 = 5800
+if quantity_demanded_at_price_155 > quantity_supplied_at_price_155:
     answer = 'shortage'
 else:
     answer = 'surplus'
 ```
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+What's the problem with the above code?
 
-# Let us go through the error and check step-by-step
-quantity_demanded_at_price_155 = 22600
-# looks good
+1. The above code causes a "NameError" because it uses the variables `quantity_demanded_at_price_155` and `quantity_supplied_at_price_155` without defining them.
+2. The variable names in the code are a little bit long 
 
-# Let's check the other parts
-quantity_supplied_at_price_155 = 5800
-# looks good
-
-# Let's check the other parts
-if quantity_demanded_at_price_155 < quantity_supplied_at_price_155:
-answer = 'shortage'
-# wrong! The condition is incorrect. We should check if quantity_demanded_at_price_155 is greater than quantity_supplied_at_price_155 to determine a shortage. The correct condition should be if quantity_demanded_at_price_155 > quantity_supplied_at_price_155.
-
-# Let's check the other parts
-else:
-answer = 'surplus'
-# looks good
-
-# Let's check the other parts
-answer = answer
-# looks good
+To solve the problem, we should first properly the quantity_demanded_price_155 and quantity_supplied_price_155 and then compare them.
 
 ---
 
@@ -1985,32 +1906,13 @@ middle2 = len(cans) // 2
 answer = (cans[middle1] + cans[middle2]) / 2
 ```
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+What's the problem with the above code?
 
-# Let us go through the error and check step-by-step
-cans = [7, 4, 5, 8, 9]
-# looks good
-
-# Let's check the other parts
-cans = sorted(cans)
-# looks good
-
-# Let's check the other parts
-middle1 = (len(cans) - 1) // 2
-# looks good
-
-# Let's check the other parts
-middle2 = len(cans) // 2
-# looks good
-
-# Let's check the other parts
-answer = (cans[middle1] + cans[middle2]) / 2
-
-The answer looks good. There is no error!
+There is no problem with the above code. It correctly answers the question and calculates the median of the numbers. However, the code can be simplified.
 
 ---
 
-Read the following table regarding "" and then write Python code to answer a question:
+Read the following table regarding "Toy prices" and then write Python code to answer a question:
 
 toy boat | $5.54
 toy guitar | $8.23
@@ -2019,42 +1921,26 @@ trivia game | $8.18
 jigsaw puzzle | $5.30
 toy dinosaur | $3.00
 
-Question: Lorenzo has $13.50. Does he have enough to buy a toy guitar and a set of juggling balls? Choose from the the options: ['yes', 'no']
+Question: Lorenzo has $13.50. Does he have enough to buy a toy guitar and a set of juggling balls? Choose from the following options: ['yes', 'no']
 ```python
 guitar_price = 8.23
-juggling_balls = 5.01
+juggling_balls_price = 5.01
 total_money = 13.5
-if total_money > juggling_balls - guitar_price:
-    answer = "yes"
+if total_money >= juggling_balls_price + guitar_price:
+    answer = True
 else:
-    answer = "no\"
+    answer = False
 ```
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+What's the problem with the above code?
 
-# Let us go through the error and check step-by-step
-guitar_price = 8.23
-# looks good
+The problem with the above code is that it returns the answer as a boolean value (True or False), while the question expects a string response ('yes' or 'no').
 
-# Let's check the other parts
-juggling_balls = 5.01
-# looks good
-
-# Let's check the other parts
-total_money = 13.5
-# looks good
-
-# Let's check the other parts
-if total_money > juggling_balls - guitar_price:
-    answer = "yes"
-else:
-    answer = "no\"
-
-The answer is incorrect. The logic here mistakenly subtracts the price of the guitar from the price of the juggling balls, which does not make sense in the context of determining if Lorenzo has enough money to buy both items.
+To fix this issue, we should return the answer as a string that matches one of the provided options.
 
 ---
 
-Read the following table regarding "Apple harvest" and then write Python code to answer a question:
+Read the following table and then write Python code to answer a question:
 
 Number of apple trees | Number of apples harvested
 1 | 50
@@ -2065,26 +1951,19 @@ Number of apple trees | Number of apples harvested
 6 | ?
 
 Question: Each apple tree yields 50 apples. How many apples are harvested from 6 apple trees?
-``` python
-apples_per_tree = 50
-number_of_trees = 6
-answer = apples_per_tree / number_of_trees
+```python
+apples_from_1_tree = 50
+apples_from_2_trees = 100
+apples_from_3_trees = 150
+apples_from_4_trees = 200
+apples_from_5_trees = 250
+apples_from_6_trees = apples_from_5_trees + apples_from_1_tree
+answer = apples_from_6_trees
 ```
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+What's the problem with the above code?
 
-# Let us go through the error and check step-by-step
-apples_per_tree = 50
-# looks good
-
-# Let's check the other parts
-number_of_trees = 6
-# looks good
-
-# Let's check the other parts
-answer = apples_per_tree / number_of_trees
-
-The answer looks good. There is no error!"""
+There is no problem with the above code. It correctly answers the question and calculates the number of apples harvested from 6 apple trees. However, the code can be simplified, as there's a clear pattern in the relationship between the number of apple trees and the number of apples harvested."""
 
 
 SELF_REFINE_CRITIQUE_INSTRUCTION_TABMWP = """{examples}
@@ -2095,7 +1974,7 @@ SELF_REFINE_CRITIQUE_INSTRUCTION_TABMWP = """{examples}
 {answer}
 ```
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good."""
+What's the problem with the above code?"""
 
 
 TABMWP_REFINE_FEWSHOT_EXAMPLES = """Read the following table regarding "Coin collections" and then write Python code to answer a question:
@@ -2113,34 +1992,23 @@ Avery | 87
 Question: Some friends discussed the sizes of their coin collections. What is the mean of the numbers?
 ```python
 number_of_coins_for_different_person = [76, 94, 86, 84, 80, 83, 82, 87]
-mean_number_of_coins = sum(number_of_coins_for_different_person) + len(number_of_coins_for_different_person)
-answer = mean_number_of_coins
+mean = sum(number_of_coins_for_different_person) / len(number_of_coins_for_different_person)
 ```
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+What's the problem with the above code?
 
-# Let us go through the error and check step-by-step
-number_of_coins_for_different_person = [76, 94, 86, 84, 80, 83, 82, 87]
-# looks good
+The problem with the above code is that it does not assign the result of the calculation to the variable answer. The code correctly calculates the mean of the number of coins, but it does not store the result in the answer variable.
 
-# Let's check the other parts
-mean_number_of_coins = sum(number_of_coins_for_different_person) + len(number_of_coins_for_different_person)
-# wrong! To find the mean, we should divide the sum of the numbers by the count, not add them. The correct calculation should be sum(number_of_coins_for_different_person) / len(number_of_coins_for_different_person).
-
-# Let's check the other parts
-answer = mean_number_of_coins
-# looks good
-
-Okay! Here is the rewrite:
-
+Here's a better solution:
 ```python
 number_of_coins_for_different_person = [76, 94, 86, 84, 80, 83, 82, 87]
-answer = sum(number_of_coins_for_different_person) / len(number_of_coins_for_different_person)
+mean = sum(number_of_coins_for_different_person) / len(number_of_coins_for_different_person)
+answer = mean  
 ```
 
 ---
 
-Read the following table regarding "Supply and Demand" and then write Python code to answer a question:
+Read the following table regarding "" and then write Python code to answer a question:
 
 Price | Quantity demanded | Quantity supplied
 $155 | 22,600 | 5,800
@@ -2149,46 +2017,28 @@ $395 | 18,400 | 13,000
 $515 | 16,300 | 16,600
 $635 | 14,200 | 20,200
 
-Question: Look at the table. Then answer the question. At a price of $155, is there a shortage or a surplus? Choose from the options: [shortage, surplus]
+Question: Look at the table. Then answer the question. At a price of $155, is there a shortage or a surplus? Choose from the the options: [shortage, surplus]
 ```python
-quantity_demanded_at_price_155 = 22600
-quantity_supplied_at_price_155 = 5800
-if quantity_demanded_at_price_155 < quantity_supplied_at_price_155:
+quantity_demanded_price_155 = 22600
+quantity_supplied_price_155 = 5800
+if quantity_demanded_at_price_155 > quantity_supplied_at_price_155:
     answer = 'shortage'
 else:
     answer = 'surplus'
 ```
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+What's the problem with the above code?
 
-# Let us go through the error and check step-by-step
-quantity_demanded_at_price_155 = 22600
-# looks good
+1. The above code causes a "NameError" because it uses the variables `quantity_demanded_at_price_155` and `quantity_supplied_at_price_155` without defining them.
+2. The variable names in the code are a little bit long 
 
-# Let's check the other parts
-quantity_supplied_at_price_155 = 5800
-# looks good
+To solve the problem, we should first properly the quantity_demanded_price_155 and quantity_supplied_price_155 and then compare them.
 
-# Let's check the other parts
-if quantity_demanded_at_price_155 < quantity_supplied_at_price_155:
-answer = 'shortage'
-# wrong! The condition is incorrect. We should check if quantity_demanded_at_price_155 is greater than quantity_supplied_at_price_155 to determine a shortage. The correct condition should be if quantity_demanded_at_price_155 > quantity_supplied_at_price_155.
-
-# Let's check the other parts
-else:
-answer = 'surplus'
-# looks good
-
-# Let's check the other parts
-answer = answer
-# looks good
-
-Okay! Here is the rewrite:
-
+Here's a better solution:
 ```python
 quantity_demanded_price_155 = 22600
 quantity_supplied_price_155 = 5800
-if quantity_demanded_at_price_155 > quantity_supplied_at_price_155:
+if quantity_demanded_price_155 > quantity_supplied_price_155:
     answer = 'shortage'
 else:
     answer = 'surplus'
@@ -2213,42 +2063,20 @@ middle2 = len(cans) // 2
 answer = (cans[middle1] + cans[middle2]) / 2
 ```
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+What's the problem with the above code?
 
-# Let us go through the error and check step-by-step
-cans = [7, 4, 5, 8, 9]
-# looks good
+There is no problem with the above code. It correctly answers the question and calculates the median of the numbers. However, the code can be simplified.
 
-# Let's check the other parts
-cans = sorted(cans)
-# looks good
-
-# Let's check the other parts
-middle1 = (len(cans) - 1) // 2
-# looks good
-
-# Let's check the other parts
-middle2 = len(cans) // 2
-# looks good
-
-# Let's check the other parts
-answer = (cans[middle1] + cans[middle2]) / 2
-
-The answer looks good. There is no error!
-
-Here is the rewrite (for the sake of completeness):
-
+Here's a better solution:
 ```python
-cans = [7, 4, 5, 8, 9]
-cans = sorted(cans)
-middle1 = (len(cans) - 1) // 2
-middle2 = len(cans) // 2
-answer = (cans[middle1] + cans[middle2]) / 2
+cans = sorted([7, 4, 5, 8, 9])
+middle = len(cans) // 2
+answer = (cans[middle] + cans[~middle]) / 2
 ```
 
 ---
 
-Read the following table regarding "" and then write Python code to answer a question:
+Read the following table regarding "Toy prices" and then write Python code to answer a question:
 
 toy boat | $5.54
 toy guitar | $8.23
@@ -2257,46 +2085,31 @@ trivia game | $8.18
 jigsaw puzzle | $5.30
 toy dinosaur | $3.00
 
-Question: Lorenzo has $13.50. Does he have enough to buy a toy guitar and a set of juggling balls? Choose from the the options: ['yes', 'no']
+Question: Lorenzo has $13.50. Does he have enough to buy a toy guitar and a set of juggling balls? Choose from the following options: ['yes', 'no']
 ```python
 guitar_price = 8.23
-juggling_balls = 5.01
+juggling_balls_price = 5.01
 total_money = 13.5
-if total_money > juggling_balls - guitar_price:
-    answer = "yes"
+if total_money >= juggling_balls_price + guitar_price:
+    answer = True
 else:
-    answer = "no"
+    answer = False
 ```
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+What's the problem with the above code?
 
-# Let us go through the error and check step-by-step
-guitar_price = 8.23
-# looks good
+The problem with the above code is that it returns the answer as a boolean value (True or False), while the question expects a string response ('yes' or 'no').
 
-# Let's check the other parts
-juggling_balls = 5.01
-# looks good
+To fix this issue, we should return the answer as a string that matches one of the provided options.
 
-# Let's check the other parts
-total_money = 13.5
-# looks good
-
-# Let's check the other parts
-if total_money > juggling_balls - guitar_price:
-    answer = "yes"
-else:
-    answer = "no"
-
-The answer is incorrect. The logic here mistakenly subtracts the price of the guitar from the price of the juggling balls, which does not make sense in the context of determining if Lorenzo has enough money to buy both items.
-
-Okay! Here is the rewrite:
-
+Here's a better solution:
 ```python
 guitar_price = 8.23
-juggling_balls = 5.01
+juggling_balls_price = 5.01
 total_money = 13.5
-if total_money >= guitar_price + juggling_balls:
+
+# Calculate if Lorenzo has enough money to buy both items
+if total_money >= juggling_balls_price + guitar_price:
     answer = "yes"
 else:
     answer = "no"
@@ -2304,7 +2117,7 @@ else:
 
 ---
 
-Read the following table regarding "Apple harvest" and then write Python code to answer a question:
+Read the following table and then write Python code to answer a question:
 
 Number of apple trees | Number of apples harvested
 1 | 50
@@ -2315,33 +2128,26 @@ Number of apple trees | Number of apples harvested
 6 | ?
 
 Question: Each apple tree yields 50 apples. How many apples are harvested from 6 apple trees?
-``` python
-apples_per_tree = 50
-number_of_trees = 6
-answer = apples_per_tree / number_of_trees
+```python
+apples_from_1_tree = 50
+apples_from_2_trees = 100
+apples_from_3_trees = 150
+apples_from_4_trees = 200
+apples_from_5_trees = 250
+apples_from_6_trees = apples_from_5_trees + apples_from_1_tree
+answer = apples_from_6_trees
 ```
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good.
+What's the problem with the above code?
 
-# Let us go through the error and check step-by-step
-apples_per_tree = 50
-# looks good
+There is no problem with the above code. It correctly answers the question and calculates the number of apples harvested from 6 apple trees. However, the code can be simplified, as there's a clear pattern in the relationship between the number of apple trees and the number of apples harvested.
 
-# Let's check the other parts
-number_of_trees = 6
-# looks good
-
-# Let's check the other parts
-answer = apples_per_tree / number_of_trees
-
-The answer looks good. There is no error!
-
-Here is the rewrite (for the sake of completeness):
-
+Here's a better solution:
 ```python
-apples_per_tree = 50
 number_of_trees = 6
-answer = apples_per_tree / number_of_trees
+apples_per_tree = 50
+total_apples = number_of_trees * apples_per_tree
+answer = total_apples
 ```"""
 
 
@@ -2353,11 +2159,11 @@ SELF_REFINE_REFINE_INSTRUCTION_TABMWP = """{examples}
 {answer}
 ```
 
-# There is an error in the code above because of lack of understanding of the question. What is the error? To find the error, go through semantically complete blocks of the code, and check if everything looks good. Provide the improved solution. If there is no error, write out the entire solution again.
+What's the problem with the above code?
 
 {critique}
 
-Okay! Here is the rewrite:"""
+Here's a better solution:"""
 
 
 # ======================================================================== HUMANEVAL ======================================================================== #
