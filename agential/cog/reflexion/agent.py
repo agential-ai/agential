@@ -125,7 +125,7 @@ class ReflexionCoTAgent(BaseAgent):
             **kwargs (Dict[str, Any], optional): Additional keyword arguments for the strategy.
 
         Returns:
-            result (List[ReflexionCoTOutput]): A list of ReflexionCoTOutput containing the thought, action, observation, is_correct, and reflections.
+            List[ReflexionCoTOutput]: A list of ReflexionCoTOutput containing the thought, action, observation, is_correct, and reflections.
         """
         if not prompt or not reflect_prompt or not examples or not reflect_examples:
             if not fewshot_type:
@@ -359,7 +359,7 @@ class ReflexionReActAgent(BaseAgent):
             **kwargs (Any): Additional keyword arguments for the strategy.
 
         Returns:
-            result (List[ReflexionReActOutput]): List of ReflexionReActOutput where each ReflexionReActOutput contains the ReAct output and
+            List[ReflexionReActOutput]: List of ReflexionReActOutput where each ReflexionReActOutput contains the ReAct output and
                 the reflections at the end of the trial.
         """
         if not prompt or not reflect_prompt or not examples or not reflect_examples:
