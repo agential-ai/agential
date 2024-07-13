@@ -10,8 +10,8 @@ from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.agent import BaseAgent
 from agential.cog.self_refine.factory import (
-    SelfRefineFactory,
     SELF_REFINE_BENCHMARK_FEWSHOTS,
+    SelfRefineFactory,
 )
 from agential.cog.self_refine.output import SelfRefineOutput
 
