@@ -9,7 +9,10 @@ from typing import Any, Dict, List
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.agent import BaseAgent
-from agential.cog.self_refine.factory import SelfRefineFactory, SELF_REFINE_BENCHMARK_FEWSHOTS
+from agential.cog.self_refine.factory import (
+    SelfRefineFactory,
+    SELF_REFINE_BENCHMARK_FEWSHOTS,
+)
 from agential.cog.self_refine.output import SelfRefineOutput
 
 
@@ -82,7 +85,14 @@ class SelfRefineAgent(BaseAgent):
         Returns:
             List[SelfRefineOutput]: A list of answers and critiques.
         """
-        if not prompt or not critique_prompt or not examples or not critique_examples or not refine_examples or not refine_prompt:
+        if (
+            not prompt
+            or not critique_prompt
+            or not examples
+            or not critique_examples
+            or not refine_examples
+            or not refine_prompt
+        ):
             if not fewshot_type:
                 fewshot_type = SELF_REFINE_BENCHMARK_FEWSHOTS[self.benchmark][0]  # type: ignore
             fewshots = SelfRefineFactory.get_fewshots(
