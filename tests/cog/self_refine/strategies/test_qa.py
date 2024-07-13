@@ -32,10 +32,61 @@ def test_init() -> None:
 
 def test_generate() -> None:
     """Tests SelfRefineQAStrategy generate."""
+    llm = FakeListChatModel(responses=["Badr Hari"])
+    strategy = SelfRefineQAStrategy(llm=llm)
+    question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
 
+    answer = strategy.generate(
+        question=question,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT,
+        prompt=SELF_REFINE_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
+    )
+    assert answer == "Badr Hari"
 
 def test_generate_critique() -> None:
     """Tests SelfRefineQAStrategy generate_critique."""
+    gt_critique = "1"
+    responses = [
+        "1"
+    ]
+    llm = FakeListChatModel(responses=responses)
+    strategy = SelfRefineQAStrategy(llm=llm)
+    question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
+    answer = "Mike Tyson"
+
+    critique = strategy.generate_critique(
+        question=question,
+        examples=HOTPOTQA_CRITIQUE_FEWSHOT_EXAMPLES,
+        answer=answer,
+        prompt=SELF_REFINE_CRITIQUE_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
+    )
+    assert critique == gt_critique
+    assert not strategy._halt
+    assert strategy._prev_code_answer == answer
+    assert strategy.patience_counter == 0
+
+    # Test early stopping.
+    gt_critique = "1"
+    answer = "Mike Tyson"
+    responses = [
+        "1"
+    ]
+    llm = FakeListChatModel(responses=responses)
+    strategy = SelfRefineQAStrategy(llm=llm, patience=1)
+    strategy._prev_code_answer = "Mike Tyson"
+    critique = strategy.generate_critique(
+        question=question,
+        examples=HOTPOTQA_CRITIQUE_FEWSHOT_EXAMPLES,
+        answer=answer,
+        prompt=SELF_REFINE_CRITIQUE_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
+    )
+    assert critique == gt_critique
+    assert strategy.patience_counter == 1
+    assert strategy._halt is True
+    assert strategy._prev_code_answer == "Mike Tyson"
 
 
 def test_create_output_dict() -> None:
