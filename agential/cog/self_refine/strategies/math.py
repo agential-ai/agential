@@ -9,6 +9,7 @@ from agential.cog.self_refine.functional import (
     _prompt_critique,
     _prompt_refine,
 )
+from agential.eval.em import EM
 from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
 
 
@@ -92,7 +93,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
             additional_keys=additional_keys,
         )
 
-        if answer.strip() == self._prev_code_answer:
+        if EM(answer.strip(), self._prev_code_answer, normalize=False):
             self.patience_counter += 1
             if self.patience_counter == self.patience:
                 self._halt = True
