@@ -11,24 +11,33 @@ from agential.cog.self_refine.prompts import (
 )
 from agential.cog.self_refine.strategies.qa import (
     SelfRefineHotQAStrategy,
+    SelfRefineTriviaQAStrategy,
+    SelfRefineAmbigNQStrategy,
+    SelfRefineFEVERStrategy,
     SelfRefineQAStrategy,
 )
 
 
 def test_init() -> None:
-    """Test SelfRefineMathStrategy initialization."""
+    """Test SelfRefineQAStrategy initialization."""
+    
 def test_generate() -> None:
-    """Tests SelfRefineMathStrategy generate."""
+    """Tests SelfRefineQAStrategy generate."""
+
 def test_generate_critique() -> None:
-    """Tests SelfRefineMathStrategy generate_critique."""
+    """Tests SelfRefineQAStrategy generate_critique."""
+
 def test_create_output_dict() -> None:
-    """Tests SelfRefineMathStrategy create_output_dict."""
+    """Tests SelfRefineQAStrategy create_output_dict."""
+
 def test_update_answer_based_on_critique() -> None:
-    """Tests SelfRefineMathStrategy update_answer_based_on_critique."""
+    """Tests SelfRefineQAStrategy update_answer_based_on_critique."""
+
 def test_halting_condition() -> None:
-    """Tests SelfRefineMathStrategy halting_condition."""
+    """Tests SelfRefineQAStrategy halting_condition."""
+
 def test_reset() -> None:
-    """Tests SelfRefineMathStrategy reset."""
+    """Tests SelfRefineQAStrategy reset."""
 
 def test_instantiate_strategies() -> None:
-    """Test instantiate all Math strategies."""
+    """Test instantiate all QA strategies."""
