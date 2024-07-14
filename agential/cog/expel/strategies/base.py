@@ -1,7 +1,7 @@
 """Base ExpeL Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -20,7 +20,16 @@ class ExpeLBaseStrategy(BaseStrategy):
         super().__init__(llm)
 
     @abstractmethod
-    def get_dynamic_examples(self):
+    def get_dynamic_examples(
+        self,
+        question: str,
+        examples: str,
+        k_docs: int,
+        num_fewshots: int,
+        max_fewshot_tokens: int,
+        reranker_strategy: str,
+        additional_keys: Dict[str, Any]
+    ) -> Tuple[str, Dict[str, str]]:
         pass
 
     @abstractmethod

@@ -1,6 +1,6 @@
 """ExpeL Agent strategies for QA."""
 
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -50,7 +50,7 @@ class ExpeLQAStrategy(ExpeLBaseStrategy):
         max_fewshot_tokens: int,
         reranker_strategy: str,
         additional_keys: Dict[str, Any]
-    ):
+    ) -> Tuple[str, Dict[str, str]]:
         additional_keys = additional_keys.copy()
 
         # Dynamically load in relevant past successful trajectories as fewshot examples.
