@@ -17,17 +17,17 @@ class ExpeLBaseStrategy(BaseStrategy):
         super().__init__(llm)
 
     @abstractmethod
-    def get_dynamic_examples():
+    def get_dynamic_examples(self):
         pass
 
     @abstractmethod
-    def gather_experience():
+    def gather_experience(self):
         pass
 
     @abstractmethod
-    def extract_insights():
+    def extract_insights(self):
         pass
 
     @abstractmethod
-    def update_insights():
+    def update_insights(self):
         pass
