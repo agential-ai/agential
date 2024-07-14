@@ -46,8 +46,8 @@ class ReActQAStrategy(ReActBaseStrategy):
         llm (BaseChatModel): The language model used for generating answers and critiques.
         max_steps (int): The maximum number of steps the agent can take.
         max_tokens (int): The maximum number of tokens allowed for a response.
-        docstore (DocstoreExplorer): The document store used for searching and looking up information.
         enc (Encoding): The encoding used for the language model.
+        docstore (DocstoreExplorer): The document store used for searching and looking up information.
     """
 
     def __init__(
@@ -55,8 +55,8 @@ class ReActQAStrategy(ReActBaseStrategy):
         llm: BaseChatModel,
         max_steps: int = 6,
         max_tokens: int = 5000,
-        docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
+        docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
     ) -> None:
         """Initialization."""
         super().__init__(llm)
