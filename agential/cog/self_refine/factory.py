@@ -40,6 +40,16 @@ from agential.cog.self_refine.prompts import (
     TABMWP_REFINE_FEWSHOT_EXAMPLES,
     TRIVIAQA_CRITIQUE_FEWSHOT_EXAMPLES,
     TRIVIAQA_REFINE_FEWSHOT_EXAMPLES,
+    HUMANEVAL_CRITIQUE_FEWSHOT_EXAMPLES,
+    HUMANEVAL_REFINE_FEWSHOT_EXAMPLES,
+    SELF_REFINE_INSTRUCTION_HUMANEVAL,
+    SELF_REFINE_REFINE_INSTRUCTION_HUMANEVAL,
+    SELF_REFINE_CRITIQUE_INSTRUCTION_HUMANEVAL,
+    MBPP_CRITIQUE_FEWSHOT_EXAMPLES,
+    MBPP_REFINE_FEWSHOT_EXAMPLES,
+    SELF_REFINE_INSTRUCTION_MBPP,
+    SELF_REFINE_REFINE_INSTRUCTION_MBPP,
+    SELF_REFINE_CRITIQUE_INSTRUCTION_MBPP
 )
 from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
 from agential.cog.self_refine.strategies.math import (
@@ -51,8 +61,13 @@ from agential.cog.self_refine.strategies.qa import (
     SelfRefineAmbigNQStrategy,
     SelfRefineFEVERStrategy,
     SelfRefineHotQAStrategy,
-    SelfRefineTriviaQAStrategy,
+    SelfRefineTriviaQAStrategy
 )
+from agential.cog.self_refine.strategies.code import (
+    SelfRefineHEvalStrategy,
+    SelfRefineMBPPStrategy
+)
+
 
 SELF_REFINE_BENCHMARK_FEWSHOTS = {
     Benchmarks.HOTPOTQA: [FewShotType.COT, FewShotType.DIRECT, FewShotType.REACT],
@@ -62,8 +77,8 @@ SELF_REFINE_BENCHMARK_FEWSHOTS = {
     Benchmarks.GSM8K: [FewShotType.POT],
     Benchmarks.SVAMP: [FewShotType.POT],
     Benchmarks.TABMWP: [FewShotType.POT],
-    Benchmarks.HUMANEVAL: [],
-    Benchmarks.MBPP: [],
+    Benchmarks.HUMANEVAL: [FewShotType.POT],
+    Benchmarks.MBPP: [FewShotType.POT],
 }
 
 SELF_REFINE_PROMPTS = {
@@ -103,10 +118,14 @@ SELF_REFINE_PROMPTS = {
         "refine_prompt": SELF_REFINE_REFINE_INSTRUCTION_TABMWP,
     },
     Benchmarks.HUMANEVAL: {
-        "prompt": "",
+        "prompt": SELF_REFINE_INSTRUCTION_HUMANEVAL,
+        "critique_prompt": SELF_REFINE_CRITIQUE_INSTRUCTION_HUMANEVAL,
+        "refine_prompt": SELF_REFINE_REFINE_INSTRUCTION_HUMANEVAL,
     },
     Benchmarks.MBPP: {
-        "prompt": "",
+        "prompt": SELF_REFINE_INSTRUCTION_MBPP,
+        "critique_prompt": SELF_REFINE_CRITIQUE_INSTRUCTION_MBPP,
+        "refine_prompt": SELF_REFINE_REFINE_INSTRUCTION_MBPP,
     },
 }
 
@@ -139,8 +158,14 @@ SELF_REFINE_FEWSHOTS: Dict[str, Dict] = {
         "critique_examples": TABMWP_CRITIQUE_FEWSHOT_EXAMPLES,
         "refine_examples": TABMWP_REFINE_FEWSHOT_EXAMPLES,
     },
-    Benchmarks.HUMANEVAL: {},
-    Benchmarks.MBPP: {},
+    Benchmarks.HUMANEVAL: {
+        "critique_examples": HUMANEVAL_CRITIQUE_FEWSHOT_EXAMPLES,
+        "refine_examples": HUMANEVAL_REFINE_FEWSHOT_EXAMPLES,
+    },
+    Benchmarks.MBPP: {
+        "critique_examples": MBPP_CRITIQUE_FEWSHOT_EXAMPLES,
+        "refine_examples": MBPP_REFINE_FEWSHOT_EXAMPLES,
+    },
 }
 
 SELF_REFINE_STRATEGIES = {
@@ -151,8 +176,8 @@ SELF_REFINE_STRATEGIES = {
     Benchmarks.GSM8K: SelfRefineGSM8KStrategy,
     Benchmarks.SVAMP: SelfRefineSVAMPStrategy,
     Benchmarks.TABMWP: SelfRefineTabMWPStrategy,
-    Benchmarks.HUMANEVAL: None,
-    Benchmarks.MBPP: None,
+    Benchmarks.HUMANEVAL: SelfRefineHEvalStrategy,
+    Benchmarks.MBPP: SelfRefineMBPPStrategy,
 }
 
 
