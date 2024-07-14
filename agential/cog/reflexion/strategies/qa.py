@@ -304,8 +304,8 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         max_trials (int): The maximum number of trials allowed. Defaults to 1.
         max_steps (int): The maximum number of steps allowed. Defaults to 6.
         max_tokens (int): The maximum number of tokens allowed. Defaults to 5000.
-        docstore (DocstoreExplorer): The document store explorer for retrieving relevant documents. Defaults to Wikipedia.
         enc (Encoding): The encoding for tokenization. Defaults to gpt-3.5-turbo.
+        docstore (DocstoreExplorer): The document store explorer for retrieving relevant documents. Defaults to Wikipedia.
     """
 
     def __init__(
@@ -316,24 +316,12 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         max_trials: int = 1,
         max_steps: int = 6,
         max_tokens: int = 5000,
-        docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
+        docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
     ) -> None:
         """Initialization."""
-        super().__init__(llm)
-        self.max_reflections = max_reflections
-        self.max_trials = max_trials
-
-        if not reflector:
-            reflector = ReflexionReActReflector(
-                llm=llm, max_reflections=max_reflections
-            )
-        self.reflector = reflector
-
-        self.max_steps = max_steps
-        self.max_tokens = max_tokens
+        super().__init__(llm, reflector, max_reflections, max_trials, max_steps, max_tokens, enc)
         self.docstore = docstore
-        self.enc = enc
 
         self._finished = False
         self._answer = ""

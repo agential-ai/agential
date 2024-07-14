@@ -1,5 +1,7 @@
 """Base Reflexion Agent strategy class."""
 
+import tiktoken
+from tiktoken import Encoding
 from abc import abstractmethod
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -17,6 +19,9 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
 
     Attributes:
         llm (BaseChatModel): The language model used for generating answers and critiques.
+        reflector (Optional[ReflexionCoTReflector]): The reflector used for generating reflections. Defaults to None.
+        max_reflections (int): The maximum number of reflections allowed. Defaults to 3.
+        max_trials (int): The maximum number of trials allowed. Defaults to 3.
     """
 
     def __init__(
@@ -156,11 +161,37 @@ class ReflexionReActBaseStrategy(BaseStrategy):
 
     Attributes:
         llm (BaseChatModel): The language model used for generating answers and critiques.
+        reflector (Optional[ReflexionReActReflector]): The reflector used for generating reflections. Defaults to None.
+        max_reflections (int): The maximum number of reflections allowed. Defaults to 3.
+        max_trials (int): The maximum number of trials allowed. Defaults to 1.
+        max_steps (int): The maximum number of steps allowed. Defaults to 6.
+        max_tokens (int): The maximum number of tokens allowed. Defaults to 5000.
+        enc (Encoding): The encoding for tokenization. Defaults to gpt-3.5-turbo.
     """
 
-    def __init__(self, llm: BaseChatModel) -> None:
+    def __init__(
+        self, 
+        llm: BaseChatModel,
+        reflector: Optional[ReflexionReActReflector] = None,
+        max_reflections: int = 3,
+        max_trials: int = 1,
+        max_steps: int = 6,
+        max_tokens: int = 5000,
+        enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
+    ) -> None:
         """Initialization."""
         super().__init__(llm)
+        self.max_reflections = max_reflections
+        self.max_trials = max_trials
+        self.max_steps = max_steps
+        self.max_tokens = max_tokens
+        self.enc = enc
+
+        if not reflector:
+            reflector = ReflexionReActReflector(
+                llm=llm, max_reflections=max_reflections
+            )
+        self.reflector = reflector
 
     @abstractmethod
     def generate_action(
