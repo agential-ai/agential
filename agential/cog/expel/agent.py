@@ -112,7 +112,7 @@ class ExpeLAgent(BaseAgent):
         reflect_additional_keys: Union[List[Dict[str, str]], Dict[str, str]] = {},
         use_dynamic_examples: bool = True,
         extract_insights: bool = True,
-        patience: int = 1,
+        patience: int = 3,
         k_docs: int = 24,
         num_fewshots: int = 6,
         max_fewshot_tokens: int = 1500,
@@ -139,7 +139,7 @@ class ExpeLAgent(BaseAgent):
             additional_keys (Union[List[Dict[str, str]], Dict[str, str]]): The additional keys. Defaults to {}.
             reflect_additional_keys (Union[List[Dict[str, str]], Dict[str, str]]): Additional keys for the reflection phase. Defaults to {}.
             use_dynamic_examples (bool): A boolean specifying whether or not to use dynamic examples from ExpeL's memory. Defaults to True.
-            patience (int): The number of times to retry the agent's process if it fails. Defaults to 1.
+            patience (int): The number of times to retry the agent's process if it fails. Defaults to 3.
             k_docs (int): The number of documents to retrieve for the fewshot. Defaults to 24.
             num_fewshots (int): The number of examples to use for the fewshot. Defaults to 6.
             max_fewshot_tokens (int): The maximum number of tokens to use for the fewshot. Defaults to 1500.
@@ -219,7 +219,7 @@ class ExpeLAgent(BaseAgent):
         reflect_strategy: str = "reflexion",
         additional_keys: Union[List[Dict[str, str]], Dict[str, str]] = {},
         reflect_additional_keys: Union[List[Dict[str, str]], Dict[str, str]] = {},
-        patience: int = 1,
+        patience: int = 3,
         **kwargs: Any,
     ) -> Dict[str, Any]:
         """Collects and stores experiences from interactions based on specified questions and keys.
@@ -241,7 +241,7 @@ class ExpeLAgent(BaseAgent):
                 - "last_attempt_and_reflexion": This strategy combines the 'last_attempt' and 'reflexion' strategies.
             additional_keys (List[Dict[str, str]], Dict[str, str]): Additional keys for the prompt. Defaults to {}.
             reflect_additional_keys (List[Dict[str, str]], Dict[str, str]): Additional keys for the reflect prompt. Defaults to {}.
-            patience (int, optional): The patience for the agent. Defaults to 1.
+            patience (int, optional): The patience for the agent. Defaults to 3.
             **kwargs (Any): Additional arguments.
 
         Returns:

@@ -366,7 +366,7 @@ def test_reflexion_react_init() -> None:
     assert isinstance(strategy.llm, BaseChatModel)
     assert isinstance(strategy.reflector, ReflexionReActReflector)
     assert strategy.max_reflections == 3
-    assert strategy.max_trials == 1
+    assert strategy.max_trials == 3
     assert strategy._scratchpad == ""
     assert strategy._finished == False
     assert strategy._answer == ""
