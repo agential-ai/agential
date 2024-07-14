@@ -15,7 +15,12 @@ from agential.cog.reflexion.agent import (
     ReflexionReActOutput,
     ReflexionReActStepOutput,
 )
-
+from agential.cog.reflexion.prompts import (
+    REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+)
+from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 
 def test_init(expel_experiences_10_fake_path: str) -> None:
     """Test initialization."""
@@ -216,7 +221,12 @@ def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
     agent.reflexion_react_agent.strategy.docstore.search = lambda x: "Search result"
     agent.reflexion_react_agent.strategy.docstore.lookup = lambda x: "Lookup result"
     new_experiences = agent.gather_experience(
-        questions=hotpotqa.question.values[-1:], keys=hotpotqa.answer.values[-1:]
+        questions=hotpotqa.question.values[-1:], 
+        keys=hotpotqa.answer.values[-1:],
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        prompts=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+        reflect_prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
 
     assert new_experiences == gt_new_experiences
