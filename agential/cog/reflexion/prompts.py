@@ -107,6 +107,7 @@ Reflection:"""
 
 
 HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """Previous Trial:
+Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
 Thought 1: The Colorado orogeny is a mountain-building event in the western United States, so the elevation range should be quite high.
 Action 1: Search[eastern sector of the Colorado orogeny]
 Observation 1: The Colorado orogeny was an episode of mountain building (an orogeny) in Colorado and surrounding areas. This took place from 1780 to 1650 million years ago (Mya), during the Paleoproterozoic (Statherian Period). It is recorded in the Colorado orogen, a >500-km-wide belt of oceanic arc rock that extends southward into New Mexico. The Colorado orogeny was likely part of the larger Yavapai orogeny.
@@ -1712,7 +1713,7 @@ Action 2: Calculate[
 ```python
 total_cost = 8.23 + 5.01
 answer = 13.5 - total_cost
-if answer >= 0:
+if answer < 0:
     answer = "yes"
 else:
     answer = "no"
@@ -1722,7 +1723,7 @@ Observation 2:
 ```python
 total_cost = 8.23 + 5.01
 answer = 13.5 - total_cost
-if answer >= 0:
+if answer < 0:
     answer = "yes"
 else:
     answer = "no"
