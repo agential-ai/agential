@@ -13,14 +13,39 @@ from agential.cog.self_refine.prompts import (
 from agential.cog.self_refine.strategies.code import (
     SelfRefineHEvalStrategy,
     SelfRefineMBPPStrategy,
+    SelfRefineCodeStrategy
 )   
 
 
 def test_init() -> None:
-    """Test SelfRefineCodeStrategy initialization."""
+    """Test SelfRefinecodeStrategy initialization."""
+    llm = FakeListChatModel(responses=[])
+    strategy = SelfRefineCodeStrategy(llm=llm, patience=3)
+    assert strategy.llm == llm
+    assert strategy.patience == 3
+    assert strategy._prev_code_answer == ""
+    assert strategy.patience_counter == 0
+    assert not strategy._halt
 
 def test_generate() -> None:
     """Tests SelfRefineCodeStrategy generate."""
+    llm = FakeListChatModel(responses=['from typing import List\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    """ Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    """\n    for i in range(len(numbers) - 1):\n        if abs(numbers[i] - numbers[i + 1]) < threshold:\n            return True\n    return False\n'
+])
+    
+    strategy = SelfRefineCodeStrategy(llm=llm)
+    
+    question = "from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    \"\"\" Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)\n    False\n    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)\n    True\n    \"\"\"\n"
+    
+    answer = strategy.generate(
+        question=question,
+        examples=HUMANEVAL_FEWSHOT_EXAMPLES_POT,
+        prompt=SELF_REFINE_INSTRUCTION_HUMANEVAL,
+        additional_keys={},
+    )
+    assert answer == 'from typing import List\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    """ Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    """\n    for i in range(len(numbers) - 1):\n        if abs(numbers[i] - numbers[i + 1]) < threshold:\n            return True\n    return False'
+
+
+
 
 def test_generate_critique() -> None:
     """Tests SelfRefineCodeStrategy generate_critique."""
