@@ -1,17 +1,20 @@
 """ExpeL Agent strategies for QA."""
 
 from typing import Optional
+
 from langchain_core.language_models.chat_models import BaseChatModel
-from agential.cog.reflexion.agent import ReflexionReActAgent
-from agential.cog.expel.strategies.base import ExpeLBaseStrategy
+
 from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
+from agential.cog.expel.strategies.base import ExpeLBaseStrategy
+from agential.cog.reflexion.agent import ReflexionReActAgent
+
 
 class ExpeLQAStrategy(ExpeLBaseStrategy):
     def __init__(
-        self, 
+        self,
         llm: BaseChatModel,
         reflexion_react_agent: ReflexionReActAgent,
         experience_memory: Optional[ExpeLExperienceMemory] = None,
@@ -44,7 +47,7 @@ class ExpeLQAStrategy(ExpeLBaseStrategy):
         k_docs: int,
         num_fewshots: int,
         max_fewshot_tokens: int,
-        reranker_strategy: str
+        reranker_strategy: str,
     ):
         # Dynamically load in relevant past successful trajectories as fewshot examples.
         dynamic_examples = self.experience_memory.load_memories(
@@ -54,9 +57,7 @@ class ExpeLQAStrategy(ExpeLBaseStrategy):
             max_fewshot_tokens=max_fewshot_tokens,
             reranker_strategy=reranker_strategy,
         )["fewshots"]
-        examples = (
-            dynamic_examples if dynamic_examples else [examples]  # type: ignore
-        )
+        examples = dynamic_examples if dynamic_examples else [examples]  # type: ignore
         examples = "\n\n".join(examples + [END_OF_EXAMPLES_DELIMITER]) + "\n"  # type: ignore
 
         # Dynamically load in all insights.
@@ -75,4 +76,3 @@ class ExpeLQAStrategy(ExpeLBaseStrategy):
 
     def update_insights(self):
         pass
-
