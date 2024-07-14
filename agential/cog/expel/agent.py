@@ -30,6 +30,8 @@ from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.reflexion.agent import ReflexionReActAgent
 from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 from agential.utils.general import shuffle_chunk_list
 
@@ -102,9 +104,9 @@ class ExpeLAgent(BaseAgent):
         question: str,
         key: str,
         prompt: str = EXPEL_REFLEXION_REACT_INSTRUCTION,
-        examples: str = "",
-        reflect_examples: str = "",
-        reflect_prompt: str = "",
+        examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        reflect_examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+        reflect_prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
         reflect_strategy: str = "reflexion",
         additional_keys: Union[List[Dict[str, str]], Dict[str, str]] = {},
         reflect_additional_keys: Union[List[Dict[str, str]], Dict[str, str]] = {},
@@ -172,6 +174,7 @@ class ExpeLAgent(BaseAgent):
             examples = (
                 dynamic_examples if dynamic_examples else examples  # type: ignore
             )
+            examples = "\n\n".join(examples)
             # examples = "\n\n".join(examples + [END_OF_EXAMPLES_DELIMITER]) + "\n"  # type: ignore
 
             # Dynamically load in all insights.
