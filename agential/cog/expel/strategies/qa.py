@@ -21,22 +21,7 @@ class ExpeLQAStrategy(ExpeLBaseStrategy):
         insight_memory: Optional[ExpeLInsightMemory] = None,
         success_batch_size: int = 8,
     ) -> None:
-        super().__init__(llm)
-
-        self.llm = llm
-        self.reflexion_react_agent = reflexion_react_agent
-        self.success_batch_size = success_batch_size
-
-        if not insight_memory:
-            self.insight_memory = ExpeLInsightMemory()
-        else:
-            self.insight_memory = insight_memory
-
-        if not experience_memory:
-            self.experience_memory = ExpeLExperienceMemory()
-        else:
-            self.experience_memory = experience_memory
-            self.extract_insights(self.experience_memory.experiences)
+        super().__init__(llm, reflexion_react_agent, experience_memory, insight_memory, success_batch_size)
 
     def generate(self) -> str:
         pass

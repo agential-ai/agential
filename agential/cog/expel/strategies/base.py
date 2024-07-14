@@ -1,11 +1,16 @@
 """Base ExpeL Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Tuple, Optional
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.strategies import BaseStrategy
+from agential.cog.expel.memory import (
+    ExpeLExperienceMemory,
+    ExpeLInsightMemory,
+)
+from agential.cog.reflexion.agent import ReflexionReActAgent
 
 
 class ExpeLBaseStrategy(BaseStrategy):
@@ -13,11 +18,30 @@ class ExpeLBaseStrategy(BaseStrategy):
 
     Attributes:
         llm (BaseChatModel): The language model used for generating answers and critiques.
+        reflexion_react_agent (Optional[ReflexionReActAgent]): The ReflexionReAct agent. Optional.
+        experience_memory (Optional[ExpeLExperienceMemory]): Memory module for storing experiences.
+        insight_memory (Optional[ExpeLInsightMemory]): Memory module for storing insights derived from experiences.
+        success_batch_size (int): Batch size for processing success experiences in generating insights.
     """
 
-    def __init__(self, llm: BaseChatModel) -> None:
+    def __init__(
+        self, 
+        llm: BaseChatModel,
+        reflexion_react_agent: ReflexionReActAgent,
+        experience_memory: Optional[ExpeLExperienceMemory] = None,
+        insight_memory: Optional[ExpeLInsightMemory] = None,
+        success_batch_size: int = 8,
+    ) -> None:
         """Initialization."""
         super().__init__(llm)
+        self.reflexion_react_agent = reflexion_react_agent
+        self.success_batch_size = success_batch_size
+
+        self.insight_memory = insight_memory if insight_memory else ExpeLInsightMemory()
+        self.experience_memory = experience_memory if experience_memory else ExpeLExperienceMemory()
+        
+        if experience_memory:
+            self.extract_insights(self.experience_memory.experiences)
 
     @abstractmethod
     def get_dynamic_examples(
