@@ -22,9 +22,7 @@ from agential.cog.expel.memory import (
     ExpeLInsightMemory,
 )
 from agential.cog.expel.prompts import (
-    END_OF_EXAMPLES_DELIMITER,
     EXPEL_REFLEXION_REACT_INSTRUCTION,
-    RULE_PREFIX,
 )
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.reflexion.agent import ReflexionReActAgent
