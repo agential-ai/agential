@@ -7,7 +7,10 @@ from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.strategies import BaseStrategy
 from agential.cog.reflexion.output import ReflexionReActStepOutput
-
+from agential.cog.reflexion.reflect import (
+    ReflexionCoTReflector,
+    ReflexionReActReflector,
+)
 
 class ReflexionCoTBaseStrategy(BaseStrategy):
     """An abstract base class for defining strategies for the ReflexionCoT Agent.
@@ -16,9 +19,21 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         llm (BaseChatModel): The language model used for generating answers and critiques.
     """
 
-    def __init__(self, llm: BaseChatModel) -> None:
+    def __init__(
+        self, 
+        llm: BaseChatModel,
+        reflector: Optional[ReflexionCoTReflector] = None,
+        max_reflections: int = 3,
+        max_trials: int = 3,
+    ) -> None:
         """Initialization."""
         super().__init__(llm)
+        self.max_reflections = max_reflections
+        self.max_trials = max_trials
+
+        if reflector is None:
+            reflector = ReflexionCoTReflector(llm=llm, max_reflections=max_reflections)
+        self.reflector = reflector
 
     @abstractmethod
     def generate_action(
