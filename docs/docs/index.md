@@ -33,7 +33,7 @@
 | ReAct                    | :material-check-all: | :material-check-all: | :octicons-check-16:  | :octicons-check-16:  |
 | Reflexion                | :material-check-all: | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
 | CRITIC                   | :material-check-all: | :octicons-check-16:  | :material-check-all: | :material-check-all: |
-| Self-Refine              |                      |                      |                      |                      |
+| Self-Refine              | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
 | LATS                     |                      |                      |                      |                      |
 
 | **Methods / Benchmarks** |        GSM8k         |        SVAMP         |        TabMWP        |
@@ -41,7 +41,7 @@
 | ReAct                    | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
 | Reflexion                | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
 | CRITIC                   | :material-check-all: | :material-check-all: | :material-check-all: |
-| Self-Refine              | :material-check-all: | :material-check-all: | :material-check-all: |
+| Self-Refine              | :material-check-all: | :octicons-check-16:  | :octicons-check-16:  |
 | LATS                     |                      |                      |                      |
 
 | **Methods / Benchmarks** |         MBPP         |      HumanEval       |
@@ -49,7 +49,7 @@
 | ReAct                    | :octicons-check-16:  | :octicons-check-16:  |
 | Reflexion                | :material-check-all: | :material-check-all: |
 | CRITIC                   | :octicons-check-16:  | :octicons-check-16:  |
-| Self-Refine              |                      |                      |
+| Self-Refine              | :octicons-check-16:  | :octicons-check-16:  |
 | LATS                     |                      |                      |
 
 | **Methods / Benchmarks** | ALFWorld | WebShop | AgentBench |
@@ -123,8 +123,6 @@ Certainly! Here's the section organized with each benchmark in a single row and 
 | FEVER     | 1. Incorrect answer<br>2. Incorrect answer format<br>3. No error<br>4. No error<br>5. No error                           |
 
 ### ReflexionCoT, ReflexionReAct
-
-Sure, here is the data formatted into a table with each benchmark as a row and columns for ReflexionCoT and ReflexionReAct. Each cell contains the numbered list of error types separated by `<br>`.
 
 | **Benchmark** | **ReflexionCoT** | **ReflexionReAct** |
 | ------------- | ---------------- | ------------------ |

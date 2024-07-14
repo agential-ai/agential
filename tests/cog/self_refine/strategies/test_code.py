@@ -5,10 +5,8 @@ from langchain_community.chat_models.fake import FakeListChatModel
 from agential.cog.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_POT
 from agential.cog.self_refine.prompts import (
     HUMANEVAL_CRITIQUE_FEWSHOT_EXAMPLES,
-    HUMANEVAL_REFINE_FEWSHOT_EXAMPLES,
     SELF_REFINE_CRITIQUE_INSTRUCTION_HUMANEVAL,
     SELF_REFINE_INSTRUCTION_HUMANEVAL,
-    SELF_REFINE_REFINE_INSTRUCTION_HUMANEVAL,
 )
 from agential.cog.self_refine.strategies.code import (
     SelfRefineCodeStrategy,
