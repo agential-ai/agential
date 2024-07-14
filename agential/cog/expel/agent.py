@@ -29,8 +29,8 @@ from agential.cog.expel.prompts import (
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.reflexion.agent import ReflexionReActAgent
 from agential.cog.reflexion.prompts import (
-    REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+    REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 from agential.utils.general import shuffle_chunk_list
@@ -168,13 +168,9 @@ class ExpeLAgent(BaseAgent):
                 max_fewshot_tokens=max_fewshot_tokens,
                 reranker_strategy=reranker_strategy,
             )["fewshots"]
-            # examples = (
-            #     dynamic_examples if dynamic_examples else [examples]  # type: ignore
-            # )
-            examples = (
-                dynamic_examples if dynamic_examples else examples  # type: ignore
+            examples = "\n\n---\n\n".join(
+                dynamic_examples if dynamic_examples else [examples]  # type: ignore
             )
-            examples = "\n\n".join(examples)
             # examples = "\n\n".join(examples + [END_OF_EXAMPLES_DELIMITER]) + "\n"  # type: ignore
 
             # Dynamically load in all insights.
