@@ -73,6 +73,7 @@ class ExpeLAgent(BaseAgent):
         super().__init__()
 
         self.llm = llm
+        self.benchmark = benchmark
 
         if not reflexion_react_agent:
             self.reflexion_react_agent = ReflexionReActAgent(
