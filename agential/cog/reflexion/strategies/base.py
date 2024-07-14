@@ -19,26 +19,23 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
 
     Attributes:
         llm (BaseChatModel): The language model used for generating answers and critiques.
-        reflector (Optional[ReflexionCoTReflector]): The reflector used for generating reflections. Defaults to None.
-        max_reflections (int): The maximum number of reflections allowed. Defaults to 3.
-        max_trials (int): The maximum number of trials allowed. Defaults to 3.
+        reflector (Optional[ReflexionCoTReflector]): The reflector used for generating reflections.
+        max_reflections (int): The maximum number of reflections allowed.
+        max_trials (int): The maximum number of trials allowed.
     """
 
     def __init__(
         self, 
         llm: BaseChatModel,
-        reflector: Optional[ReflexionCoTReflector] = None,
-        max_reflections: int = 3,
-        max_trials: int = 3,
+        reflector: ReflexionCoTReflector,
+        max_reflections: int,
+        max_trials: int,
     ) -> None:
         """Initialization."""
         super().__init__(llm)
+        self.reflector = reflector
         self.max_reflections = max_reflections
         self.max_trials = max_trials
-
-        if reflector is None:
-            reflector = ReflexionCoTReflector(llm=llm, max_reflections=max_reflections)
-        self.reflector = reflector
 
     @abstractmethod
     def generate_action(
@@ -161,37 +158,32 @@ class ReflexionReActBaseStrategy(BaseStrategy):
 
     Attributes:
         llm (BaseChatModel): The language model used for generating answers and critiques.
-        reflector (Optional[ReflexionReActReflector]): The reflector used for generating reflections. Defaults to None.
-        max_reflections (int): The maximum number of reflections allowed. Defaults to 3.
-        max_trials (int): The maximum number of trials allowed. Defaults to 3.
-        max_steps (int): The maximum number of steps allowed. Defaults to 6.
-        max_tokens (int): The maximum number of tokens allowed. Defaults to 5000.
-        enc (Encoding): The encoding for tokenization. Defaults to gpt-3.5-turbo.
+        reflector (Optional[ReflexionReActReflector]): The reflector used for generating reflections.
+        max_reflections (int): The maximum number of reflections allowed. 
+        max_trials (int): The maximum number of trials allowed. 
+        max_steps (int): The maximum number of steps allowed. 
+        max_tokens (int): The maximum number of tokens allowed. 
+        enc (Encoding): The encoding for tokenization. 
     """
 
     def __init__(
         self, 
         llm: BaseChatModel,
-        reflector: Optional[ReflexionReActReflector] = None,
-        max_reflections: int = 3,
-        max_trials: int = 3,
-        max_steps: int = 6,
-        max_tokens: int = 5000,
-        enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
+        reflector: ReflexionReActReflector,
+        max_reflections: int,
+        max_trials: int,
+        max_steps: int,
+        max_tokens: int,
+        enc: Encoding,
     ) -> None:
         """Initialization."""
         super().__init__(llm)
+        self.reflector = reflector
         self.max_reflections = max_reflections
         self.max_trials = max_trials
         self.max_steps = max_steps
         self.max_tokens = max_tokens
         self.enc = enc
-
-        if not reflector:
-            reflector = ReflexionReActReflector(
-                llm=llm, max_reflections=max_reflections
-            )
-        self.reflector = reflector
 
     @abstractmethod
     def generate_action(
