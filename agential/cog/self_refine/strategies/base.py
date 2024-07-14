@@ -9,11 +9,18 @@ from agential.base.strategies import BaseStrategy
 
 
 class SelfRefineBaseStrategy(BaseStrategy):
-    """An abstract base class for defining strategies for the Self-Refine Agent."""
+    """An abstract base class for defining strategies for the Self-Refine Agent.
+    
+    Attributes:
+        llm (BaseChatModel): The language model used for generating answers and critiques.
+        patience (int): The number of interactions to tolerate the same incorrect answer
+            before halting further attempts. Defaults to 1.
+    """
 
-    def __init__(self, llm: BaseChatModel) -> None:
+    def __init__(self, llm: BaseChatModel, patience: int = 1) -> None:
         """Initialization."""
         super().__init__(llm)
+        self.patience = patience
 
     @abstractmethod
     def generate_critique(
