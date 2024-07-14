@@ -103,14 +103,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
         max_trials: int = 3,
     ) -> None:
         """Initialization."""
-        super().__init__(llm)
-        self.llm = llm
-        self.max_reflections = max_reflections
-        self.max_trials = max_trials
-
-        if not reflector:
-            reflector = ReflexionCoTReflector(llm=llm, max_reflections=max_reflections)
-        self.reflector = reflector
+        super().__init__(llm, reflector, max_reflections, max_trials)
 
         self._scratchpad = ""
         self._finished = False
