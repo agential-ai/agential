@@ -2378,11 +2378,8 @@ SELF_REFINE_CRITIQUE_INSTRUCTION_HUMANEVAL = """{examples}
 
 {tests}
 ```
-Execution: {execution_status} 
 
-What's the problem with the above code?
-
-{critique}"""
+What's the problem with the above code?"""
 
 
 HUMANEVAL_REFINE_FEWSHOT_EXAMPLES = """```python
@@ -2665,7 +2662,6 @@ SELF_REFINE_REFINE_INSTRUCTION_HUMANEVAL = """{examples}
 
 {tests}
 ```
-Execution: {execution_status} 
 
 What's the problem with the above code?
 
@@ -2677,7 +2673,15 @@ Here's a better solution (include only function implementation):"""
 # ======================================================================== MBPP ======================================================================== #
 
 
-SELF_REFINE_INSTRUCTION_MBPP = """"""
+SELF_REFINE_INSTRUCTION_MBPP = """{examples}
+(END OF EXAMPLES)
+
+You are an expert Python programmer, and here is your task: {question}.
+Your code should pass these tests:
+
+{tests}
+
+```python"""
 
 
 MBPP_CRITIQUE_FEWSHOT_EXAMPLES = """You are an expert Python programmer, and here is your task: Write a function to find the shared elements from the given two lists.
@@ -2829,7 +2833,19 @@ What's the problem with the above code?
 There is no problem with the above code. It correctly identifies and returns all words which are at least 4 characters long in the given string. The regex pattern `\b\w{4,}\b` correctly matches words that are 4 or more characters long."""
 
 
-SELF_REFINE_CRITIQUE_INSTRUCTION_MBPP = """"""
+SELF_REFINE_CRITIQUE_INSTRUCTION_MBPP = """{examples}
+(END OF EXAMPLES)
+
+You are an expert Python programmer, and here is your task: {question}.
+Your code should pass these tests.
+
+```python
+{answer}
+
+{tests}
+```
+
+What's the problem with the above code?"""
 
 
 MBPP_REFINE_FEWSHOT_EXAMPLES = """You are an expert Python programmer, and here is your task: Write a function to find the shared elements from the given two lists.
@@ -3023,4 +3039,20 @@ def find_char_long(text):
     return re.findall(r"\b\w{4,}\b", text)
 ```"""
 
-SELF_REFINE_REFINE_INSTRUCTION_MBPP = """"""
+SELF_REFINE_REFINE_INSTRUCTION_MBPP = """{examples}
+(END OF EXAMPLES)
+
+You are an expert Python programmer, and here is your task: {question}.
+Your code should pass these tests.
+
+```python
+{answer}
+
+{tests}
+```
+
+What's the problem with the above code?
+
+{critique}
+
+Here's a better solution:"""
