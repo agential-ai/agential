@@ -86,8 +86,3 @@ The following are some experience you gather on a similar task of question answe
 
 Question: {question}{scratchpad}
 """
-
-# Task Inference: Insights.
-RULE_PREFIX = """
-The following are some experience you gather on a similar task of question answering using Wikipedia API. Use these as references to help you perform this task:
-"""
