@@ -71,6 +71,8 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         max_trials: int = 3,
     ) -> None:
         """Initialization."""
+        if reflector is None:
+            reflector = ReflexionCoTReflector(llm=llm, max_reflections=max_reflections)
         super().__init__(llm, reflector, max_reflections, max_trials)
 
         self._scratchpad = ""
@@ -320,6 +322,10 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
     ) -> None:
         """Initialization."""
+        if reflector is None:
+            reflector = ReflexionReActReflector(
+                llm=llm, max_reflections=max_reflections
+            )
         super().__init__(llm, reflector, max_reflections, max_trials, max_steps, max_tokens, enc)
         self.docstore = docstore
 
