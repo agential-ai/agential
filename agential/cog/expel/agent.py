@@ -22,7 +22,7 @@ from agential.cog.expel.memory import (
     ExpeLInsightMemory,
 )
 from agential.cog.expel.prompts import (
-    EXPEL_REFLEXION_REACT_INSTRUCTION,
+    EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.reflexion.agent import ReflexionReActAgent
@@ -101,7 +101,7 @@ class ExpeLAgent(BaseAgent):
         self,
         question: str,
         key: str,
-        prompt: str = EXPEL_REFLEXION_REACT_INSTRUCTION,
+        prompt: str = EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
         examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         reflect_examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         reflect_prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
