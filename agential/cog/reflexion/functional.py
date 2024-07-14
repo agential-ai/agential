@@ -125,16 +125,7 @@ def _build_cot_agent_prompt(
     Returns:
         str: A formatted prompt template ready for use.
     """
-    prompt = PromptTemplate(
-        input_variables=[
-            "examples",
-            "reflections",
-            "question",
-            "scratchpad",
-        ]
-        + list(additional_keys.keys()),
-        template=prompt,
-    ).format(
+    prompt = PromptTemplate.from_template(prompt).format(
         examples=examples,
         reflections=reflections,
         question=question,
@@ -208,11 +199,7 @@ def _build_cot_reflection_prompt(
     Returns:
         str: A formatted prompt template ready for use.
     """
-    prompt = PromptTemplate(
-        input_variables=["examples", "question", "scratchpad"]
-        + list(additional_keys.keys()),
-        template=prompt,
-    ).format(
+    prompt = PromptTemplate.from_template(prompt).format(
         examples=examples,
         question=question,
         scratchpad=scratchpad,
@@ -444,11 +431,7 @@ def _build_react_agent_prompt(
     Returns:
         str: A formatted prompt template ready for use.
     """
-    prompt = PromptTemplate(
-        input_variables=["examples", "reflections", "question", "scratchpad"]
-        + list(additional_keys.keys()),
-        template=prompt,
-    ).format(
+    prompt = PromptTemplate.from_template(prompt).format(
         question=question,
         examples=examples,
         reflections=reflections,
@@ -581,10 +564,7 @@ def _build_react_reflection_prompt(
     Returns:
         str: A formatted prompt template ready for use.
     """
-    prompt = PromptTemplate(
-        input_variables=["examples", "question", "scratchpad"],
-        template=prompt,
-    ).format(
+    prompt = PromptTemplate.from_template(prompt).format(
         question=question,
         examples=examples,
         scratchpad=scratchpad,

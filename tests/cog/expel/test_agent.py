@@ -423,7 +423,10 @@ def test_generate(expel_experiences_10_fake_path: str) -> None:
     )
     agent.reflexion_react_agent.strategy.docstore.search = lambda x: "Search result"
     agent.reflexion_react_agent.strategy.docstore.lookup = lambda x: "Lookup result"
-    out = agent.generate(question=question, key=key)
+    out = agent.generate(
+        question=question, 
+        key=key
+    )
     assert out == gt_out
     assert len(agent.experience_memory.experiences["idxs"]) == 6
     assert agent.experience_memory.experiences["questions"][5] == question
