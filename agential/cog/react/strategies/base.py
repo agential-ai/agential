@@ -15,17 +15,17 @@ class ReActBaseStrategy(BaseStrategy):
 
     Attributes:
         llm (BaseChatModel): The language model used for generating answers and critiques.
-        max_steps (int): The maximum number of steps the agent can take. Defaults to 6.
-        max_tokens (int): The maximum number of tokens allowed for a response. Defaults to 5000.
-        enc (Encoding): The encoding used for the language model. Defaults to "gpt-3.5-turbo" encoding.
+        max_steps (int): The maximum number of steps the agent can take. 
+        max_tokens (int): The maximum number of tokens allowed for a response.
+        enc (Encoding): The encoding used for the language model. 
     """
 
     def __init__(
         self, 
         llm: BaseChatModel,
-        max_steps: int = 6,
-        max_tokens: int = 5000,
-        enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
+        max_steps: int,
+        max_tokens: int,
+        enc: Encoding,
     ) -> None:
         """Initialization."""
         super().__init__(llm)

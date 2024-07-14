@@ -1,6 +1,6 @@
 """ExpeL Agent strategies for QA."""
 
-from typing import Optional, Dict, Any, Tuple
+from typing import Optional, Dict, Any, Tuple, List, Union
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -10,7 +10,15 @@ from agential.cog.expel.memory import (
 )
 from agential.cog.expel.strategies.base import ExpeLBaseStrategy
 from agential.cog.reflexion.agent import ReflexionReActAgent
-
+from agential.cog.expel.functional import (
+    gather_experience, 
+    categorize_experiences, 
+    get_folds,
+    get_operations_compare,
+    get_operations_success,
+    retrieve_insight_index
+)
+from agential.utils.general import shuffle_chunk_list
 
 class ExpeLQAStrategy(ExpeLBaseStrategy):
     def __init__(
@@ -59,11 +67,142 @@ class ExpeLQAStrategy(ExpeLBaseStrategy):
 
         return examples, additional_keys
 
-    def gather_experience(self):
-        pass
+    def gather_experience(
+        self,
+        questions: List[str],
+        keys: List[str],
+        examples: str,
+        prompt: str,
+        reflect_examples: str,
+        reflect_prompt: str,
+        reflect_strategy: str,
+        additional_keys: Union[List[Dict[str, str]], Dict[str, str]],
+        reflect_additional_keys: Union[List[Dict[str, str]], Dict[str, str]],
+        patience: int,
+        **kwargs: Any
+    ) -> Dict[str, Any]:
+        experiences = gather_experience(
+            reflexion_react_agent=self.reflexion_react_agent,
+            questions=questions,
+            keys=keys,
+            examples=examples,
+            prompt=prompt,
+            reflect_examples=reflect_examples,
+            reflect_prompt=reflect_prompt,
+            reflect_strategy=reflect_strategy,
+            additional_keys=additional_keys,
+            reflect_additional_keys=reflect_additional_keys,
+            patience=patience,
+            **kwargs,
+        )
+        self.reflexion_react_agent.reset()
 
-    def extract_insights(self):
-        pass
+        self.experience_memory.add_memories(
+            questions=experiences["questions"],
+            keys=experiences["keys"],
+            trajectories=experiences["trajectories"],
+            reflections=experiences["reflections"],
+        )
+        return experiences
 
-    def update_insights(self):
-        pass
+    def extract_insights(self, experiences: Dict[str, Any]) -> None:
+        # Extract insights.
+        categories = categorize_experiences(experiences)
+        folds = get_folds(categories, len(experiences["idxs"]))
+
+        for train_idxs in folds.values():
+            train_category_idxs = {
+                category: list(set(train_idxs).intersection(set(category_idxs)))  # type: ignore
+                for category, category_idxs in categories.items()
+            }
+
+            # Compare.
+            for train_idx in train_category_idxs["compare"]:
+                question = experiences["questions"][train_idx]
+                trajectory = experiences["trajectories"][
+                    train_idx
+                ]  # List[Dict[str, Any]].
+
+                # Compare the successful trial with all previous failed trials.
+                success_trial = "".join(
+                    f"Thought: {step.thought}\nAction: {step.action_type}[{step.query}]\nObservation: {step.observation}\n"
+                    for step in trajectory[-1].react_output
+                )
+                for failed_trial in trajectory[:-1]:
+                    failed_trial = "".join(
+                        f"Thought: {step.thought}\nAction: {step.action_type}[{step.query}]\nObservation: {step.observation}\n"
+                        for step in failed_trial.react_output
+                    )
+                    insights = self.insight_memory.load_memories()["insights"]
+
+                    operations = get_operations_compare(
+                        llm=self.llm,
+                        insights=insights,
+                        question=question,
+                        success_trial=success_trial,
+                        failed_trial=failed_trial,
+                        is_full=self.insight_memory.max_num_insights < len(insights),
+                    )
+                    self.update_insights(operations=operations)
+
+            # Success.
+            if train_category_idxs["success"]:
+                batched_success_trajs_idxs = shuffle_chunk_list(
+                    train_category_idxs["success"], self.success_batch_size
+                )
+                for success_idxs in batched_success_trajs_idxs:
+                    insights = self.insight_memory.load_memories()["insights"]
+
+                    # Concatenate batched successful trajectories.
+                    concat_success_trajs = [
+                        f"{experiences['questions'][idx]}\n"
+                        + "".join(
+                            f"Thought: {step.thought}\nAction: {step.action_type}[{step.query}]\nObservation: {step.observation}\n"
+                            for step in experiences["trajectories"][idx][0].react_output
+                        )
+                        for idx in success_idxs
+                    ]
+
+                    success_trials = "\n\n".join(concat_success_trajs)
+
+                    operations = get_operations_success(
+                        llm=self.llm,
+                        success_trials=success_trials,
+                        insights=insights,
+                        is_full=self.insight_memory.max_num_insights < len(insights),
+                    )
+                    self.update_insights(operations=operations)
+
+    def update_insights(self, operations: List[Tuple[str, str]]) -> None:
+        # Update rules with comparison insights.
+        for i in range(len(operations)):
+            insights = self.insight_memory.load_memories()["insights"]
+            operation, operation_insight = operations[i]
+            operation_type = operation.split(" ")[0]
+
+            if operation_type == "REMOVE":
+                insight_idx = retrieve_insight_index(insights, operation_insight)
+                if insight_idx != -1:
+                    self.insight_memory.delete_memories(insight_idx)
+            elif operation_type == "AGREE":
+                insight_idx = retrieve_insight_index(insights, operation_insight)
+                if insight_idx != -1:
+                    self.insight_memory.update_memories(
+                        idx=insight_idx, update_type="AGREE"
+                    )
+            elif operation_type == "EDIT":
+                insight_idx = int(operation.split(" ")[1])
+                self.insight_memory.update_memories(
+                    idx=insight_idx,
+                    update_type="EDIT",
+                    insight=operation_insight,
+                )
+            elif operation_type == "ADD":
+                self.insight_memory.add_memories(
+                    [{"insight": operation_insight, "score": 2}]
+                )
+
+    def reset(self) -> None:
+        self.reflexion_react_agent.reset()
+        self.experience_memory.clear()
+        self.insight_memory.clear()
