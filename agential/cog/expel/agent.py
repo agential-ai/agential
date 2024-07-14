@@ -171,15 +171,12 @@ class ExpeLAgent(BaseAgent):
             examples = "\n\n---\n\n".join(
                 dynamic_examples if dynamic_examples else [examples]  # type: ignore
             )
-            # examples = "\n\n".join(examples + [END_OF_EXAMPLES_DELIMITER]) + "\n"  # type: ignore
 
             # Dynamically load in all insights.
-            # examples += RULE_PREFIX
             insights = self.insight_memory.load_memories()["insights"]
             insights = "".join(
                 [f"{i}. {insight['insight']}\n" for i, insight in enumerate(insights)]
             )
-            # examples += insights
             additional_keys.update({"insights": insights})
 
         experience = self.gather_experience(
