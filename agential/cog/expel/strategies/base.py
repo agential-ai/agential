@@ -18,9 +18,9 @@ class ExpeLBaseStrategy(BaseStrategy):
 
     Attributes:
         llm (BaseChatModel): The language model used for generating answers and critiques.
-        reflexion_react_agent (Optional[ReflexionReActAgent]): The ReflexionReAct agent. Optional.
-        experience_memory (Optional[ExpeLExperienceMemory]): Memory module for storing experiences.
-        insight_memory (Optional[ExpeLInsightMemory]): Memory module for storing insights derived from experiences.
+        reflexion_react_agent (ReflexionReActAgent): The ReflexionReAct agent.
+        experience_memory (ExpeLExperienceMemory): Memory module for storing experiences.
+        insight_memory (ExpeLInsightMemory): Memory module for storing insights derived from experiences.
         success_batch_size (int): Batch size for processing success experiences in generating insights.
     """
 
@@ -28,20 +28,16 @@ class ExpeLBaseStrategy(BaseStrategy):
         self, 
         llm: BaseChatModel,
         reflexion_react_agent: ReflexionReActAgent,
-        experience_memory: Optional[ExpeLExperienceMemory] = None,
-        insight_memory: Optional[ExpeLInsightMemory] = None,
-        success_batch_size: int = 8,
+        experience_memory: ExpeLExperienceMemory,
+        insight_memory: ExpeLInsightMemory,
+        success_batch_size: int,
     ) -> None:
         """Initialization."""
         super().__init__(llm)
         self.reflexion_react_agent = reflexion_react_agent
         self.success_batch_size = success_batch_size
-
-        self.insight_memory = insight_memory if insight_memory else ExpeLInsightMemory()
-        self.experience_memory = experience_memory if experience_memory else ExpeLExperienceMemory()
-        
-        if experience_memory:
-            self.extract_insights(self.experience_memory.experiences)
+        self.insight_memory = insight_memory
+        self.experience_memory = experience_memory
 
     @abstractmethod
     def get_dynamic_examples(
