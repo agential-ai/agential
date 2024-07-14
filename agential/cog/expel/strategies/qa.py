@@ -38,7 +38,14 @@ class ExpeLQAStrategy(ExpeLBaseStrategy):
     def generate(self) -> str:
         pass
 
-    def get_dynamic_examples(self):
+    def get_dynamic_examples(
+        self,
+        question: str,
+        k_docs: int,
+        num_fewshots: int,
+        max_fewshot_tokens: int,
+        reranker_strategy: str
+    ):
         # Dynamically load in relevant past successful trajectories as fewshot examples.
         dynamic_examples = self.experience_memory.load_memories(
             query=question,
