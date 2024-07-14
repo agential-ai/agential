@@ -32,7 +32,7 @@ class ExpeLQAStrategy(ExpeLBaseStrategy):
         experience_memory = experience_memory or ExpeLExperienceMemory()
         insight_memory = insight_memory or ExpeLInsightMemory()
         super().__init__(llm, reflexion_react_agent, experience_memory, insight_memory, success_batch_size)
-        
+
         if experience_memory:
             self.extract_insights(self.experience_memory.experiences)
 
@@ -207,7 +207,8 @@ class ExpeLQAStrategy(ExpeLBaseStrategy):
                     [{"insight": operation_insight, "score": 2}]
                 )
 
-    def reset(self) -> None:
-        self.reflexion_react_agent.reset()
+    def reset(self, only_reflexion: bool) -> None:
+        if only_reflexion:
+            self.reflexion_react_agent.reset()
         self.experience_memory.clear()
         self.insight_memory.clear()
