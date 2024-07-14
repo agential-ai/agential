@@ -61,10 +61,7 @@ class ReActMathStrategy(ReActBaseStrategy):
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
     ) -> None:
         """Initialization."""
-        super().__init__(llm)
-        self.max_steps = max_steps
-        self.max_tokens = max_tokens
-        self.enc = enc
+        super().__init__(llm, max_steps, max_tokens, enc)
 
         self._scratchpad = ""
         self._answer = ""

@@ -59,11 +59,8 @@ class ReActQAStrategy(ReActBaseStrategy):
         docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
     ) -> None:
         """Initialization."""
-        super().__init__(llm)
-        self.max_steps = max_steps
-        self.max_tokens = max_tokens
+        super().__init__(llm, max_steps, max_tokens, enc)
         self.docstore = docstore
-        self.enc = enc
 
         self._scratchpad = ""
         self._answer = ""
