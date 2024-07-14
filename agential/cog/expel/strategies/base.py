@@ -1,7 +1,7 @@
 """Base ExpeL Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Any, Dict, Tuple, Optional
+from typing import Any, Dict, Tuple, Union, List
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -53,13 +53,26 @@ class ExpeLBaseStrategy(BaseStrategy):
         pass
 
     @abstractmethod
-    def gather_experience(self):
+    def gather_experience(
+        self,
+        questions: List[str],
+        keys: List[str],
+        examples: str,
+        prompt: str,
+        reflect_examples: str,
+        reflect_prompt: str,
+        reflect_strategy: str,
+        additional_keys: Union[List[Dict[str, str]], Dict[str, str]],
+        reflect_additional_keys: Union[List[Dict[str, str]], Dict[str, str]],
+        patience: int,
+        **kwargs: Any
+    ) -> Dict[str, Any]:
         pass
 
     @abstractmethod
-    def extract_insights(self):
+    def extract_insights(self, experiences: Dict[str, Any]) -> None:
         pass
 
     @abstractmethod
-    def update_insights(self):
+    def update_insights(self, operations: List[Tuple[str, str]]) -> None:
         pass
