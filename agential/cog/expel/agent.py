@@ -102,12 +102,13 @@ class ExpeLAgent(BaseAgent):
         key: str,
         should_extract_insights: bool = True,
         prompt: str = EXPEL_REFLEXION_REACT_INSTRUCTION,
-        examples: Optional[str] = None,
+        examples: str = "",
         reflect_examples: str = "",
         reflect_prompt: str = "",
         reflect_strategy: str = "reflexion",
         additional_keys: Union[List[Dict[str, str]], Dict[str, str]] = {},
         reflect_additional_keys: Union[List[Dict[str, str]], Dict[str, str]] = {},
+        use_dynamic_examples: bool = True,
         patience: int = 1,
         k_docs: int = 24,
         num_fewshots: int = 6,
@@ -128,12 +129,13 @@ class ExpeLAgent(BaseAgent):
             keys (List[str]): Corresponding keys to the questions, used for internal tracking and analysis.
             should_extract_insights (bool): Whether to extract insights from the experiences. Defaults to True.
             prompt (str): The initial prompt or instruction to guide the ReflexionReAct agent's process.
-            examples (Optional[str]): Examples to provide context or guidance for the ReflexionReAct agent.
+            examples (str): Examples to provide context or guidance for the ReflexionReAct agent.
             reflect_examples (str): Examples specifically for the reflection phase of processing.
             reflect_prompt (str): The prompt or instruction guiding the reflection process.
             reflect_strategy (Optional[str]): The strategy to use for processing questions. Defaults to "reflexion".
             additional_keys (Union[List[Dict[str, str]], Dict[str, str]]): The additional keys. Defaults to {}.
             reflect_additional_keys (Union[List[Dict[str, str]], Dict[str, str]]): Additional keys for the reflection phase. Defaults to {}.
+            use_dynamic_examples (bool): A boolean specifying whether or not to use dynamic examples from ExpeL's memory. Defaults to True.
             patience (int): The number of times to retry the agent's process if it fails. Defaults to 1.
             k_docs (int): The number of documents to retrieve for the fewshot. Defaults to 24.
             num_fewshots (int): The number of examples to use for the fewshot. Defaults to 6.
@@ -154,9 +156,9 @@ class ExpeLAgent(BaseAgent):
             self.reset()
 
         # User has ability to override examples.
-        if not examples:
+        if use_dynamic_examples:
             # Dynamically load in relevant past successful trajectories as fewshot examples.
-            examples = self.experience_memory.load_memories(
+            dynamic_examples = self.experience_memory.load_memories(
                 query=question,
                 k_docs=k_docs,
                 num_fewshots=num_fewshots,
@@ -164,7 +166,7 @@ class ExpeLAgent(BaseAgent):
                 reranker_strategy=reranker_strategy,
             )["fewshots"]
             examples = (
-                examples if examples else [HOTPOTQA_FEWSHOT_EXAMPLES_REACT]  # type: ignore
+                dynamic_examples if dynamic_examples else [examples]  # type: ignore
             )
             examples = "\n\n".join(examples + [END_OF_EXAMPLES_DELIMITER]) + "\n"  # type: ignore
 
