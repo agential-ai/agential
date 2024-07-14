@@ -101,7 +101,6 @@ class ExpeLAgent(BaseAgent):
         self,
         question: str,
         key: str,
-        should_extract_insights: bool = True,
         prompt: str = EXPEL_REFLEXION_REACT_INSTRUCTION,
         examples: str = "",
         reflect_examples: str = "",
@@ -110,6 +109,7 @@ class ExpeLAgent(BaseAgent):
         additional_keys: Union[List[Dict[str, str]], Dict[str, str]] = {},
         reflect_additional_keys: Union[List[Dict[str, str]], Dict[str, str]] = {},
         use_dynamic_examples: bool = True,
+        extract_insights: bool = True,
         patience: int = 1,
         k_docs: int = 24,
         num_fewshots: int = 6,
@@ -128,7 +128,7 @@ class ExpeLAgent(BaseAgent):
         Parameters:
             questions (List[str]): A list of questions for the agent to process.
             keys (List[str]): Corresponding keys to the questions, used for internal tracking and analysis.
-            should_extract_insights (bool): Whether to extract insights from the experiences. Defaults to True.
+            extract_insights (bool): Whether to extract insights from the experiences. Defaults to True.
             prompt (str): The initial prompt or instruction to guide the ReflexionReAct agent's process.
             examples (str): Examples to provide context or guidance for the ReflexionReAct agent.
             reflect_examples (str): Examples specifically for the reflection phase of processing.
@@ -166,18 +166,22 @@ class ExpeLAgent(BaseAgent):
                 max_fewshot_tokens=max_fewshot_tokens,
                 reranker_strategy=reranker_strategy,
             )["fewshots"]
+            # examples = (
+            #     dynamic_examples if dynamic_examples else [examples]  # type: ignore
+            # )
             examples = (
-                dynamic_examples if dynamic_examples else [examples]  # type: ignore
+                dynamic_examples if dynamic_examples else examples  # type: ignore
             )
-            examples = "\n\n".join(examples + [END_OF_EXAMPLES_DELIMITER]) + "\n"  # type: ignore
+            # examples = "\n\n".join(examples + [END_OF_EXAMPLES_DELIMITER]) + "\n"  # type: ignore
 
             # Dynamically load in all insights.
-            examples += RULE_PREFIX
+            # examples += RULE_PREFIX
             insights = self.insight_memory.load_memories()["insights"]
             insights = "".join(
                 [f"{i}. {insight['insight']}\n" for i, insight in enumerate(insights)]
             )
-            examples += insights
+            # examples += insights
+            additional_keys.update({"insights": insights})
 
         experience = self.gather_experience(
             questions=[question],
@@ -193,7 +197,7 @@ class ExpeLAgent(BaseAgent):
             **kwargs,
         )
 
-        if should_extract_insights:
+        if extract_insights:
             self.extract_insights(experience)
 
         return experience

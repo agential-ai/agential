@@ -77,6 +77,10 @@ You have a maximum of {max_steps} steps.
 
 Here are some examples:
 {examples}
+(END OF EXAMPLES)
+
+The following are some experience you gather on a similar task of question answering using Wikipedia API. Use these as references to help you perform this task:
+{insights}
 
 {reflections}
 
