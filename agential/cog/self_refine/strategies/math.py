@@ -24,8 +24,8 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
 
     def __init__(self, llm: BaseChatModel, patience: int = 1) -> None:
         """Initialization."""
-        super().__init__(llm)
-        self.patience = patience
+        super().__init__(llm, patience)
+
         self._prev_code_answer = ""
         self.patience_counter = 0
         self._halt = False
