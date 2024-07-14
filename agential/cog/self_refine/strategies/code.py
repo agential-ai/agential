@@ -182,4 +182,3 @@ class SelfRefineMBPPStrategy(SelfRefineCodeStrategy):
     """A strategy class for the MBPP benchmark using the Self-Refine agent."""
 
     pass
-
