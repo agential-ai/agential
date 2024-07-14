@@ -122,6 +122,21 @@ Certainly! Here's the section organized with each benchmark in a single row and 
 | TRIVIAQA  | 1. Incorrect answer<br>2. No error<br>3. Incorrect answer<br>4. No error<br>5. No error                                  |
 | FEVER     | 1. Incorrect answer<br>2. Incorrect answer format<br>3. No error<br>4. No error<br>5. No error                           |
 
+### ReflexionCoT, ReflexionReAct
+
+Sure, here is the data formatted into a table with each benchmark as a row and columns for ReflexionCoT and ReflexionReAct. Each cell contains the numbered list of error types separated by `<br>`.
+
+| **Benchmark** | **ReflexionCoT** | **ReflexionReAct** |
+| ------------- | ---------------- | ------------------ |
+| **HotpotQA**  | 1. Misinterpretation<br>2. Incorrect assumption<br>3. Misinterpretation<br>4. Misinterpretation<br>5. Misinterpretation | 1. Misled action<br>2. Misled action<br>3. Misread context<br>4. Wrong answer<br>5. Logical error |
+| **FEVER**     | 1. Insufficient info<br>2. Misinterpretation<br>3. Insufficient info<br>4. Insufficient info<br>5. Misinterpretation | 1. Ignored context<br>2. Insufficient info<br>3. Insufficient info<br>4. Ignore context<br>5. Ignore context |
+| **AmbigNQ**   | 1. Knowledge error<br>2. Knowledge error<br>3. Knowledge error<br>4. Misinterpret question<br>5. Knowledge error | 1. Incorrect assumption/Insufficient info<br>2. Insufficient info<br>3. Knowledge error<br>4. Incorrect answer format<br>5. Misread context |
+| **TriviaQA**  | 1. Incorrect assumption<br>2. Incorrect assumption<br>3. Incorrect assumption<br>4. Misinterpretation<br>5. Incorrect assumption | 1. Ignore context<br>2. Ignore context<br>3. Ignore context<br>4. Ignore context<br>5. Ignore context |
+| **GSM8K**     | 1. Logical error<br>2. Logical error<br>3. Misinterpret question<br>4. Logical error<br>5. Misinterpret question | 1. Logical error/Misinterpret question<br>2. Logical error/Misinterpret question<br>3. Logical error/Re-calculation error<br>4. Logical error/Re-calculation error<br>5. Logical error/Misinterpret question |
+| **SVAMP**     | 1. Logical error<br>2. Logical error<br>3. Logical error<br>4. Logical error<br>5. Logical error | 1. Misinterpret question<br>2. Logical error<br>3. Logical error<br>4. Logical error<br>5. Logical error |
+| **TabMWP**    | 1. Incorrect operator<br>2. Incorrect operator<br>3. Misinterpret question<br>4. Incorrect operator<br>5. Logical error | 1. Misinterpret question<br>2. Logical error<br>3. Logical error<br>4. Re-calculation error<br>5. Logical error |
+| **HumanEval** | 1. Conceptual error<br>2. Logical error<br>3. Logical error<br>4. Logical error<br>5. Logical error | 1. Logical error<br>2. Logical error<br>3. Logical error<br>4. Logical error<br>5. Logical error |
+| **MBPP**      | 1. Logical error<br>2. Logical error<br>3. Incorrect function usage<br>4. Logical error<br>5. Logical error | 1. Incorrect function implementation<br>2. Logical error<br>3. Incorrect function usage<br>4. Logical error<br>5. Logical error |
 
 For full documentation visit [mkdocs.org](https://www.mkdocs.org).
 
