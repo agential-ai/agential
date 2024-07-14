@@ -2169,19 +2169,509 @@ Here's a better solution:"""
 # ======================================================================== HUMANEVAL ======================================================================== #
 
 
-SELF_REFINE_INSTRUCTION_HUMANEVAL = """"""
+SELF_REFINE_INSTRUCTION_HUMANEVAL = """You are an AI that only responds with python code, NOT ENGLISH. You will be given a function signature and its docstring by the user. 
+
+```python
+{question}"""
 
 
-HUMANEVAL_CRITIQUE_FEWSHOT_EXAMPLES = """"""
+HUMANEVAL_CRITIQUE_FEWSHOT_EXAMPLES = """```python
+def has_duplicate_names(names_list: List[str]) -> bool:
+    \"\"\"Check if there is any name that appears more than once in the list.
+    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice'])
+    True
+    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) 
+    False
+    \"\"\"
+    return len(names_list) != len(set(names_list)) - 1
+
+assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) == True
+assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) == False
+```
+
+What's the problem with the above code?
+
+1. The function incorrectly returns True for a list without any duplicates. This indicates a logical error in the implementation, specifically due to an incorrect comparison operation.
+
+2. Let's check the code:
+
+> names_list = ['Alice', 'Bob', 'Charlie', 'Dave']
+
+This defines a list of names without any deliberate duplication. However, the function still returns True.
+
+> return len(names_list) != len(set(names_list)) - 1
+
+This line is designed to check for duplicates by comparing the length of the list with the length of the set created from the list, which inherently removes any duplicate entries. The subtraction of one from the set’s length is intended to allow exactly one duplicated name in the list for the condition to hold true. However, this approach is logically flawed. The subtraction results in a condition that falsely identifies duplicates if there's even one unique item that makes the set’s size smaller than the list’s size. This error leads to a false positive for duplicates whenever the list has any unique items.
+
+Overall, the function does not perform as expected due to a critical error in this line. The incorrect manipulation of the set's length by subtracting one introduces a logical fallacy, causing the function to misidentify non-duplicate scenarios as having duplicates. This is a conceptual error in understanding how to handle the detection of a single allowed duplicate in the context of set and list length comparison.
+
+---
+
+```python
+def average_positive(numbers: List[int]) -> float:
+    \"\"\"Calculate the average of positive numbers in the list.
+    >>> average_positive([1, -1, 2, -2, 3])
+    2.0
+    >>> average_positive([-5, 0, 5, 15])
+    10.0
+    >>> average_positive([100, 200, -100, 0])
+    150.0
+    >>> average_positive([-1, -2, -3])
+    0
+    \"\"\"
+    total = sum(numbers)
+    count = sum(1 for x in numbers if x > 0)
+    return total / count if count else 0
+
+assert average_positive([1, -1, 2, -2, 3]) == 2.0
+assert average_positive([-5, 0, 5, 15]) == 10.0
+assert average_positive([100, 200, -100, 0]) == 150.0
+assert average_positive([-1, -2, -3]) == 0
+```
+
+What's the problem with the above code?
+
+1. The function incorrectly returns an average of all numbers, not just the positives. This leads to incorrect calculations when negative numbers are present in the list.
+
+2. Let's check the code:
+
+> numbers = [1, -1, 2, -2, 3]
+
+This list includes both positive and negative numbers, but the function's calculation should focus only on the positives.
+
+> total = sum(numbers)
+
+This line incorrectly calculates the total sum of all numbers in the list, not just the positive ones. This is the root of the error as it fails to exclude negative numbers and zeros, which should not contribute to the average of positive numbers. 
+
+> count = sum(1 for x in numbers if x > 0)
+
+While this line correctly counts the number of positive numbers, the previous calculation of the total sum includes all numbers, thus distorting the average calculation.
+
+Overall, the function does not perform as expected due to a critical oversight in the initial summing process. The inclusion of all numbers in the total, regardless of their sign, leads to an incorrect average calculation for positive numbers only. This error could be easily overlooked as it merges the concepts of filtering and summing but applies them incorrectly by not aligning the filtering of positives in both the sum and count operations.
+
+---
+
+```python
+def exceeds_threshold(measurements: List[float], threshold: float) -> int:
+    \"\"\"Return the count of instances where the difference between any two successive measurements exceeds the given threshold.
+    >>> exceeds_threshold([100, 102, 107, 103], 5) 
+    1
+    >>> exceeds_threshold([100, 101, 102, 103], 2) 
+    0
+    \"\"\"
+    count = 0
+    for i in range(1, len(measurements)):
+        if abs(measurements[i] - measurements[i - 1]) > (threshold + 1):
+            count += 1
+    return count
+
+assert exceeds_threshold([100, 102, 107, 103], 5) == 1
+assert exceeds_threshold([100, 101, 102, 103], 2) == 0
+```
+
+What's the problem with the above code?
+
+1. The function incorrectly fails to count differences that exactly meet the threshold because it mistakenly uses a threshold incremented by 1. This causes it to underreport the number of threshold exceedances.
+
+2. Let's check the code:
+
+> measurements = [100, 102, 107, 103]
+
+This set of data points includes instances where the difference between successive measurements is equal to or greater than the threshold set.
+
+> count = 0
+
+Initializes a counter to zero. This line is correct as it sets up the counting variable which will be used to tally the number of exceedances.
+
+> for i in range(1, len(measurements)):
+
+Begins a loop starting from the second element (index 1) of the measurements list. This is correct, as it prepares to compare each element with its predecessor to check the difference against the threshold.
+
+> if abs(measurements[i] - measurements[i - 1]) > (threshold + 1):
+
+This line is the crux of the problem. It increases the threshold by 1, thereby raising the condition required to count an exceedance. The addition of 1 to the threshold misrepresents the intended logic of the function by requiring differences to exceed the original threshold by more than intended. This modification in the threshold results in undercounting actual exceedances, as it does not count differences that are exactly equal to the original threshold, or only slightly above it by less than 1.
+
+Overall, the function fails to perform as expected because it incorrectly manipulates the threshold condition. The increase in the threshold by 1 leads to the function not recognizing valid exceedances that meet the original criteria set by the threshold. The logical error is a straightforward misunderstanding of how to apply the threshold in comparing measurement differences.
+
+---
+
+```python
+def sum_even_indexed(numbers: List[int]) -> int:
+    \"\"\"Sum numbers that are located at even indices in the list.
+    >>> sum_even_indexed([10, 3, 5, 2, 8])
+    23
+    >>> sum_even_indexed([1, 2, 3, 4, 5, 6])
+    9
+    >>> sum_even_indexed([0, 100, 200, 300])
+    200
+    >>> sum_even_indexed([7])
+    7
+    \"\"\"
+    return sum(num for i, num in enumerate(numbers) if (i + 1) % 2 == 0)
+
+assert sum_even_indexed([10, 3, 5, 2, 8]) == 23
+assert sum_even_indexed([1, 2, 3, 4, 5, 6]) == 9
+assert sum_even_indexed([0, 100, 200, 300]) == 200
+assert sum_even_indexed([7]) == 7
+```
+
+What's the problem with the above code?
+
+1. The function incorrectly sums up numbers at odd indices instead of even indices due to an off-by-one error. This error results from misinterpreting index positions because of adding 1 to the index before modulo operation.
+
+2. Let's check the code:
+
+> numbers = [10, 3, 5, 2, 8]
+
+This defines a list of numbers where the correct function should sum the numbers at even indices (1, 3, 5) according to 0-based indexing.
+
+> return sum(num for i, num in enumerate(numbers) if (i + 1) % 2 == 0)
+
+This line contains the core functionality but introduces a logical error. The condition `(i + 1) % 2 == 0` is intended to sum numbers at even indices based on a zero-based index system. However, by adding 1 to the index, the function checks if the position is odd (1-based index), not even. This results in the function summing numbers at what are technically odd indices in a zero-based index system, like 1, 3, 5, etc., instead of 0, 2, 4.
+
+Overall, the function does not perform as expected because of a subtle logical error in handling index values. It miscounts the indices, summing the wrong set of numbers.
+
+---
+
+```python
+from collections import Counter
+
+def are_anagrams(s1: str, s2: str) -> bool:
+    \"\"\"Check if two strings are anagrams of each other, ignoring case.
+    >>> are_anagrams('Listen', 'silent')
+    True
+    >>> are_anagrams('Hello', 'World')
+    False
+    >>> are_anagrams('Angel', 'Glean')
+    True
+    \"\"\"
+    return Counter(s1) == Counter(s2)
+
+assert are_anagrams('Listen', 'silent') == True
+assert are_anagrams('Hello', 'World') == False
+assert are_anagrams('Angel', 'Glean') == True
+```
+
+What's the problem with the above code?
+
+1. The function fails to account for case sensitivity because it does not convert the strings to a uniform case before using the `Counter` to compare them, leading to incorrect results when strings differ only in case.
+
+2. Let's check the code:
+
+> s1 = 'Listen'; s2 = 'silent'
+
+This defines two strings where the correct function should return True given they are case-insensitive anagrams.
+
+> return Counter(s1) == Counter(s2)
+
+The function returns `False` for `Counter('Listen') == Counter('silent')` because the `Counter` is case-sensitive, and thus counts 'L' and 'l' as different characters, resulting in unequal counters.
+
+Overall, the primary issue is that the function does not perform a case conversion before counting the characters, which is essential for a correct case-insensitive anagram comparison. This oversight leads to the function incorrectly determining that strings like 'Listen' and 'silent' are not anagrams due to case differences. The correct approach should involve converting both input strings to the same case (either all uppercase or all lowercase) before applying the `Counter`."""
 
 
-SELF_REFINE_CRITIQUE_INSTRUCTION_HUMANEVAL = """"""
+SELF_REFINE_CRITIQUE_INSTRUCTION_HUMANEVAL = """{examples}
+(END OF EXAMPLES)
+
+```python
+{question}
+{answer}
+
+{tests}
+```
+Execution: {execution_status} 
+
+What's the problem with the above code?
+
+{critique}"""
 
 
-HUMANEVAL_REFINE_FEWSHOT_EXAMPLES = """"""
+HUMANEVAL_REFINE_FEWSHOT_EXAMPLES = """```python
+def has_duplicate_names(names_list: List[str]) -> bool:
+    \"\"\"Check if there is any name that appears more than once in the list.
+    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice'])
+    True
+    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) 
+    False
+    \"\"\"
+    return len(names_list) != len(set(names_list)) - 1
+
+assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) == True
+assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) == False
+```
+
+What's the problem with the above code?
+
+1. The function incorrectly returns True for a list without any duplicates. This indicates a logical error in the implementation, specifically due to an incorrect comparison operation.
+
+2. Let's check the code:
+
+> names_list = ['Alice', 'Bob', 'Charlie', 'Dave']
+
+This defines a list of names without any deliberate duplication. However, the function still returns True.
+
+> return len(names_list) != len(set(names_list)) - 1
+
+This line is designed to check for duplicates by comparing the length of the list with the length of the set created from the list, which inherently removes any duplicate entries. The subtraction of one from the set’s length is intended to allow exactly one duplicated name in the list for the condition to hold true. However, this approach is logically flawed. The subtraction results in a condition that falsely identifies duplicates if there's even one unique item that makes the set’s size smaller than the list’s size. This error leads to a false positive for duplicates whenever the list has any unique items.
+
+Overall, the function does not perform as expected due to a critical error in this line. The incorrect manipulation of the set's length by subtracting one introduces a logical fallacy, causing the function to misidentify non-duplicate scenarios as having duplicates. This is a conceptual error in understanding how to handle the detection of a single allowed duplicate in the context of set and list length comparison.
+
+Here's a better solution (include only function implementation):
+```python
+def has_duplicate_names(names_list: List[str]) -> bool:
+    \"\"\"Check if there is any name that appears more than once in the list.
+    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice'])
+    True
+    >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) 
+    False
+    \"\"\"
+    return len(names_list) != len(set(names_list))
+```
+
+---
+
+```python
+def average_positive(numbers: List[int]) -> float:
+    \"\"\"Calculate the average of positive numbers in the list.
+    >>> average_positive([1, -1, 2, -2, 3])
+    2.0
+    >>> average_positive([-5, 0, 5, 15])
+    10.0
+    >>> average_positive([100, 200, -100, 0])
+    150.0
+    >>> average_positive([-1, -2, -3])
+    0
+    \"\"\"
+    total = sum(numbers)
+    count = sum(1 for x in numbers if x > 0)
+    return total / count if count else 0
+
+assert average_positive([1, -1, 2, -2, 3]) == 2.0
+assert average_positive([-5, 0, 5, 15]) == 10.0
+assert average_positive([100, 200, -100, 0]) == 150.0
+assert average_positive([-1, -2, -3]) == 0
+```
+
+What's the problem with the above code?
+
+1. The function incorrectly returns an average of all numbers, not just the positives. This leads to incorrect calculations when negative numbers are present in the list.
+
+2. Let's check the code:
+
+> numbers = [1, -1, 2, -2, 3]
+
+This list includes both positive and negative numbers, but the function's calculation should focus only on the positives.
+
+> total = sum(numbers)
+
+This line incorrectly calculates the total sum of all numbers in the list, not just the positive ones. This is the root of the error as it fails to exclude negative numbers and zeros, which should not contribute to the average of positive numbers. 
+
+> count = sum(1 for x in numbers if x > 0)
+
+While this line correctly counts the number of positive numbers, the previous calculation of the total sum includes all numbers, thus distorting the average calculation.
+
+Overall, the function does not perform as expected due to a critical oversight in the initial summing process. The inclusion of all numbers in the total, regardless of their sign, leads to an incorrect average calculation for positive numbers only. This error could be easily overlooked as it merges the concepts of filtering and summing but applies them incorrectly by not aligning the filtering of positives in both the sum and count operations.
+
+Here's a better solution (include only function implementation):
+```python
+def average_positive(numbers: List[int]) -> float:
+    \"\"\"Calculate the average of positive numbers in the list.
+    >>> average_positive([1, -1, 2, -2, 3])
+    2.0
+    >>> average_positive([-5, 0, 5, 15])
+    10.0
+    >>> average_positive([100, 200, -100, 0])
+    150.0
+    >>> average_positive([-1, -2, -3])
+    0
+    \"\"\"
+    positive_numbers = [num for num in numbers if num > 0]
+    return sum(positive_numbers) / len(positive_numbers) if positive_numbers else 0
+```
+
+---
+
+```python
+def exceeds_threshold(measurements: List[float], threshold: float) -> int:
+    \"\"\"Return the count of instances where the difference between any two successive measurements exceeds the given threshold.
+    >>> exceeds_threshold([100, 102, 107, 103], 5) 
+    1
+    >>> exceeds_threshold([100, 101, 102, 103], 2) 
+    0
+    \"\"\"
+    count = 0
+    for i in range(1, len(measurements)):
+        if abs(measurements[i] - measurements[i - 1]) > (threshold + 1):
+            count += 1
+    return count
+
+assert exceeds_threshold([100, 102, 107, 103], 5) == 1
+assert exceeds_threshold([100, 101, 102, 103], 2) == 0
+```
+
+What's the problem with the above code?
+
+1. The function incorrectly fails to count differences that exactly meet the threshold because it mistakenly uses a threshold incremented by 1. This causes it to underreport the number of threshold exceedances.
+
+2. Let's check the code:
+
+> measurements = [100, 102, 107, 103]
+
+This set of data points includes instances where the difference between successive measurements is equal to or greater than the threshold set.
+
+> count = 0
+
+Initializes a counter to zero. This line is correct as it sets up the counting variable which will be used to tally the number of exceedances.
+
+> for i in range(1, len(measurements)):
+
+Begins a loop starting from the second element (index 1) of the measurements list. This is correct, as it prepares to compare each element with its predecessor to check the difference against the threshold.
+
+> if abs(measurements[i] - measurements[i - 1]) > (threshold + 1):
+
+This line is the crux of the problem. It increases the threshold by 1, thereby raising the condition required to count an exceedance. The addition of 1 to the threshold misrepresents the intended logic of the function by requiring differences to exceed the original threshold by more than intended. This modification in the threshold results in undercounting actual exceedances, as it does not count differences that are exactly equal to the original threshold, or only slightly above it by less than 1.
+
+Overall, the function fails to perform as expected because it incorrectly manipulates the threshold condition. The increase in the threshold by 1 leads to the function not recognizing valid exceedances that meet the original criteria set by the threshold. The logical error is a straightforward misunderstanding of how to apply the threshold in comparing measurement differences.
+
+Here's a better solution (include only function implementation):
+```python
+def exceeds_threshold(measurements: List[float], threshold: float) -> int:
+    \"\"\"Return the count of instances where the difference between any two successive measurements exceeds the given threshold.
+    >>> exceeds_threshold([100, 102, 107, 103], 5) 
+    1
+    >>> exceeds_threshold([100, 101, 102, 103], 2) 
+    0
+    \"\"\"
+    count = 0
+    for i in range(1, len(measurements)):
+        if abs(measurements[i] - measurements[i - 1]) > threshold:
+            count += 1
+    return count
+```
+
+---
+
+```python
+def sum_even_indexed(numbers: List[int]) -> int:
+    \"\"\"Sum numbers that are located at even indices in the list.
+    >>> sum_even_indexed([10, 3, 5, 2, 8])
+    23
+    >>> sum_even_indexed([1, 2, 3, 4, 5, 6])
+    9
+    >>> sum_even_indexed([0, 100, 200, 300])
+    200
+    >>> sum_even_indexed([7])
+    7
+    \"\"\"
+    return sum(num for i, num in enumerate(numbers) if (i + 1) % 2 == 0)
+
+assert sum_even_indexed([10, 3, 5, 2, 8]) == 23
+assert sum_even_indexed([1, 2, 3, 4, 5, 6]) == 9
+assert sum_even_indexed([0, 100, 200, 300]) == 200
+assert sum_even_indexed([7]) == 7
+```
+
+What's the problem with the above code?
+
+1. The function incorrectly sums up numbers at odd indices instead of even indices due to an off-by-one error. This error results from misinterpreting index positions because of adding 1 to the index before modulo operation.
+
+2. Let's check the code:
+
+> numbers = [10, 3, 5, 2, 8]
+
+This defines a list of numbers where the correct function should sum the numbers at even indices (1, 3, 5) according to 0-based indexing.
+
+> return sum(num for i, num in enumerate(numbers) if (i + 1) % 2 == 0)
+
+This line contains the core functionality but introduces a logical error. The condition `(i + 1) % 2 == 0` is intended to sum numbers at even indices based on a zero-based index system. However, by adding 1 to the index, the function checks if the position is odd (1-based index), not even. This results in the function summing numbers at what are technically odd indices in a zero-based index system, like 1, 3, 5, etc., instead of 0, 2, 4.
+
+Overall, the function does not perform as expected because of a subtle logical error in handling index values. It miscounts the indices, summing the wrong set of numbers.
+
+Here's a better solution (include only function implementation):
+```python
+def sum_even_indexed(numbers: List[int]) -> int:
+    \"\"\"Sum numbers that are located at even indices in the list.
+    >>> sum_even_indexed([10, 3, 5, 2, 8])
+    23
+    >>> sum_even_indexed([1, 2, 3, 4, 5, 6])
+    9
+    >>> sum_even_indexed([0, 100, 200, 300])
+    200
+    >>> sum_even_indexed([7])
+    7
+    \"\"\"
+    return sum(num for i, num in enumerate(numbers) if i % 2 == 0)
+```
+
+---
+
+```python
+from collections import Counter
+
+def are_anagrams(s1: str, s2: str) -> bool:
+    \"\"\"Check if two strings are anagrams of each other, ignoring case.
+    >>> are_anagrams('Listen', 'silent')
+    True
+    >>> are_anagrams('Hello', 'World')
+    False
+    >>> are_anagrams('Angel', 'Glean')
+    True
+    \"\"\"
+    return Counter(s1) == Counter(s2)
+
+assert are_anagrams('Listen', 'silent') == True
+assert are_anagrams('Hello', 'World') == False
+assert are_anagrams('Angel', 'Glean') == True
+```
+
+What's the problem with the above code?
+
+1. The function fails to account for case sensitivity because it does not convert the strings to a uniform case before using the `Counter` to compare them, leading to incorrect results when strings differ only in case.
+
+2. Let's check the code:
+
+> s1 = 'Listen'; s2 = 'silent'
+
+This defines two strings where the correct function should return True given they are case-insensitive anagrams.
+
+> return Counter(s1) == Counter(s2)
+
+The function returns `False` for `Counter('Listen') == Counter('silent')` because the `Counter` is case-sensitive, and thus counts 'L' and 'l' as different characters, resulting in unequal counters.
+
+Overall, the primary issue is that the function does not perform a case conversion before counting the characters, which is essential for a correct case-insensitive anagram comparison. This oversight leads to the function incorrectly determining that strings like 'Listen' and 'silent' are not anagrams due to case differences. The correct approach should involve converting both input strings to the same case (either all uppercase or all lowercase) before applying the `Counter`.
+
+Here's a better solution (include only function implementation):
+```python
+from collections import Counter
+
+def are_anagrams(s1: str, s2: str) -> bool:
+    \"\"\"Check if two strings are anagrams of each other, ignoring case.
+    >>> are_anagrams('Listen', 'silent')
+    True
+    >>> are_anagrams('Hello', 'World')
+    False
+    >>> are_anagrams('Angel', 'Glean')
+    True
+    \"\"\"
+    return Counter(s1.lower()) == Counter(s2.lower())
+```"""
 
 
-SELF_REFINE_REFINE_INSTRUCTION_HUMANEVAL = """"""
+SELF_REFINE_REFINE_INSTRUCTION_HUMANEVAL = """{examples}
+(END OF EXAMPLES)
+
+```python
+{question}
+{answer}
+
+{tests}
+```
+Execution: {execution_status} 
+
+What's the problem with the above code?
+
+{critique}
+
+Here's a better solution (include only function implementation):"""
 
 
 # ======================================================================== MBPP ======================================================================== #
@@ -2190,13 +2680,347 @@ SELF_REFINE_REFINE_INSTRUCTION_HUMANEVAL = """"""
 SELF_REFINE_INSTRUCTION_MBPP = """"""
 
 
-MBPP_CRITIQUE_FEWSHOT_EXAMPLES = """"""
+MBPP_CRITIQUE_FEWSHOT_EXAMPLES = """You are an expert Python programmer, and here is your task: Write a function to find the shared elements from the given two lists.
+Your code should pass these tests.
+
+```python
+def similar_elements(test_tup1, test_tup2):
+    return tuple(set(test_tup1) | set(test_tup2))
+
+assert set(similar_elements((3, 4, 5, 6), (5, 7, 4, 10))) == set((4, 5))
+assert set(similar_elements((1, 2, 3, 4), (5, 4, 3, 7))) == set((3, 4))
+assert set(similar_elements((11, 12, 14, 13), (17, 15, 14, 13))) == set((13, 14))
+```
+
+What's the problem with the above code?
+
+1. The function incorrectly returns a set of all unique elements from both lists rather than the intersection. This indicates a logical error in the implementation due to incorrect set operation.
+
+2. Let's check the code:
+
+> test_tup1 = (3, 4, 5, 6)
+> test_tup2 = (5, 7, 4, 10)
+
+This should define two lists of numbers where only 4 and 5 are common in both.
+
+> return tuple(set(test_tup1) | set(test_tup2))
+
+This line erroneously uses the set union operator (`|`) which combines all elements from both sets, instead of the set intersection operator (`&`) which would correctly identify elements present in both sets. This error results in incorrect function output when no duplicates should be reported.
+
+Overall, the function fails to perform as expected due to a critical error in using the wrong set operation. The incorrect manipulation of set operators introduces a fundamental flaw, mistaking union for intersection, thus misidentifying the intended behavior of finding common elements.
+
+---
+
+You are an expert Python programmer, and here is your task: Write a python function to identify non-prime numbers.
+Your code should pass these tests.
+
+```python
+import math
+
+def is_not_prime(n):
+    if n == 2:
+        return True
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            return True
+    return False
+
+assert is_not_prime(2) == False
+assert is_not_prime(10) == True
+assert is_not_prime(35) == True
+assert is_not_prime(37) == False
+```
+
+What's the problem with the above code?
+
+> n = 2
+
+This should identify the number 2, which is a prime number and should return False.
+
+> if n == 2:
+> return True
+
+This line erroneously returns True for the input 2, indicating it as not prime, which is incorrect. The condition should be modified to correctly handle prime identification.
+
+---
+
+You are an expert Python programmer, and here is your task: Write a function to find the n largest integers from a given list of numbers, returned in descending order.
+Your code should pass these tests.
+
+```python
+def heap_queue_largest(nums, n):
+    return sorted(nums)[-n:]
+
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 3) == [85, 75, 65]
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 2) == [85, 75]
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 5) == [85, 75, 65, 58, 35]
+```
+
+What's the problem with the above code?
+
+1. The function incorrectly returns the sorted list of all elements, taking the last n elements. This indicates a logical error in the implementation due to incorrect sorting and slicing.
+
+2. Let's check the code:
+
+> nums = [25, 35, 22, 85, 14, 65, 75, 22, 58]
+> n = 3
+
+This should identify the three largest numbers in the list, which are 85, 75, and 65, in descending order.
+
+> return sorted(nums)[-n:]
+
+This line erroneously sorts the entire list and takes the last n elements, which may not be the n largest elements in descending order. This error results in incorrect function output when the largest elements should be reported.
+
+Overall, the function fails to perform as expected due to a critical error in using the wrong sorting and slicing approach. The incorrect manipulation of list sorting and slicing introduces a fundamental flaw, misidentifying the intended behavior of finding the n largest elements.
+
+---
+
+You are an expert Python programmer, and here is your task: Write a python function to check whether the two numbers differ at one bit position only or not.
+Your code should pass these tests.
+
+```python
+def is_power_of_two(x):
+    return x and (not(x & (x - 1)))
+
+def differ_at_one_bit_pos(a, b):
+    return is_power_of_two(a ^ b)
+
+assert differ_at_one_bit_pos(13, 9) == True
+assert differ_at_one_bit_pos(15, 8) == False
+assert differ_at_one_bit_pos(2, 4) == False
+assert differ_at_one_bit_pos(2, 3) == True
+assert differ_at_one_bit_pos(5, 1) == True
+assert differ_at_one_bit_pos(1, 5) == True
+```
+
+What's the problem with the above code?
+
+1. There is no problem with the code above. It follows the statement which checks whether the two numbers differ at one bit positino only or not.
+
+2. Let's check the code:
+
+> a = 13
+> b = 9
+
+This should identify that 13 (1101 in binary) and 9 (1001 in binary) differ at more than one bit position and should return True.
+
+> return a ^ b == 1
+
+Overall, the function succeed to perform as expected in comparing the XOR result.
+
+---
+
+You are an expert Python programmer, and here is your task: Write a function to find all words which are at least 4 characters long in a string.
+Your code should pass these tests.
+
+```python
+import re
+
+def find_char_long(text):
+    return re.findall(r"\b\w{4,}\b", text)
+
+assert set(find_char_long('Please move back to stream')) == set(['Please', 'move', 'back', 'stream'])
+assert set(find_char_long('Jing Eco and Tech')) == set(['Jing', 'Tech'])
+assert set(find_char_long('Jhingai wulu road Zone 3')) == set(['Jhingai', 'wulu', 'road', 'Zone'])
+```
+
+What's the problem with the above code?
+
+There is no problem with the above code. It correctly identifies and returns all words which are at least 4 characters long in the given string. The regex pattern `\b\w{4,}\b` correctly matches words that are 4 or more characters long."""
 
 
 SELF_REFINE_CRITIQUE_INSTRUCTION_MBPP = """"""
 
 
-MBPP_REFINE_FEWSHOT_EXAMPLES = """"""
+MBPP_REFINE_FEWSHOT_EXAMPLES = """You are an expert Python programmer, and here is your task: Write a function to find the shared elements from the given two lists.
+Your code should pass these tests.
 
+```python
+def similar_elements(test_tup1, test_tup2):
+    return tuple(set(test_tup1) | set(test_tup2))
+
+assert set(similar_elements((3, 4, 5, 6), (5, 7, 4, 10))) == set((4, 5))
+assert set(similar_elements((1, 2, 3, 4), (5, 4, 3, 7))) == set((3, 4))
+assert set(similar_elements((11, 12, 14, 13), (17, 15, 14, 13))) == set((13, 14))
+```
+
+What's the problem with the above code?
+
+1. The function incorrectly returns a set of all unique elements from both lists rather than the intersection. This indicates a logical error in the implementation due to incorrect set operation.
+
+2. Let's check the code:
+
+> test_tup1 = (3, 4, 5, 6)
+> test_tup2 = (5, 7, 4, 10)
+
+This should define two lists of numbers where only 4 and 5 are common in both.
+
+> return tuple(set(test_tup1) | set(test_tup2))
+
+This line erroneously uses the set union operator (`|`) which combines all elements from both sets, instead of the set intersection operator (`&`) which would correctly identify elements present in both sets. This error results in incorrect function output when no duplicates should be reported.
+
+Overall, the function fails to perform as expected due to a critical error in using the wrong set operation. The incorrect manipulation of set operators introduces a fundamental flaw, mistaking union for intersection, thus misidentifying the intended behavior of finding common elements.
+
+Here's a better solution:
+```python
+def similar_elements(test_tup1, test_tup2):
+    return tuple(set(test_tup1) & set(test_tup2))
+```
+
+---
+
+You are an expert Python programmer, and here is your task: Write a python function to identify non-prime numbers.
+Your code should pass these tests.
+
+```python
+import math
+
+def is_not_prime(n):
+    if n == 2:
+        return True
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            return True
+    return False
+
+assert is_not_prime(2) == False
+assert is_not_prime(10) == True
+assert is_not_prime(35) == True
+assert is_not_prime(37) == False
+```
+
+What's the problem with the above code?
+
+> n = 2
+
+This should identify the number 2, which is a prime number and should return False.
+
+> if n == 2:
+> return True
+
+This line erroneously returns True for the input 2, indicating it as not prime, which is incorrect. The condition should be modified to correctly handle prime identification.
+
+Here's a better solution:
+```python
+def is_not_prime(n):
+    result = False
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            result = True
+            break
+    return result
+```
+
+---
+
+You are an expert Python programmer, and here is your task: Write a function to find the n largest integers from a given list of numbers, returned in descending order.
+Your code should pass these tests.
+
+```python
+def heap_queue_largest(nums, n):
+    return sorted(nums)[-n:]
+
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 3) == [85, 75, 65]
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 2) == [85, 75]
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 5) == [85, 75, 65, 58, 35]
+```
+
+What's the problem with the above code?
+
+1. The function incorrectly returns the sorted list of all elements, taking the last n elements. This indicates a logical error in the implementation due to incorrect sorting and slicing.
+
+2. Let's check the code:
+
+> nums = [25, 35, 22, 85, 14, 65, 75, 22, 58]
+> n = 3
+
+This should identify the three largest numbers in the list, which are 85, 75, and 65, in descending order.
+
+> return sorted(nums)[-n:]
+
+This line erroneously sorts the entire list and takes the last n elements, which may not be the n largest elements in descending order. This error results in incorrect function output when the largest elements should be reported.
+
+Overall, the function fails to perform as expected due to a critical error in using the wrong sorting and slicing approach. The incorrect manipulation of list sorting and slicing introduces a fundamental flaw, misidentifying the intended behavior of finding the n largest elements.
+
+Here's a better solution:
+```python
+import heapq as hq
+
+def heap_queue_largest(nums, n):
+    largest_nums = hq.nlargest(n, nums)
+    return largest_nums
+```
+
+---
+
+You are an expert Python programmer, and here is your task: Write a python function to check whether the two numbers differ at one bit position only or not.
+Your code should pass these tests.
+
+```python
+def is_power_of_two(x):
+    return x and (not(x & (x - 1)))
+
+def differ_at_one_bit_pos(a, b):
+    return is_power_of_two(a ^ b)
+
+assert differ_at_one_bit_pos(13, 9) == True
+assert differ_at_one_bit_pos(15, 8) == False
+assert differ_at_one_bit_pos(2, 4) == False
+assert differ_at_one_bit_pos(2, 3) == True
+assert differ_at_one_bit_pos(5, 1) == True
+assert differ_at_one_bit_pos(1, 5) == True
+```
+
+What's the problem with the above code?
+
+1. There is no problem with the code above. It follows the statement which checks whether the two numbers differ at one bit positino only or not.
+
+2. Let's check the code:
+
+> a = 13
+> b = 9
+
+This should identify that 13 (1101 in binary) and 9 (1001 in binary) differ at more than one bit position and should return True.
+
+> return a ^ b == 1
+
+Overall, the function succeed to perform as expected in comparing the XOR result.
+
+Here's a better solution:
+```python
+def is_power_of_two(x):
+    return x and (not(x & (x - 1)))
+
+def differ_at_one_bit_pos(a, b):
+    return is_power_of_two(a ^ b)
+```
+
+---
+
+You are an expert Python programmer, and here is your task: Write a function to find all words which are at least 4 characters long in a string.
+Your code should pass these tests.
+
+```python
+import re
+
+def find_char_long(text):
+    return re.findall(r"\b\w{4,}\b", text)
+
+assert set(find_char_long('Please move back to stream')) == set(['Please', 'move', 'back', 'stream'])
+assert set(find_char_long('Jing Eco and Tech')) == set(['Jing', 'Tech'])
+assert set(find_char_long('Jhingai wulu road Zone 3')) == set(['Jhingai', 'wulu', 'road', 'Zone'])
+```
+
+What's the problem with the above code?
+
+There is no problem with the above code. It correctly identifies and returns all words which are at least 4 characters long in the given string. The regex pattern `\b\w{4,}\b` correctly matches words that are 4 or more characters long.
+
+Here's the solution again for clarity:
+```python
+import re
+
+def find_char_long(text):
+    return re.findall(r"\b\w{4,}\b", text)
+```"""
 
 SELF_REFINE_REFINE_INSTRUCTION_MBPP = """"""
