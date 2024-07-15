@@ -39,7 +39,7 @@ from agential.cog.expel.strategies.qa import (
     ExpeLHotQAStrategy,
     ExpeLFEVERStrategy,
     ExpeLAmbigNQStrategy,
-    ExpeLTriviaQAStrategy
+    ExpeLTriviaQAStrategy,
 )
 
 EXPEL_BENCHMARK_FEWSHOTS = {
@@ -136,6 +136,7 @@ EXPEL_STRATEGIES = {
     Benchmarks.MBPP: None,
 }
 
+
 class ExpeLFactory(BaseFactory):
     """A factory class for creating instances of ExpeL strategies and selecting prompts and few-shot examples."""
 
@@ -154,15 +155,13 @@ class ExpeLFactory(BaseFactory):
             Dict[str, str]: A dictionary of few-shot examples.
         """
         if benchmark not in EXPEL_FEWSHOTS:
-            raise ValueError(
-                f"Benchmark '{benchmark}' few-shots not found for ExpeL."
-            )
+            raise ValueError(f"Benchmark '{benchmark}' few-shots not found for ExpeL.")
 
         if fewshot_type not in EXPEL_BENCHMARK_FEWSHOTS[benchmark]:
             raise ValueError(
                 f"Benchmark '{benchmark}' few-shot type not supported for ExpeL."
             )
-        
+
         benchmark_fewshots = BENCHMARK_FEWSHOTS[benchmark][fewshot_type]
 
         return {"examples": benchmark_fewshots, **EXPEL_FEWSHOTS[benchmark]}
@@ -179,12 +178,10 @@ class ExpeLFactory(BaseFactory):
             Dict[str, str]: The prompt instructions.
         """
         if benchmark not in EXPEL_PROMPTS:
-            raise ValueError(
-                f"Benchmark '{benchmark}' prompt not found for ExpeL."
-            )
-        
+            raise ValueError(f"Benchmark '{benchmark}' prompt not found for ExpeL.")
+
         return EXPEL_PROMPTS[benchmark]
-        
+
     @staticmethod
     def get_strategy(benchmark: str, **kwargs: Any) -> ExpeLBaseStrategy:
         """Returns an instance of the appropriate ExpeL strategy based on the provided benchmark.
@@ -198,9 +195,7 @@ class ExpeLFactory(BaseFactory):
             ExpeLBaseStrategy: An instance of the appropriate ExpeL strategy.
         """
         if benchmark not in EXPEL_STRATEGIES:
-            raise ValueError(
-                f"Unsupported benchmark: {benchmark} for agent ExpeL"
-            )
+            raise ValueError(f"Unsupported benchmark: {benchmark} for agent ExpeL")
 
         strategy = EXPEL_STRATEGIES[benchmark]
         return strategy(**kwargs)

@@ -11,14 +11,15 @@ from agential.cog.expel.memory import (
 from agential.cog.expel.strategies.base import ExpeLBaseStrategy
 from agential.cog.reflexion.agent import ReflexionReActAgent
 from agential.cog.expel.functional import (
-    gather_experience, 
-    categorize_experiences, 
+    gather_experience,
+    categorize_experiences,
     get_folds,
     get_operations_compare,
     get_operations_success,
-    retrieve_insight_index
+    retrieve_insight_index,
 )
 from agential.utils.general import shuffle_chunk_list
+
 
 class ExpeLQAStrategy(ExpeLBaseStrategy):
     def __init__(
@@ -31,7 +32,13 @@ class ExpeLQAStrategy(ExpeLBaseStrategy):
     ) -> None:
         experience_memory = experience_memory or ExpeLExperienceMemory()
         insight_memory = insight_memory or ExpeLInsightMemory()
-        super().__init__(llm, reflexion_react_agent, experience_memory, insight_memory, success_batch_size)
+        super().__init__(
+            llm,
+            reflexion_react_agent,
+            experience_memory,
+            insight_memory,
+            success_batch_size,
+        )
 
         if experience_memory:
             self.extract_insights(self.experience_memory.experiences)
@@ -47,7 +54,7 @@ class ExpeLQAStrategy(ExpeLBaseStrategy):
         num_fewshots: int,
         max_fewshot_tokens: int,
         reranker_strategy: str,
-        additional_keys: Dict[str, Any]
+        additional_keys: Dict[str, Any],
     ) -> Tuple[str, Dict[str, str]]:
         additional_keys = additional_keys.copy()
 
@@ -84,7 +91,7 @@ class ExpeLQAStrategy(ExpeLBaseStrategy):
         additional_keys: Union[List[Dict[str, str]], Dict[str, str]],
         reflect_additional_keys: Union[List[Dict[str, str]], Dict[str, str]],
         patience: int,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Dict[str, Any]:
         experiences = gather_experience(
             reflexion_react_agent=self.reflexion_react_agent,
@@ -219,16 +226,20 @@ class ExpeLHotQAStrategy(ExpeLQAStrategy):
 
     pass
 
+
 class ExpeLTriviaQAStrategy(ExpeLQAStrategy):
     """A strategy class for the TriviaQA benchmark using the ExpeL agent."""
 
     pass
 
+
 class ExpeLAmbigNQStrategy(ExpeLQAStrategy):
     """A strategy class for the AmbigNQ benchmark using the ExpeL agent."""
-    
+
     pass
+
 
 class ExpeLFEVERStrategy(ExpeLQAStrategy):
     """A strategy class for the FEVER benchmark using the ExpeL agent."""
+
     pass

@@ -25,7 +25,7 @@ class ExpeLBaseStrategy(BaseStrategy):
     """
 
     def __init__(
-        self, 
+        self,
         llm: BaseChatModel,
         reflexion_react_agent: ReflexionReActAgent,
         experience_memory: ExpeLExperienceMemory,
@@ -48,7 +48,7 @@ class ExpeLBaseStrategy(BaseStrategy):
         num_fewshots: int,
         max_fewshot_tokens: int,
         reranker_strategy: str,
-        additional_keys: Dict[str, Any]
+        additional_keys: Dict[str, Any],
     ) -> Tuple[str, Dict[str, str]]:
         pass
 
@@ -65,7 +65,7 @@ class ExpeLBaseStrategy(BaseStrategy):
         additional_keys: Union[List[Dict[str, str]], Dict[str, str]],
         reflect_additional_keys: Union[List[Dict[str, str]], Dict[str, str]],
         patience: int,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Dict[str, Any]:
         pass
 
