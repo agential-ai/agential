@@ -48,7 +48,7 @@ def test_extract_insights(expel_experiences_10_fake_path: str) -> None:
     assert strategy.insight_memory.insights == gt_insights
 
 def test_update_insights() -> None:
-    """Tests update_insights."""
+    """Test update_insights."""
     insights = [
         {"insight": "Test 1", "score": 1},
         {"insight": "Test 2", "score": 2},
@@ -100,5 +100,35 @@ def test_update_insights() -> None:
     assert strategy.insight_memory.insights == gt_insights
 
 
-def test_reset():
-    pass
+def test_reset() -> None:
+    """Test reset."""
+    llm = FakeListChatModel(responses=[])
+    reflexion_react_agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
+    strategy = ExpeLQAStrategy(llm=llm, reflexion_react_agent=reflexion_react_agent)
+    
+    strategy.reflexion_react_agent.strategy._scratchpad = "cat"
+    strategy.experience_memory.experiences = "dog"
+    strategy.insight_memory.insights = ["turtle"]
+    strategy.reset()
+    assert strategy.reflexion_react_agent.strategy._scratchpad == ""
+    assert strategy.experience_memory.experiences == {
+        "idxs": [],
+        "questions": [],
+        "keys": [],
+        "trajectories": [],
+        "reflections": [],
+    }
+    assert strategy.insight_memory.insights == []
+
+    # Test only_reflexion=True.
+    llm = FakeListChatModel(responses=[])
+    reflexion_react_agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
+    strategy = ExpeLQAStrategy(llm=llm, reflexion_react_agent=reflexion_react_agent)
+    
+    strategy.reflexion_react_agent.strategy._scratchpad = "cat"
+    strategy.experience_memory.experiences = "dog"
+    strategy.insight_memory.insights = ["turtle"]
+    strategy.reset(only_reflexion=True)
+    assert strategy.reflexion_react_agent.strategy._scratchpad == ""
+    assert strategy.experience_memory.experiences == "dog"
+    assert strategy.insight_memory.insights == ["turtle"]
