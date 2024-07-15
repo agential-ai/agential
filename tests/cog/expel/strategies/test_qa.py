@@ -42,7 +42,7 @@ def test_extract_insights(expel_experiences_10_fake_path: str) -> None:
     ]
     llm = FakeListChatModel(responses=responses)
     reflexion_react_agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
-    strategy = ExpeLQAStrategy(llm=llm, reflexion_react_agent=reflexion_react_agent, insight_memory=memory)
+    strategy = ExpeLQAStrategy(llm=llm, reflexion_react_agent=reflexion_react_agent)
     
     strategy.extract_insights(selected_dict)
     assert strategy.insight_memory.insights == gt_insights
