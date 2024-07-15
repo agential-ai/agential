@@ -95,7 +95,7 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
 
 def test_reset() -> None:
     """Test reset."""
-    llm = FakeListChatModel(responses=["1"])
+    llm = FakeListChatModel(responses=[])
 
     agent = ExpeLAgent(llm=llm, benchmark="hotpotqa")
     agent.strategy.reflexion_react_agent.strategy._scratchpad == "cat"
