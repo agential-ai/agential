@@ -29,20 +29,20 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
 
     agent = ExpeLAgent(llm=llm, benchmark="hotpotqa")
     assert isinstance(agent.llm, BaseChatModel)
-    assert isinstance(agent.reflexion_react_agent, ReflexionReActAgent)
-    assert isinstance(agent.experience_memory, ExpeLExperienceMemory)
-    assert isinstance(agent.insight_memory, ExpeLInsightMemory)
-    assert agent.success_batch_size == 8
-    assert agent.experience_memory.experiences == {
+    assert isinstance(agent.strategy.reflexion_react_agent, ReflexionReActAgent)
+    assert isinstance(agent.strategy.experience_memory, ExpeLExperienceMemory)
+    assert isinstance(agent.strategy.insight_memory, ExpeLInsightMemory)
+    assert agent.strategy.success_batch_size == 8
+    assert agent.strategy.experience_memory.experiences == {
         "idxs": [],
         "questions": [],
         "keys": [],
         "trajectories": [],
         "reflections": [],
     }
-    assert not agent.experience_memory.success_traj_docs
-    assert not agent.experience_memory.vectorstore
-    assert not agent.insight_memory.insights
+    assert not agent.strategy.experience_memory.success_traj_docs
+    assert not agent.strategy.experience_memory.vectorstore
+    assert not agent.strategy.insight_memory.insights
 
     # Test with all parameters specified except experience memory and reflexion_react_agent.
     agent = ExpeLAgent(
@@ -55,20 +55,20 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
         success_batch_size=10,
     )
     assert isinstance(agent.llm, BaseChatModel)
-    assert isinstance(agent.reflexion_react_agent, ReflexionReActAgent)
-    assert isinstance(agent.experience_memory, ExpeLExperienceMemory)
-    assert isinstance(agent.insight_memory, ExpeLInsightMemory)
-    assert agent.success_batch_size == 10
-    assert agent.experience_memory.experiences == {
+    assert isinstance(agent.strategy.reflexion_react_agent, ReflexionReActAgent)
+    assert isinstance(agent.strategy.experience_memory, ExpeLExperienceMemory)
+    assert isinstance(agent.strategy.insight_memory, ExpeLInsightMemory)
+    assert agent.strategy.success_batch_size == 10
+    assert agent.strategy.experience_memory.experiences == {
         "idxs": [],
         "questions": [],
         "keys": [],
         "trajectories": [],
         "reflections": [],
     }
-    assert not agent.experience_memory.success_traj_docs
-    assert not agent.experience_memory.vectorstore
-    assert agent.insight_memory.insights == [{"insight": "blah blah", "score": 10}]
+    assert not agent.strategy.experience_memory.success_traj_docs
+    assert not agent.strategy.experience_memory.vectorstore
+    assert agent.strategy.insight_memory.insights == [{"insight": "blah blah", "score": 10}]
 
     # Test with custom reflexion_react_agent (verify it overrides reflexion_react_kwargs)
     agent = ExpeLAgent(
@@ -77,8 +77,8 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
         reflexion_react_strategy_kwargs={"max_steps": 100},
         reflexion_react_agent=ReflexionReActAgent(llm=llm, benchmark="hotpotqa"),
     )
-    assert isinstance(agent.reflexion_react_agent, ReflexionReActAgent)
-    assert agent.reflexion_react_agent.benchmark == "hotpotqa"
+    assert isinstance(agent.strategy.reflexion_react_agent, ReflexionReActAgent)
+    assert agent.strategy.reflexion_react_agent.benchmark == "hotpotqa"
 
     # Test with custom experience memory (verify correct initialization).
     experiences = joblib.load(expel_experiences_10_fake_path)
@@ -89,8 +89,8 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
         benchmark="hotpotqa",
         experience_memory=ExpeLExperienceMemory(experiences),
     )
-    assert agent.experience_memory.experiences == experiences
-    assert agent.insight_memory.insights == []
+    assert agent.strategy.experience_memory.experiences == experiences
+    assert agent.strategy.insight_memory.insights == []
 
 
 def test_reset() -> None:
