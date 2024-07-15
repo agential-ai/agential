@@ -21,14 +21,14 @@ class CriticAgent(BaseAgent):
         llm (BaseChatModel): An instance of a language model used for generating initial answers
             and critiques.
         benchmark (str): The benchmark.
-        **strategy_kwargs (Dict[str, Any]): Additional strategy-specific arguments.
+        **strategy_kwargs (Any): Additional strategy-specific arguments.
     """
 
     def __init__(
         self,
         llm: BaseChatModel,
         benchmark: str,
-        **strategy_kwargs: Dict[str, Any],
+        **strategy_kwargs: Any,
     ) -> None:
         """Initialization."""
         super().__init__()
