@@ -25,6 +25,7 @@ from agential.cog.expel.prompts import (
     EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+from agential.cog.expel.factory import EXPEL_BENCHMARK_FEWSHOTS, ExpeLFactory
 from agential.cog.reflexion.agent import ReflexionReActAgent
 from agential.cog.reflexion.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
@@ -71,9 +72,12 @@ class ExpeLAgent(BaseAgent):
     ) -> None:
         """Initialization."""
         super().__init__()
-
         self.llm = llm
         self.benchmark = benchmark
+
+        self.strategy = ExpeLFactory().get_strategy(
+            benchmark=self.benchmark, llm=self.llm, **strategy_kwargs
+        )
 
         if not reflexion_react_agent:
             self.reflexion_react_agent = ReflexionReActAgent(

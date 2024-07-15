@@ -60,7 +60,7 @@ class ReflexionCoTAgent(BaseAgent):
         llm (BaseChatModel): The language model used to generate responses.
         benchmark (str): The benchmark.
         reflector (Optional[ReflexionCoTReflector]): An optional reflector module for guided self-reflection.
-        **strategy_kwargs (Dict[str, Any]): Additional keyword arguments for the strategy.
+        **strategy_kwargs (Any): Additional keyword arguments for the strategy.
 
     Methods:
         generate(): Generates a response.
@@ -72,7 +72,7 @@ class ReflexionCoTAgent(BaseAgent):
         llm: BaseChatModel,
         benchmark: str,
         reflector: Optional[ReflexionCoTReflector] = None,
-        **strategy_kwargs: Dict[str, Any],
+        **strategy_kwargs: Any,
     ) -> None:
         """Initialization."""
         super().__init__()
@@ -225,7 +225,7 @@ class ReflexionReActAgent(BaseAgent):
         llm (BaseChatModel): The language model used to generate responses.
         benchmark (str): The benchmark.
         reflector (Optional[ReflexionReActReflector]): An optional reflector module for guided self-reflection. Defaults to None.
-        **strategy_kwargs (Dict[str, Any]): Additional keyword arguments for the strategy.
+        **strategy_kwargs (Any): Additional keyword arguments for the strategy.
 
     Methods:
         generate(): Generates a response.
@@ -237,7 +237,7 @@ class ReflexionReActAgent(BaseAgent):
         llm: BaseChatModel,
         benchmark: str,
         reflector: Optional[ReflexionReActReflector] = None,
-        **strategy_kwargs: Dict[str, Any],
+        **strategy_kwargs: Any,
     ) -> None:
         """Initialization."""
         super().__init__()
