@@ -75,7 +75,7 @@ class ExpeLAgent(BaseAgent):
         super().__init__()
         self.llm = llm
         self.benchmark = benchmark
-        reflexion_react_strategy_kwargs.update({"benchmark": benchmark})
+        reflexion_react_agent = reflexion_react_agent or ReflexionReActAgent(llm=llm, benchmark=benchmark, **reflexion_react_strategy_kwargs)
 
         self.strategy = ExpeLFactory().get_strategy(
             benchmark=self.benchmark, 
@@ -83,7 +83,6 @@ class ExpeLAgent(BaseAgent):
             reflexion_react_agent=reflexion_react_agent,
             experience_memory=experience_memory,
             insight_memory=insight_memory,
-            reflexion_react_strategy_kwargs=reflexion_react_strategy_kwargs,
             **strategy_kwargs
         )
 

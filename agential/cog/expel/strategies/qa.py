@@ -31,16 +31,7 @@ class ExpeLQAStrategy(ExpeLBaseStrategy):
         success_batch_size: int = 8,
     ) -> None:
         experience_memory = experience_memory or ExpeLExperienceMemory()
-        insight_memory = insight_memory or ExpeLInsightMemory()
-
-        # if not reflexion_react_agent:
-        #     self.reflexion_react_agent = ReflexionReActAgent(
-        #         llm=llm,
-        #         benchmark=benchmark,
-        #         **reflexion_react_strategy_kwargs,
-        #     )
-        # else:
-        #     self.reflexion_react_agent = reflexion_react_agent
+        insight_memory = insight_memory or ExpeLInsightMemory()        
         super().__init__(
             llm,
             reflexion_react_agent,
