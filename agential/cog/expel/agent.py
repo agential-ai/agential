@@ -69,6 +69,7 @@ class ExpeLAgent(BaseAgent):
         experience_memory: Optional[ExpeLExperienceMemory] = None,
         insight_memory: Optional[ExpeLInsightMemory] = None,
         success_batch_size: int = 8,
+        **strategy_kwargs: Any,
     ) -> None:
         """Initialization."""
         super().__init__()
@@ -76,7 +77,12 @@ class ExpeLAgent(BaseAgent):
         self.benchmark = benchmark
 
         self.strategy = ExpeLFactory().get_strategy(
-            benchmark=self.benchmark, llm=self.llm, **strategy_kwargs
+            benchmark=self.benchmark, 
+            llm=self.llm, 
+            reflexion_react_agent=reflexion_react_agent,
+            experience_memory=experience_memory,
+            insight_memory=insight_memory,
+            **strategy_kwargs
         )
 
         if not reflexion_react_agent:
