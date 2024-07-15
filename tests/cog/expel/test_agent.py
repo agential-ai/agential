@@ -98,19 +98,19 @@ def test_reset() -> None:
     llm = FakeListChatModel(responses=["1"])
 
     agent = ExpeLAgent(llm=llm, benchmark="hotpotqa")
-    agent.reflexion_react_agent.strategy._scratchpad == "cat"
-    agent.experience_memory.experiences == "dog"
-    agent.insight_memory.insights = ["turtle"]
+    agent.strategy.reflexion_react_agent.strategy._scratchpad == "cat"
+    agent.strategy.experience_memory.experiences == "dog"
+    agent.strategy.insight_memory.insights = ["turtle"]
     agent.reset()
-    assert agent.reflexion_react_agent.strategy._scratchpad == ""
-    assert agent.experience_memory.experiences == {
+    assert agent.strategy.reflexion_react_agent.strategy._scratchpad == ""
+    assert agent.strategy.experience_memory.experiences == {
         "idxs": [],
         "questions": [],
         "keys": [],
         "trajectories": [],
         "reflections": [],
     }
-    assert agent.insight_memory.insights == []
+    assert agent.strategy.insight_memory.insights == []
 
 
 def test_retrieve() -> None:
