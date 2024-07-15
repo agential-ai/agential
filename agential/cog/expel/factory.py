@@ -1,8 +1,27 @@
 """ExpeL prompts and fewshot examples selector."""
 
 from typing import Any, Dict
+
 from agential.base.factory import BaseFactory
 from agential.cog.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
+from agential.cog.expel.prompts import (
+    EXPEL_REFLEXION_REACT_INSTRUCTION_AMBIGNQ,
+    EXPEL_REFLEXION_REACT_INSTRUCTION_FEVER,
+    EXPEL_REFLEXION_REACT_INSTRUCTION_GSM8K,
+    EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+    EXPEL_REFLEXION_REACT_INSTRUCTION_HUMANEVAL,
+    EXPEL_REFLEXION_REACT_INSTRUCTION_MBPP,
+    EXPEL_REFLEXION_REACT_INSTRUCTION_SVAMP,
+    EXPEL_REFLEXION_REACT_INSTRUCTION_TABMWP,
+    EXPEL_REFLEXION_REACT_INSTRUCTION_TRIVIAQA,
+)
+from agential.cog.expel.strategies.base import ExpeLBaseStrategy
+from agential.cog.expel.strategies.qa import (
+    ExpeLAmbigNQStrategy,
+    ExpeLFEVERStrategy,
+    ExpeLHotQAStrategy,
+    ExpeLTriviaQAStrategy,
+)
 from agential.cog.reflexion.prompts import (
     AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     FEVER_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
@@ -22,24 +41,6 @@ from agential.cog.reflexion.prompts import (
     SVAMP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     TABMWP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     TRIVIAQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-)
-from agential.cog.expel.prompts import (
-    EXPEL_REFLEXION_REACT_INSTRUCTION_AMBIGNQ,
-    EXPEL_REFLEXION_REACT_INSTRUCTION_FEVER,
-    EXPEL_REFLEXION_REACT_INSTRUCTION_GSM8K,
-    EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-    EXPEL_REFLEXION_REACT_INSTRUCTION_HUMANEVAL,
-    EXPEL_REFLEXION_REACT_INSTRUCTION_MBPP,
-    EXPEL_REFLEXION_REACT_INSTRUCTION_SVAMP,
-    EXPEL_REFLEXION_REACT_INSTRUCTION_TABMWP,
-    EXPEL_REFLEXION_REACT_INSTRUCTION_TRIVIAQA,
-)
-from agential.cog.expel.strategies.base import ExpeLBaseStrategy
-from agential.cog.expel.strategies.qa import (
-    ExpeLHotQAStrategy,
-    ExpeLFEVERStrategy,
-    ExpeLAmbigNQStrategy,
-    ExpeLTriviaQAStrategy,
 )
 
 EXPEL_BENCHMARK_FEWSHOTS = {
