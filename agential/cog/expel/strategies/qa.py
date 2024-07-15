@@ -43,9 +43,36 @@ class ExpeLQAStrategy(ExpeLBaseStrategy):
         if experience_memory:
             self.extract_insights(self.experience_memory.experiences)
 
-    def generate(self) -> str:
-        pass
+    def generate(
+        self,
+        question: str,
+        key: str,
+        examples: str,
+        prompt: str,
+        reflect_examples: str,
+        reflect_prompt: str,
+        reflect_strategy: str,
+        additional_keys: Dict[str, Any],
+        reflect_additional_keys: Dict[str, Any],
+        patience: int,
+        **kwargs: Any
+    ) -> str:
+        experiences = self.gather_experience(
+            questions=[question],
+            keys=[key],
+            examples=examples,
+            prompt=prompt,
+            reflect_examples=reflect_examples,
+            reflect_prompt=reflect_prompt,
+            reflect_strategy=reflect_strategy,
+            additional_keys=additional_keys,
+            reflect_additional_keys=reflect_additional_keys,
+            patience=patience,
+            **kwargs
+        )
 
+        return experiences 
+    
     def get_dynamic_examples(
         self,
         question: str,

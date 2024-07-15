@@ -147,10 +147,23 @@ class ExpeLAgent(BaseAgent):
                 additional_keys=additional_keys
             )
 
-        experience = self.gather_experience(
-            questions=[question],
-            keys=[key],
-            examples=examples,  # type: ignore
+        # experience = self.gather_experience(
+        #     questions=[question],
+        #     keys=[key],
+        #     examples=examples,  # type: ignore
+        #     prompt=prompt,
+        #     reflect_examples=reflect_examples,
+        #     reflect_prompt=reflect_prompt,
+        #     reflect_strategy=reflect_strategy,
+        #     additional_keys=additional_keys,
+        #     reflect_additional_keys=reflect_additional_keys,
+        #     patience=patience,
+        #     **kwargs,
+        # )
+        experience = self.strategy.generate(
+            question=question,
+            key=key,
+            examples=examples,
             prompt=prompt,
             reflect_examples=reflect_examples,
             reflect_prompt=reflect_prompt,
@@ -158,7 +171,7 @@ class ExpeLAgent(BaseAgent):
             additional_keys=additional_keys,
             reflect_additional_keys=reflect_additional_keys,
             patience=patience,
-            **kwargs,
+            **kwargs
         )
 
         if extract_insights:
