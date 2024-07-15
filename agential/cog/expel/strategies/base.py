@@ -1,7 +1,7 @@
 """Base ExpeL Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Any, Dict, Tuple, Union, List
+from typing import Any, Dict, List, Tuple, Union
 
 from langchain_core.language_models.chat_models import BaseChatModel
 

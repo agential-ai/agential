@@ -1,23 +1,23 @@
 """ExpeL Agent strategies for QA."""
 
-from typing import Optional, Dict, Any, Tuple, List, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
+from agential.cog.expel.functional import (
+    categorize_experiences,
+    gather_experience,
+    get_folds,
+    get_operations_compare,
+    get_operations_success,
+    retrieve_insight_index,
+)
 from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
 from agential.cog.expel.strategies.base import ExpeLBaseStrategy
 from agential.cog.reflexion.agent import ReflexionReActAgent
-from agential.cog.expel.functional import (
-    gather_experience,
-    categorize_experiences,
-    get_folds,
-    get_operations_compare,
-    get_operations_success,
-    retrieve_insight_index,
-)
 from agential.utils.general import shuffle_chunk_list
 
 
