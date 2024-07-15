@@ -113,30 +113,6 @@ def test_reset() -> None:
     assert agent.strategy.insight_memory.insights == []
 
 
-def test_retrieve() -> None:
-    """Test retrieve."""
-    llm = FakeListChatModel(responses=["1"])
-
-    agent = ExpeLAgent(llm=llm, benchmark="hotpotqa")
-    memory = agent.retrieve()
-    assert list(memory.keys()) == [
-        "experiences",
-        "success_traj_docs",
-        "vectorstore",
-        "insights",
-    ]
-    assert memory["experiences"] == {
-        "idxs": [],
-        "questions": [],
-        "keys": [],
-        "trajectories": [],
-        "reflections": [],
-    }
-    assert memory["success_traj_docs"] == []
-    assert not memory["vectorstore"]
-    assert memory["insights"] == []
-
-
 def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
     """Test gather_experience."""
     hotpotqa = joblib.load(hotpotqa_distractor_sample_path)
@@ -219,8 +195,8 @@ def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
     ]
     llm = FakeListChatModel(responses=action_responses)
     agent = ExpeLAgent(llm=llm, benchmark="hotpotqa")
-    agent.reflexion_react_agent.strategy.docstore.search = lambda x: "Search result"
-    agent.reflexion_react_agent.strategy.docstore.lookup = lambda x: "Lookup result"
+    agent.strategy.reflexion_react_agent.strategy.docstore.search = lambda x: "Search result"
+    agent.strategy.reflexion_react_agent.strategy.docstore.lookup = lambda x: "Lookup result"
     new_experiences = agent.gather_experience(
         questions=hotpotqa.question.values[-1:],
         keys=hotpotqa.answer.values[-1:],
@@ -231,9 +207,9 @@ def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
     )
 
     assert new_experiences == gt_new_experiences
-    assert new_experiences == agent.experience_memory.experiences
-    assert len(agent.experience_memory.success_traj_docs) == 13
-    assert agent.experience_memory.vectorstore
+    assert new_experiences == agent.strategy.experience_memory.experiences
+    assert len(agent.strategy.experience_memory.success_traj_docs) == 13
+    assert agent.strategy.experience_memory.vectorstore
 
 
 def test_update_insights() -> None:
@@ -254,7 +230,7 @@ def test_update_insights() -> None:
             ("REMOVE 0", "Test 1"),
         ]
     )
-    assert agent.insight_memory.insights == gt_insights
+    assert agent.strategy.insight_memory.insights == gt_insights
 
     # Invalid remove.
     agent.update_insights(
@@ -262,21 +238,21 @@ def test_update_insights() -> None:
             ("REMOVE 0", "Test askdasf"),
         ]
     )
-    assert agent.insight_memory.insights == gt_insights
+    assert agent.strategy.insight_memory.insights == gt_insights
 
     # Valid agree.
     gt_insights = [{"insight": "Test 2", "score": 3}, {"insight": "Test 3", "score": 3}]
     agent.update_insights([("AGREE 0", "Test 2")])
-    assert agent.insight_memory.insights == gt_insights
+    assert agent.strategy.insight_memory.insights == gt_insights
 
     # Invalid agree.
     agent.update_insights([("AGREE 0", "Test asdjafh")])
-    assert agent.insight_memory.insights == gt_insights
+    assert agent.strategy.insight_memory.insights == gt_insights
 
     # Edit.
     gt_insights = [{"insight": "Test 2", "score": 3}, {"insight": "Test 4", "score": 4}]
     agent.update_insights([("EDIT 1", "Test 4")])
-    assert agent.insight_memory.insights == gt_insights
+    assert agent.strategy.insight_memory.insights == gt_insights
 
     # Add.
     gt_insights = [
@@ -285,7 +261,7 @@ def test_update_insights() -> None:
         {"insight": "Another insight", "score": 2},
     ]
     agent.update_insights([("ADD", "Another insight")])
-    assert agent.insight_memory.insights == gt_insights
+    assert agent.strategy.insight_memory.insights == gt_insights
 
 
 def test_extract_insights(expel_experiences_10_fake_path: str) -> None:
@@ -313,7 +289,7 @@ def test_extract_insights(expel_experiences_10_fake_path: str) -> None:
     llm = FakeListChatModel(responses=responses)
     agent = ExpeLAgent(llm=llm, benchmark="hotpotqa")
     agent.extract_insights(selected_dict)
-    assert agent.insight_memory.insights == gt_insights
+    assert agent.strategy.insight_memory.insights == gt_insights
 
 
 def test_generate(expel_experiences_10_fake_path: str) -> None:
@@ -422,14 +398,14 @@ def test_generate(expel_experiences_10_fake_path: str) -> None:
         benchmark="hotpotqa",
         experience_memory=ExpeLExperienceMemory(experiences),
     )
-    agent.reflexion_react_agent.strategy.docstore.search = lambda x: "Search result"
-    agent.reflexion_react_agent.strategy.docstore.lookup = lambda x: "Lookup result"
+    agent.strategy.reflexion_react_agent.strategy.docstore.search = lambda x: "Search result"
+    agent.strategy.reflexion_react_agent.strategy.docstore.lookup = lambda x: "Lookup result"
     out = agent.generate(question=question, key=key)
     assert out == gt_out
-    assert len(agent.experience_memory.experiences["idxs"]) == 6
-    assert agent.experience_memory.experiences["questions"][5] == question
-    assert agent.experience_memory.experiences["keys"][5] == key
-    assert agent.experience_memory.experiences["reflections"][5] == []
-    assert agent.insight_memory.insights == gt_insights
-    assert len(agent.experience_memory.success_traj_docs) == 36
-    assert agent.experience_memory.vectorstore
+    assert len(agent.strategy.experience_memory.experiences["idxs"]) == 6
+    assert agent.strategy.experience_memory.experiences["questions"][5] == question
+    assert agent.strategy.experience_memory.experiences["keys"][5] == key
+    assert agent.strategy.experience_memory.experiences["reflections"][5] == []
+    assert agent.strategy.insight_memory.insights == gt_insights
+    assert len(agent.strategy.experience_memory.success_traj_docs) == 36
+    assert agent.strategy.experience_memory.vectorstore
