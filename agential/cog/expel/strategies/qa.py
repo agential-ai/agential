@@ -214,11 +214,13 @@ class ExpeLQAStrategy(ExpeLBaseStrategy):
                     [{"insight": operation_insight, "score": 2}]
                 )
 
-    def reset(self, only_reflexion: bool) -> None:
+    def reset(self, only_reflexion: bool = False) -> None:
         if only_reflexion:
             self.reflexion_react_agent.reset()
-        self.experience_memory.clear()
-        self.insight_memory.clear()
+        else:
+            self.reflexion_react_agent.reset()
+            self.experience_memory.clear()
+            self.insight_memory.clear()
 
 
 class ExpeLHotQAStrategy(ExpeLQAStrategy):

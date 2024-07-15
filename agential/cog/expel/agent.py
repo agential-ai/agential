@@ -85,27 +85,27 @@ class ExpeLAgent(BaseAgent):
             **strategy_kwargs
         )
 
-        if not reflexion_react_agent:
-            self.reflexion_react_agent = ReflexionReActAgent(
-                llm=llm,
-                benchmark=benchmark,
-                **reflexion_react_strategy_kwargs,
-            )
-        else:
-            self.reflexion_react_agent = reflexion_react_agent
+        # if not reflexion_react_agent:
+        #     self.reflexion_react_agent = ReflexionReActAgent(
+        #         llm=llm,
+        #         benchmark=benchmark,
+        #         **reflexion_react_strategy_kwargs,
+        #     )
+        # else:
+        #     self.reflexion_react_agent = reflexion_react_agent
 
-        self.success_batch_size = success_batch_size
+        # self.success_batch_size = success_batch_size
 
-        if not insight_memory:
-            self.insight_memory = ExpeLInsightMemory()
-        else:
-            self.insight_memory = insight_memory
+        # if not insight_memory:
+        #     self.insight_memory = ExpeLInsightMemory()
+        # else:
+        #     self.insight_memory = insight_memory
 
-        if not experience_memory:
-            self.experience_memory = ExpeLExperienceMemory()
-        else:
-            self.experience_memory = experience_memory
-            self.extract_insights(self.experience_memory.experiences)
+        # if not experience_memory:
+        #     self.experience_memory = ExpeLExperienceMemory()
+        # else:
+        #     self.experience_memory = experience_memory
+        #     self.extract_insights(self.experience_memory.experiences)
 
     def generate(
         self,
@@ -161,31 +161,42 @@ class ExpeLAgent(BaseAgent):
             and reflections.
         """
         if reset_reflexion:
-            self.reflexion_react_agent.reset()
+            # self.reflexion_react_agent.reset()
+            self.strategy.reset(only_reflexion=True)
 
         if reset:
             self.reset()
 
         # User has ability to override examples.
         if use_dynamic_examples:
-            # Dynamically load in relevant past successful trajectories as fewshot examples.
-            dynamic_examples = self.experience_memory.load_memories(
-                query=question,
+            # # Dynamically load in relevant past successful trajectories as fewshot examples.
+            # dynamic_examples = self.experience_memory.load_memories(
+            #     query=question,
+            #     k_docs=k_docs,
+            #     num_fewshots=num_fewshots,
+            #     max_fewshot_tokens=max_fewshot_tokens,
+            #     reranker_strategy=reranker_strategy,
+            # )["fewshots"]
+            # examples = "\n\n---\n\n".join(
+            #     dynamic_examples if dynamic_examples else [examples]  # type: ignore
+            # )
+
+            # # Dynamically load in all insights.
+            # insights = self.insight_memory.load_memories()["insights"]
+            # insights = "".join(
+            #     [f"{i}. {insight['insight']}\n" for i, insight in enumerate(insights)]
+            # )
+            # additional_keys.update({"insights": insights})
+
+            examples, additional_keys = self.strategy.get_dynamic_examples(
+                question=question,
+                examples=examples,
                 k_docs=k_docs,
                 num_fewshots=num_fewshots,
                 max_fewshot_tokens=max_fewshot_tokens,
                 reranker_strategy=reranker_strategy,
-            )["fewshots"]
-            examples = "\n\n---\n\n".join(
-                dynamic_examples if dynamic_examples else [examples]  # type: ignore
+                additional_keys=additional_keys
             )
-
-            # Dynamically load in all insights.
-            insights = self.insight_memory.load_memories()["insights"]
-            insights = "".join(
-                [f"{i}. {insight['insight']}\n" for i, insight in enumerate(insights)]
-            )
-            additional_keys.update({"insights": insights})
 
         experience = self.gather_experience(
             questions=[question],
@@ -212,9 +223,10 @@ class ExpeLAgent(BaseAgent):
         This method clears the memory modules and resets the state of the ReflexionReAct agent,
         the experience memory, and the insight memory.
         """
-        self.reflexion_react_agent.reset()
-        self.experience_memory.clear()
-        self.insight_memory.clear()
+        # self.reflexion_react_agent.reset()
+        # self.experience_memory.clear()
+        # self.insight_memory.clear()
+        self.strategy.reset()
 
     def gather_experience(
         self,
