@@ -19,11 +19,19 @@ from agential.cog.reflexion.agent import (
     ReflexionReActStepOutput,
 )
 from agential.cog.reflexion.agent import ReflexionReActAgent
+
+
+def test_init():
+    pass
+
+
 def test_generate():
     pass
 
+
 def test_get_dynamic_examples():
     pass
+
 
 def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
     """Test gather_experience."""
