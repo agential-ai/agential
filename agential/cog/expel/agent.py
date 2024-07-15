@@ -162,7 +162,7 @@ class ExpeLAgent(BaseAgent):
         )
 
         if extract_insights:
-            self.extract_insights(experience)
+            self.strategy.extract_insights(experience)
 
         return experience
 
@@ -229,33 +229,3 @@ class ExpeLAgent(BaseAgent):
         )
 
         return experiences
-
-    def extract_insights(self, experiences: Dict[str, Any]) -> None:
-        """Analyzes stored experiences to extract and store insights.
-
-        This method categorizes experiences and applies different strategies to extract actionable insights from them.
-        Insights are derived from the comparison of successful and unsuccessful trajectories, as well as
-        successful trajectories.
-
-        Parameters:
-            experiences (Dict[str, Any]): A dictionary containing the experiences to be analyzed, structured
-            with keys: idxs, questions, keys, trajectories, and reflections.
-        """
-        self.strategy.extract_insights(
-            experiences=experiences
-        )
-
-    def update_insights(self, operations: List[Tuple[str, str]]) -> None:
-        """Updates the agent's stored insights.
-
-        This method processes a list of operations (e.g., ADD, REMOVE, EDIT, AGREE) on the insights derived from comparing
-        new experiences against the stored ones. It allows the agent to refine its understanding and strategies
-        for future interactions.
-
-        Parameters:
-            operations (List[Tuple[str, str]]): A list of tuples, each containing an operation type (ADD, REMOVE, EDIT, AGREE)
-            and the insight or modification related to that operation.
-        """
-        self.strategy.update_insights(
-            operations=operations
-        )
