@@ -326,7 +326,9 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
             reflector = ReflexionReActReflector(
                 llm=llm, max_reflections=max_reflections
             )
-        super().__init__(llm, reflector, max_reflections, max_trials, max_steps, max_tokens, enc)
+        super().__init__(
+            llm, reflector, max_reflections, max_trials, max_steps, max_tokens, enc
+        )
         self.docstore = docstore
 
         self._finished = False

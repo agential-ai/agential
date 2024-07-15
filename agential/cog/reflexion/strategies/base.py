@@ -1,11 +1,12 @@
 """Base Reflexion Agent strategy class."""
 
-import tiktoken
-from tiktoken import Encoding
 from abc import abstractmethod
 from typing import Any, Dict, List, Optional, Tuple
 
+import tiktoken
+
 from langchain_core.language_models.chat_models import BaseChatModel
+from tiktoken import Encoding
 
 from agential.base.strategies import BaseStrategy
 from agential.cog.reflexion.output import ReflexionReActStepOutput
@@ -13,6 +14,7 @@ from agential.cog.reflexion.reflect import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )
+
 
 class ReflexionCoTBaseStrategy(BaseStrategy):
     """An abstract base class for defining strategies for the ReflexionCoT Agent.
@@ -25,7 +27,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
     """
 
     def __init__(
-        self, 
+        self,
         llm: BaseChatModel,
         reflector: ReflexionCoTReflector,
         max_reflections: int,
@@ -159,15 +161,15 @@ class ReflexionReActBaseStrategy(BaseStrategy):
     Attributes:
         llm (BaseChatModel): The language model used for generating answers and critiques.
         reflector (Optional[ReflexionReActReflector]): The reflector used for generating reflections.
-        max_reflections (int): The maximum number of reflections allowed. 
-        max_trials (int): The maximum number of trials allowed. 
-        max_steps (int): The maximum number of steps allowed. 
-        max_tokens (int): The maximum number of tokens allowed. 
-        enc (Encoding): The encoding for tokenization. 
+        max_reflections (int): The maximum number of reflections allowed.
+        max_trials (int): The maximum number of trials allowed.
+        max_steps (int): The maximum number of steps allowed.
+        max_tokens (int): The maximum number of tokens allowed.
+        enc (Encoding): The encoding for tokenization.
     """
 
     def __init__(
-        self, 
+        self,
         llm: BaseChatModel,
         reflector: ReflexionReActReflector,
         max_reflections: int,

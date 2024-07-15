@@ -4,8 +4,9 @@ from abc import abstractmethod
 from typing import Any, Dict, Tuple
 
 import tiktoken
-from tiktoken import Encoding
+
 from langchain_core.language_models.chat_models import BaseChatModel
+from tiktoken import Encoding
 
 from agential.base.strategies import BaseStrategy
 
@@ -15,13 +16,13 @@ class ReActBaseStrategy(BaseStrategy):
 
     Attributes:
         llm (BaseChatModel): The language model used for generating answers and critiques.
-        max_steps (int): The maximum number of steps the agent can take. 
+        max_steps (int): The maximum number of steps the agent can take.
         max_tokens (int): The maximum number of tokens allowed for a response.
-        enc (Encoding): The encoding used for the language model. 
+        enc (Encoding): The encoding used for the language model.
     """
 
     def __init__(
-        self, 
+        self,
         llm: BaseChatModel,
         max_steps: int,
         max_tokens: int,
@@ -32,7 +33,7 @@ class ReActBaseStrategy(BaseStrategy):
         self.max_steps = max_steps
         self.max_tokens = max_tokens
         self.enc = enc
-        
+
     @abstractmethod
     def generate_action(
         self,
