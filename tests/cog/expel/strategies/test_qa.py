@@ -1,6 +1,7 @@
 """Unit tests for ExpeL QA strategies."""
 
 import joblib
+from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_community.chat_models.fake import FakeListChatModel
 from agential.cog.expel.strategies.qa import ExpeLQAStrategy
 from agential.cog.expel.memory import (
@@ -21,8 +22,71 @@ from agential.cog.reflexion.agent import (
 from agential.cog.reflexion.agent import ReflexionReActAgent
 
 
-def test_init():
-    pass
+def test_init(expel_experiences_10_fake_path: str) -> None:
+    """Test initialization."""
+    llm = FakeListChatModel(responses=[])
+    reflexion_react_agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
+    strategy = ExpeLQAStrategy(llm=llm, reflexion_react_agent=reflexion_react_agent)
+    assert isinstance(strategy.llm, BaseChatModel)
+    assert isinstance(strategy.reflexion_react_agent, ReflexionReActAgent)
+    assert isinstance(strategy.experience_memory, ExpeLExperienceMemory)
+    assert isinstance(strategy.insight_memory, ExpeLInsightMemory)
+    assert strategy.success_batch_size == 8
+    assert strategy.experience_memory.experiences == {
+        "idxs": [],
+        "questions": [],
+        "keys": [],
+        "trajectories": [],
+        "reflections": [],
+    }
+    assert not strategy.experience_memory.success_traj_docs
+    assert not strategy.experience_memory.vectorstore
+    assert not strategy.insight_memory.insights
+
+    # Test with all parameters specified except experience memory and reflexion_react_agent.
+    strategy = ExpeLQAStrategy(
+        llm=llm,
+        reflexion_react_agent=ReflexionReActAgent(llm=llm, benchmark="hotpotqa", max_trials=3),
+        insight_memory=ExpeLInsightMemory(
+            insights=[{"insight": "blah blah", "score": 10}]
+        ),
+        success_batch_size=10,
+    )
+    assert isinstance(strategy.llm, BaseChatModel)
+    assert isinstance(strategy.reflexion_react_agent, ReflexionReActAgent)
+    assert isinstance(strategy.experience_memory, ExpeLExperienceMemory)
+    assert isinstance(strategy.insight_memory, ExpeLInsightMemory)
+    assert strategy.success_batch_size == 10
+    assert strategy.experience_memory.experiences == {
+        "idxs": [],
+        "questions": [],
+        "keys": [],
+        "trajectories": [],
+        "reflections": [],
+    }
+    assert not strategy.experience_memory.success_traj_docs
+    assert not strategy.experience_memory.vectorstore
+    assert strategy.insight_memory.insights == [{"insight": "blah blah", "score": 10}]
+
+    # Test with custom reflexion_react_agent (verify it overrides reflexion_react_kwargs)
+    strategy = ExpeLQAStrategy(
+        llm=llm,
+        reflexion_react_agent=ReflexionReActAgent(llm=llm, benchmark="hotpotqa", max_steps=100),
+    )
+    assert isinstance(strategy.reflexion_react_agent, ReflexionReActAgent)
+    assert strategy.reflexion_react_agent.benchmark == "hotpotqa"
+
+    # Test with custom experience memory (verify correct initialization).
+    experiences = joblib.load(expel_experiences_10_fake_path)
+    experiences = {key: value[:1] for key, value in experiences.items()}
+
+    strategy = ExpeLQAStrategy(
+        llm=llm,
+        reflexion_react_agent=ReflexionReActAgent(llm=llm, benchmark="hotpotqa"),
+        experience_memory=ExpeLExperienceMemory(experiences),
+    )
+    assert strategy.experience_memory.experiences == experiences
+    assert strategy.insight_memory.insights == []
 
 
 def test_generate():
