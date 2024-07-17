@@ -62,7 +62,9 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
     }
     assert not agent.strategy.experience_memory.success_traj_docs
     assert not agent.strategy.experience_memory.vectorstore
-    assert agent.strategy.insight_memory.insights == [{"insight": "blah blah", "score": 10}]
+    assert agent.strategy.insight_memory.insights == [
+        {"insight": "blah blah", "score": 10}
+    ]
 
     # Test with custom reflexion_react_agent (verify it overrides reflexion_react_kwargs)
     agent = ExpeLAgent(
@@ -213,8 +215,12 @@ def test_generate(expel_experiences_10_fake_path: str) -> None:
         benchmark="hotpotqa",
         experience_memory=ExpeLExperienceMemory(experiences),
     )
-    agent.strategy.reflexion_react_agent.strategy.docstore.search = lambda x: "Search result"
-    agent.strategy.reflexion_react_agent.strategy.docstore.lookup = lambda x: "Lookup result"
+    agent.strategy.reflexion_react_agent.strategy.docstore.search = (
+        lambda x: "Search result"
+    )
+    agent.strategy.reflexion_react_agent.strategy.docstore.lookup = (
+        lambda x: "Lookup result"
+    )
     out = agent.generate(question=question, key=key)
     assert out == gt_out
     assert len(agent.strategy.experience_memory.experiences["idxs"]) == 6

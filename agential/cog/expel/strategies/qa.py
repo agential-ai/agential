@@ -31,7 +31,7 @@ class ExpeLQAStrategy(ExpeLBaseStrategy):
         success_batch_size: int = 8,
     ) -> None:
         experience_memory = experience_memory or ExpeLExperienceMemory()
-        insight_memory = insight_memory or ExpeLInsightMemory()        
+        insight_memory = insight_memory or ExpeLInsightMemory()
         super().__init__(
             llm,
             reflexion_react_agent,
@@ -55,7 +55,7 @@ class ExpeLQAStrategy(ExpeLBaseStrategy):
         additional_keys: Dict[str, Any],
         reflect_additional_keys: Dict[str, Any],
         patience: int,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> str:
         experiences = self.gather_experience(
             questions=[question],
@@ -68,11 +68,11 @@ class ExpeLQAStrategy(ExpeLBaseStrategy):
             additional_keys=additional_keys,
             reflect_additional_keys=reflect_additional_keys,
             patience=patience,
-            **kwargs
+            **kwargs,
         )
 
-        return experiences 
-    
+        return experiences
+
     def get_dynamic_examples(
         self,
         question: str,

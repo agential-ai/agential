@@ -1,26 +1,27 @@
 """Unit tests for ExpeL QA strategies."""
 
 import joblib
-from langchain_core.language_models.chat_models import BaseChatModel
+
 from langchain_community.chat_models.fake import FakeListChatModel
-from agential.cog.expel.strategies.qa import ExpeLQAStrategy
+from langchain_core.language_models.chat_models import BaseChatModel
+
 from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
-from agential.cog.reflexion.prompts import (
-    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-)
 from agential.cog.expel.prompts import EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA
+from agential.cog.expel.strategies.qa import ExpeLQAStrategy
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.reflexion.agent import (
     ReflexionReActAgent,
     ReflexionReActOutput,
     ReflexionReActStepOutput,
 )
-from agential.cog.reflexion.agent import ReflexionReActAgent
+from agential.cog.reflexion.prompts import (
+    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+    REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+)
 
 
 def test_init(expel_experiences_10_fake_path: str) -> None:
@@ -47,7 +48,9 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
     # Test with all parameters specified except experience memory and reflexion_react_agent.
     strategy = ExpeLQAStrategy(
         llm=llm,
-        reflexion_react_agent=ReflexionReActAgent(llm=llm, benchmark="hotpotqa", max_trials=3),
+        reflexion_react_agent=ReflexionReActAgent(
+            llm=llm, benchmark="hotpotqa", max_trials=3
+        ),
         insight_memory=ExpeLInsightMemory(
             insights=[{"insight": "blah blah", "score": 10}]
         ),
@@ -72,7 +75,9 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
     # Test with custom reflexion_react_agent (verify it overrides reflexion_react_kwargs)
     strategy = ExpeLQAStrategy(
         llm=llm,
-        reflexion_react_agent=ReflexionReActAgent(llm=llm, benchmark="hotpotqa", max_steps=100),
+        reflexion_react_agent=ReflexionReActAgent(
+            llm=llm, benchmark="hotpotqa", max_steps=100
+        ),
     )
     assert isinstance(strategy.reflexion_react_agent, ReflexionReActAgent)
     assert strategy.reflexion_react_agent.benchmark == "hotpotqa"
@@ -186,7 +191,7 @@ def test_generate() -> None:
         reflect_strategy="reflexion",
         additional_keys={},
         reflect_additional_keys={},
-        patience=1
+        patience=1,
     )
 
     assert new_experiences == gt_new_experiences
@@ -294,14 +299,13 @@ def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
         reflect_strategy="reflexion",
         additional_keys={},
         reflect_additional_keys={},
-        patience=1
+        patience=1,
     )
 
     assert new_experiences == gt_new_experiences
     assert new_experiences == strategy.experience_memory.experiences
     assert len(strategy.experience_memory.success_traj_docs) == 13
     assert strategy.experience_memory.vectorstore
-
 
 
 def test_extract_insights(expel_experiences_10_fake_path: str) -> None:
@@ -329,9 +333,10 @@ def test_extract_insights(expel_experiences_10_fake_path: str) -> None:
     llm = FakeListChatModel(responses=responses)
     reflexion_react_agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
     strategy = ExpeLQAStrategy(llm=llm, reflexion_react_agent=reflexion_react_agent)
-    
+
     strategy.extract_insights(selected_dict)
     assert strategy.insight_memory.insights == gt_insights
+
 
 def test_update_insights() -> None:
     """Test update_insights."""
@@ -343,7 +348,9 @@ def test_update_insights() -> None:
     memory = ExpeLInsightMemory(insights, max_num_insights=3)
     llm = FakeListChatModel(responses=[])
     reflexion_react_agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
-    strategy = ExpeLQAStrategy(llm=llm, reflexion_react_agent=reflexion_react_agent, insight_memory=memory)
+    strategy = ExpeLQAStrategy(
+        llm=llm, reflexion_react_agent=reflexion_react_agent, insight_memory=memory
+    )
 
     # Valid remove.
     gt_insights = [{"insight": "Test 2", "score": 2}, {"insight": "Test 3", "score": 3}]
@@ -391,7 +398,7 @@ def test_reset() -> None:
     llm = FakeListChatModel(responses=[])
     reflexion_react_agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
     strategy = ExpeLQAStrategy(llm=llm, reflexion_react_agent=reflexion_react_agent)
-    
+
     strategy.reflexion_react_agent.strategy._scratchpad = "cat"
     strategy.experience_memory.experiences = "dog"
     strategy.insight_memory.insights = ["turtle"]
@@ -410,7 +417,7 @@ def test_reset() -> None:
     llm = FakeListChatModel(responses=[])
     reflexion_react_agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
     strategy = ExpeLQAStrategy(llm=llm, reflexion_react_agent=reflexion_react_agent)
-    
+
     strategy.reflexion_react_agent.strategy._scratchpad = "cat"
     strategy.experience_memory.experiences = "dog"
     strategy.insight_memory.insights = ["turtle"]
