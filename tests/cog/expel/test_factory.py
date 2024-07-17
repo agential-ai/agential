@@ -7,15 +7,7 @@ from langchain_community.chat_models.fake import FakeListChatModel
 from agential.cog.constants import Benchmarks
 from agential.cog.expel.factory import ExpeLFactory
 from agential.cog.expel.prompts import (
-    EXPEL_REFLEXION_REACT_INSTRUCTION_AMBIGNQ,
-    EXPEL_REFLEXION_REACT_INSTRUCTION_FEVER,
-    EXPEL_REFLEXION_REACT_INSTRUCTION_GSM8K,
     EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-    EXPEL_REFLEXION_REACT_INSTRUCTION_HUMANEVAL,
-    EXPEL_REFLEXION_REACT_INSTRUCTION_MBPP,
-    EXPEL_REFLEXION_REACT_INSTRUCTION_SVAMP,
-    EXPEL_REFLEXION_REACT_INSTRUCTION_TABMWP,
-    EXPEL_REFLEXION_REACT_INSTRUCTION_TRIVIAQA,
 )
 
 from agential.cog.expel.strategies.qa import (
