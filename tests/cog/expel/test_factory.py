@@ -5,6 +5,7 @@ import pytest
 from langchain_community.chat_models.fake import FakeListChatModel
 
 from agential.cog.constants import Benchmarks
+from agential.cog.reflexion.agent import ReflexionReActAgent
 from agential.cog.expel.factory import ExpeLFactory
 from agential.cog.expel.prompts import (
     EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
@@ -28,19 +29,19 @@ def test_expel_factory_get_strategy() -> None:
 
     # QA benchmarks.
     assert isinstance(
-        ExpeLFactory.get_strategy(Benchmarks.HOTPOTQA, llm=llm),
+        ExpeLFactory.get_strategy(Benchmarks.HOTPOTQA, llm=llm, reflexion_react_agent=ReflexionReActAgent(llm=llm, benchmark=Benchmarks.HOTPOTQA)),
         ExpeLHotQAStrategy,
     )
     assert isinstance(
-        ExpeLFactory.get_strategy(Benchmarks.TRIVIAQA, llm=llm),
+        ExpeLFactory.get_strategy(Benchmarks.TRIVIAQA, llm=llm, reflexion_react_agent=ReflexionReActAgent(llm=llm, benchmark=Benchmarks.TRIVIAQA)),
         ExpeLTriviaQAStrategy,
     )
     assert isinstance(
-        ExpeLFactory.get_strategy(Benchmarks.AMBIGNQ, llm=llm),
+        ExpeLFactory.get_strategy(Benchmarks.AMBIGNQ, llm=llm, reflexion_react_agent=ReflexionReActAgent(llm=llm, benchmark=Benchmarks.AMBIGNQ)),
         ExpeLAmbigNQStrategy,
     )
     assert isinstance(
-        ExpeLFactory.get_strategy(Benchmarks.FEVER, llm=llm),
+        ExpeLFactory.get_strategy(Benchmarks.FEVER, llm=llm, reflexion_react_agent=ReflexionReActAgent(llm=llm, benchmark=Benchmarks.FEVER)),
         ExpeLFEVERStrategy,
     )
 
@@ -72,7 +73,7 @@ def test_expel_factory_get_fewshots() -> None:
     with pytest.raises(
         ValueError, match="Benchmark 'hotpotqa' few-shot type not supported for ExpeL."
     ):
-        ExpeLFactory.get_fewshots("hotpotqa", fewshot_type="react")
+        ExpeLFactory.get_fewshots("hotpotqa", fewshot_type="pot")
 
 def test_expel_factory_get_prompts() -> None:
     """Tests ExpeLFactory get_prompts method."""
@@ -91,7 +92,3 @@ def test_expel_factory_get_prompts() -> None:
         ValueError, match="Benchmark 'unknown' prompt not found for ExpeL."
     ):
         ExpeLFactory.get_prompts("unknown")
-
-    # Missing use_tool argument.
-    with pytest.raises(ValueError, match="`use_tool` not specified."):
-        ExpeLFactory.get_prompts(benchmark)
