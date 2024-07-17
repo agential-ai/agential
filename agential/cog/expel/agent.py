@@ -14,9 +14,7 @@ from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
-
 from agential.cog.reflexion.agent import ReflexionReActAgent
-
 
 
 class ExpeLAgent(BaseAgent):

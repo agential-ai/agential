@@ -67,9 +67,7 @@ def gather_experience(
         additional_keys = [{} for _ in range(len(questions))]
 
     if not reflect_additional_keys:
-        reflect_additional_keys = [
-            {} for _ in range(len(questions))
-        ]
+        reflect_additional_keys = [{} for _ in range(len(questions))]
 
     experiences: Dict[str, List] = {
         "idxs": [],
