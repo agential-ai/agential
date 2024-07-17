@@ -222,6 +222,10 @@ EXPEL_REFLEXION_REACT_INSTRUCTION_HUMANEVAL = """Answer a coding question with i
 (3) Finish[<insert your answer here>], which returns the code implementation and finishes the task.
 You have a maximum of {max_steps} steps.
 
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
 ```python
 {question}
     pass
