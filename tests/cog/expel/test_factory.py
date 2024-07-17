@@ -12,7 +12,7 @@ from agential.cog.expel.factory import (
 from agential.cog.expel.prompts import (
     EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
 )
-from agential.cog.expel.strategies.qa import (
+from agential.cog.expel.strategies.general import (
     ExpeLAmbigNQStrategy,
     ExpeLFEVERStrategy,
     ExpeLHotQAStrategy,
