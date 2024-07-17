@@ -51,7 +51,7 @@ class ExpeLBaseStrategy(BaseStrategy):
         additional_keys: Dict[str, Any],
     ) -> Tuple[str, Dict[str, str]]:
         """Generates dynamic examples for a given question.
-        
+
         Args:
             question (str): The question to generate examples for.
             examples (str): The examples to use for generating dynamic examples.
@@ -60,7 +60,7 @@ class ExpeLBaseStrategy(BaseStrategy):
             max_fewshot_tokens (int): The maximum number of tokens for the few-shot examples.
             reranker_strategy (str): The strategy to use for reranking the generated examples.
             additional_keys (Dict[str, Any]): Additional keys to associate with the generated examples.
-        
+
         Returns:
             Tuple[str, Dict[str, str]]: The generated examples and a dictionary of additional keys.
         """
@@ -82,7 +82,7 @@ class ExpeLBaseStrategy(BaseStrategy):
         **kwargs: Any,
     ) -> Dict[str, Any]:
         """Gathers experience by executing a series of steps.
-        
+
         Args:
             questions (List[str]): A list of questions to gather experiences for.
             keys (List[str]): A list of keys to associate with the gathered experiences.
@@ -95,7 +95,7 @@ class ExpeLBaseStrategy(BaseStrategy):
             reflect_additional_keys (Union[List[Dict[str, str]], Dict[str, str]]): Additional keys to associate with the insights generated from the reflection process.
             patience (int): The number of attempts to make before giving up on gathering an experience.
             **kwargs (Any): Additional keyword arguments to pass to the underlying methods.
-        
+
         Returns:
             Dict[str, Any]: A dictionary containing the gathered experiences and insights.
         """
@@ -104,7 +104,7 @@ class ExpeLBaseStrategy(BaseStrategy):
     @abstractmethod
     def extract_insights(self, experiences: Dict[str, Any]) -> None:
         """Extracts insights from the provided experiences.
-        
+
         Args:
             experiences (Dict[str, Any]): A dictionary of experiences to extract insights from.
         """
@@ -113,7 +113,7 @@ class ExpeLBaseStrategy(BaseStrategy):
     @abstractmethod
     def update_insights(self, operations: List[Tuple[str, str]]) -> None:
         """Updates the insights in the insight memory based on the provided operations.
-        
+
         Args:
             operations (List[Tuple[str, str]]): A list of tuples, where each tuple contains a key and a value to update in the insight memory.
         """

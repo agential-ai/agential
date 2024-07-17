@@ -10,6 +10,10 @@ from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
+from agential.cog.expel.prompts import (
+    EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+)
+from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.reflexion.agent import (
     ReflexionReActAgent,
     ReflexionReActOutput,
@@ -19,10 +23,7 @@ from agential.cog.reflexion.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
-from agential.cog.expel.prompts import (
-    EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-)
-from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+
 
 def test_init(expel_experiences_10_fake_path: str) -> None:
     """Test initialization."""
@@ -229,12 +230,12 @@ def test_generate(expel_experiences_10_fake_path: str) -> None:
         lambda x: "Lookup result"
     )
     out = agent.generate(
-        question=question, 
+        question=question,
         key=key,
         prompt=EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-        reflect_prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
+        reflect_prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert out == gt_out
     assert len(agent.strategy.experience_memory.experiences["idxs"]) == 6
