@@ -16,7 +16,7 @@ from agential.cog.expel.prompts import (
     EXPEL_REFLEXION_REACT_INSTRUCTION_TRIVIAQA,
 )
 from agential.cog.expel.strategies.base import ExpeLBaseStrategy
-from agential.cog.expel.strategies.qa import (
+from agential.cog.expel.strategies.general import (
     ExpeLAmbigNQStrategy,
     ExpeLFEVERStrategy,
     ExpeLHotQAStrategy,

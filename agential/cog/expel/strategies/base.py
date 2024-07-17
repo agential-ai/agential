@@ -76,8 +76,8 @@ class ExpeLBaseStrategy(BaseStrategy):
         reflect_examples: str,
         reflect_prompt: str,
         reflect_strategy: str,
-        additional_keys: Union[List[Dict[str, str]], Dict[str, str]],
-        reflect_additional_keys: Union[List[Dict[str, str]], Dict[str, str]],
+        additional_keys: List[Dict[str, str]],
+        reflect_additional_keys: List[Dict[str, str]],
         patience: int,
         **kwargs: Any,
     ) -> Dict[str, Any]:
@@ -91,8 +91,8 @@ class ExpeLBaseStrategy(BaseStrategy):
             reflect_examples (str): The examples to use for the reflection strategy.
             reflect_prompt (str): The prompt to use for the reflection strategy.
             reflect_strategy (str): The strategy to use for the reflection process.
-            additional_keys (Union[List[Dict[str, str]], Dict[str, str]]): Additional keys to associate with the gathered experiences.
-            reflect_additional_keys (Union[List[Dict[str, str]], Dict[str, str]]): Additional keys to associate with the insights generated from the reflection process.
+            additional_keys (List[Dict[str, str]]): Additional keys to associate with the gathered experiences.
+            reflect_additional_keys (List[Dict[str, str]]): Additional keys to associate with the insights generated from the reflection process.
             patience (int): The number of attempts to make before giving up on gathering an experience.
             **kwargs (Any): Additional keyword arguments to pass to the underlying methods.
 
