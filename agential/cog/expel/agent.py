@@ -122,6 +122,18 @@ class ExpeLAgent(BaseAgent):
             Dict[str, Any]: A dictionary containing the collected experiences, including questions, keys, trajectories,
             and reflections.
         """
+        if not prompt or not reflect_prompt or not examples or not reflect_examples:
+            if not fewshot_type:
+                fewshot_type = EXPEL_BENCHMARK_FEWSHOTS[self.benchmark][0]  # type: ignore
+            fewshots = ExpeLFactory.get_fewshots(
+                benchmark=self.benchmark, fewshot_type=fewshot_type
+            )
+            prompts = ExpeLFactory.get_prompts(benchmark=self.benchmark)
+            examples = fewshots["examples"]
+            prompt = prompts["prompt"]
+            reflect_examples = fewshots["reflect_examples"]
+            reflect_prompt = prompts["reflect_prompt"]
+
         if reset_reflexion:
             self.strategy.reset(only_reflexion=True)
 
