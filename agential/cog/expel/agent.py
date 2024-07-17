@@ -14,16 +14,9 @@ from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
-from agential.cog.expel.prompts import (
-    EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-)
-from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+
 from agential.cog.reflexion.agent import ReflexionReActAgent
-from agential.cog.reflexion.prompts import (
-    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-)
+
 
 
 class ExpeLAgent(BaseAgent):
@@ -82,10 +75,10 @@ class ExpeLAgent(BaseAgent):
         self,
         question: str,
         key: str,
-        prompt: str = EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-        examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        reflect_examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-        reflect_prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+        prompt: str = "",
+        examples: str = "",
+        reflect_examples: str = "",
+        reflect_prompt: str = "",
         reflect_strategy: str = "reflexion",
         additional_keys: Dict[str, str] = {},
         reflect_additional_keys: Dict[str, str] = {},
@@ -109,15 +102,15 @@ class ExpeLAgent(BaseAgent):
         Parameters:
             questions (List[str]): A list of questions for the agent to process.
             keys (List[str]): Corresponding keys to the questions, used for internal tracking and analysis.
-            extract_insights (bool): Whether to extract insights from the experiences. Defaults to True.
-            prompt (str): The initial prompt or instruction to guide the ReflexionReAct agent's process.
-            examples (str): Examples to provide context or guidance for the ReflexionReAct agent.
-            reflect_examples (str): Examples specifically for the reflection phase of processing.
-            reflect_prompt (str): The prompt or instruction guiding the reflection process.
+            prompt (str): The initial prompt or instruction to guide the ReflexionReAct agent's process. Defaults to "".
+            examples (str): Examples to provide context or guidance for the ReflexionReAct agent. Defaults to "".
+            reflect_examples (str): Examples specifically for the reflection phase of processing. Defaults to "".
+            reflect_prompt (str): The prompt or instruction guiding the reflection process. Defaults to "".
             reflect_strategy (Optional[str]): The strategy to use for processing questions. Defaults to "reflexion".
             additional_keys (Dict[str, str]): The additional keys. Defaults to {}.
             reflect_additional_keys (Dict[str, str]): Additional keys for the reflection phase. Defaults to {}.
             use_dynamic_examples (bool): A boolean specifying whether or not to use dynamic examples from ExpeL's memory. Defaults to True.
+            extract_insights (bool): Whether to extract insights from the experiences. Defaults to True.
             patience (int): The number of times to retry the agent's process if it fails. Defaults to 3.
             k_docs (int): The number of documents to retrieve for the fewshot. Defaults to 24.
             num_fewshots (int): The number of examples to use for the fewshot. Defaults to 6.
