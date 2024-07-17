@@ -4,7 +4,7 @@ Original Paper: https://arxiv.org/pdf/2308.10144.pdf
 Paper Repository: https://github.com/LeapLabTHU/ExpeL
 """
 
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Union
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
