@@ -87,8 +87,8 @@ class ExpeLAgent(BaseAgent):
         reflect_examples: str = HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         reflect_prompt: str = REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
         reflect_strategy: str = "reflexion",
-        additional_keys: Union[List[Dict[str, str]], Dict[str, str]] = {},
-        reflect_additional_keys: Union[List[Dict[str, str]], Dict[str, str]] = {},
+        additional_keys: Dict[str, str] = {},
+        reflect_additional_keys: Dict[str, str] = {},
         use_dynamic_examples: bool = True,
         extract_insights: bool = True,
         patience: int = 3,
@@ -115,8 +115,8 @@ class ExpeLAgent(BaseAgent):
             reflect_examples (str): Examples specifically for the reflection phase of processing.
             reflect_prompt (str): The prompt or instruction guiding the reflection process.
             reflect_strategy (Optional[str]): The strategy to use for processing questions. Defaults to "reflexion".
-            additional_keys (Union[List[Dict[str, str]], Dict[str, str]]): The additional keys. Defaults to {}.
-            reflect_additional_keys (Union[List[Dict[str, str]], Dict[str, str]]): Additional keys for the reflection phase. Defaults to {}.
+            additional_keys (Dict[str, str]): The additional keys. Defaults to {}.
+            reflect_additional_keys (Dict[str, str]): Additional keys for the reflection phase. Defaults to {}.
             use_dynamic_examples (bool): A boolean specifying whether or not to use dynamic examples from ExpeL's memory. Defaults to True.
             patience (int): The number of times to retry the agent's process if it fails. Defaults to 3.
             k_docs (int): The number of documents to retrieve for the fewshot. Defaults to 24.

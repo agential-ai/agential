@@ -35,8 +35,8 @@ def gather_experience(
     reflect_examples: str,
     reflect_prompt: str,
     reflect_strategy: str = "reflexion",
-    additional_keys: Union[List[Dict[str, str]], Dict[str, str]] = {},
-    reflect_additional_keys: Union[List[Dict[str, str]], Dict[str, str]] = {},
+    additional_keys: List[Dict[str, str]] = [],
+    reflect_additional_keys: List[Dict[str, str]] = [],
     patience: int = 3,
     **kwargs: Any,
 ) -> Dict[str, List]:
@@ -53,8 +53,8 @@ def gather_experience(
         reflect_examples (str, optional): Reflection fewshot examples.
         reflect_prompt (str, optional): Reflect prompt template string.
         reflect_strategy (str, optional): The strategy used to generate experiences. Defaults to "reflexion" if not specified.
-        additional_keys (List[Dict[str, str]], Dict[str, str]): Additional keys for the prompt. Defaults to {}.
-        reflect_additional_keys (List[Dict[str, str]], Dict[str, str]): Additional keys for the reflect prompt. Defaults to {}.
+        additional_keys (List[Dict[str, str]]): Additional keys for the prompt. Defaults to [].
+        reflect_additional_keys (List[Dict[str, str]]): Additional keys for the reflect prompt. Defaults to [].
         patience (int, optional): The patience for the agent. Defaults to 3.
         **kwargs (Any): Additional keyword arguments.
 
@@ -63,12 +63,12 @@ def gather_experience(
 
     Each index in 'idxs' corresponds to the respective question, key, trajectory, and reflections at the same position in their lists.
     """
-    if isinstance(additional_keys, dict):
-        additional_keys = [additional_keys for _ in range(len(questions))]
+    if not additional_keys:
+        additional_keys = [{} for _ in range(len(questions))]
 
-    if isinstance(reflect_additional_keys, dict):
+    if not reflect_additional_keys:
         reflect_additional_keys = [
-            reflect_additional_keys for _ in range(len(questions))
+            {} for _ in range(len(questions))
         ]
 
     experiences: Dict[str, List] = {

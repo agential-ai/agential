@@ -56,7 +56,7 @@ class ExpeLQAStrategy(ExpeLBaseStrategy):
         reflect_additional_keys: Dict[str, Any],
         patience: int,
         **kwargs: Any,
-    ) -> str:
+    ) -> Dict[str, Any]:
         experiences = self.gather_experience(
             questions=[question],
             keys=[key],
@@ -65,8 +65,8 @@ class ExpeLQAStrategy(ExpeLBaseStrategy):
             reflect_examples=reflect_examples,
             reflect_prompt=reflect_prompt,
             reflect_strategy=reflect_strategy,
-            additional_keys=additional_keys,
-            reflect_additional_keys=reflect_additional_keys,
+            additional_keys=[additional_keys],
+            reflect_additional_keys=[reflect_additional_keys],
             patience=patience,
             **kwargs,
         )
@@ -80,7 +80,7 @@ class ExpeLQAStrategy(ExpeLBaseStrategy):
         k_docs: int,
         num_fewshots: int,
         max_fewshot_tokens: int,
-        reranker_strategy: str,
+        reranker_strategy: Optional[str],
         additional_keys: Dict[str, Any],
     ) -> Tuple[str, Dict[str, str]]:
         additional_keys = additional_keys.copy()
@@ -115,8 +115,8 @@ class ExpeLQAStrategy(ExpeLBaseStrategy):
         reflect_examples: str,
         reflect_prompt: str,
         reflect_strategy: str,
-        additional_keys: Union[List[Dict[str, str]], Dict[str, str]],
-        reflect_additional_keys: Union[List[Dict[str, str]], Dict[str, str]],
+        additional_keys: List[Dict[str, str]],
+        reflect_additional_keys: List[Dict[str, str]],
         patience: int,
         **kwargs: Any,
     ) -> Dict[str, Any]:
