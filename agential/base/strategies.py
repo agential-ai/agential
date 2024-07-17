@@ -18,7 +18,7 @@ class BaseStrategy(ABC):
         self,
         *args: Any,
         **kwargs: Any,
-    ) -> str:
+    ) -> Any:
         """Generates a response."""
         pass
 

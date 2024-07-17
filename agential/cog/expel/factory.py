@@ -16,11 +16,20 @@ from agential.cog.expel.prompts import (
     EXPEL_REFLEXION_REACT_INSTRUCTION_TRIVIAQA,
 )
 from agential.cog.expel.strategies.base import ExpeLBaseStrategy
-from agential.cog.expel.strategies.general import (
+from agential.cog.expel.strategies.qa import (
     ExpeLAmbigNQStrategy,
     ExpeLFEVERStrategy,
     ExpeLHotQAStrategy,
     ExpeLTriviaQAStrategy,
+)
+from agential.cog.expel.strategies.math import (
+    ExpeLGSM8KStrategy,
+    ExpeLSVAMPStrategy,
+    ExpeLTabMWPStrategy,
+)
+from agential.cog.expel.strategies.code import (
+    ExpeLMBPPStrategy,
+    ExpeLHEvalStrategy,
 )
 from agential.cog.reflexion.prompts import (
     AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
@@ -130,11 +139,11 @@ EXPEL_STRATEGIES = {
     Benchmarks.FEVER: ExpeLFEVERStrategy,
     Benchmarks.TRIVIAQA: ExpeLTriviaQAStrategy,
     Benchmarks.AMBIGNQ: ExpeLAmbigNQStrategy,
-    Benchmarks.GSM8K: None,
-    Benchmarks.SVAMP: None,
-    Benchmarks.TABMWP: None,
-    Benchmarks.HUMANEVAL: None,
-    Benchmarks.MBPP: None,
+    Benchmarks.GSM8K: ExpeLGSM8KStrategy,
+    Benchmarks.SVAMP: ExpeLSVAMPStrategy,
+    Benchmarks.TABMWP: ExpeLTabMWPStrategy,
+    Benchmarks.HUMANEVAL: ExpeLHEvalStrategy,
+    Benchmarks.MBPP: ExpeLMBPPStrategy,
 }
 
 
