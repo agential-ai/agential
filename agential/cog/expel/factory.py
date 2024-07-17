@@ -16,20 +16,20 @@ from agential.cog.expel.prompts import (
     EXPEL_REFLEXION_REACT_INSTRUCTION_TRIVIAQA,
 )
 from agential.cog.expel.strategies.base import ExpeLBaseStrategy
-from agential.cog.expel.strategies.qa import (
-    ExpeLAmbigNQStrategy,
-    ExpeLFEVERStrategy,
-    ExpeLHotQAStrategy,
-    ExpeLTriviaQAStrategy,
+from agential.cog.expel.strategies.code import (
+    ExpeLHEvalStrategy,
+    ExpeLMBPPStrategy,
 )
 from agential.cog.expel.strategies.math import (
     ExpeLGSM8KStrategy,
     ExpeLSVAMPStrategy,
     ExpeLTabMWPStrategy,
 )
-from agential.cog.expel.strategies.code import (
-    ExpeLMBPPStrategy,
-    ExpeLHEvalStrategy,
+from agential.cog.expel.strategies.qa import (
+    ExpeLAmbigNQStrategy,
+    ExpeLFEVERStrategy,
+    ExpeLHotQAStrategy,
+    ExpeLTriviaQAStrategy,
 )
 from agential.cog.reflexion.prompts import (
     AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
