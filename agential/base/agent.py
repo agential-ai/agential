@@ -9,10 +9,10 @@ class BaseAgent(ABC):
 
     @abstractmethod
     def reset(self, *args: Any, **kwargs: Any) -> Any:
-        """Optionally resets the agent's state."""
+        """Resets the agent's state."""
         raise NotImplementedError("Reset method not implemented.")
 
     @abstractmethod
     def generate(self, *args: Any, **kwargs: Any) -> Any:
-        """Optionally implementable method to generate a response."""
+        """Generate a response."""
         raise NotImplementedError("Generate method not implemented.")
