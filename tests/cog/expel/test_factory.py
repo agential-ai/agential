@@ -54,7 +54,7 @@ def test_expel_factory_get_strategy() -> None:
 
 def test_expel_factory_get_fewshots() -> None:
     """Tests ExpeLFactory get_fewshots method."""
-    # Valid benchmark with tool usage.
+    # Valid benchmark.
     benchmark = Benchmarks.HOTPOTQA
     fewshots = ExpeLFactory.get_fewshots(benchmark, fewshot_type="react")
     assert "reflect_examples" in fewshots
@@ -77,7 +77,7 @@ def test_expel_factory_get_fewshots() -> None:
 
 def test_expel_factory_get_prompts() -> None:
     """Tests ExpeLFactory get_prompts method."""
-    # Valid benchmark with tool usage.
+    # Valid benchmark.
     benchmark = Benchmarks.HOTPOTQA
     prompts = ExpeLFactory.get_prompts(benchmark)
     assert "prompt" in prompts
