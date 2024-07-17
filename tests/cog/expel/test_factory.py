@@ -12,20 +12,20 @@ from agential.cog.expel.factory import (
 from agential.cog.expel.prompts import (
     EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
 )
-from agential.cog.expel.strategies.qa import (
-    ExpeLAmbigNQStrategy,
-    ExpeLFEVERStrategy,
-    ExpeLHotQAStrategy,
-    ExpeLTriviaQAStrategy,
+from agential.cog.expel.strategies.code import (
+    ExpeLHEvalStrategy,
+    ExpeLMBPPStrategy,
 )
 from agential.cog.expel.strategies.math import (
     ExpeLGSM8KStrategy,
     ExpeLSVAMPStrategy,
     ExpeLTabMWPStrategy,
 )
-from agential.cog.expel.strategies.code import (
-    ExpeLHEvalStrategy,
-    ExpeLMBPPStrategy,
+from agential.cog.expel.strategies.qa import (
+    ExpeLAmbigNQStrategy,
+    ExpeLFEVERStrategy,
+    ExpeLHotQAStrategy,
+    ExpeLTriviaQAStrategy,
 )
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.reflexion.agent import ReflexionReActAgent
