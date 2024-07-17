@@ -1,7 +1,7 @@
 """Base ExpeL Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, List, Tuple, Optional
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -47,7 +47,7 @@ class ExpeLBaseStrategy(BaseStrategy):
         k_docs: int,
         num_fewshots: int,
         max_fewshot_tokens: int,
-        reranker_strategy: str,
+        reranker_strategy: Optional[str],
         additional_keys: Dict[str, Any],
     ) -> Tuple[str, Dict[str, str]]:
         """Generates dynamic examples for a given question.
@@ -58,7 +58,7 @@ class ExpeLBaseStrategy(BaseStrategy):
             k_docs (int): The number of documents to retrieve for generating the examples.
             num_fewshots (int): The number of few-shot examples to generate.
             max_fewshot_tokens (int): The maximum number of tokens for the few-shot examples.
-            reranker_strategy (str): The strategy to use for reranking the generated examples.
+            reranker_strategy (Optional[str]): The strategy to use for reranking the generated examples.
             additional_keys (Dict[str, Any]): Additional keys to associate with the generated examples.
 
         Returns:

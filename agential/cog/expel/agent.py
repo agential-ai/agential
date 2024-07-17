@@ -80,6 +80,7 @@ class ExpeLAgent(BaseAgent):
         reflect_strategy: str = "reflexion",
         additional_keys: Dict[str, str] = {},
         reflect_additional_keys: Dict[str, str] = {},
+        fewshot_type: str = "",
         use_dynamic_examples: bool = True,
         extract_insights: bool = True,
         patience: int = 3,
@@ -107,6 +108,7 @@ class ExpeLAgent(BaseAgent):
             reflect_strategy (Optional[str]): The strategy to use for processing questions. Defaults to "reflexion".
             additional_keys (Dict[str, str]): The additional keys. Defaults to {}.
             reflect_additional_keys (Dict[str, str]): Additional keys for the reflection phase. Defaults to {}.
+            fewshot_type (str): The type of fewshot to use. Defaults to "".
             use_dynamic_examples (bool): A boolean specifying whether or not to use dynamic examples from ExpeL's memory. Defaults to True.
             extract_insights (bool): Whether to extract insights from the experiences. Defaults to True.
             patience (int): The number of times to retry the agent's process if it fails. Defaults to 3.
