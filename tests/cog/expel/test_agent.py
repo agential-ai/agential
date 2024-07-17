@@ -232,8 +232,8 @@ def test_generate(expel_experiences_10_fake_path: str) -> None:
     out = agent.generate(
         question=question,
         key=key,
-        prompt=EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        prompt=EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         reflect_prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )

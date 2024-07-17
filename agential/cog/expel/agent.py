@@ -73,8 +73,8 @@ class ExpeLAgent(BaseAgent):
         self,
         question: str,
         key: str,
-        prompt: str = "",
         examples: str = "",
+        prompt: str = "",
         reflect_examples: str = "",
         reflect_prompt: str = "",
         reflect_strategy: str = "reflexion",
@@ -100,8 +100,8 @@ class ExpeLAgent(BaseAgent):
         Parameters:
             questions (List[str]): A list of questions for the agent to process.
             keys (List[str]): Corresponding keys to the questions, used for internal tracking and analysis.
-            prompt (str): The initial prompt or instruction to guide the ReflexionReAct agent's process. Defaults to "".
             examples (str): Examples to provide context or guidance for the ReflexionReAct agent. Defaults to "".
+            prompt (str): The initial prompt or instruction to guide the ReflexionReAct agent's process. Defaults to "".
             reflect_examples (str): Examples specifically for the reflection phase of processing. Defaults to "".
             reflect_prompt (str): The prompt or instruction guiding the reflection process. Defaults to "".
             reflect_strategy (Optional[str]): The strategy to use for processing questions. Defaults to "reflexion".
