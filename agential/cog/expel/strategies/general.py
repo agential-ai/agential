@@ -23,7 +23,7 @@ from agential.utils.general import shuffle_chunk_list
 
 class ExpeLStrategy(ExpeLBaseStrategy):
     """A general strategy class for the ExpeL agent.
-    
+
     Attributes:
     llm (BaseChatModel): The language model used for generating answers and critiques.
     reflexion_react_agent (ReflexionReActAgent): The ReflexionReAct agent.
@@ -31,6 +31,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
     insight_memory (ExpeLInsightMemory): Memory module for storing insights derived from experiences. Default is None.
     success_batch_size (int): Batch size for processing success experiences in generating insights. Default is 8.
     """
+
     def __init__(
         self,
         llm: BaseChatModel,
@@ -68,7 +69,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
         **kwargs: Any,
     ) -> Dict[str, Any]:
         """Generates a response based on the provided question, key, examples, prompt, reflect_examples, reflect_prompt, reflect_strategy, additional_keys, reflect_additional_keys, and patience.
-        
+
         Args:
             question (str): The question to generate a response for.
             key (str): The key associated with the question.
@@ -80,9 +81,10 @@ class ExpeLStrategy(ExpeLBaseStrategy):
             additional_keys (Dict[str, Any]): Additional keys to include in the response.
             reflect_additional_keys (Dict[str, Any]): Additional keys to include in the reflection.
             patience (int): The number of attempts to make before giving up.
-        
+            **kwargs (Any): Additional keyword arguments.
+
         Returns:
-            Dict[str, Any]: The generated experiences.
+            Dict[str, Any]: The generated response.
         """
         experiences = self.gather_experience(
             questions=[question],
@@ -111,7 +113,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
         additional_keys: Dict[str, Any],
     ) -> Tuple[str, Dict[str, str]]:
         """Dynamically loads relevant past successful trajectories as few-shot examples and insights from the experience and insight memories, and returns the updated examples and additional keys.
-        
+
         Args:
             question (str): The question to use for loading the relevant past successful trajectories.
             examples (str): The examples to use as a fallback if no dynamic examples are found.
@@ -120,7 +122,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
             max_fewshot_tokens (int): The maximum number of tokens to include in the few-shot examples.
             reranker_strategy (Optional[str]): The reranker strategy to use for loading the relevant past successful trajectories.
             additional_keys (Dict[str, Any]): Additional keys to update with the loaded insights.
-        
+
         Returns:
             Tuple[str, Dict[str, str]]: The updated examples and additional keys.
         """
@@ -162,7 +164,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
         **kwargs: Any,
     ) -> Dict[str, Any]:
         """Gathers experience data for the Reflexion React agent, including questions, keys, examples, prompts, and additional keys. The gathered experience is added to the experience memory and returned as a dictionary.
-        
+
         Args:
             questions (List[str]): A list of questions to gather experience for.
             keys (List[str]): A list of keys to associate with the gathered experience.
@@ -175,7 +177,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
             reflect_additional_keys (List[Dict[str, str]]): Additional keys to associate with the reflection experience.
             patience (int): The patience to use for the experience gathering.
             **kwargs (Any): Additional keyword arguments to pass to the `gather_experience` function.
-        
+
         Returns:
             Dict[str, Any]: A dictionary containing the gathered experience, including questions, keys, trajectories, and reflections.
         """
@@ -205,10 +207,10 @@ class ExpeLStrategy(ExpeLBaseStrategy):
 
     def extract_insights(self, experiences: Dict[str, Any]) -> None:
         """Extracts insights from the provided experiences and updates the `InsightMemory` accordingly.
-        
+
         This method is responsible for analyzing the successful and failed trials in the provided experiences, comparing them, and generating insights that are then stored in the `InsightMemory`. The insights are generated using the `get_operations_compare` and `get_operations_success` functions, and the `update_insights` method is used to apply the generated operations to the `InsightMemory`.
         The method first categorizes the experiences into "compare" and "success" categories, and then processes the experiences in batches. For the "compare" category, it compares the successful trial with all previous failed trials and generates insights using the `get_operations_compare` function. For the "success" category, it concatenates the successful trials and generates insights using the `get_operations_success` function.
-        
+
         Args:
             experiences (Dict[str, Any]): A dictionary containing the experiences to be processed, including questions, trajectories, and other relevant data.
         """
@@ -281,15 +283,15 @@ class ExpeLStrategy(ExpeLBaseStrategy):
 
     def update_insights(self, operations: List[Tuple[str, str]]) -> None:
         """Updates the insights in the `InsightMemory` based on the provided operations.
-        
+
         The `operations` parameter is a list of tuples, where each tuple contains an operation type and an insight. The supported operation types are:
         - "REMOVE": Removes the insight from the `InsightMemory`.
         - "AGREE": Increases the score of the insight in the `InsightMemory`.
         - "EDIT": Updates the insight in the `InsightMemory` with the provided insight.
         - "ADD": Adds a new insight to the `InsightMemory` with a score of 2.
-        
+
         This method is responsible for applying the various operations to the insights stored in the `InsightMemory`.
-        
+
         Args:
             operations (List[Tuple[str, str]]): A list of tuples, where each tuple contains an operation type and an insight.
         """
@@ -323,7 +325,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
 
     def reset(self, only_reflexion: bool = False) -> None:
         """Resets the state of the `ReflexionReactAgent` and clears the `ExperienceMemory` and `InsightMemory` if `only_reflexion` is `False`.
-        
+
         Args:
             only_reflexion (bool, optional): If `True`, only the `ReflexionReactAgent` is reset. If `False`, the `ExperienceMemory` and `InsightMemory` are also cleared. Defaults to `False`.
         """
