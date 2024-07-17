@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.agent import BaseAgent
+from agential.cog.expel.factory import EXPEL_BENCHMARK_FEWSHOTS, ExpeLFactory
 from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
@@ -17,7 +18,6 @@ from agential.cog.expel.prompts import (
     EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.cog.expel.factory import EXPEL_BENCHMARK_FEWSHOTS, ExpeLFactory
 from agential.cog.reflexion.agent import ReflexionReActAgent
 from agential.cog.reflexion.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
@@ -65,15 +65,17 @@ class ExpeLAgent(BaseAgent):
         super().__init__()
         self.llm = llm
         self.benchmark = benchmark
-        reflexion_react_agent = reflexion_react_agent or ReflexionReActAgent(llm=llm, benchmark=benchmark, **reflexion_react_strategy_kwargs)
-        
+        reflexion_react_agent = reflexion_react_agent or ReflexionReActAgent(
+            llm=llm, benchmark=benchmark, **reflexion_react_strategy_kwargs
+        )
+
         self.strategy = ExpeLFactory().get_strategy(
-            benchmark=self.benchmark, 
-            llm=self.llm, 
+            benchmark=self.benchmark,
+            llm=self.llm,
             reflexion_react_agent=reflexion_react_agent,
             experience_memory=experience_memory,
             insight_memory=insight_memory,
-            **strategy_kwargs
+            **strategy_kwargs,
         )
 
     def generate(
@@ -144,7 +146,7 @@ class ExpeLAgent(BaseAgent):
                 num_fewshots=num_fewshots,
                 max_fewshot_tokens=max_fewshot_tokens,
                 reranker_strategy=reranker_strategy,
-                additional_keys=additional_keys
+                additional_keys=additional_keys,
             )
 
         experience = self.strategy.generate(
@@ -158,7 +160,7 @@ class ExpeLAgent(BaseAgent):
             additional_keys=additional_keys,
             reflect_additional_keys=reflect_additional_keys,
             patience=patience,
-            **kwargs
+            **kwargs,
         )
 
         if extract_insights:
@@ -225,7 +227,7 @@ class ExpeLAgent(BaseAgent):
             additional_keys=additional_keys,
             reflect_additional_keys=reflect_additional_keys,
             patience=patience,
-            **kwargs
+            **kwargs,
         )
 
         return experiences

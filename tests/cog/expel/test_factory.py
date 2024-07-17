@@ -5,21 +5,21 @@ import pytest
 from langchain_community.chat_models.fake import FakeListChatModel
 
 from agential.cog.constants import Benchmarks
-from agential.cog.reflexion.agent import ReflexionReActAgent
-from agential.cog.expel.factory import ExpeLFactory
+from agential.cog.expel.factory import (
+    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+    ExpeLFactory,
+)
 from agential.cog.expel.prompts import (
     EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
 )
-
 from agential.cog.expel.strategies.qa import (
     ExpeLAmbigNQStrategy,
     ExpeLFEVERStrategy,
     ExpeLHotQAStrategy,
     ExpeLTriviaQAStrategy,
 )
-
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.cog.expel.factory import HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT
+from agential.cog.reflexion.agent import ReflexionReActAgent
 from agential.cog.reflexion.prompts import REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
 
 
@@ -29,19 +29,43 @@ def test_expel_factory_get_strategy() -> None:
 
     # QA benchmarks.
     assert isinstance(
-        ExpeLFactory.get_strategy(Benchmarks.HOTPOTQA, llm=llm, reflexion_react_agent=ReflexionReActAgent(llm=llm, benchmark=Benchmarks.HOTPOTQA)),
+        ExpeLFactory.get_strategy(
+            Benchmarks.HOTPOTQA,
+            llm=llm,
+            reflexion_react_agent=ReflexionReActAgent(
+                llm=llm, benchmark=Benchmarks.HOTPOTQA
+            ),
+        ),
         ExpeLHotQAStrategy,
     )
     assert isinstance(
-        ExpeLFactory.get_strategy(Benchmarks.TRIVIAQA, llm=llm, reflexion_react_agent=ReflexionReActAgent(llm=llm, benchmark=Benchmarks.TRIVIAQA)),
+        ExpeLFactory.get_strategy(
+            Benchmarks.TRIVIAQA,
+            llm=llm,
+            reflexion_react_agent=ReflexionReActAgent(
+                llm=llm, benchmark=Benchmarks.TRIVIAQA
+            ),
+        ),
         ExpeLTriviaQAStrategy,
     )
     assert isinstance(
-        ExpeLFactory.get_strategy(Benchmarks.AMBIGNQ, llm=llm, reflexion_react_agent=ReflexionReActAgent(llm=llm, benchmark=Benchmarks.AMBIGNQ)),
+        ExpeLFactory.get_strategy(
+            Benchmarks.AMBIGNQ,
+            llm=llm,
+            reflexion_react_agent=ReflexionReActAgent(
+                llm=llm, benchmark=Benchmarks.AMBIGNQ
+            ),
+        ),
         ExpeLAmbigNQStrategy,
     )
     assert isinstance(
-        ExpeLFactory.get_strategy(Benchmarks.FEVER, llm=llm, reflexion_react_agent=ReflexionReActAgent(llm=llm, benchmark=Benchmarks.FEVER)),
+        ExpeLFactory.get_strategy(
+            Benchmarks.FEVER,
+            llm=llm,
+            reflexion_react_agent=ReflexionReActAgent(
+                llm=llm, benchmark=Benchmarks.FEVER
+            ),
+        ),
         ExpeLFEVERStrategy,
     )
 
@@ -74,6 +98,7 @@ def test_expel_factory_get_fewshots() -> None:
         ValueError, match="Benchmark 'hotpotqa' few-shot type not supported for ExpeL."
     ):
         ExpeLFactory.get_fewshots("hotpotqa", fewshot_type="pot")
+
 
 def test_expel_factory_get_prompts() -> None:
     """Tests ExpeLFactory get_prompts method."""
