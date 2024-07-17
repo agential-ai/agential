@@ -12,11 +12,20 @@ from agential.cog.expel.factory import (
 from agential.cog.expel.prompts import (
     EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
 )
-from agential.cog.expel.strategies.general import (
+from agential.cog.expel.strategies.qa import (
     ExpeLAmbigNQStrategy,
     ExpeLFEVERStrategy,
     ExpeLHotQAStrategy,
     ExpeLTriviaQAStrategy,
+)
+from agential.cog.expel.strategies.math import (
+    ExpeLGSM8KStrategy,
+    ExpeLSVAMPStrategy,
+    ExpeLTabMWPStrategy,
+)
+from agential.cog.expel.strategies.code import (
+    ExpeLHEvalStrategy,
+    ExpeLMBPPStrategy,
 )
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.reflexion.agent import ReflexionReActAgent
@@ -67,6 +76,63 @@ def test_expel_factory_get_strategy() -> None:
             ),
         ),
         ExpeLFEVERStrategy,
+    )
+
+    # Math benchmarks.
+    assert isinstance(
+        ExpeLFactory.get_strategy(
+            Benchmarks.GSM8K,
+            llm=llm,
+            reflexion_react_agent=ReflexionReActAgent(
+                llm=llm, benchmark=Benchmarks.GSM8K
+            ),
+        ),
+        ExpeLGSM8KStrategy,
+    )
+
+    assert isinstance(
+        ExpeLFactory.get_strategy(
+            Benchmarks.SVAMP,
+            llm=llm,
+            reflexion_react_agent=ReflexionReActAgent(
+                llm=llm, benchmark=Benchmarks.SVAMP
+            ),
+        ),
+        ExpeLSVAMPStrategy,
+    )
+
+    assert isinstance(
+        ExpeLFactory.get_strategy(
+            Benchmarks.TABMWP,
+            llm=llm,
+            reflexion_react_agent=ReflexionReActAgent(
+                llm=llm, benchmark=Benchmarks.TABMWP
+            ),
+        ),
+        ExpeLTabMWPStrategy,
+    )
+
+    # Code benchmarks.
+    assert isinstance(
+        ExpeLFactory.get_strategy(
+            Benchmarks.HUMANEVAL,
+            llm=llm,
+            reflexion_react_agent=ReflexionReActAgent(
+                llm=llm, benchmark=Benchmarks.HUMANEVAL
+            ),
+        ),
+        ExpeLHEvalStrategy,
+    )
+
+    assert isinstance(
+        ExpeLFactory.get_strategy(
+            Benchmarks.MBPP,
+            llm=llm,
+            reflexion_react_agent=ReflexionReActAgent(
+                llm=llm, benchmark=Benchmarks.MBPP
+            ),
+        ),
+        ExpeLMBPPStrategy,
     )
 
     # Unsupported benchmark.
