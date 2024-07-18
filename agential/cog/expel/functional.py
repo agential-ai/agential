@@ -67,14 +67,7 @@ def gather_experience(
 
     if not reflect_additional_keys:
         reflect_additional_keys = [{} for _ in range(len(questions))]
-
-    # experiences: Dict[str, List] = {
-    #     "idxs": [],
-    #     "questions": [],
-    #     "keys": [],
-    #     "trajectories": [],
-    #     "reflections": [],
-    # }
+        
     experiences = []
     for (question, key, main_keys, reflect_keys) in zip(questions, keys, additional_keys, reflect_additional_keys):
         trajectory = reflexion_react_agent.generate(
@@ -101,11 +94,6 @@ def gather_experience(
             reflections=reflections,
         )
         experiences.append(experience)
-        # experiences["idxs"].append(idx)
-        # experiences["questions"].append(question)
-        # experiences["keys"].append(key)
-        # experiences["trajectories"].append(trajectory)
-        # experiences["reflections"].append(reflections)
 
     return experiences
 
