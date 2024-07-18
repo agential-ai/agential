@@ -10,7 +10,7 @@ from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
-from agential.cog.expel.output import ExpeLExperienceOutput
+from agential.cog.expel.output import ExpeLOutput
 
 
 def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> None:
@@ -106,7 +106,7 @@ def test_expel_experience_memory_add_memories(
         success_questions, success_keys, success_trajectories, success_reflections
     )
     assert len(memory.experiences) == 1
-    assert memory.experiences[0] == ExpeLExperienceOutput(
+    assert memory.experiences[0] == ExpeLOutput(
         question=success_questions[0],
         key=success_keys[0],
         trajectory=success_trajectories[0],
@@ -121,7 +121,7 @@ def test_expel_experience_memory_add_memories(
         success_keys,
         success_trajectories,
     )
-    assert memory.experiences[1] == ExpeLExperienceOutput(
+    assert memory.experiences[1] == ExpeLOutput(
         question=success_questions[0],
         key=success_keys[0],
         trajectory=success_trajectories[0],
@@ -136,7 +136,7 @@ def test_expel_experience_memory_add_memories(
     memory.add_memories(
         success_questions, success_keys, success_trajectories, success_reflections
     )
-    assert memory.experiences[2] == ExpeLExperienceOutput(
+    assert memory.experiences[2] == ExpeLOutput(
         question=success_questions[0],
         key=success_keys[0],
         trajectory=success_trajectories[0],
@@ -150,13 +150,13 @@ def test_expel_experience_memory_add_memories(
 
     # Test with adding only failed trajectories.
     memory.add_memories(fail_questions, fail_keys, fail_trajectories, fail_reflections)
-    assert memory.experiences[3] == ExpeLExperienceOutput(
+    assert memory.experiences[3] == ExpeLOutput(
         question=fail_questions[0],
         key=fail_keys[0],
         trajectory=fail_trajectories[0],
         reflections=fail_reflections[0],
     )
-    assert memory.experiences[4] == ExpeLExperienceOutput(
+    assert memory.experiences[4] == ExpeLOutput(
         question=fail_questions[1],
         key=fail_keys[1],
         trajectory=fail_trajectories[1],
@@ -174,19 +174,19 @@ def test_expel_experience_memory_add_memories(
         success_trajectories + fail_trajectories,
         success_reflections + fail_reflections,
     )
-    assert memory.experiences[5] == ExpeLExperienceOutput(
+    assert memory.experiences[5] == ExpeLOutput(
         question=success_questions[0],
         key=success_keys[0],
         trajectory=success_trajectories[0],
         reflections=success_reflections[0],
     )
-    assert memory.experiences[6] == ExpeLExperienceOutput(
+    assert memory.experiences[6] == ExpeLOutput(
         question=fail_questions[0],
         key=fail_keys[0],
         trajectory=fail_trajectories[0],
         reflections=fail_reflections[0],
     )
-    assert memory.experiences[7] == ExpeLExperienceOutput(
+    assert memory.experiences[7] == ExpeLOutput(
         question=fail_questions[1],
         key=fail_keys[1],
         trajectory=fail_trajectories[1],
