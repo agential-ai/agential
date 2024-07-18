@@ -10,6 +10,7 @@ from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
+from agential.cog.expel.output import ExpeLExperienceOutput
 from agential.cog.expel.prompts import (
     EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
 )
@@ -23,7 +24,6 @@ from agential.cog.reflexion.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
-from agential.cog.expel.output import ExpeLExperienceOutput
 
 
 def test_init(expel_experiences_10_fake_path: str) -> None:

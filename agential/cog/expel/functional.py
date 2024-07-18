@@ -10,6 +10,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
 from langchain_core.prompts.prompt import PromptTemplate
 
+from agential.cog.expel.output import ExpeLExperienceOutput
 from agential.cog.expel.prompts import (
     CRITIQUE_SUMMARY_SUFFIX_FULL,
     CRITIQUE_SUMMARY_SUFFIX_NOT_FULL,
@@ -22,7 +23,6 @@ from agential.cog.expel.prompts import (
     SYSTEM_TEMPLATE,
 )
 from agential.cog.reflexion.agent import ReflexionReActAgent
-from agential.cog.expel.output import ExpeLExperienceOutput
 
 # ============================================== Experience Gathering ==============================================
 
@@ -69,7 +69,9 @@ def gather_experience(
         reflect_additional_keys = [{} for _ in range(len(questions))]
 
     experiences = []
-    for (question, key, main_keys, reflect_keys) in zip(questions, keys, additional_keys, reflect_additional_keys):
+    for question, key, main_keys, reflect_keys in zip(
+        questions, keys, additional_keys, reflect_additional_keys
+    ):
         trajectory = reflexion_react_agent.generate(
             question=question,
             key=key,

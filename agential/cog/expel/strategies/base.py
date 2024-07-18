@@ -10,8 +10,8 @@ from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
-from agential.cog.reflexion.agent import ReflexionReActAgent
 from agential.cog.expel.output import ExpeLExperienceOutput
+from agential.cog.reflexion.agent import ReflexionReActAgent
 
 
 class ExpeLBaseStrategy(BaseStrategy):
