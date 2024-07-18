@@ -98,7 +98,7 @@ class ExpeLBaseStrategy(BaseStrategy):
             **kwargs (Any): Additional keyword arguments to pass to the underlying methods.
 
         Returns:
-            Dict[str, Any]: A dictionary containing the gathered experiences and insights.
+            List[ExpeLExperienceOutput]: A list of experiences gathered.
         """
         pass
 
@@ -107,7 +107,7 @@ class ExpeLBaseStrategy(BaseStrategy):
         """Extracts insights from the provided experiences.
 
         Args:
-            experiences (Dict[str, Any]): A dictionary of experiences to extract insights from.
+            experiences (List[ExpeLExperienceOutput]): A list of experiences to extract insights from.
         """
         pass
 
