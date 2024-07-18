@@ -23,6 +23,7 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
+from agential.cog.expel.output import ExpeLExperienceOutput
 
 
 def test_gather_experience() -> None:
@@ -42,13 +43,14 @@ def test_gather_experience() -> None:
         reflect_prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
         reflect_strategy="reflexion",
     )
-    gt_experiences = {
-        "idxs": [0],
-        "questions": [""],
-        "keys": [""],
-        "trajectories": [[]],
-        "reflections": [[]],
-    }
+    gt_experiences = [
+        ExpeLExperienceOutput(
+            question="",
+            key="",
+            trajectory=[],
+            reflections=[],
+        )
+    ]
     assert experiences == gt_experiences
 
 
