@@ -323,13 +323,7 @@ def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
 
 def test_extract_insights(expel_experiences_10_fake_path: str) -> None:
     """Test extract_insights."""
-    experiences = joblib.load(expel_experiences_10_fake_path)
-    selected_indices = [3]
-    selected_dict = {
-        key: [value[i] for i in selected_indices] for key, value in experiences.items()
-    }
-    selected_dict["idxs"] = list(range(len(selected_indices)))
-
+    experiences = joblib.load(expel_experiences_10_fake_path)[3:4]
     gt_insights = [
         {
             "insight": "Always try multiple variations of search terms when looking for specific information.",
@@ -347,7 +341,7 @@ def test_extract_insights(expel_experiences_10_fake_path: str) -> None:
     reflexion_react_agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
     strategy = ExpeLStrategy(llm=llm, reflexion_react_agent=reflexion_react_agent)
 
-    strategy.extract_insights(selected_dict)
+    strategy.extract_insights(experiences)
     assert strategy.insight_memory.insights == gt_insights
 
 
@@ -417,13 +411,7 @@ def test_reset() -> None:
     strategy.insight_memory.insights = ["turtle"]
     strategy.reset()
     assert strategy.reflexion_react_agent.strategy._scratchpad == ""
-    assert strategy.experience_memory.experiences == {
-        "idxs": [],
-        "questions": [],
-        "keys": [],
-        "trajectories": [],
-        "reflections": [],
-    }
+    assert strategy.experience_memory.experiences == []
     assert strategy.insight_memory.insights == []
 
     # Test only_reflexion=True.
