@@ -16,7 +16,7 @@ from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
-from agential.cog.expel.output import ExpeLExperienceOutput
+from agential.cog.expel.output import ExpeLOutput
 from agential.cog.expel.strategies.base import ExpeLBaseStrategy
 from agential.cog.reflexion.agent import ReflexionReActAgent
 from agential.utils.general import shuffle_chunk_list
@@ -68,7 +68,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
         reflect_additional_keys: Dict[str, Any],
         patience: int,
         **kwargs: Any,
-    ) -> List[ExpeLExperienceOutput]:
+    ) -> List[ExpeLOutput]:
         """Generates a response based on the provided question, key, examples, prompt, reflect_examples, reflect_prompt, reflect_strategy, additional_keys, reflect_additional_keys, and patience.
 
         Args:
@@ -85,7 +85,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
             **kwargs (Any): Additional keyword arguments.
 
         Returns:
-            List[ExpeLExperienceOutput]: The generated response.
+            List[ExpeLOutput]: The generated response.
         """
         experiences = self.gather_experience(
             questions=[question],
@@ -163,7 +163,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
         reflect_additional_keys: List[Dict[str, str]],
         patience: int,
         **kwargs: Any,
-    ) -> List[ExpeLExperienceOutput]:
+    ) -> List[ExpeLOutput]:
         """Gathers experience data for the Reflexion React agent, including questions, keys, examples, prompts, and additional keys. The gathered experience is added to the experience memory and returned as a dictionary.
 
         Args:
@@ -180,7 +180,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
             **kwargs (Any): Additional keyword arguments to pass to the `gather_experience` function.
 
         Returns:
-            List[ExpeLExperienceOutput]: A list of experience outputs.
+            List[ExpeLOutput]: A list of experience outputs.
         """
         experiences = gather_experience(
             reflexion_react_agent=self.reflexion_react_agent,
@@ -206,14 +206,14 @@ class ExpeLStrategy(ExpeLBaseStrategy):
         )
         return experiences
 
-    def extract_insights(self, experiences: List[ExpeLExperienceOutput]) -> None:
+    def extract_insights(self, experiences: List[ExpeLOutput]) -> None:
         """Extracts insights from the provided experiences and updates the `InsightMemory` accordingly.
 
         This method is responsible for analyzing the successful and failed trials in the provided experiences, comparing them, and generating insights that are then stored in the `InsightMemory`. The insights are generated using the `get_operations_compare` and `get_operations_success` functions, and the `update_insights` method is used to apply the generated operations to the `InsightMemory`.
         The method first categorizes the experiences into "compare" and "success" categories, and then processes the experiences in batches. For the "compare" category, it compares the successful trial with all previous failed trials and generates insights using the `get_operations_compare` function. For the "success" category, it concatenates the successful trials and generates insights using the `get_operations_success` function.
 
         Args:
-            experiences (List[ExpeLExperienceOutput]): A dictionary containing the experiences to be processed, including questions, trajectories, and other relevant data.
+            experiences (List[ExpeLOutput]): A dictionary containing the experiences to be processed, including questions, trajectories, and other relevant data.
         """
         # Extract insights.
         categories = categorize_experiences(experiences)

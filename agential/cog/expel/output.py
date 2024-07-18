@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 from agential.cog.reflexion.output import ReflexionReActOutput
 
 
-class ExpeLExperienceOutput(BaseModel):
+class ExpeLOutput(BaseModel):
     """ExpeL structured output for experiences.
 
     Attributes:

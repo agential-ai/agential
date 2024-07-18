@@ -17,7 +17,7 @@ from scipy.spatial.distance import cosine
 from tiktoken.core import Encoding
 
 from agential.base.modules.memory import BaseMemory
-from agential.cog.expel.output import ExpeLExperienceOutput
+from agential.cog.expel.output import ExpeLOutput
 from agential.cog.reflexion.output import ReflexionReActOutput
 
 
@@ -25,7 +25,7 @@ class ExpeLExperienceMemory(BaseMemory):
     """ExpeL's experience pool memory.
 
     Attributes:
-        experiences (List[ExpeLExperienceOutput]): A list of experiences. Defaults to [].
+        experiences (List[ExpeLOutput]): A list of experiences. Defaults to [].
         strategy (str): The strategy employed for handling and vectorizing experiences. Defaults to "task".
         embedder (Embeddings): An embedding object used for generating vector embeddings of documents. Defaults to HuggingFaceEmbeddings.
         encoder (Encoding): An encoder object used for token counting within documents. Defaults to gpt-3.5-turbo.
@@ -33,7 +33,7 @@ class ExpeLExperienceMemory(BaseMemory):
 
     def __init__(
         self,
-        experiences: Optional[List[ExpeLExperienceOutput]] = [],
+        experiences: Optional[List[ExpeLOutput]] = [],
         strategy: str = "task",
         embedder: Embeddings = HuggingFaceEmbeddings(),
         encoder: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
@@ -156,7 +156,7 @@ class ExpeLExperienceMemory(BaseMemory):
 
         # Update experiences.
         experiences = [
-            ExpeLExperienceOutput(
+            ExpeLOutput(
                 question=question,
                 key=key,
                 trajectory=trajectory,

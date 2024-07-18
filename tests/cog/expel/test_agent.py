@@ -10,7 +10,7 @@ from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
-from agential.cog.expel.output import ExpeLExperienceOutput
+from agential.cog.expel.output import ExpeLOutput
 from agential.cog.expel.prompts import (
     EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
 )
@@ -106,7 +106,7 @@ def test_generate(expel_experiences_10_fake_path: str) -> None:
     question = "What giant silverware company was started as a religious Utopian group and was for many years run by Pierrepont Noyes?"
     key = "Oneida Limited"
 
-    gt_out = ExpeLExperienceOutput(
+    gt_out = ExpeLOutput(
         question="What giant silverware company was started as a religious Utopian group and was for many years run by Pierrepont Noyes?",
         key="Oneida Limited",
         trajectory=[

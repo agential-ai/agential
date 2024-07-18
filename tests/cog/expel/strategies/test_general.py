@@ -9,7 +9,7 @@ from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
-from agential.cog.expel.output import ExpeLExperienceOutput
+from agential.cog.expel.output import ExpeLOutput
 from agential.cog.expel.strategies.general import ExpeLStrategy
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.reflexion.agent import (
@@ -89,7 +89,7 @@ def test_generate() -> None:
     key = "Oneida Limited"
 
     gt_new_experiences = [
-        ExpeLExperienceOutput(
+        ExpeLOutput(
             question="What giant silverware company was started as a religious Utopian group and was for many years run by Pierrepont Noyes?",
             key="Oneida Limited",
             trajectory=[
@@ -225,7 +225,7 @@ def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
     hotpotqa = joblib.load(hotpotqa_distractor_sample_path)
 
     gt_new_experiences = [
-        ExpeLExperienceOutput(
+        ExpeLOutput(
             question="What giant silverware company was started as a religious Utopian group and was for many years run by Pierrepont Noyes?",
             key="Oneida Limited",
             trajectory=[
