@@ -69,8 +69,7 @@ def test_expel_experience_memory_clear(expel_experiences_10_fake_path: str) -> N
     assert memory.success_traj_docs
     assert memory.vectorstore
     memory.clear()
-    for v in memory.experiences.values():
-        assert not v
+    assert memory.experiences == []
     assert not memory.success_traj_docs
     assert not memory.vectorstore
 
@@ -82,7 +81,7 @@ def test_expel_experience_memory_add_memories(
     experiences = joblib.load(expel_experiences_10_fake_path)
 
     # Successful trajectory.
-    success_questions = [experiences["questions"][3]]
+    success_questions = [experiences[3]["questions"][3]]
     success_keys = [experiences["keys"][3]]
     success_trajectories = [experiences["trajectories"][3]]
     success_reflections = [[]]
