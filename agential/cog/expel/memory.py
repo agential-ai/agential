@@ -53,7 +53,7 @@ class ExpeLExperienceMemory(BaseMemory):
         success_traj_idxs: List[int] = []
         if len(self.experiences):
             success_traj_idxs = []
-            for experience in self.experiences:
+            for idx, experience in enumerate(self.experiences):
                 trajectory = experience.trajectory
                 is_correct = (
                     trajectory[0].react_output[-1].is_correct
@@ -155,22 +155,9 @@ class ExpeLExperienceMemory(BaseMemory):
         else:
             reflections = [[] for _ in range(len(questions))]
 
-        start_idx = max(self.experiences["idxs"], default=-1) + 1
+        start_idx = len(self.experiences)
 
         # Update experiences.
-        self.experiences["idxs"].extend(
-            list(
-                range(
-                    start_idx,
-                    start_idx + len(questions),
-                )
-            )
-        )
-        self.experiences["questions"].extend(questions)
-        self.experiences["keys"].extend(keys)
-        self.experiences["trajectories"].extend(trajectories)
-        self.experiences["reflections"].extend(reflections)
-
         experiences = [
             ExpeLExperienceOutput(
                 question=question,
@@ -191,8 +178,8 @@ class ExpeLExperienceMemory(BaseMemory):
                 success_traj_idxs.append(idx)
 
         for idx in success_traj_idxs:
-            question = self.experiences["questions"][idx]
-            steps = self.experiences["trajectories"][idx][
+            question = self.experiences[idx].question
+            steps = self.experiences[idx].trajectories[
                 0
             ].react_output  # Zero-th trial of trajectory.
 
@@ -256,7 +243,7 @@ class ExpeLExperienceMemory(BaseMemory):
             int: The token count of the document's trajectory.
         """
         task_idx = fewshot_doc.metadata["task_idx"]
-        trajectory = self.experiences["trajectories"][task_idx]
+        trajectory = self.experiences[task_idx].trajectory
         steps = trajectory[0].react_output  # A successful trial.
         steps_str = ""
         for step in steps:
@@ -287,7 +274,7 @@ class ExpeLExperienceMemory(BaseMemory):
         """
         # If empty.
         if (
-            not len(self.experiences["idxs"])
+            not len(self.experiences)
             or not k_docs
             or not num_fewshots
             or not max_fewshot_tokens
@@ -350,8 +337,8 @@ class ExpeLExperienceMemory(BaseMemory):
         # or have already been selected as fewshot examples to avoid redundancy.
         for fewshot_doc in fewshot_docs:
             task_idx = fewshot_doc.metadata["task_idx"]
-            question = self.experiences["questions"][task_idx]
-            trajectory = self.experiences["trajectories"][task_idx]
+            question = self.experiences[task_idx].question
+            trajectory = self.experiences[task_idx].trajectory
             steps = trajectory[0].react_output  # Zero-th successful trial.
             steps_str = ""
             for step in steps:
