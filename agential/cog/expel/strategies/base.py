@@ -11,6 +11,7 @@ from agential.cog.expel.memory import (
     ExpeLInsightMemory,
 )
 from agential.cog.reflexion.agent import ReflexionReActAgent
+from agential.cog.expel.output import ExpeLExperienceOutput
 
 
 class ExpeLBaseStrategy(BaseStrategy):
@@ -80,7 +81,7 @@ class ExpeLBaseStrategy(BaseStrategy):
         reflect_additional_keys: List[Dict[str, str]],
         patience: int,
         **kwargs: Any,
-    ) -> Dict[str, Any]:
+    ) -> List[ExpeLExperienceOutput]:
         """Gathers experience by executing a series of steps.
 
         Args:
@@ -102,7 +103,7 @@ class ExpeLBaseStrategy(BaseStrategy):
         pass
 
     @abstractmethod
-    def extract_insights(self, experiences: Dict[str, Any]) -> None:
+    def extract_insights(self, experiences: List[ExpeLExperienceOutput]) -> None:
         """Extracts insights from the provided experiences.
 
         Args:
