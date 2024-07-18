@@ -1,7 +1,5 @@
 """Unit tests for ExpeL memory module."""
 
-import re
-
 import joblib
 import pytest
 
@@ -12,9 +10,6 @@ from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
-from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.cog.reflexion.agent import ReflexionReActOutput, ReflexionReActStepOutput
-
 
 def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> None:
     """Test ExpeLExperienceMemory initialization."""
