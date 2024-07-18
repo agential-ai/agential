@@ -360,13 +360,7 @@ def test_expel_experience_memory_show_memories(
         "success_traj_docs",
         "vectorstore",
     ]
-    assert memory_dict["experiences"] == {
-        "idxs": [],
-        "questions": [],
-        "keys": [],
-        "trajectories": [],
-        "reflections": [],
-    }
+    assert memory_dict["experiences"] == []
     assert not memory_dict["success_traj_docs"]
     assert not memory_dict["vectorstore"]
 
