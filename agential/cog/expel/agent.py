@@ -15,6 +15,7 @@ from agential.cog.expel.memory import (
     ExpeLInsightMemory,
 )
 from agential.cog.reflexion.agent import ReflexionReActAgent
+from agential.cog.expel.output import ExpeLExperienceOutput
 
 
 class ExpeLAgent(BaseAgent):
@@ -91,7 +92,7 @@ class ExpeLAgent(BaseAgent):
         reset_reflexion: bool = True,
         reset: bool = False,
         **kwargs: Any,
-    ) -> Dict[str, Any]:
+    ) -> ExpeLExperienceOutput:
         """Collects and stores experiences from interactions based on specified questions and strategies.
 
         This method invokes the ReflexionReAct agent to process a set of questions with corresponding keys,
@@ -121,8 +122,7 @@ class ExpeLAgent(BaseAgent):
             **kwargs (Any): Additional keyword arguments.
 
         Returns:
-            Dict[str, Any]: A dictionary containing the collected experiences, including questions, keys, trajectories,
-            and reflections.
+            ExpeLExperienceOutput: The output of the ExpeL agent.
         """
         if not prompt or not reflect_prompt or not examples or not reflect_examples:
             if not fewshot_type:
@@ -171,7 +171,7 @@ class ExpeLAgent(BaseAgent):
         if extract_insights:
             self.strategy.extract_insights(experience)
 
-        return experience
+        return experience[0]
 
     def reset(self) -> None:
         """Resets the agent's state.
