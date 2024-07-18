@@ -17,30 +17,22 @@ from scipy.spatial.distance import cosine
 from tiktoken.core import Encoding
 
 from agential.base.modules.memory import BaseMemory
-from agential.cog.reflexion.output import ReflexionReActOutput, ReflexionReActStepOutput
-
+from agential.cog.reflexion.output import ReflexionReActOutput
+from agential.cog.expel.output import ExpeLExperienceOutput
 
 class ExpeLExperienceMemory(BaseMemory):
     """ExpeL's experience pool memory.
 
     Attributes:
-        experiences (Dict[str, List], optional): A dictionary storing experience data,
-            where each key is a task identifier. Generated from `gather_experience`.
-        fewshot_questions (List[str], optional): A list of questions used in fewshot learning scenarios.
-        fewshot_keys (List[str], optional): A list of answers (keys) corresponding to the fewshot questions.
-        fewshot_examples (List[List[Dict[str, str]]], optional): A nested list where each list
-            contains a dictionary of with the thought, action_type, query, observation, and is_correct used as fewshot examples.
-        strategy (str): The strategy employed for handling and vectorizing experiences.
-        embedder (Embeddings): An embedding object used for generating vector embeddings of documents.
-        encoder (Encoding): An encoder object used for token counting within documents.
+        experiences (List[ExpeLExperienceOutput]): A list of experiences. Defaults to [].
+        strategy (str): The strategy employed for handling and vectorizing experiences. Defaults to "task".
+        embedder (Embeddings): An embedding object used for generating vector embeddings of documents. Defaults to HuggingFaceEmbeddings.
+        encoder (Encoding): An encoder object used for token counting within documents. Defaults to gpt-3.5-turbo.
     """
 
     def __init__(
         self,
-        experiences: Optional[Dict[str, List]] = {},
-        fewshot_questions: Optional[List[str]] = [],
-        fewshot_keys: Optional[List[str]] = [],
-        fewshot_examples: Optional[List[List[Dict[str, str]]]] = [],
+        experiences: Optional[List[ExpeLExperienceOutput]] = [],
         strategy: str = "task",
         embedder: Embeddings = HuggingFaceEmbeddings(),
         encoder: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
@@ -51,27 +43,18 @@ class ExpeLExperienceMemory(BaseMemory):
         self.experiences = (
             deepcopy(experiences)
             if experiences
-            else {
-                "idxs": [],
-                "questions": [],
-                "keys": [],
-                "trajectories": [],
-                "reflections": [],
-            }
+            else []
         )
-        self.fewshot_questions = fewshot_questions
-        self.fewshot_keys = fewshot_keys
-        self.fewshot_examples = fewshot_examples
         self.strategy = strategy
         self.embedder = embedder
         self.encoder = encoder
 
         # Collect all successful trajectories.
         success_traj_idxs: List[int] = []
-        if len(self.experiences["idxs"]):
+        if len(self.experiences):
             success_traj_idxs = []
-            for idx in self.experiences["idxs"]:
-                trajectory = self.experiences["trajectories"][idx]
+            for experience in self.experiences:
+                trajectory = experience.trajectory
                 is_correct = (
                     trajectory[0].react_output[-1].is_correct
                 )  # Success on last step of the zero-th trial of this trajectory.
@@ -80,8 +63,8 @@ class ExpeLExperienceMemory(BaseMemory):
 
         self.success_traj_docs: List[Document] = []
         for idx in success_traj_idxs:
-            question = self.experiences["questions"][idx]
-            steps = self.experiences["trajectories"][idx][
+            question = self.experiences[idx].question
+            steps = self.experiences[idx].trajectory[
                 0
             ].react_output  # Zero-th trial of trajectory.
 
@@ -124,65 +107,9 @@ class ExpeLExperienceMemory(BaseMemory):
                     )
                 )
 
-        # If including fewshot examples in experiences.
-        if fewshot_questions and fewshot_keys and fewshot_examples:
-            # Update self.experiences.
-            for question, key, trajectory in zip(
-                fewshot_questions, fewshot_keys, fewshot_examples
-            ):
-                idx = max(self.experiences["idxs"], default=-1) + 1
-
-                self.experiences["idxs"].append(idx)
-                self.experiences["questions"].append(question)
-                self.experiences["keys"].append(key)
-                self.experiences["trajectories"].append([trajectory])
-                self.experiences["reflections"].append([])
-
-                # Update self.success_traj_docs.
-
-                # Add the task.
-                self.success_traj_docs.append(
-                    Document(
-                        page_content=question,
-                        metadata={"type": "task", "task_idx": idx},
-                    )
-                )
-
-                # Add all trajectory actions.
-                self.success_traj_docs.extend(
-                    [
-                        Document(
-                            page_content=f"Action: {step.action_type}[{step.query}]",
-                            metadata={"type": "action", "task_idx": idx},
-                        )
-                        for step in trajectory.react_output
-                    ]
-                )
-
-                # Add all trajectory thoughts.
-                self.success_traj_docs.extend(
-                    [
-                        Document(
-                            page_content=f"Thought: {step.thought}",
-                            metadata={"type": "thought", "task_idx": idx},
-                        )
-                        for step in trajectory.react_output
-                    ]
-                )
-
-                # Add each step.
-                for step in trajectory.react_output:
-                    step = f"Thought: {step.thought}\nAction: {step.action_type}[{step.query}]\nObservation: {step.observation}\n"
-                    self.success_traj_docs.append(
-                        Document(
-                            page_content=step,
-                            metadata={"type": "step", "task_idx": idx},
-                        )
-                    )
-
         # Create vectorstore.
         self.vectorstore = None
-        if len(self.experiences["idxs"]) and len(self.success_traj_docs):
+        if len(self.experiences) and len(self.success_traj_docs):
             self.vectorstore = FAISS.from_documents(
                 [
                     doc
@@ -194,20 +121,14 @@ class ExpeLExperienceMemory(BaseMemory):
 
     def __len__(self) -> int:
         """Returns length of experiences."""
-        return len(self.experiences["idxs"])
+        return len(self.experiences)
 
     def clear(self) -> None:
         """Clears all stored experiences from the memory.
 
         Resets the memory to its initial empty state.
         """
-        self.experiences = {
-            "idxs": [],
-            "questions": [],
-            "keys": [],
-            "trajectories": [],
-            "reflections": [],
-        }
+        self.experiences = []
         self.success_traj_docs = []
         self.vectorstore = None
 
@@ -249,6 +170,18 @@ class ExpeLExperienceMemory(BaseMemory):
         self.experiences["keys"].extend(keys)
         self.experiences["trajectories"].extend(trajectories)
         self.experiences["reflections"].extend(reflections)
+
+        experiences = [
+            ExpeLExperienceOutput(
+                question=question,
+                key=key,
+                trajectory=trajectory,
+                reflections=reflection,
+            ) for (question, key, trajectory, reflection) in zip(
+                questions, keys, trajectories, reflections
+            )
+        ]
+        self.experiences.append(experiences)
 
         # Update success_traj_docs.
         success_traj_idxs = []
