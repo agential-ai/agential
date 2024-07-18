@@ -10,6 +10,7 @@ from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
+from agential.cog.expel.output import ExpeLExperienceOutput
 
 def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> None:
     """Test ExpeLExperienceMemory initialization."""
@@ -81,33 +82,35 @@ def test_expel_experience_memory_add_memories(
     experiences = joblib.load(expel_experiences_10_fake_path)
 
     # Successful trajectory.
-    success_questions = [experiences[3]["questions"][3]]
-    success_keys = [experiences["keys"][3]]
-    success_trajectories = [experiences["trajectories"][3]]
+    success_questions = [experiences[3].question]
+    success_keys = [experiences[3].key]
+    success_trajectories = [experiences[3].trajectory]
     success_reflections = [[]]
 
     # Failed trajectories (multiple).
     fail_questions = [
-        experiences["questions"][0],
-        experiences["questions"][1],
+        experiences[0].question,
+        experiences[1].question,
     ]
     fail_keys = [
-        experiences["keys"][0],
-        experiences["keys"][1],
+        experiences[0].key,
+        experiences[1].key,
     ]
-    fail_trajectories = [experiences["trajectories"][0], experiences["trajectories"][1]]
-    fail_reflections = [experiences["reflections"][0], experiences["reflections"][1]]
+    fail_trajectories = [experiences[0].trajectory, experiences[1].trajectory]
+    fail_reflections = [experiences[0].reflections, experiences[1].reflections]
 
     # Test with empty memory (with and without reflection).
     memory = ExpeLExperienceMemory()
     memory.add_memories(
         success_questions, success_keys, success_trajectories, success_reflections
     )
-    assert memory.experiences["idxs"] == [0]
-    assert memory.experiences["questions"][0] == success_questions[0]
-    assert memory.experiences["keys"][0] == success_keys[0]
-    assert memory.experiences["trajectories"][0] == success_trajectories[0]
-    assert memory.experiences["reflections"][0] == success_reflections[0]
+    assert len(memory.experiences) == 1
+    assert memory.experiences[0] == ExpeLExperienceOutput(
+        question=success_questions[0],
+        key=success_keys[0],
+        trajectory=success_trajectories[0],
+        reflections=success_reflections[0],
+    )
     assert len(memory.success_traj_docs) == 10
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
     assert memory.vectorstore
@@ -117,11 +120,12 @@ def test_expel_experience_memory_add_memories(
         success_keys,
         success_trajectories,
     )
-    assert memory.experiences["idxs"] == [0, 1]
-    assert memory.experiences["questions"][1] == success_questions[0]
-    assert memory.experiences["keys"][1] == success_keys[0]
-    assert memory.experiences["trajectories"][1] == success_trajectories[0]
-    assert memory.experiences["reflections"][1] == success_reflections[0]
+    assert memory.experiences[1] == ExpeLExperienceOutput(
+        question=success_questions[0],
+        key=success_keys[0],
+        trajectory=success_trajectories[0],
+        reflections=success_reflections[0],
+    )
     assert len(memory.success_traj_docs) == 20
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
     assert memory.success_traj_docs[-1].metadata["task_idx"] == 1
@@ -131,11 +135,12 @@ def test_expel_experience_memory_add_memories(
     memory.add_memories(
         success_questions, success_keys, success_trajectories, success_reflections
     )
-    assert memory.experiences["idxs"] == [0, 1, 2]
-    assert memory.experiences["questions"][2] == success_questions[0]
-    assert memory.experiences["keys"][2] == success_keys[0]
-    assert memory.experiences["trajectories"][2] == success_trajectories[0]
-    assert memory.experiences["reflections"][2] == success_reflections[0]
+    assert memory.experiences[2] == ExpeLExperienceOutput(
+        question=success_questions[0],
+        key=success_keys[0],
+        trajectory=success_trajectories[0],
+        reflections=success_reflections[0],
+    )
     assert len(memory.success_traj_docs) == 30
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
     assert memory.success_traj_docs[20].metadata["task_idx"] == 2
@@ -144,15 +149,18 @@ def test_expel_experience_memory_add_memories(
 
     # Test with adding only failed trajectories.
     memory.add_memories(fail_questions, fail_keys, fail_trajectories, fail_reflections)
-    assert memory.experiences["idxs"] == [0, 1, 2, 3, 4]
-    assert memory.experiences["questions"][3] == fail_questions[0]
-    assert memory.experiences["questions"][4] == fail_questions[1]
-    assert memory.experiences["keys"][3] == fail_keys[0]
-    assert memory.experiences["keys"][4] == fail_keys[1]
-    assert memory.experiences["trajectories"][3] == fail_trajectories[0]
-    assert memory.experiences["trajectories"][4] == fail_trajectories[1]
-    assert memory.experiences["reflections"][3] == fail_reflections[0]
-    assert memory.experiences["reflections"][4] == fail_reflections[1]
+    assert memory.experiences[3] == ExpeLExperienceOutput(
+        question=fail_questions[0],
+        key=fail_keys[0],
+        trajectory=fail_trajectories[0],
+        reflections=fail_reflections[0],
+    )
+    assert memory.experiences[4] == ExpeLExperienceOutput(
+        question=fail_questions[1],
+        key=fail_keys[1],
+        trajectory=fail_trajectories[1],
+        reflections=fail_reflections[1],
+    )
     assert len(memory.success_traj_docs) == 43
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
     assert memory.success_traj_docs[20].metadata["task_idx"] == 2
@@ -165,19 +173,24 @@ def test_expel_experience_memory_add_memories(
         success_trajectories + fail_trajectories,
         success_reflections + fail_reflections,
     )
-    assert memory.experiences["idxs"] == [0, 1, 2, 3, 4, 5, 6, 7]
-    assert memory.experiences["questions"][5] == success_questions[0]
-    assert memory.experiences["questions"][6] == fail_questions[0]
-    assert memory.experiences["questions"][7] == fail_questions[1]
-    assert memory.experiences["keys"][5] == success_keys[0]
-    assert memory.experiences["keys"][6] == fail_keys[0]
-    assert memory.experiences["keys"][7] == fail_keys[1]
-    assert memory.experiences["trajectories"][5] == success_trajectories[0]
-    assert memory.experiences["trajectories"][6] == fail_trajectories[0]
-    assert memory.experiences["trajectories"][7] == fail_trajectories[1]
-    assert memory.experiences["reflections"][5] == success_reflections[0]
-    assert memory.experiences["reflections"][6] == fail_reflections[0]
-    assert memory.experiences["reflections"][7] == fail_reflections[1]
+    assert memory.experiences[5] == ExpeLExperienceOutput(
+        question=success_questions[0],
+        key=success_keys[0],
+        trajectory=success_trajectories[0],
+        reflections=success_reflections[0],
+    )
+    assert memory.experiences[6] == ExpeLExperienceOutput(
+        question=fail_questions[0],
+        key=fail_keys[0],
+        trajectory=fail_trajectories[0],
+        reflections=fail_reflections[0],
+    )
+    assert memory.experiences[7] == ExpeLExperienceOutput(
+        question=fail_questions[1],
+        key=fail_keys[1],
+        trajectory=fail_trajectories[1],
+        reflections=fail_reflections[1],
+    )
     assert len(memory.success_traj_docs) == 66
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
     assert memory.success_traj_docs[20].metadata["task_idx"] == 2
