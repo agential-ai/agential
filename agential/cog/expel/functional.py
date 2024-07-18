@@ -67,7 +67,7 @@ def gather_experience(
 
     if not reflect_additional_keys:
         reflect_additional_keys = [{} for _ in range(len(questions))]
-        
+
     experiences = []
     for (question, key, main_keys, reflect_keys) in zip(questions, keys, additional_keys, reflect_additional_keys):
         trajectory = reflexion_react_agent.generate(
@@ -101,17 +101,13 @@ def gather_experience(
 # ============================================== Insight Extraction ==============================================
 
 
-def categorize_experiences(experiences: Dict[str, List]) -> Dict[str, List]:
+def categorize_experiences(experiences: List[ExpeLExperienceOutput]) -> Dict[str, List]:
     """Categorizes experiences based on the success of trials in the trajectories.
 
     This function iterates over each index in the experiences and categorizes them into 'compare', 'success', or 'fail' based on the outcomes of the trials. Each trial is represented by a tuple, with the first element indicating success (True) or failure (False).
 
     Parameters:
-        experiences (Dict[str, List]): A dictionary containing the trajectories to be categorized. The dictionary should have the following structure:
-            {
-                "idxs": List[int],  # Indices of the tasks
-                "trajectories": List[List[Tuple[bool, Any, Any]]]  # Trajectories as a list of tuples
-            }
+        experiences (List[ExpeLExperienceOutput]): A list of ExpeLExperienceOutput objects, each containing the trajectory and reflections for a given question-key pair.
 
     Returns:
         Dict[str, List]: A dictionary with the indices of tasks categorized into 'compare', 'success', and 'fail'.
@@ -121,8 +117,8 @@ def categorize_experiences(experiences: Dict[str, List]) -> Dict[str, List]:
     """
     count_dict: Dict[str, List] = {"compare": [], "success": [], "fail": []}
 
-    for idx in experiences["idxs"]:  # Index for a particular task.
-        trajectory = experiences["trajectories"][idx]  # type: ignore
+    for idx, experience in enumerate(experiences):
+        trajectory = experience.trajectory
         trials_are_correct = [trial.react_output[-1].is_correct for trial in trajectory]
 
         # Success.
