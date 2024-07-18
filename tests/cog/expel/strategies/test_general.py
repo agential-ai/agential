@@ -21,6 +21,7 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
+from agential.cog.expel.output import ExpeLExperienceOutput
 
 
 def test_init(expel_experiences_10_fake_path: str) -> None:
@@ -33,13 +34,7 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
     assert isinstance(strategy.experience_memory, ExpeLExperienceMemory)
     assert isinstance(strategy.insight_memory, ExpeLInsightMemory)
     assert strategy.success_batch_size == 8
-    assert strategy.experience_memory.experiences == {
-        "idxs": [],
-        "questions": [],
-        "keys": [],
-        "trajectories": [],
-        "reflections": [],
-    }
+    assert strategy.experience_memory.experiences == []
     assert not strategy.experience_memory.success_traj_docs
     assert not strategy.experience_memory.vectorstore
     assert not strategy.insight_memory.insights
@@ -60,13 +55,7 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
     assert isinstance(strategy.experience_memory, ExpeLExperienceMemory)
     assert isinstance(strategy.insight_memory, ExpeLInsightMemory)
     assert strategy.success_batch_size == 10
-    assert strategy.experience_memory.experiences == {
-        "idxs": [],
-        "questions": [],
-        "keys": [],
-        "trajectories": [],
-        "reflections": [],
-    }
+    assert strategy.experience_memory.experiences == []
     assert not strategy.experience_memory.success_traj_docs
     assert not strategy.experience_memory.vectorstore
     assert strategy.insight_memory.insights == [{"insight": "blah blah", "score": 10}]
@@ -83,7 +72,7 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
 
     # Test with custom experience memory (verify correct initialization).
     experiences = joblib.load(expel_experiences_10_fake_path)
-    experiences = {key: value[:1] for key, value in experiences.items()}
+    experiences = experiences[:1]
 
     strategy = ExpeLStrategy(
         llm=llm,
@@ -99,14 +88,11 @@ def test_generate() -> None:
     question = "What giant silverware company was started as a religious Utopian group and was for many years run by Pierrepont Noyes?"
     key = "Oneida Limited"
 
-    gt_new_experiences = {
-        "idxs": [0],
-        "questions": [
-            "What giant silverware company was started as a religious Utopian group and was for many years run by Pierrepont Noyes?"
-        ],
-        "keys": ["Oneida Limited"],
-        "trajectories": [
-            [
+    gt_new_experiences = [
+        ExpeLExperienceOutput(
+            question="What giant silverware company was started as a religious Utopian group and was for many years run by Pierrepont Noyes?",
+            key="Oneida Limited",
+            trajectory=[
                 ReflexionReActOutput(
                     react_output=[
                         ReflexionReActStepOutput(
@@ -160,10 +146,10 @@ def test_generate() -> None:
                     ],
                     reflections=[],
                 )
-            ]
-        ],
-        "reflections": [[]],
-    }
+            ],
+            reflections=[]
+        )
+    ]
 
     action_responses = [
         "I need to search for the giant silverware company that was started as a religious Utopian group and was run by Pierrepont Noyes.\nAction: Search[Pierrepont Noyes]\nObservation: Could not find [Pierrepont Noyes]. Similar: ['Noyes Academy', 'Penn Noyes', 'Pierrepont Noyes', 'Pierrepont Noyes House', 'Pierrepont Noyes Mausoleum', 'Pierrepont Noyes Memorial Foundation']\nThought: I need to search for the company directly instead.\nAction: Search[giant silverware company religious Utopian group]\nObservation: Could not find [giant silverware company religious Utopian group]. Similar: ['Oneida Limited', 'Oneida Community', 'Oneida Silver']\nThought: I should search for Oneida Limited.\nAction: Search[Oneida Limited]\nObservation: Oneida Limited is one of the world's largest designers and sellers of stainless steel and silver-plated cutlery and tableware for the consumer and foodservice industries.\nThought: Oneida Limited is the giant silverware company that was started as a religious Utopian group and run by Pierrepont Noyes.\nAction: Finish[Oneida Limited]",
@@ -238,14 +224,11 @@ def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
     """Test gather_experience."""
     hotpotqa = joblib.load(hotpotqa_distractor_sample_path)
 
-    gt_new_experiences = {
-        "idxs": [0],
-        "questions": [
-            "What giant silverware company was started as a religious Utopian group and was for many years run by Pierrepont Noyes?"
-        ],
-        "keys": ["Oneida Limited"],
-        "trajectories": [
-            [
+    gt_new_experiences = [
+        ExpeLExperienceOutput(
+            question="What giant silverware company was started as a religious Utopian group and was for many years run by Pierrepont Noyes?",
+            key="Oneida Limited",
+            trajectory=[
                 ReflexionReActOutput(
                     react_output=[
                         ReflexionReActStepOutput(
@@ -299,10 +282,10 @@ def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
                     ],
                     reflections=[],
                 )
-            ]
-        ],
-        "reflections": [[]],
-    }
+            ],
+            reflections=[],
+        )
+    ]
 
     action_responses = [
         "I need to search for the giant silverware company that was started as a religious Utopian group and was run by Pierrepont Noyes.\nAction: Search[Pierrepont Noyes]\nObservation: Could not find [Pierrepont Noyes]. Similar: ['Noyes Academy', 'Penn Noyes', 'Pierrepont Noyes', 'Pierrepont Noyes House', 'Pierrepont Noyes Mausoleum', 'Pierrepont Noyes Memorial Foundation']\nThought: I need to search for the company directly instead.\nAction: Search[giant silverware company religious Utopian group]\nObservation: Could not find [giant silverware company religious Utopian group]. Similar: ['Oneida Limited', 'Oneida Community', 'Oneida Silver']\nThought: I should search for Oneida Limited.\nAction: Search[Oneida Limited]\nObservation: Oneida Limited is one of the world's largest designers and sellers of stainless steel and silver-plated cutlery and tableware for the consumer and foodservice industries.\nThought: Oneida Limited is the giant silverware company that was started as a religious Utopian group and run by Pierrepont Noyes.\nAction: Finish[Oneida Limited]",

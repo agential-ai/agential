@@ -197,11 +197,18 @@ class ExpeLStrategy(ExpeLBaseStrategy):
         )
         self.reflexion_react_agent.reset()
 
+        questions, keys, trajectories, reflections = [], [], [], []
+        for experience in experiences:
+            questions.append(experience.question)
+            keys.append(experience.key)
+            trajectories.append(experience.trajectory)
+            reflections.append(experience.reflections)
+
         self.experience_memory.add_memories(
-            questions=experiences["questions"],
-            keys=experiences["keys"],
-            trajectories=experiences["trajectories"],
-            reflections=experiences["reflections"],
+            questions=[exp.question for exp in experiences],
+            keys=[exp.key for exp in experiences],
+            trajectories=[exp.trajectory for exp in experiences],
+            reflections=[exp.reflections for exp in experiences],
         )
         return experiences
 
@@ -216,7 +223,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
         """
         # Extract insights.
         categories = categorize_experiences(experiences)
-        folds = get_folds(categories, len(experiences["idxs"]))
+        folds = get_folds(categories, len(experiences))
 
         for train_idxs in folds.values():
             train_category_idxs = {
@@ -226,10 +233,8 @@ class ExpeLStrategy(ExpeLBaseStrategy):
 
             # Compare.
             for train_idx in train_category_idxs["compare"]:
-                question = experiences["questions"][train_idx]
-                trajectory = experiences["trajectories"][
-                    train_idx
-                ]  # List[Dict[str, Any]].
+                question = experiences[train_idx].question
+                trajectory = experiences[train_idx].trajectory
 
                 # Compare the successful trial with all previous failed trials.
                 success_trial = "".join(
@@ -263,10 +268,10 @@ class ExpeLStrategy(ExpeLBaseStrategy):
 
                     # Concatenate batched successful trajectories.
                     concat_success_trajs = [
-                        f"{experiences['questions'][idx]}\n"
+                        f"{experiences[idx].question}\n"
                         + "".join(
                             f"Thought: {step.thought}\nAction: {step.action_type}[{step.query}]\nObservation: {step.observation}\n"
-                            for step in experiences["trajectories"][idx][0].react_output
+                            for step in experiences[idx].trajectory[0].react_output
                         )
                         for idx in success_idxs
                     ]
