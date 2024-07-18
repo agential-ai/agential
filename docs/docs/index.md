@@ -34,6 +34,7 @@
 | Reflexion                | :material-check-all: | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
 | CRITIC                   | :material-check-all: | :octicons-check-16:  | :material-check-all: | :material-check-all: |
 | Self-Refine              | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
+| ExpeL                    | :material-check-all: | :material-check-all: | :octicons-check-16:  | :octicons-check-16:  |
 | LATS                     |                      |                      |                      |                      |
 
 | **Methods / Benchmarks** |        GSM8k         |        SVAMP         |        TabMWP        |
@@ -42,6 +43,7 @@
 | Reflexion                | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
 | CRITIC                   | :material-check-all: | :material-check-all: | :material-check-all: |
 | Self-Refine              | :material-check-all: | :octicons-check-16:  | :octicons-check-16:  |
+| ExpeL                    | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
 | LATS                     |                      |                      |                      |
 
 | **Methods / Benchmarks** |         MBPP         |      HumanEval       |
@@ -50,6 +52,7 @@
 | Reflexion                | :material-check-all: | :material-check-all: |
 | CRITIC                   | :octicons-check-16:  | :octicons-check-16:  |
 | Self-Refine              | :octicons-check-16:  | :octicons-check-16:  |
+| ExpeL                    | :octicons-check-16:  | :octicons-check-16:  |
 | LATS                     |                      |                      |
 
 | **Methods / Benchmarks** | ALFWorld | WebShop | AgentBench |
@@ -58,6 +61,7 @@
 | Reflexion                |          |         |            |
 | CRITIC                   |          |         |            |
 | Self-Refine              |          |         |            |
+| ExpeL                    |          |         |            |
 | LATS                     |          |         |            |
 
 ## Experimenting...
@@ -68,6 +72,7 @@
 | Reflexion                |          |       |          |         |
 | CRITIC                   |          |       |          |         |
 | Self-Refine              |          |       |          |         |
+| ExpeL                    |          |       |          |         |
 | LATS                     |          |       |          |         |
 
 | **Methods / Benchmarks** | GSM8k | SVAMP | TabMWP |
@@ -76,6 +81,7 @@
 | Reflexion                |       |       |        |
 | CRITIC                   |       |       |        |
 | Self-Refine              |       |       |        |
+| ExpeL                    |       |       |        |
 | LATS                     |       |       |        |
 
 | **Methods / Benchmarks** | MBPP  | HumanEval |
@@ -84,6 +90,7 @@
 | Reflexion                |       |           |
 | CRITIC                   |       |           |
 | Self-Refine              |       |           |
+| ExpeL                    |       |           |
 | LATS                     |       |           |
 
 | **Methods / Benchmarks** | ALFWorld | WebShop | AgentBench |
@@ -92,6 +99,7 @@
 | Reflexion                |          |         |            |
 | CRITIC                   |          |         |            |
 | Self-Refine              |          |         |            |
+| ExpeL                    |          |         |            |
 | LATS                     |          |         |            |
 
 ## Types of errors
