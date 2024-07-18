@@ -168,7 +168,7 @@ class ExpeLExperienceMemory(BaseMemory):
                 questions, keys, trajectories, reflections
             )
         ]
-        self.experiences.append(experiences)
+        self.experiences.extend(experiences)
 
         # Update success_traj_docs.
         success_traj_idxs = []
@@ -179,7 +179,7 @@ class ExpeLExperienceMemory(BaseMemory):
 
         for idx in success_traj_idxs:
             question = self.experiences[idx].question
-            steps = self.experiences[idx].trajectories[
+            steps = self.experiences[idx].trajectory[
                 0
             ].react_output  # Zero-th trial of trajectory.
 
