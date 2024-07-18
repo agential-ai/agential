@@ -17,8 +17,9 @@ from scipy.spatial.distance import cosine
 from tiktoken.core import Encoding
 
 from agential.base.modules.memory import BaseMemory
-from agential.cog.reflexion.output import ReflexionReActOutput
 from agential.cog.expel.output import ExpeLExperienceOutput
+from agential.cog.reflexion.output import ReflexionReActOutput
+
 
 class ExpeLExperienceMemory(BaseMemory):
     """ExpeL's experience pool memory.
@@ -40,11 +41,7 @@ class ExpeLExperienceMemory(BaseMemory):
         """Initializes the memory with optional experiences, fewshot examples, and strategies."""
         super().__init__()
 
-        self.experiences = (
-            deepcopy(experiences)
-            if experiences
-            else []
-        )
+        self.experiences = deepcopy(experiences) if experiences else []
         self.strategy = strategy
         self.embedder = embedder
         self.encoder = encoder
@@ -64,9 +61,9 @@ class ExpeLExperienceMemory(BaseMemory):
         self.success_traj_docs: List[Document] = []
         for idx in success_traj_idxs:
             question = self.experiences[idx].question
-            steps = self.experiences[idx].trajectory[
-                0
-            ].react_output  # Zero-th trial of trajectory.
+            steps = (
+                self.experiences[idx].trajectory[0].react_output
+            )  # Zero-th trial of trajectory.
 
             # Add the task.
             self.success_traj_docs.append(
@@ -164,7 +161,8 @@ class ExpeLExperienceMemory(BaseMemory):
                 key=key,
                 trajectory=trajectory,
                 reflections=reflection,
-            ) for (question, key, trajectory, reflection) in zip(
+            )
+            for (question, key, trajectory, reflection) in zip(
                 questions, keys, trajectories, reflections
             )
         ]
@@ -179,9 +177,9 @@ class ExpeLExperienceMemory(BaseMemory):
 
         for idx in success_traj_idxs:
             question = self.experiences[idx].question
-            steps = self.experiences[idx].trajectory[
-                0
-            ].react_output  # Zero-th trial of trajectory.
+            steps = (
+                self.experiences[idx].trajectory[0].react_output
+            )  # Zero-th trial of trajectory.
 
             # Add the task.
             self.success_traj_docs.append(

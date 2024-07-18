@@ -12,6 +12,7 @@ from agential.cog.expel.memory import (
 )
 from agential.cog.expel.output import ExpeLExperienceOutput
 
+
 def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> None:
     """Test ExpeLExperienceMemory initialization."""
     experiences = joblib.load(expel_experiences_10_fake_path)

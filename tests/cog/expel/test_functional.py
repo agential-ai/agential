@@ -16,6 +16,7 @@ from agential.cog.expel.functional import (
     remove_err_operations,
     retrieve_insight_index,
 )
+from agential.cog.expel.output import ExpeLExperienceOutput
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.reflexion.agent import ReflexionReActAgent
 from agential.cog.reflexion.prompts import (
@@ -23,7 +24,6 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
-from agential.cog.expel.output import ExpeLExperienceOutput
 
 
 def test_gather_experience() -> None:

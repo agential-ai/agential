@@ -16,10 +16,11 @@ from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
+from agential.cog.expel.output import ExpeLExperienceOutput
 from agential.cog.expel.strategies.base import ExpeLBaseStrategy
 from agential.cog.reflexion.agent import ReflexionReActAgent
 from agential.utils.general import shuffle_chunk_list
-from agential.cog.expel.output import ExpeLExperienceOutput
+
 
 class ExpeLStrategy(ExpeLBaseStrategy):
     """A general strategy class for the ExpeL agent.
