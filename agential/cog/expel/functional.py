@@ -4,7 +4,7 @@ import random
 import re
 
 from itertools import chain
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, List, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
@@ -22,6 +22,7 @@ from agential.cog.expel.prompts import (
     SYSTEM_TEMPLATE,
 )
 from agential.cog.reflexion.agent import ReflexionReActAgent
+from agential.cog.expel.output import ExpeLExperienceOutput
 
 # ============================================== Experience Gathering ==============================================
 
