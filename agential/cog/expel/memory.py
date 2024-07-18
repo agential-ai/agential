@@ -99,10 +99,10 @@ class ExpeLExperienceMemory(BaseMemory):
 
             # Add each step.
             for step in steps:
-                step = f"Thought: {step.thought}\nAction: {step.action_type}[{step.query}]\nObservation: {step.observation}\n"
+                step_string = f"Thought: {step.thought}\nAction: {step.action_type}[{step.query}]\nObservation: {step.observation}\n"
                 self.success_traj_docs.append(
                     Document(
-                        page_content=step,
+                        page_content=step_string,
                         metadata={"type": "step", "task_idx": idx},
                     )
                 )
@@ -214,10 +214,10 @@ class ExpeLExperienceMemory(BaseMemory):
 
             # Add each step.
             for step in steps:
-                step = f"Thought: {step.thought}\nAction: {step.action_type}[{step.query}]\nObservation: {step.observation}\n"
+                step_string = f"Thought: {step.thought}\nAction: {step.action_type}[{step.query}]\nObservation: {step.observation}\n"
                 self.success_traj_docs.append(
                     Document(
-                        page_content=step,  # type: ignore
+                        page_content=step_string,  # type: ignore
                         metadata={"type": "step", "task_idx": idx},
                     )
                 )

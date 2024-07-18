@@ -86,12 +86,12 @@ def gather_experience(
         )
 
         reflections = [trial.reflections for trial in trajectory if trial.reflections]
-        reflections = list(set(list(chain.from_iterable(reflections))))  # type: ignore
+        selected_reflections = list(set(list(chain.from_iterable(reflections))))  # type: ignore
         experience = ExpeLExperienceOutput(
             question=question,
             key=key,
             trajectory=trajectory,
-            reflections=reflections,
+            reflections=selected_reflections,
         )
         experiences.append(experience)
 
