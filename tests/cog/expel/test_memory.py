@@ -17,13 +17,7 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
 
     # Test empty initialization.
     memory = ExpeLExperienceMemory()
-    assert memory.experiences == {
-        "idxs": [],
-        "questions": [],
-        "keys": [],
-        "trajectories": [],
-        "reflections": [],
-    }
+    assert memory.experiences == []
     assert memory.strategy == "task"
     assert isinstance(memory.embedder, Embeddings)
     assert isinstance(memory.encoder, Encoding)
