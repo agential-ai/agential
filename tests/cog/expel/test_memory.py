@@ -15,92 +15,6 @@ from agential.cog.expel.memory import (
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.reflexion.agent import ReflexionReActOutput, ReflexionReActStepOutput
 
-fewshot_questions = re.findall(r"Question: (.+?)\n", HOTPOTQA_FEWSHOT_EXAMPLES_REACT)
-fewshot_keys = re.findall(
-    r"Action \d+: Finish\[(.+?)\]", HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-)
-
-fewshot_examples = [
-    ReflexionReActOutput(
-        **{
-            "react_output": [
-                ReflexionReActStepOutput(
-                    **{
-                        "thought": "I need to search Colorado orogeny, find the area that the eastern sector of the Colorado orogeny extends into, then find the elevation range of the area.",
-                        "action_type": "Search",
-                        "query": "Colorado orogeny",
-                        "observation": "The Colorado orogeny was an episode of mountain building (an orogeny) in Colorado and surrounding areas.",
-                        "answer": "",
-                        "external_tool_info": {
-                            "search_result": "The Colorado orogeny was an episode of mountain building (an orogeny) in Colorado and surrounding areas.",
-                            "lookup_result": "",
-                        },
-                        "is_correct": False,
-                    }
-                ),
-                ReflexionReActStepOutput(
-                    **{
-                        "thought": "It does not mention the eastern sector. So I need to look up eastern sector.",
-                        "action_type": "Lookup",
-                        "query": "eastern sector",
-                        "observation": "(Result 1 / 1) The eastern sector extends into the High Plains and is called the Central Plains orogeny.",
-                        "answer": "",
-                        "external_tool_info": {
-                            "search_result": "",
-                            "lookup_result": "(Result 1 / 1) The eastern sector extends into the High Plains and is called the Central Plains orogeny.",
-                        },
-                        "is_correct": False,
-                    }
-                ),
-                ReflexionReActStepOutput(
-                    **{
-                        "thought": "The eastern sector of Colorado orogeny extends into the High Plains. So I need to search High Plains and find its elevation range.",
-                        "action_type": "Search",
-                        "query": "High Plains",
-                        "observation": "High Plains refers to one of two distinct land regions:",
-                        "answer": "",
-                        "external_tool_info": {
-                            "search_result": "High Plains refers to one of two distinct land regions:",
-                            "lookup_result": "",
-                        },
-                        "is_correct": False,
-                    }
-                ),
-                ReflexionReActStepOutput(
-                    **{
-                        "thought": "I need to instead search High Plains (United States).",
-                        "action_type": "Search",
-                        "query": "High Plains (United States)",
-                        "observation": "The High Plains are a subregion of the Great Plains. From east to west, the High Plains rise in elevation from around 1,800 to 7,000 ft (550 to 2,130 m).[3]",
-                        "answer": "",
-                        "external_tool_info": {
-                            "search_result": "The High Plains are a subregion of the Great Plains. From east to west, the High Plains rise in elevation from around 1,800 to 7,000 ft (550 to 2,130 m).[3]",
-                            "lookup_result": "",
-                        },
-                        "is_correct": False,
-                    },
-                ),
-                ReflexionReActStepOutput(
-                    **{
-                        "thought": "High Plains rise in elevation from around 1,800 to 7,000 ft, so the answer is 1,800 to 7,000 ft.",
-                        "action_type": "Finish",
-                        "query": "1,800 to 7,000 ft",
-                        "observation": "1,800 to 7,000 ft",
-                        "answer": "1,800 to 7,000 ft",
-                        "external_tool_info": {
-                            "search_result": "",
-                            "lookup_result": "",
-                        },
-                        "is_correct": True,
-                    }
-                ),
-            ],
-            "reflections": [],
-        }
-    )
-    for _ in range(6)
-]
-
 
 def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> None:
     """Test ExpeLExperienceMemory initialization."""
@@ -115,9 +29,6 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
         "trajectories": [],
         "reflections": [],
     }
-    assert not memory.fewshot_questions
-    assert not memory.fewshot_keys
-    assert not memory.fewshot_examples
     assert memory.strategy == "task"
     assert isinstance(memory.embedder, Embeddings)
     assert isinstance(memory.encoder, Encoding)
@@ -128,9 +39,6 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
     # Test with experiences parameter.
     memory = ExpeLExperienceMemory(experiences)
     assert memory.experiences == experiences
-    assert not memory.fewshot_questions
-    assert not memory.fewshot_keys
-    assert not memory.fewshot_examples
     assert memory.strategy == "task"
     assert isinstance(memory.embedder, Embeddings)
     assert isinstance(memory.encoder, Encoding)
@@ -152,57 +60,6 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
 
     for type_, doc in zip(success_traj_doc_types, memory.success_traj_docs):
         assert type_ == doc.metadata["type"]
-
-    # Test with no experiences and fewshot examples.
-    memory = ExpeLExperienceMemory(
-        fewshot_questions=fewshot_questions,
-        fewshot_keys=fewshot_keys,
-        fewshot_examples=fewshot_examples,
-    )
-    assert list(memory.experiences.keys()) == [
-        "idxs",
-        "questions",
-        "keys",
-        "trajectories",
-        "reflections",
-    ]
-    for v in memory.experiences.values():
-        assert len(v) == 6
-    assert memory.fewshot_questions
-    assert memory.fewshot_keys
-    assert memory.fewshot_examples
-    assert memory.strategy == "task"
-    assert isinstance(memory.embedder, Embeddings)
-    assert isinstance(memory.encoder, Encoding)
-
-    assert len(memory.success_traj_docs) == 96
-    assert memory.vectorstore
-
-    # Test with experiences and fewshot examples.
-    memory = ExpeLExperienceMemory(
-        experiences=experiences,
-        fewshot_questions=fewshot_questions,
-        fewshot_keys=fewshot_keys,
-        fewshot_examples=fewshot_examples,
-    )
-    assert list(memory.experiences.keys()) == [
-        "idxs",
-        "questions",
-        "keys",
-        "trajectories",
-        "reflections",
-    ]
-    for v in memory.experiences.values():
-        assert len(v) == 11
-    assert memory.fewshot_questions
-    assert memory.fewshot_keys
-    assert memory.fewshot_examples
-    assert memory.strategy == "task"
-    assert isinstance(memory.embedder, Embeddings)
-    assert isinstance(memory.encoder, Encoding)
-
-    assert len(memory.success_traj_docs) == 119
-    assert memory.vectorstore
 
 
 def test_expel_experience_memory_len(expel_experiences_10_fake_path: str) -> None:
@@ -375,16 +232,6 @@ def test_expel_experience_memory__fewshot_doc_token_count(
     for doc, gt_token_count in zip(memory.success_traj_docs, gt_token_counts):
         token_count = memory._fewshot_doc_token_count(doc)
         assert token_count == gt_token_count
-
-    # Testing with fewshots only.
-    memory = ExpeLExperienceMemory(
-        fewshot_questions=fewshot_questions,
-        fewshot_keys=fewshot_keys,
-        fewshot_examples=fewshot_examples,
-    )
-    for doc in memory.success_traj_docs:
-        token_count = memory._fewshot_doc_token_count(doc)
-        assert token_count == 312
 
 
 def test_expel_experience_memory_load_memories(
