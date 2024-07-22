@@ -62,7 +62,6 @@ class Node:
         self.depth = 0 if parent is None else parent.depth + 1
         self.is_terminal = False
         self.reward = 0
-        self.em = 0  # Exact match, evaluation metric
 
     def uct(self):
         if self.visits == 0:
@@ -72,23 +71,31 @@ class Node:
     def __str__(self):
         return f"Node(depth={self.depth}, value={self.value:.2f}, visits={self.visits}, thought={self.state['thought']}, action={self.state['action']}, observation={self.state['observation']})"
 
-def generate_prompt(node):
-    trajectory = []
-    question = node.question
+def upward_traversal(node):
+    nodes = []
     while node:
+        nodes.append(node)
+        node = node.parent
+    return list(reversed(nodes))
+
+def generate_prompt(node):
+    traversed_nodes = upward_traversal(node)  # From root to current node.
+    trajectory = []
+
+    for node in traversed_nodes:
         new_segment = []
         if node.state['thought']:
             new_segment.append(f"Thought {node.depth}: {node.state['thought']}")
         if node.state['action']:
             new_segment.append(f"Action {node.depth}: {node.state['action']}")
-        if node.state['observation'] and node.depth != 0:  # Exclude the observation from the root node
+        if node.state['observation'] and node.depth > 0:
             new_segment.append(f"Observation {node.depth}: {node.state['observation']}")
         trajectory.append('\n'.join(new_segment))
-        node = node.parent
-    return question + '\n'.join(reversed(trajectory))
+
+    return '\n'.join(trajectory)
 
 
-def select_node(node):
+def select_node(node: Node):
     while node and node.children:
         terminal_children = [child for child in node.children if child.is_terminal]
 
@@ -98,39 +105,25 @@ def select_node(node):
             node = node.parent  
             continue  
 
-        node_with_reward_1 = None
         for child in terminal_children:
             if child.reward == 1:
-                node_with_reward_1 = child
-                break
-
-        if node_with_reward_1:
-            return node_with_reward_1
+                return child
         
         node = max([child for child in node.children if not child.is_terminal], key=lambda child: child.uct(), default=None)
 
     return node
     
-def node_trajectory_to_text(node_string):
-    lines = node_string.split('\n')
+def node_trajectory_to_text(trajectory):
     formatted_lines = []
-    for line in lines:
-        try:
-            depth = int(line.split(",")[0].split("=")[1].strip())
-            thought = line.split(", thought=")[1].split(", action=")[0].strip()
-            action = line.split(", action=")[1].split(", observation=")[0].strip()
-            observation = line.split(", observation=")[1].split(")")[0].strip()
-        except IndexError:
-            continue
-        
-        if depth != 0:
-            if thought:
-                formatted_lines.append(f"Thought {depth}: {thought}")
-            if action:
-                formatted_lines.append(f"Action {depth}: {action}")
-            if observation:
-                formatted_lines.append(f"Observation {depth}: {observation}")
-    
+    for node in trajectory:
+        if node.depth > 0:
+            if node.state['thought']:
+                formatted_lines.append(f"Thought {node.depth}: {node.state['thought']}")
+            if node.state['action']:
+                formatted_lines.append(f"Action {node.depth}: {node.state['action']}")
+            if node.state['observation']:
+                formatted_lines.append(f"Observation {node.depth}: {node.state['observation']}")
+
     return '\n'.join(formatted_lines)
 
 def get_unique_trajectories(failed_trajectories, num=5):
@@ -145,9 +138,6 @@ def get_unique_trajectories(failed_trajectories, num=5):
             break
     return unique_trajectories
 
-def completions_with_backoff(**kwargs):
-    return openai.ChatCompletion.create(**kwargs)
-
 # Function to generate GPT completions
 def gpt(prompt, model="gpt-3.5-turbo", temperature=1.0, max_tokens=100, n=1, stop=None) -> list:
     messages = [{"role": "user", "content": prompt}]
@@ -156,7 +146,7 @@ def gpt(prompt, model="gpt-3.5-turbo", temperature=1.0, max_tokens=100, n=1, sto
     while n > 0:
         cnt = min(n, 20)
         n -= cnt
-        res = completions_with_backoff(model=model, messages=messages, temperature=temperature, max_tokens=max_tokens, n=cnt, stop=stop)
+        res = openai.ChatCompletion.create(model=model, messages=messages, temperature=temperature, max_tokens=max_tokens, n=cnt, stop=stop)
         outputs.extend([choice["message"]["content"] for choice in res["choices"]])
     
     return outputs
@@ -177,12 +167,6 @@ def get_samples(task, x, y, n_generate_sample, prompt_sample, stop):
     samples = gpt(prompt, n=n_generate_sample, stop=stop)
     return [y + _ for _ in samples]
 
-def collect_trajectory(node):
-    trajectory = []
-    while node:
-        trajectory.append(str(node))
-        node = node.parent
-    return '\n'.join(reversed(trajectory))
 
 def step(env, action):
     attempts = 0
@@ -194,7 +178,7 @@ def step(env, action):
 
 def generate_new_states(node, args, task, n):
     global failed_trajectories
-    prompt = generate_prompt(node)
+    prompt = node.question + generate_prompt(node)
     sampled_actions = get_samples(task, prompt, f"Thought {node.depth + 1}: ", n, prompt_sample=args.prompt_sample, stop="Observation")
     tried_actions = []
     
@@ -228,24 +212,22 @@ def generate_new_states(node, args, task, n):
             new_node.is_terminal = r == 1 or done
             new_node.reward = r
             new_node.depth = node.depth + 1
-            if r == 1:
-                new_node.em = info.get('em')
+
             unique_states[unique_key] = new_node  # Add this state to unique_states
 
             if new_node.is_terminal and r == 0:
-                trajectory = collect_trajectory(new_node)
-                failed_trajectories.append({'trajectory': trajectory, 'final_answer': f"{action_type.lower()}[{action_param}]"})
+                traversed_nodes = upward_traversal(new_node)
+                failed_trajectories.append({'trajectory': traversed_nodes, 'final_answer': f"{action_type.lower()}[{action_param}]"})
 
     return list(unique_states.values())  # Return unique nodes as a list
 
 
-def expand_node(node, args, task):
-    if node.depth >= 7:
-        print("Depth limit reached")
+def expand_node(node, args, task, depth_limit=7):
+    if node.depth >= depth_limit:
         node.is_terminal = True
-        return
-    new_nodes = generate_new_states(node, args, task, args.n_generate_sample)
-    node.children.extend(new_nodes)
+        return []
+    children_nodes = generate_new_states(node, args, task, args.n_generate_sample)
+    return children_nodes
 
 def get_value(task, x, y, n_evaluate_sample, cache_value=True):
     global reflection_map
@@ -274,7 +256,7 @@ def get_values(task, x, ys, n_evaluate_sample, cache_value=True):
     return values
 
 def evaluate_node(node, args, task):
-    child_prompts = [generate_prompt(child) for child in node.children if not child.is_terminal]
+    child_prompts = [child.question + generate_prompt(child) for child in node.children if not child.is_terminal]
     votes = get_values(task, node.question, child_prompts, args.n_evaluate_sample)
         
     # Pre-allocate votes list
@@ -299,7 +281,7 @@ def rollout(node, args, task, idx, max_depth=4):
             if state.is_terminal:
                 return state.reward, state
                 
-        child_prompts = [generate_prompt(child) for child in new_states if not child.is_terminal and child is not None]
+        child_prompts = [child.question + generate_prompt(child) for child in new_states if not child.is_terminal and child is not None]
         #new_state = new_state[0]
         while len(values) == 0:
             values = get_values(task, node.question, child_prompts, args.n_evaluate_sample)
