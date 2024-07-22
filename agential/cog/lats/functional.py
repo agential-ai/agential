@@ -72,21 +72,6 @@ class Node:
     
     def __str__(self):
         return f"Node(depth={self.depth}, value={self.value:.2f}, visits={self.visits}, thought={self.state['thought']}, action={self.state['action']}, observation={self.state['observation']})"
-    
-    def to_dict(self):
-        return {
-            'state': self.state,
-            'question': self.question,
-            'parent': self.parent.to_dict() if self.parent else None,
-            'children': [child.to_dict() for child in self.children],
-            'visits': self.visits,
-            'value': self.value,
-            'depth': self.depth,
-            'is_terminal': self.is_terminal,
-            'reward': self.reward,
-            'em': self.em,
-        }
-
 
 def generate_prompt(node):
     trajectory = []
