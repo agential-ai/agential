@@ -1,5 +1,5 @@
-STANDARD_PROMPT = """
-Write a coherent passage of 4 short paragraphs. The end sentence of each paragraph must be: {input}
+LATS_INSTRUCTION_HOTPOTQA = """
+Write a coherent passage of 4 short paragraphs. The end sentence of each paragraph must be: {question}{trajectory}{thought}
 """
 
 

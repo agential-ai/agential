@@ -4,9 +4,37 @@ import numpy as np
 import openai
 import requests
 
+from typing import Dict
 
-def _build_standard_prompt():
-    pass
+from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_core.messages.human import HumanMessage
+from langchain_core.prompts.prompt import PromptTemplate
+
+
+def _build_standard_prompt(
+    question: str,
+    trajectory: str,
+    thought: str,
+    prompt: str,
+    additional_keys: Dict[str, str] = {},
+) -> str:
+    """Builds a prompt for questioning the agent using a template.
+
+    Parameters:
+        question (str): The question to be answered by the agent.
+        trajectory (str): The trajectory taken by the agent. 
+        thought (str): The agent's thought.
+        prompt (str): Prompt template string.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
+
+    Returns:
+        str: A formatted prompt ready for use with the language model.
+    """
+    prompt = PromptTemplate.from_template(prompt).format(
+        question=question, trajectory=trajectory, thought=thought, **additional_keys
+    )
+    return prompt
+    
 
 def _prompt_standard():
     pass
@@ -132,7 +160,7 @@ def gpt(prompt, model="gpt-3.5-turbo", temperature=1.0, max_tokens=100, n=1, sto
     
     return outputs
 
-def get_samples(task, x, y, n_generate_sample, prompt_sample, stop):
+def get_samples(task, x, question, trajectory, thought, additional_keys, n_generate_sample, prompt_sample, stop):
     global failed_trajectories
     global reflection_map
     unique_trajectories = get_unique_trajectories(failed_trajectories)
@@ -140,19 +168,21 @@ def get_samples(task, x, y, n_generate_sample, prompt_sample, stop):
         print("generating reflections")
         reflection_map = task.generate_self_reflection(unique_trajectories, x)
     if prompt_sample == 'standard':
-        prompt = task.standard_prompt_wrap(x, y)
+        prompt = _build_standard_prompt(question, trajectory, thought, prompt, additional_keys)
     elif prompt_sample == 'cot':
-        prompt = task.cot_prompt_wrap(x, y, reflection_map)
+        prompt = task.cot_prompt_wrap(x, thought, reflection_map)
     else:
         raise ValueError(f'prompt_sample {prompt_sample} not recognized')
     samples = gpt(prompt, n=n_generate_sample, stop=stop)
-    return [y + _ for _ in samples]
+    return [thought + _ for _ in samples]
 
 def generate_new_states(node, prompt_sample, task, n):
     global failed_trajectories
     traversed_nodes = upward_traversal(node)
-    prompt = node.question + generate_prompt(traversed_nodes)
-    sampled_actions = get_samples(task, prompt, f"Thought {node.depth + 1}: ", n, prompt_sample=prompt_sample, stop="Observation")
+    prompt = node.question
+    trajectory = generate_prompt(traversed_nodes)
+    additional_keys = Dict[str, str] = {}
+    sampled_actions = get_samples(task, prompt, prompt, trajectory, f"Thought {node.depth + 1}: ", additional_keys, n, prompt_sample=prompt_sample, stop="Observation")
     tried_actions = []
     
     unique_states = {}  # Store unique states here
