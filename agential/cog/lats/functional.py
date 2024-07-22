@@ -167,15 +167,6 @@ def get_samples(task, x, y, n_generate_sample, prompt_sample, stop):
     samples = gpt(prompt, n=n_generate_sample, stop=stop)
     return [y + _ for _ in samples]
 
-
-def step(env, action):
-    attempts = 0
-    while attempts < 10:
-        try:
-            return env.step(action)
-        except requests.exceptions.Timeout:
-            attempts += 1
-
 def generate_new_states(node, args, task, n):
     global failed_trajectories
     prompt = node.question + generate_prompt(node)
@@ -201,7 +192,7 @@ def generate_new_states(node, args, task, n):
             action_type = action_line.split('[')[0] if '[' in action_line else action_line
             action_param = action_line.split('[')[1].split(']')[0] if '[' in action_line else ""
 
-            obs, r, done, info = step(env, f"{action_type.lower()}[{action_param}]")
+            obs, r, done, info = env.step(f"{action_type.lower()}[{action_param}]")
 
             # Update the new state dictionary
             new_state['thought'] = thought_line
@@ -266,12 +257,11 @@ def evaluate_node(node, args, task):
 
     return sum(votes) / len(votes) if votes else 0
 
-def rollout(node, args, task, idx, max_depth=4):
+def rollout(node, args, task, max_depth=4):
     depth = node.depth
     n = 5
     rewards = [0]
     while not node.is_terminal and depth < max_depth:
-        # Generate new states
         new_states = []
         values = []
         while len(new_states) == 0:
@@ -282,7 +272,6 @@ def rollout(node, args, task, idx, max_depth=4):
                 return state.reward, state
                 
         child_prompts = [child.question + generate_prompt(child) for child in new_states if not child.is_terminal and child is not None]
-        #new_state = new_state[0]
         while len(values) == 0:
             values = get_values(task, node.question, child_prompts, args.n_evaluate_sample)
         max_value_index = values.index(max(values))
@@ -307,9 +296,8 @@ def backpropagate(node, value):
 
         node = node.parent
 
-def collect_all_nodes(node):
-        """Recursively collect all nodes starting from the given node."""
+def preorder_traversal(node):
         nodes = [node]
         for child in node.children:
-            nodes.extend(collect_all_nodes(child))
+            nodes.extend(preorder_traversal(child))
         return nodes
