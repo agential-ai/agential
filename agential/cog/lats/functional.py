@@ -62,7 +62,6 @@ class Node:
         self.depth = 0 if parent is None else parent.depth + 1
         self.is_terminal = False
         self.reward = 0
-        self.exhausted = False # If all children are terminal
         self.em = 0  # Exact match, evaluation metric
 
     def uct(self):
@@ -90,58 +89,27 @@ def generate_prompt(node):
 
 
 def select_node(node):
-    """
-    Returns current node if it has no children.
-
-    Otherwise, it checks the current node's children.
-    - Returns a terminal child node with reward 1 if the current node does not have all terminal children nodes.
-    - If the current node has all terminal children nodes, it cuts the current node and all of its children nodes from the tree.
-    - If neither of the 2 above are satisfied, then it selects the highest UCT value non-terminal child node and continues looping.
-    """
-
-    # Enters while loop iff the current node exists and has children.
-    # Otherwise, it returns the current node.
     while node and node.children:
-        
-        # A terminal node is defined as a node with reward 1 or it's done (finishes with an answer). 
         terminal_children = [child for child in node.children if child.is_terminal]
-        terminal_status = [child.is_terminal for child in node.children]
-        
-        # UPDATE: If all the current node's children are finished, then move up to the current node's parent.
-        # If all children of current node are terminal, move up to current node's parent.
-        # This cuts out all terminal children and the current node from the tree.
+
         if len(terminal_children) == len(node.children):
             if node.parent:  
                 node.parent.children.remove(node)
             node = node.parent  
             continue  
 
-        #    c
-        #   / \
-        #  g   b
-        #       \ 
-        #        d
+        node_with_reward_1 = None
+        for child in terminal_children:
+            if child.reward == 1:
+                node_with_reward_1 = child
+                break
 
-        # Given that the current node does not have all terminal children,
-        # - Return the first terminal child node of the current node with reward 1.
-        # - Defaults to None if no terminal child node with reward 1 exists.
-        node_with_reward_1 = next((child for child in terminal_children if child.reward == 1), None)
         if node_with_reward_1:
             return node_with_reward_1
         
-        # Given that the current node does not have all terminal children AND
-        # Given the current node does not have a terminal child node with reward 1,
-        # - Of the current node's non-terminal children, get the child node with the highest UCT value.
-        # - Defaults to None if no non-terminal children exist.
-        node = max((child for child in node.children if not child.is_terminal), key=lambda child: child.uct(), default=None)
+        node = max([child for child in node.children if not child.is_terminal], key=lambda child: child.uct(), default=None)
 
-        # Given that the current node does not have all terminal children AND
-        # Given the current node does not have a terminal child node with reward 1,
-        # - This while loop should never run. The line of code above will be a non-terminal node.
-        while node.is_terminal and node.reward != 1:  # while False and <> -> False
-            node = max((child for child in node.parent.children if not child.is_terminal), key=lambda child: child.uct(), default=None)
-        
-    return node  # This will return None if all paths from the root are exhausted
+    return node
     
 def node_trajectory_to_text(node_string):
     lines = node_string.split('\n')
