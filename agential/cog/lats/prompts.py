@@ -150,7 +150,7 @@ Observation 2: Episode finished, reward = 0
 Reflection: I appeared to have retrieved the correct information about The Oberoi Family and the location of it's head office, and provided a corresponding answer. However this answer does not exactly match the ground truth answer so I should try a different wording, such as Delhi.
 
 Previous trial:
-{trajectories}Reflection:'''
+{unique_trajectories}Reflection:'''
 
 
 VALUE_PROMPT_REASONING_FEEDBACK = '''Analyze the trajectories of a solution to a question answering task. The trajectories are labeled by environmental observations about the situation, thoughts that can reason about the current situation and actions that can be three types: 
@@ -210,9 +210,9 @@ Action 3: Finish[President Richard Nixon]
 This trajectory is correct as all of my thoughts and actions are correct. It makes sense to search for Milhouse first as it is the central subject of the question. It is also correct to directly look up the relevant information in the article, instead of trying another search. 
 Thus the correctness score is 10
 
-{trajectories}
+{unique_trajectories}
 
-{input}
+{question}
 '''
 
 VALUE_PROMPT_REASONING = '''You are an advanced reasoning agent that can improve based on self refection. Analyze the trajectories of your previous solutions to a question answering task. The trajectories are labeled by environmental observations about the situation, thoughts that can reason about the current situation and actions that can be three types: 
