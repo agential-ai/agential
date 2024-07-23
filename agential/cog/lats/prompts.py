@@ -45,7 +45,7 @@ Observation 2: (Result 1 / 1) Milhouse was named after U.S. president Richard Ni
 Thought 3: Milhouse was named after U.S. president Richard Nixon, so the answer is Richard Nixon.
 Action 3: Finish[President Richard Nixon]
 
-{question}{trajectory}
+{question}{trajectory}{thought}
 """
 
 COT_PROMPT_FEEDBACK = '''You are also an advanced reasoning agent that can improve based on self refection. Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: 
@@ -91,10 +91,10 @@ Action 3: Finish[President Richard Nixon]
 
 You have attempted to answer the following question before and failed, either because your reasoning for the answer was incorrect or the phrasing of your response did not exactly match the answer. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.
 
-{trajectories}
+{reflections}
 When providing the thought and action for the current trial, that into account these failed trajectories and make sure not to repeat the same mistakes and incorrect answers. 
 
-{input}
+{question}{trajectory}{thought}
 '''
 
 
