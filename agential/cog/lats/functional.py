@@ -232,7 +232,7 @@ def gpt(prompt, model="gpt-3.5-turbo", temperature=1.0, max_tokens=100, n=1, sto
     return outputs
 
 
-def get_samples(task, x, question, trajectory, thought, additional_keys, n_generate_sample, prompt_sample, stop):
+def get_samples(question, trajectory, thought, additional_keys, n_generate_sample, prompt_sample, stop):
     global failed_trajectories
     global reflection_map
     unique_trajectories = get_unique_trajectories(failed_trajectories)
@@ -254,7 +254,7 @@ def generate_new_states(node, prompt_sample, task, n):
     prompt = node.question
     trajectory = generate_prompt(traversed_nodes)
     additional_keys = Dict[str, str] = {}
-    sampled_actions = get_samples(task, prompt, prompt, trajectory, f"Thought {node.depth + 1}: ", additional_keys, n, prompt_sample=prompt_sample, stop="Observation")
+    sampled_actions = get_samples(prompt, trajectory, f"Thought {node.depth + 1}: ", additional_keys, n, prompt_sample=prompt_sample, stop="Observation")
     tried_actions = []
     
     unique_states = {}  # Store unique states here
