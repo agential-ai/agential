@@ -39,8 +39,32 @@ def _build_standard_prompt(
 def _prompt_standard():
     pass
 
-def _build_cot_prompt():
-    pass
+def _build_cot_prompt(
+    question: str,
+    trajectory: str,
+    thought: str,
+    reflections: str,
+    prompt: str,
+    additional_keys: Dict[str, str] = {},
+) -> str:
+    """Builds a prompt for questioning the agent using a template.
+
+    Parameters:
+        question (str): The question to be answered by the agent.
+        trajectory (str): The trajectory taken by the agent. 
+        thought (str): The agent's thought.
+        reflections (str): The reflection map created by the agent.
+        prompt (str): Prompt template string.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
+
+    Returns:
+        str: A formatted prompt ready for use with the language model.
+    """
+    prompt = PromptTemplate.from_template(prompt).format(
+        question=question, trajectory=trajectory, thought=thought, reflections=reflections, **additional_keys
+    )
+    return prompt
+
 
 def _prompt_cot():
     pass
@@ -160,6 +184,7 @@ def gpt(prompt, model="gpt-3.5-turbo", temperature=1.0, max_tokens=100, n=1, sto
     
     return outputs
 
+
 def get_samples(task, x, question, trajectory, thought, additional_keys, n_generate_sample, prompt_sample, stop):
     global failed_trajectories
     global reflection_map
@@ -170,7 +195,7 @@ def get_samples(task, x, question, trajectory, thought, additional_keys, n_gener
     if prompt_sample == 'standard':
         prompt = _build_standard_prompt(question, trajectory, thought, prompt, additional_keys)
     elif prompt_sample == 'cot':
-        prompt = task.cot_prompt_wrap(x, thought, reflection_map)
+        prompt = _build_cot_prompt(question, trajectory, thought, reflection_map, additional_keys)
     else:
         raise ValueError(f'prompt_sample {prompt_sample} not recognized')
     samples = gpt(prompt, n=n_generate_sample, stop=stop)
