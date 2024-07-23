@@ -150,7 +150,7 @@ Observation 2: Episode finished, reward = 0
 Reflection: I appeared to have retrieved the correct information about The Oberoi Family and the location of it's head office, and provided a corresponding answer. However this answer does not exactly match the ground truth answer so I should try a different wording, such as Delhi.
 
 Previous trial:
-{trajectory}Reflection:'''
+{trajectories}Reflection:'''
 
 
 VALUE_PROMPT_REASONING_FEEDBACK = '''Analyze the trajectories of a solution to a question answering task. The trajectories are labeled by environmental observations about the situation, thoughts that can reason about the current situation and actions that can be three types: 

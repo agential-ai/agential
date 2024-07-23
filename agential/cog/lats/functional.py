@@ -69,8 +69,29 @@ def _build_cot_prompt(
 def _prompt_cot():
     pass
 
-def _build_reflection_prompt():
-    pass
+def _build_reflection_prompt(  
+    question: str,
+    trajectory: str,  
+    uniquetrajectories: str,
+    prompt: str,
+    additional_keys: Dict[str, str] = {},
+) -> str:
+    """Builds a prompt for questioning the agent using a template.
+
+    Parameters:
+        question (str): The question to be answered by the agent.
+        trajectory (str): The trajectory taken by the agent. 
+        uniquetrajectories (str): The unique trajectories of the agent. 
+        prompt (str): Prompt template string.
+        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
+
+    Returns:
+        str: A formatted prompt ready for use with the language model.
+    """
+    prompt = PromptTemplate.from_template(prompt).format(
+        question=question, trajectory=trajectory, uniquetrajectories=uniquetrajectories, **additional_keys
+    )
+    return prompt
 
 def _prompt_reflection():
     pass
@@ -191,7 +212,7 @@ def get_samples(task, x, question, trajectory, thought, additional_keys, n_gener
     unique_trajectories = get_unique_trajectories(failed_trajectories)
     if len(unique_trajectories) > len(reflection_map) and len(unique_trajectories) < 4:
         print("generating reflections")
-        reflection_map = task.generate_self_reflection(unique_trajectories, x)
+        reflection_map = _build_reflection_prompt(unique_trajectories, question, trajectory)
     if prompt_sample == 'standard':
         prompt = _build_standard_prompt(question, trajectory, thought, prompt, additional_keys)
     elif prompt_sample == 'cot':
