@@ -140,10 +140,45 @@ def _prompt_value():
     pass
 
 
+def _build_agent_prompt(
+    question: str,
+    examples: str,
+    trajectory: str,
+    reflections: str,
+    prompt: str,
+    additional_keys: Dict[str, str] = {},
+):
+    prompt = PromptTemplate.from_template(prompt).format(
+        question=question, examples=examples, trajectory=trajectory, reflections=reflections, **additional_keys
+    )
+    return prompt
 
-
-
-
+def _prompt_agent(
+    llm: BaseChatModel,
+    question: str,
+    examples: str,
+    trajectory: str,
+    reflections: str,
+    prompt: str,
+    additional_keys: Dict[str, str] = {},
+):
+    prompt = _build_agent_prompt(
+        question=question,
+        examples=examples,
+        trajectory=trajectory,
+        reflections=reflections,
+        prompt=prompt,
+        additional_keys=additional_keys,
+    )
+    out = llm(
+        [
+            HumanMessage(
+                content=prompt,
+            )
+        ]
+    ).content
+    assert isinstance(out, str)
+    return out
 
 
 
