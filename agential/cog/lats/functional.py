@@ -96,24 +96,14 @@ def _prompt_cot():
 
 
 def _build_reflection_prompt(  
-    trajectory: str,  
+    question: str,
+    examples: str,
+    trajectory: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
 ) -> str:
-    """Builds a prompt for questioning the agent using a template.
-
-    Parameters:
-        question (str): The question to be answered by the agent.
-        trajectory (str): The trajectory taken by the agent. 
-        unique_trajectories (str): The unique trajectories of the agent. 
-        prompt (str): Prompt template string.
-        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
-
-    Returns:
-        str: A formatted prompt ready for use with the language model.
-    """
     prompt = PromptTemplate.from_template(prompt).format(
-        trajectory=trajectory, **additional_keys
+        question=question, examples=examples, trajectory=trajectory, **additional_keys
     )
     return prompt
 

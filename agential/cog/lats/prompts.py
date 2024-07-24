@@ -186,11 +186,14 @@ Observation 3: Answer is INCORRECT
 Reflection: My reasoning failed because I incorrectly assumed that the popularity and longevity of First for Women implied it was older. In the future, I should rely solely on verified publication dates rather than making assumptions based on perceived popularity or longevity."""
 
 
-LATS_REFLECT_INSTRUCTION_HOTPOTQA = """{examples}
+LATS_REFLECT_INSTRUCTION_HOTPOTQA = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
+Here are some examples:
+{examples}
 (END OF EXAMPLES)
 
 Previous trial:
-{unique_trajectories}
+Question: {question}
+{trajectory}
 
 Reflection:"""
 

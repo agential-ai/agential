@@ -7,10 +7,11 @@ from agential.cog.lats.functional import (
     generate_prompt, 
     upward_traversal, 
     get_samples, 
-    get_unique_trajectories
+    get_unique_trajectories,
+    _build_reflection_prompt
 )
 from agential.cog.lats.memory import Node
-from agential.cog.lats.prompts import HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT
+from agential.cog.lats.prompts import HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT, LATS_REFLECT_INSTRUCTION_HOTPOTQA
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
 
@@ -121,17 +122,17 @@ class LATSQAStrategy(LATSBaseStrategy):
         pass
 
     def reflect_node(self, question):
-        unique_trajectories = get_unique_trajectories(failed_trajectories)
+        unique_trajectories = get_unique_trajectories(self.failed_trajectories)
         if len(unique_trajectories) > len(reflection_map) and len(unique_trajectories) < 4:
-            failed_trajectories = "\n".join([f"{question}\n{traj}\n" for traj in unique_trajectories])
-            failed_trajectories = [f"Question: {traj}" for traj in failed_trajectories.split("Question: ")[1:]]
+            self.failed_trajectories = "\n".join([f"{question}\n{traj}\n" for traj in unique_trajectories])
+            self.failed_trajectories = [f"Question: {traj}" for traj in self.failed_trajectories.split("Question: ")[1:]]
             
             reflection_mapping = []
             trajectories = ""
-            for traj in failed_trajectories:
+            for traj in self.failed_trajectories:
                 trajectories += traj
                 
-                reflect_prompt = _build_reflection_prompt(trajectory=traj, prompt=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT)
+                reflect_prompt = _build_reflection_prompt(trajectory=traj, prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA, examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT)
                 
                 reflection = gpt(reflect_prompt)
                 
