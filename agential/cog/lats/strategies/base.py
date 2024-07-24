@@ -13,6 +13,7 @@ class LATSBaseStrategy(BaseStrategy):
         """Initialization."""
         super().__init__(llm)
 
+    
     @abstractmethod
     def select_node():
         pass
