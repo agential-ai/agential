@@ -236,7 +236,6 @@ def get_samples(question, trajectory, thought, additional_keys, n_generate_sampl
     global reflection_map
     unique_trajectories = get_unique_trajectories(failed_trajectories)
     if len(unique_trajectories) > len(reflection_map) and len(unique_trajectories) < 4:
-        print("generating reflections")
         failed_trajectories = "\n".join([f"{question}\n{traj}\n" for traj in unique_trajectories])
         failed_trajectories = [f"Question: {traj}" for traj in failed_trajectories.split("Question: ")[1:]]
         
@@ -261,10 +260,10 @@ def get_samples(question, trajectory, thought, additional_keys, n_generate_sampl
     if prompt_sample == 'standard':
         prompt = _build_standard_prompt(question, trajectory, thought, LATS_INSTRUCTION_HOTPOTQA, additional_keys)
     elif prompt_sample == 'cot':
-        if reflection_map:
+        if reflection_mapping:
             reflections = ""
-            for reflection_mapping in reflection_mapping:
-                traj_with_reflection = reflection_mapping['trajectory'] + "FAILED TRAJECTORY\nReflection: " + reflection_mapping['reflection'] + "\n\n"
+            for reflection_mapping_ in reflection_mapping:
+                traj_with_reflection = reflection_mapping_['trajectory'] + "FAILED TRAJECTORY\nReflection: " + reflection_mapping_['reflection'] + "\n\n"
                 reflections += traj_with_reflection
             prompt = _build_cot_feedback_prompt(question, trajectory, thought, reflections, COT_PROMPT_FEEDBACK, additional_keys)
         else:

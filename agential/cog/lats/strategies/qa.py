@@ -1,11 +1,16 @@
 """LATS Agent strategies for QA."""
-import logging
 
-from typing import Any, Dict
-from agential.agential.eval.em import EM
+from typing import Dict
+from agential.eval.em import EM
 from agential.cog.lats.strategies.base import LATSBaseStrategy
-from agential.cog.lats.functional import generate_prompt, upward_traversal, get_samples, collect_trajectory
+from agential.cog.lats.functional import (
+    generate_prompt, 
+    upward_traversal, 
+    get_samples, 
+    get_unique_trajectories
+)
 from agential.cog.lats.memory import Node
+from agential.cog.lats.prompts import HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
 
@@ -19,8 +24,11 @@ class LATSQAStrategy(LATSBaseStrategy):
         self.failed_traj = []
         self.docstore = docstore
 
+    def generate(self):
+        pass
 
-    def generate(self , node , prompt_sample):
+
+    def generate_(self , node , prompt_sample):
         traversed_nodes = upward_traversal(node)
         prompt = node.question
         trajectory = generate_prompt(traversed_nodes)
@@ -46,9 +54,7 @@ class LATSQAStrategy(LATSBaseStrategy):
 
 
     def generate_observation(self, unique_states, node , key):
-        
         node_dict = {}
-        new_state = node.state.copy()  # Make a copy of the parent node's state
 
         for (thought_line , action_type, query) in unique_states:
             reward = 0
@@ -75,11 +81,12 @@ class LATSQAStrategy(LATSBaseStrategy):
             else:
                 obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
         
-             # Update the new state dictionary
-            new_state['thought'] = thought_line
-            new_state['action'] = f"{action_type}[{query}]"
-
-            new_state['observation'] = obs
+            # Update the new state dictionary
+            new_state = {
+                'thought': thought_line,
+                'action': f"{action_type}[{query}]",
+                'observation': obs,
+            }
 
             new_node = Node(state=new_state, question=node.question, parent=node)
 
@@ -91,76 +98,11 @@ class LATSQAStrategy(LATSBaseStrategy):
             
             node_dict[unique_key] = new_node  # Add this state to unique_states
 
-
             if new_node.is_terminal and reward == 0:
-                trajectory = collect_trajectory(new_node)
-                #print(trajectory)
-                #if f"{action_type.lower()}[{action_param}]" not in failed_trajectories.values():
-                self.failed_trajectories.append({'trajectory': trajectory, 'final_answer': f"{action_type.lower()}[{query}]"})
+                traversed_nodes = upward_traversal(new_node)
+                self.failed_trajectories.append({'trajectory': traversed_nodes, 'final_answer': f"{action_type.lower()}[{query}]"})
 
         return list(unique_states.values())  # Return unique nodes as a list
-
-
-
-
-
-        for action in sampled_actions:
-
-            thought_line = next((line.split(":")[1].strip() for line in action.split("\n") if line.startswith(f"Thought {node.depth + 1}")), '')
-            action_line = next((line.split(":")[1].strip() for line in action.split("\n") if line.startswith("Action") and ":" in line), None)
-
-            # Use thought and action to form a unique key
-            unique_key = f"{thought_line}::{action_line}"
-            
-            if unique_key in unique_states:
-                continue  # Skip if this state already exists
-
-            
-            if action_line:
-                action_type = action_line.split('[')[0] if '[' in action_line else action_line
-                action_param = action_line.split('[')[1].split(']')[0] if '[' in action_line else ""
-
-                obs, r, done, info = env.step(f"{action_type.lower()}[{action_param}]")
-
-                # Update the new state dictionary
-                new_state = {
-                    'thought': thought_line,
-                    'action': action_line,
-                    'observation': obs
-                }
-
-                new_node = Node(state=new_state, question=node.question, parent=node)
-                new_node.is_terminal = r == 1 or done
-                new_node.reward = r
-                new_node.depth = node.depth + 1
-
-                unique_states[unique_key] = new_node  # Add this state to unique_states
-
-                if new_node.is_terminal and r == 0:
-                    traversed_nodes = upward_traversal(new_node)
-                    self.failed_trajectories.append({'trajectory': traversed_nodes, 'final_answer': f"{action_type.lower()}[{action_param}]"})
-
-        return list(unique_states.values())
-    
-    def env_step(self,action_type):
-        if action_type.lower() == "finish":
-            self._answer = query
-            self._finished = True
-            obs = query
-        elif action_type.lower() == "search":
-            try:
-                search_result = self.docstore.search(query)
-                external_tool_info["search_result"] = search_result
-                obs = remove_newline(search_result)
-            except Exception:
-                obs = "Could not find that page, please try again."
-        elif action_type.lower() == "lookup":
-            try:
-                lookup_result = self.docstore.lookup(query)
-                external_tool_info["lookup_result"] = lookup_result
-                obs = remove_newline(lookup_result)
-
-
 
 
     def select_node(self):
@@ -178,8 +120,30 @@ class LATSQAStrategy(LATSBaseStrategy):
     def backpropagate_node(self):
         pass
 
-    def reflect_node(self):
-        pass
+    def reflect_node(self, question):
+        unique_trajectories = get_unique_trajectories(failed_trajectories)
+        if len(unique_trajectories) > len(reflection_map) and len(unique_trajectories) < 4:
+            failed_trajectories = "\n".join([f"{question}\n{traj}\n" for traj in unique_trajectories])
+            failed_trajectories = [f"Question: {traj}" for traj in failed_trajectories.split("Question: ")[1:]]
+            
+            reflection_mapping = []
+            trajectories = ""
+            for traj in failed_trajectories:
+                trajectories += traj
+                
+                reflect_prompt = _build_reflection_prompt(trajectory=traj, prompt=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT)
+                
+                reflection = gpt(reflect_prompt)
+                
+                trajectories += "Reflection: " + reflection[0] + "\n"
+                
+                reflection_mapping.append({
+                    'question': question,
+                    'trajectory': traj,
+                    'reflection': reflection[0]
+                })
+
+            reflection_map = reflection_mapping
 
     def reset(self):
         pass
