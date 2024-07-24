@@ -10,7 +10,7 @@ from agential.cog.lats.functional import (
     get_unique_trajectories,
     _prompt_reflection
 )
-from agential.cog.lats.memory import Node
+from agential.cog.lats.functional import Node
 from agential.cog.lats.prompts import HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT, LATS_REFLECT_INSTRUCTION_HOTPOTQA
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
@@ -22,7 +22,8 @@ class LATSQAStrategy(LATSBaseStrategy):
 
     def __init__(self, llm ,docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),):
         super().__init__(llm)
-        self.failed_traj = []
+        self.failed_trajectories = []
+        self.reflection_map = []
         self.docstore = docstore
 
     def generate(self):
@@ -121,35 +122,30 @@ class LATSQAStrategy(LATSBaseStrategy):
     def backpropagate_node(self):
         pass
 
-    def reflect_node(self, question):
+    def reflect_condition(self, unique_trajectories):
+        return len(unique_trajectories) > len(self.reflection_map) and len(unique_trajectories) < 4
+
+    def reflect(self, question, additional_keys):
         unique_trajectories = get_unique_trajectories(self.failed_trajectories)
-        if len(unique_trajectories) > len(reflection_map) and len(unique_trajectories) < 4:
-            self.failed_trajectories = "\n".join([f"{question}\n{traj}\n" for traj in unique_trajectories])
-            self.failed_trajectories = [f"Question: {traj}" for traj in self.failed_trajectories.split("Question: ")[1:]]
-            
-            reflection_mapping = []
-            trajectories = ""
-            for traj in self.failed_trajectories:
-                trajectories += traj
-                
-                reflection = _prompt_reflection(
-                    self.llm,
-                    trajectory=traj, 
-                    prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA, 
-                    examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT
-                )
 
-                reflection = gpt(reflect_prompt)
-                
-                trajectories += "Reflection: " + reflection[0] + "\n"
-                
-                reflection_mapping.append({
-                    'question': question,
-                    'trajectory': traj,
-                    'reflection': reflection[0]
-                })
+        reflection_mapping = []
+        for trajectory in unique_trajectories:
+            reflection = _prompt_reflection(
+                self.llm,
+                question=question,
+                examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
+                trajectory=trajectory, 
+                prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA, 
+                additional_keys=additional_keys
+            )
 
-            reflection_map = reflection_mapping
+            reflection_mapping.append({
+                'question': question,
+                'trajectory': trajectory,
+                'reflection': reflection
+            })
+
+        self.reflection_map = reflection_mapping
 
     def reset(self):
         pass

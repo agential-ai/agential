@@ -162,10 +162,9 @@ reflection_map = []
 failed_trajectories = []
 
 class Node:
-    def __init__(self, state, question, parent=None):
+    def __init__(self, state, parent=None):
         self.state = {'thought': '', 'action': '', 'observation': ''} if state is None else state
         self.parent = parent
-        self.question = question
         self.children = []
         self.visits = 0
         self.value = 0
