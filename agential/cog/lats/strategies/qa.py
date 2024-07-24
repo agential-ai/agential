@@ -8,7 +8,7 @@ from agential.cog.lats.functional import (
     upward_traversal, 
     get_samples, 
     get_unique_trajectories,
-    _build_reflection_prompt
+    _prompt_reflection
 )
 from agential.cog.lats.memory import Node
 from agential.cog.lats.prompts import HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT, LATS_REFLECT_INSTRUCTION_HOTPOTQA
@@ -132,8 +132,13 @@ class LATSQAStrategy(LATSBaseStrategy):
             for traj in self.failed_trajectories:
                 trajectories += traj
                 
-                reflect_prompt = _build_reflection_prompt(trajectory=traj, prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA, examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT)
-                
+                reflection = _prompt_reflection(
+                    self.llm,
+                    trajectory=traj, 
+                    prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA, 
+                    examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT
+                )
+
                 reflection = gpt(reflect_prompt)
                 
                 trajectories += "Reflection: " + reflection[0] + "\n"

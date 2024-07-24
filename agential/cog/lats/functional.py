@@ -108,8 +108,30 @@ def _build_reflection_prompt(
     return prompt
 
 
-def _prompt_reflection():
-    pass
+def _prompt_reflection(
+    llm: BaseChatModel,
+    question: str,
+    examples: str,
+    trajectory: str,
+    prompt: str,
+    additional_keys: Dict[str, str] = {},
+):
+    prompt = _build_reflection_prompt(
+        question=question,
+        examples=examples,
+        trajectory=trajectory,
+        prompt=prompt,
+        additional_keys=additional_keys,
+    )
+    out = llm(
+        [
+            HumanMessage(
+                content=prompt,
+            )
+        ]
+    ).content
+    assert isinstance(out, str)
+    return out
 
 def _build_value_prompt():
     pass
