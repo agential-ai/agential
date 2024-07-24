@@ -52,7 +52,10 @@ class LATSQAStrategy(LATSBaseStrategy):
         self.reflection_map = []
         self.docstore = docstore
 
-    def generate(
+    def generate():
+        pass
+
+    def generate_thought(
         self,
         question,
         examples,
