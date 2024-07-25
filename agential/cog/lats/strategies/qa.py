@@ -49,11 +49,62 @@ class LATSQAStrategy(LATSBaseStrategy):
     def __init__(self, llm ,docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),):
         super().__init__(llm)
         self.failed_trajectories = []
-        self.reflection_map = []
         self.docstore = docstore
 
-    def generate():
-        pass
+    def generate(
+        self,
+        node,
+        question,
+        examples,
+        reflect_examples,
+        reflections,
+        depth,
+        prompt,
+        reflect_prompt,
+        additional_keys,
+        reflect_additional_keys
+    ):
+        unique_trajectories = get_unique_trajectories(self.failed_trajectories)
+
+        reflections = []
+        if self.reflect_condition(unique_trajectories):
+            reflections = self.reflect(
+                question=question,
+                examples=reflect_examples,
+                prompt=reflect_prompt,
+                additional_keys=reflect_additional_keys,
+            )
+            for reflection in reflections:
+                traj_with_reflection = reflection['trajectory'] + "FAILED TRAJECTORY\nReflection: " + reflection['reflection'] + "\n\n"
+                reflections += traj_with_reflection
+
+        traversed_nodes = upward_traversal(node)
+        trajectory = generate_prompt(traversed_nodes)
+
+        trajectory = self.generate_thought(
+            question=question,
+            examples=examples,
+            trajectory=trajectory,
+            reflections=reflections,
+            depth=depth,
+            prompt=prompt,
+            additional_keys=additional_keys,
+        )
+        trajectory, action_type, query = self.generate_action(
+            question=question,
+            examples=examples,
+            trajectory=trajectory,
+            reflections=reflections,
+            depth=depth,
+            prompt=prompt,
+            additional_keys=additional_keys,
+        )
+        trajectory, external_tool_info = self.generate_observation(
+            action_type=action_type,
+            query=query,
+            trajectory=trajectory,
+            depth=depth,
+        )
 
     def generate_thought(
         self,
@@ -70,7 +121,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             question=question,
             examples=examples,
             trajectory=trajectory,
-            reflections=reflections if self.reflection_map else "",
+            reflections=reflections,
             prompt=prompt,
             additional_keys=additional_keys,
         )
@@ -94,7 +145,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             question=question,
             examples=examples,
             trajectory=trajectory,
-            reflections=reflections if self.reflection_map else "",
+            reflections=reflections,
             prompt=prompt,
             additional_keys=additional_keys,
         )
@@ -164,7 +215,7 @@ class LATSQAStrategy(LATSBaseStrategy):
     ):
         unique_trajectories = get_unique_trajectories(self.failed_trajectories)
 
-        reflection_mapping = []
+        reflections = []
         for trajectory in unique_trajectories:
             reflection = _prompt_reflection(
                 self.llm,
@@ -175,13 +226,12 @@ class LATSQAStrategy(LATSBaseStrategy):
                 additional_keys=additional_keys
             )
 
-            reflection_mapping.append({
-                'question': question,
+            reflections.append({
                 'trajectory': trajectory,
                 'reflection': reflection
             })
 
-        self.reflection_map = reflection_mapping
+        return reflections
 
     def reset(self):
         pass
