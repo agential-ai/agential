@@ -46,10 +46,16 @@ def parse_qa_action(string: str) -> Tuple[str, str]:
 
 class LATSQAStrategy(LATSBaseStrategy):
 
-    def __init__(self, llm ,docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),):
+    def __init__(
+        self, 
+        llm, 
+        docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
+        max_reflections: int = 4,
+    ):
         super().__init__(llm)
         self.failed_trajectories = []
         self.docstore = docstore
+        self.max_reflections = max_reflections
 
     def generate(
         self,
@@ -64,10 +70,8 @@ class LATSQAStrategy(LATSBaseStrategy):
         additional_keys,
         reflect_additional_keys
     ):
-        unique_trajectories = get_unique_trajectories(self.failed_trajectories)
-
         reflections = []
-        if self.reflect_condition(unique_trajectories):
+        if self.reflect_condition():
             reflections = self.reflect(
                 question=question,
                 examples=reflect_examples,
@@ -203,8 +207,9 @@ class LATSQAStrategy(LATSBaseStrategy):
     def backpropagate_node(self):
         pass
 
-    def reflect_condition(self, unique_trajectories):
-        return len(unique_trajectories) > len(self.reflection_map) and len(unique_trajectories) < 4
+    def reflect_condition(self):
+        unique_trajectories = get_unique_trajectories(self.failed_trajectories)
+        return len(unique_trajectories) > len(self.failed_trajectories) and len(unique_trajectories) < self.max_reflections
 
     def reflect(
         self, 
