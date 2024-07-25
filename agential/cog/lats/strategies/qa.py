@@ -70,7 +70,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         additional_keys,
         reflect_additional_keys
     ):
-        reflections = []
+        reflections_str = ""
         if self.reflect_condition():
             reflections = self.reflect(
                 question=question,
@@ -79,8 +79,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                 additional_keys=reflect_additional_keys,
             )
             for reflection in reflections:
-                traj_with_reflection = reflection['trajectory'] + "FAILED TRAJECTORY\nReflection: " + reflection['reflection'] + "\n\n"
-                reflections += traj_with_reflection
+                reflections_str += f"{reflection['trajectory']}\nFAILED TRAJECTORY\nReflection: {reflection['reflection']}\n\n"
 
         traversed_nodes = upward_traversal(node)
         trajectory = generate_prompt(traversed_nodes)
@@ -89,7 +88,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             question=question,
             examples=examples,
             trajectory=trajectory,
-            reflections=reflections,
+            reflections=reflections_str,
             depth=depth,
             prompt=prompt,
             additional_keys=additional_keys,
@@ -98,7 +97,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             question=question,
             examples=examples,
             trajectory=trajectory,
-            reflections=reflections,
+            reflections=reflections_str,
             depth=depth,
             prompt=prompt,
             additional_keys=additional_keys,
