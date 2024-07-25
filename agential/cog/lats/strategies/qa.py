@@ -1,8 +1,9 @@
 """LATS Agent strategies for QA."""
 
 import re
+import numpy as np
 
-from typing import Dict, Tuple
+from typing import Tuple
 from agential.eval.em import EM
 from agential.cog.lats.strategies.base import LATSBaseStrategy
 from agential.cog.lats.functional import (
@@ -13,12 +14,28 @@ from agential.cog.lats.functional import (
     _prompt_reflection,
     _prompt_agent
 )
-from agential.cog.lats.functional import Node
 from agential.cog.lats.prompts import HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT, LATS_REFLECT_INSTRUCTION_HOTPOTQA
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
 
 from langchain_community.docstore.wikipedia import Wikipedia
+
+
+class Node:
+    def __init__(self, state=None, parent=None, children=None, visits=0, value=0, depth=None, is_terminal=False, reward=0):
+        self.state = {'thought': '', 'action': '', 'observation': ''} if state is None else state
+        self.parent = parent
+        self.children = [] if children is None else children
+        self.visits = visits
+        self.value = value
+        self.depth = 0 if parent is None else parent.depth + 1 if depth is None else depth
+        self.is_terminal = is_terminal
+        self.reward = reward
+
+    def uct(self):
+        if self.visits == 0:
+            return self.value
+        return self.value / self.visits + np.sqrt(2 * np.log(self.parent.visits) / self.visits)
 
 
 def parse_qa_action(string: str) -> Tuple[str, str]:
@@ -55,19 +72,19 @@ class LATSQAStrategy(LATSBaseStrategy):
     ):
         super().__init__(llm)
         self.failed_trajectories = []
+        self.reflection_map = []
         self.docstore = docstore
         self.n_samples = n_samples
         self.max_reflections = max_reflections
 
     def generate(
         self,
-        node,
+        node: Node,
         question,
         key,
         examples,
         reflect_examples,
         reflections,
-        depth,
         prompt,
         reflect_prompt,
         additional_keys,
@@ -88,14 +105,14 @@ class LATSQAStrategy(LATSBaseStrategy):
         trajectory = generate_prompt(traversed_nodes)
 
         unique_states = set()
-        trajectories = []
+        children_nodes = []
         for _ in range(self.n_samples):
             trajectory_i, thought = self.generate_thought(
                 question=question,
                 examples=examples,
                 trajectory=trajectory,
                 reflections=reflections_str,
-                depth=depth,
+                depth=node.depth,
                 prompt=prompt,
                 additional_keys=additional_keys,
             )
@@ -104,7 +121,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                 examples=examples,
                 trajectory=trajectory_i,
                 reflections=reflections_str,
-                depth=depth,
+                depth=node.depth,
                 prompt=prompt,
                 additional_keys=additional_keys,
             )
@@ -118,18 +135,17 @@ class LATSQAStrategy(LATSBaseStrategy):
                     action_type=action_type,
                     query=query,
                     trajectory=trajectory_i,
-                    depth=depth,
+                    depth=node.depth,
                 )
-                trajectories.append(trajectory_i)
 
                 new_node = Node(
                     state={
-                        "thought": f"Thought {depth + 1}: {thought}",
-                        "action": f"Action {depth + 1}: {action_type}[{query}]",
-                        "observation": f"Observation {depth + 1}: {obs}",
+                        "thought": f"Thought {node.depth + 1}: {thought}",
+                        "action": f"Action {node.depth + 1}: {action_type}[{query}]",
+                        "observation": f"Observation {node.depth + 1}: {obs}",
                     },
                     parent=node,
-                    depth=depth + 1,
+                    depth=node.depth + 1,
                     is_terminal=reward==1 or done,
                     reward=reward
                 )
@@ -140,6 +156,10 @@ class LATSQAStrategy(LATSBaseStrategy):
                         "trajectory": traversed_nodes,
                         "final_answer": query.lower().strip()
                     })
+
+                children_nodes.append(new_node)
+
+        return children_nodes
 
     def generate_thought(
         self,
@@ -248,9 +268,13 @@ class LATSQAStrategy(LATSBaseStrategy):
 
         return node
 
-    def expand_node(self):
-        pass
-
+    def expand_node(self, node, prompt_sample, n_generate_sample, depth_limit):
+        if node.depth >= depth_limit:
+            node.is_terminal = True
+            return []
+        children_nodes = self.generate(node, prompt_sample, n_generate_sample)
+        return children_nodes
+    
     def evaluate_node(self):
         pass
 
@@ -262,7 +286,7 @@ class LATSQAStrategy(LATSBaseStrategy):
 
     def reflect_condition(self):
         unique_trajectories = get_unique_trajectories(self.failed_trajectories)
-        return len(unique_trajectories) > len(self.failed_trajectories) and len(unique_trajectories) < self.max_reflections
+        return len(unique_trajectories) > len(self.reflection_map) and len(unique_trajectories) < self.max_reflections
 
     def reflect(
         self, 
@@ -288,6 +312,8 @@ class LATSQAStrategy(LATSBaseStrategy):
                 'trajectory': trajectory,
                 'reflection': reflection
             })
+
+        self.reflection_map = reflections
 
         return reflections
 
