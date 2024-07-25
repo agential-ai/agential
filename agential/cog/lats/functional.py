@@ -197,21 +197,21 @@ reflection_map = []
 failed_trajectories = []
 
 class Node:
-    def __init__(self, state, parent=None):
+    def __init__(self, state=None, parent=None, children=None, visits=0, value=0, depth=None, is_terminal=False, reward=0):
         self.state = {'thought': '', 'action': '', 'observation': ''} if state is None else state
         self.parent = parent
-        self.children = []
-        self.visits = 0
-        self.value = 0
-        self.depth = 0 if parent is None else parent.depth + 1
-        self.is_terminal = False
-        self.reward = 0
+        self.children = [] if children is None else children
+        self.visits = visits
+        self.value = value
+        self.depth = 0 if parent is None else parent.depth + 1 if depth is None else depth
+        self.is_terminal = is_terminal
+        self.reward = reward
 
     def uct(self):
         if self.visits == 0:
             return self.value
         return self.value / self.visits + np.sqrt(2 * np.log(self.parent.visits) / self.visits)
-    
+
 def upward_traversal(node):
     nodes = []
     while node:

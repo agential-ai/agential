@@ -50,17 +50,20 @@ class LATSQAStrategy(LATSBaseStrategy):
         self, 
         llm, 
         docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
+        n_samples: int = 5,
         max_reflections: int = 4,
     ):
         super().__init__(llm)
         self.failed_trajectories = []
         self.docstore = docstore
+        self.n_samples = n_samples
         self.max_reflections = max_reflections
 
     def generate(
         self,
         node,
         question,
+        key,
         examples,
         reflect_examples,
         reflections,
@@ -84,30 +87,48 @@ class LATSQAStrategy(LATSBaseStrategy):
         traversed_nodes = upward_traversal(node)
         trajectory = generate_prompt(traversed_nodes)
 
-        trajectory = self.generate_thought(
-            question=question,
-            examples=examples,
-            trajectory=trajectory,
-            reflections=reflections_str,
-            depth=depth,
-            prompt=prompt,
-            additional_keys=additional_keys,
-        )
-        trajectory, action_type, query = self.generate_action(
-            question=question,
-            examples=examples,
-            trajectory=trajectory,
-            reflections=reflections_str,
-            depth=depth,
-            prompt=prompt,
-            additional_keys=additional_keys,
-        )
-        trajectory, external_tool_info = self.generate_observation(
-            action_type=action_type,
-            query=query,
-            trajectory=trajectory,
-            depth=depth,
-        )
+        unique_states = set()
+        trajectories = []
+        for _ in range(self.n_samples):
+            trajectory_i, thought = self.generate_thought(
+                question=question,
+                examples=examples,
+                trajectory=trajectory,
+                reflections=reflections_str,
+                depth=depth,
+                prompt=prompt,
+                additional_keys=additional_keys,
+            )
+            trajectory_i, action_type, query = self.generate_action(
+                question=question,
+                examples=examples,
+                trajectory=trajectory_i,
+                reflections=reflections_str,
+                depth=depth,
+                prompt=prompt,
+                additional_keys=additional_keys,
+            )
+
+            unique_key = f"{thought}::{action_type}::{query}"
+            if unique_key not in unique_states:
+                unique_states.add(unique_key)
+                
+                trajectory_i, obs, external_tool_info = self.generate_observation(
+                    action_type=action_type,
+                    query=query,
+                    trajectory=trajectory_i,
+                    depth=depth,
+                )
+                trajectories.append(trajectory_i)
+
+                new_node = Node(
+                    state={
+                        "thought": f"Thought {depth + 1}: {thought}",
+                        "action": f"Action {depth + 1}: {action_type}[{query}]",
+                        "observation": f"Observation {depth + 1}: {obs}",
+                    },
+                    parent=node
+                )
 
     def generate_thought(
         self,
@@ -131,7 +152,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         thought = remove_newline(thought).split("Action")[0].strip()
         trajectory += " " + thought
 
-        return trajectory
+        return trajectory, thought
     
     def generate_action(
         self,
@@ -189,7 +210,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
         trajectory += obs
 
-        return trajectory, external_tool_info
+        return trajectory, obs, external_tool_info
 
     def select_node(self):
         pass
