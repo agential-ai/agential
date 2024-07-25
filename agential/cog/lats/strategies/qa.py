@@ -230,8 +230,23 @@ class LATSQAStrategy(LATSBaseStrategy):
 
         return trajectory, obs, reward, done, external_tool_info
 
-    def select_node(self):
-        pass
+    def select_node(self, node):
+        while node and node.children:
+            terminal_children = [child for child in node.children if child.is_terminal]
+
+            if len(terminal_children) == len(node.children):
+                if node.parent:  
+                    node.parent.children.remove(node)
+                node = node.parent  
+                continue  
+
+            for child in terminal_children:
+                if child.reward == 1:
+                    return child
+            
+            node = max([child for child in node.children if not child.is_terminal], key=lambda child: child.uct(), default=None)
+
+        return node
 
     def expand_node(self):
         pass
