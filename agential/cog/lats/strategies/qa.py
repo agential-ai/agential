@@ -273,6 +273,8 @@ class LATSQAStrategy(LATSBaseStrategy):
             node.is_terminal = True
             return []
         children_nodes = self.generate(node, prompt_sample, n_generate_sample)
+        node.children.extend(children_nodes)
+
         return children_nodes
     
     def evaluate_node(self):
