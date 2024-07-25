@@ -113,7 +113,8 @@ class LATSQAStrategy(LATSBaseStrategy):
             if unique_key not in unique_states:
                 unique_states.add(unique_key)
                 
-                trajectory_i, obs, external_tool_info = self.generate_observation(
+                trajectory_i, obs, reward, done, external_tool_info = self.generate_observation(
+                    key=key,
                     action_type=action_type,
                     query=query,
                     trajectory=trajectory_i,
@@ -127,8 +128,18 @@ class LATSQAStrategy(LATSBaseStrategy):
                         "action": f"Action {depth + 1}: {action_type}[{query}]",
                         "observation": f"Observation {depth + 1}: {obs}",
                     },
-                    parent=node
+                    parent=node,
+                    depth=depth + 1,
+                    is_terminal=reward==1 or done,
+                    reward=reward
                 )
+
+                if new_node.is_terminal and reward == 0:
+                    traversed_nodes = upward_traversal(new_node)
+                    self.failed_trajectories.append({
+                        "trajectory": traversed_nodes,
+                        "final_answer": query.lower().strip()
+                    })
 
     def generate_thought(
         self,
@@ -181,6 +192,7 @@ class LATSQAStrategy(LATSBaseStrategy):
 
     def generate_observation(
         self,
+        key,
         action_type,
         query,
         trajectory,
@@ -188,9 +200,16 @@ class LATSQAStrategy(LATSBaseStrategy):
     ):
         external_tool_info = {"search_result": "", "lookup_result": ""}
 
+        reward = 0
+        done = False
         trajectory += f"\nObservation {depth + 1}: "
         if action_type.lower() == "finish":
-            obs = query
+            if EM(query, key):
+                obs = "Answer is CORRECT"
+                reward = 1
+            else:
+                obs = "Answer is INCORRECT"
+            done = True
         elif action_type.lower() == "search":
             try:
                 search_result = self.docstore.search(query)
@@ -203,14 +222,13 @@ class LATSQAStrategy(LATSBaseStrategy):
                 lookup_result = self.docstore.lookup(query)
                 external_tool_info["lookup_result"] = lookup_result
                 obs = remove_newline(lookup_result)
-
             except ValueError:
                 obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
         else:
             obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
         trajectory += obs
 
-        return trajectory, obs, external_tool_info
+        return trajectory, obs, reward, done, external_tool_info
 
     def select_node(self):
         pass
