@@ -1,8 +1,3 @@
-LATS_INSTRUCTION_HOTPOTQA = """
-Write a coherent passage of 4 short paragraphs. The end sentence of each paragraph must be: {question}{trajectory}{thought}
-"""
-
-
 COT_PROMPT = """
 Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: 
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
