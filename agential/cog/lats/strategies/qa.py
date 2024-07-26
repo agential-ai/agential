@@ -408,13 +408,24 @@ class LATSQAStrategy(LATSBaseStrategy):
                 child_trajectory_cache[child_trajectory] = value
             values.append(value)
 
+        # TODO: finish up evaluate_node
         return values
 
     def simulate_node(self):
         pass
 
-    def backpropagate_node(self):
-        pass
+    def backpropagate_node(self, node, value):
+        while node:
+            node.visits += 1
+            if node.is_terminal:
+                if node.reward == 0:
+                    node.value = (node.value * (node.visits - 1) + (-1)) / node.visits
+                else:
+                    node.value = (node.value * (node.visits - 1) + value) / node.visits
+            else:
+                node.value = (node.value * (node.visits - 1) + value) / node.visits
+
+            node = node.parent
 
     def reflect_condition(self):
         unique_trajectories = get_unique_trajectories(self.failed_trajectories)
