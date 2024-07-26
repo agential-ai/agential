@@ -210,7 +210,8 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-{unique_trajectories}
+{failed_trajectories}
 
-Question: {question}
-"""
+Question: {question}{trajectory}
+
+Explanation:"""
