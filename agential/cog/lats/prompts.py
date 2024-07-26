@@ -48,7 +48,7 @@ Action 3: Finish[President Richard Nixon]
 {question}{trajectory}{thought}
 """
 
-COT_PROMPT_FEEDBACK = '''You are also an advanced reasoning agent that can improve based on self refection. Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: 
+COT_PROMPT_FEEDBACK = """You are also an advanced reasoning agent that can improve based on self refection. Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: 
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 (2) Lookup[keyword], which returns the next sentence containing keyword in the current passage.
 (3) Finish[answer], which returns the answer and finishes the task.
@@ -95,7 +95,7 @@ You have attempted to answer the following question before and failed, either be
 When providing the thought and action for the current trial, that into account these failed trajectories and make sure not to repeat the same mistakes and incorrect answers. 
 
 {question}{trajectory}{thought}
-'''
+"""
 
 HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT = """Previous Trial:
 Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
@@ -198,7 +198,7 @@ Question: {question}
 Reflection:"""
 
 
-VALUE_PROMPT_REASONING_FEEDBACK = '''Analyze the trajectories of a solution to a question answering task. The trajectories are labeled by environmental observations about the situation, thoughts that can reason about the current situation and actions that can be three types: 
+VALUE_PROMPT_REASONING_FEEDBACK = """Analyze the trajectories of a solution to a question answering task. The trajectories are labeled by environmental observations about the situation, thoughts that can reason about the current situation and actions that can be three types: 
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 (2) Lookup[keyword], which returns the next sentence containing keyword in the current passage.
 (3) Finish[answer], which returns the answer and finishes the task.
@@ -258,9 +258,9 @@ Thus the correctness score is 10
 {unique_trajectories}
 
 {question}
-'''
+"""
 
-VALUE_PROMPT_REASONING = '''You are an advanced reasoning agent that can improve based on self refection. Analyze the trajectories of your previous solutions to a question answering task. The trajectories are labeled by environmental observations about the situation, thoughts that can reason about the current situation and actions that can be three types: 
+VALUE_PROMPT_REASONING = """You are an advanced reasoning agent that can improve based on self refection. Analyze the trajectories of your previous solutions to a question answering task. The trajectories are labeled by environmental observations about the situation, thoughts that can reason about the current situation and actions that can be three types: 
 (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 (2) Lookup[keyword], which returns the next sentence containing keyword in the current passage.
 (3) Finish[answer], which returns the answer and finishes the task.
@@ -318,4 +318,4 @@ This trajectory is correct as all of my thoughts and actions are correct. It mak
 Thus the correctness score is 10
 
 {input}
-'''
+"""
