@@ -9,7 +9,7 @@ from agential.cog.lats.strategies.base import LATSBaseStrategy
 from agential.cog.lats.functional import (
     generate_prompt,
     upward_traversal,
-    get_samples,
+    _prompt_value,
     get_unique_trajectories,
     _prompt_reflection,
     _prompt_agent,
@@ -23,7 +23,37 @@ from agential.utils.parse import remove_newline
 
 from langchain_community.docstore.wikipedia import Wikipedia
 
+def parse_qa_action(string: str) -> Tuple[str, str]:
+    """Parses an action string into an action type and its argument.
 
+    This method is used in ReAct.
+
+    Args:
+        string (str): The action string to be parsed.
+
+    Returns:
+        Tuple[str, str]: A tuple containing the action type and argument.
+    """
+    pattern = r"^(\w+)\[(.+)\]$"
+    match = re.match(pattern, string)
+
+    if match:
+        action_type = match.group(1)
+        argument = match.group(2)
+    else:
+        action_type = ""
+        argument = ""
+    return action_type, argument
+
+def parse_qa_value(string: str) -> Tuple[str, int]:
+    try:
+        explanation_part = string.split("Explanation:")[1].strip()
+        explanation, score_part = explanation_part.split("Correctness score:")
+        score = int(score_part.strip())
+        return explanation.strip(), score
+    except Exception:
+        return "Explanation not found", 0
+    
 class Node:
     def __init__(
         self,
@@ -55,29 +85,6 @@ class Node:
         return self.value / self.visits + np.sqrt(
             2 * np.log(self.parent.visits) / self.visits
         )
-
-
-def parse_qa_action(string: str) -> Tuple[str, str]:
-    """Parses an action string into an action type and its argument.
-
-    This method is used in ReAct.
-
-    Args:
-        string (str): The action string to be parsed.
-
-    Returns:
-        Tuple[str, str]: A tuple containing the action type and argument.
-    """
-    pattern = r"^(\w+)\[(.+)\]$"
-    match = re.match(pattern, string)
-
-    if match:
-        action_type = match.group(1)
-        argument = match.group(2)
-    else:
-        action_type = ""
-        argument = ""
-    return action_type, argument
 
 
 class LATSQAStrategy(LATSBaseStrategy):
@@ -333,26 +340,40 @@ class LATSQAStrategy(LATSBaseStrategy):
         self,
         node,
         question,
+        examples,
+        prompt,
+        additional_keys,
     ):
         children_trajectories = [
             generate_prompt(upward_traversal(child))
             for child in node.children
             if not child.is_terminal
         ]
-        unique_trajectories = get_unique_trajectories(self.failed_trajectories)
 
         # votes = get_values(task, node.question, child_prompts, n_evaluate_sample)
 
-        # x = question
-        # y = children_trajectories[i]
-        if len(unique_trajectories) > 0:
-            failed_trajectories = ""
-            for traj, ref in zip(z, reflections):
-                failed_trajectories += f"{question}\n{traj}\nThis trajectory is incorrect as {ref['reflection']}\nThus the correctness score is 1\n"
-            
-            inp = x + y + "\nThis trajectory is "
-            
-            prompt = value_prompt_reasoning_feedback.format(s="", trajectories=failed_trajectories, input=inp)
+        child_trajectory_cache = {}
+        for child_trajectory in children_trajectories:
+            if child_trajectory in child_trajectory_cache:
+                value = 0
+            else:
+                if len(self.reflection_map) > 0:
+                    failed_trajectories = ""
+                    for trajectory_reflection in self.reflection_map:
+                        failed_trajectories += f"Question: {question}\n{trajectory_reflection['trajectory']}\n\nExplanation: This trajectory is incorrect as {trajectory_reflection['reflection']}\nCorrectness score: 1"
+                        failed_trajectories += "\n\n---\n\n"
+                        
+                value = _prompt_value(
+                    llm=self.llm,
+                    question=question,
+                    examples=examples,
+                    trajectory=child_trajectory,
+                    failed_trajectories=failed_trajectories,
+                    prompt=prompt,
+                    additional_keys=additional_keys,
+                )
+
+                child_trajectory_cache[child_trajectory] = value
         else:
             pass
 
