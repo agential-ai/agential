@@ -143,6 +143,7 @@ class LATSQAStrategy(LATSBaseStrategy):
 
         unique_states = set()
         children_nodes = []
+        child_node_states = []
         for _ in range(self.n_samples):
             trajectory_i, thought = self.generate_thought(
                 question=question,
@@ -200,7 +201,19 @@ class LATSQAStrategy(LATSBaseStrategy):
 
                 children_nodes.append(new_node)
 
-        return children_nodes
+                child_node_state = {
+                    "thought": thought, 
+                    "action_type": action_type,
+                    "query": query, 
+                    "obs": obs, 
+                    "reward": reward, 
+                    "done": done, 
+                    "external_tool_info": external_tool_info        
+                }
+
+                child_node_states.append(child_node_state)
+
+        return children_nodes, child_node_states
 
     def generate_thought(
         self,
