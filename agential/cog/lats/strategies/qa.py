@@ -85,7 +85,9 @@ class Node:
         return self.value / self.visits + np.sqrt(
             2 * np.log(self.parent.visits) / self.visits
         )
-
+    
+    def add_children(self, children):
+        self.children.extend(children)
 
 class LATSQAStrategy(LATSBaseStrategy):
 
@@ -109,6 +111,8 @@ class LATSQAStrategy(LATSBaseStrategy):
         self.reflection_map = []
         self.value_cache = {}
 
+    # TODO: we should have some structured outputs here 
+    # TODO: this method should return all children node thought, actionn, observation triplets.
     def generate(
         self,
         node: Node,
@@ -246,6 +250,7 @@ class LATSQAStrategy(LATSBaseStrategy):
 
         return trajectory, action_type, query
 
+    # TODO: can we get this method to return less?
     def generate_observation(
         self,
         key,
@@ -336,7 +341,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             additional_keys=additional_keys,
             reflect_additional_keys=reflect_additional_keys,
         )
-        node.children.extend(children_nodes)
+        node.add_children(children_nodes)
 
         return children_nodes
 
