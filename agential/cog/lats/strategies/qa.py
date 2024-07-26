@@ -354,8 +354,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             if not child.is_terminal
         ]
 
-        # votes = get_values(task, node.question, child_prompts, n_evaluate_sample)
-
+        values = []
         child_trajectory_cache = {}
         for child_trajectory in children_trajectories:
             if child_trajectory in child_trajectory_cache:
@@ -386,12 +385,12 @@ class LATSQAStrategy(LATSBaseStrategy):
                         self.value_cache[unique_key] = value_str
                 
                 explanation, value = parse_qa_value(value_str)
+                value = value / 10
 
                 child_trajectory_cache[child_trajectory] = value
-                
+            values.append(value)
 
-        else:
-            pass
+        return values
 
     def simulate_node(self):
         pass
