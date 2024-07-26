@@ -138,8 +138,8 @@ Thought 6: Since I couldn't find information on the Rocky Mountains, I will try 
 Action 6: Search[Colorado orogeny elevation range]
 Observation 6: Could not find [Colorado orogeny elevation range]. Similar: ['Sangre de Cristo Range', 'Mosquito Range', 'Laramide orogeny', 'Appalachian Mountains', 'Front Range', 'Wind River Range', 'Wasatch Range', 'Rocky Mountains', 'Colorado Plateau', 'Basin and Range Province']
 
-Correctness score: 2
 Explanation: This trajectory is incorrect because the focus shifted to unrelated geological events and areas instead of directly verifying specific details related to the Colorado orogeny. Future attempts should ensure to verify the specific geographical regions and details directly related to the question before making conclusions.
+Correctness score: 2
 
 ---
 
@@ -153,8 +153,8 @@ Observation 2: (Result 1 / 1) Milhouse was named after U.S. president Richard Ni
 Thought 3: Milhouse was named after U.S. president Richard Nixon, so the answer is Richard Nixon.
 Action 3: Finish[President Richard Nixon]
 
-Correctness score: 10
 Explanation: This trajectory is correct as all of my thoughts and actions are correct. It makes sense to search for Milhouse first as it is the central subject of the question. It is also correct to directly look up the relevant information in the article, instead of trying another search. 
+Correctness score: 10
 
 ---
 
@@ -169,8 +169,8 @@ Thought 3: The documentary about Adam Clayton Powell seems detailed and signific
 Action 3: Finish[Adam Clayton Powell]
 Observation 3: Answer is INCORRECT
 
-Correctness score: 2
 Explanation: My reasoning failed because I assumed that a documentary with significant historical importance could cover unrelated topics such as Finnish rock groups. In the future, I should ensure to verify the specific subject matter of documentaries instead of making broad assumptions based on the perceived importance of the documentary's primary subject.
+Correctness score: 2
 
 ---
 
@@ -184,8 +184,8 @@ Observation 2: Elia Kazan was an American film and theatre director, producer, s
 Thought 3: Professions of Elia Kazan are director, producer, screenwriter, and actor. So profession Nicholas Ray and Elia Kazan have in common is director, producer, screenwriter, and actor.
 Action 3: Finish[director, producer, screenwriter, actor]
 
-Correctness score: 5
 Explanation: The trajectory is incorrect because while both Nicholas Ray and Elia Kazan share the professions of director, screenwriter, and actor, producer was incorrectly included. Future attempts should ensure to identify only the professions explicitly shared by both individuals.
+Correctness score: 5
 
 ---
 
@@ -194,8 +194,8 @@ Thought 1: I need to search Arthur's Magazine and First for Women, and find whic
 Action 1: Search[Arthur's Magazine]
 Observation 1: Arthur's Magazine (1844-1846) was an American literary periodical published in Philadelphia in the 19th century. Edited by Timothy Shay Arthur, it featured work by Edgar A. Poe, J.H. Ingraham, Sarah Josepha Hale, Thomas G. Spear, and others.[1][2] In May 1846 it was merged into Godey's Lady's Book.[3]
 
-Correctness score: 10
-Explanation: This trajectory is correct as it is reasonable to search for the first magazine provided in the question. It is also better to have simple searches corresponding to a single entity, making this the best action."""
+Explanation: This trajectory is correct as it is reasonable to search for the first magazine provided in the question. It is also better to have simple searches corresponding to a single entity, making this the best action.
+Correctness score: 10"""
 
 
 LATS_VALUE_INSTRUCTION_HOTPOTQA = """Analyze the trajectories of a solution to a question answering task. The trajectories are labeled by environmental observations about the situation, thoughts that can reason about the current situation and actions that can be three types: 
@@ -212,4 +212,5 @@ Here are some examples:
 
 {unique_trajectories}
 
-{question}"""
+Question: {question}
+"""

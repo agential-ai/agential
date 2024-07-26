@@ -341,7 +341,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         ]
         unique_trajectories = get_unique_trajectories(self.failed_trajectories)
 
-        votes = get_values(task, node.question, child_prompts, n_evaluate_sample)
+        # votes = get_values(task, node.question, child_prompts, n_evaluate_sample)
 
         # x = question
         # y = children_trajectories[i]
@@ -353,9 +353,6 @@ class LATSQAStrategy(LATSBaseStrategy):
             inp = x + y + "\nThis trajectory is "
             
             prompt = value_prompt_reasoning_feedback.format(s="", trajectories=failed_trajectories, input=inp)
-            
-            if get_token_length(prompt) > max_token_length:
-                prompt = value_prompt_reasoning_feedback_short.format(s="", trajectories=failed_trajectories, input=inp)
         else:
             pass
 
