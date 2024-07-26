@@ -108,6 +108,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         self.cache_values = cache_values
 
         self.failed_trajectories = []
+        # TODO: there's probably a way to combine failed_trajectories and reflection_map
         self.reflection_map = []
         self.value_cache = {}
 
@@ -345,6 +346,7 @@ class LATSQAStrategy(LATSBaseStrategy):
 
         return children_nodes
 
+    # TODO: maybe we need structured outputs here too...
     def evaluate_node(
         self,
         node,
