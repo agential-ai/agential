@@ -111,8 +111,6 @@ class LATSQAStrategy(LATSBaseStrategy):
         self.reflection_map = []
         self.value_cache = {}
 
-    # TODO: we should have some structured outputs here 
-    # TODO: this method should return all children node thought, action, observation triplets.
     def generate(
         self,
         node: Node,
