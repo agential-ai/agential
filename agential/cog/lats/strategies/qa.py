@@ -108,12 +108,11 @@ class LATSQAStrategy(LATSBaseStrategy):
         self.cache_values = cache_values
 
         self.failed_trajectories = []
-        # TODO: there's probably a way to combine failed_trajectories and reflection_map
         self.reflection_map = []
         self.value_cache = {}
 
     # TODO: we should have some structured outputs here 
-    # TODO: this method should return all children node thought, actionn, observation triplets.
+    # TODO: this method should return all children node thought, action, observation triplets.
     def generate(
         self,
         node: Node,
