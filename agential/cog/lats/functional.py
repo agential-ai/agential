@@ -13,98 +13,7 @@ from agential.cog.lats.prompts import (
     LATS_INSTRUCTION_HOTPOTQA,
     COT_PROMPT,
     COT_PROMPT_FEEDBACK,
-    REFLECTION_PROMPT,
 )
-
-
-def _build_standard_prompt(
-    question: str,
-    trajectory: str,
-    thought: str,
-    prompt: str,
-    additional_keys: Dict[str, str] = {},
-) -> str:
-    """Builds a prompt for questioning the agent using a template.
-
-    Parameters:
-        question (str): The question to be answered by the agent.
-        trajectory (str): The trajectory taken by the agent.
-        thought (str): The agent's thought.
-        prompt (str): Prompt template string.
-        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
-
-    Returns:
-        str: A formatted prompt ready for use with the language model.
-    """
-    prompt = PromptTemplate.from_template(prompt).format(
-        question=question, trajectory=trajectory, thought=thought, **additional_keys
-    )
-    return prompt
-
-
-def _prompt_standard():
-    pass
-
-
-def _build_cot_prompt(
-    question: str,
-    trajectory: str,
-    thought: str,
-    prompt: str,
-    additional_keys: Dict[str, str] = {},
-) -> str:
-    """Builds a prompt for questioning the agent using a template.
-
-    Parameters:
-        question (str): The question to be answered by the agent.
-        trajectory (str): The trajectory taken by the agent.
-        thought (str): The agent's thought.
-        reflections (str): The reflection map created by the agent.
-        prompt (str): Prompt template string.
-        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
-
-    Returns:
-        str: A formatted prompt ready for use with the language model.
-    """
-    prompt = PromptTemplate.from_template(prompt).format(
-        question=question, trajectory=trajectory, thought=thought, **additional_keys
-    )
-    return prompt
-
-
-def _build_cot_feedback_prompt(
-    question: str,
-    trajectory: str,
-    thought: str,
-    reflections: str,
-    prompt: str,
-    additional_keys: Dict[str, str] = {},
-) -> str:
-    """Builds a prompt for questioning the agent using a template.
-
-    Parameters:
-        question (str): The question to be answered by the agent.
-        trajectory (str): The trajectory taken by the agent.
-        thought (str): The agent's thought.
-        reflections (str): The reflection map created by the agent.
-        prompt (str): Prompt template string.
-        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
-
-    Returns:
-        str: A formatted prompt ready for use with the language model.
-    """
-    prompt = PromptTemplate.from_template(prompt).format(
-        question=question,
-        trajectory=trajectory,
-        thought=thought,
-        reflections=reflections,
-        **additional_keys,
-    )
-    return prompt
-
-
-def _prompt_cot():
-    pass
 
 
 def _build_reflection_prompt(
@@ -480,7 +389,6 @@ def expand_node(node, prompt_sample, n_generate_sample, depth_limit=7):
     children_nodes = generate_new_states(node, prompt_sample, n_generate_sample)
     return children_nodes
 
-
 def get_value(task, x, y, n_evaluate_sample, cache_value=True):
     global reflection_map
     global failed_trajectories
@@ -494,6 +402,20 @@ def get_value(task, x, y, n_evaluate_sample, cache_value=True):
     if cache_value:
         task.value_cache[value_prompt] = value
     return value
+
+# def get_value(task, x, y, n_evaluate_sample, cache_value=True):
+#     global reflection_map
+#     global failed_trajectories
+
+#     unique_trajectories = get_unique_trajectories(failed_trajectories)
+#     value_prompt = task.value_prompt_wrap(x, y, unique_trajectories, reflection_map)
+#     if cache_value and value_prompt in task.value_cache:
+#         return task.value_cache[value_prompt]
+#     value_outputs = gpt(value_prompt, n=n_evaluate_sample, stop=None)
+#     value = task.value_outputs_unwrap(value_outputs)
+#     if cache_value:
+#         task.value_cache[value_prompt] = value
+#     return value
 
 
 def get_values(task, x, ys, n_evaluate_sample, cache_value=True):

@@ -335,10 +335,39 @@ class LATSQAStrategy(LATSBaseStrategy):
         question,
     ):
         children_trajectories = [
-            child.question + generate_prompt(upward_traversal(child))
+            generate_prompt(upward_traversal(child))
             for child in node.children
             if not child.is_terminal
         ]
+        unique_trajectories = get_unique_trajectories(self.failed_trajectories)
+
+        if len(unique_trajectories) > 0:
+            pass
+        else:
+            pass
+
+        votes = get_values(task, node.question, child_prompts, n_evaluate_sample)
+
+        question = x.split('\n')[0]
+        #z = []
+        if len(z) != 0:
+            failed_trajectories = ""
+            
+            # Combine the trajectories with their corresponding reflections
+            for traj, ref in zip(z, reflections):
+                failed_trajectories += f"{question}\n{traj}\nThis trajectory is incorrect as {ref['reflection']}\nThus the correctness score is 1\n"
+            
+            inp = x + y + "\nThis trajectory is "
+            
+            prompt = value_prompt_reasoning_feedback.format(s="", trajectories=failed_trajectories, input=inp)
+            
+            if get_token_length(prompt) > max_token_length:
+                prompt = value_prompt_reasoning_feedback_short.format(s="", trajectories=failed_trajectories, input=inp)
+        else:
+            inp = y + "\nThis trajectory is "
+
+            # 
+            prompt = value_prompt_reasoning.format(s="", input=inp)
 
     def simulate_node(self):
         pass
