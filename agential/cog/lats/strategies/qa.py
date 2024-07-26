@@ -137,6 +137,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             for reflection in reflections:
                 reflections_str += f"{reflection['trajectory']}\nFAILED TRAJECTORY\nReflection: {reflection['reflection']}\n\n"
 
+        # TODO: Every time we want to call upward traversal, we should need to traverse the whole tree again. Maybe we can just store this info in the node?
         traversed_nodes = upward_traversal(node)
         trajectory = generate_prompt(traversed_nodes)
 
