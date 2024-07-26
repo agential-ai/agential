@@ -96,14 +96,18 @@ class LATSQAStrategy(LATSBaseStrategy):
         n_samples: int = 5,
         max_reflections: int = 4,
         depth_limit: int = 7,
+        cache_values: bool = True,
     ):
         super().__init__(llm)
-        self.failed_trajectories = []
-        self.reflection_map = []
         self.docstore = docstore
         self.n_samples = n_samples
         self.max_reflections = max_reflections
         self.depth_limit = depth_limit
+        self.cache_values = cache_values
+
+        self.failed_trajectories = []
+        self.reflection_map = []
+        self.value_cache = {}
 
     def generate(
         self,
@@ -357,23 +361,35 @@ class LATSQAStrategy(LATSBaseStrategy):
             if child_trajectory in child_trajectory_cache:
                 value = 0
             else:
+                failed_trajectories = ""
                 if len(self.reflection_map) > 0:
-                    failed_trajectories = ""
                     for trajectory_reflection in self.reflection_map:
                         failed_trajectories += f"Question: {question}\n{trajectory_reflection['trajectory']}\n\nExplanation: This trajectory is incorrect as {trajectory_reflection['reflection']}\nCorrectness score: 1"
                         failed_trajectories += "\n\n---\n\n"
-                        
-                value = _prompt_value(
-                    llm=self.llm,
-                    question=question,
-                    examples=examples,
-                    trajectory=child_trajectory,
-                    failed_trajectories=failed_trajectories,
-                    prompt=prompt,
-                    additional_keys=additional_keys,
-                )
+                    failed_trajectories = failed_trajectories.strip().rstrip("---").strip()
+
+                unique_key = f"{child_trajectory}::{failed_trajectories}"
+                if self.cache_values and unique_key in self.value_cache:
+                    value_str = self.value_cache[unique_key]
+                else:
+                    value_str = _prompt_value(
+                        llm=self.llm,
+                        question=question,
+                        examples=examples,
+                        trajectory=child_trajectory,
+                        failed_trajectories=failed_trajectories,
+                        prompt=prompt,
+                        additional_keys=additional_keys,
+                    )
+
+                    if self.cache_values:
+                        self.value_cache[unique_key] = value_str
+                
+                explanation, value = parse_qa_value(value_str)
 
                 child_trajectory_cache[child_trajectory] = value
+                
+
         else:
             pass
 
