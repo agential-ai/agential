@@ -53,12 +53,50 @@ def _prompt_reflection(
     return out
 
 
-def _build_value_prompt():
-    pass
+def _build_value_prompt(
+    question: str,
+    examples: str,
+    trajectory: str,
+    failed_trajectories: str,
+    prompt: str,
+    additional_keys: Dict[str, str] = {},
+):
+    prompt = PromptTemplate.from_template(prompt).format(
+        question=question, 
+        examples=examples, 
+        trajectory=trajectory,
+        failed_trajectories=failed_trajectories, 
+        **additional_keys
+    )
+    return prompt
 
 
-def _prompt_value():
-    pass
+def _prompt_value(
+    llm: BaseChatModel,
+    question: str,
+    examples: str,
+    trajectory: str,
+    failed_trajectories: str,
+    prompt: str,
+    additional_keys: Dict[str, str] = {},
+):
+    prompt = _build_value_prompt(
+        question=question,
+        examples=examples,
+        trajectory=trajectory,
+        failed_trajectories=failed_trajectories,
+        prompt=prompt,
+        additional_keys=additional_keys,
+    )
+    out = llm(
+        [
+            HumanMessage(
+                content=prompt,
+            )
+        ]
+    ).content
+    assert isinstance(out, str)
+    return out
 
 
 def _build_agent_prompt(
