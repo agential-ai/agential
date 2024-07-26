@@ -11,8 +11,6 @@ from langchain_core.messages.human import HumanMessage
 from langchain_core.prompts.prompt import PromptTemplate
 from agential.cog.lats.prompts import (
     LATS_INSTRUCTION_HOTPOTQA,
-    COT_PROMPT,
-    COT_PROMPT_FEEDBACK,
 )
 
 
