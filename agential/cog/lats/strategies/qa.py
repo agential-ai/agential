@@ -69,6 +69,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
         n_samples: int = 5,
         max_reflections: int = 4,
+        depth_limit: int = 7
     ):
         super().__init__(llm)
         self.failed_trajectories = []
@@ -76,6 +77,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         self.docstore = docstore
         self.n_samples = n_samples
         self.max_reflections = max_reflections
+        self.depth_limit = depth_limit
 
     def generate(
         self,
@@ -268,17 +270,47 @@ class LATSQAStrategy(LATSBaseStrategy):
 
         return node
 
-    def expand_node(self, node, prompt_sample, n_generate_sample, depth_limit):
-        if node.depth >= depth_limit:
+    def expand_node(
+        self, 
+        node,
+        question,
+        key,
+        examples,
+        reflect_examples,
+        reflections,
+        prompt,
+        reflect_prompt,
+        additional_keys,
+        reflect_additional_keys,
+    ):
+        if node.depth >= self.depth_limit:
             node.is_terminal = True
             return []
-        children_nodes = self.generate(node, prompt_sample, n_generate_sample)
+        children_nodes = self.generate(
+            node=node, 
+            question=question,
+            key=key,
+            examples=examples,
+            reflect_examples=reflect_examples,
+            reflections=reflections,
+            prompt=prompt,
+            reflect_prompt=reflect_prompt,
+            additional_keys=additional_keys,
+            reflect_additional_keys=reflect_additional_keys,
+        )
         node.children.extend(children_nodes)
 
         return children_nodes
     
-    def evaluate_node(self):
-        pass
+    def evaluate_node(
+        self,
+        node,
+        question,
+    ):
+        children_trajectories = [child.question + generate_prompt(upward_traversal(child)) for child in node.children if not child.is_terminal]
+
+        
+
 
     def simulate_node(self):
         pass
