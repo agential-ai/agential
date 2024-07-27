@@ -130,7 +130,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             if unique_key not in unique_states:
                 unique_states.add(unique_key)
 
-                trajectory_i, obs, reward, done, external_tool_info = (
+                trajectory_i, reward, obs, done, external_tool_info = (
                     self.generate_observation(
                         key=key,
                         action_type=action_type,
@@ -238,13 +238,11 @@ class LATSQAStrategy(LATSBaseStrategy):
     ):
         external_tool_info = {"search_result": "", "lookup_result": ""}
 
-        reward = 0
         done = False
         trajectory += f"\nObservation {depth + 1}: "
         if action_type.lower() == "finish":
             if EM(query, key):
                 obs = "Answer is CORRECT"
-                reward = 1
             else:
                 obs = "Answer is INCORRECT"
             done = True
@@ -266,7 +264,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
         trajectory += obs
 
-        return trajectory, obs, reward, done, external_tool_info
+        return trajectory, int(EM(query, key)), obs, done, external_tool_info
 
     def select_node(self, node):
         while node and node.children:
