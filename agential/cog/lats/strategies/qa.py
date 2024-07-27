@@ -25,7 +25,7 @@ from langchain_community.docstore.wikipedia import Wikipedia
 def parse_qa_action(string: str) -> Tuple[str, str]:
     """Parses an action string into an action type and its argument.
 
-    This method is used in ReAct.
+    This method is used in LATS.
 
     Args:
         string (str): The action string to be parsed.
@@ -487,3 +487,27 @@ class LATSQAStrategy(LATSBaseStrategy):
         self.failed_trajectories = []
         self.reflection_map = []
         self.value_cache = {}
+
+
+class LATSHotQAStrategy(LATSQAStrategy):
+    """A strategy class for the HotpotQA benchmark using the LATS agent."""
+
+    pass
+
+
+class LATSTriviaQAStrategy(LATSQAStrategy):
+    """A strategy class for the TriviaQA benchmark using the LATS agent."""
+
+    pass
+
+
+class LATSAmbigNQStrategy(LATSQAStrategy):
+    """A strategy class for the AmbigNQ benchmark using the LATS agent."""
+
+    pass
+
+
+class LATSFEVERStrategy(LATSQAStrategy):
+    """A strategy class for the FEVER benchmark using the LATS agent."""
+
+    pass

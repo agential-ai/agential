@@ -12,6 +12,9 @@ from agential.base.agent import BaseAgent
 
 
 class LATSAgent(BaseAgent):
+    def __init__(self):
+        pass
+
     def generate(self):
         pass
     
