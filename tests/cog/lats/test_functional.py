@@ -31,9 +31,9 @@ MOCK_ADDITIONAL_KEYS = {"key1": "value1", "key2": "value2"}
 # Fixtures
 @pytest.fixture
 def mock_chat_model():
-    return FakeListChatModel(responses=["Reflection Output", "Value Output", "Agent Output"])
-
-
+    return FakeListChatModel(
+        responses=["Reflection Output", "Value Output", "Agent Output"]
+    )
 
 
 @pytest.fixture
@@ -101,54 +101,68 @@ def test_get_unique_trajectories():
     assert get_unique_trajectories(failed_trajectories) == ["Path1", "Path3"]
 
 
-
 def test_build_reflection_prompt(mock_prompt_template):
-    prompt = _build_reflection_prompt(MOCK_QUESTION, MOCK_EXAMPLES, MOCK_TRAJECTORY, mock_prompt_template, MOCK_ADDITIONAL_KEYS)
+    prompt = _build_reflection_prompt(
+        MOCK_QUESTION,
+        MOCK_EXAMPLES,
+        MOCK_TRAJECTORY,
+        mock_prompt_template,
+        MOCK_ADDITIONAL_KEYS,
+    )
     assert prompt == MOCK_PROMPT_TEMPLATE  # No mocking, so the raw template is returned
 
 
 def test_prompt_reflection(mock_chat_model, mock_prompt_template):
-    reflection = _prompt_reflection(mock_chat_model, MOCK_QUESTION, MOCK_EXAMPLES, MOCK_TRAJECTORY, mock_prompt_template, MOCK_ADDITIONAL_KEYS)
-    mock_chat_model.assert_called_once_with([HumanMessage(content=MOCK_PROMPT_TEMPLATE)])
+    reflection = _prompt_reflection(
+        mock_chat_model,
+        MOCK_QUESTION,
+        MOCK_EXAMPLES,
+        MOCK_TRAJECTORY,
+        mock_prompt_template,
+        MOCK_ADDITIONAL_KEYS,
+    )
+    mock_chat_model.assert_called_once_with(
+        [HumanMessage(content=MOCK_PROMPT_TEMPLATE)]
+    )
     assert reflection == "Reflection Output"
 
 
 def test_build_value_prompt(mock_prompt_template):
     prompt = _build_value_prompt(
-        MOCK_QUESTION, 
-        MOCK_EXAMPLES, 
+        MOCK_QUESTION,
+        MOCK_EXAMPLES,
         MOCK_TRAJECTORY,
-        MOCK_FAILED_TRAJECTORIES, 
-        MOCK_PROMPT_TEMPLATE, 
-        MOCK_ADDITIONAL_KEYS
+        MOCK_FAILED_TRAJECTORIES,
+        MOCK_PROMPT_TEMPLATE,
+        MOCK_ADDITIONAL_KEYS,
     )
     mock_prompt_template.from_template.assert_called_once_with(MOCK_PROMPT_TEMPLATE)
     mock_prompt_template.from_template().format.assert_called_once_with(
-        question=MOCK_QUESTION, 
-        examples=MOCK_EXAMPLES, 
-        trajectory=MOCK_TRAJECTORY, 
-        failed_trajectories=MOCK_FAILED_TRAJECTORIES, 
-        **MOCK_ADDITIONAL_KEYS
+        question=MOCK_QUESTION,
+        examples=MOCK_EXAMPLES,
+        trajectory=MOCK_TRAJECTORY,
+        failed_trajectories=MOCK_FAILED_TRAJECTORIES,
+        **MOCK_ADDITIONAL_KEYS,
     )
     assert prompt == MOCK_PROMPT_TEMPLATE
 
 
 def test_build_agent_prompt(mock_prompt_template):
     prompt = _build_agent_prompt(
-        MOCK_QUESTION, 
-        MOCK_EXAMPLES, 
-        MOCK_TRAJECTORY, 
-        MOCK_REFLECTIONS, 
-        MOCK_PROMPT_TEMPLATE, 
-        MOCK_ADDITIONAL_KEYS
+        MOCK_QUESTION,
+        MOCK_EXAMPLES,
+        MOCK_TRAJECTORY,
+        MOCK_REFLECTIONS,
+        MOCK_PROMPT_TEMPLATE,
+        MOCK_ADDITIONAL_KEYS,
     )
     mock_prompt_template.from_template.assert_called_once_with(MOCK_PROMPT_TEMPLATE)
     mock_prompt_template.from_template().format.assert_called_once_with(
-        question=MOCK_QUESTION, 
-        examples=MOCK_EXAMPLES, 
-        trajectory=MOCK_TRAJECTORY, 
-        reflections=MOCK_REFLECTIONS, 
-        **MOCK_ADDITIONAL_KEYS
+        question=MOCK_QUESTION,
+        examples=MOCK_EXAMPLES,
+        trajectory=MOCK_TRAJECTORY,
+        reflections=MOCK_REFLECTIONS,
+        **MOCK_ADDITIONAL_KEYS,
     )
     assert prompt == MOCK_PROMPT_TEMPLATE
 
@@ -156,13 +170,13 @@ def test_build_agent_prompt(mock_prompt_template):
 def test_prompt_value(mock_llm, mock_prompt_template):
     mock_llm.return_value.content = "Value Output"
     value = _prompt_value(
-        mock_llm, 
-        MOCK_QUESTION, 
-        MOCK_EXAMPLES, 
-        MOCK_TRAJECTORY, 
-        MOCK_FAILED_TRAJECTORIES, 
-        MOCK_PROMPT_TEMPLATE, 
-        MOCK_ADDITIONAL_KEYS
+        mock_llm,
+        MOCK_QUESTION,
+        MOCK_EXAMPLES,
+        MOCK_TRAJECTORY,
+        MOCK_FAILED_TRAJECTORIES,
+        MOCK_PROMPT_TEMPLATE,
+        MOCK_ADDITIONAL_KEYS,
     )
     mock_llm.assert_called_once_with([HumanMessage(content=MOCK_PROMPT_TEMPLATE)])
     assert value == "Value Output"
@@ -171,13 +185,13 @@ def test_prompt_value(mock_llm, mock_prompt_template):
 def test_prompt_agent(mock_llm, mock_prompt_template):
     mock_llm.return_value.content = "Agent Output"
     agent = _prompt_agent(
-        mock_llm, 
-        MOCK_QUESTION, 
-        MOCK_EXAMPLES, 
-        MOCK_TRAJECTORY, 
-        MOCK_REFLECTIONS, 
-        MOCK_PROMPT_TEMPLATE, 
-        MOCK_ADDITIONAL_KEYS
+        mock_llm,
+        MOCK_QUESTION,
+        MOCK_EXAMPLES,
+        MOCK_TRAJECTORY,
+        MOCK_REFLECTIONS,
+        MOCK_PROMPT_TEMPLATE,
+        MOCK_ADDITIONAL_KEYS,
     )
     mock_llm.assert_called_once_with([HumanMessage(content=MOCK_PROMPT_TEMPLATE)])
     assert agent == "Agent Output"
