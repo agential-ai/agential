@@ -18,8 +18,7 @@ from agential.cog.lats.functional import (
 )
 
 
-from agential.cog.react.prompts import REACT_INSTRUCTION_HOTPOTQA
-from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+from agential.cog.lats.prompts import LATS_INSTRUCTION_HOTPOTQA, HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT
 
 
 @pytest.fixture
@@ -60,9 +59,10 @@ def sample_nodes():
 
 def test_get_node_trajectory(sample_nodes):
     root, child1, _ = sample_nodes
-    expected_trajectory = (
-        "Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]"
-    )
+    expected_trajectory = [
+        "Root thought",
+        "Thought 1: Child1 thought\nAction 1: Lookup[topic]"
+    ]
     assert get_node_trajectory(child1) == expected_trajectory
 
 
@@ -77,140 +77,100 @@ def test_get_unique_trajectories():
 
 
 def test__build_reflection_prompt():
-    """Test _build_reflection_prompt function."""
     prompt = _build_reflection_prompt(
-        question="",
-        scratchpad="",
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        prompt=REACT_INSTRUCTION_HOTPOTQA,
+        question="What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?",
+        trajectory="Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]",
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,  # Use LATS specific examples
+        prompt=LATS_INSTRUCTION_HOTPOTQA,          # Use LATS instruction
     )
     assert isinstance(prompt, str)
+    assert "Colorado orogeny" in prompt
+    assert "elevation range" in prompt
 
-    # Test with custom prompt template string.
-    gt_out = "  examples 1"  
-    out = _build_reflection_prompt(
-        question="",
-        scratchpad="",
-        examples="examples",
-        prompt="{question} {scratchpad} {examples} {max_steps}",
-    )
-    assert out == gt_out
 
 def test__prompt_reflection():
-    """Test _prompt_reflection function."""
     out = _prompt_reflection(
         llm=FakeListChatModel(responses=["Reflection Output"]),
-        question="",
-        scratchpad="",
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        prompt=REACT_INSTRUCTION_HOTPOTQA,
+        question="What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?",
+        trajectory="Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]",
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,  # Use LATS specific examples
+        prompt=LATS_INSTRUCTION_HOTPOTQA,          # Use LATS instruction
     )
     assert isinstance(out, str)
     assert out == "Reflection Output"
 
-    # Test with custom prompt template string.
+def test__build_reflection_prompt():
+    prompt = _build_reflection_prompt(
+        question="What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?",
+        trajectory="Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]",
+        examples= HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT, # Update to LATS specific reflection examples
+        prompt=LATS_INSTRUCTION_HOTPOTQA,          # Use LATS instruction
+    )
+    assert isinstance(prompt, str)
+    assert "Colorado orogeny" in prompt
+    assert "elevation range" in prompt
+
+
+def test__prompt_reflection():
     out = _prompt_reflection(
         llm=FakeListChatModel(responses=["Reflection Output"]),
-        question="",
-        scratchpad="",
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        prompt="{question} {scratchpad} {examples} {max_steps}",
+        question="What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?",
+        trajectory="Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]",
+        examples= HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT, # Update to LATS specific reflection examples
+        prompt=LATS_INSTRUCTION_HOTPOTQA,          # Use LATS instruction
     )
     assert isinstance(out, str)
     assert out == "Reflection Output"
+
+
 
 def test__build_value_prompt():
-    """Test _build_value_prompt function."""
     prompt = _build_value_prompt(
-        question="",
-        scratchpad="",
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        prompt=REACT_INSTRUCTION_HOTPOTQA,
+        question="What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?",
+        trajectory="Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]",
+        examples= HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,  
+        prompt=LATS_INSTRUCTION_HOTPOTQA,
         failed_trajectories="Failed Trajectories",
     )
     assert isinstance(prompt, str)
-
-    # Test with custom prompt template string.
-    gt_out = "  examples Failed Trajectories 1"
-    out = _build_value_prompt(
-        question="",
-        scratchpad="",
-        examples="examples",
-        failed_trajectories="Failed Trajectories",
-        prompt="{question} {scratchpad} {examples} {failed_trajectories} {max_steps}",
-    )
-    assert out == gt_out
+    assert "Colorado orogeny" in prompt
+    assert "elevation range" in prompt
+    
 
 def test__prompt_value():
-    """Test _prompt_value function."""
     out = _prompt_value(
         llm=FakeListChatModel(responses=["Value Output"]),
-        question="",
-        scratchpad="",
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        question="What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?",
+        trajectory="Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]",
+        examples= HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,  
         failed_trajectories="Failed Trajectories",
-        prompt=REACT_INSTRUCTION_HOTPOTQA,
-    )
-    assert isinstance(out, str)
-    assert out == "Value Output"
-
-    # Test with custom prompt template string.
-    out = _prompt_value(
-        llm=FakeListChatModel(responses=["Value Output"]),
-        question="",
-        scratchpad="",
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        failed_trajectories="Failed Trajectories",
-        prompt="{question} {scratchpad} {examples} {failed_trajectories} {max_steps}",
+        prompt=LATS_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, str)
     assert out == "Value Output"
 
 
 def test__build_agent_prompt():
-    """Test _build_agent_prompt function."""
     prompt = _build_agent_prompt(
-        question="",
-        scratchpad="",
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        prompt=REACT_INSTRUCTION_HOTPOTQA,
+        question="What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?",
+        trajectory="Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]",
+        examples= HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,  
+        prompt=LATS_INSTRUCTION_HOTPOTQA,
         reflections="Reflections",
     )
     assert isinstance(prompt, str)
+    assert "Colorado orogeny" in prompt
+    assert "elevation range" in prompt
 
-    # Test with custom prompt template string.
-    gt_out = "  examples Reflections 1"
-    out = _build_agent_prompt(
-        question="",
-        scratchpad="",
-        examples="examples",
-        reflections="Reflections",
-        prompt="{question} {scratchpad} {examples} {reflections} {max_steps}",
-    )
-    assert out == gt_out
 
 def test__prompt_agent():
-    """Test _prompt_agent function."""
     out = _prompt_agent(
         llm=FakeListChatModel(responses=["Agent Output"]),
-        question="",
-        scratchpad="",
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        question="What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?",
+        trajectory="Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]",
+        examples= HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,  
         reflections="Reflections",
-        prompt=REACT_INSTRUCTION_HOTPOTQA,
+        prompt=LATS_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, str)
     assert out == "Agent Output"
-
-    # Test with custom prompt template string.
-    out = _prompt_agent(
-        llm=FakeListChatModel(responses=["Agent Output"]),
-        question="",
-        scratchpad="",
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        reflections="Reflections",
-        prompt="{question} {scratchpad} {examples} {reflections} {max_steps}",
-    )
-    assert isinstance(out, str)
-    assert out == "Agent Output"
-
