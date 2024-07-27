@@ -208,6 +208,24 @@ def generate_prompt(traversed_nodes):
 
     return "\n".join(trajectory)
 
+def get_node_trajectory(node):
+    trajectory = []
+    
+    while node:
+        step = []
+        if node.depth > 0:
+            if node.state.get("thought"):
+                step.append(f"Thought {node.depth}: {node.state['thought']}")
+            if node.state.get("action"):
+                step.append(f"Action {node.depth}: {node.state['action']}")
+            if node.state.get("observation"):
+                step.append(f"Observation {node.depth}: {node.state['observation']}")
+            step = "\n".join(step)
+        trajectory.append(step)
+        node = node.parent
+    
+    return "\n".join(reversed(trajectory))
+
 
 def select_node(node: Node):
     while node and node.children:
@@ -238,7 +256,7 @@ def get_unique_trajectories(failed_trajectories, num=5):
     for traj in failed_trajectories:
         final_answer = traj.get("final_answer")
         if final_answer not in seen_final_answers:
-            unique_trajectories.append(generate_prompt(traj["trajectory"]))
+            unique_trajectories.append(traj["trajectory"])
             seen_final_answers.add(final_answer)
         if len(unique_trajectories) >= num:
             break

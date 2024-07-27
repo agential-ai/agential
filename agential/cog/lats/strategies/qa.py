@@ -7,8 +7,7 @@ from typing import Tuple
 from agential.eval.em import EM
 from agential.cog.lats.strategies.base import LATSBaseStrategy
 from agential.cog.lats.functional import (
-    generate_prompt,
-    upward_traversal,
+    get_node_trajectory,
     _prompt_value,
     get_unique_trajectories,
     _prompt_reflection,
@@ -16,7 +15,7 @@ from agential.cog.lats.functional import (
 )
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
-
+from agential.cog.react.output import ReActOutput
 from langchain_community.docstore.wikipedia import Wikipedia
 
 def parse_qa_action(string: str) -> Tuple[str, str]:
@@ -132,8 +131,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                 reflections_str += f"{reflection['trajectory']}\nFAILED TRAJECTORY\nReflection: {reflection['reflection']}\n\n"
 
         # TODO: Every time we want to call upward traversal, we should need to traverse the whole tree again. Maybe we can just store this info in the node?
-        traversed_nodes = upward_traversal(node)
-        trajectory = generate_prompt(traversed_nodes)
+        trajectory = get_node_trajectory(node)
 
         unique_states = set()
         children_nodes = []
@@ -181,11 +179,11 @@ class LATSQAStrategy(LATSBaseStrategy):
                     parent=node,
                     depth=node.depth + 1,
                     is_terminal=reward == 1 or done,
-                    reward=reward,
+                    reward=reward
                 )
 
                 if new_node.is_terminal and reward == 0:
-                    traversed_nodes = upward_traversal(new_node)
+                    traversed_nodes = get_node_trajectory(new_node)
                     self.failed_trajectories.append(
                         {
                             "trajectory": traversed_nodes,
@@ -353,7 +351,6 @@ class LATSQAStrategy(LATSBaseStrategy):
 
         return children_nodes
 
-    # TODO: maybe we need structured outputs here too...
     def evaluate_node(
         self,
         node,
@@ -363,7 +360,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         additional_keys,
     ):
         children_trajectories = [
-            {"child_trajectory": generate_prompt(upward_traversal(child)), "idx": idx}
+            {"child_trajectory": get_node_trajectory(child), "idx": idx}
             for idx, child in enumerate(node.children)
             if not child.is_terminal
         ]
@@ -405,7 +402,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                 node.children[idx].value = value
 
                 child_trajectory_cache[child_trajectory] = value
-            values.append(value)
+            values.append({"value": value, "explanation": explanation})
 
         return values
 
