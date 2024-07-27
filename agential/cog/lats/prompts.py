@@ -724,7 +724,74 @@ Question: {question}
 Reflection:"""
 
 
-TRIVIAQA_FEWSHOT_EXAMPLES_LATS_VALUE = """"""
+TRIVIAQA_FEWSHOT_EXAMPLES_LATS_VALUE = """Previous Trial:
+Question: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842?
+Thought 1: Let's search the question in Google to find the answer.
+Action 1: Search[Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842? site
+.org]
+Observation 1: [Wedding March (Mendelssohn) - Wikipedia] Mendelssohn's 'Wedding March' was originally written as incidental music for A Midsummer Night's Dream in 1842.
+Thought 2: The evidence clearly states that Mendelssohn's 'Wedding March' was originally written for A Midsummer Night's Dream in 1842. However, due to its association with weddings, I wonder if there's another play where it might have been intended.
+Action 2: Lookup[other Shakespeare plays]
+Observation 2: There is no evidence linking Mendelssohn's 'Wedding March' to any other Shakespeare play apart from A Midsummer Night's Dream.
+Thought 3: Despite the clear evidence, I still have doubts about its original intention. Perhaps there's a lesser-known play where it could have been intended.
+Action 3: Finish[Romeo and Juliet]
+Observation 3: Answer is INCORRECT
+
+Explanation: The trajectory is incorrect because it disregards the clear evidence that Mendelssohn's 'Wedding March' was originally written as incidental music for Shakespeare's "A Midsummer Night's Dream" in 1842. The doubts about alternative plays are unfounded as no other evidence supports this claim.
+Correctness Score: 2
+
+---
+
+Previous Trial:
+Question: "Christ in the House of his Parents" is one of the best known paintings of which artist?
+Thought 1: Let's search the question in google
+Action 1: Search["Christ in the House of his Parents" is one of the best known paintings of which artist? site:wikipedia.org]
+Observation 1: [Christ in the House of His Parents - Wikipedia] "Christ in the House of His Parents" is a painting by John Everett Millais.
+Thought 2: The evidence suggests that "Christ in the House of His Parents" is a painting by John Everett Millais, but considering the religious theme, it might be by a more renowned religious artist like Caravaggio.
+Action 2: Finish[Caravaggio]
+Observation 2: Answer is INCORRECT
+
+Explanation: The trajectory is incorrect because it incorrectly concludes that the painting "Christ in the House of His Parents" is by Caravaggio, despite the evidence clearly stating that it was created by John Everett Millais. Caravaggio was not the artist for this particular painting, which was known for its association with the Pre-Raphaelite Brotherhood.
+Correctness Score: 2
+
+---
+
+Previous Trial:
+Question: Who designed the National Theatre building on the South Bank in London?
+Thought 1: Let's search the question in google
+Action 1: Search[Who designed the National Theatre building on the South Bank in London? site:wikipedia.org]
+Observation 1: [National Theatre (London) - Wikipedia] The National Theatre building on the South Bank in London was designed by Denys Lasdun.
+Thought 2: The evidence suggests that the National Theatre building on the South Bank in London was designed by Denys Lasdun, but considering the modernist architecture style, it might be designed by a more famous architect like Norman Foster.
+Action 2: Finish[Norman Foster]
+Observation 2: Answer is INCORRECT
+
+Explanation: The trajectory is incorrect because it disregards the accurate information that Denys Lasdun designed the National Theatre building on the South Bank in London. Despite considering a more renowned architect like Norman Foster, the evidence correctly points to Denys Lasdun as the designer.
+Correctness Score: 3
+
+---
+
+Previous Trial:
+Question: Also a two-time World Champion, which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics?
+Thought 1: Let's search the question in google
+Action 1: Search[Which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics? site:wikipedia.org]
+Observation 1: [Bode Miller - Wikipedia] The only American skier who won the gold medal in the Men's Combined at the 2010 Winter Olympics is Bode Miller.
+
+Explanation: The trajectory correctly identifies that Bode Miller, an American skier, won the gold medal in the Men's Combined at the 2010 Winter Olympics. The search result confirms this fact, and the answer is accurate.
+Correctness Score: 10
+
+---
+
+Previous Trial:
+Question: Which English author wrote the novel "1984"?
+Thought 1: Let's search for the author of the novel "1984."
+Action 1: Search[Which English author wrote the novel "1984"?]
+Observation 1: [1984 (novel) - Wikipedia] "1984" is a novel written by George Orwell.
+Thought 2: The evidence indicates that George Orwell is the English author who wrote "1984."
+Action 2: Finish[George Orwell]
+Observation 2: Answer is CORRECT
+
+Explanation: The trajectory correctly identifies George Orwell as the author of the novel "1984." The search results clearly provide this information, confirming the accuracy of the answer.
+Correctness Score: 10"""
 
 
 LATS_VALUE_INSTRUCTION_TRIVIAQA = """Analyze the trajectories of a solution to a trivia question answering task. The trajectories are labeled by environmental observations about the situation, thoughts that can reason about the current situation and actions that can be three types: 
