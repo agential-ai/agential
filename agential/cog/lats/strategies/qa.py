@@ -18,7 +18,6 @@ from agential.utils.parse import remove_newline
 from agential.cog.react.output import ReActOutput
 from langchain_community.docstore.wikipedia import Wikipedia
 
-# TODO: Every time we want to call upward traversal, we should need to traverse the whole tree again. Maybe we can just store this info in the node?
 # TODO: can we get generate_observation to return less? 
 # TODO: On a side note, can we just use pydantic classes to structure things?
 
