@@ -1,5 +1,6 @@
 """LATS prompts and fewshot examples selector."""
 
+from typing import Dict, Any
 
 from agential.base.factory import BaseFactory
 from agential.cog.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
@@ -143,3 +144,43 @@ LATS_STRATEGIES = {
     Benchmarks.HUMANEVAL: None,
     Benchmarks.MBPP: None,
 }
+
+
+class LATSFactory(BaseFactory):
+
+    @staticmethod
+    def get_fewshots(
+        benchmark: str, fewshot_type: str, **kwargs: Any
+    ) -> Dict[str, str]:
+        if benchmark not in LATS_FEWSHOTS:
+            raise ValueError(
+                f"Benchmark '{benchmark}' few-shots not found for LATS."
+            )
+        
+        if fewshot_type not in LATS_BENCHMARK_FEWSHOTS[benchmark]:
+            raise ValueError(
+                f"Benchmark '{benchmark}' few-shot type not supported for LATS."
+            )
+        
+        benchmark_fewshots = BENCHMARK_FEWSHOTS[benchmark][fewshot_type]
+
+        return {"examples": benchmark_fewshots, **LATS_FEWSHOTS[benchmark]}
+
+    @staticmethod
+    def get_prompts(benchmark: str, **kwargs: Any) -> Dict[str, str]:
+        if benchmark not in LATS_PROMPTS:
+            raise ValueError(
+                f"Benchmark '{benchmark}' prompt not found for LATS."
+            )
+
+        return LATS_PROMPTS[benchmark]
+    
+    @staticmethod
+    def get_strategy(benchmark: str, **kwargs: Any) -> LATSBaseStrategy:
+        if benchmark not in LATS_STRATEGIES:
+            raise ValueError(
+                f"Unsupported benchmark: {benchmark} for agent LATS"
+            )
+
+        strategy = LATS_STRATEGIES[benchmark]
+        return strategy(**kwargs)
