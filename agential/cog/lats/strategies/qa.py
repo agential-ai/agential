@@ -18,7 +18,10 @@ from agential.utils.parse import remove_newline
 from agential.cog.react.output import ReActOutput
 from langchain_community.docstore.wikipedia import Wikipedia
 
-# TODO: need to return as much info as possible
+# TODO: test the strategy class manually
+# TODO: write the LATSAgent class
+# TODO: need to return as much info as possible; pydantic outputs
+
 
 def parse_qa_action(string: str) -> Tuple[str, str]:
     """Parses an action string into an action type and its argument.
@@ -42,6 +45,7 @@ def parse_qa_action(string: str) -> Tuple[str, str]:
         argument = ""
     return action_type, argument
 
+
 def parse_qa_value(string: str) -> Tuple[str, int]:
     try:
         explanation_part = string.split("Explanation:")[1].strip()
@@ -50,7 +54,8 @@ def parse_qa_value(string: str) -> Tuple[str, int]:
         return explanation.strip(), score
     except Exception:
         return "Explanation not found", 0
-    
+
+
 class Node:
     def __init__(
         self,
@@ -82,25 +87,21 @@ class Node:
         return self.value / self.visits + np.sqrt(
             2 * np.log(self.parent.visits) / self.visits
         )
-    
+
     def add_children(self, children):
         self.children.extend(children)
 
     def to_dict(self):
         return {
-            'state': self.state,
-            'parent': self.parent.to_dict() if self.parent else None,
-            'children': [child.to_dict() for child in self.children],
-            'visits': self.visits,
-            'value': self.value,
-            'depth': self.depth,
-            'is_terminal': self.is_terminal,
-            'reward': self.reward,
+            "state": self.state,
+            "parent": self.parent.to_dict() if self.parent else None,
+            "children": [child.to_dict() for child in self.children],
+            "visits": self.visits,
+            "value": self.value,
+            "depth": self.depth,
+            "is_terminal": self.is_terminal,
+            "reward": self.reward,
         }
-
-
-
-
 
 
 class LATSQAStrategy(LATSBaseStrategy):
@@ -125,7 +126,6 @@ class LATSQAStrategy(LATSBaseStrategy):
         self.reflection_map = []
         self.value_cache = {}
 
-
     def generate(
         self,
         node: Node,
@@ -138,7 +138,6 @@ class LATSQAStrategy(LATSBaseStrategy):
         reflect_prompt,
         additional_keys,
         reflect_additional_keys,
-        
     ):
         reflections_str = ""
         if self.reflect_condition():
@@ -199,7 +198,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                     parent=node,
                     depth=node.depth + 1,
                     is_terminal=reward == 1 or done,
-                    reward=reward
+                    reward=reward,
                 )
 
                 if new_node.is_terminal and reward == 0:
@@ -214,15 +213,15 @@ class LATSQAStrategy(LATSBaseStrategy):
                 children_nodes.append(new_node)
 
                 children_node_info = {
-                    "thought": thought, 
+                    "thought": thought,
                     "action_type": action_type,
-                    "query": query, 
-                    "obs": obs, 
-                    "reward": reward, 
-                    "done": done, 
+                    "query": query,
+                    "obs": obs,
+                    "reward": reward,
+                    "done": done,
                     "external_tool_info": external_tool_info,
                     "is_terminal": reward == 1 or done,
-                    "depth": node.depth + 1   
+                    "depth": node.depth + 1,
                 }
 
                 children_node_states.append(children_node_info)
@@ -399,7 +398,9 @@ class LATSQAStrategy(LATSBaseStrategy):
                     for trajectory_reflection in self.reflection_map:
                         failed_trajectories += f"Question: {question}\n{trajectory_reflection['trajectory']}\n\nExplanation: This trajectory is incorrect as {trajectory_reflection['reflection']}\nCorrectness score: 1"
                         failed_trajectories += "\n\n---\n\n"
-                    failed_trajectories = failed_trajectories.strip().rstrip("---").strip()
+                    failed_trajectories = (
+                        failed_trajectories.strip().rstrip("---").strip()
+                    )
 
                 unique_key = f"{trajectory}::{failed_trajectories}"
                 if self.cache_values and unique_key in self.value_cache:
@@ -417,7 +418,7 @@ class LATSQAStrategy(LATSBaseStrategy):
 
                     if self.cache_values:
                         self.value_cache[unique_key] = value_str
-                
+
                 explanation, value = parse_qa_value(value_str)
                 value = value / 10
                 node.children[idx].value = value
@@ -428,32 +429,41 @@ class LATSQAStrategy(LATSBaseStrategy):
         return values
 
     def simulate_node(
-            self,
-            node, 
-            question, 
-            key , 
-            examples ,
-            reflect_examples, 
-            reflections,prompt , 
-            reflect_prompt , 
-            additional_keys, 
-            reflect_additional_keys
-        ):
+        self,
+        node,
+        question,
+        key,
+        examples,
+        reflect_examples,
+        reflections,
+        prompt,
+        reflect_prompt,
+        additional_keys,
+        reflect_additional_keys,
+    ):
         depth = node.depth
         n = 5
         rewards = [0]
-        value_list = []
         while not node.is_terminal and depth < self.depth_limit:
-            # Generate new states
-            new_states = []
-            values = []
+            new_states, values = [], []
             while len(new_states) == 0:
-                new_states = self.generate(node , question, key, examples ,reflect_examples , reflections ,prompt , reflect_prompt , additional_keys, reflect_additional_keys)
+                new_states = self.generate(
+                    node,
+                    question,
+                    key,
+                    examples,
+                    reflect_examples,
+                    reflections,
+                    prompt,
+                    reflect_prompt,
+                    additional_keys,
+                    reflect_additional_keys,
+                )
 
             for state in new_states:
                 if state.is_terminal:
                     return state.reward, state
-            
+
             for child in new_states:
                 if not child.is_terminal:
                     child_trajectory = get_node_trajectory(child)
@@ -462,7 +472,9 @@ class LATSQAStrategy(LATSBaseStrategy):
                         for trajectory_reflection in self.reflection_map:
                             failed_trajectories += f"Question: {question}\n{trajectory_reflection['trajectory']}\n\nExplanation: This trajectory is incorrect as {trajectory_reflection['reflection']}\nCorrectness score: 1"
                             failed_trajectories += "\n\n---\n\n"
-                        failed_trajectories = failed_trajectories.strip().rstrip("---").strip()
+                        failed_trajectories = (
+                            failed_trajectories.strip().rstrip("---").strip()
+                        )
                     value = _prompt_value(
                         llm=self.llm,
                         question=question,
@@ -474,18 +486,17 @@ class LATSQAStrategy(LATSBaseStrategy):
                     )
 
                     value = parse_qa_value(value)
-                    value_list.append(value)
+                    values.append(value)
 
-            max_value_index = value_list.index(max(value_list))
-            
-            rewards.append(max(value_list))
+            max_value_index = values.index(max(values))
+
+            rewards.append(max(values))
             node = new_states[max_value_index]
             depth += 1
 
             if depth == self.depth_limit:
                 rewards = [-1]
         return sum(rewards) / len(rewards), node
-            
 
     def backpropagate_node(self, node, value):
         while node:
@@ -528,4 +539,6 @@ class LATSQAStrategy(LATSBaseStrategy):
         return reflections
 
     def reset(self):
-        pass
+        self.failed_trajectories = []
+        self.reflection_map = []
+        self.value_cache = {}

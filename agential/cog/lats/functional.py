@@ -62,11 +62,11 @@ def _build_value_prompt(
     additional_keys: Dict[str, str] = {},
 ):
     prompt = PromptTemplate.from_template(prompt).format(
-        question=question, 
-        examples=examples, 
+        question=question,
+        examples=examples,
         trajectory=trajectory,
-        failed_trajectories=failed_trajectories, 
-        **additional_keys
+        failed_trajectories=failed_trajectories,
+        **additional_keys,
     )
     return prompt
 
@@ -208,9 +208,10 @@ def generate_prompt(traversed_nodes):
 
     return "\n".join(trajectory)
 
+
 def get_node_trajectory(node):
     trajectory = []
-    
+
     while node:
         step = []
         if node.depth > 0:
@@ -223,7 +224,7 @@ def get_node_trajectory(node):
             step = "\n".join(step)
         trajectory.append(step)
         node = node.parent
-    
+
     return "\n".join(reversed(trajectory))
 
 
@@ -443,6 +444,7 @@ def expand_node(node, prompt_sample, n_generate_sample, depth_limit=7):
     children_nodes = generate_new_states(node, prompt_sample, n_generate_sample)
     return children_nodes
 
+
 def get_value(task, x, y, n_evaluate_sample, cache_value=True):
     global reflection_map
     global failed_trajectories
@@ -456,6 +458,7 @@ def get_value(task, x, y, n_evaluate_sample, cache_value=True):
     if cache_value:
         task.value_cache[value_prompt] = value
     return value
+
 
 # def get_value(task, x, y, n_evaluate_sample, cache_value=True):
 #     global reflection_map
@@ -496,7 +499,9 @@ def evaluate_node(node, task, n_evaluate_sample):
     # Pre-allocate votes list
     votes = votes + [0] * (len(node.children) - len(votes))
     # [a, b, c] + [0] * num_terminal_children
-    for i, child in enumerate(node.children):  # [<list of values for non terminal children>] + [<list of 0s for terminal children>]
+    for i, child in enumerate(
+        node.children
+    ):  # [<list of values for non terminal children>] + [<list of 0s for terminal children>]
         child.value = votes[i]
 
     return sum(votes) / len(votes) if votes else 0
