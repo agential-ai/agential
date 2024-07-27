@@ -56,7 +56,6 @@ def parse_qa_value(string: str) -> Tuple[str, int]:
 
 
 class LATSQAStrategy(LATSBaseStrategy):
-
     def __init__(
         self,
         llm,
