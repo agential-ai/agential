@@ -391,11 +391,12 @@ class LATSQAStrategy(LATSBaseStrategy):
         additional_keys,
         reflect_additional_keys,
     ):
+        all_children_node_states, all_values = [], []
         depth = node.depth
         rewards = [0]
         while not node.is_terminal and depth < self.depth_limit:
             values = []
-            new_children_nodes, new_children_node_states = self.generate(
+            children_nodes, children_node_states = self.generate(
                 node=node,
                 question=question,
                 key=key,
@@ -407,12 +408,13 @@ class LATSQAStrategy(LATSBaseStrategy):
                 additional_keys=additional_keys,
                 reflect_additional_keys=reflect_additional_keys,
             )
+            all_children_node_states.append(children_node_states)
 
-            for state in new_children_nodes:
-                if state.is_terminal:
-                    return state.reward, state
+            for node in children_nodes:
+                if node.is_terminal:
+                    return node.reward, node, all_children_node_states
 
-            for child in new_children_nodes:
+            for child in children_nodes:
                 if not child.is_terminal:
                     child_trajectory = get_node_trajectory(child)
                     failed_trajectories = ""
@@ -437,13 +439,13 @@ class LATSQAStrategy(LATSBaseStrategy):
                     values.append(value)
 
             max_value_index = values.index(max(values))
-
             rewards.append(max(values))
-            node = new_children_nodes[max_value_index]
+            node = children_nodes[max_value_index]
             depth += 1
 
             if depth == self.depth_limit:
                 rewards = [-1]
+
         return sum(rewards) / len(rewards), node
 
     def backpropagate_node(self, node, value):
