@@ -412,7 +412,7 @@ class LATSQAStrategy(LATSBaseStrategy):
 
             for node in children_nodes:
                 if node.is_terminal:
-                    return node.reward, node
+                    return node.reward, node, all_children_node_states
 
             for child in children_nodes:
                 if not child.is_terminal:
