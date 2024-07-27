@@ -441,11 +441,10 @@ class LATSQAStrategy(LATSBaseStrategy):
         reflect_additional_keys,
     ):
         depth = node.depth
-        n = 5
         rewards = [0]
         while not node.is_terminal and depth < self.depth_limit:
             values = []
-            new_states = self.generate(
+            new_children_nodes, new_children_node_states = self.generate(
                 node=node,
                 question=question,
                 key=key,
@@ -458,11 +457,11 @@ class LATSQAStrategy(LATSBaseStrategy):
                 reflect_additional_keys=reflect_additional_keys,
             )
 
-            for state in new_states:
+            for state in new_children_nodes:
                 if state.is_terminal:
                     return state.reward, state
 
-            for child in new_states:
+            for child in new_children_nodes:
                 if not child.is_terminal:
                     child_trajectory = get_node_trajectory(child)
                     failed_trajectories = ""
@@ -483,13 +482,13 @@ class LATSQAStrategy(LATSBaseStrategy):
                         additional_keys=additional_keys,
                     )
 
-                    value = parse_qa_value(value)
+                    explanation, value = parse_qa_value(value)
                     values.append(value)
 
             max_value_index = values.index(max(values))
 
             rewards.append(max(values))
-            node = new_states[max_value_index]
+            node = new_children_nodes[max_value_index]
             depth += 1
 
             if depth == self.depth_limit:
