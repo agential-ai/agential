@@ -336,6 +336,7 @@ Reflection: My reasoning failed because I doubted the information even though it
 
 ---
 
+Previous Trial:
 Claim: Tim Burton didn't direct the film "Edward Scissorhands."
 Thought 1: I need to search for the film "Edward Scissorhands" to verify who directed it.
 Action 1: Search[Edward Scissorhands]

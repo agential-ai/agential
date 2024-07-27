@@ -18,6 +18,10 @@ from agential.utils.parse import remove_newline
 from agential.cog.react.output import ReActOutput
 from langchain_community.docstore.wikipedia import Wikipedia
 
+# TODO: Every time we want to call upward traversal, we should need to traverse the whole tree again. Maybe we can just store this info in the node?
+# TODO: can we get generate_observation to return less? On a side note, can we just use pydantic classes to structure things?
+
+
 def parse_qa_action(string: str) -> Tuple[str, str]:
     """Parses an action string into an action type and its argument.
 
@@ -130,7 +134,6 @@ class LATSQAStrategy(LATSBaseStrategy):
             for reflection in reflections:
                 reflections_str += f"{reflection['trajectory']}\nFAILED TRAJECTORY\nReflection: {reflection['reflection']}\n\n"
 
-        # TODO: Every time we want to call upward traversal, we should need to traverse the whole tree again. Maybe we can just store this info in the node?
         trajectory = get_node_trajectory(node)
 
         unique_states = set()
@@ -256,7 +259,6 @@ class LATSQAStrategy(LATSBaseStrategy):
 
         return trajectory, action_type, query
 
-    # TODO: can we get this method to return less?
     def generate_observation(
         self,
         key,
