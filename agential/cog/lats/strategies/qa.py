@@ -14,10 +14,6 @@ from agential.cog.lats.functional import (
     _prompt_reflection,
     _prompt_agent,
 )
-from agential.cog.lats.prompts import (
-    HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
-    LATS_REFLECT_INSTRUCTION_HOTPOTQA,
-)
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
 
@@ -367,15 +363,17 @@ class LATSQAStrategy(LATSBaseStrategy):
         additional_keys,
     ):
         children_trajectories = [
-            generate_prompt(upward_traversal(child))
-            for child in node.children
+            {"child_trajectory": generate_prompt(upward_traversal(child)), "idx": idx}
+            for idx, child in enumerate(node.children)
             if not child.is_terminal
         ]
 
         values = []
         child_trajectory_cache = {}
         for child_trajectory in children_trajectories:
-            if child_trajectory in child_trajectory_cache:
+            trajectory = child_trajectory["child_trajectory"]
+            idx = child_trajectory["idx"]
+            if trajectory in child_trajectory_cache:
                 value = 0
             else:
                 failed_trajectories = ""
@@ -385,7 +383,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                         failed_trajectories += "\n\n---\n\n"
                     failed_trajectories = failed_trajectories.strip().rstrip("---").strip()
 
-                unique_key = f"{child_trajectory}::{failed_trajectories}"
+                unique_key = f"{trajectory}::{failed_trajectories}"
                 if self.cache_values and unique_key in self.value_cache:
                     value_str = self.value_cache[unique_key]
                 else:
@@ -393,7 +391,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                         llm=self.llm,
                         question=question,
                         examples=examples,
-                        trajectory=child_trajectory,
+                        trajectory=trajectory,
                         failed_trajectories=failed_trajectories,
                         prompt=prompt,
                         additional_keys=additional_keys,
@@ -404,11 +402,11 @@ class LATSQAStrategy(LATSBaseStrategy):
                 
                 explanation, value = parse_qa_value(value_str)
                 value = value / 10
+                node.children[idx].value = value
 
                 child_trajectory_cache[child_trajectory] = value
             values.append(value)
 
-        # TODO: finish up evaluate_node
         return values
 
     def simulate_node(self):

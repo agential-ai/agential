@@ -477,7 +477,8 @@ def evaluate_node(node, task, n_evaluate_sample):
 
     # Pre-allocate votes list
     votes = votes + [0] * (len(node.children) - len(votes))
-    for i, child in enumerate(node.children):
+    # [a, b, c] + [0] * num_terminal_children
+    for i, child in enumerate(node.children):  # [<list of values for non terminal children>] + [<list of 0s for terminal children>]
         child.value = votes[i]
 
     return sum(votes) / len(votes) if votes else 0
