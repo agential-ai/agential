@@ -556,3 +556,125 @@ Explanation:"""
 
 
 # ======================================================================== TRIVIAQA ======================================================================== #
+
+
+LATS_INSTRUCTION_TRIVIAQA = """Solve a trivia question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: 
+(1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
+(2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
+(3) Finish[answer], which returns the answer and finishes the task.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+{reflections}
+
+Question: {question}{trajectory}"""
+
+
+TRIVIAQA_FEWSHOT_EXAMPLES_LATS_REFLECT = """Previous Trial:
+Question: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842?
+Thought 1: Let's search the question in Google to find the answer.
+Action 1: Search[Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842? site
+.org]
+Observation 1: [Wedding March (Mendelssohn) - Wikipedia] Mendelssohn's 'Wedding March' was originally written as incidental music for A Midsummer Night's Dream in 1842.
+Thought 2: The evidence clearly states that Mendelssohn's 'Wedding March' was originally written for A Midsummer Night's Dream in 1842. However, due to its association with weddings, I wonder if there's another play where it might have been intended.
+Action 2: Lookup[other Shakespeare plays]
+Observation 2: There is no evidence linking Mendelssohn's 'Wedding March' to any other Shakespeare play apart from A Midsummer Night's Dream.
+Thought 3: Despite the clear evidence, I still have doubts about its original intention. Perhaps there's a lesser-known play where it could have been intended.
+Action 3: Finish[Romeo and Juliet]
+Observation 3: Answer is INCORRECT
+
+Reflection: My reasoning failed because I questioned the clear evidence provided by the source and made an incorrect assumption based on the nature of the piece. In the future, I should rely on verified information and avoid speculating without factual basis.
+
+---
+
+Previous Trial:
+Question: "Christ in the House of his Parents" is one of the best known paintings of which artist?
+Thought 1: Let's search the question in google
+Action 1: Search["Christ in the House of his Parents" is one of the best known paintings of which artist? site:wikipedia.org]
+Observation 1: [Christ in the House of His Parents - Wikipedia] "Christ in the House of His Parents" is a painting by John Everett Millais.
+Thought 2: The evidence suggests that "Christ in the House of His Parents" is a painting by John Everett Millais, but considering the religious theme, it might be by a more renowned religious artist like Caravaggio.
+Action 2: Finish[Caravaggio]
+Observation 2: Answer is INCORRECT
+
+Reflection: My reasoning failed because I ignored the clear evidence provided by the source and made an incorrect assumption based on the theme of the painting. In the future, I should rely on the provided evidence rather than making unsupported assumptions.
+
+---
+
+Previous Trial:
+Question: Who designed the National Theatre building on the South Bank in London?
+Thought 1: Let's search the question in google
+Action 1: Search[Who designed the National Theatre building on the South Bank in London? site:wikipedia.org]
+Observation 1: [National Theatre (London) - Wikipedia] The National Theatre building on the South Bank in London was designed by Denys Lasdun.
+Thought 2: The evidence suggests that the National Theatre building on the South Bank in London was designed by Denys Lasdun, but considering the modernist architecture style, it might be designed by a more famous architect like Norman Foster.
+Action 2: Finish[Norman Foster]
+Observation 2: Answer is INCORRECT
+
+Reflection: My reasoning failed because I ignored the clear evidence provided by the source and made an incorrect assumption based on the style of the building. In the future, I should rely on the provided evidence rather than making unsupported assumptions.
+
+---
+
+Previous Trial:
+Question: Also a two-time World Champion, which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics?
+Thought 1: Let's search the question in google
+Action 1: Search[Which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics? site:wikipedia.org]
+Observation 1: [Bode Miller - Wikipedia] The only American skier who won the gold medal in the Men's Combined at the 2010 Winter Olympics is Bode Miller.
+Thought 2: The evidence suggests that Bode Miller is the only American skier who won the gold medal in the Men's Combined at the 2010 Winter Olympics, but considering his fame, it might be more recent or another famous skier like Lindsey Vonn.
+Action 2: Finish[Lindsey Vonn]
+Observation 2: Answer is INCORRECT
+
+Reflection: My reasoning failed because I doubted the clear evidence provided by the source and made an incorrect assumption based on the fame of another skier. In the future, I should rely on the provided evidence rather than making unsupported assumptions.
+
+---
+
+Previous Trial:
+Question: Which English author wrote the novel "1984"?
+Thought 1: Let's search the question in google.
+Action 1: Search[Which English author wrote the novel "1984"? site:wikipedia.org]
+Observation 1: [1984 (novel) - Wikipedia] The novel "1984" was written by George Orwell, an English author known for his dystopian works.
+Thought 2: The evidence suggests that George Orwell is the author of "1984," but I should verify if there are any other authors commonly associated with this novel.
+Action 2: Lookup[authors commonly associated with 1984 novel]
+Observation 2: The search confirms that George Orwell is the primary author associated with "1984."
+Thought 3: Although the search confirms George Orwell, I still feel there might be a connection with Aldous Huxley due to the similar dystopian themes. I should double-check to avoid any mistake.
+Action 3: Finish[Aldous Huxley]
+Observation 3: Answer is INCORRECT
+
+Reflection: My reasoning failed because I doubted the clear evidence provided by multiple sources and made an incorrect assumption based on thematic similarity with another author's work. In the future, I should rely on the provided evidence and avoid overcomplicating the verification process."""
+
+
+
+LATS_REFLECT_INSTRUCTION_TRIVIAQA = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Previous trial:
+Question: {question}
+{trajectory}
+
+Reflection:"""
+
+
+TRIVIAQA_FEWSHOT_EXAMPLES_LATS_VALUE = """"""
+
+
+LATS_VALUE_INSTRUCTION_TRIVIAQA = """Analyze the trajectories of a solution to a trivia question answering task. The trajectories are labeled by environmental observations about the situation, thoughts that can reason about the current situation and actions that can be three types: 
+(1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
+(2) Lookup[keyword], which returns the next sentence containing keyword in the current passage.
+(3) Finish[answer], which returns the answer and finishes the task.
+
+Given a question and a trajectory, evaluate its correctness by focusing on the latest thought, action, and observation. Then, provide a score between 1 and 10.
+Incomplete trajectories can be correct if the thoughts and actions so far are correct, even if the answer is not found yet. Do not generate additional thoughts or actions. 
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+{failed_trajectories}
+
+Previous Trial:
+Question: {question}{trajectory}
+
+Explanation:"""
+

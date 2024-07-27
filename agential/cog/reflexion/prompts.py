@@ -691,6 +691,7 @@ Reflection: My reasoning failed because I doubted the clear evidence provided by
 
 ---
 
+Previous Trial:
 Question: Which English author wrote the novel "1984"?
 Thought 1: Let's search the question in google.
 Action 1: Search[Which English author wrote the novel "1984"? site:wikipedia.org]
