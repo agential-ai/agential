@@ -2,7 +2,7 @@
 
 import pytest
 
-from langchain_core.messages.human import HumanMessage
+
 from langchain_community.chat_models.fake import FakeListChatModel
 
 from agential.cog.lats.functional import (
@@ -18,34 +18,8 @@ from agential.cog.lats.functional import (
 )
 
 
-# Mock Data
-MOCK_QUESTION = "What is the meaning of life?"
-MOCK_EXAMPLES = "Here are some examples..."
-MOCK_TRAJECTORY = "Thought: ... Action: ... Observation: ..."
-MOCK_REFLECTIONS = "Reflection 1: ... Reflection 2: ..."
-MOCK_FAILED_TRAJECTORIES = "Failed 1: ... Failed 2: ..."
-MOCK_PROMPT_TEMPLATE = "Question: {question}\nExamples: {examples}"
-MOCK_ADDITIONAL_KEYS = {"key1": "value1", "key2": "value2"}
-
-
-# Fixtures
-@pytest.fixture
-def mock_chat_model():
-    return FakeListChatModel(
-        responses=["Reflection Output", "Value Output", "Agent Output"]
-    )
-
-
-@pytest.fixture
-def mock_prompt_template():
-    class MockPromptTemplate:
-        def __init__(self, template):
-            self.template = template
-
-        def format(self, **kwargs):
-            return self.template.format(**kwargs)  # Simply format the template
-
-    return MockPromptTemplate(MOCK_PROMPT_TEMPLATE)
+from agential.cog.react.prompts import REACT_INSTRUCTION_HOTPOTQA
+from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 
 
 @pytest.fixture
@@ -101,97 +75,142 @@ def test_get_unique_trajectories():
     assert get_unique_trajectories(failed_trajectories) == ["Path1", "Path3"]
 
 
-def test_build_reflection_prompt(mock_prompt_template):
+
+def test__build_reflection_prompt():
+    """Test _build_reflection_prompt function."""
     prompt = _build_reflection_prompt(
-        MOCK_QUESTION,
-        MOCK_EXAMPLES,
-        MOCK_TRAJECTORY,
-        mock_prompt_template,
-        MOCK_ADDITIONAL_KEYS,
+        question="",
+        scratchpad="",
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        prompt=REACT_INSTRUCTION_HOTPOTQA,
     )
-    assert prompt == MOCK_PROMPT_TEMPLATE  # No mocking, so the raw template is returned
+    assert isinstance(prompt, str)
 
-
-def test_prompt_reflection(mock_chat_model, mock_prompt_template):
-    reflection = _prompt_reflection(
-        mock_chat_model,
-        MOCK_QUESTION,
-        MOCK_EXAMPLES,
-        MOCK_TRAJECTORY,
-        mock_prompt_template,
-        MOCK_ADDITIONAL_KEYS,
+    # Test with custom prompt template string.
+    gt_out = "  examples 1"  
+    out = _build_reflection_prompt(
+        question="",
+        scratchpad="",
+        examples="examples",
+        prompt="{question} {scratchpad} {examples} {max_steps}",
     )
-    mock_chat_model.assert_called_once_with(
-        [HumanMessage(content=MOCK_PROMPT_TEMPLATE)]
+    assert out == gt_out
+
+def test__prompt_reflection():
+    """Test _prompt_reflection function."""
+    out = _prompt_reflection(
+        llm=FakeListChatModel(responses=["Reflection Output"]),
+        question="",
+        scratchpad="",
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        prompt=REACT_INSTRUCTION_HOTPOTQA,
     )
-    assert reflection == "Reflection Output"
+    assert isinstance(out, str)
+    assert out == "Reflection Output"
 
+    # Test with custom prompt template string.
+    out = _prompt_reflection(
+        llm=FakeListChatModel(responses=["Reflection Output"]),
+        question="",
+        scratchpad="",
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        prompt="{question} {scratchpad} {examples} {max_steps}",
+    )
+    assert isinstance(out, str)
+    assert out == "Reflection Output"
 
-def test_build_value_prompt(mock_prompt_template):
+def test__build_value_prompt():
+    """Test _build_value_prompt function."""
     prompt = _build_value_prompt(
-        MOCK_QUESTION,
-        MOCK_EXAMPLES,
-        MOCK_TRAJECTORY,
-        MOCK_FAILED_TRAJECTORIES,
-        MOCK_PROMPT_TEMPLATE,
-        MOCK_ADDITIONAL_KEYS,
+        question="",
+        scratchpad="",
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        prompt=REACT_INSTRUCTION_HOTPOTQA,
+        failed_trajectories="Failed Trajectories",
     )
-    mock_prompt_template.from_template.assert_called_once_with(MOCK_PROMPT_TEMPLATE)
-    mock_prompt_template.from_template().format.assert_called_once_with(
-        question=MOCK_QUESTION,
-        examples=MOCK_EXAMPLES,
-        trajectory=MOCK_TRAJECTORY,
-        failed_trajectories=MOCK_FAILED_TRAJECTORIES,
-        **MOCK_ADDITIONAL_KEYS,
+    assert isinstance(prompt, str)
+
+    # Test with custom prompt template string.
+    gt_out = "  examples Failed Trajectories 1"
+    out = _build_value_prompt(
+        question="",
+        scratchpad="",
+        examples="examples",
+        failed_trajectories="Failed Trajectories",
+        prompt="{question} {scratchpad} {examples} {failed_trajectories} {max_steps}",
     )
-    assert prompt == MOCK_PROMPT_TEMPLATE
+    assert out == gt_out
+
+def test__prompt_value():
+    """Test _prompt_value function."""
+    out = _prompt_value(
+        llm=FakeListChatModel(responses=["Value Output"]),
+        question="",
+        scratchpad="",
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        failed_trajectories="Failed Trajectories",
+        prompt=REACT_INSTRUCTION_HOTPOTQA,
+    )
+    assert isinstance(out, str)
+    assert out == "Value Output"
+
+    # Test with custom prompt template string.
+    out = _prompt_value(
+        llm=FakeListChatModel(responses=["Value Output"]),
+        question="",
+        scratchpad="",
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        failed_trajectories="Failed Trajectories",
+        prompt="{question} {scratchpad} {examples} {failed_trajectories} {max_steps}",
+    )
+    assert isinstance(out, str)
+    assert out == "Value Output"
 
 
-def test_build_agent_prompt(mock_prompt_template):
+def test__build_agent_prompt():
+    """Test _build_agent_prompt function."""
     prompt = _build_agent_prompt(
-        MOCK_QUESTION,
-        MOCK_EXAMPLES,
-        MOCK_TRAJECTORY,
-        MOCK_REFLECTIONS,
-        MOCK_PROMPT_TEMPLATE,
-        MOCK_ADDITIONAL_KEYS,
+        question="",
+        scratchpad="",
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        prompt=REACT_INSTRUCTION_HOTPOTQA,
+        reflections="Reflections",
     )
-    mock_prompt_template.from_template.assert_called_once_with(MOCK_PROMPT_TEMPLATE)
-    mock_prompt_template.from_template().format.assert_called_once_with(
-        question=MOCK_QUESTION,
-        examples=MOCK_EXAMPLES,
-        trajectory=MOCK_TRAJECTORY,
-        reflections=MOCK_REFLECTIONS,
-        **MOCK_ADDITIONAL_KEYS,
+    assert isinstance(prompt, str)
+
+    # Test with custom prompt template string.
+    gt_out = "  examples Reflections 1"
+    out = _build_agent_prompt(
+        question="",
+        scratchpad="",
+        examples="examples",
+        reflections="Reflections",
+        prompt="{question} {scratchpad} {examples} {reflections} {max_steps}",
     )
-    assert prompt == MOCK_PROMPT_TEMPLATE
+    assert out == gt_out
 
-
-def test_prompt_value(mock_llm, mock_prompt_template):
-    mock_llm.return_value.content = "Value Output"
-    value = _prompt_value(
-        mock_llm,
-        MOCK_QUESTION,
-        MOCK_EXAMPLES,
-        MOCK_TRAJECTORY,
-        MOCK_FAILED_TRAJECTORIES,
-        MOCK_PROMPT_TEMPLATE,
-        MOCK_ADDITIONAL_KEYS,
+def test__prompt_agent():
+    """Test _prompt_agent function."""
+    out = _prompt_agent(
+        llm=FakeListChatModel(responses=["Agent Output"]),
+        question="",
+        scratchpad="",
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        reflections="Reflections",
+        prompt=REACT_INSTRUCTION_HOTPOTQA,
     )
-    mock_llm.assert_called_once_with([HumanMessage(content=MOCK_PROMPT_TEMPLATE)])
-    assert value == "Value Output"
+    assert isinstance(out, str)
+    assert out == "Agent Output"
 
-
-def test_prompt_agent(mock_llm, mock_prompt_template):
-    mock_llm.return_value.content = "Agent Output"
-    agent = _prompt_agent(
-        mock_llm,
-        MOCK_QUESTION,
-        MOCK_EXAMPLES,
-        MOCK_TRAJECTORY,
-        MOCK_REFLECTIONS,
-        MOCK_PROMPT_TEMPLATE,
-        MOCK_ADDITIONAL_KEYS,
+    # Test with custom prompt template string.
+    out = _prompt_agent(
+        llm=FakeListChatModel(responses=["Agent Output"]),
+        question="",
+        scratchpad="",
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        reflections="Reflections",
+        prompt="{question} {scratchpad} {examples} {reflections} {max_steps}",
     )
-    mock_llm.assert_called_once_with([HumanMessage(content=MOCK_PROMPT_TEMPLATE)])
-    assert agent == "Agent Output"
+    assert isinstance(out, str)
+    assert out == "Agent Output"
+
