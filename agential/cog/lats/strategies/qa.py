@@ -391,7 +391,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         additional_keys,
         reflect_additional_keys,
     ):
-        children_node_states, all_values = [], []
+        all_children_node_states, all_values = [], []
         depth = node.depth
         rewards = [0]
         while not node.is_terminal and depth < self.depth_limit:
@@ -408,7 +408,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                 additional_keys=additional_keys,
                 reflect_additional_keys=reflect_additional_keys,
             )
-            children_node_states.append(children_node_states)
+            all_children_node_states.append(children_node_states)
 
             for node in children_nodes:
                 if node.is_terminal:
