@@ -57,7 +57,7 @@ conda create -n agential python=3.11.5
 Now activate the environment.
 
 ```
-
+conda activate agential
 ```
 
 Please ensure you are in your virtual environment prior to beginning the next step. The Anaconda Command Prompt should have changed from `(base) C:\Users\<username>>` ---> `(agential) C:\Users\<username>>`. The change from (base) to (agential) indicates that you are now in your virtual environment.
