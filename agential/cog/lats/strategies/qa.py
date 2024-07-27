@@ -1,7 +1,6 @@
 """LATS Agent strategies for QA."""
 
 import re
-import numpy as np
 
 from typing import Tuple
 from agential.eval.em import EM
@@ -15,7 +14,7 @@ from agential.cog.lats.functional import (
 )
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
-from agential.cog.react.output import ReActOutput
+from agential.cog.lats.functional import Node
 from langchain_community.docstore.wikipedia import Wikipedia
 
 # TODO: test the strategy class manually
@@ -54,54 +53,6 @@ def parse_qa_value(string: str) -> Tuple[str, int]:
         return explanation.strip(), score
     except Exception:
         return "Explanation not found", 0
-
-
-class Node:
-    def __init__(
-        self,
-        state=None,
-        parent=None,
-        children=None,
-        visits=0,
-        value=0,
-        depth=None,
-        is_terminal=False,
-        reward=0,
-    ):
-        self.state = (
-            {"thought": "", "action": "", "observation": ""} if state is None else state
-        )
-        self.parent = parent
-        self.children = [] if children is None else children
-        self.visits = visits
-        self.value = value
-        self.depth = (
-            0 if parent is None else parent.depth + 1 if depth is None else depth
-        )
-        self.is_terminal = is_terminal
-        self.reward = reward
-
-    def uct(self):
-        if self.visits == 0:
-            return self.value
-        return self.value / self.visits + np.sqrt(
-            2 * np.log(self.parent.visits) / self.visits
-        )
-
-    def add_children(self, children):
-        self.children.extend(children)
-
-    def to_dict(self):
-        return {
-            "state": self.state,
-            "parent": self.parent.to_dict() if self.parent else None,
-            "children": [child.to_dict() for child in self.children],
-            "visits": self.visits,
-            "value": self.value,
-            "depth": self.depth,
-            "is_terminal": self.is_terminal,
-            "reward": self.reward,
-        }
 
 
 class LATSQAStrategy(LATSBaseStrategy):
