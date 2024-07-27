@@ -18,9 +18,7 @@ from agential.utils.parse import remove_newline
 from agential.cog.react.output import ReActOutput
 from langchain_community.docstore.wikipedia import Wikipedia
 
-# TODO: can we get generate_observation to return less? 
-# TODO: On a side note, can we just use pydantic classes to structure things?
-
+# TODO: need to return as much info as possible
 
 def parse_qa_action(string: str) -> Tuple[str, str]:
     """Parses an action string into an action type and its argument.
