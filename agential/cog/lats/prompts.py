@@ -532,7 +532,76 @@ Question: {question}
 Reflection:"""
 
 
-AMBIGNQ_FEWSHOT_EXAMPLES_LATS_VALUE = """"""
+AMBIGNQ_FEWSHOT_EXAMPLES_LATS_VALUE = """Previous Trial:
+Question: When did men's figure skating become a summer Olympic sport?
+Thought 1: Let's search the question in google.
+Action 1: Search[When did men's figure skating become a summer Olympic sport?]
+Observation 1: [Figure skating at the Olympic Games - Wikipedia] According to some sources, men's figure skating became a summer Olympic sport during the 1912 Stockholm Olympics.
+Thought 2: The claim about the 1912 Stockholm Olympics seems plausible, as it was a notable event in Olympic history.
+Action 2: Lookup[1912 Stockholm Olympics figure skating]
+Observation 2: Further research suggests that men's figure skating was included in the 1912 Stockholm Olympics, but as part of the Winter Olympic program, not the Summer Olympics.
+Thought 3: Despite the association with the Winter Olympics, the claim might still hold if there was an exception or a unique circumstance in 1912.
+Action 3: Finish[1912 Stockholm Olympics]
+Observation 3: Answer is INCORRECT
+
+Explanation: The trajectory is incorrect because it mistakenly associates men’s figure skating with the 1912 Stockholm Olympics, which were indeed a Summer Olympic event, but figure skating was part of the Winter Olympics, starting with the 1908 London Games. The confusion likely arose from misinterpreting the type of Olympic Games in which figure skating was included.
+Correctness score: 2
+
+---
+
+Previous Trial:
+Question: When was the last time the USA men's national soccer team missed the World Cup?
+Thought 1: Let's search the question in google
+Action 1: Search[When was the last time the USA men's national soccer team missed the World Cup? site: wikipedia.org]
+Observation 1: [United States at the FIFA World Cup - Wikipedia] The United States participated in every World Cup from 1990 through 2014, but did not qualify in 2018, marking the first time the team had missed a World Cup since 1986. They returned to the World Cup by qualifying for the 2022 edition.
+Thought 2: The evidence suggests that the USA men's national soccer team did not qualify for the World Cup in 2018. Since they participated in every World Cup from 1990 through 2014, the last time they missed before 2018 must be 1986.
+Action 2: Finish[1986]
+Observation 2: Answer is INCORRECT
+
+Explanation: The trajectory is incorrect because it fails to recognize that the most recent instance of the USA men's national soccer team missing the World Cup was indeed 2018, not 1986. The team missed the 2018 World Cup but participated in all tournaments from 1990 to 2014 and returned in 2022.
+Correctness score: 3
+
+---
+
+Previous Trial:
+Question: What does barium do in a ct scan?
+Thought 1: Let's search the question in google
+Action 1: Search[What does barium do in a ct scan? site: wikipedia.org]
+Observation 1: [Barium sulfate suspension - Wikipedia] Barium sulfate suspension, often simply called barium, is a contrast agent used during X-rays. Specifically it is used to improve visualization of the gastrointestinal tract (esophagus, stomach, intestines) on plain X-ray or computed tomography.
+Thought 2: The evidence suggests that barium is used to "improve visualization of the gastrointestinal tract".
+Action 2: Search[Why barium used in CT scans?]
+Observation 2: [What To Expect Before Your CT Scan - St. Elizabeth's Medical Center] The barium helps to highlight body areas for the CT scan. If you are having a scan of a body part other than the abdomen you should arrive 30 minutes before your appointed time.
+Thought 3: The evidence suggests that barium helps "highlight body areas" for the CT scan, so it is used for general visualization purposes.
+Action 3: Finish[to highlight body areas]
+Observation 3: Answer is INCORRECT
+
+Explanation: The trajectory is incorrect because it misinterprets the specific role of barium in a CT scan. Barium is used as a contrast agent primarily to improve visualization of the gastrointestinal tract, not just to highlight body areas in a general sense. The detailed information about its use for imaging the gastrointestinal tract was available but not accurately incorporated into the conclusion.
+Correctness score: 4
+
+---
+
+Previous Trial:
+Question: Where was the fort located at which the first shot of the civil war was fired?
+Thought 1: Let's search the question in google
+Action 1: Search[Where was the fort located at which the first shot of the civil war was fired?]
+Observation 1: [Civil War Begins - U.S. Senate] April 12, 1861 At 4:30 a.m. on April 12, 1861, Confederate troops fired on Fort Sumter in South Carolina’s Charleston Harbor. Less than 34 hours later, Union forces surrendered.
+
+Explanation: The trajectory correctly identifies that the first shot of the Civil War was fired at Fort Sumter, located in Charleston Harbor, South Carolina. The conclusion is accurate based on the provided evidence.
+Correctness score: 10
+
+---
+
+Previous Trial:
+Question: When did Nando's come to the UK?
+Thought 1: Let's search for the information about Nando's entry into the UK.
+Action 1: Search[When did Nando's come to the UK?]
+Observation 1: Nando's is a South African restaurant chain known for its peri-peri chicken. The chain opened its first UK branch in 1992.
+Thought 2: The evidence indicates that Nando's established its first UK restaurant in 1992.
+Action 2: Finish[1992]
+Observation 2: Answer is CORRECT
+
+Explanation: The trajectory correctly identifies that Nando's opened its first UK branch in 1992, which accurately answers the question about when the restaurant chain came to the UK.
+Correct Score: 10"""
 
 
 LATS_VALUE_INSTRUCTION_AMBIGNQ = """Analyze the trajectories of a solution to a question answering task. The trajectories are labeled by environmental observations about the situation, thoughts that can reason about the current situation and actions that can be three types: 
@@ -641,7 +710,6 @@ Action 3: Finish[Aldous Huxley]
 Observation 3: Answer is INCORRECT
 
 Reflection: My reasoning failed because I doubted the clear evidence provided by multiple sources and made an incorrect assumption based on thematic similarity with another author's work. In the future, I should rely on the provided evidence and avoid overcomplicating the verification process."""
-
 
 
 LATS_REFLECT_INSTRUCTION_TRIVIAQA = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
