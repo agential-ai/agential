@@ -100,6 +100,11 @@ class Node:
             'reward': self.reward,
         }
 
+
+
+
+
+
 class LATSQAStrategy(LATSBaseStrategy):
 
     def __init__(
@@ -122,6 +127,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         self.reflection_map = []
         self.value_cache = {}
 
+
     def generate(
         self,
         node: Node,
@@ -134,6 +140,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         reflect_prompt,
         additional_keys,
         reflect_additional_keys,
+        
     ):
         reflections_str = ""
         if self.reflect_condition():
@@ -422,8 +429,65 @@ class LATSQAStrategy(LATSBaseStrategy):
 
         return values
 
-    def simulate_node(self):
-        pass
+    def simulate_node(
+            self,
+            node, 
+            question, 
+            key , 
+            examples ,
+            reflect_examples, 
+            reflections,prompt , 
+            reflect_prompt , 
+            additional_keys, 
+            reflect_additional_keys
+        ):
+        depth = node.depth
+        n = 5
+        rewards = [0]
+        value_list = []
+        while not node.is_terminal and depth < self.depth_limit:
+            # Generate new states
+            new_states = []
+            values = []
+            while len(new_states) == 0:
+                new_states = self.generate(node , question, key, examples ,reflect_examples , reflections ,prompt , reflect_prompt , additional_keys, reflect_additional_keys)
+
+            for state in new_states:
+                if state.is_terminal:
+                    return state.reward, state
+            
+            for child in new_states:
+                if not child.is_terminal:
+                    child_trajectory = get_node_trajectory(child)
+                    failed_trajectories = ""
+                    if len(self.reflection_map) > 0:
+                        for trajectory_reflection in self.reflection_map:
+                            failed_trajectories += f"Question: {question}\n{trajectory_reflection['trajectory']}\n\nExplanation: This trajectory is incorrect as {trajectory_reflection['reflection']}\nCorrectness score: 1"
+                            failed_trajectories += "\n\n---\n\n"
+                        failed_trajectories = failed_trajectories.strip().rstrip("---").strip()
+                    value = _prompt_value(
+                        llm=self.llm,
+                        question=question,
+                        examples=examples,
+                        trajectory=child_trajectory,
+                        failed_trajectories=failed_trajectories,
+                        prompt=prompt,
+                        additional_keys=additional_keys,
+                    )
+
+                    value = parse_qa_value(value)
+                    value_list.append(value)
+
+            max_value_index = value_list.index(max(value_list))
+            
+            rewards.append(max(value_list))
+            node = new_states[max_value_index]
+            depth += 1
+
+            if depth == self.depth_limit:
+                rewards = [-1]
+        return sum(rewards) / len(rewards), node
+            
 
     def backpropagate_node(self, node, value):
         while node:
