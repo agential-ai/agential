@@ -55,6 +55,7 @@ class Node:
             "reward": self.reward,
         }
 
+
 def _build_reflection_prompt(
     question: str,
     examples: str,
