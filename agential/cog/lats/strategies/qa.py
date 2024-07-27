@@ -88,6 +88,18 @@ class Node:
     def add_children(self, children):
         self.children.extend(children)
 
+    def to_dict(self):
+        return {
+            'state': self.state,
+            'parent': self.parent.to_dict() if self.parent else None,
+            'children': [child.to_dict() for child in self.children],
+            'visits': self.visits,
+            'value': self.value,
+            'depth': self.depth,
+            'is_terminal': self.is_terminal,
+            'reward': self.reward,
+        }
+
 class LATSQAStrategy(LATSBaseStrategy):
 
     def __init__(
@@ -138,7 +150,7 @@ class LATSQAStrategy(LATSBaseStrategy):
 
         unique_states = set()
         children_nodes = []
-        child_node_states = []
+        children_node_states = []
         for _ in range(self.n_samples):
             trajectory_i, thought = self.generate_thought(
                 question=question,
@@ -196,19 +208,21 @@ class LATSQAStrategy(LATSBaseStrategy):
 
                 children_nodes.append(new_node)
 
-                child_node_state = {
+                children_node_info = {
                     "thought": thought, 
                     "action_type": action_type,
                     "query": query, 
                     "obs": obs, 
                     "reward": reward, 
                     "done": done, 
-                    "external_tool_info": external_tool_info        
+                    "external_tool_info": external_tool_info,
+                    "is_terminal": reward == 1 or done,
+                    "depth": node.depth + 1   
                 }
 
-                child_node_states.append(child_node_state)
+                children_node_states.append(children_node_info)
 
-        return children_nodes, child_node_states
+        return children_nodes, children_node_states
 
     def generate_thought(
         self,
@@ -337,7 +351,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         if node.depth >= self.depth_limit:
             node.is_terminal = True
             return []
-        children_nodes = self.generate(
+        children_nodes, children_node_states = self.generate(
             node=node,
             question=question,
             key=key,
@@ -351,7 +365,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         )
         node.add_children(children_nodes)
 
-        return children_nodes
+        return children_nodes, children_node_states
 
     def evaluate_node(
         self,
