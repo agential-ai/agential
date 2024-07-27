@@ -334,7 +334,6 @@ class LATSQAStrategy(LATSBaseStrategy):
             node = max(
                 [child for child in node.children if not child.is_terminal],
                 key=lambda child: child.uct(),
-                default=None,
             )
 
         return node
@@ -423,7 +422,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                 value = value / 10
                 node.children[idx].value = value
 
-                child_trajectory_cache[child_trajectory] = value
+                child_trajectory_cache[trajectory] = value
             values.append({"value": value, "explanation": explanation})
 
         return values
@@ -445,20 +444,19 @@ class LATSQAStrategy(LATSBaseStrategy):
         n = 5
         rewards = [0]
         while not node.is_terminal and depth < self.depth_limit:
-            new_states, values = [], []
-            while len(new_states) == 0:
-                new_states = self.generate(
-                    node,
-                    question,
-                    key,
-                    examples,
-                    reflect_examples,
-                    reflections,
-                    prompt,
-                    reflect_prompt,
-                    additional_keys,
-                    reflect_additional_keys,
-                )
+            values = []
+            new_states = self.generate(
+                node=node,
+                question=question,
+                key=key,
+                examples=examples,
+                reflect_examples=reflect_examples,
+                reflections=reflections,
+                prompt=prompt,
+                reflect_prompt=reflect_prompt,
+                additional_keys=additional_keys,
+                reflect_additional_keys=reflect_additional_keys,
+            )
 
             for state in new_states:
                 if state.is_terminal:
