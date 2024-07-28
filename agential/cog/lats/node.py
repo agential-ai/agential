@@ -53,8 +53,6 @@ class Node(BaseNode):
     def to_dict(self):
         return {
             "state": self.state,
-            "parent": self.parent.to_dict() if self.parent else None,
-            "children": [child.to_dict() for child in self.children],
             "visits": self.visits,
             "value": self.value,
             "depth": self.depth,
