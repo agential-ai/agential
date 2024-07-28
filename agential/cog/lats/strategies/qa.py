@@ -75,6 +75,11 @@ class LATSQAStrategy(LATSBaseStrategy):
         self.failed_trajectories = []
         self.reflection_map = []
         self.value_cache = {}
+        self.root = None
+
+    def initialize(self):
+        self.root = Node(state=None)
+        return self.root
 
     def generate(
         self,
