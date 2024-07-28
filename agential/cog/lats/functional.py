@@ -2,13 +2,28 @@
 
 from typing import Dict
 import numpy as np
+from abc import ABC, abstractmethod
 
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
 from langchain_core.prompts.prompt import PromptTemplate
 
 
-class Node:
+class BaseNode(ABC):
+    @abstractmethod
+    def uct(self):
+        pass
+
+    @abstractmethod
+    def add_children(self, children):
+        pass
+
+    @abstractmethod
+    def to_dict(self):
+        pass
+    
+
+class Node(BaseNode):
     def __init__(
         self,
         state=None,
@@ -54,6 +69,7 @@ class Node:
             "is_terminal": self.is_terminal,
             "reward": self.reward,
         }
+
 
 
 def _build_reflection_prompt(
