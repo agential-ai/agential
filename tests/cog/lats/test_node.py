@@ -25,14 +25,16 @@ def test_node_init() -> None:
     assert node.reward == 0
 
 
-def test_node_with_parent():
+def test_node_with_parent() -> None:
+    """Test node init with parent."""
     parent = Node()
     child = Node(parent=parent)
     assert child.parent == parent
     assert child.depth == 1
 
 
-def test_node_uct():
+def test_node_uct() -> None:
+    """Test node uct."""
     parent = Node()
     parent.visits = 10
     child = Node(parent=parent)
@@ -42,7 +44,8 @@ def test_node_uct():
     assert child.uct() == pytest.approx(expected_uct)
 
 
-def test_node_add_children():
+def test_node_add_children() -> None:
+    """Test node add_children."""
     parent = Node()
     child1 = Node()
     child2 = Node()
@@ -52,7 +55,8 @@ def test_node_add_children():
     assert parent.children[1] == child2
 
 
-def test_node_to_dict():
+def test_node_to_dict() -> None:
+    """Test node to_dict."""
     node = Node(
         state=ReActOutput(
             **{
@@ -84,12 +88,14 @@ def test_node_to_dict():
     assert node_dict["reward"] == 1
 
 
-def test_node_uct_zero_visits():
+def test_node_uct_zero_visits() -> None:
+    """Test node uct with zero visits."""
     node = Node(value=5)
     assert node.uct() == 5
 
 
-def test_node_depth_inheritance():
+def test_node_depth_inheritance() -> None:
+    """Test node depth inheritance."""
     root = Node()
     level1 = Node(parent=root)
     level2 = Node(parent=level1)
