@@ -190,6 +190,7 @@ class LATSQAStrategy(LATSBaseStrategy):
     ) -> Tuple[str, str]:
         trajectory += f"\nThought {depth + 1}:"
         thought = _prompt_agent(
+            llm=self.llm,
             question=question,
             examples=examples,
             trajectory=trajectory,

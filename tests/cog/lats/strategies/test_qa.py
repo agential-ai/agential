@@ -91,8 +91,23 @@ def test_initialize() -> None:
 
 def test_generate_thought() -> None:
     """Test the generate_thought method."""
-    pass
+    llm = FakeListChatModel(responses=["I should search for information about the topic. Action: Search[topic]"])
+    strategy = LATSHotQAStrategy(llm=llm)
+    
+    question = "What is the capital of France?"
+    examples = "Example 1\nExample 2"
+    trajectory = "Previous thought"
+    reflections = "Reflection 1\nReflection 2"
+    depth = 1
+    prompt = "Generate a thought"
+    additional_keys = {"key": "value"}
 
+    updated_trajectory, thought  = strategy.generate_thought(
+        question, examples, trajectory, reflections, depth, prompt, additional_keys
+    )
+
+    assert thought == "I should search for information about the topic."
+    assert updated_trajectory == "Previous thought\nThought 2: I should search for information about the topic."
 
 def test_generate_action() -> None:
     """Test the generate_action method."""
