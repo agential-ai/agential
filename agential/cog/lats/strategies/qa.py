@@ -14,12 +14,8 @@ from agential.cog.lats.functional import (
 )
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
-from agential.cog.lats.functional import Node
+from agential.cog.lats.node import Node
 from langchain_community.docstore.wikipedia import Wikipedia
-
-# TODO: test the strategy class manually
-# TODO: write the LATSAgent class
-# TODO: need to return as much info as possible; pydantic outputs
 
 
 def parse_qa_action(string: str) -> Tuple[str, str]:
