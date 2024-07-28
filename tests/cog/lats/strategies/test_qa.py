@@ -10,6 +10,8 @@ from agential.cog.lats.strategies.qa import (
     LATSAmbigNQStrategy,
     LATSFEVERStrategy,
 )
+from agential.utils.docstore import DocstoreExplorer
+from langchain_community.docstore.wikipedia import Wikipedia
 
 
 def test_parse_qa_action():
@@ -45,7 +47,29 @@ def test_parse_qa_value():
 
 def test_init() -> None:
     """Test initialization."""
-    pass
+    llm = FakeListChatModel(responses=[])
+    docstore = DocstoreExplorer(Wikipedia())
+    strategy = LATSHotQAStrategy(
+        llm=llm,
+        docstore=docstore,
+        n_samples=5,
+        max_reflections=4,
+        depth_limit=7,
+        max_unique=5,
+        cache_values=True
+    )
+    
+    assert strategy.llm == llm
+    assert isinstance(strategy.docstore, DocstoreExplorer)
+    assert strategy.n_samples == 5
+    assert strategy.max_reflections == 4
+    assert strategy.depth_limit == 7
+    assert strategy.max_unique == 5
+    assert strategy.cache_values is True
+    assert strategy.root is None
+    assert strategy.failed_trajectories == []
+    assert strategy.reflection_map == []
+    assert strategy.value_cache == {}
 
 
 def test_initialize() -> None:
