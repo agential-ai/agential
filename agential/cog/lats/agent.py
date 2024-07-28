@@ -34,6 +34,13 @@ class LATSAgent(BaseAgent):
     def generate(
         self,
         question,
+        key,
+        examples,
+        reflect_examples,
+        prompt,
+        reflect_prompt,
+        additional_keys,
+        reflect_additional_keys,
         max_iterations = 30
     ):
         root = self.strategy.initialize()
@@ -44,13 +51,60 @@ class LATSAgent(BaseAgent):
                 return node
             
             children_nodes, children_node_states = self.strategy.expand_node(
-                node,
-
+                node=node,
+                question=question,
+                key=key,
+                examples=examples,
+                reflect_examples=reflect_examples,
+                prompt=prompt,
+                reflect_prompt=reflect_prompt,
+                additional_keys=additional_keys,
+                reflect_additional_keys=reflect_additional_keys,
             )
         
             while node.is_terminal or not node.children:
                 node = self.strategy.select_node(root)
-                children_nodes, children_node_states = self.strategy.expand_node(node, args, task)
+                children_nodes, children_node_states = self.strategy.expand_node(
+                    node=node,
+                    question=question,
+                    key=key,
+                    examples=examples,
+                    reflect_examples=reflect_examples,
+                    prompt=prompt,
+                    reflect_prompt=reflect_prompt,
+                    additional_keys=additional_keys,
+                    reflect_additional_keys=reflect_additional_keys,
+                )
+
+            values = self.strategy.evaluate_node(
+                node=node,
+                question=question,
+                examples=examples,
+                prompt=prompt,
+                additional_keys=additional_keys,
+            )
+
+            reward, terminal_node = self.strategy.simulate_node(
+                node=max(node.children, key=lambda child: child.value),
+                question=question,
+                key=key,
+                examples=examples,
+                reflect_examples=reflect_examples,
+                prompt=prompt,
+                reflect_prompt=reflect_prompt,
+                additional_keys=additional_keys,
+                reflect_additional_keys=reflect_additional_keys,
+            )
+
+            if self.strategy.halting_condition(terminal_node):
+                return terminal_node
+            
+            self.strategy.backpropagate_node(
+                node=terminal_node,
+                value=reward
+            )
+
+            
 
     def reset(self) -> Any:
         pass
