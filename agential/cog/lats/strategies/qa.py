@@ -2,7 +2,7 @@
 
 import re
 
-from typing import Tuple
+from typing import Tuple, List, Dict, Any
 
 from langchain_community.docstore.wikipedia import Wikipedia
 
@@ -85,22 +85,22 @@ class LATSQAStrategy(LATSBaseStrategy):
         self.value_cache = {}
         self.root = None
 
-    def initialize(self):
+    def initialize(self) -> Node:
         self.root = Node()
         return self.root
 
     def generate(
         self,
         node: Node,
-        question,
-        key,
-        examples,
-        reflect_examples,
-        prompt,
-        reflect_prompt,
-        additional_keys,
-        reflect_additional_keys,
-    ):
+        question: str,
+        key: str,
+        examples: str,
+        reflect_examples: str,
+        prompt: str,
+        reflect_prompt: str,
+        additional_keys: Dict[str, str],
+        reflect_additional_keys: Dict[str, str],
+    ) -> List[Node]:
         reflections_str = ""
         if self.reflect_condition():
             reflections = self.reflect(
@@ -180,14 +180,14 @@ class LATSQAStrategy(LATSBaseStrategy):
 
     def generate_thought(
         self,
-        question,
-        examples,
-        trajectory,
-        reflections,
-        depth,
-        prompt,
-        additional_keys,
-    ):
+        question: str,
+        examples: str,
+        trajectory: str,
+        reflections: str,
+        depth: int,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> Tuple[str, str]:
         trajectory += f"\nThought {depth + 1}:"
         thought = _prompt_agent(
             question=question,
@@ -204,14 +204,14 @@ class LATSQAStrategy(LATSBaseStrategy):
 
     def generate_action(
         self,
-        question,
-        examples,
-        trajectory,
-        reflections,
-        depth,
-        prompt,
-        additional_keys,
-    ):
+        question: str,
+        examples: str,
+        trajectory: str,
+        reflections: str,
+        depth: int,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> Tuple[str, str, str]:
         trajectory += f"\nAction {depth + 1}:"
         action = _prompt_agent(
             question=question,
@@ -229,12 +229,12 @@ class LATSQAStrategy(LATSBaseStrategy):
 
     def generate_observation(
         self,
-        key,
-        action_type,
-        query,
-        trajectory,
-        depth,
-    ):
+        key: str,
+        action_type: str,
+        query: str,
+        trajectory: str,
+        depth: int,
+    ) -> Tuple[str, int, str, bool, Dict[str, Any]]:
         external_tool_info = {"search_result": "", "lookup_result": ""}
 
         done = False
@@ -265,7 +265,7 @@ class LATSQAStrategy(LATSBaseStrategy):
 
         return trajectory, int(EM(query, key)), obs, done, external_tool_info
 
-    def select_node(self, node):
+    def select_node(self, node: Node) -> Node:
         while node and node.children:
             terminal_children = [child for child in node.children if child.is_terminal]
 
@@ -288,16 +288,16 @@ class LATSQAStrategy(LATSBaseStrategy):
 
     def expand_node(
         self,
-        node,
-        question,
-        key,
-        examples,
-        reflect_examples,
-        prompt,
-        reflect_prompt,
-        additional_keys,
-        reflect_additional_keys,
-    ):
+        node: Node,
+        question: str,
+        key: str,
+        examples: str,
+        reflect_examples: str,
+        prompt: str,
+        reflect_prompt: str,
+        additional_keys: Dict[str, str],
+        reflect_additional_keys: Dict[str, str],
+    ) -> List[Node]:
         if node.depth >= self.depth_limit:
             node.is_terminal = True
             return []
@@ -318,12 +318,12 @@ class LATSQAStrategy(LATSBaseStrategy):
 
     def evaluate_node(
         self,
-        node,
-        question,
-        examples,
-        prompt,
-        additional_keys,
-    ):
+        node: Node,
+        question: str,
+        examples: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> List[Dict[str, Any]]:
         children_trajectories = [
             {"child_trajectory": get_node_trajectory(child), "idx": idx}
             for idx, child in enumerate(node.children)
@@ -375,16 +375,16 @@ class LATSQAStrategy(LATSBaseStrategy):
 
     def simulate_node(
         self,
-        node,
-        question,
-        key,
-        examples,
-        reflect_examples,
-        prompt,
-        reflect_prompt,
-        additional_keys,
-        reflect_additional_keys,
-    ):
+        node: Node,
+        question: str,
+        key: str,
+        examples: str,
+        reflect_examples: str,
+        prompt: str,
+        reflect_prompt: str,
+        additional_keys: Dict[str, str],
+        reflect_additional_keys: Dict[str, str],
+    ) -> Tuple[float, Node, List[List[Node]], List[List[Dict[str, Any]]]]:
         depth = node.depth
         rewards = [0]
         all_children_nodes, all_values = [], []
@@ -444,7 +444,7 @@ class LATSQAStrategy(LATSBaseStrategy):
 
         return sum(rewards) / len(rewards), node, all_children_nodes, all_values
 
-    def backpropagate_node(self, node, value):
+    def backpropagate_node(self, node: Node, value: float) -> None:
         while node:
             node.visits += 1
             if node.is_terminal:
@@ -457,10 +457,10 @@ class LATSQAStrategy(LATSBaseStrategy):
 
             node = node.parent
 
-    def halting_condition(self, node):
+    def halting_condition(self, node: Node) -> bool:
         return node.is_terminal and node.reward == 1
 
-    def reflect_condition(self):
+    def reflect_condition(self) -> bool:
         unique_trajectories = get_unique_trajectories(
             self.failed_trajectories, max_unique=self.max_unique
         )
@@ -469,7 +469,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             and len(unique_trajectories) < self.max_reflections
         )
 
-    def reflect(self, question, examples, prompt, additional_keys):
+    def reflect(self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]) -> List[Dict[str, str]]:
         unique_trajectories = get_unique_trajectories(
             self.failed_trajectories, max_unique=self.max_unique
         )
@@ -491,7 +491,7 @@ class LATSQAStrategy(LATSBaseStrategy):
 
         return reflections
 
-    def reset(self):
+    def reset(self) -> None:
         self.failed_trajectories = []
         self.reflection_map = []
         self.value_cache = {}
