@@ -12,14 +12,35 @@ from agential.cog.lats.strategies.qa import (
 )
 
 
-def test_parse_qa_action() -> None:
+def test_parse_qa_action():
     """Test the parse_qa_action function."""
-    pass
+    # Test valid action strings.
+    assert parse_qa_action("Search[query]") == ("Search", "query")
+    assert parse_qa_action("Lookup[term]") == ("Lookup", "term")
+    assert parse_qa_action("Finish[answer]") == ("Finish", "answer")
 
+    # Test invalid action strings.
+    assert parse_qa_action("InvalidAction") == ("", "")
+    assert parse_qa_action("") == ("", "")
+    assert parse_qa_action("Action[]") == ("", "")
 
-def test_parse_qa_value() -> None:
-    """Test parse_qa_value function."""
-    pass
+def test_parse_qa_value():
+    """Test the parse_qa_value function."""
+    # Test valid value strings.
+    valid_input = "Some text. Explanation: This is the explanation. Correctness score: 5"
+    assert parse_qa_value(valid_input) == ("This is the explanation.", 5)
+
+    # Test invalid value strings.
+    assert parse_qa_value("No explanation or score") == ("Explanation not found", 0)
+    assert parse_qa_value("Explanation: Only explanation") == ("Explanation not found", 0)
+    assert parse_qa_value("Correctness score: 5") == ("Explanation not found", 0)
+
+    # Test edge cases.
+    assert parse_qa_value("Explanation: Empty. Correctness score: 0") == ("Empty.", 0)
+    assert parse_qa_value("Explanation: Multi-line\nexplanation. Correctness score: 10") == ("Multi-line\nexplanation.", 10)
+
+    # Test with unexpected format.
+    assert parse_qa_value("Explanation: Tricky: score. Correctness score: 7") == ("Tricky: score.", 7)
 
 
 def test_init() -> None:
@@ -115,4 +136,14 @@ def test_reset() -> None:
 
 def test_instantiate_strategies() -> None:
     """Test the instantiation of various LATS QA strategies."""
-    pass
+    llm = FakeListChatModel(responses=[])
+    hotqa_strategy = LATSHotQAStrategy(llm=llm)
+    triviaqa_strategy = LATSTriviaQAStrategy(llm=llm)
+    ambignq_strategy = LATSAmbigNQStrategy(llm=llm)
+    fever_strategy = LATSFEVERStrategy(llm=llm)
+    
+    assert isinstance(hotqa_strategy, LATSHotQAStrategy)
+    assert isinstance(triviaqa_strategy, LATSTriviaQAStrategy)
+    assert isinstance(ambignq_strategy, LATSAmbigNQStrategy)
+    assert isinstance(fever_strategy, LATSFEVERStrategy)
+    
