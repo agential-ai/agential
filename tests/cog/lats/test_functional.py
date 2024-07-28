@@ -2,7 +2,6 @@
 
 from langchain_community.chat_models.fake import FakeListChatModel
 
-from agential.cog.lats.node import Node
 from agential.cog.lats.functional import (
     _build_agent_prompt,
     _build_reflection_prompt,
@@ -13,6 +12,7 @@ from agential.cog.lats.functional import (
     get_node_trajectory,
     get_unique_trajectories,
 )
+from agential.cog.lats.node import Node
 from agential.cog.lats.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
     LATS_INSTRUCTION_HOTPOTQA,

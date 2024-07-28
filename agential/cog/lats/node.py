@@ -1,7 +1,7 @@
 """Node class for LATS."""
 
-from typing import Dict, List, Any
 from abc import ABC, abstractmethod
+from typing import Any, Dict, List
 
 import numpy as np
 
@@ -36,7 +36,7 @@ class Node(BaseNode):
         children: List of child nodes. Defaults to None (empty list).
         visits: Number of times the node has been visited. Defaults to 0.
         value: The value of the node. Defaults to 0.
-        depth: The depth of the node in the tree. Defaults to None or parent node's depth + 1.
+        depth: The depth of the node in the tree. Defaults to 0 or parent node's depth + 1.
         is_terminal: Whether the node is a terminal node. Defaults to False.
         reward: The reward associated with the node. Defaults to 0.
     """
@@ -48,7 +48,7 @@ class Node(BaseNode):
         children=None,
         visits=0,
         value=0,
-        depth=None,
+        depth=0,
         is_terminal=False,
         reward=0,
     ) -> None:
@@ -72,7 +72,7 @@ class Node(BaseNode):
         self.visits = visits
         self.value = value
         self.depth = (
-            0 if parent is None else parent.depth + 1 if depth is None else depth
+            depth if parent is None else parent.depth + 1
         )
         self.is_terminal = is_terminal
         self.reward = reward
