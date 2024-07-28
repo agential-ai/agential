@@ -2,7 +2,7 @@
 
 import re
 
-from typing import Tuple, List, Dict, Any
+from typing import Any, Dict, List, Tuple
 
 from langchain_community.docstore.wikipedia import Wikipedia
 
@@ -469,7 +469,9 @@ class LATSQAStrategy(LATSBaseStrategy):
             and len(unique_trajectories) < self.max_reflections
         )
 
-    def reflect(self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]) -> List[Dict[str, str]]:
+    def reflect(
+        self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]
+    ) -> List[Dict[str, str]]:
         unique_trajectories = get_unique_trajectories(
             self.failed_trajectories, max_unique=self.max_unique
         )

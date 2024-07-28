@@ -1,7 +1,7 @@
 """Base LATS Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Dict, List, Tuple, Any
+from typing import Any, Dict, List, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -270,7 +270,9 @@ class LATSBaseStrategy(BaseStrategy):
         pass
 
     @abstractmethod
-    def reflect(self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]) -> List[Dict[str, str]]:
+    def reflect(
+        self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]
+    ) -> List[Dict[str, str]]:
         """Perform reflection on the current search state.
 
         Args:
