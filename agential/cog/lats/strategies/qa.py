@@ -490,6 +490,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         self.failed_trajectories = []
         self.reflection_map = []
         self.value_cache = {}
+        self.root = None
 
 
 class LATSHotQAStrategy(LATSQAStrategy):
