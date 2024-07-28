@@ -239,8 +239,8 @@ def get_node_trajectory(node) -> str:
                 )
             if node.state.get("observation"):
                 step.append(f"Observation {node.depth}: {node.state['observation']}")
-            step = "\n".join(step)
-        trajectory.append(step)
+        step_str = "\n".join(step)
+        trajectory.append(step_str)
         node = node.parent
 
     return "\n".join(reversed(trajectory))
