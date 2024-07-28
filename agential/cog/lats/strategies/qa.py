@@ -15,6 +15,7 @@ from agential.cog.lats.functional import (
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
 from agential.cog.lats.node import Node
+from agential.cog.react.output import ReActOutput
 from langchain_community.docstore.wikipedia import Wikipedia
 
 
@@ -142,11 +143,16 @@ class LATSQAStrategy(LATSBaseStrategy):
                 )
 
                 new_node = Node(
-                    state={
-                        "thought": f"Thought {node.depth + 1}: {thought}",
-                        "action": f"Action {node.depth + 1}: {action_type}[{query}]",
-                        "observation": f"Observation {node.depth + 1}: {obs}",
-                    },
+                    state=ReActOutput(
+                        **{
+                            "thought": thought,
+                            "action_type": action_type,
+                            "query": query,
+                            "observation": obs,
+                            "answer": "" if not done else query.lower().strip(),
+                            "external_tool_info": external_tool_info,
+                        }
+                    ),
                     parent=node,
                     depth=node.depth + 1,
                     is_terminal=reward == 1 or done,
@@ -173,6 +179,18 @@ class LATSQAStrategy(LATSBaseStrategy):
                     "done": done,
                     "external_tool_info": external_tool_info,
                     "is_terminal": reward == 1 or done,
+                    "depth": node.depth + 1,
+                }
+            else:
+                children_node_info = {
+                    "thought": thought,
+                    "action_type": action_type,
+                    "query": query,
+                    "obs": "",
+                    "reward": None,
+                    "done": None,
+                    "external_tool_info": {},
+                    "is_terminal": None,
                     "depth": node.depth + 1,
                 }
 
