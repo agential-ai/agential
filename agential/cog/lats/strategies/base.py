@@ -1,5 +1,6 @@
 """Base LATS Agent strategy class."""
 
+from typing import List, Dict
 from abc import abstractmethod
 
 from agential.base.strategies import BaseStrategy
