@@ -24,8 +24,6 @@ from agential.utils.parse import remove_newline
 def parse_qa_action(string: str) -> Tuple[str, str]:
     """Parses an action string into an action type and its argument.
 
-    This method is used in LATS.
-
     Args:
         string (str): The action string to be parsed.
 
@@ -45,6 +43,15 @@ def parse_qa_action(string: str) -> Tuple[str, str]:
 
 
 def parse_qa_value(string: str) -> Tuple[str, int]:
+    """Extracts the explanation and correctness score from a given string.
+
+    Args:
+        string (str): The input string containing an explanation and correctness score.
+
+    Returns:
+        Tuple[str, int]: A tuple containing the explanation (str) and the correctness score (int).
+        If parsing fails, returns ("Explanation not found", 0).
+    """
     try:
         explanation_part = string.split("Explanation:")[1].strip()
         explanation, score_part = explanation_part.split("Correctness score:")
