@@ -1,75 +1,10 @@
 """Functional module for Language Agent Tree Search (LATS)."""
 
-from typing import Dict
-import numpy as np
-from abc import ABC, abstractmethod
+from typing import Dict, List
 
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
 from langchain_core.prompts.prompt import PromptTemplate
-
-
-class BaseNode(ABC):
-    @abstractmethod
-    def uct(self):
-        pass
-
-    @abstractmethod
-    def add_children(self, children):
-        pass
-
-    @abstractmethod
-    def to_dict(self):
-        pass
-    
-
-class Node(BaseNode):
-    def __init__(
-        self,
-        state=None,
-        parent=None,
-        children=None,
-        visits=0,
-        value=0,
-        depth=None,
-        is_terminal=False,
-        reward=0,
-    ):
-        self.state = (
-            {"thought": "", "action": "", "observation": ""} if state is None else state
-        )
-        self.parent = parent
-        self.children = [] if children is None else children
-        self.visits = visits
-        self.value = value
-        self.depth = (
-            0 if parent is None else parent.depth + 1 if depth is None else depth
-        )
-        self.is_terminal = is_terminal
-        self.reward = reward
-
-    def uct(self):
-        if self.visits == 0:
-            return self.value
-        return self.value / self.visits + np.sqrt(
-            2 * np.log(self.parent.visits) / self.visits
-        )
-
-    def add_children(self, children):
-        self.children.extend(children)
-
-    def to_dict(self):
-        return {
-            "state": self.state,
-            "parent": self.parent.to_dict() if self.parent else None,
-            "children": [child.to_dict() for child in self.children],
-            "visits": self.visits,
-            "value": self.value,
-            "depth": self.depth,
-            "is_terminal": self.is_terminal,
-            "reward": self.reward,
-        }
-
 
 
 def _build_reflection_prompt(
@@ -79,6 +14,18 @@ def _build_reflection_prompt(
     prompt: str,
     additional_keys: Dict[str, str] = {},
 ) -> str:
+    """Constructs a reflection prompt for the Language Agent Tree Search (LATS) agent.
+
+    Args:
+        question (str): The main question or task for the agent to reflect on.
+        examples (str): Relevant examples to provide context for the reflection.
+        trajectory (str): The agent's current trajectory or thought process.
+        prompt (str): The base prompt template to be formatted.
+        additional_keys (Dict[str, str], optional): Additional key-value pairs for formatting the prompt. Defaults to {}.
+
+    Returns:
+        str: The fully formatted reflection prompt ready for use with the language model.
+    """
     prompt = PromptTemplate.from_template(prompt).format(
         question=question, examples=examples, trajectory=trajectory, **additional_keys
     )
@@ -92,7 +39,20 @@ def _prompt_reflection(
     trajectory: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-):
+) -> str:
+    """Generates a reflection using the language model based on the given inputs.
+
+    Args:
+        llm (BaseChatModel): The language model to use for generating the reflection.
+        question (str): The main question or task.
+        examples (str): Relevant examples to provide context.
+        trajectory (str): The agent's current trajectory or thought process.
+        prompt (str): The base prompt template to be used.
+        additional_keys (Dict[str, str], optional): Additional formatting keys. Defaults to {}.
+
+    Returns:
+        str: The generated reflection content.
+    """
     prompt = _build_reflection_prompt(
         question=question,
         examples=examples,
@@ -118,7 +78,20 @@ def _build_value_prompt(
     failed_trajectories: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-):
+) -> str:
+    """Constructs a value prompt for the LATS agent.
+
+    Args:
+        question (str): The main question or task.
+        examples (str): Relevant examples to provide context.
+        trajectory (str): The agent's current trajectory.
+        failed_trajectories (str): Previously failed trajectories.
+        prompt (str): The base prompt template to be formatted.
+        additional_keys (Dict[str, str], optional): Additional formatting keys. Defaults to {}.
+
+    Returns:
+        str: The fully formatted value prompt.
+    """
     prompt = PromptTemplate.from_template(prompt).format(
         question=question,
         examples=examples,
@@ -137,7 +110,21 @@ def _prompt_value(
     failed_trajectories: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-):
+) -> str:
+    """Generates a value assessment using the language model based on the given inputs.
+
+    Args:
+        llm (BaseChatModel): The language model to use for generating the value assessment.
+        question (str): The main question or task.
+        examples (str): Relevant examples to provide context.
+        trajectory (str): The agent's current trajectory.
+        failed_trajectories (str): Previously failed trajectories.
+        prompt (str): The base prompt template to be used.
+        additional_keys (Dict[str, str], optional): Additional formatting keys. Defaults to {}.
+
+    Returns:
+        str: The generated value assessment content.
+    """
     prompt = _build_value_prompt(
         question=question,
         examples=examples,
@@ -164,7 +151,20 @@ def _build_agent_prompt(
     reflections: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-):
+) -> str:
+    """Constructs an agent prompt for the LATS agent.
+
+    Args:
+        question (str): The main question or task.
+        examples (str): Relevant examples to provide context.
+        trajectory (str): The agent's current trajectory.
+        reflections (str): Previous reflections made by the agent.
+        prompt (str): The base prompt template to be formatted.
+        additional_keys (Dict[str, str], optional): Additional formatting keys. Defaults to {}.
+
+    Returns:
+        str: The fully formatted agent prompt.
+    """
     prompt = PromptTemplate.from_template(prompt).format(
         question=question,
         examples=examples,
@@ -183,7 +183,21 @@ def _prompt_agent(
     reflections: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-):
+) -> str:
+    """Generates an agent response using the language model based on the given inputs.
+
+    Args:
+        llm (BaseChatModel): The language model to use for generating the agent response.
+        question (str): The main question or task.
+        examples (str): Relevant examples to provide context.
+        trajectory (str): The agent's current trajectory.
+        reflections (str): Previous reflections made by the agent.
+        prompt (str): The base prompt template to be used.
+        additional_keys (Dict[str, str], optional): Additional formatting keys. Defaults to {}.
+
+    Returns:
+        str: The generated agent response content.
+    """
     prompt = _build_agent_prompt(
         question=question,
         examples=examples,
@@ -203,7 +217,15 @@ def _prompt_agent(
     return out
 
 
-def get_node_trajectory(node):
+def get_node_trajectory(node) -> str:
+    """Generates a string representation of the trajectory from the given node to the root.
+
+    Args:
+        node: The current node in the tree.
+
+    Returns:
+        str: A string representation of the trajectory, including thoughts, actions, and observations.
+    """
     trajectory = []
 
     while node:
@@ -222,7 +244,16 @@ def get_node_trajectory(node):
     return "\n".join(reversed(trajectory))
 
 
-def get_unique_trajectories(failed_trajectories, num=5):
+def get_unique_trajectories(failed_trajectories, max_unique) -> List[str]:
+    """Extracts a specified number of unique trajectories from the given failed trajectories.
+
+    Args:
+        failed_trajectories (list): A list of dictionaries containing failed trajectories.
+        max_unique (int, optional): The maximum number of unique trajectories to return.
+
+    Returns:
+        List[str]: A list of unique trajectory strings, up to the specified number.
+    """
     unique_trajectories = []
     seen_final_answers = set()
     for traj in failed_trajectories:
@@ -230,6 +261,6 @@ def get_unique_trajectories(failed_trajectories, num=5):
         if final_answer not in seen_final_answers:
             unique_trajectories.append(traj["trajectory"])
             seen_final_answers.add(final_answer)
-        if len(unique_trajectories) >= num:
+        if len(unique_trajectories) >= max_unique:
             break
     return unique_trajectories

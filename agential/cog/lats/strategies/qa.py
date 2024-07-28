@@ -63,6 +63,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         n_samples: int = 5,
         max_reflections: int = 4,
         depth_limit: int = 7,
+        max_unique: int = 5,
         cache_values: bool = True,
     ):
         super().__init__(llm)
@@ -70,6 +71,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         self.n_samples = n_samples
         self.max_reflections = max_reflections
         self.depth_limit = depth_limit
+        self.max_unique = max_unique
         self.cache_values = cache_values
 
         self.failed_trajectories = []
@@ -460,14 +462,14 @@ class LATSQAStrategy(LATSBaseStrategy):
         return node.is_terminal and node.reward == 1
 
     def reflect_condition(self):
-        unique_trajectories = get_unique_trajectories(self.failed_trajectories)
+        unique_trajectories = get_unique_trajectories(self.failed_trajectories, max_unique=self.max_unique)
         return (
             len(unique_trajectories) > len(self.reflection_map)
             and len(unique_trajectories) < self.max_reflections
         )
 
     def reflect(self, question, examples, prompt, additional_keys):
-        unique_trajectories = get_unique_trajectories(self.failed_trajectories)
+        unique_trajectories = get_unique_trajectories(self.failed_trajectories, max_unique=self.max_unique)
 
         reflections = []
         for trajectory in unique_trajectories:
