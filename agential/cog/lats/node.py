@@ -1,5 +1,9 @@
-import numpy as np
 from abc import ABC, abstractmethod
+
+import numpy as np
+
+from agential.cog.react.output import ReActOutput
+
 
 class BaseNode(ABC):
     @abstractmethod
@@ -13,7 +17,7 @@ class BaseNode(ABC):
     @abstractmethod
     def to_dict(self):
         pass
-    
+
 
 class Node(BaseNode):
     def __init__(
@@ -28,7 +32,18 @@ class Node(BaseNode):
         reward=0,
     ):
         self.state = (
-            {"thought": "", "action": "", "observation": ""} if state is None else state
+            ReActOutput(
+                **{
+                    "thought": "",
+                    "action_type": "",
+                    "query": "",
+                    "observation": "",
+                    "answer": "",
+                    "external_tool_info": {},
+                }
+            )
+            if state is None
+            else state
         )
         self.parent = parent
         self.children = [] if children is None else children

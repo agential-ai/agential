@@ -3,20 +3,22 @@
 import re
 
 from typing import Tuple
-from agential.eval.em import EM
-from agential.cog.lats.strategies.base import LATSBaseStrategy
+
+from langchain_community.docstore.wikipedia import Wikipedia
+
 from agential.cog.lats.functional import (
-    get_node_trajectory,
-    _prompt_value,
-    get_unique_trajectories,
-    _prompt_reflection,
     _prompt_agent,
+    _prompt_reflection,
+    _prompt_value,
+    get_node_trajectory,
+    get_unique_trajectories,
 )
+from agential.cog.lats.node import Node
+from agential.cog.lats.strategies.base import LATSBaseStrategy
+from agential.cog.react.output import ReActOutput
+from agential.eval.em import EM
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
-from agential.cog.lats.node import Node
-from agential.cog.react.output import ReActOutput
-from langchain_community.docstore.wikipedia import Wikipedia
 
 
 def parse_qa_action(string: str) -> Tuple[str, str]:
@@ -476,14 +478,18 @@ class LATSQAStrategy(LATSBaseStrategy):
         return node.is_terminal and node.reward == 1
 
     def reflect_condition(self):
-        unique_trajectories = get_unique_trajectories(self.failed_trajectories, max_unique=self.max_unique)
+        unique_trajectories = get_unique_trajectories(
+            self.failed_trajectories, max_unique=self.max_unique
+        )
         return (
             len(unique_trajectories) > len(self.reflection_map)
             and len(unique_trajectories) < self.max_reflections
         )
 
     def reflect(self, question, examples, prompt, additional_keys):
-        unique_trajectories = get_unique_trajectories(self.failed_trajectories, max_unique=self.max_unique)
+        unique_trajectories = get_unique_trajectories(
+            self.failed_trajectories, max_unique=self.max_unique
+        )
 
         reflections = []
         for trajectory in unique_trajectories:

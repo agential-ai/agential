@@ -233,8 +233,10 @@ def get_node_trajectory(node) -> str:
         if node.depth > 0:
             if node.state.get("thought"):
                 step.append(f"Thought {node.depth}: {node.state['thought']}")
-            if node.state.get("action"):
-                step.append(f"Action {node.depth}: {node.state['action_type']}[{node.state['query']}]")
+            if node.state.get("action_type") and node.state.get("query"):
+                step.append(
+                    f"Action {node.depth}: {node.state['action_type']}[{node.state['query']}]"
+                )
             if node.state.get("observation"):
                 step.append(f"Observation {node.depth}: {node.state['observation']}")
             step = "\n".join(step)

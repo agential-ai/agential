@@ -12,6 +12,7 @@ from agential.base.agent import BaseAgent
 from agential.cog.lats.factory import LATSFactory
 from agential.cog.lats.functional import Node
 
+
 class LATSAgent(BaseAgent):
     def __init__(
         self,
@@ -30,7 +31,7 @@ class LATSAgent(BaseAgent):
             llm=self.llm,
             **strategy_kwargs,
         )
- 
+
     def generate(
         self,
         question,
@@ -41,15 +42,15 @@ class LATSAgent(BaseAgent):
         reflect_prompt,
         additional_keys,
         reflect_additional_keys,
-        max_iterations = 30
+        max_iterations=30,
     ):
         root = self.strategy.initialize()
         for i in range(max_iterations):
             node = self.strategy.select_node(root)
-    
+
             if self.strategy.halting_condition(node):
                 return node
-            
+
             children_nodes, children_node_states = self.strategy.expand_node(
                 node=node,
                 question=question,
@@ -61,7 +62,7 @@ class LATSAgent(BaseAgent):
                 additional_keys=additional_keys,
                 reflect_additional_keys=reflect_additional_keys,
             )
-        
+
             while node.is_terminal or not node.children:
                 node = self.strategy.select_node(root)
                 children_nodes, children_node_states = self.strategy.expand_node(
@@ -98,13 +99,8 @@ class LATSAgent(BaseAgent):
 
             if self.strategy.halting_condition(terminal_node):
                 return terminal_node
-            
-            self.strategy.backpropagate_node(
-                node=terminal_node,
-                value=reward
-            )
 
-            
+            self.strategy.backpropagate_node(node=terminal_node, value=reward)
 
     def reset(self) -> Any:
         pass

@@ -1,11 +1,13 @@
 """Base LATS Agent strategy class."""
 
-from typing import List, Dict
 from abc import abstractmethod
+from typing import Dict, List
+
+from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.strategies import BaseStrategy
-from langchain_core.language_models.chat_models import BaseChatModel
 from agential.cog.lats.node import Node
+
 
 class LATSBaseStrategy(BaseStrategy):
     """An abstract base class for defining strategies for the LATS Agent."""
@@ -19,19 +21,50 @@ class LATSBaseStrategy(BaseStrategy):
         pass
 
     @abstractmethod
-    def generate(self, node: Node, question: str, key: str, examples: str, reflect_examples: str, prompt: str, reflect_prompt: str, additional_keys: Dict[str, str], reflect_additional_keys: Dict[str, str]) -> tuple:
+    def generate(
+        self,
+        node: Node,
+        question: str,
+        key: str,
+        examples: str,
+        reflect_examples: str,
+        prompt: str,
+        reflect_prompt: str,
+        additional_keys: Dict[str, str],
+        reflect_additional_keys: Dict[str, str],
+    ) -> tuple:
         pass
 
     @abstractmethod
-    def generate_thought(self, question: str, examples: str, trajectory: str, reflections: str, depth: int, prompt: str, additional_keys: Dict[str, str]) -> tuple:
+    def generate_thought(
+        self,
+        question: str,
+        examples: str,
+        trajectory: str,
+        reflections: str,
+        depth: int,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> tuple:
         pass
 
     @abstractmethod
-    def generate_action(self, question: str, examples: str, trajectory: str, reflections: str, depth: int, prompt: str, additional_keys: Dict[str, str]) -> tuple:
+    def generate_action(
+        self,
+        question: str,
+        examples: str,
+        trajectory: str,
+        reflections: str,
+        depth: int,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> tuple:
         pass
 
     @abstractmethod
-    def generate_observation(self, key: str, action_type: str, query: str, trajectory: str, depth: int) -> tuple:
+    def generate_observation(
+        self, key: str, action_type: str, query: str, trajectory: str, depth: int
+    ) -> tuple:
         pass
 
     @abstractmethod
@@ -39,15 +72,44 @@ class LATSBaseStrategy(BaseStrategy):
         pass
 
     @abstractmethod
-    def expand_node(self, node: Node, question: str, key: str, examples: str, reflect_examples: str, prompt: str, reflect_prompt: str, additional_keys: Dict[str, str], reflect_additional_keys: Dict[str, str]) -> List[Node]:
+    def expand_node(
+        self,
+        node: Node,
+        question: str,
+        key: str,
+        examples: str,
+        reflect_examples: str,
+        prompt: str,
+        reflect_prompt: str,
+        additional_keys: Dict[str, str],
+        reflect_additional_keys: Dict[str, str],
+    ) -> List[Node]:
         pass
 
     @abstractmethod
-    def evaluate_node(self, node: Node, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]) -> List[Dict]:
+    def evaluate_node(
+        self,
+        node: Node,
+        question: str,
+        examples: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> List[Dict]:
         pass
 
     @abstractmethod
-    def simulate_node(self, node: Node, question: str, key: str, examples: str, reflect_examples: str, prompt: str, reflect_prompt: str, additional_keys: Dict[str, str], reflect_additional_keys: Dict[str, str]) -> tuple:
+    def simulate_node(
+        self,
+        node: Node,
+        question: str,
+        key: str,
+        examples: str,
+        reflect_examples: str,
+        prompt: str,
+        reflect_prompt: str,
+        additional_keys: Dict[str, str],
+        reflect_additional_keys: Dict[str, str],
+    ) -> tuple:
         pass
 
     @abstractmethod
@@ -63,7 +125,9 @@ class LATSBaseStrategy(BaseStrategy):
         pass
 
     @abstractmethod
-    def reflect(self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]) -> List[Dict]:
+    def reflect(
+        self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]
+    ) -> List[Dict]:
         pass
 
     @abstractmethod
