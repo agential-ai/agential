@@ -76,7 +76,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         self.root = None
 
     def initialize(self):
-        self.root = Node(state=None)
+        self.root = Node()
         return self.root
 
     def generate(
