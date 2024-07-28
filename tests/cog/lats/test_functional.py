@@ -1,7 +1,5 @@
 """Unit tests for LATS functional module."""
 
-import pytest
-
 from langchain_community.chat_models.fake import FakeListChatModel
 
 from agential.cog.lats.node import Node
@@ -129,7 +127,8 @@ def test__prompt_agent() -> None:
     assert out == "Agent Output"
 
 
-def test_get_node_trajectory():
+def test_get_node_trajectory() -> None:
+    """Tests the get_node_trajectory() function."""
     root = Node(state={"thought": "Root thought", "action_type": "", "query": "", "observation": ""})
     child1 = Node(
         state={
@@ -151,9 +150,11 @@ def test_get_node_trajectory():
     )
 
     expected_trajectory = '\nThought 1: Child1 thought\nAction 1: Lookup[topic]\nThought 2: Child2 thought\nAction 2: Finish[answer]\nObservation 2: Answer correct'
-    assert get_node_trajectory(child2) == "\n".join(expected_trajectory)
+    assert get_node_trajectory(child2) == expected_trajectory
 
-def test_get_unique_trajectories():
+
+def test_get_unique_trajectories() -> None:
+    """Tests the get_unique_trajectories() function."""
     failed_trajectories = [
         {"trajectory": "Path1", "final_answer": "Answer1"},
         {"trajectory": "Path2", "final_answer": "Answer1"},  # Duplicate answer
