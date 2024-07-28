@@ -36,18 +36,12 @@ class LATSAgent(BaseAgent):
         question,
         max_iterations = 30
     ):
-        node = self.strategy.initialize()
+        root = self.strategy.initialize()
         for i in range(max_iterations):
             node = self.strategy.select_node(root)
-
-            while node is None or (node.is_terminal and node.reward != 1):
-                node = self.strategy.select_node(root)
-
-            if node is None:
-                break
     
-            if node.is_terminal and node.reward == 1:
-                return node.state, node.value, node.reward
+            if self.strategy.halting_condition(node):
+                return node
             
             children_nodes, children_node_states = self.strategy.expand_node(
                 node,

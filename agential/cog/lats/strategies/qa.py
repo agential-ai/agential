@@ -461,6 +461,9 @@ class LATSQAStrategy(LATSBaseStrategy):
 
             node = node.parent
 
+    def halting_condition(self, node):
+        return node.is_terminal and node.reward == 1
+
     def reflect_condition(self):
         unique_trajectories = get_unique_trajectories(self.failed_trajectories)
         return (
