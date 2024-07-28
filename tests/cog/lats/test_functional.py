@@ -164,21 +164,21 @@ def test_get_unique_trajectories() -> None:
         {"trajectory": "Path6", "final_answer": "Answer4"},
     ]
 
-    # Test with max_unique=5
+    # Test with max_unique=5.
     result = get_unique_trajectories(failed_trajectories, max_unique=5)
     assert result == ["Path1", "Path3", "Path4", "Path6"]
 
-    # Test with max_unique=2
+    # Test with max_unique=2.
     result = get_unique_trajectories(failed_trajectories, max_unique=2)
     assert result == ["Path1", "Path3"]
 
-    # Test with empty list
+    # Test with empty list.
     result = get_unique_trajectories([], max_unique=5)
     assert result == []
 
-    # Test with all unique answers
+    # Test with all unique answers.
     unique_trajectories = [
         {"trajectory": f"Path{i}", "final_answer": f"Answer{i}"} for i in range(1, 7)
     ]
     result = get_unique_trajectories(unique_trajectories, max_unique=5)
-    assert result == [f"Path{i}" for i in range(1, 6)]  # Should return 5 trajectories
+    assert result == [f"Path{i}" for i in range(1, 6)]
