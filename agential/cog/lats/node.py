@@ -71,9 +71,7 @@ class Node(BaseNode):
         self.children = [] if children is None else children
         self.visits = visits
         self.value = value
-        self.depth = (
-            depth if parent is None else parent.depth + 1
-        )
+        self.depth = depth if parent is None else parent.depth + 1
         self.is_terminal = is_terminal
         self.reward = reward
 
