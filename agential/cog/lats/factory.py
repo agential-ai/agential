@@ -132,11 +132,22 @@ LATS_STRATEGIES = {
 
 
 class LATSFactory(BaseFactory):
+    """A factory class for creating instances of LATS strategies and selecting prompts and few-shot examples."""
 
     @staticmethod
     def get_fewshots(
         benchmark: str, fewshot_type: str, **kwargs: Any
     ) -> Dict[str, str]:
+        """Retrieve few-shot examples based on the benchmark.
+
+        Args:
+            benchmark (str): The benchmark name.
+            fewshot_type (str): The benchmark few-shot type.
+            **kwargs (Any): Additional arguments.
+
+        Returns:
+            Dict[str, str]: A dictionary of few-shot examples.
+        """
         if benchmark not in LATS_FEWSHOTS:
             raise ValueError(f"Benchmark '{benchmark}' few-shots not found for LATS.")
 
@@ -151,6 +162,15 @@ class LATSFactory(BaseFactory):
 
     @staticmethod
     def get_prompts(benchmark: str, **kwargs: Any) -> Dict[str, str]:
+        """Retrieve the prompt instruction based on the benchmark.
+
+        Args:
+            benchmark (str): The benchmark name.
+            **kwargs (Any): Additional arguments.
+
+        Returns:
+            Dict[str, str]: A dictionary of prompt instructions.
+        """
         if benchmark not in LATS_PROMPTS:
             raise ValueError(f"Benchmark '{benchmark}' prompt not found for LATS.")
 
@@ -158,6 +178,16 @@ class LATSFactory(BaseFactory):
 
     @staticmethod
     def get_strategy(benchmark: str, **kwargs: Any) -> LATSBaseStrategy:
+        """Returns an instance of the appropriate ReAct strategy based on the provided benchmark.
+
+        Args:
+            benchmark (str): The benchmark name.
+            **kwargs (Any): Additional keyword arguments to pass to
+                the strategy's constructor.
+
+        Returns:
+            LATSBaseStrategy: An instance of the appropriate ReAct strategy.
+        """
         if benchmark not in LATS_STRATEGIES:
             raise ValueError(f"Unsupported benchmark: {benchmark} for agent LATS")
 

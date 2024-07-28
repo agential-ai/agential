@@ -259,10 +259,11 @@ def get_unique_trajectories(failed_trajectories, max_unique) -> List[str]:
     unique_trajectories = []
     seen_final_answers = set()
     for traj in failed_trajectories:
-        final_answer = traj.get("final_answer")
+        final_answer = traj["final_answer"]
         if final_answer not in seen_final_answers:
             unique_trajectories.append(traj["trajectory"])
             seen_final_answers.add(final_answer)
         if len(unique_trajectories) >= max_unique:
             break
+        
     return unique_trajectories
