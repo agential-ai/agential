@@ -1,13 +1,24 @@
 """Unit tests for LATS QA strategies."""
 
+from langchain_community.chat_models.fake import FakeListChatModel
 
-def test_parse_qa_value() -> None:
-    """Test parse_qa_value function."""
-    pass
+from agential.cog.lats.strategies.qa import (
+    parse_qa_action,
+    parse_qa_value,
+    LATSHotQAStrategy,
+    LATSTriviaQAStrategy,
+    LATSAmbigNQStrategy,
+    LATSFEVERStrategy,
+)
 
 
 def test_parse_qa_action() -> None:
     """Test the parse_qa_action function."""
+    pass
+
+
+def test_parse_qa_value() -> None:
+    """Test parse_qa_value function."""
     pass
 
 
@@ -83,7 +94,23 @@ def test_reflect() -> None:
 
 def test_reset() -> None:
     """Test the reset method."""
-    pass
+    llm = FakeListChatModel(responses=[])
+    strategy = LATSHotQAStrategy(llm=llm)
+    
+    strategy.root = "some_root"
+    strategy.reflection_map = ["reflection1", "reflection2"]
+    strategy.value_cache = {"value1": "value2"}
+    strategy.failed_trajectories = ["trajectory1", "trajectory2"]
+    
+    # Call reset.
+    strategy.reset()
+    
+    # Check if the state has been reset.
+    assert strategy.root is None
+    assert strategy.failed_trajectories == []
+    assert strategy.reflection_map == []
+    assert strategy.value_cache == {}
+
 
 
 def test_instantiate_strategies() -> None:
