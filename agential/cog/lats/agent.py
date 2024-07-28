@@ -85,16 +85,18 @@ class LATSAgent(BaseAgent):
                 additional_keys=additional_keys,
             )
 
-            reward, terminal_node, all_children_nodes, all_values = self.strategy.simulate_node(
-                node=max(node.children, key=lambda child: child.value),
-                question=question,
-                key=key,
-                examples=examples,
-                reflect_examples=reflect_examples,
-                prompt=prompt,
-                reflect_prompt=reflect_prompt,
-                additional_keys=additional_keys,
-                reflect_additional_keys=reflect_additional_keys,
+            reward, terminal_node, all_children_nodes, all_values = (
+                self.strategy.simulate_node(
+                    node=max(node.children, key=lambda child: child.value),
+                    question=question,
+                    key=key,
+                    examples=examples,
+                    reflect_examples=reflect_examples,
+                    prompt=prompt,
+                    reflect_prompt=reflect_prompt,
+                    additional_keys=additional_keys,
+                    reflect_additional_keys=reflect_additional_keys,
+                )
             )
 
             if self.strategy.halting_condition(terminal_node):

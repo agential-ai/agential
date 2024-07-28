@@ -17,7 +17,7 @@ class BaseNode(ABC):
         pass
 
     @abstractmethod
-    def add_children(self, children: List['BaseNode']) -> None:
+    def add_children(self, children: List["BaseNode"]) -> None:
         """Add child nodes to the current node."""
         pass
 

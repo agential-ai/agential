@@ -129,7 +129,14 @@ def test__prompt_agent() -> None:
 
 def test_get_node_trajectory() -> None:
     """Tests the get_node_trajectory() function."""
-    root = Node(state={"thought": "Root thought", "action_type": "", "query": "", "observation": ""})
+    root = Node(
+        state={
+            "thought": "Root thought",
+            "action_type": "",
+            "query": "",
+            "observation": "",
+        }
+    )
     child1 = Node(
         state={
             "thought": "Child1 thought",
@@ -149,7 +156,7 @@ def test_get_node_trajectory() -> None:
         parent=child1,
     )
 
-    expected_trajectory = '\nThought 1: Child1 thought\nAction 1: Lookup[topic]\nThought 2: Child2 thought\nAction 2: Finish[answer]\nObservation 2: Answer correct'
+    expected_trajectory = "\nThought 1: Child1 thought\nAction 1: Lookup[topic]\nThought 2: Child2 thought\nAction 2: Finish[answer]\nObservation 2: Answer correct"
     assert get_node_trajectory(child2) == expected_trajectory
 
 

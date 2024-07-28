@@ -140,14 +140,12 @@ class LATSQAStrategy(LATSBaseStrategy):
             if unique_key not in unique_states:
                 unique_states.add(unique_key)
 
-                _, reward, obs, done, external_tool_info = (
-                    self.generate_observation(
-                        key=key,
-                        action_type=action_type,
-                        query=query,
-                        trajectory=trajectory_i,
-                        depth=node.depth,
-                    )
+                _, reward, obs, done, external_tool_info = self.generate_observation(
+                    key=key,
+                    action_type=action_type,
+                    query=query,
+                    trajectory=trajectory_i,
+                    depth=node.depth,
                 )
 
                 new_node = Node(
@@ -432,7 +430,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                     explanation, value = parse_qa_value(value)
                     values.append({"explanation": explanation, "value": value})
 
-            max_value = max(values, key=lambda x: x['value'])
+            max_value = max(values, key=lambda x: x["value"])
             max_value_index = values.index(max_value)
             rewards.append(max_value)
             node = children_nodes[max_value_index]
