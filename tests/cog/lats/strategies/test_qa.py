@@ -107,11 +107,28 @@ def test_generate_thought() -> None:
     )
 
     assert thought == "I should search for information about the topic."
-    assert updated_trajectory == "Previous thought\nThought 2: I should search for information about the topic."
+    assert updated_trajectory == "Previous thought\nThought 1: I should search for information about the topic."
+
 
 def test_generate_action() -> None:
     """Test the generate_action method."""
-    pass
+    llm = FakeListChatModel(responses=["Search[capital of France]"])
+    strategy = LATSHotQAStrategy(llm=llm)
+    
+    question = "What is the capital of France?"
+    examples = "Example 1\nExample 2"
+    trajectory = "Thought 1: I should search for information about the capital of France."
+    reflections = "Reflection 1\nReflection 2"
+    depth = 1
+    prompt = "Generate an action"
+    additional_keys = {"key": "value"}
+
+    trajectory, action_type, query = strategy.generate_action(
+        question, examples, trajectory, reflections, depth, prompt, additional_keys
+    )
+    assert trajectory == 'Thought 1: I should search for information about the capital of France.\nAction 1: Search[capital of France]'
+    assert action_type == "Search"
+    assert query == "capital of France"
 
 
 def test_generate_observation() -> None:
