@@ -51,7 +51,7 @@ class LATSAgent(BaseAgent):
             if self.strategy.halting_condition(node):
                 return node
 
-            children_nodes, children_node_states = self.strategy.expand_node(
+            children_nodes = self.strategy.expand_node(
                 node=node,
                 question=question,
                 key=key,
@@ -65,7 +65,7 @@ class LATSAgent(BaseAgent):
 
             while node.is_terminal or not node.children:
                 node = self.strategy.select_node(root)
-                children_nodes, children_node_states = self.strategy.expand_node(
+                children_nodes = self.strategy.expand_node(
                     node=node,
                     question=question,
                     key=key,
@@ -85,7 +85,7 @@ class LATSAgent(BaseAgent):
                 additional_keys=additional_keys,
             )
 
-            reward, terminal_node = self.strategy.simulate_node(
+            reward, terminal_node, all_children_nodes, all_values = self.strategy.simulate_node(
                 node=max(node.children, key=lambda child: child.value),
                 question=question,
                 key=key,

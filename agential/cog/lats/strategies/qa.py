@@ -364,7 +364,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                 node.children[idx].value = value
 
                 child_trajectory_cache[trajectory] = value
-            values.append({"value": value, "explanation": explanation})
+            values.append({"explanation": explanation, "value": value})
 
         return values
 
@@ -382,6 +382,7 @@ class LATSQAStrategy(LATSBaseStrategy):
     ):
         depth = node.depth
         rewards = [0]
+        all_children_nodes, all_values = [], []
         while not node.is_terminal and depth < self.depth_limit:
             values = []
             children_nodes = self.generate(
@@ -422,17 +423,21 @@ class LATSQAStrategy(LATSBaseStrategy):
                     )
 
                     explanation, value = parse_qa_value(value)
-                    values.append(value)
+                    values.append({"explanation": explanation, "value": value})
 
-            max_value_index = values.index(max(values))
-            rewards.append(max(values))
+            max_value = max(values, key=lambda x: x['value'])
+            max_value_index = values.index(max_value)
+            rewards.append(max_value)
             node = children_nodes[max_value_index]
             depth += 1
 
             if depth == self.depth_limit:
                 rewards = [-1]
 
-        return sum(rewards) / len(rewards), node
+            all_children_nodes.append(children_nodes)
+            all_values.append(values)
+
+        return sum(rewards) / len(rewards), node, all_children_nodes, all_values
 
     def backpropagate_node(self, node, value):
         while node:
