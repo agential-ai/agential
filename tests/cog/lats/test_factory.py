@@ -9,7 +9,13 @@ from agential.cog.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
 )
 from agential.cog.lats.factory import LATSFactory
-from agential.cog.lats.prompts import LATS_INSTRUCTION_HOTPOTQA, LATS_REFLECT_INSTRUCTION_HOTPOTQA, LATS_VALUE_INSTRUCTION_HOTPOTQA, HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT, HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE
+from agential.cog.lats.prompts import (
+    HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
+    HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE,
+    LATS_INSTRUCTION_HOTPOTQA,
+    LATS_REFLECT_INSTRUCTION_HOTPOTQA,
+    LATS_VALUE_INSTRUCTION_HOTPOTQA,
+)
 from agential.cog.lats.strategies.qa import (
     LATSAmbigNQStrategy,
     LATSFEVERStrategy,
@@ -53,8 +59,11 @@ def test_LATS_factory_get_fewshots() -> None:
     benchmark = Benchmarks.HOTPOTQA
     result = LATSFactory.get_fewshots(benchmark, fewshot_type="react")
     assert isinstance(result, dict)
-    assert result == {"examples": HOTPOTQA_FEWSHOT_EXAMPLES_REACT, "reflect_examples": HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
-        "value_examples": HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE}
+    assert result == {
+        "examples": HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        "reflect_examples": HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
+        "value_examples": HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE,
+    }
 
     # Test unsupported benchmark.
     with pytest.raises(
@@ -74,9 +83,12 @@ def test_LATS_factory_get_prompts() -> None:
     # Test valid input.
     benchmark = Benchmarks.HOTPOTQA
     result = LATSFactory.get_prompts(benchmark)
-    assert result == {"prompt": LATS_INSTRUCTION_HOTPOTQA, 
-                      "reflect_prompt": LATS_REFLECT_INSTRUCTION_HOTPOTQA,        "reflect_prompt": LATS_REFLECT_INSTRUCTION_HOTPOTQA,
-        "value_prompt": LATS_VALUE_INSTRUCTION_HOTPOTQA,}
+    assert result == {
+        "prompt": LATS_INSTRUCTION_HOTPOTQA,
+        "reflect_prompt": LATS_REFLECT_INSTRUCTION_HOTPOTQA,
+        "reflect_prompt": LATS_REFLECT_INSTRUCTION_HOTPOTQA,
+        "value_prompt": LATS_VALUE_INSTRUCTION_HOTPOTQA,
+    }
 
     # Test unsupported benchmark.
     with pytest.raises(

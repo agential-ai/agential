@@ -265,5 +265,5 @@ def get_unique_trajectories(failed_trajectories, max_unique) -> List[str]:
             seen_final_answers.add(final_answer)
         if len(unique_trajectories) >= max_unique:
             break
-        
+
     return unique_trajectories
