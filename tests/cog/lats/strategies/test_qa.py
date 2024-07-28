@@ -12,7 +12,7 @@ from agential.cog.lats.strategies.qa import (
 )
 from agential.utils.docstore import DocstoreExplorer
 from langchain_community.docstore.wikipedia import Wikipedia
-
+from agential.cog.lats.node import Node
 
 def test_parse_qa_action():
     """Test the parse_qa_action function."""
@@ -74,7 +74,19 @@ def test_init() -> None:
 
 def test_initialize() -> None:
     """Test the initialize method."""
-    pass
+    llm = FakeListChatModel(responses=[])
+    strategy = LATSHotQAStrategy(llm=llm)
+    
+    node = strategy.initialize()
+    
+    assert strategy.root == node
+    assert strategy.root is not None
+    assert isinstance(strategy.root, Node)
+    assert strategy.root.state.thought == ""
+    assert strategy.root.state.action_type == ""
+    assert strategy.root.state.query == ""
+    assert strategy.root.state.observation == ""
+    assert strategy.root.state.external_tool_info == {}
 
 
 def test_generate_thought() -> None:
