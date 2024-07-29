@@ -240,7 +240,6 @@ def test_reset() -> None:
     assert strategy.value_cache == {}
 
 
-
 def test_instantiate_strategies() -> None:
     """Test the instantiation of various LATS QA strategies."""
     llm = FakeListChatModel(responses=[])
