@@ -9,6 +9,8 @@ from agential.cog.lats.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
     LATS_INSTRUCTION_HOTPOTQA,
     LATS_REFLECT_INSTRUCTION_HOTPOTQA,
+    HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE, 
+    LATS_VALUE_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.lats.strategies.qa import (
     LATSAmbigNQStrategy,
@@ -658,7 +660,49 @@ def test_evaluate_node() -> None:
 
 def test_simulate_node() -> None:
     """Test the simulate_node method."""
-    pass
+    qa_strategy = LATSHotQAStrategy(llm=FakeListChatModel(responses=["Value Output"]), depth_limit=3)
+
+    # Create a mock Node
+    root_node = Node(depth=0, is_terminal=False)
+
+    # Mock input parameters
+    question = "What is the capital of France?"
+    key = "Paris"
+    examples = HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+    reflect_examples = HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT
+    prompt = LATS_INSTRUCTION_HOTPOTQA
+    reflect_prompt = LATS_REFLECT_INSTRUCTION_HOTPOTQA
+    additional_keys = {}
+    reflect_additional_keys = {}
+
+    # Call the simulate_node function
+    reward, final_node, all_children_nodes, all_values = qa_strategy.simulate_node(
+        node=root_node,
+        question=question,
+        key=key,
+        examples=examples,
+        reflect_examples=reflect_examples,
+        prompt=prompt,
+        reflect_prompt=reflect_prompt,
+        additional_keys=additional_keys,
+        reflect_additional_keys=reflect_additional_keys
+    )
+
+    # Assert the return types
+    assert isinstance(reward, float)
+    assert isinstance(final_node, Node)
+    assert isinstance(all_children_nodes, list)
+    assert isinstance(all_values, list)
+
+    # Assert the depth limit is respected
+    assert final_node.depth <= qa_strategy.depth_limit
+
+    # Assert that children nodes and values are generated
+    assert len(all_children_nodes) > 0
+    assert len(all_values) > 0
+
+    # Assert that the reward is within the expected range (-1 to 1)
+    assert -1 <= reward <= 1
 
 
 def test_backpropagate_node() -> None:
