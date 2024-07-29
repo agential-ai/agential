@@ -104,5 +104,5 @@ class LATSAgent(BaseAgent):
 
             self.strategy.backpropagate_node(node=terminal_node, value=reward)
 
-    def reset(self) -> Any:
-        pass
+    def reset(self) -> None:
+        self.strategy.reset()
