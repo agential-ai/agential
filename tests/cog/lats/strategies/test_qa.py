@@ -330,29 +330,81 @@ def test_generate() -> None:
 
     # Test generate with reflections.
     gt_states = [
-        ReActOutput(thought='I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and crimes of violence outside the ring', action_type='Search', query='best kickboxer controversies violence', observation="Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.", answer='', external_tool_info={'search_result': "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.", 'lookup_result': ''}),
-        ReActOutput(thought='I need to search for the best kick boxer in the world and then look into his controversies related to unsportsmanlike conduct and crimes of violence', action_type='Search', query='best kick boxer in the world', observation="Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.", answer='', external_tool_info={'search_result': "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.", 'lookup_result': ''}),
-        ReActOutput(thought='I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and violence outside of the ring', action_type='Search', query='best kick boxer in the world controversies', observation="Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.", answer='', external_tool_info={'search_result': "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.", 'lookup_result': ''}),
-        ReActOutput(thought='I need to search for the best kickboxer in the world who has been involved in controversies regarding unsportsmanlike conduct and crimes of violence outside the ring', action_type='Search', query='best kickboxer controversies', observation="Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.", answer='', external_tool_info={'search_result': "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.", 'lookup_result': ''}),
-        ReActOutput(thought='I need to search for the best kick boxer in the world and his controversies regarding unsportsmanlike conducts and crimes of violence', action_type='Search', query='best kick boxer in the world controversies', observation="Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.", answer='', external_tool_info={'search_result': "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.", 'lookup_result': ''}),
+        ReActOutput(
+            thought="I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and crimes of violence outside the ring",
+            action_type="Search",
+            query="best kickboxer controversies violence",
+            observation="Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
+            answer="",
+            external_tool_info={
+                "search_result": "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
+                "lookup_result": "",
+            },
+        ),
+        ReActOutput(
+            thought="I need to search for the best kick boxer in the world and then look into his controversies related to unsportsmanlike conduct and crimes of violence",
+            action_type="Search",
+            query="best kick boxer in the world",
+            observation="Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
+            answer="",
+            external_tool_info={
+                "search_result": "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
+                "lookup_result": "",
+            },
+        ),
+        ReActOutput(
+            thought="I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and violence outside of the ring",
+            action_type="Search",
+            query="best kick boxer in the world controversies",
+            observation="Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
+            answer="",
+            external_tool_info={
+                "search_result": "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
+                "lookup_result": "",
+            },
+        ),
+        ReActOutput(
+            thought="I need to search for the best kickboxer in the world who has been involved in controversies regarding unsportsmanlike conduct and crimes of violence outside the ring",
+            action_type="Search",
+            query="best kickboxer controversies",
+            observation="Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
+            answer="",
+            external_tool_info={
+                "search_result": "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
+                "lookup_result": "",
+            },
+        ),
+        ReActOutput(
+            thought="I need to search for the best kick boxer in the world and his controversies regarding unsportsmanlike conducts and crimes of violence",
+            action_type="Search",
+            query="best kick boxer in the world controversies",
+            observation="Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
+            answer="",
+            external_tool_info={
+                "search_result": "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
+                "lookup_result": "",
+            },
+        ),
     ]
     responses = [
-        'My reasoning for this question failed because I did not narrow down the search to focus on kick boxers and instead ended up with unrelated information',
+        "My reasoning for this question failed because I did not narrow down the search to focus on kick boxers and instead ended up with unrelated information",
         "My reasoning failed because I did not focus on gathering specific information related to the individual's kickboxing career and controversies, leading to an incorrect answer",
-        'I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and crimes of violence outside the ring',
-        'Search[best kickboxer controversies violence]\nObservation 1: Could not find [best kickboxer controversies violence]',
-        'I need to search for the best kick boxer in the world and then look into his controversies related to unsportsmanlike conduct and crimes of violence',
-        'Search[best kick boxer in the world]\nObservation 1: There have been several renowned kickboxers throughout history, such as Buakaw Banchamek, Ernesto Hoost, and Ramon Dekkers',
-        'I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and violence outside of the ring',
-        'Search[best kick boxer in the world controversies]\nObservation 1: Could not find [best kick boxer in the world controversies]',
-        'I need to search for the best kickboxer in the world who has been involved in controversies regarding unsportsmanlike conduct and crimes of violence outside the ring',
-        'Search[best kickboxer controversies]\nObservation 1: Could not find [best kickboxer controversies]',
-        'I need to search for the best kick boxer in the world and his controversies regarding unsportsmanlike conducts and crimes of violence',
-        'Search[best kick boxer in the world controversies]\nObservation 1: Could not find [best kick boxer in the world controversies]',
+        "I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and crimes of violence outside the ring",
+        "Search[best kickboxer controversies violence]\nObservation 1: Could not find [best kickboxer controversies violence]",
+        "I need to search for the best kick boxer in the world and then look into his controversies related to unsportsmanlike conduct and crimes of violence",
+        "Search[best kick boxer in the world]\nObservation 1: There have been several renowned kickboxers throughout history, such as Buakaw Banchamek, Ernesto Hoost, and Ramon Dekkers",
+        "I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and violence outside of the ring",
+        "Search[best kick boxer in the world controversies]\nObservation 1: Could not find [best kick boxer in the world controversies]",
+        "I need to search for the best kickboxer in the world who has been involved in controversies regarding unsportsmanlike conduct and crimes of violence outside the ring",
+        "Search[best kickboxer controversies]\nObservation 1: Could not find [best kickboxer controversies]",
+        "I need to search for the best kick boxer in the world and his controversies regarding unsportsmanlike conducts and crimes of violence",
+        "Search[best kick boxer in the world controversies]\nObservation 1: Could not find [best kick boxer in the world controversies]",
     ]
     llm = FakeListChatModel(responses=responses)
     strategy = LATSHotQAStrategy(llm=llm)
-    strategy.docstore.search = lambda x: "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues."
+    strategy.docstore.search = (
+        lambda x: "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues."
+    )
     strategy.failed_trajectories = [
         {"trajectory": "Failed trajectory 1", "final_answer": "Incorrect answer 1"},
         {"trajectory": "Failed trajectory 2", "final_answer": "Incorrect answer 2"},
@@ -390,7 +442,7 @@ def test_generate() -> None:
     ]
     llm = FakeListChatModel(responses=responses)
     strategy = LATSHotQAStrategy(llm=llm, n_samples=1)
-    
+
     root = strategy.initialize()
     children_nodes = strategy.generate(
         node=root,
@@ -403,13 +455,13 @@ def test_generate() -> None:
         additional_keys={},
         reflect_additional_keys={},
     )
-    print(strategy.reflection_map)
     assert len(children_nodes) == 1
     assert children_nodes[0].state.thought == "I think the answer is Mike Tyson."
     assert children_nodes[0].state.action_type == "Finish"
     assert children_nodes[0].state.query == "Mike Tyson"
     assert children_nodes[0].is_terminal
     assert children_nodes[0].reward == 0
+
 
 def test_select_node() -> None:
     """Test the select_node method."""
@@ -422,7 +474,7 @@ def test_select_node() -> None:
     child2 = Node(state={}, parent=root)
     grandchild1 = Node(state={}, parent=child1)
     grandchild2 = Node(state={}, parent=child1)
-    
+
     root.children = [child1, child2]
     child1.children = [grandchild1, grandchild2]
 
@@ -432,7 +484,9 @@ def test_select_node() -> None:
     child2.visits = 5
     child2.value = 0.4
     selected_node = strategy.select_node(root)
-    assert selected_node == grandchild1  # child2 should have higher UCT due to fewer visits
+    assert (
+        selected_node == grandchild1
+    )  # child2 should have higher UCT due to fewer visits
 
     # Test selection of terminal node with reward 1.
     grandchild1.is_terminal = True
@@ -508,8 +562,8 @@ def test_backpropagate_node() -> None:
 
     assert root.visits == 3
     assert child.visits == 3
-    assert root.value == 5/6
-    assert child.value == 5/6
+    assert root.value == 5 / 6
+    assert child.value == 5 / 6
 
 
 def test_halting_condition():

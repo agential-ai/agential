@@ -5,7 +5,9 @@ from typing import Dict, List
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
 from langchain_core.prompts.prompt import PromptTemplate
+
 from agential.cog.lats.node import Node
+
 
 def _build_reflection_prompt(
     question: str,

@@ -2,6 +2,7 @@
 
 from langchain_community.chat_models.fake import FakeListChatModel
 
+from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.functional import (
     _build_agent_prompt,
     _build_reflection_prompt,
@@ -15,13 +16,13 @@ from agential.cog.lats.functional import (
 from agential.cog.lats.node import Node
 from agential.cog.lats.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
-    LATS_INSTRUCTION_HOTPOTQA,
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE,
+    LATS_INSTRUCTION_HOTPOTQA,
+    LATS_REFLECT_INSTRUCTION_HOTPOTQA,
     LATS_VALUE_INSTRUCTION_HOTPOTQA,
-    LATS_REFLECT_INSTRUCTION_HOTPOTQA
 )
-from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.react.output import ReActOutput
+
 
 def test__build_reflection_prompt() -> None:
     """Tests the _build_reflection_prompt() function."""
@@ -43,7 +44,7 @@ def test__prompt_reflection() -> None:
         question="What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?",
         trajectory="Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]",
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
-        prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA, 
+        prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, str)
     assert out == "Reflection Output"
@@ -108,35 +109,41 @@ def test__prompt_agent() -> None:
 def test_get_node_trajectory() -> None:
     """Tests the get_node_trajectory() function."""
     root = Node(
-        state=ReActOutput(**{
-            "thought": "Root thought",
-            "action_type": "",
-            "query": "",
-            "observation": "",
-            "answer": "",
-            "external_tool_info": {}
-        })
+        state=ReActOutput(
+            **{
+                "thought": "Root thought",
+                "action_type": "",
+                "query": "",
+                "observation": "",
+                "answer": "",
+                "external_tool_info": {},
+            }
+        )
     )
     child1 = Node(
-        state=ReActOutput(**{
-            "thought": "Child1 thought",
-            "action_type": "Lookup",
-            "query": "topic",
-            "observation": "",
-            "answer": "",
-            "external_tool_info": {}
-        }),
+        state=ReActOutput(
+            **{
+                "thought": "Child1 thought",
+                "action_type": "Lookup",
+                "query": "topic",
+                "observation": "",
+                "answer": "",
+                "external_tool_info": {},
+            }
+        ),
         parent=root,
     )
     child2 = Node(
-        state=ReActOutput(**{
-            "thought": "Child2 thought",
-            "action_type": "Finish",
-            "query": "answer",
-            "observation": "Answer correct",
-            "answer": "",
-            "external_tool_info": {}
-        }),
+        state=ReActOutput(
+            **{
+                "thought": "Child2 thought",
+                "action_type": "Finish",
+                "query": "answer",
+                "observation": "Answer correct",
+                "answer": "",
+                "external_tool_info": {},
+            }
+        ),
         parent=child1,
     )
 
