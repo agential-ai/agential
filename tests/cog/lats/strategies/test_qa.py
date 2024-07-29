@@ -328,6 +328,21 @@ def test_generate() -> None:
         assert node.is_terminal is False
         assert node.visits == 0
 
+    # Test generate with reflections.
+    responses = []
+    llm = FakeListChatModel(responses=responses)
+    strategy = LATSHotQAStrategy(llm=llm)
+    children_nodes = strategy.generate(
+        node=root,
+        question=question,
+        key=key,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
+        prompt=LATS_INSTRUCTION_HOTPOTQA,
+        reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
+        reflect_additional_keys={},
+    )
 
 def test_select_node() -> None:
     """Test the select_node method."""
