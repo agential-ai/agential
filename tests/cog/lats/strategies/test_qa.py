@@ -510,8 +510,107 @@ def test_select_node() -> None:
 
 def test_expand_node() -> None:
     """Test the expand_node method."""
-    pass
+    gt_states = [
+        ReActOutput(
+            thought="I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
+            action_type="Search",
+            query="best kick boxer controversies crimes",
+            observation="Badr Hari is the best kick boxer in the world.",
+            answer="",
+            external_tool_info={
+                "search_result": "Badr Hari is the best kick boxer in the world.",
+                "lookup_result": "",
+            },
+        ),
+        ReActOutput(
+            thought="I need to search for the best kickboxer who has been involved in controversies and crimes of violence",
+            action_type="Search",
+            query="best kick boxer controversies crimes",
+            observation="Badr Hari is the best kick boxer in the world.",
+            answer="",
+            external_tool_info={
+                "search_result": "Badr Hari is the best kick boxer in the world.",
+                "lookup_result": "",
+            },
+        ),
+        ReActOutput(
+            thought="I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies",
+            action_type="Search",
+            query="best kick boxer controversies",
+            observation="Badr Hari is the best kick boxer in the world.",
+            answer="",
+            external_tool_info={
+                "search_result": "Badr Hari is the best kick boxer in the world.",
+                "lookup_result": "",
+            },
+        ),
+        ReActOutput(
+            thought="I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring",
+            action_type="Search",
+            query="best kick boxer controversies violence",
+            observation="Badr Hari is the best kick boxer in the world.",
+            answer="",
+            external_tool_info={
+                "search_result": "Badr Hari is the best kick boxer in the world.",
+                "lookup_result": "",
+            },
+        ),
+        ReActOutput(
+            thought="I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies",
+            action_type="Search",
+            query="best kickboxer controversies",
+            observation="Badr Hari is the best kick boxer in the world.",
+            answer="",
+            external_tool_info={
+                "search_result": "Badr Hari is the best kick boxer in the world.",
+                "lookup_result": "",
+            },
+        ),
+    ]
 
+    responses = [
+        "I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
+        "Search[best kick boxer controversies crimes]",
+        "I need to search for the best kickboxer who has been involved in controversies and crimes of violence",
+        "Search[best kick boxer controversies crimes]\nObservation 0: No exact matches found",
+        "I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies",
+        "Search[best kick boxer controversies]\nObservation 0: Could not find [best kick boxer controversies]",
+        "I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring",
+        "Search[best kick boxer controversies violence]\nObservation 0: Could not find [best kick boxer controversies violence]",
+        "I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies",
+        "Search[best kickboxer controversies]\nObservation 0: The search results show multiple kickboxers who have been involved in controversies",
+    ]
+    llm = FakeListChatModel(responses=responses)
+    strategy = LATSHotQAStrategy(llm=llm)
+    strategy.docstore.search = (
+        lambda x: "Badr Hari is the best kick boxer in the world."
+    )
+
+    question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
+    key = "Badr Hari"
+
+    root = strategy.initialize()
+
+    children_nodes = strategy.expand_node(
+        node=root,
+        question=question,
+        key=key,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
+        prompt=LATS_INSTRUCTION_HOTPOTQA,
+        reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
+        reflect_additional_keys={},
+    )
+    assert len(children_nodes) == 5
+    for gt_state, node in zip(gt_states, children_nodes):
+        assert node.state == gt_state
+        assert node.depth == 1
+        assert node.reward == 0
+        assert node.value == 0
+        assert node.is_terminal is False
+        assert node.visits == 0
+    assert strategy.root.children == children_nodes
 
 def test_evaluate_node() -> None:
     """Test the evaluate_node method."""
@@ -566,7 +665,7 @@ def test_backpropagate_node() -> None:
     assert child.value == 5 / 6
 
 
-def test_halting_condition():
+def test_halting_condition() -> None:
     """Test the halting_condition method."""
     llm = FakeListChatModel(responses=[])
     strategy = LATSHotQAStrategy(llm=llm)
@@ -588,7 +687,7 @@ def test_halting_condition():
     assert strategy.halting_condition(incorrect_terminal_node) is False
 
 
-def test_reflect_condition():
+def test_reflect_condition() -> None:
     """Test the reflect_condition method."""
     llm = FakeListChatModel(responses=[])
     strategy = LATSHotQAStrategy(llm=llm, max_unique=3, max_reflections=5)
@@ -620,7 +719,7 @@ def test_reflect_condition():
     assert strategy.reflect_condition() is False
 
 
-def test_reflect():
+def test_reflect() -> None:
     """Test the reflect method."""
     llm = FakeListChatModel(responses=["Reflection 1", "Reflection 2"])
     strategy = LATSHotQAStrategy(llm=llm, max_unique=2)
