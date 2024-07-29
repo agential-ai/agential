@@ -227,13 +227,62 @@ def test_generate_observation() -> None:
 
 def test_generate() -> None:
     """Test the generate method."""
-
     gt_states = [
-        ReActOutput(thought='I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes', action_type='Search', query='best kick boxer controversies crimes', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}),
-        ReActOutput(thought='I need to search for the best kickboxer who has been involved in controversies and crimes of violence', action_type='Search', query='best kick boxer controversies crimes', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}),
-        ReActOutput(thought='I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies', action_type='Search', query='best kick boxer controversies', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}),
-        ReActOutput(thought='I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring', action_type='Search', query='best kick boxer controversies violence', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}),
-        ReActOutput(thought='I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies', action_type='Search', query='best kickboxer controversies', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}),
+        ReActOutput(
+            thought="I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
+            action_type="Search",
+            query="best kick boxer controversies crimes",
+            observation="Badr Hari is the best kick boxer in the world.",
+            answer="",
+            external_tool_info={
+                "search_result": "Badr Hari is the best kick boxer in the world.",
+                "lookup_result": "",
+            },
+        ),
+        ReActOutput(
+            thought="I need to search for the best kickboxer who has been involved in controversies and crimes of violence",
+            action_type="Search",
+            query="best kick boxer controversies crimes",
+            observation="Badr Hari is the best kick boxer in the world.",
+            answer="",
+            external_tool_info={
+                "search_result": "Badr Hari is the best kick boxer in the world.",
+                "lookup_result": "",
+            },
+        ),
+        ReActOutput(
+            thought="I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies",
+            action_type="Search",
+            query="best kick boxer controversies",
+            observation="Badr Hari is the best kick boxer in the world.",
+            answer="",
+            external_tool_info={
+                "search_result": "Badr Hari is the best kick boxer in the world.",
+                "lookup_result": "",
+            },
+        ),
+        ReActOutput(
+            thought="I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring",
+            action_type="Search",
+            query="best kick boxer controversies violence",
+            observation="Badr Hari is the best kick boxer in the world.",
+            answer="",
+            external_tool_info={
+                "search_result": "Badr Hari is the best kick boxer in the world.",
+                "lookup_result": "",
+            },
+        ),
+        ReActOutput(
+            thought="I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies",
+            action_type="Search",
+            query="best kickboxer controversies",
+            observation="Badr Hari is the best kick boxer in the world.",
+            answer="",
+            external_tool_info={
+                "search_result": "Badr Hari is the best kick boxer in the world.",
+                "lookup_result": "",
+            },
+        ),
     ]
 
     responses = [
@@ -326,24 +375,36 @@ def test_halting_condition():
     incorrect_terminal_node.reward = 0
     assert strategy.halting_condition(incorrect_terminal_node) is False
 
+
 def test_reflect_condition():
     """Test the reflect_condition method."""
     llm = FakeListChatModel(responses=[])
     strategy = LATSHotQAStrategy(llm=llm, max_unique=3, max_reflections=5)
 
     # Test when there are fewer unique trajectories than reflections
-    strategy.failed_trajectories = [{"trajectory": f"t{i}", "final_answer": "answer"} for i in range(2)]
+    strategy.failed_trajectories = [
+        {"trajectory": f"t{i}", "final_answer": "answer"} for i in range(2)
+    ]
     strategy.reflection_map = {}
     assert strategy.reflect_condition() is True
 
     # Test when there are more unique trajectories than reflections but less than max_reflections
-    strategy.failed_trajectories = [{"trajectory": f"t{i}", "final_answer": f"answer{i}"} for i in range(4)]
+    strategy.failed_trajectories = [
+        {"trajectory": f"t{i}", "final_answer": f"answer{i}"} for i in range(4)
+    ]
     strategy.reflection_map = {"r1": "reflection1"}
     assert strategy.reflect_condition() is True
 
     # Test when there are max_reflections unique trajectories
-    strategy.failed_trajectories = [{"trajectory": f"t{i}", "final_answer": "answer"} for i in range(5)]
-    strategy.reflection_map = {"r1": "reflection1", "r2": "reflection2", "r3": "reflection3", "r4": "reflection4"}
+    strategy.failed_trajectories = [
+        {"trajectory": f"t{i}", "final_answer": "answer"} for i in range(5)
+    ]
+    strategy.reflection_map = {
+        "r1": "reflection1",
+        "r2": "reflection2",
+        "r3": "reflection3",
+        "r4": "reflection4",
+    }
     assert strategy.reflect_condition() is False
 
 
@@ -351,26 +412,29 @@ def test_reflect():
     """Test the reflect method."""
     llm = FakeListChatModel(responses=["Reflection 1", "Reflection 2"])
     strategy = LATSHotQAStrategy(llm=llm, max_unique=2)
-    
+
     strategy.failed_trajectories = [
         {"trajectory": "Failed trajectory 1", "final_answer": "Incorrect answer 1"},
         {"trajectory": "Failed trajectory 2", "final_answer": "Incorrect answer 2"},
-        {"trajectory": "Failed trajectory 1", "final_answer": "Incorrect answer 1"},  # Duplicate, should be ignored
+        {
+            "trajectory": "Failed trajectory 1",
+            "final_answer": "Incorrect answer 1",
+        },  # Duplicate, should be ignored
     ]
-    
+
     question = "What is the capital of France?"
     examples = "Example 1\nExample 2"
     prompt = "Reflect on the failed trajectory"
     additional_keys = {"key": "value"}
-    
+
     reflections = strategy.reflect(question, examples, prompt, additional_keys)
-    
+
     assert len(reflections) == 2
     assert reflections[0]["trajectory"] == "Failed trajectory 1"
     assert reflections[0]["reflection"] == "Reflection 1"
     assert reflections[1]["trajectory"] == "Failed trajectory 2"
     assert reflections[1]["reflection"] == "Reflection 2"
-    
+
     assert strategy.reflection_map == reflections
 
 
