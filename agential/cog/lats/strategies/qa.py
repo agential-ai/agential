@@ -408,9 +408,11 @@ class LATSQAStrategy(LATSBaseStrategy):
                 reflect_additional_keys=reflect_additional_keys,
             )
 
+            all_children_nodes.append(children_nodes)
+
             for node in children_nodes:
                 if node.is_terminal:
-                    return node.reward, node
+                    return node.reward, node, all_children_nodes, all_values
 
             for child in children_nodes:
                 if not child.is_terminal:
@@ -445,7 +447,6 @@ class LATSQAStrategy(LATSBaseStrategy):
             if depth == self.depth_limit:
                 rewards = [-1]
 
-            all_children_nodes.append(children_nodes)
             all_values.append(values)
 
         return sum(rewards) / len(rewards), node, all_children_nodes, all_values

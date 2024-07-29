@@ -660,7 +660,27 @@ def test_evaluate_node() -> None:
 
 def test_simulate_node() -> None:
     """Test the simulate_node method."""
-    qa_strategy = LATSHotQAStrategy(llm=FakeListChatModel(responses=["Value Output"]), depth_limit=3)
+    responses = [
+        'I need to search for the capital of France',
+        'Search[capital of France]',
+        'I need to search for the capital of France',
+        'Search[capital of France]',
+        'The trajectory provided is completely incorrect as the observation received does not relate to the search query at all, indicating that the search term might have been mistyped or confused',
+        'The search results did not return the information needed',
+        'Search[capital of France]\nObservation 2: The capital of France is Paris, known for its art, fashion, gastronomy, and culture',
+        'The search did not return relevant information',
+        'Search[capital of France Wikipedia]\nObservation 2: The capital of France is Paris, the largest city in France and its capital since the 4th century',
+        'The trajectory provided is incorrect because the environmental observation does not relate to the question asked',
+        'This trajectory is incorrect as it did not provide any relevant information regarding the capital of France',
+        'There seems to be an issue with the search results',
+        'Search[similar entities to the capital of France]\nObservation 3: Similar: [Paris, Marseille, Lyon, Toulouse, Lille]\nThought 4: The capital of France is Paris',
+        'The search results seem to be incorrect',
+        'Search[capital of France]\nObservation 3: The capital of France is Paris',
+        'The trajectory is incorrect as the observations did not provide any relevant information related to the question',
+        'This trajectory is incorrect as the focus should have been on verifying the information related to the capital of France, rather than repeatedly trying the same search query that does not provide the desired information',
+    ]
+
+    qa_strategy = LATSHotQAStrategy(llm=FakeListChatModel(responses=responses), depth_limit=3, n_samples=2)
 
     # Create a mock Node
     root_node = Node(depth=0, is_terminal=False)
@@ -670,10 +690,13 @@ def test_simulate_node() -> None:
     key = "Paris"
     examples = HOTPOTQA_FEWSHOT_EXAMPLES_REACT
     reflect_examples = HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT
+    value_examples = HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE
     prompt = LATS_INSTRUCTION_HOTPOTQA
     reflect_prompt = LATS_REFLECT_INSTRUCTION_HOTPOTQA
+    value_prompt = LATS_VALUE_INSTRUCTION_HOTPOTQA
     additional_keys = {}
     reflect_additional_keys = {}
+    value_additional_keys = {}
 
     # Call the simulate_node function
     reward, final_node, all_children_nodes, all_values = qa_strategy.simulate_node(
@@ -682,10 +705,13 @@ def test_simulate_node() -> None:
         key=key,
         examples=examples,
         reflect_examples=reflect_examples,
+        value_examples=value_examples,
         prompt=prompt,
         reflect_prompt=reflect_prompt,
+        value_prompt=value_prompt,
         additional_keys=additional_keys,
-        reflect_additional_keys=reflect_additional_keys
+        reflect_additional_keys=reflect_additional_keys,
+        value_additional_keys=value_additional_keys,
     )
 
     # Assert the return types
