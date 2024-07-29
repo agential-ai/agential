@@ -347,9 +347,31 @@ def test_reflect_condition():
     assert strategy.reflect_condition() is False
 
 
-def test_reflect() -> None:
+def test_reflect():
     """Test the reflect method."""
-    pass
+    llm = FakeListChatModel(responses=["Reflection 1", "Reflection 2"])
+    strategy = LATSHotQAStrategy(llm=llm, max_unique=2)
+    
+    strategy.failed_trajectories = [
+        {"trajectory": "Failed trajectory 1", "final_answer": "Incorrect answer 1"},
+        {"trajectory": "Failed trajectory 2", "final_answer": "Incorrect answer 2"},
+        {"trajectory": "Failed trajectory 1", "final_answer": "Incorrect answer 1"},  # Duplicate, should be ignored
+    ]
+    
+    question = "What is the capital of France?"
+    examples = "Example 1\nExample 2"
+    prompt = "Reflect on the failed trajectory"
+    additional_keys = {"key": "value"}
+    
+    reflections = strategy.reflect(question, examples, prompt, additional_keys)
+    
+    assert len(reflections) == 2
+    assert reflections[0]["trajectory"] == "Failed trajectory 1"
+    assert reflections[0]["reflection"] == "Reflection 1"
+    assert reflections[1]["trajectory"] == "Failed trajectory 2"
+    assert reflections[1]["reflection"] == "Reflection 2"
+    
+    assert strategy.reflection_map == reflections
 
 
 def test_reset() -> None:
