@@ -125,7 +125,7 @@ def test_generate_thought() -> None:
     assert thought == "I should search for information about the topic."
     assert (
         updated_trajectory
-        == "Previous thought\nThought 1: I should search for information about the topic."
+        == "Previous thought\nThought 2: I should search for information about the topic."
     )
 
 
@@ -137,7 +137,7 @@ def test_generate_action() -> None:
     question = "What is the capital of France?"
     examples = "Example 1\nExample 2"
     trajectory = (
-        "Thought 1: I should search for information about the capital of France."
+        "Thought 2: I should search for information about the capital of France."
     )
     reflections = "Reflection 1\nReflection 2"
     depth = 1
@@ -149,7 +149,7 @@ def test_generate_action() -> None:
     )
     assert (
         trajectory
-        == "Thought 1: I should search for information about the capital of France.\nAction 1: Search[capital of France]"
+        == "Thought 2: I should search for information about the capital of France.\nAction 2: Search[capital of France]"
     )
     assert action_type == "Search"
     assert query == "capital of France"
@@ -168,7 +168,7 @@ def test_generate_observation() -> None:
 
     # Test Finish action.
     finish_result = strategy.generate_observation(key, "Finish", "Paris", trajectory, 1)
-    assert finish_result[0] == "Previous trajectory\nObservation 1: Answer is CORRECT"
+    assert finish_result[0] == "Previous trajectory\nObservation 2: Answer is CORRECT"
     assert finish_result[1] == 1
     assert finish_result[2] == "Answer is CORRECT"
     assert finish_result[3] is True
@@ -180,7 +180,7 @@ def test_generate_observation() -> None:
     )
     assert (
         search_result[0]
-        == "Previous trajectory\nObservation 2: Paris is the capital of France."
+        == "Previous trajectory\nObservation 3: Paris is the capital of France."
     )
     assert search_result[1] == 0
     assert search_result[2] == "Paris is the capital of France."
@@ -192,7 +192,7 @@ def test_generate_observation() -> None:
 
     # Test Lookup action.
     lookup_result = strategy.generate_observation(key, "Lookup", "Paris", trajectory, 3)
-    assert lookup_result[0].endswith("Observation 3: Paris is a city in France.")
+    assert lookup_result[0].endswith("Observation 4: Paris is a city in France.")
     assert lookup_result[1] == 0
     assert lookup_result[2] == "Paris is a city in France."
     assert lookup_result[3] is False
@@ -207,7 +207,7 @@ def test_generate_observation() -> None:
     )
     assert (
         invalid_result[0]
-        == "Previous trajectory\nObservation 4: Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
+        == "Previous trajectory\nObservation 5: Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
     )
     assert invalid_result[1] == 0
     assert (

@@ -60,6 +60,9 @@ def _prompt_reflection(
         prompt=prompt,
         additional_keys=additional_keys,
     )
+    print("<PROMPT REFLECTION=====================================================================>")
+    print(prompt)
+    print("<PROMPT REFLECTION=====================================================================>")
     out = llm(
         [
             HumanMessage(
@@ -67,6 +70,9 @@ def _prompt_reflection(
             )
         ]
     ).content
+    print("<OUT REFLECTION=====================================================================>")
+    print(repr(out))
+    print("<OUT REFLECTION=====================================================================>")
     assert isinstance(out, str)
     return out
 
@@ -133,6 +139,9 @@ def _prompt_value(
         prompt=prompt,
         additional_keys=additional_keys,
     )
+    print("<PROMPT VALUE=====================================================================>")
+    print(prompt)
+    print("<PROMPT VALUE=====================================================================>")
     out = llm(
         [
             HumanMessage(
@@ -140,6 +149,9 @@ def _prompt_value(
             )
         ]
     ).content
+    print("<OUT VALUE=====================================================================>")
+    print(repr(out))
+    print("<OUT VALUE=====================================================================>")
     assert isinstance(out, str)
     return out
 
@@ -206,6 +218,9 @@ def _prompt_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
+    print("<PROMPT AGENT=====================================================================>")
+    print(prompt)
+    print("<PROMPT AGENT=====================================================================>")
     out = llm(
         [
             HumanMessage(
@@ -213,6 +228,9 @@ def _prompt_agent(
             )
         ]
     ).content
+    print("<OUT AGENT=====================================================================>")
+    print(repr(out))
+    print("<OUT AGENT=====================================================================>")
     assert isinstance(out, str)
     return out
 

@@ -188,7 +188,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str, str]:
-        trajectory += f"\nThought {depth}:"
+        trajectory += f"\nThought {depth + 1}:"
         thought = _prompt_agent(
             llm=self.llm,
             question=question,
@@ -213,7 +213,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str, str, str]:
-        trajectory += f"\nAction {depth}:"
+        trajectory += f"\nAction {depth + 1}:"
         action = _prompt_agent(
             llm=self.llm,
             question=question,
@@ -240,7 +240,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         external_tool_info = {"search_result": "", "lookup_result": ""}
 
         reward, done = 0, False
-        trajectory += f"\nObservation {depth}: "
+        trajectory += f"\nObservation {depth + 1}: "
         if action_type.lower() == "finish":
             if EM(query, key):
                 obs = "Answer is CORRECT"
