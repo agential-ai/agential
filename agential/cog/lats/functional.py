@@ -5,7 +5,7 @@ from typing import Dict, List
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
 from langchain_core.prompts.prompt import PromptTemplate
-
+from agential.cog.lats.node import Node
 
 def _build_reflection_prompt(
     question: str,
@@ -60,13 +60,13 @@ def _prompt_reflection(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print(
-        "<PROMPT REFLECTION=====================================================================>"
-    )
-    print(prompt)
-    print(
-        "<PROMPT REFLECTION=====================================================================>"
-    )
+    # print(
+    #     "<PROMPT REFLECTION=====================================================================>"
+    # )
+    # print(prompt)
+    # print(
+    #     "<PROMPT REFLECTION=====================================================================>"
+    # )
     out = llm(
         [
             HumanMessage(
@@ -74,13 +74,13 @@ def _prompt_reflection(
             )
         ]
     ).content
-    print(
-        "<OUT REFLECTION=====================================================================>"
-    )
-    print(repr(out))
-    print(
-        "<OUT REFLECTION=====================================================================>"
-    )
+    # print(
+    #     "<OUT REFLECTION=====================================================================>"
+    # )
+    # print(repr(out))
+    # print(
+    #     "<OUT REFLECTION=====================================================================>"
+    # )
     assert isinstance(out, str)
     return out
 
@@ -234,13 +234,13 @@ def _prompt_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print(
-        "<PROMPT AGENT=====================================================================>"
-    )
-    print(prompt)
-    print(
-        "<PROMPT AGENT=====================================================================>"
-    )
+    # print(
+    #     "<PROMPT AGENT=====================================================================>"
+    # )
+    # print(prompt)
+    # print(
+    #     "<PROMPT AGENT=====================================================================>"
+    # )
     out = llm(
         [
             HumanMessage(
@@ -248,22 +248,22 @@ def _prompt_agent(
             )
         ]
     ).content
-    print(
-        "<OUT AGENT=====================================================================>"
-    )
-    print(repr(out))
-    print(
-        "<OUT AGENT=====================================================================>"
-    )
+    # print(
+    #     "<OUT AGENT=====================================================================>"
+    # )
+    # print(repr(out))
+    # print(
+    #     "<OUT AGENT=====================================================================>"
+    # )
     assert isinstance(out, str)
     return out
 
 
-def get_node_trajectory(node) -> str:
+def get_node_trajectory(node: Node) -> str:
     """Generates a string representation of the trajectory from the given node to the root.
 
     Args:
-        node: The current node in the tree.
+        node (Node): The current node in the tree.
 
     Returns:
         str: A string representation of the trajectory, including thoughts, actions, and observations.
@@ -273,14 +273,14 @@ def get_node_trajectory(node) -> str:
     while node:
         step = []
         if node.depth > 0:
-            if node.state.get("thought"):
-                step.append(f"Thought {node.depth}: {node.state['thought']}")
-            if node.state.get("action_type") and node.state.get("query"):
+            if node.state.thought:
+                step.append(f"Thought {node.depth}: {node.state.thought}")
+            if node.state.action_type and node.state.query:
                 step.append(
-                    f"Action {node.depth}: {node.state['action_type']}[{node.state['query']}]"
+                    f"Action {node.depth}: {node.state.action_type}[{node.state.query}]"
                 )
-            if node.state.get("observation"):
-                step.append(f"Observation {node.depth}: {node.state['observation']}")
+            if node.state.observation:
+                step.append(f"Observation {node.depth}: {node.state.observation}")
         step_str = "\n".join(step)
         trajectory.append(step_str)
         node = node.parent

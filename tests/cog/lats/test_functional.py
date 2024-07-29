@@ -16,34 +16,12 @@ from agential.cog.lats.node import Node
 from agential.cog.lats.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
     LATS_INSTRUCTION_HOTPOTQA,
+    HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE,
+    LATS_VALUE_INSTRUCTION_HOTPOTQA,
+    LATS_REFLECT_INSTRUCTION_HOTPOTQA
 )
-
-
-def test__build_reflection_prompt() -> None:
-    """Tests the _build_reflection_prompt() function."""
-    prompt = _build_reflection_prompt(
-        question="What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?",
-        trajectory="Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]",
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,  # Use LATS specific examples
-        prompt=LATS_INSTRUCTION_HOTPOTQA,  # Use LATS instruction
-    )
-    assert isinstance(prompt, str)
-    assert "Colorado orogeny" in prompt
-    assert "elevation range" in prompt
-
-
-def test__prompt_reflection() -> None:
-    """Tests the _prompt_reflection() function."""
-    out = _prompt_reflection(
-        llm=FakeListChatModel(responses=["Reflection Output"]),
-        question="What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?",
-        trajectory="Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]",
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,  # Use LATS specific examples
-        prompt=LATS_INSTRUCTION_HOTPOTQA,  # Use LATS instruction
-    )
-    assert isinstance(out, str)
-    assert out == "Reflection Output"
-
+from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+from agential.cog.react.output import ReActOutput
 
 def test__build_reflection_prompt() -> None:
     """Tests the _build_reflection_prompt() function."""
@@ -51,7 +29,7 @@ def test__build_reflection_prompt() -> None:
         question="What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?",
         trajectory="Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]",
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
-        prompt=LATS_INSTRUCTION_HOTPOTQA,
+        prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(prompt, str)
     assert "Colorado orogeny" in prompt
@@ -65,7 +43,7 @@ def test__prompt_reflection() -> None:
         question="What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?",
         trajectory="Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]",
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
-        prompt=LATS_INSTRUCTION_HOTPOTQA,
+        prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA, 
     )
     assert isinstance(out, str)
     assert out == "Reflection Output"
@@ -75,10 +53,10 @@ def test__build_value_prompt() -> None:
     """Tests the _build_value_prompt() function."""
     prompt = _build_value_prompt(
         question="What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?",
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE,
         trajectory="Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]",
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
-        prompt=LATS_INSTRUCTION_HOTPOTQA,
         failed_trajectories="Failed Trajectories",
+        prompt=LATS_VALUE_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(prompt, str)
     assert "Colorado orogeny" in prompt
@@ -90,10 +68,10 @@ def test__prompt_value() -> None:
     out = _prompt_value(
         llm=FakeListChatModel(responses=["Value Output"]),
         question="What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?",
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE,
         trajectory="Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]",
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
         failed_trajectories="Failed Trajectories",
-        prompt=LATS_INSTRUCTION_HOTPOTQA,
+        prompt=LATS_VALUE_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, str)
     assert out == "Value Output"
@@ -104,7 +82,7 @@ def test__build_agent_prompt() -> None:
     prompt = _build_agent_prompt(
         question="What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?",
         trajectory="Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]",
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         prompt=LATS_INSTRUCTION_HOTPOTQA,
         reflections="Reflections",
     )
@@ -119,7 +97,7 @@ def test__prompt_agent() -> None:
         llm=FakeListChatModel(responses=["Agent Output"]),
         question="What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?",
         trajectory="Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]",
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         reflections="Reflections",
         prompt=LATS_INSTRUCTION_HOTPOTQA,
     )
@@ -130,29 +108,35 @@ def test__prompt_agent() -> None:
 def test_get_node_trajectory() -> None:
     """Tests the get_node_trajectory() function."""
     root = Node(
-        state={
+        state=ReActOutput(**{
             "thought": "Root thought",
             "action_type": "",
             "query": "",
             "observation": "",
-        }
+            "answer": "",
+            "external_tool_info": {}
+        })
     )
     child1 = Node(
-        state={
+        state=ReActOutput(**{
             "thought": "Child1 thought",
             "action_type": "Lookup",
             "query": "topic",
             "observation": "",
-        },
+            "answer": "",
+            "external_tool_info": {}
+        }),
         parent=root,
     )
     child2 = Node(
-        state={
+        state=ReActOutput(**{
             "thought": "Child2 thought",
             "action_type": "Finish",
             "query": "answer",
             "observation": "Answer correct",
-        },
+            "answer": "",
+            "external_tool_info": {}
+        }),
         parent=child1,
     )
 

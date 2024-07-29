@@ -383,32 +383,33 @@ def test_generate() -> None:
         assert node.is_terminal is False
         assert node.visits == 0
 
-    # # Test case with a terminal child node (reward 0)
-    # terminal_responses = [
-    #     "I think the answer is Mike Tyson.",
-    #     "Finish[Mike Tyson]",
-    # ]
-    # llm_terminal = FakeListChatModel(responses=terminal_responses)
-    # strategy_terminal = LATSHotQAStrategy(llm=llm_terminal)
+    # Test case with a terminal child node (reward 0)
+    responses = [
+        "I think the answer is Mike Tyson.",
+        "Finish[Mike Tyson]",
+    ]
+    llm = FakeListChatModel(responses=responses)
+    strategy = LATSHotQAStrategy(llm=llm, n_samples=1)
     
-    # root_terminal = strategy_terminal.initialize()
-    # children_nodes_terminal = strategy_terminal.generate(
-    #     node=root_terminal,
-    #     question=question,
-    #     key=key,
-    #     examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-    #     reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
-    #     prompt=LATS_INSTRUCTION_HOTPOTQA,
-    #     reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
-    #     additional_keys={},
-    #     reflect_additional_keys={},
-    # )
-    # assert len(children_nodes_terminal) == 1
-    # assert children_nodes_terminal[0].state.thought == "I think the answer is Mike Tyson."
-    # assert children_nodes_terminal[0].state.action_type == "Finish"
-    # assert children_nodes_terminal[0].state.query == "Mike Tyson"
-    # assert children_nodes_terminal[0].is_terminal
-    # assert children_nodes_terminal[0].reward == 0
+    root = strategy.initialize()
+    children_nodes = strategy.generate(
+        node=root,
+        question=question,
+        key=key,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
+        prompt=LATS_INSTRUCTION_HOTPOTQA,
+        reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
+        reflect_additional_keys={},
+    )
+    print(strategy.reflection_map)
+    assert len(children_nodes) == 1
+    assert children_nodes[0].state.thought == "I think the answer is Mike Tyson."
+    assert children_nodes[0].state.action_type == "Finish"
+    assert children_nodes[0].state.query == "Mike Tyson"
+    assert children_nodes[0].is_terminal
+    assert children_nodes[0].reward == 0
 
 def test_select_node() -> None:
     """Test the select_node method."""
