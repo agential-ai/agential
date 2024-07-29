@@ -239,11 +239,12 @@ class LATSQAStrategy(LATSBaseStrategy):
     ) -> Tuple[str, int, str, bool, Dict[str, Any]]:
         external_tool_info = {"search_result": "", "lookup_result": ""}
 
-        done = False
+        reward, done = 0, False
         trajectory += f"\nObservation {depth}: "
         if action_type.lower() == "finish":
             if EM(query, key):
                 obs = "Answer is CORRECT"
+                reward = int(EM(query, key))
             else:
                 obs = "Answer is INCORRECT"
             done = True
@@ -265,7 +266,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
         trajectory += obs
 
-        return trajectory, int(EM(query, key)), obs, done, external_tool_info
+        return trajectory, reward, obs, done, external_tool_info
 
     def select_node(self, node: Node) -> Node:
         while node and node.children:

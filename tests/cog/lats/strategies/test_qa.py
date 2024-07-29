@@ -133,7 +133,46 @@ def test_generate_action() -> None:
 
 def test_generate_observation() -> None:
     """Test the generate_observation method."""
-    pass
+    llm = FakeListChatModel(responses=[])
+    docstore = DocstoreExplorer(None)
+    docstore.search = lambda x: "Paris is the capital of France."
+    docstore.lookup = lambda x: "Paris is a city in France."
+    strategy = LATSHotQAStrategy(llm=llm, docstore=docstore)
+
+    key = "Paris"
+    trajectory = "Previous trajectory"
+
+    # Test Finish action.
+    finish_result = strategy.generate_observation(key, "Finish", "Paris", trajectory, 1)
+    assert finish_result[0] == 'Previous trajectory\nObservation 1: Answer is CORRECT'     
+    assert finish_result[1] == 1
+    assert finish_result[2] == 'Answer is CORRECT'
+    assert finish_result[3] is True
+    assert finish_result[4] == {"search_result": "", "lookup_result": ""}
+
+    # Test Search action.
+    search_result = strategy.generate_observation(key, "Search", "capital of France", trajectory, 2)
+    assert search_result[0] == 'Previous trajectory\nObservation 2: Paris is the capital of France.'
+    assert search_result[1] == 0
+    assert search_result[2] == 'Paris is the capital of France.'
+    assert search_result[3] is False
+    assert search_result[4] == {'search_result': 'Paris is the capital of France.', 'lookup_result': ''}
+
+    # Test Lookup action.
+    lookup_result = strategy.generate_observation(key, "Lookup", "Paris", trajectory, 3)
+    assert lookup_result[0].endswith("Observation 3: Paris is a city in France.")
+    assert lookup_result[1] == 0
+    assert lookup_result[2] == 'Paris is a city in France.'
+    assert lookup_result[3] is False
+    assert lookup_result[4] == {'search_result': '', 'lookup_result': 'Paris is a city in France.'}
+
+    # Test invalid action.
+    invalid_result = strategy.generate_observation(key, "Invalid", "query", trajectory, 4)
+    assert invalid_result[0] == 'Previous trajectory\nObservation 4: Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>].'
+    assert invalid_result[1] == 0
+    assert invalid_result[2] == 'Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>].'
+    assert invalid_result[3] is False
+    assert invalid_result[4] == {'search_result': '', 'lookup_result': ''}
 
 
 def test_generate() -> None:
