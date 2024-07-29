@@ -383,10 +383,13 @@ class LATSQAStrategy(LATSBaseStrategy):
         key: str,
         examples: str,
         reflect_examples: str,
+        value_examples: str, 
         prompt: str,
         reflect_prompt: str,
+        value_prompt: str, 
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
+        value_additional_keys: Dict[str, str],
     ) -> Tuple[float, Node, List[List[Node]], List[List[Dict[str, Any]]]]:
         depth = node.depth
         rewards = [0]
@@ -423,11 +426,11 @@ class LATSQAStrategy(LATSBaseStrategy):
                     value = _prompt_value(
                         llm=self.llm,
                         question=question,
-                        examples=examples,
+                        examples=value_examples,
                         trajectory=child_trajectory,
                         failed_trajectories=failed_trajectories,
-                        prompt=prompt,
-                        additional_keys=additional_keys,
+                        prompt=value_prompt,
+                        additional_keys=value_additional_keys,
                     )
 
                     explanation, value = parse_qa_value(value)
