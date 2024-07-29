@@ -329,9 +329,40 @@ def test_generate() -> None:
         assert node.visits == 0
 
     # Test generate with reflections.
-    responses = []
+    gt_states = [
+        ReActOutput(thought='I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and crimes of violence outside the ring', action_type='Search', query='best kickboxer controversies violence', observation="Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.", answer='', external_tool_info={'search_result': "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.", 'lookup_result': ''}),
+        ReActOutput(thought='I need to search for the best kick boxer in the world and then look into his controversies related to unsportsmanlike conduct and crimes of violence', action_type='Search', query='best kick boxer in the world', observation="Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.", answer='', external_tool_info={'search_result': "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.", 'lookup_result': ''}),
+        ReActOutput(thought='I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and violence outside of the ring', action_type='Search', query='best kick boxer in the world controversies', observation="Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.", answer='', external_tool_info={'search_result': "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.", 'lookup_result': ''}),
+        ReActOutput(thought='I need to search for the best kickboxer in the world who has been involved in controversies regarding unsportsmanlike conduct and crimes of violence outside the ring', action_type='Search', query='best kickboxer controversies', observation="Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.", answer='', external_tool_info={'search_result': "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.", 'lookup_result': ''}),
+        ReActOutput(thought='I need to search for the best kick boxer in the world and his controversies regarding unsportsmanlike conducts and crimes of violence', action_type='Search', query='best kick boxer in the world controversies', observation="Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.", answer='', external_tool_info={'search_result': "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.", 'lookup_result': ''}),
+    ]
+    responses = [
+        'My reasoning for this question failed because I did not narrow down the search to focus on kick boxers and instead ended up with unrelated information',
+        "My reasoning failed because I did not focus on gathering specific information related to the individual's kickboxing career and controversies, leading to an incorrect answer",
+        'I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and crimes of violence outside the ring',
+        'Search[best kickboxer controversies violence]\nObservation 1: Could not find [best kickboxer controversies violence]',
+        'I need to search for the best kick boxer in the world and then look into his controversies related to unsportsmanlike conduct and crimes of violence',
+        'Search[best kick boxer in the world]\nObservation 1: There have been several renowned kickboxers throughout history, such as Buakaw Banchamek, Ernesto Hoost, and Ramon Dekkers',
+        'I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and violence outside of the ring',
+        'Search[best kick boxer in the world controversies]\nObservation 1: Could not find [best kick boxer in the world controversies]',
+        'I need to search for the best kickboxer in the world who has been involved in controversies regarding unsportsmanlike conduct and crimes of violence outside the ring',
+        'Search[best kickboxer controversies]\nObservation 1: Could not find [best kickboxer controversies]',
+        'I need to search for the best kick boxer in the world and his controversies regarding unsportsmanlike conducts and crimes of violence',
+        'Search[best kick boxer in the world controversies]\nObservation 1: Could not find [best kick boxer in the world controversies]',
+    ]
     llm = FakeListChatModel(responses=responses)
     strategy = LATSHotQAStrategy(llm=llm)
+    strategy.docstore.search = lambda x: "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues."
+    strategy.failed_trajectories = [
+        {"trajectory": "Failed trajectory 1", "final_answer": "Incorrect answer 1"},
+        {"trajectory": "Failed trajectory 2", "final_answer": "Incorrect answer 2"},
+        {
+            "trajectory": "Failed trajectory 1",
+            "final_answer": "Incorrect answer 1",
+        },  # Duplicate, should be ignored
+    ]
+
+    root = strategy.initialize()
     children_nodes = strategy.generate(
         node=root,
         question=question,
@@ -343,6 +374,41 @@ def test_generate() -> None:
         additional_keys={},
         reflect_additional_keys={},
     )
+    assert len(children_nodes) == 5
+    for gt_state, node in zip(gt_states, children_nodes):
+        assert node.state == gt_state
+        assert node.depth == 1
+        assert node.reward == 0
+        assert node.value == 0
+        assert node.is_terminal is False
+        assert node.visits == 0
+
+    # # Test case with a terminal child node (reward 0)
+    # terminal_responses = [
+    #     "I think the answer is Mike Tyson.",
+    #     "Finish[Mike Tyson]",
+    # ]
+    # llm_terminal = FakeListChatModel(responses=terminal_responses)
+    # strategy_terminal = LATSHotQAStrategy(llm=llm_terminal)
+    
+    # root_terminal = strategy_terminal.initialize()
+    # children_nodes_terminal = strategy_terminal.generate(
+    #     node=root_terminal,
+    #     question=question,
+    #     key=key,
+    #     examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+    #     reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
+    #     prompt=LATS_INSTRUCTION_HOTPOTQA,
+    #     reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
+    #     additional_keys={},
+    #     reflect_additional_keys={},
+    # )
+    # assert len(children_nodes_terminal) == 1
+    # assert children_nodes_terminal[0].state.thought == "I think the answer is Mike Tyson."
+    # assert children_nodes_terminal[0].state.action_type == "Finish"
+    # assert children_nodes_terminal[0].state.query == "Mike Tyson"
+    # assert children_nodes_terminal[0].is_terminal
+    # assert children_nodes_terminal[0].reward == 0
 
 def test_select_node() -> None:
     """Test the select_node method."""
