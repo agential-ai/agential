@@ -305,14 +305,46 @@ def test_backpropagate_node() -> None:
     pass
 
 
-def test_halting_condition() -> None:
+def test_halting_condition():
     """Test the halting_condition method."""
-    pass
+    llm = FakeListChatModel(responses=[])
+    strategy = LATSHotQAStrategy(llm=llm)
 
+    # Test with a terminal node and reward of 1.
+    terminal_node = Node(state={})
+    terminal_node.is_terminal = True
+    terminal_node.reward = 1
+    assert strategy.halting_condition(terminal_node) is True
 
-def test_reflect_condition() -> None:
+    # Test with a non-terminal node.
+    non_terminal_node = Node(state={})
+    assert strategy.halting_condition(non_terminal_node) is False
+
+    # Test with a terminal node but reward is not 1.
+    incorrect_terminal_node = Node(state={})
+    incorrect_terminal_node.is_terminal = True
+    incorrect_terminal_node.reward = 0
+    assert strategy.halting_condition(incorrect_terminal_node) is False
+
+def test_reflect_condition():
     """Test the reflect_condition method."""
-    pass
+    llm = FakeListChatModel(responses=[])
+    strategy = LATSHotQAStrategy(llm=llm, max_unique=3, max_reflections=5)
+
+    # Test when there are fewer unique trajectories than reflections
+    strategy.failed_trajectories = [{"trajectory": f"t{i}", "final_answer": "answer"} for i in range(2)]
+    strategy.reflection_map = {}
+    assert strategy.reflect_condition() is True
+
+    # Test when there are more unique trajectories than reflections but less than max_reflections
+    strategy.failed_trajectories = [{"trajectory": f"t{i}", "final_answer": f"answer{i}"} for i in range(4)]
+    strategy.reflection_map = {"r1": "reflection1"}
+    assert strategy.reflect_condition() is True
+
+    # Test when there are max_reflections unique trajectories
+    strategy.failed_trajectories = [{"trajectory": f"t{i}", "final_answer": "answer"} for i in range(5)]
+    strategy.reflection_map = {"r1": "reflection1", "r2": "reflection2", "r3": "reflection3", "r4": "reflection4"}
+    assert strategy.reflect_condition() is False
 
 
 def test_reflect() -> None:
