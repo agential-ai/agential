@@ -331,7 +331,45 @@ def test_generate() -> None:
 
 def test_select_node() -> None:
     """Test the select_node method."""
-    pass
+    llm = FakeListChatModel(responses=[])
+    strategy = LATSHotQAStrategy(llm=llm)
+
+    # Create a tree structure.
+    root = Node(state={})
+    child1 = Node(state={}, parent=root)
+    child2 = Node(state={}, parent=root)
+    grandchild1 = Node(state={}, parent=child1)
+    grandchild2 = Node(state={}, parent=child1)
+    
+    root.children = [child1, child2]
+    child1.children = [grandchild1, grandchild2]
+
+    # Test selection of non-terminal node with highest UCT.
+    child1.visits = 10
+    child1.value = 0.6
+    child2.visits = 5
+    child2.value = 0.4
+    selected_node = strategy.select_node(root)
+    assert selected_node == grandchild1  # child2 should have higher UCT due to fewer visits
+
+    # Test selection of terminal node with reward 1.
+    grandchild1.is_terminal = True
+    grandchild1.reward = 1
+    selected_node = strategy.select_node(root)
+    assert selected_node == grandchild1
+
+    # Test pruning of fully expanded terminal node.
+    grandchild2.is_terminal = True
+    grandchild2.reward = 0
+    selected_node = strategy.select_node(root)
+    assert selected_node == child2
+    assert child1 not in root.children
+
+    # Test selection when all children are terminal.
+    child2.is_terminal = True
+    child2.reward = 0
+    selected_node = strategy.select_node(root)
+    assert selected_node == None
 
 
 def test_expand_node() -> None:
@@ -351,7 +389,45 @@ def test_simulate_node() -> None:
 
 def test_backpropagate_node() -> None:
     """Test the backpropagate_node method."""
-    pass
+    llm = FakeListChatModel(responses=[])
+    strategy = LATSHotQAStrategy(llm=llm)
+
+    # Create a simple tree structure.
+    root = Node(state={})
+    child = Node(state={}, parent=root)
+    grandchild = Node(state={}, parent=child)
+    grandchild.is_terminal = True
+
+    # Test backpropagation for a successful terminal node.
+    grandchild.reward = 1
+    strategy.backpropagate_node(grandchild, 1.0)
+
+    assert root.visits == 1
+    assert child.visits == 1
+    assert grandchild.visits == 1
+    assert root.value == 1.0
+    assert child.value == 1.0
+    assert grandchild.value == 1.0
+
+    # Test backpropagation for a failed terminal node.
+    grandchild.reward = 0
+    strategy.backpropagate_node(grandchild, 1.0)
+
+    assert root.visits == 2
+    assert child.visits == 2
+    assert grandchild.visits == 2
+    assert root.value == 1.0
+    assert child.value == 1.0
+    assert grandchild.value == 0.0
+
+    # Test backpropagation for a non-terminal node.
+    child.is_terminal = False
+    strategy.backpropagate_node(child, 0.5)
+
+    assert root.visits == 3
+    assert child.visits == 3
+    assert root.value == 5/6
+    assert child.value == 5/6
 
 
 def test_halting_condition():

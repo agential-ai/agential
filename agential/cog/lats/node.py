@@ -64,7 +64,7 @@ class Node(BaseNode):
                     "external_tool_info": {},
                 }
             )
-            if state is None
+            if not state
             else state
         )
         self.parent = parent
