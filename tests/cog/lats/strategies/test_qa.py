@@ -614,7 +614,46 @@ def test_expand_node() -> None:
 
 def test_evaluate_node() -> None:
     """Test the evaluate_node method."""
-    pass
+    llm = FakeListChatModel(responses=["Explanation: Good trajectory. Correctness score: 8"])
+    strategy = LATSHotQAStrategy(llm=llm)
+
+    root = strategy.initialize()
+    child1 = Node(state=ReActOutput(thought="Child 1", action_type="", query="", observation="", answer="", external_tool_info={}), parent=root)
+    child2 = Node(state=ReActOutput(thought="Child 2", action_type="", query="", observation="", answer="", external_tool_info={}), parent=root, is_terminal=True)
+
+    root.children = [child1, child2]
+
+    question = "What is the capital of France?"
+    examples = "Example 1\nExample 2"
+    prompt = "Evaluate this trajectory"
+
+    strategy.reflection_map = [
+        {
+            "trajectory": "Failed trajectory",
+            "reflection": "This trajectory failed because...",
+        }
+    ]
+
+    values = strategy.evaluate_node(root, question, examples, prompt, {})
+
+    assert len(values) == 1  # Only one non-terminal child.
+    assert "explanation" in values[0]
+    assert "value" in values[0]
+    assert values[0]["explanation"] == "Good trajectory."
+    assert values[0]["value"] == 0.8  # 8 / 10
+
+    assert child1.value == 0.8
+    assert child2.value == 0  # Terminal node, value not updated.
+
+    # Test caching.
+    strategy.cache_values = True
+    cached_values = strategy.evaluate_node(root, question, examples, prompt, {})
+    assert cached_values == values
+
+    # Test with empty reflection_map.
+    strategy.reflection_map = []
+    empty_reflection_values = strategy.evaluate_node(root, question, examples, prompt, {})
+    assert empty_reflection_values == values
 
 
 def test_simulate_node() -> None:
