@@ -3,7 +3,13 @@
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_community.docstore.wikipedia import Wikipedia
 
+from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.node import Node
+from agential.cog.lats.prompts import (
+    HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
+    LATS_INSTRUCTION_HOTPOTQA,
+    LATS_REFLECT_INSTRUCTION_HOTPOTQA,
+)
 from agential.cog.lats.strategies.qa import (
     LATSAmbigNQStrategy,
     LATSFEVERStrategy,
@@ -12,6 +18,7 @@ from agential.cog.lats.strategies.qa import (
     parse_qa_action,
     parse_qa_value,
 )
+from agential.cog.react.output import ReActOutput
 from agential.utils.docstore import DocstoreExplorer
 
 
@@ -186,7 +193,7 @@ def test_generate_observation() -> None:
     assert search_result[2] == "Paris is the capital of France."
     assert search_result[3] is False
     assert search_result[4] == {
-        "search_result": "Paris is the capital of France.",
+        "search_result": "Badr Hari is the best kick boxer in the world.",
         "lookup_result": "",
     }
 
@@ -197,7 +204,7 @@ def test_generate_observation() -> None:
     assert lookup_result[2] == "Paris is a city in France."
     assert lookup_result[3] is False
     assert lookup_result[4] == {
-        "search_result": "",
+        "search_result": "Badr Hari is the best kick boxer in the world.",
         "lookup_result": "Paris is a city in France.",
     }
 
@@ -220,7 +227,57 @@ def test_generate_observation() -> None:
 
 def test_generate() -> None:
     """Test the generate method."""
-    pass
+
+    gt_states = [
+        ReActOutput(thought='I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes', action_type='Search', query='best kick boxer controversies crimes', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}),
+        ReActOutput(thought='I need to search for the best kickboxer who has been involved in controversies and crimes of violence', action_type='Search', query='best kick boxer controversies crimes', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}),
+        ReActOutput(thought='I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies', action_type='Search', query='best kick boxer controversies', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}),
+        ReActOutput(thought='I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring', action_type='Search', query='best kick boxer controversies violence', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}),
+        ReActOutput(thought='I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies', action_type='Search', query='best kickboxer controversies', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}),
+    ]
+
+    responses = [
+        "I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
+        "Search[best kick boxer controversies crimes]",
+        "I need to search for the best kickboxer who has been involved in controversies and crimes of violence",
+        "Search[best kick boxer controversies crimes]\nObservation 0: No exact matches found",
+        "I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies",
+        "Search[best kick boxer controversies]\nObservation 0: Could not find [best kick boxer controversies]",
+        "I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring",
+        "Search[best kick boxer controversies violence]\nObservation 0: Could not find [best kick boxer controversies violence]",
+        "I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies",
+        "Search[best kickboxer controversies]\nObservation 0: The search results show multiple kickboxers who have been involved in controversies",
+    ]
+    llm = FakeListChatModel(responses=responses)
+    strategy = LATSHotQAStrategy(llm=llm)
+    strategy.docstore.search = (
+        lambda x: "Badr Hari is the best kick boxer in the world."
+    )
+
+    question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
+    key = "Badr Hari"
+
+    root = strategy.initialize()
+
+    children_nodes = strategy.generate(
+        node=root,
+        question=question,
+        key=key,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
+        prompt=LATS_INSTRUCTION_HOTPOTQA,
+        reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
+        reflect_additional_keys={},
+    )
+    assert len(children_nodes) == 5
+    for gt_state, node in zip(gt_states, children_nodes):
+        assert node.state == gt_state
+        assert node.depth == 1
+        assert node.reward == 0
+        assert node.value == 0
+        assert node.is_terminal is False
+        assert node.visits == 0
 
 
 def test_select_node() -> None:

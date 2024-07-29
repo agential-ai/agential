@@ -112,7 +112,6 @@ Action 3: Finish[director, screenwriter, actor]
 
 ---
 
-
 Question: Which magazine was started first Arthur's Magazine or First for Women?
 Thought 1: I need to search for the founding dates of Arthur's Magazine and First for Women to determine which was started first.
 Action 1: Search[founding date of Arthur's Magazine]
@@ -125,7 +124,6 @@ Action 3: (Result 1 / 1) Lookup[Arthur's Magazine founding date, First for Women
 Observation 3: Arthur's Magazine is founded in 1844 and First for Women is founded in 1989.
 Thought 4: Since Arthur's Magazine was founded in 1844 and First for Women was founded in 1989, Arthur's Magazine was started first.
 Action 4: Finish[Arthur's Magazine]
-
 
 ---
 
