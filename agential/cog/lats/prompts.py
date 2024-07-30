@@ -1,5 +1,11 @@
 """LATS prompts and fewshot examples."""
 
+LATS_REFLECTION_FORMAT = """{trajectory}
+FAILED TRAJECTORY
+
+Reflection: {reflection}"""
+
+
 # ======================================================================== HOTPOTQA ======================================================================== #
 
 

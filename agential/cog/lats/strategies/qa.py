@@ -7,6 +7,7 @@ from typing import Any, Dict, List, Tuple
 from langchain_community.docstore.wikipedia import Wikipedia
 
 from agential.cog.lats.functional import (
+    _build_reflection_format,
     _prompt_agent,
     _prompt_reflection,
     _prompt_value,
@@ -110,7 +111,10 @@ class LATSQAStrategy(LATSBaseStrategy):
                 additional_keys=reflect_additional_keys,
             )
             for reflection in reflections:
-                reflections_str += f"{reflection['trajectory']}\nFAILED TRAJECTORY\nReflection: {reflection['reflection']}\n\n"
+                reflections_str += _build_reflection_format(
+                    trajectory=reflection["trajectory"], 
+                    reflection=reflection["reflection"]
+                ) + "\n\n"
 
         trajectory = get_node_trajectory(node)
 

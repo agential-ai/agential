@@ -7,6 +7,24 @@ from langchain_core.messages.human import HumanMessage
 from langchain_core.prompts.prompt import PromptTemplate
 
 from agential.cog.lats.node import Node
+from agential.cog.lats.prompts import LATS_REFLECTION_FORMAT
+
+
+def _build_reflection_format(trajectory: str, reflection: str) -> str:
+    """Builds a formatted string for LATS reflection.
+
+    This function takes a trajectory and a reflection as input and formats them
+    according to the LATS_REFLECTION_FORMAT template.
+
+    Args:
+        trajectory (str): The trajectory string to be included in the format.
+        reflection (str): The reflection string to be included in the format.
+
+    Returns:
+        str: A formatted string combining the trajectory and reflection using
+             the LATS_REFLECTION_FORMAT template.
+    """
+    return LATS_REFLECTION_FORMAT.format(trajectory=trajectory, reflection=reflection)
 
 
 def _build_reflection_prompt(
