@@ -8,8 +8,8 @@ from langchain_core.prompts.prompt import PromptTemplate
 
 from agential.cog.lats.node import Node
 from agential.cog.lats.prompts import (
-    LATS_REFLECTION_FORMAT,
     LATS_FAILED_TRAJECTORY_FORMAT,
+    LATS_REFLECTION_FORMAT,
 )
 
 

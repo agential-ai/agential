@@ -7,8 +7,8 @@ from typing import Any, Dict, List, Tuple
 from langchain_community.docstore.wikipedia import Wikipedia
 
 from agential.cog.lats.functional import (
-    _build_reflection_format,
     _build_failed_trajectory_format,
+    _build_reflection_format,
     _prompt_agent,
     _prompt_reflection,
     _prompt_value,
