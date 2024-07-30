@@ -681,11 +681,8 @@ def test_simulate_node() -> None:
     ]
 
     qa_strategy = LATSHotQAStrategy(llm=FakeListChatModel(responses=responses), depth_limit=3, n_samples=2)
+    root_node = qa_strategy.initialize()
 
-    # Create a mock Node
-    root_node = Node(depth=0, is_terminal=False)
-
-    # Mock input parameters
     question = "What is the capital of France?"
     key = "Paris"
     examples = HOTPOTQA_FEWSHOT_EXAMPLES_REACT
@@ -698,7 +695,6 @@ def test_simulate_node() -> None:
     reflect_additional_keys = {}
     value_additional_keys = {}
 
-    # Call the simulate_node function
     reward, final_node, all_children_nodes, all_values = qa_strategy.simulate_node(
         node=root_node,
         question=question,
@@ -714,20 +710,16 @@ def test_simulate_node() -> None:
         value_additional_keys=value_additional_keys,
     )
 
-    # Assert the return types
     assert isinstance(reward, float)
     assert isinstance(final_node, Node)
     assert isinstance(all_children_nodes, list)
     assert isinstance(all_values, list)
 
-    # Assert the depth limit is respected
     assert final_node.depth <= qa_strategy.depth_limit
 
-    # Assert that children nodes and values are generated
     assert len(all_children_nodes) > 0
     assert len(all_values) > 0
 
-    # Assert that the reward is within the expected range (-1 to 1)
     assert -1 <= reward <= 1
 
 
