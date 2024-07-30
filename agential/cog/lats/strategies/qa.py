@@ -112,10 +112,13 @@ class LATSQAStrategy(LATSBaseStrategy):
                 additional_keys=reflect_additional_keys,
             )
             for reflection in reflections:
-                reflections_str += _build_reflection_format(
-                    trajectory=reflection["trajectory"], 
-                    reflection=reflection["reflection"]
-                ) + "\n\n"
+                reflections_str += (
+                    _build_reflection_format(
+                        trajectory=reflection["trajectory"],
+                        reflection=reflection["reflection"],
+                    )
+                    + "\n\n"
+                )
 
         trajectory = get_node_trajectory(node)
 
@@ -349,11 +352,14 @@ class LATSQAStrategy(LATSBaseStrategy):
                 failed_trajectories = ""
                 if len(self.reflection_map) > 0:
                     for trajectory_reflection in self.reflection_map:
-                        failed_trajectories += _build_failed_trajectory_format(
-                            question=question,
-                            trajectory=trajectory_reflection['trajectory'],
-                            reflection=trajectory_reflection['reflection']
-                        ) + "\n\n"
+                        failed_trajectories += (
+                            _build_failed_trajectory_format(
+                                question=question,
+                                trajectory=trajectory_reflection["trajectory"],
+                                reflection=trajectory_reflection["reflection"],
+                            )
+                            + "\n\n"
+                        )
                     failed_trajectories = failed_trajectories.rstrip("\n\n")
 
                 unique_key = f"{trajectory}::{failed_trajectories}"
@@ -426,11 +432,14 @@ class LATSQAStrategy(LATSBaseStrategy):
                     failed_trajectories = ""
                     if len(self.reflection_map) > 0:
                         for trajectory_reflection in self.reflection_map:
-                            failed_trajectories += _build_failed_trajectory_format(
-                                question=question,
-                                trajectory=trajectory_reflection['trajectory'],
-                                reflection=trajectory_reflection['reflection']
-                            ) + "\n\n"
+                            failed_trajectories += (
+                                _build_failed_trajectory_format(
+                                    question=question,
+                                    trajectory=trajectory_reflection["trajectory"],
+                                    reflection=trajectory_reflection["reflection"],
+                                )
+                                + "\n\n"
+                            )
                         failed_trajectories = failed_trajectories.rstrip("\n\n")
 
                     value = _prompt_value(

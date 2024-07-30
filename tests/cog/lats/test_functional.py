@@ -29,7 +29,7 @@ from agential.cog.react.output import ReActOutput
 def test__build_reflection_format() -> None:
     """Tests the _build_reflection_format() function."""
 
-    gt_reflection = 'Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]\nFAILED TRAJECTORY\n\nReflection: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?'
+    gt_reflection = "Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]\nFAILED TRAJECTORY\n\nReflection: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?"
     reflection = _build_reflection_format(
         trajectory="Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]",
         reflection="What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?",
@@ -40,13 +40,13 @@ def test__build_reflection_format() -> None:
 def test__build_failed_trajectory_format() -> None:
     """Tests the _build_failed_trajectory_format() function."""
 
-    gt_failed_trajectory = 'Question: What is the capital of France?\nRoot thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]\n\nExplanation: This trajectory is incorrect as The trajectory failed to provide the correct answer. I should have looked up information about France instead.\nCorrectness score: 1'
+    gt_failed_trajectory = "Question: What is the capital of France?\nRoot thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]\n\nExplanation: This trajectory is incorrect as The trajectory failed to provide the correct answer. I should have looked up information about France instead.\nCorrectness score: 1"
     failed_trajectory = _build_failed_trajectory_format(
         question="What is the capital of France?",
         trajectory="Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]",
         reflection="The trajectory failed to provide the correct answer. I should have looked up information about France instead.",
     )
-    
+
     print(repr(failed_trajectory))
     assert failed_trajectory == gt_failed_trajectory
 
