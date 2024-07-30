@@ -228,6 +228,8 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
+Here are some failed trajectories and their explanations and correctness scores:
+
 {failed_trajectories}
 
 Previous Trial:
@@ -437,6 +439,8 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
+Here are some failed trajectories and their explanations and correctness scores:
+
 {failed_trajectories}
 
 Previous Trial:
@@ -628,6 +632,8 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
+Here are some failed trajectories and their explanations and correctness scores:
+
 {failed_trajectories}
 
 Previous Trial:
@@ -817,6 +823,8 @@ Incomplete trajectories can be correct if the thoughts and actions so far are co
 Here are some examples:
 {examples}
 (END OF EXAMPLES)
+
+Here are some failed trajectories and their explanations and correctness scores:
 
 {failed_trajectories}
 
