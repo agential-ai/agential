@@ -7,9 +7,9 @@ from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.node import Node
 from agential.cog.lats.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
+    HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE,
     LATS_INSTRUCTION_HOTPOTQA,
     LATS_REFLECT_INSTRUCTION_HOTPOTQA,
-    HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE, 
     LATS_VALUE_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.lats.strategies.qa import (
@@ -614,14 +614,38 @@ def test_expand_node() -> None:
         assert node.visits == 0
     assert strategy.root.children == children_nodes
 
+
 def test_evaluate_node() -> None:
     """Test the evaluate_node method."""
-    llm = FakeListChatModel(responses=["Explanation: Good trajectory. Correctness score: 8"])
+    llm = FakeListChatModel(
+        responses=["Explanation: Good trajectory. Correctness score: 8"]
+    )
     strategy = LATSHotQAStrategy(llm=llm)
 
     root = strategy.initialize()
-    child1 = Node(state=ReActOutput(thought="Child 1", action_type="", query="", observation="", answer="", external_tool_info={}), parent=root)
-    child2 = Node(state=ReActOutput(thought="Child 2", action_type="", query="", observation="", answer="", external_tool_info={}), parent=root, is_terminal=True)
+    child1 = Node(
+        state=ReActOutput(
+            thought="Child 1",
+            action_type="",
+            query="",
+            observation="",
+            answer="",
+            external_tool_info={},
+        ),
+        parent=root,
+    )
+    child2 = Node(
+        state=ReActOutput(
+            thought="Child 2",
+            action_type="",
+            query="",
+            observation="",
+            answer="",
+            external_tool_info={},
+        ),
+        parent=root,
+        is_terminal=True,
+    )
 
     root.children = [child1, child2]
 
@@ -654,33 +678,37 @@ def test_evaluate_node() -> None:
 
     # Test with empty reflection_map.
     strategy.reflection_map = []
-    empty_reflection_values = strategy.evaluate_node(root, question, examples, prompt, {})
+    empty_reflection_values = strategy.evaluate_node(
+        root, question, examples, prompt, {}
+    )
     assert empty_reflection_values == values
 
 
 def test_simulate_node() -> None:
     """Test the simulate_node method."""
     responses = [
-        'I need to search for the capital of France',
-        'Search[capital of France]',
-        'I need to search for the capital of France',
-        'Search[capital of France]',
-        'The trajectory provided is completely incorrect as the observation received does not relate to the search query at all, indicating that the search term might have been mistyped or confused',
-        'The search results did not return the information needed',
-        'Search[capital of France]\nObservation 2: The capital of France is Paris, known for its art, fashion, gastronomy, and culture',
-        'The search did not return relevant information',
-        'Search[capital of France Wikipedia]\nObservation 2: The capital of France is Paris, the largest city in France and its capital since the 4th century',
-        'The trajectory provided is incorrect because the environmental observation does not relate to the question asked',
-        'This trajectory is incorrect as it did not provide any relevant information regarding the capital of France',
-        'There seems to be an issue with the search results',
-        'Search[similar entities to the capital of France]\nObservation 3: Similar: [Paris, Marseille, Lyon, Toulouse, Lille]\nThought 4: The capital of France is Paris',
-        'The search results seem to be incorrect',
-        'Search[capital of France]\nObservation 3: The capital of France is Paris',
-        'The trajectory is incorrect as the observations did not provide any relevant information related to the question',
-        'This trajectory is incorrect as the focus should have been on verifying the information related to the capital of France, rather than repeatedly trying the same search query that does not provide the desired information',
+        "I need to search for the capital of France",
+        "Search[capital of France]",
+        "I need to search for the capital of France",
+        "Search[capital of France]",
+        "The trajectory provided is completely incorrect as the observation received does not relate to the search query at all, indicating that the search term might have been mistyped or confused",
+        "The search results did not return the information needed",
+        "Search[capital of France]\nObservation 2: The capital of France is Paris, known for its art, fashion, gastronomy, and culture",
+        "The search did not return relevant information",
+        "Search[capital of France Wikipedia]\nObservation 2: The capital of France is Paris, the largest city in France and its capital since the 4th century",
+        "The trajectory provided is incorrect because the environmental observation does not relate to the question asked",
+        "This trajectory is incorrect as it did not provide any relevant information regarding the capital of France",
+        "There seems to be an issue with the search results",
+        "Search[similar entities to the capital of France]\nObservation 3: Similar: [Paris, Marseille, Lyon, Toulouse, Lille]\nThought 4: The capital of France is Paris",
+        "The search results seem to be incorrect",
+        "Search[capital of France]\nObservation 3: The capital of France is Paris",
+        "The trajectory is incorrect as the observations did not provide any relevant information related to the question",
+        "This trajectory is incorrect as the focus should have been on verifying the information related to the capital of France, rather than repeatedly trying the same search query that does not provide the desired information",
     ]
 
-    qa_strategy = LATSHotQAStrategy(llm=FakeListChatModel(responses=responses), depth_limit=3, n_samples=2)
+    qa_strategy = LATSHotQAStrategy(
+        llm=FakeListChatModel(responses=responses), depth_limit=3, n_samples=2
+    )
     root_node = qa_strategy.initialize()
 
     question = "What is the capital of France?"
