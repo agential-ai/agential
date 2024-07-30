@@ -64,6 +64,21 @@ def parse_qa_value(string: str) -> Tuple[str, int]:
 
 
 class LATSQAStrategy(LATSBaseStrategy):
+    """A strategy class for QA benchmarks using the LATS agent.
+
+    Args:
+        llm: The language model to be used for generating responses.
+        docstore (DocstoreExplorer): Document store explorer, defaults to Wikipedia.
+        n_samples (int): Number of samples to generate, default is 5.
+        max_reflections (int): Maximum number of reflections allowed, default is 4.
+        depth_limit (int): Maximum depth of the search tree, default is 7.
+        max_unique (int): Maximum number of unique samples to consider, default is 5.
+        cache_values (bool): Whether to cache values, default is True.
+
+    The strategy uses these parameters to fine-tune its behavior and performance
+    in question-answering tasks.
+    """
+
     def __init__(
         self,
         llm,
@@ -73,7 +88,8 @@ class LATSQAStrategy(LATSBaseStrategy):
         depth_limit: int = 7,
         max_unique: int = 5,
         cache_values: bool = True,
-    ):
+    ) -> None:
+        """Initialize."""
         super().__init__(llm)
         self.docstore = docstore
         self.n_samples = n_samples
@@ -88,6 +104,11 @@ class LATSQAStrategy(LATSBaseStrategy):
         self.root = None
 
     def initialize(self) -> Node:
+        """Create and return the root node.
+
+        Returns:
+            Node: The root node of the search tree.
+        """
         self.root = Node()
         return self.root
 
@@ -103,6 +124,22 @@ class LATSQAStrategy(LATSBaseStrategy):
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
     ) -> List[Node]:
+        """Generate child nodes for the given node.
+
+        Args:
+            node (Node): The current node to expand.
+            question (str): The main question or task.
+            key (str): The answer key for evaluation.
+            examples (str): Examples for context.
+            reflect_examples (str): Examples for reflection.
+            prompt (str): The prompt template for generation.
+            reflect_prompt (str): The prompt template for reflection.
+            additional_keys (Dict[str, str]): Additional keys for prompt formatting.
+            reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
+
+        Returns:
+            List[Node]: A list of generated child nodes.
+        """
         reflections_str = ""
         if self.reflect_condition():
             reflections = self.reflect(
@@ -196,6 +233,20 @@ class LATSQAStrategy(LATSBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str, str]:
+        """Generate a thought for the current step in the reasoning process.
+
+        Args:
+            question (str): The main question or task to be addressed.
+            examples (str): Relevant examples to provide context for thought generation.
+            trajectory (str): The current trajectory or history of thoughts and actions.
+            reflections (str): Previous reflections to guide the thought process.
+            depth (int): The current depth in the search tree.
+            prompt (str): The prompt template for thought generation.
+            additional_keys (Dict[str, str]): Additional keys for prompt formatting.
+
+        Returns:
+            Tuple[str, str]: A tuple containing the updated trajectory and the generated thought.
+        """
         trajectory += f"\nThought {depth + 1}:"
         thought = _prompt_agent(
             llm=self.llm,
@@ -221,6 +272,20 @@ class LATSQAStrategy(LATSBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str, str, str]:
+        """Generate an action for the current step in the reasoning process.
+
+        Args:
+            question (str): The main question or task to be addressed.
+            examples (str): Relevant examples to provide context for action generation.
+            trajectory (str): The current trajectory or history of thoughts and actions.
+            reflections (str): Previous reflections to guide the action generation.
+            depth (int): The current depth in the search tree.
+            prompt (str): The prompt template for action generation.
+            additional_keys (Dict[str, str]): Additional keys for prompt formatting.
+
+        Returns:
+            Tuple[str, str, str]: A tuple containing the updated trajectory, action type, and query.
+        """
         trajectory += f"\nAction {depth + 1}:"
         action = _prompt_agent(
             llm=self.llm,
@@ -245,6 +310,19 @@ class LATSQAStrategy(LATSBaseStrategy):
         trajectory: str,
         depth: int,
     ) -> Tuple[str, int, str, bool, Dict[str, Any]]:
+        """Generate an observation based on the current action.
+
+        Args:
+            key (str): The answer key for evaluation.
+            action_type (str): The type of action taken.
+            query (str): The query associated with the action.
+            trajectory (str): The current trajectory or history of thoughts and actions.
+            depth (int): The current depth in the search tree.
+
+        Returns:
+            Tuple[str, int, str, bool, Dict[str, str]]: A tuple containing the updated trajectory,
+            reward, observation, done flag, and external tool information.
+        """
         external_tool_info = {"search_result": "", "lookup_result": ""}
 
         reward, done = 0, False
@@ -277,6 +355,14 @@ class LATSQAStrategy(LATSBaseStrategy):
         return trajectory, reward, obs, done, external_tool_info
 
     def select_node(self, node: Node) -> Node:
+        """Select the most promising node for expansion.
+
+        Args:
+            node (Node): The current node from which to start the selection.
+
+        Returns:
+            Node: The selected node for expansion.
+        """
         while node and node.children:
             terminal_children = [child for child in node.children if child.is_terminal]
 
@@ -309,6 +395,22 @@ class LATSQAStrategy(LATSBaseStrategy):
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
     ) -> List[Node]:
+        """Expand the given node by generating its child nodes.
+
+        Args:
+            node (Node): The node to be expanded.
+            question (str): The main question or task.
+            key (str): The answer key for evaluation.
+            examples (str): Examples for context in generation.
+            reflect_examples (str): Examples for reflection.
+            prompt (str): The prompt template for generation.
+            reflect_prompt (str): The prompt template for reflection.
+            additional_keys (Dict[str, str]): Additional keys for prompt formatting.
+            reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
+
+        Returns:
+            List[Node]: A list of newly generated child nodes.
+        """
         if node.depth >= self.depth_limit:
             node.is_terminal = True
             return []
