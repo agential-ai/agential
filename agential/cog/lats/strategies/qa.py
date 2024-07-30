@@ -8,6 +8,7 @@ from langchain_community.docstore.wikipedia import Wikipedia
 
 from agential.cog.lats.functional import (
     _build_reflection_format,
+    _build_failed_trajectory_format,
     _prompt_agent,
     _prompt_reflection,
     _prompt_value,
@@ -348,11 +349,12 @@ class LATSQAStrategy(LATSBaseStrategy):
                 failed_trajectories = ""
                 if len(self.reflection_map) > 0:
                     for trajectory_reflection in self.reflection_map:
-                        failed_trajectories += f"Question: {question}\n{trajectory_reflection['trajectory']}\n\nExplanation: This trajectory is incorrect as {trajectory_reflection['reflection']}\nCorrectness score: 1"
-                        failed_trajectories += "\n\n---\n\n"
-                    failed_trajectories = (
-                        failed_trajectories.strip().rstrip("---").strip()
-                    )
+                        failed_trajectories += _build_failed_trajectory_format(
+                            question=question,
+                            trajectory=trajectory_reflection['trajectory'],
+                            reflection=trajectory_reflection['reflection']
+                        ) + "\n\n"
+                    failed_trajectories = failed_trajectories.rstrip("\n\n")
 
                 unique_key = f"{trajectory}::{failed_trajectories}"
                 if self.cache_values and unique_key in self.value_cache:
@@ -424,11 +426,13 @@ class LATSQAStrategy(LATSBaseStrategy):
                     failed_trajectories = ""
                     if len(self.reflection_map) > 0:
                         for trajectory_reflection in self.reflection_map:
-                            failed_trajectories += f"Question: {question}\n{trajectory_reflection['trajectory']}\n\nExplanation: This trajectory is incorrect as {trajectory_reflection['reflection']}\nCorrectness score: 1"
-                            failed_trajectories += "\n\n---\n\n"
-                        failed_trajectories = (
-                            failed_trajectories.strip().rstrip("---").strip()
-                        )
+                            failed_trajectories += _build_failed_trajectory_format(
+                                question=question,
+                                trajectory=trajectory_reflection['trajectory'],
+                                reflection=trajectory_reflection['reflection']
+                            ) + "\n\n"
+                        failed_trajectories = failed_trajectories.rstrip("\n\n")
+
                     value = _prompt_value(
                         llm=self.llm,
                         question=question,

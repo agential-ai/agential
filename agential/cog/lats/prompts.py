@@ -6,6 +6,13 @@ FAILED TRAJECTORY
 Reflection: {reflection}"""
 
 
+LATS_FAILED_TRAJECTORY_FORMAT = """Question: {question}
+{trajectory}
+
+Explanation: This trajectory is incorrect as {reflection}
+Correctness score: 1"""
+
+
 # ======================================================================== HOTPOTQA ======================================================================== #
 
 

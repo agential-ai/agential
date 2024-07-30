@@ -194,10 +194,7 @@ def test_generate_observation() -> None:
     assert search_result[1] == 0
     assert search_result[2] == "Paris is the capital of France."
     assert search_result[3] is False
-    assert search_result[4] == {
-        "search_result": "Badr Hari is the best kick boxer in the world.",
-        "lookup_result": "",
-    }
+    assert search_result[4] == {'search_result': 'Paris is the capital of France.', 'lookup_result': ''}
 
     # Test Lookup action.
     lookup_result = strategy.generate_observation(key, "Lookup", "Paris", trajectory, 3)

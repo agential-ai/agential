@@ -7,7 +7,7 @@ from langchain_core.messages.human import HumanMessage
 from langchain_core.prompts.prompt import PromptTemplate
 
 from agential.cog.lats.node import Node
-from agential.cog.lats.prompts import LATS_REFLECTION_FORMAT
+from agential.cog.lats.prompts import LATS_REFLECTION_FORMAT, LATS_FAILED_TRAJECTORY_FORMAT
 
 
 def _build_reflection_format(trajectory: str, reflection: str) -> str:
@@ -25,6 +25,24 @@ def _build_reflection_format(trajectory: str, reflection: str) -> str:
              the LATS_REFLECTION_FORMAT template.
     """
     return LATS_REFLECTION_FORMAT.format(trajectory=trajectory, reflection=reflection)
+
+
+def _build_failed_trajectory_format(question: str, trajectory: str, reflection: str) -> str:
+    """Builds a formatted string for a failed LATS trajectory.
+
+    This function takes a question, trajectory, and reflection as input and formats them
+    according to the LATS_FAILED_TRAJECTORY_FORMAT template.
+
+    Args:
+        question (str): The question that led to the failed trajectory.
+        trajectory (str): The failed trajectory string.
+        reflection (str): The reflection on the failed trajectory.
+
+    Returns:
+        str: A formatted string combining the question, trajectory, and reflection using
+             the LATS_FAILED_TRAJECTORY_FORMAT template.
+    """
+    return LATS_FAILED_TRAJECTORY_FORMAT.format(question=question, trajectory=trajectory, reflection=reflection)
 
 
 def _build_reflection_prompt(
