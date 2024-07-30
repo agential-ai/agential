@@ -78,7 +78,6 @@ class LATSQAStrategy(LATSBaseStrategy):
     The strategy uses these parameters to fine-tune its behavior and performance
     in question-answering tasks.
     """
-
     def __init__(
         self,
         llm,
@@ -437,6 +436,18 @@ class LATSQAStrategy(LATSBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> List[Dict[str, Any]]:
+        """Evaluate the given node and its children.
+
+        Args:
+            node (Node): The node to be evaluated.
+            question (str): The main question or task.
+            examples (str): Examples for context in evaluation.
+            prompt (str): The prompt template for evaluation.
+            additional_keys (Dict[str, str]): Additional keys for prompt formatting.
+
+        Returns:
+            List[Dict[str, Any]]: A list of dictionaries containing evaluation results for each child node.
+        """
         children_trajectories = [
             {"child_trajectory": get_node_trajectory(child), "idx": idx}
             for idx, child in enumerate(node.children)
@@ -505,6 +516,26 @@ class LATSQAStrategy(LATSBaseStrategy):
         reflect_additional_keys: Dict[str, str],
         value_additional_keys: Dict[str, str],
     ) -> Tuple[float, Node, List[List[Node]], List[List[Dict[str, Any]]]]:
+        """Simulate the node to estimate its value and collect information about the simulation process.
+
+        Args:
+            node (Node): The node to simulate.
+            question (str): The main question or task.
+            key (str): The answer key for evaluation.
+            examples (str): Examples for context in simulation.
+            reflect_examples (str): Examples for reflection during simulation.
+            prompt (str): The prompt template for simulation.
+            reflect_prompt (str): The prompt template for reflection during simulation.
+            additional_keys (Dict[str, str]): Additional keys for prompt formatting.
+            reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
+
+        Returns:
+            Tuple[float, Node, List[List[Node]], List[List[Dict[str, Any]]]]: A tuple containing:
+                - The estimated value of the node (float)
+                - The final node reached in the simulation (Node)
+                - A list of lists of nodes, representing the paths explored during simulation
+                - A list of lists of dictionaries, containing additional information about each step in the paths
+        """
         depth = node.depth
         rewards = [0]
         all_children_nodes, all_values = [], []
@@ -571,6 +602,15 @@ class LATSQAStrategy(LATSBaseStrategy):
         return sum(rewards) / len(rewards), node, all_children_nodes, all_values
 
     def backpropagate_node(self, node: Node, value: float) -> None:
+        """Backpropagate the estimated value through the tree, updating node statistics.
+
+        Args:
+            node (Node): The node from which to start backpropagation.
+            value (float): The value to backpropagate through the tree.
+
+        Returns:
+            None
+        """
         while node:
             node.visits += 1
             if node.is_terminal:
@@ -584,9 +624,22 @@ class LATSQAStrategy(LATSBaseStrategy):
             node = node.parent
 
     def halting_condition(self, node: Node) -> bool:
+        """Determine if the search should halt at the current node.
+
+        Args:
+            node (Node): The current node to evaluate.
+
+        Returns:
+            bool: True if the search should halt, False otherwise.
+        """
         return node.is_terminal and node.reward == 1
 
     def reflect_condition(self) -> bool:
+        """Determine if reflection should be performed.
+
+        Returns:
+            bool: True if reflection should be performed, False otherwise.
+        """
         unique_trajectories = get_unique_trajectories(
             self.failed_trajectories, max_unique=self.max_unique
         )
@@ -598,6 +651,17 @@ class LATSQAStrategy(LATSBaseStrategy):
     def reflect(
         self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]
     ) -> List[Dict[str, str]]:
+        """Perform reflection on the current search state.
+
+        Args:
+            question (str): The main question or task.
+            examples (str): Examples for context in reflection.
+            prompt (str): The prompt template for reflection.
+            additional_keys (Dict[str, str]): Additional keys for prompt formatting.
+
+        Returns:
+            List[Dict[str, str]]: A list of dictionaries containing reflection results.
+        """
         unique_trajectories = get_unique_trajectories(
             self.failed_trajectories, max_unique=self.max_unique
         )
@@ -620,6 +684,11 @@ class LATSQAStrategy(LATSBaseStrategy):
         return reflections
 
     def reset(self) -> None:
+        """Reset the strategy to its initial state.
+
+        Returns:
+            None
+        """
         self.failed_trajectories = []
         self.reflection_map = []
         self.value_cache = {}
