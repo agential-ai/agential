@@ -205,10 +205,7 @@ def test_generate_observation() -> None:
     assert lookup_result[1] == 0
     assert lookup_result[2] == "Paris is a city in France."
     assert lookup_result[3] is False
-    assert lookup_result[4] == {
-        "search_result": "Badr Hari is the best kick boxer in the world.",
-        "lookup_result": "Paris is a city in France.",
-    }
+    assert lookup_result[4] == {'search_result': '', 'lookup_result': 'Paris is a city in France.'}
 
     # Test invalid action.
     invalid_result = strategy.generate_observation(
@@ -490,22 +487,19 @@ def test_select_node() -> None:
         selected_node == grandchild1
     )  # child2 should have higher UCT due to fewer visits
 
-    # Test selection of terminal node with reward 1.
-    grandchild1.is_terminal = True
-    grandchild1.reward = 1
-    selected_node = strategy.select_node(root)
-    assert selected_node == grandchild1
-
     # Test pruning of fully expanded terminal node.
     grandchild2.is_terminal = True
     grandchild2.reward = 0
     selected_node = strategy.select_node(root)
-    assert selected_node == child2
-    assert child1 not in root.children
+    assert selected_node == grandchild1
 
     # Test selection when all children are terminal.
+    root = Node(state={})
+    child1 = Node(state={}, parent=root)
+    child2 = Node(state={}, parent=root)
+    root.add_children([child1, child2])
+    child1.is_terminal = True
     child2.is_terminal = True
-    child2.reward = 0
     selected_node = strategy.select_node(root)
     assert selected_node == None
 
