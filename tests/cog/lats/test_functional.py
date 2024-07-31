@@ -175,6 +175,10 @@ def test_get_node_trajectory() -> None:
     expected_trajectory = "\nThought 1: Child1 thought\nAction 1: Lookup[topic]\nThought 2: Child2 thought\nAction 2: Finish[answer]\nObservation 2: Answer correct"
     assert get_node_trajectory(child2) == expected_trajectory
 
+    # Test root node.
+    root = Node()
+    assert get_node_trajectory(root) == ""
+
 
 def test_get_unique_trajectories() -> None:
     """Tests the get_unique_trajectories() function."""

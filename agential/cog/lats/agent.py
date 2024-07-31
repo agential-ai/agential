@@ -53,7 +53,6 @@ class LATSAgent(BaseAgent):
         for i in range(max_iterations):
             node = self.strategy.select_node(root)
 
-
             children_nodes = self.strategy.expand_node(
                 node=node,
                 question=question,
