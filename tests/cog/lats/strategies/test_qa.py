@@ -501,7 +501,7 @@ def test_select_node() -> None:
     child1.is_terminal = True
     child2.is_terminal = True
     selected_node = strategy.select_node(root)
-    assert selected_node == None
+    assert selected_node == root
 
 
 def test_expand_node() -> None:

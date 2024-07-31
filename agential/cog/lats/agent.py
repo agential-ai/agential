@@ -53,8 +53,6 @@ class LATSAgent(BaseAgent):
         for i in range(max_iterations):
             node = self.strategy.select_node(root)
 
-            if self.strategy.halting_condition(node):
-                return node
 
             children_nodes = self.strategy.expand_node(
                 node=node,
@@ -67,6 +65,9 @@ class LATSAgent(BaseAgent):
                 additional_keys=additional_keys,
                 reflect_additional_keys=reflect_additional_keys,
             )
+            for child_node in children_nodes:
+                if self.strategy.halting_condition(child_node):
+                    return child_node
 
             while node.is_terminal or not node.children:
                 node = self.strategy.select_node(root)

@@ -363,18 +363,20 @@ class LATSQAStrategy(LATSBaseStrategy):
             Node: The selected node for expansion.
         """
         while node and node.children:
-            terminal_children = [child for child in node.children if child.is_terminal]
+            # Filter out terminal children.
+            non_terminal_children = [child for child in node.children if not child.is_terminal]
 
-            if len(terminal_children) == len(node.children):
+            # If all children are terminal, move up to the parent node.
+            if not non_terminal_children:
                 if node.parent:
                     node.parent.children.remove(node)
-                node = node.parent
-                continue
-
-            node = max(
-                [child for child in node.children if not child.is_terminal],
-                key=lambda child: child.uct(),
-            )
+                    node = node.parent
+                else:
+                    # If we are at the root node and all children are terminal, return the root.
+                    break
+            else:
+                # Select the child with the highest UCT value among non-terminal children.
+                node = max(non_terminal_children, key=lambda child: child.uct())
 
         return node
 
