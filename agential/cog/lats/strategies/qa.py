@@ -374,6 +374,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             node = max(
                 [child for child in node.children if not child.is_terminal],
                 key=lambda child: child.uct(),
+                default=None
             )
 
         return node
