@@ -66,7 +66,7 @@ def parse_qa_value(string: str) -> Tuple[str, int]:
 class LATSQAStrategy(LATSBaseStrategy):
     """A strategy class for QA benchmarks using the LATS agent.
 
-    Args:
+    Attributes:
         llm: The language model to be used for generating responses.
         docstore (DocstoreExplorer): Document store explorer, defaults to Wikipedia.
         n_samples (int): Number of samples to generate, default is 5.
@@ -370,10 +370,6 @@ class LATSQAStrategy(LATSBaseStrategy):
                     node.parent.children.remove(node)
                 node = node.parent
                 continue
-
-            for child in terminal_children:
-                if child.reward == 1:
-                    return child
 
             node = max(
                 [child for child in node.children if not child.is_terminal],
