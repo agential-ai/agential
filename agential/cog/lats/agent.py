@@ -55,7 +55,7 @@ class LATSAgent(BaseAgent):
             patience_counter, previous_node = 0, None
             node = self.strategy.select_node(root)
 
-            while node.is_terminal or not node.children:
+            while not node.children:
                 # Early stopping if we cannot expand the tree.
                 if node == previous_node:
                     patience_counter += 1
