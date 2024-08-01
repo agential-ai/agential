@@ -356,6 +356,11 @@ class LATSQAStrategy(LATSBaseStrategy):
     def select_node(self, node: Node) -> Node:
         """Select the most promising node for expansion.
 
+        There are 3 cases for the returned node:
+            - Case 1: Returns current node as it has no children (root).
+            - Case 2: Returns current node as it has all terminal children (root).
+            - Case 3: Returns non-terminal node with highest UCT value. 
+
         Args:
             node (Node): The current node from which to start the selection.
 
