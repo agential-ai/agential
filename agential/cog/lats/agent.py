@@ -47,28 +47,24 @@ class LATSAgent(BaseAgent):
         reflect_prompt,
         additional_keys,
         reflect_additional_keys,
+        patience=2, 
         max_iterations=30,
     ):
         root = self.strategy.initialize()
         for i in range(max_iterations):
+            patience_counter, previous_node = 0, None
             node = self.strategy.select_node(root)
 
-            children_nodes = self.strategy.expand_node(
-                node=node,
-                question=question,
-                key=key,
-                examples=examples,
-                reflect_examples=reflect_examples,
-                prompt=prompt,
-                reflect_prompt=reflect_prompt,
-                additional_keys=additional_keys,
-                reflect_additional_keys=reflect_additional_keys,
-            )
-            for child_node in children_nodes:
-                if self.strategy.halting_condition(child_node):
-                    return child_node
-
             while node.is_terminal or not node.children:
+                # Early stopping if we cannot expand the tree.
+                if node == previous_node:
+                    patience_counter += 1
+                    if patience_counter >= patience:
+                        break
+                else:
+                    patience_counter = 0
+                previous_node = node
+
                 node = self.strategy.select_node(root)
                 children_nodes = self.strategy.expand_node(
                     node=node,
@@ -81,6 +77,9 @@ class LATSAgent(BaseAgent):
                     additional_keys=additional_keys,
                     reflect_additional_keys=reflect_additional_keys,
                 )
+                for child_node in children_nodes:
+                    if self.strategy.halting_condition(child_node):
+                        return child_node
 
             values = self.strategy.evaluate_node(
                 node=node,
@@ -92,7 +91,7 @@ class LATSAgent(BaseAgent):
 
             reward, terminal_node, all_children_nodes, all_values = (
                 self.strategy.simulate_node(
-                    node=max(node.children, key=lambda child: child.value),
+                    node=max(node.children, key=lambda child: child.value, default=node),
                     question=question,
                     key=key,
                     examples=examples,
