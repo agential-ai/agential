@@ -541,8 +541,16 @@ class LATSQAStrategy(LATSBaseStrategy):
         """
         depth = node.depth
         rewards = [0]
-        all_children_nodes, all_values = [], []
-        while not node.is_terminal and depth < self.depth_limit:
+
+        result = {
+            "current_nodes": [],
+            "children_nodes": [],
+            "values": [],
+
+        }
+        while not node.is_terminal and depth < self.depth_limit: 
+            result['current_nodes'].append(node)
+
             values = []
             children_nodes = self.generate(
                 node=node,
@@ -556,13 +564,13 @@ class LATSQAStrategy(LATSBaseStrategy):
                 reflect_additional_keys=reflect_additional_keys,
             )
 
-            all_children_nodes.append(children_nodes)
+            result['children_nodes'].append(children_nodes)
 
             for node in children_nodes:
                 if node.is_terminal:
-                    return node.reward, node, all_children_nodes, all_values
+                    return node.reward, node, result
 
-            for child in children_nodes:
+            for idx, child in enumerate(children_nodes):
                 if not child.is_terminal:
                     child_trajectory = get_node_trajectory(child)
                     failed_trajectories = ""
@@ -589,7 +597,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                     )
 
                     explanation, value = parse_qa_value(value)
-                    values.append({"explanation": explanation, "value": value})
+                    values.append({"node_idx": idx, "explanation": explanation, "value": value})
 
             max_value = max(values, key=lambda x: x["value"])
             max_value_index = values.index(max_value)
@@ -600,9 +608,9 @@ class LATSQAStrategy(LATSBaseStrategy):
             if depth == self.depth_limit:
                 rewards = [-1]
 
-            all_values.append(values)
+            result['values'].append(values)
 
-        return sum(rewards) / len(rewards), node, all_children_nodes, all_values
+        return sum(rewards) / len(rewards), node, result
 
     def backpropagate_node(self, node: Node, value: float) -> None:
         """Backpropagate the estimated value through the tree, updating node statistics.

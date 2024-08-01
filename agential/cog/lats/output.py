@@ -6,13 +6,21 @@ from pydantic import BaseModel, Field
 from agential.cog.lats.node import Node
 
 
+class LATSSimulationStepOutput(BaseModel):
+    """LATS simulation step Pydantic output class.
+    
+    Attributes:
+
+    """
+
+
 class LATSSimulationOutput(BaseModel):
     """LATS simulation Pydantic output class.
     
     Attributes:
 
     """
-    
+
 
 class LATSStepOutput(BaseModel):
     """LATS step Pydantic output class.
