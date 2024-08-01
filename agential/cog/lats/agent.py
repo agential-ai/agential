@@ -76,7 +76,7 @@ class LATSAgent(BaseAgent):
                 additional_keys=additional_keys,
             )
 
-            reward, terminal_node, all_children_nodes, all_values = (
+            reward, terminal_node, results = (
                 self.strategy.simulate_node(
                     node=max(node.children, key=lambda child: child.value, default=node),
                     question=question,

@@ -500,7 +500,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                 node.children[idx].value = value
 
                 child_trajectory_cache[trajectory] = value
-            values.append({"explanation": explanation, "value": value})
+            values.append({"node_idx": idx, "explanation": explanation, "value": value})
 
         return values
 
@@ -541,15 +541,15 @@ class LATSQAStrategy(LATSBaseStrategy):
         """
         depth = node.depth
         rewards = [0]
+        results = []
+        while not node.is_terminal and depth < self.depth_limit:
+            result = {
+                "current_node": None,
+                "children_nodes": [],
+                "values": [],
+            }
 
-        result = {
-            "current_nodes": [],
-            "children_nodes": [],
-            "values": [],
-
-        }
-        while not node.is_terminal and depth < self.depth_limit: 
-            result['current_nodes'].append(node)
+            result['current_node'] = node
 
             values = []
             children_nodes = self.generate(
@@ -564,11 +564,11 @@ class LATSQAStrategy(LATSBaseStrategy):
                 reflect_additional_keys=reflect_additional_keys,
             )
 
-            result['children_nodes'].append(children_nodes)
+            result['children_nodes'] = children_nodes
 
             for node in children_nodes:
                 if node.is_terminal:
-                    return node.reward, node, result
+                    return node.reward, node, results
 
             for idx, child in enumerate(children_nodes):
                 if not child.is_terminal:
@@ -608,9 +608,12 @@ class LATSQAStrategy(LATSBaseStrategy):
             if depth == self.depth_limit:
                 rewards = [-1]
 
-            result['values'].append(values)
+            result['best_child_node'] = node
+            result['values'] = values
 
-        return sum(rewards) / len(rewards), node, result
+            results.append(result)
+
+        return sum(rewards) / len(rewards), node, results
 
     def backpropagate_node(self, node: Node, value: float) -> None:
         """Backpropagate the estimated value through the tree, updating node statistics.
