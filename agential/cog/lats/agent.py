@@ -76,7 +76,7 @@ class LATSAgent(BaseAgent):
                 additional_keys=additional_keys,
             )
 
-            reward, terminal_node, results = (
+            simulation_reward, simulation_terminal_node, results = (
                 self.strategy.simulate_node(
                     node=max(node.children, key=lambda child: child.value, default=node),
                     question=question,
@@ -90,10 +90,10 @@ class LATSAgent(BaseAgent):
                 )
             )
 
-            if self.strategy.halting_condition(terminal_node):
-                return terminal_node
+            if self.strategy.halting_condition(simulation_terminal_node):
+                return simulation_terminal_node
 
-            self.strategy.backpropagate_node(node=terminal_node, value=reward)
+            self.strategy.backpropagate_node(node=simulation_terminal_node, value=simulation_reward)
 
     def reset(self) -> None:
         self.strategy.reset()
