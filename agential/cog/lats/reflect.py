@@ -1,1 +1,0 @@
-"""Reflecting module for LATS."""
