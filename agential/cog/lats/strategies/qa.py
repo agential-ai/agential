@@ -544,12 +544,10 @@ class LATSQAStrategy(LATSBaseStrategy):
         results = []
         while not node.is_terminal and depth < self.depth_limit:
             result = {
-                "current_node": None,
+                "current_node": node,
                 "children_nodes": [],
                 "values": [],
             }
-
-            result['current_node'] = node
 
             values = []
             children_nodes = self.generate(

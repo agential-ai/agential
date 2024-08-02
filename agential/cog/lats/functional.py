@@ -354,3 +354,18 @@ def get_unique_trajectories(failed_trajectories, max_unique) -> List[str]:
             break
 
     return unique_trajectories
+
+
+def preorder_traversal(node) -> List[Node]:
+        """Recursively collect all nodes starting from the given node.
+        
+        Args:
+            node (Node): The root node to collect from.
+
+        Returns:
+            List[Node]: A list of all nodes collected.
+        """
+        nodes = [node]
+        for child in node.children:
+            nodes.extend(preorder_traversal(child))
+        return nodes

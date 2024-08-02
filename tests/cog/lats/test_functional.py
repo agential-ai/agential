@@ -14,6 +14,7 @@ from agential.cog.lats.functional import (
     _prompt_value,
     get_node_trajectory,
     get_unique_trajectories,
+    preorder_traversal
 )
 from agential.cog.lats.node import Node
 from agential.cog.lats.prompts import (
@@ -209,3 +210,48 @@ def test_get_unique_trajectories() -> None:
     ]
     result = get_unique_trajectories(unique_trajectories, max_unique=5)
     assert result == [f"Path{i}" for i in range(1, 6)]
+
+
+def test_preorder_traversal() -> None:
+    """Tests the preorder_traversal() function."""
+    root = Node(
+        state=ReActOutput(
+            **{
+                "thought": "Root thought",
+                "action_type": "",
+                "query": "",
+                "observation": "",
+                "answer": "",
+                "external_tool_info": {},
+            }
+        )
+    )
+    child1 = Node(
+        state=ReActOutput(
+            **{
+                "thought": "Child1 thought",
+                "action_type": "Lookup",
+                "query": "topic",
+                "observation": "",
+                "answer": "",
+                "external_tool_info": {},
+            }
+        ),
+        parent=root,
+    )
+    child2 = Node(
+        state=ReActOutput(
+            **{
+                "thought": "Child2 thought",
+                "action_type": "Finish",
+                "query": "answer",
+                "observation": "Answer correct",
+                "answer": "",
+                "external_tool_info": {},
+            }
+        ),
+        parent=child1,
+    )
+    root.add_children([child1, child2])
+    nodes = preorder_traversal(root)
+    assert nodes == [root, child1, child2]
