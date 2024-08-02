@@ -75,6 +75,7 @@ class LATSAgent(BaseAgent):
         Returns:
                 Tuple[Node, List[LATSOutput]]: A tuple containing the root node and a list of outputs.
         """
+        
         if reset:
             self.reset()
 
@@ -97,21 +98,23 @@ class LATSAgent(BaseAgent):
                 additional_keys=additional_keys,
                 reflect_additional_keys=reflect_additional_keys,
             )
-            output.append(
-                LATSOutput(
-                    iteration=i,
-                    current_node=node.to_dict(),
-                    children_nodes=[
-                        child_node.to_dict() for child_node in children_nodes
-                    ],
-                    values=[],
-                    simulation_reward=0,
-                    simulation_terminal_node={},
-                    simulation_results=[],
-                )
-            )
+            print("<===========================================================EXPAND NODE END===========================================================>")
+
             for child_node in children_nodes:
                 if self.strategy.halting_condition(child_node):
+                    output.append(
+                        LATSOutput(
+                            iteration=i,
+                            current_node=node.to_dict(),
+                            children_nodes=[
+                                child_node.to_dict() for child_node in children_nodes
+                            ],
+                            values=[],
+                            simulation_reward=0,
+                            simulation_terminal_node={},
+                            simulation_results=[],
+                        )
+                    )
                     return child_node, output
 
             values = self.strategy.evaluate_node(
@@ -121,6 +124,7 @@ class LATSAgent(BaseAgent):
                 prompt=value_prompt,
                 additional_keys=value_additional_keys,
             )
+            print("<===========================================================EVALUATE NODE END===========================================================>")
 
             simulation_reward, simulation_terminal_node, simulation_results = (
                 self.strategy.simulate_node(
@@ -140,6 +144,8 @@ class LATSAgent(BaseAgent):
                     value_additional_keys=value_additional_keys,
                 )
             )
+            print("<===========================================================SIMULATE NODE END===========================================================>")
+
             simulation_results = [
                 LATSSimulationOutput(
                     current_node=result["current_node"].to_dict(),
@@ -150,11 +156,19 @@ class LATSAgent(BaseAgent):
                 )
                 for result in simulation_results
             ]
-
-            output[-1].values = values
-            output[-1].simulation_reward = simulation_reward
-            output[-1].simulation_terminal_node = simulation_terminal_node.to_dict()
-            output[-1].simulation_results = simulation_results
+            output.append(
+                LATSOutput(
+                    iteration=i,
+                    current_node=node.to_dict(),
+                    children_nodes=[
+                        child_node.to_dict() for child_node in children_nodes
+                    ],
+                    values=values,
+                    simulation_reward=simulation_reward,
+                    simulation_terminal_node=simulation_terminal_node.to_dict(),
+                    simulation_results=simulation_results,
+                )
+            )
 
             if self.strategy.halting_condition(simulation_terminal_node):
                 return simulation_terminal_node, output
