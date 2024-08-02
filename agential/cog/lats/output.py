@@ -11,7 +11,7 @@ class LATSSimulationOutput(BaseModel):
     Attributes:
         current_node (Dict[str, Any]): The current node.
         children_nodes (List[Dict[str, Any]]): The children nodes of the current node.
-        values (List[float]): The values of the children nodes.
+        values (List[Dict[str, Any]]): The values of the children nodes.
     """
 
     current_node: Dict[str, Any] = Field(..., description="The current node.")
@@ -19,7 +19,7 @@ class LATSSimulationOutput(BaseModel):
         ...,
         description="The children nodes of the current node.",
     )
-    values: List[float] = Field(
+    values: List[Dict[str, Any]] = Field(
         ...,
         description="The values of the children nodes.",
     )
@@ -32,7 +32,7 @@ class LATSOutput(BaseModel):
         iteration (int): The iteration number.
         current_node (Dict[str, Any]): The current node.
         children_nodes (List[Dict[str, Any]]): The children nodes of the current node.
-        values (List[float]): The values of the children nodes.
+        values (List[Dict[str, Any]]): The values of the children nodes.
         simulation_reward (float): The reward of the simulation from the current node's most valuable child node.
         simulation_terminal_node (Dict[str, Any]): The terminal node of the simulation.
         simulation_results (List[LATSSimulationOutput]): The results of the simulation.
@@ -44,7 +44,7 @@ class LATSOutput(BaseModel):
         ...,
         description="The children nodes of the current node.",
     )
-    values: List[float] = Field(
+    values: List[Dict[str, Any]] = Field(
         ...,
         description="The values of the children nodes.",
     )
