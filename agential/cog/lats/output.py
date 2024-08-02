@@ -1,6 +1,6 @@
 """LATS structured output module."""
 
-from typing import List
+from typing import List, Dict, Any
 
 from pydantic import BaseModel, Field
 from agential.cog.lats.node import Node
@@ -12,8 +12,8 @@ class LATSSimulationOutput(BaseModel):
     Attributes:
 
     """
-    current_node: Node = Field(..., description="The current node.")
-    children_nodes: List[Node] = Field(
+    current_node: Dict[str, Any] = Field(..., description="The current node.")
+    children_nodes: List[Dict[str, Any]] = Field(
         ...,
         description="The children nodes of the current node.",
     )
@@ -30,8 +30,8 @@ class LATSOutput(BaseModel):
 
     """
 
-    current_node: Node = Field(..., description="The current node.")
-    children_nodes: List[Node] = Field(
+    current_node: Dict[str, Any] = Field(..., description="The current node.")
+    children_nodes: List[Dict[str, Any]] = Field(
         ...,
         description="The children nodes of the current node.",
     )
@@ -43,7 +43,7 @@ class LATSOutput(BaseModel):
         ...,
         description="The reward of the simulation from the current node's most valuable child node.",
     )
-    simulation_terminal_node: Node = Field(
+    simulation_terminal_node: Dict[str, Any] = Field(
         ...,
         description="The terminal node of the simulation.",
     )

@@ -10,7 +10,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.agent import BaseAgent
 from agential.cog.lats.factory import LATSFactory
-
+from agential.cog.lats.output import LATSSimulationOutput, LATSOutput
 
 class LATSAgent(BaseAgent):
     """LATS (Language Agent Tree Search) agent.
@@ -89,6 +89,8 @@ class LATSAgent(BaseAgent):
                     reflect_additional_keys=reflect_additional_keys,
                 )
             )
+            for result in results:
+                LATSSimulationOutput(**result)
 
             if self.strategy.halting_condition(simulation_terminal_node):
                 return simulation_terminal_node
