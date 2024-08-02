@@ -48,8 +48,12 @@ class LATSAgent(BaseAgent):
         additional_keys,
         reflect_additional_keys,
         max_iterations=30,
+        reset=True
     ):
-        output, all_nodes = [], []
+        if reset:
+            self.reset()
+
+        output = []
 
         root = self.strategy.initialize()
         for i in range(max_iterations):
@@ -65,6 +69,17 @@ class LATSAgent(BaseAgent):
                 reflect_prompt=reflect_prompt,
                 additional_keys=additional_keys,
                 reflect_additional_keys=reflect_additional_keys,
+            )
+            output.append(
+                LATSOutput(
+                    iteration=i,
+                    current_node=node.to_dict(),
+                    children_nodes=[child_node.to_dict() for child_node in children_nodes],
+                    values=[],
+                    simulation_reward=0,
+                    simulation_terminal_node=None,
+                    simulation_results=[],
+                )
             )
             for child_node in children_nodes:
                 if self.strategy.halting_condition(child_node):
@@ -93,22 +108,17 @@ class LATSAgent(BaseAgent):
             )
             simulation_results = [LATSSimulationOutput(**result) for result in simulation_results]
 
-            output.append(
-                LATSOutput(
-                    iteration=i,
-                    current_node=node.to_dict(),
-                    children_nodes=[child_node.to_dict() for child_node in children_nodes],
-                    values=values,
-                    simulation_reward=simulation_reward,
-                    simulation_terminal_node=simulation_terminal_node.to_dict(),
-                    simulation_results=simulation_results,
-                )
-            )
+            output[-1].values = values
+            output[-1].simulation_reward = simulation_reward
+            output[-1].simulation_terminal_node = simulation_terminal_node.to_dict()
+            output[-1].simulation_results = simulation_results
 
             if self.strategy.halting_condition(simulation_terminal_node):
                 return simulation_terminal_node, output
 
             self.strategy.backpropagate_node(node=simulation_terminal_node, value=simulation_reward)
+
+        return simulation_terminal_node, output
 
     def reset(self) -> None:
         self.strategy.reset()
