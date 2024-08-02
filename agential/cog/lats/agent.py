@@ -12,6 +12,7 @@ from agential.base.agent import BaseAgent
 from agential.cog.lats.factory import LATSFactory
 from agential.cog.lats.output import LATSSimulationOutput, LATSOutput
 
+
 class LATSAgent(BaseAgent):
     """LATS (Language Agent Tree Search) agent.
 
@@ -19,6 +20,7 @@ class LATSAgent(BaseAgent):
         llm: The language model used by the LATS agent.
         benchmark: The benchmark or task the agent is designed to solve.
     """
+
     def __init__(
         self,
         llm: BaseChatModel,
@@ -48,7 +50,7 @@ class LATSAgent(BaseAgent):
         additional_keys,
         reflect_additional_keys,
         max_iterations=30,
-        reset=True
+        reset=True,
     ):
         if reset:
             self.reset()
@@ -57,7 +59,9 @@ class LATSAgent(BaseAgent):
 
         root = self.strategy.initialize()
         for i in range(max_iterations):
-            node = self.strategy.select_node(root)  # Selected node is always non-terminal.
+            node = self.strategy.select_node(
+                root
+            )  # Selected node is always non-terminal.
 
             children_nodes = self.strategy.expand_node(
                 node=node,
@@ -74,7 +78,9 @@ class LATSAgent(BaseAgent):
                 LATSOutput(
                     iteration=i,
                     current_node=node.to_dict(),
-                    children_nodes=[child_node.to_dict() for child_node in children_nodes],
+                    children_nodes=[
+                        child_node.to_dict() for child_node in children_nodes
+                    ],
                     values=[],
                     simulation_reward=0,
                     simulation_terminal_node=None,
@@ -95,7 +101,9 @@ class LATSAgent(BaseAgent):
 
             simulation_reward, simulation_terminal_node, simulation_results = (
                 self.strategy.simulate_node(
-                    node=max(node.children, key=lambda child: child.value, default=node),
+                    node=max(
+                        node.children, key=lambda child: child.value, default=node
+                    ),
                     question=question,
                     key=key,
                     examples=examples,
@@ -106,7 +114,9 @@ class LATSAgent(BaseAgent):
                     reflect_additional_keys=reflect_additional_keys,
                 )
             )
-            simulation_results = [LATSSimulationOutput(**result) for result in simulation_results]
+            simulation_results = [
+                LATSSimulationOutput(**result) for result in simulation_results
+            ]
 
             output[-1].values = values
             output[-1].simulation_reward = simulation_reward
@@ -116,7 +126,9 @@ class LATSAgent(BaseAgent):
             if self.strategy.halting_condition(simulation_terminal_node):
                 return simulation_terminal_node, output
 
-            self.strategy.backpropagate_node(node=simulation_terminal_node, value=simulation_reward)
+            self.strategy.backpropagate_node(
+                node=simulation_terminal_node, value=simulation_reward
+            )
 
         return simulation_terminal_node, output
 

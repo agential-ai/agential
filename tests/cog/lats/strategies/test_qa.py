@@ -205,7 +205,10 @@ def test_generate_observation() -> None:
     assert lookup_result[1] == 0
     assert lookup_result[2] == "Paris is a city in France."
     assert lookup_result[3] is False
-    assert lookup_result[4] == {'search_result': '', 'lookup_result': 'Paris is a city in France.'}
+    assert lookup_result[4] == {
+        "search_result": "",
+        "lookup_result": "Paris is a city in France.",
+    }
 
     # Test invalid action.
     invalid_result = strategy.generate_observation(

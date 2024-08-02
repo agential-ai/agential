@@ -7,10 +7,13 @@ from pydantic import BaseModel, Field
 
 class LATSSimulationOutput(BaseModel):
     """LATS simulation Pydantic output class.
-    
-    Attributes:
 
+    Attributes:
+        current_node (Dict[str, Any]): The current node.
+        children_nodes (List[Dict[str, Any]]): The children nodes of the current node.
+        values (List[float]): The values of the children nodes.
     """
+
     current_node: Dict[str, Any] = Field(..., description="The current node.")
     children_nodes: List[Dict[str, Any]] = Field(
         ...,
@@ -26,7 +29,13 @@ class LATSOutput(BaseModel):
     """LATS Pydantic output class.
 
     Attributes:
-
+        iteration (int): The iteration number.
+        current_node (Dict[str, Any]): The current node.
+        children_nodes (List[Dict[str, Any]]): The children nodes of the current node.
+        values (List[float]): The values of the children nodes.
+        simulation_reward (float): The reward of the simulation from the current node's most valuable child node.
+        simulation_terminal_node (Dict[str, Any]): The terminal node of the simulation.
+        simulation_results (List[LATSSimulationOutput]): The results of the simulation.
     """
 
     iteration: int = Field(..., description="The iteration number.")
@@ -39,7 +48,7 @@ class LATSOutput(BaseModel):
         ...,
         description="The values of the children nodes.",
     )
-    simulation_reward:  float = Field(
+    simulation_reward: float = Field(
         ...,
         description="The reward of the simulation from the current node's most valuable child node.",
     )
@@ -51,4 +60,3 @@ class LATSOutput(BaseModel):
         ...,
         description="The results of the simulation.",
     )
-

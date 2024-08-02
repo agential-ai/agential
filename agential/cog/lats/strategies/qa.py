@@ -78,6 +78,7 @@ class LATSQAStrategy(LATSBaseStrategy):
     The strategy uses these parameters to fine-tune its behavior and performance
     in question-answering tasks.
     """
+
     def __init__(
         self,
         llm,
@@ -359,7 +360,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         There are 3 cases for the returned node:
             - Case 1 (Current node has no children): Returns current node as it has no children (root).
             - Case 2 (Backtracks till root): Returns current node as it has all terminal children (must be root).
-            - Case 3 (Most common case): Returns non-terminal childless node with highest UCT value. 
+            - Case 3 (Most common case): Returns non-terminal childless node with highest UCT value.
 
         Args:
             node (Node): The current node from which to start the selection.
@@ -369,7 +370,9 @@ class LATSQAStrategy(LATSBaseStrategy):
         """
         while node and node.children:
             # Filter out terminal children.
-            non_terminal_children = [child for child in node.children if not child.is_terminal]
+            non_terminal_children = [
+                child for child in node.children if not child.is_terminal
+            ]
 
             # If all children are terminal, move up to the parent node.
             if not non_terminal_children:
@@ -562,7 +565,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                 reflect_additional_keys=reflect_additional_keys,
             )
 
-            result['children_nodes'] = children_nodes
+            result["children_nodes"] = children_nodes
 
             for node in children_nodes:
                 if node.is_terminal:
@@ -595,7 +598,9 @@ class LATSQAStrategy(LATSBaseStrategy):
                     )
 
                     explanation, value = parse_qa_value(value)
-                    values.append({"node_idx": idx, "explanation": explanation, "value": value})
+                    values.append(
+                        {"node_idx": idx, "explanation": explanation, "value": value}
+                    )
 
             max_value = max(values, key=lambda x: x["value"])
             max_value_index = values.index(max_value)
@@ -606,8 +611,8 @@ class LATSQAStrategy(LATSBaseStrategy):
             if depth == self.depth_limit:
                 rewards = [-1]
 
-            result['best_child_node'] = node
-            result['values'] = values
+            result["best_child_node"] = node
+            result["values"] = values
 
             results.append(result)
 
