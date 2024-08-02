@@ -126,6 +126,7 @@ class LATSAgent(BaseAgent):
                     children_nodes=[
                         child_node.to_dict() for child_node in result["children_nodes"]
                     ],
+                    values=result["values"],
                 )
                 for result in simulation_results
             ]
