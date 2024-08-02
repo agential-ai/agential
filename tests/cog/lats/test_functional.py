@@ -14,7 +14,6 @@ from agential.cog.lats.functional import (
     _prompt_value,
     get_node_trajectory,
     get_unique_trajectories,
-    preorder_traversal
 )
 from agential.cog.lats.node import Node
 from agential.cog.lats.prompts import (

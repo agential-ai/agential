@@ -717,7 +717,7 @@ def test_simulate_node() -> None:
     reflect_additional_keys = {}
     value_additional_keys = {}
 
-    reward, final_node, all_children_nodes, all_values = qa_strategy.simulate_node(
+    reward, final_node, simulation_results = qa_strategy.simulate_node(
         node=root_node,
         question=question,
         key=key,
@@ -734,13 +734,11 @@ def test_simulate_node() -> None:
 
     assert isinstance(reward, float)
     assert isinstance(final_node, Node)
-    assert isinstance(all_children_nodes, list)
-    assert isinstance(all_values, list)
+    assert isinstance(simulation_results, list)
 
     assert final_node.depth <= qa_strategy.depth_limit
 
-    assert len(all_children_nodes) > 0
-    assert len(all_values) > 0
+    assert len(simulation_results) > 0
 
     assert -1 <= reward <= 1
 
