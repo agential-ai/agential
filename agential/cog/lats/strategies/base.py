@@ -18,7 +18,7 @@ class LATSBaseStrategy(BaseStrategy):
 
     @abstractmethod
     def initialize(self) -> Node:
-        """Create and return the root node.
+        """Create and return the rdeot node.
 
         Returns:
             Node: The root node of the search tree.

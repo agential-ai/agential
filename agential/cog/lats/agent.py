@@ -55,6 +55,26 @@ class LATSAgent(BaseAgent):
         max_iterations=30,
         reset=True,
     ):
+        """Generate an output for the given question.
+
+        Args:
+            question (str): The question or task to be solved.
+            key (str): The key associated with the question.
+            examples (str): Examples to guide the agent's reasoning.
+            reflect_examples (str): Examples to guide the agent's reflections.
+            value_examples (str): Examples to guide the agent's value estimation.
+            prompt (str): The prompt to guide the agent's reasoning.
+            reflect_prompt (str): The prompt to guide the agent's reflections.
+            value_prompt (str): The prompt to guide the agent's value estimation.
+            additional_keys (Dict[str, str]): Additional keys for formatting the prompts.
+            reflect_additional_keys (Dict[str, str]): Additional keys for formatting the reflection prompts.
+            value_additional_keys (Dict[str, str]): Additional keys for formatting the value prompts.
+            max_iterations (int): The maximum number of iterations to run the agent. Defaults to 30.
+            reset (bool): Whether to reset the agent before generating the output. Defaults to True.
+
+        Returns:
+                Tuple[Node, List[LATSOutput]]: A tuple containing the root node and a list of outputs.
+        """
         if reset:
             self.reset()
 
@@ -77,7 +97,9 @@ class LATSAgent(BaseAgent):
                 additional_keys=additional_keys,
                 reflect_additional_keys=reflect_additional_keys,
             )
-            print("<===========================================================EXPAND NODE END===========================================================>")
+            print(
+                "<===========================================================EXPAND NODE END===========================================================>"
+            )
 
             for child_node in children_nodes:
                 if self.strategy.halting_condition(child_node):
@@ -103,7 +125,9 @@ class LATSAgent(BaseAgent):
                 prompt=value_prompt,
                 additional_keys=value_additional_keys,
             )
-            print("<===========================================================EVALUATE NODE END===========================================================>")
+            print(
+                "<===========================================================EVALUATE NODE END===========================================================>"
+            )
 
             simulation_reward, simulation_terminal_node, simulation_results = (
                 self.strategy.simulate_node(
@@ -123,7 +147,9 @@ class LATSAgent(BaseAgent):
                     value_additional_keys=value_additional_keys,
                 )
             )
-            print("<===========================================================SIMULATE NODE END===========================================================>")
+            print(
+                "<===========================================================SIMULATE NODE END===========================================================>"
+            )
 
             simulation_results = [
                 LATSSimulationOutput(
@@ -159,4 +185,5 @@ class LATSAgent(BaseAgent):
         return simulation_terminal_node, output
 
     def reset(self) -> None:
+        """Reset the agent."""
         self.strategy.reset()
