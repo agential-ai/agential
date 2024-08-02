@@ -75,7 +75,6 @@ class LATSAgent(BaseAgent):
         Returns:
                 Tuple[Node, List[LATSOutput]]: A tuple containing the root node and a list of outputs.
         """
-        
         if reset:
             self.reset()
 
@@ -98,7 +97,9 @@ class LATSAgent(BaseAgent):
                 additional_keys=additional_keys,
                 reflect_additional_keys=reflect_additional_keys,
             )
-            print("<===========================================================EXPAND NODE END===========================================================>")
+            print(
+                "<===========================================================EXPAND NODE END===========================================================>"
+            )
 
             for child_node in children_nodes:
                 if self.strategy.halting_condition(child_node):
@@ -124,7 +125,9 @@ class LATSAgent(BaseAgent):
                 prompt=value_prompt,
                 additional_keys=value_additional_keys,
             )
-            print("<===========================================================EVALUATE NODE END===========================================================>")
+            print(
+                "<===========================================================EVALUATE NODE END===========================================================>"
+            )
 
             simulation_reward, simulation_terminal_node, simulation_results = (
                 self.strategy.simulate_node(
@@ -144,7 +147,9 @@ class LATSAgent(BaseAgent):
                     value_additional_keys=value_additional_keys,
                 )
             )
-            print("<===========================================================SIMULATE NODE END===========================================================>")
+            print(
+                "<===========================================================SIMULATE NODE END===========================================================>"
+            )
 
             simulation_results = [
                 LATSSimulationOutput(
