@@ -10,7 +10,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.agent import BaseAgent
 from agential.cog.lats.factory import LATSFactory
-from agential.cog.lats.output import LATSSimulationOutput, LATSOutput
+from agential.cog.lats.output import LATSOutput, LATSSimulationOutput
 
 
 class LATSAgent(BaseAgent):
@@ -45,10 +45,13 @@ class LATSAgent(BaseAgent):
         key,
         examples,
         reflect_examples,
+        value_examples,
         prompt,
         reflect_prompt,
+        value_prompt,
         additional_keys,
         reflect_additional_keys,
+        value_additional_keys,
         max_iterations=30,
         reset=True,
     ):
@@ -83,7 +86,7 @@ class LATSAgent(BaseAgent):
                     ],
                     values=[],
                     simulation_reward=0,
-                    simulation_terminal_node=None,
+                    simulation_terminal_node={},
                     simulation_results=[],
                 )
             )
@@ -94,9 +97,9 @@ class LATSAgent(BaseAgent):
             values = self.strategy.evaluate_node(
                 node=node,
                 question=question,
-                examples=examples,
-                prompt=prompt,
-                additional_keys=additional_keys,
+                examples=value_examples,
+                prompt=value_prompt,
+                additional_keys=value_additional_keys,
             )
 
             simulation_reward, simulation_terminal_node, simulation_results = (
@@ -108,10 +111,13 @@ class LATSAgent(BaseAgent):
                     key=key,
                     examples=examples,
                     reflect_examples=reflect_examples,
+                    value_examples=value_examples,
                     prompt=prompt,
                     reflect_prompt=reflect_prompt,
+                    value_prompt=value_prompt,
                     additional_keys=additional_keys,
                     reflect_additional_keys=reflect_additional_keys,
+                    value_additional_keys=value_additional_keys,
                 )
             )
             simulation_results = [
