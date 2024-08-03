@@ -144,7 +144,7 @@ class LATSAgent(BaseAgent):
                 )
             )
 
-            simulation_results = [
+            simulation_results_output = [
                 LATSSimulationOutput(
                     current_node=result["current_node"].to_dict(),
                     children_nodes=[
@@ -164,7 +164,7 @@ class LATSAgent(BaseAgent):
                     values=values,
                     simulation_reward=simulation_reward,
                     simulation_terminal_node=simulation_terminal_node.to_dict(),
-                    simulation_results=simulation_results,
+                    simulation_results=simulation_results_output,
                 )
             )
 

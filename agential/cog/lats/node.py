@@ -44,13 +44,13 @@ class Node(BaseNode):
     def __init__(
         self,
         state: Optional[ReActOutput] = None,
-        parent: Optional['Node'] = None,
-        children: Optional[List['Node']] = None,
+        parent: Optional["Node"] = None,
+        children: Optional[List["Node"]] = None,
         visits: int = 0,
         value: float = 0,
         depth: int = 0,
         is_terminal: bool = False,
-        reward: float = 0,    
+        reward: float = 0,
     ) -> None:
         """Initialization."""
         self.state = (
@@ -79,19 +79,20 @@ class Node(BaseNode):
         Returns:
             The UCT value of the node.
         """
-        if self.visits == 0:
+        if self.visits == 0 or self.parent is None:
             return self.value
+
         return self.value / self.visits + np.sqrt(
             2 * np.log(self.parent.visits) / self.visits
         )
 
-    def add_children(self, children) -> None:
+    def add_children(self, children: List["BaseNode"]) -> None:
         """Add child nodes to the current node.
 
         Args:
-            children (Node): List of child nodes to be added.
+            children (List[BaseNode]): List of child nodes to be added.
         """
-        self.children.extend(children)
+        self.children.extend(children)  # type: ignore
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert the node to a dictionary representation.

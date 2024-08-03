@@ -291,7 +291,9 @@ def get_node_trajectory(node: Node) -> str:
     return "\n".join(reversed(trajectory))
 
 
-def get_unique_trajectories(failed_trajectories: List[Dict[str, str]], max_unique: int) -> List[str]:
+def get_unique_trajectories(
+    failed_trajectories: List[Dict[str, str]], max_unique: int
+) -> List[str]:
     """Extracts a specified number of unique trajectories from the given failed trajectories.
 
     Args:

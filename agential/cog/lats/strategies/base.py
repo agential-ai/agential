@@ -215,7 +215,7 @@ class LATSBaseStrategy(BaseStrategy):
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
         value_additional_keys: Dict[str, str],
-    ) -> Tuple[float, Node, List[List[Node]]]:
+    ) -> Tuple[float, Node, List[Dict[str, Any]]]:
         """Simulate the node to estimate its value and collect information about the simulation process.
 
         Args:
@@ -233,10 +233,10 @@ class LATSBaseStrategy(BaseStrategy):
             value_additional_keys (Dict[str, str]): Additional keys for value estimation prompt formatting.
 
         Returns:
-            Tuple[float, Node, List[List[Node]]]]: A tuple containing:
+            Tuple[float, Node, List[Dict[str, Any]]]: A tuple containing:
                 - The estimated value of the node (float)
                 - The final node reached in the simulation (Node)
-                - A list of lists of nodes, representing the paths explored during simulation
+                - A list of dictionaries, representing the states of nodes explored during simulation
         """
         pass
 
