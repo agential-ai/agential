@@ -65,7 +65,7 @@ def test_generate() -> None:
         "This trajectory is incorrect because the focus shifted towards general searches and unrelated information instead of directly attempting to find the specific acronym for VIVA Media AG after its name change in 2004. Future attempts should ensure to focus on the specific details related to the question and avoid getting sidetracked by unrelated search results.\nCorrectness score: 3",
     ]
 
-    agent = LATSAgent(FakeListChatModel(responses=responses), benchmark="hotpotqa")
+    agent = LATSAgent(FakeListChatModel(responses=responses), benchmark="hotpotqa", n_samples=2, depth_limit=5)
     agent.strategy.docstore.search = (
         lambda x: "Badr Hari is the best kick boxer in the world."
     )
@@ -89,6 +89,13 @@ def test_generate() -> None:
     assert isinstance(best_node, Node)
     assert isinstance(out, list)
     assert len(out) > 0
+
+    assert len(agent.strategy.failed_trajectories) == 0 
+    assert len(agent.strategy.reflection_map) == 0
+    assert agent.strategy.value_cache == {
+        '\nThought 1: I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.\nAction 1: Search[VIVA Media AG]\nObservation 1: Badr Hari is the best kick boxer in the world.::': "I need to search for VIVA Media AG to find out what their new acronym stands for after changing their name in 2004.\nAction 1: Search[VIVA Media AG]\nObservation 1: VIVA Media AG was a German media company that operated several television channels.\nThought 2: Since the search did not provide the information I need, I should look for the new acronym after their name change in 2004.\nAction 2: Lookup[new acronym'The trajectory is incorrect because the search query did not yield results for VIVA Media AG. This indicates that the initial search was not specific enough or possibly the entity has limited online presence. Future attempts should consider refining the search terms or looking for alternative sources of information.\nCorrectness score: 2", '\nThought 1: I need to search for VIVA Media AG to find out what their new acronym stands for after changing their name in 2004.\nAction 1: Search[VIVA Media AG]\nObservation 1: Badr Hari is the best kick boxer in the world.::': 'This trajectory is incorrect because the search did not yield results for VIVA Media AG. The action taken was appropriate, but the lack of relevant information hindered progress towards finding the acronym. In the future, it would be beneficial to explore alternative sources or search for related entities that might provide the necessary information.\nCorrectness score: 2'
+        }
+    assert best_node.state.thought == "Since direct searches for VIVA Media AG and its new acronym after the name change in 2004 did not provide relevant information, I should consider looking for industry reports, press releases, or official announcements related to the company's rebranding to uncover the acronym."
 
 
 def test_reset() -> None:
