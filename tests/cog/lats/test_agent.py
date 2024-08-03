@@ -107,6 +107,58 @@ def test_generate() -> None:
     assert best_node.to_dict() == gt_state
     assert out[0] == gt_out
 
+    # Test generate with reflection.
+    question = "What's the capital of France?"
+    key = "France"
+
+    responses = [
+        'I need to search for the capital of France.\nAction 1: Search[capital of France]',
+        'Search[capital of France]\nObservation 1: The capital of France is Paris.\nThought 2: The capital of France is Paris, so the answer is Paris.\nAction 2: Finish[Paris]',
+        'I need to search for the capital of France.\nAction 1: Search[capital of France]',
+        'Search[capital of France]',
+        'The trajectory is incorrect as the observation does not provide any relevant information about the capital of France. The action was not aligned with the question, leading to an incorrect trajectory.\nCorrectness score: 1',
+        'The search result is incorrect. I need to search again for the capital of France.\nAction 2: Search[capital of France]\nObservation 2: The capital of France is Paris.\nThought 3: The capital of France is Paris, so the answer is Paris.\nAction 3: Finish[Paris]',
+        'Search[capital of France]\nObservation 2: The capital of France is Paris.\nThought 3: The capital of France is Paris.\nAction 3: Finish[Paris]',
+        'The search result is incorrect. I need to search for the capital of France again.\nAction 2: Search[capital of France]\nObservation 2: Paris is the capital of France.\nThought 3: The capital of France is Paris.\nAction 3: Finish[Paris]',
+        'Search[capital of France]\nObservation 2: The capital of France is Paris.\nThought 3: The capital of France is Paris.\nAction 3: Finish[Paris]',
+        'The trajectory is incorrect because the search results are unrelated to the question asked. The focus should have been on verifying the capital of France directly instead of repeating the same unsuccessful search. \nCorrectness score: 1',
+        'The trajectory is incorrect because the search results are unrelated to the question. The focus should have been on verifying the capital of France directly instead of repeating the same search with no relevant information retrieved. \nCorrectness score: 1',
+        'The search results are not providing the correct information. I should try a different approach to find the capital of France.\nAction 3: Search[Paris]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris.\nAction 4: Finish[Paris]',
+        'Search[Paris]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris.\nAction 4: Finish[Paris]',
+        'The search results are not yielding the correct information. I need to try a different approach.\nAction 3: Search[Paris]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris.\nAction 4: Finish[Paris]',
+        'Search[Paris, France]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris.\nAction 4: Finish[Paris]',
+        'The trajectory is incorrect because the search results did not provide the relevant information needed to answer the question. The repeated searches for the capital of France yielded irrelevant results, and the final attempt to search for "Paris" also did not yield the correct answer. Future attempts should ensure to verify the accuracy and relevance of the search results before proceeding with the next steps.\nCorrectness score: 1',
+        'The trajectory is incorrect because despite recognizing the incorrect search results, the user did not adjust their search query or approach to find the correct answer. The repeated searches for the same incorrect information indicate a lack of adaptability in the search strategy. The user should have tried different variations of the search query or explored alternative sources to find the correct answer. \nCorrectness score: 1',
+        'The search results are still not providing the correct information. I need to try a different search term to find the capital of France.\nAction 4: Search[capital city France]\nObservation 4: Paris is the capital city of France.\nThought 5: Paris is indeed the capital of France. I can now provide the answer.\nAction 5: Finish[Paris]',
+        'Search[What is the capital of France?]\nObservation 4: The capital of France is Paris.\nThought 5: The correct answer is Paris.\nAction 5: Finish[Paris]',
+        'The search results are not helpful. I should try a different method to find the answer.\nAction 4: Finish[Paris]',
+        'Finish[Paris]',
+    ]
+    agent = LATSAgent(llm=FakeListChatModel(responses=responses), benchmark="hotpotqa", n_samples=2, depth_limit=5)
+    agent.strategy.docstore.search = (
+        lambda x: "Badr Hari is the best kick boxer in the world."
+    )
+
+    best_node, out = agent.generate(
+        question=question,
+        key=key,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
+        value_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE,
+        prompt=LATS_INSTRUCTION_HOTPOTQA,
+        reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
+        value_prompt=LATS_VALUE_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
+        reflect_additional_keys={},
+        value_additional_keys={},
+        max_iterations=1,
+        reset=True,
+    )
+    assert agent.strategy.failed_trajectories == [{'trajectory': '\nThought 1: I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: Badr Hari is the best kick boxer in the world.\nThought 2: The search result is incorrect. I need to search again for the capital of France.\nAction 2: Search[capital of France]\nObservation 2: Badr Hari is the best kick boxer in the world.\nThought 3: The search results are not providing the correct information. I should try a different approach to find the capital of France.\nAction 3: Search[Paris]\nObservation 3: Badr Hari is the best kick boxer in the world.\nThought 4: The search results are not helpful. I should try a different method to find the answer.\nAction 4: Finish[Paris]\nObservation 4: Answer is INCORRECT',
+  'final_answer': 'paris'}]
+    assert agent.strategy.reflection_map == []
+    
+
 def test_reset() -> None:
     """Test the reset method."""
     llm = FakeListChatModel(responses=[])

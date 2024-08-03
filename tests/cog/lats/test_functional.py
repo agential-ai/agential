@@ -28,7 +28,7 @@ from agential.cog.react.output import ReActOutput
 
 def test__build_reflection_format() -> None:
     """Tests the _build_reflection_format() function."""
-    gt_reflection = "Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]\nFAILED TRAJECTORY\n\nReflection: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?"
+    gt_reflection = "Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]\n\nReflection: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?"
     reflection = _build_reflection_format(
         trajectory="Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]",
         reflection="What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?",
