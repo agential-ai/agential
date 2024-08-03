@@ -35,7 +35,7 @@
 | CRITIC                   | :material-check-all: | :octicons-check-16:  | :material-check-all: | :material-check-all: |
 | Self-Refine              | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
 | ExpeL                    | :material-check-all: | :material-check-all: | :octicons-check-16:  | :octicons-check-16:  |
-| LATS                     |                      |                      |                      |                      |
+| LATS                     | :material-check-all: | :octicons-check-16:  | :octicons-check-16:  | :octicons-check-16:  |
 
 | **Methods / Benchmarks** |        GSM8k         |        SVAMP         |        TabMWP        |
 | ------------------------ | :------------------: | :------------------: | :------------------: |
