@@ -54,8 +54,8 @@ class LATSAgent(BaseAgent):
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
         value_additional_keys: Dict[str, str],        
-        max_iterations=30,
-        reset=True,
+        max_iterations: int = 30,
+        reset: bool = True,
     ) -> Tuple[Node, List[LATSOutput]]:
         """Generate an output for the given question.
 
