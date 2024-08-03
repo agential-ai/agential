@@ -20,7 +20,7 @@ from agential.cog.lats.node import Node
 from agential.cog.lats.strategies.base import LATSBaseStrategy
 from agential.cog.react.output import ReActOutput
 from agential.eval.em import EM
-from agential.utils.docstore import DocstoreExplorer
+from agential.utils.general import safe_execute
 from agential.utils.parse import remove_newline
 
 
@@ -326,33 +326,30 @@ class LATSMathStrategy(LATSBaseStrategy):
             Tuple[str, int, str, bool, Dict[str, str]]: A tuple containing the updated trajectory,
             reward, observation, done flag, and external tool information.
         """
-        external_tool_info = {"search_result": "", "lookup_result": ""}
+        external_tool_info = {"execution_status": "", "code_answer": ""}
+        code_answer, execution_status = safe_execute(query)
 
         reward, done = 0, False
         trajectory += f"\nObservation {depth + 1}: "
         if action_type.lower() == "finish":
-            if EM(query, key):
+            external_tool_info["code_answer"] = code_answer[0]
+            external_tool_info["execution_status"] = execution_status
+
+            if EM(code_answer[0], key, normalize=False):
                 obs = "Answer is CORRECT"
-                reward = int(EM(query, key))
+                reward = int(EM(code_answer[0], key, normalize=False))
             else:
                 obs = "Answer is INCORRECT"
             done = True
-        elif action_type.lower() == "search":
-            try:
-                search_result = self.docstore.search(query)
-                external_tool_info["search_result"] = search_result
-                obs = remove_newline(search_result)
-            except Exception:
-                obs = "Could not find that page, please try again."
-        elif action_type.lower() == "lookup":
-            try:
-                lookup_result = self.docstore.lookup(query)
-                external_tool_info["lookup_result"] = lookup_result
-                obs = remove_newline(lookup_result)
-            except ValueError:
-                obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
+        elif action_type.lower() == "calculate":
+            external_tool_info["code_answer"] = code_answer[0]
+            external_tool_info["execution_status"] = execution_status
+
+            obs = f"\n```python\n{query}\n```\nExecution Status: {execution_status}\nOutput: answer = {code_answer[0]}"
         else:
-            obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
+            obs = (
+                "Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
+            )
         trajectory += obs
 
         return trajectory, reward, obs, done, external_tool_info
