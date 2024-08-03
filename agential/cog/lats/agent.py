@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Tuple
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.agent import BaseAgent
-from agential.cog.lats.factory import LATSFactory
+from agential.cog.lats.factory import LATSFactory, LATS_BENCHMARK_FEWSHOTS
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import LATSOutput, LATSSimulationOutput
 
@@ -45,15 +45,16 @@ class LATSAgent(BaseAgent):
         self,
         question: str,
         key: str,
-        examples: str,
-        reflect_examples: str,
-        value_examples: str,
-        prompt: str,
-        reflect_prompt: str,
-        value_prompt: str,
-        additional_keys: Dict[str, str],
-        reflect_additional_keys: Dict[str, str],
-        value_additional_keys: Dict[str, str],
+        examples: str = "",
+        reflect_examples: str = "",
+        value_examples: str = "",
+        prompt: str = "",
+        reflect_prompt: str = "",
+        value_prompt: str = "",
+        additional_keys: Dict[str, str] = {},
+        reflect_additional_keys: Dict[str, str] = {},
+        value_additional_keys: Dict[str, str] = {},
+        fewshot_type: str = "",
         max_iterations: int = 30,
         reset: bool = True,
     ) -> Tuple[Node, List[LATSOutput]]:
@@ -62,21 +63,36 @@ class LATSAgent(BaseAgent):
         Args:
             question (str): The question or task to be solved.
             key (str): The key associated with the question.
-            examples (str): Examples to guide the agent's reasoning.
-            reflect_examples (str): Examples to guide the agent's reflections.
-            value_examples (str): Examples to guide the agent's value estimation.
-            prompt (str): The prompt to guide the agent's reasoning.
-            reflect_prompt (str): The prompt to guide the agent's reflections.
-            value_prompt (str): The prompt to guide the agent's value estimation.
-            additional_keys (Dict[str, str]): Additional keys for formatting the prompts.
-            reflect_additional_keys (Dict[str, str]): Additional keys for formatting the reflection prompts.
-            value_additional_keys (Dict[str, str]): Additional keys for formatting the value prompts.
+            examples (str): Examples to guide the agent's reasoning. Defaults to "".
+            reflect_examples (str): Examples to guide the agent's reflections. Defaults to "".
+            value_examples (str): Examples to guide the agent's value estimation. Defaults to "".
+            prompt (str): The prompt to guide the agent's reasoning. Defaults to "".
+            reflect_prompt (str): The prompt to guide the agent's reflections. Defaults to "".
+            value_prompt (str): The prompt to guide the agent's value estimation. Defaults to "".
+            additional_keys (Dict[str, str]): Additional keys for formatting the prompts. Defaults to {}.
+            reflect_additional_keys (Dict[str, str]): Additional keys for formatting the reflection prompts. Defaults to {}.
+            value_additional_keys (Dict[str, str]): Additional keys for formatting the value prompts. Defaults to {}.
+            fewshot_type (str): The type of few-shot examples to use. Defaults to "".
             max_iterations (int): The maximum number of iterations to run the agent. Defaults to 30.
             reset (bool): Whether to reset the agent before generating the output. Defaults to True.
 
         Returns:
                 Tuple[Node, List[LATSOutput]]: A tuple containing the root node and a list of outputs.
         """
+        if not prompt or not examples:
+            if not fewshot_type:
+                fewshot_type = LATS_BENCHMARK_FEWSHOTS[self.benchmark][0]
+            fewshots = LATSFactory.get_fewshots(
+                benchmark=self.benchmark, fewshot_type=fewshot_type
+            )
+            prompts = LATSFactory.get_prompts(benchmark=self.benchmark)
+            examples = fewshots["examples"]
+            reflect_examples = fewshots["reflect_examples"]
+            value_examples = fewshots["value_examples"]
+            prompt = prompts["prompt"]
+            reflect_prompt = prompts["reflect_prompt"]
+            value_prompt = prompts["value_prompt"]
+
         if reset:
             self.reset()
 
