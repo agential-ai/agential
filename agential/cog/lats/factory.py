@@ -192,4 +192,4 @@ class LATSFactory(BaseFactory):
             raise ValueError(f"Unsupported benchmark: {benchmark} for agent LATS")
 
         strategy = LATS_STRATEGIES[benchmark]
-        return strategy(**kwargs)
+        return strategy(**kwargs)  # type: ignore

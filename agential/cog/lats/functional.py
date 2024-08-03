@@ -286,17 +286,17 @@ def get_node_trajectory(node: Node) -> str:
                 step.append(f"Observation {node.depth}: {node.state.observation}")
         step_str = "\n".join(step)
         trajectory.append(step_str)
-        node = node.parent
+        node = node.parent  # type: ignore
 
     return "\n".join(reversed(trajectory))
 
 
-def get_unique_trajectories(failed_trajectories, max_unique) -> List[str]:
+def get_unique_trajectories(failed_trajectories: List[Dict[str, str]], max_unique: int) -> List[str]:
     """Extracts a specified number of unique trajectories from the given failed trajectories.
 
     Args:
-        failed_trajectories (list): A list of dictionaries containing failed trajectories.
-        max_unique (int, optional): The maximum number of unique trajectories to return.
+        failed_trajectories (List[Dict[str, str]]): A list of dictionaries containing failed trajectories.
+        max_unique (int): The maximum number of unique trajectories to return.
 
     Returns:
         List[str]: A list of unique trajectory strings, up to the specified number.

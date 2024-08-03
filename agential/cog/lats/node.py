@@ -1,7 +1,7 @@
 """Node class for LATS."""
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 
@@ -43,26 +43,24 @@ class Node(BaseNode):
 
     def __init__(
         self,
-        state=None,
-        parent=None,
-        children=None,
-        visits=0,
-        value=0,
-        depth=0,
-        is_terminal=False,
-        reward=0,
+        state: Optional[ReActOutput] = None,
+        parent: Optional['Node'] = None,
+        children: Optional[List['Node']] = None,
+        visits: int = 0,
+        value: float = 0,
+        depth: int = 0,
+        is_terminal: bool = False,
+        reward: float = 0,    
     ) -> None:
         """Initialization."""
         self.state = (
             ReActOutput(
-                **{
-                    "thought": "",
-                    "action_type": "",
-                    "query": "",
-                    "observation": "",
-                    "answer": "",
-                    "external_tool_info": {},
-                }
+                thought="",
+                action_type="",
+                query="",
+                observation="",
+                answer="",
+                external_tool_info={},
             )
             if not state
             else state
@@ -71,7 +69,7 @@ class Node(BaseNode):
         self.children = [] if children is None else children
         self.visits = visits
         self.value = value
-        self.depth = depth if parent is None else parent.depth + 1
+        self.depth: int = depth if parent is None else parent.depth + 1
         self.is_terminal = is_terminal
         self.reward = reward
 
@@ -91,7 +89,7 @@ class Node(BaseNode):
         """Add child nodes to the current node.
 
         Args:
-            children: List of child nodes to be added.
+            children (Node): List of child nodes to be added.
         """
         self.children.extend(children)
 

@@ -208,11 +208,14 @@ class LATSBaseStrategy(BaseStrategy):
         key: str,
         examples: str,
         reflect_examples: str,
+        value_examples: str,
         prompt: str,
         reflect_prompt: str,
+        value_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
-    ) -> Tuple[float, Node, List[List[Node]], List[List[Dict[str, Any]]]]:
+        value_additional_keys: Dict[str, str],
+    ) -> Tuple[float, Node, List[List[Node]]]:
         """Simulate the node to estimate its value and collect information about the simulation process.
 
         Args:
@@ -221,17 +224,19 @@ class LATSBaseStrategy(BaseStrategy):
             key (str): The answer key for evaluation.
             examples (str): Examples for context in simulation.
             reflect_examples (str): Examples for reflection during simulation.
+            value_examples (str): Examples for value estimation.
             prompt (str): The prompt template for simulation.
             reflect_prompt (str): The prompt template for reflection during simulation.
+            value_prompt (str): The prompt template for value estimation.
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
+            value_additional_keys (Dict[str, str]): Additional keys for value estimation prompt formatting.
 
         Returns:
-            Tuple[float, Node, List[List[Node]], List[List[Dict[str, Any]]]]: A tuple containing:
+            Tuple[float, Node, List[List[Node]]]]: A tuple containing:
                 - The estimated value of the node (float)
                 - The final node reached in the simulation (Node)
                 - A list of lists of nodes, representing the paths explored during simulation
-                - A list of lists of dictionaries, containing additional information about each step in the paths
         """
         pass
 

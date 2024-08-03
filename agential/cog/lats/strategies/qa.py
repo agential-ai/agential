@@ -2,7 +2,7 @@
 
 import re
 
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, Optional
 
 from langchain_community.docstore.wikipedia import Wikipedia
 
@@ -21,6 +21,7 @@ from agential.cog.react.output import ReActOutput
 from agential.eval.em import EM
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
+from langchain_core.language_models.chat_models import BaseChatModel
 
 
 def parse_qa_action(string: str) -> Tuple[str, str]:
@@ -44,15 +45,15 @@ def parse_qa_action(string: str) -> Tuple[str, str]:
     return action_type, argument
 
 
-def parse_qa_value(string: str) -> Tuple[str, int]:
+def parse_qa_value(string: str) -> Tuple[str, float]:
     """Extracts the explanation and correctness score from a given string.
 
     Args:
         string (str): The input string containing an explanation and correctness score.
 
     Returns:
-        Tuple[str, int]: A tuple containing the explanation (str) and the correctness score (int).
-        If parsing fails, returns ("Explanation not found", 0).
+        Tuple[str, float]: A tuple containing the explanation (str) and the correctness score (float).
+        If parsing fails, returns ("Explanation not found", 0.0).
     """
     try:
         explanation_part = string.split("Explanation:")[1].strip()
@@ -60,7 +61,7 @@ def parse_qa_value(string: str) -> Tuple[str, int]:
         score = int(score_part.strip())
         return explanation.strip(), score
     except Exception:
-        return "Explanation not found", 0
+        return "Explanation not found", 0.0
 
 
 class LATSQAStrategy(LATSBaseStrategy):
@@ -81,7 +82,7 @@ class LATSQAStrategy(LATSBaseStrategy):
 
     def __init__(
         self,
-        llm,
+        llm: BaseChatModel,
         docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
         n_samples: int = 5,
         max_reflections: int = 4,
@@ -98,10 +99,10 @@ class LATSQAStrategy(LATSBaseStrategy):
         self.max_unique = max_unique
         self.cache_values = cache_values
 
-        self.failed_trajectories = []
-        self.reflection_map = []
-        self.value_cache = {}
-        self.root = None
+        self.failed_trajectories: List[Dict[str, str]] = []
+        self.reflection_map: List[Dict[str, str]] = []
+        self.value_cache: Dict[str, str] = {}
+        self.root: Optional[Node] = None
 
     def initialize(self) -> Node:
         """Create and return the root node.
@@ -109,7 +110,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         Returns:
             Node: The root node of the search tree.
         """
-        self.root = Node()
+        self.root = Node()  # type: ignore
         return self.root
 
     def generate(
@@ -195,14 +196,12 @@ class LATSQAStrategy(LATSBaseStrategy):
 
                 new_node = Node(
                     state=ReActOutput(
-                        **{
-                            "thought": thought,
-                            "action_type": action_type,
-                            "query": query,
-                            "observation": obs,
-                            "answer": "" if not done else query.lower().strip(),
-                            "external_tool_info": external_tool_info,
-                        }
+                        thought=thought,
+                        action_type=action_type,
+                        query=query,
+                        observation=obs,
+                        answer="" if not done else query.lower().strip(),
+                        external_tool_info=external_tool_info
                     ),
                     parent=node,
                     depth=node.depth + 1,
@@ -463,8 +462,8 @@ class LATSQAStrategy(LATSBaseStrategy):
         values = []
         child_trajectory_cache = {}
         for child_trajectory in children_trajectories:
-            trajectory = child_trajectory["child_trajectory"]
-            idx = child_trajectory["idx"]
+            trajectory: str = child_trajectory["child_trajectory"]  # type: ignore
+            idx: int = child_trajectory["idx"]  # type: ignore
             if trajectory in child_trajectory_cache:
                 value = 0
             else:
@@ -499,7 +498,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                         self.value_cache[unique_key] = value_str
 
                 explanation, value = parse_qa_value(value_str)
-                value = value / 10
+                value = value / 10.0
                 node.children[idx].value = value
 
                 child_trajectory_cache[trajectory] = value
@@ -521,7 +520,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
         value_additional_keys: Dict[str, str],
-    ) -> Tuple[float, Node, List[List[Node]], List[List[Dict[str, Any]]]]:
+    ) -> Tuple[float, Node, List[List[Node]]]:
         """Simulate the node to estimate its value and collect information about the simulation process.
 
         Args:
@@ -539,15 +538,14 @@ class LATSQAStrategy(LATSBaseStrategy):
             value_additional_keys (Dict[str, str]): Additional keys for value estimation prompt formatting.
 
         Returns:
-            Tuple[float, Node, List[List[Node]], List[List[Dict[str, Any]]]]: A tuple containing:
+            Tuple[float, Node, List[List[Node]]]: A tuple containing:
                 - The estimated value of the node (float)
                 - The final node reached in the simulation (Node)
                 - A list of lists of nodes, representing the paths explored during simulation
-                - A list of lists of dictionaries, containing additional information about each step in the paths
         """
         depth = node.depth
         rewards = [0]
-        results = []
+        results: List[Dict[str, Any]] = []
         while not node.is_terminal and depth < self.depth_limit:
             result = {
                 "current_node": node,
@@ -555,7 +553,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                 "values": [],
             }
 
-            values = []
+            values: List[Dict, Any] = []
             children_nodes = self.generate(
                 node=node,
                 question=question,
@@ -605,7 +603,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                         {"node_idx": idx, "explanation": explanation, "value": value}
                     )
 
-            max_value = max(values, key=lambda x: x["value"])
+            max_value = max(values, key=lambda x: x["value"])  # type: ignore
             max_value_index = values.index(max_value)
             rewards.append(max_value)
             node = children_nodes[max_value_index]
