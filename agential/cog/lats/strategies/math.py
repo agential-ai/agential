@@ -24,28 +24,35 @@ from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
 
 
-def parse_qa_action(string: str) -> Tuple[str, str]:
-    """Parses an action string into an action type and its argument.
+def parse_math_action(action: str) -> Tuple[str, str]:
+    """Parses an action string to extract the action type and code content.
+
+    Identifies action types (`Finish`, `Calculate`) and extracts the
+    corresponding code content enclosed within Markdown-style code blocks.
+    The action type is case-insensitive and the code content is trimmed of
+    leading and trailing whitespace.
 
     Args:
-        string (str): The action string to be parsed.
+        action (str): The action string containing the action type and code content.
 
     Returns:
-        Tuple[str, str]: A tuple containing the action type and argument.
+        Tuple[str, str]: A tuple containing the extracted action type (capitalized)
+        and the extracted code content.
     """
-    pattern = r"^(\w+)\[(.+)\]$"
-    match = re.match(pattern, string)
+    action_split = action.split("```python", maxsplit=1)
+    match = re.search(r"\b(Finish|Calculate)\b", action_split[0], re.IGNORECASE)
 
-    if match:
-        action_type = match.group(1)
-        argument = match.group(2)
-    else:
+    action_type = match.group(0).lower().capitalize() if match else ""
+    try:
+        query = action_split[1].split("```")[0].strip() if action_type else ""
+    except:
         action_type = ""
-        argument = ""
-    return action_type, argument
+        query = ""
+
+    return action_type, query
 
 
-def parse_qa_value(string: str) -> Tuple[str, float]:
+def parse_math_value(string: str) -> Tuple[str, float]:
     """Extracts the explanation and correctness score from a given string.
 
     Args:
@@ -64,8 +71,8 @@ def parse_qa_value(string: str) -> Tuple[str, float]:
         return "Explanation not found", 0.0
 
 
-class LATSQAStrategy(LATSBaseStrategy):
-    """A strategy class for QA benchmarks using the LATS agent.
+class LATSMathStrategy(LATSBaseStrategy):
+    """A strategy class for Math benchmarks using the LATS agent.
 
     Attributes:
         llm: The language model to be used for generating responses.
@@ -497,7 +504,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                     if self.cache_values:
                         self.value_cache[unique_key] = value_str
 
-                explanation, value = parse_qa_value(value_str)  # type: ignore
+                explanation, value = parse_math_value(value_str)  # type: ignore
                 value = value / 10.0  # type: ignore
                 node.children[idx].value = value
 
@@ -598,7 +605,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                         additional_keys=value_additional_keys,
                     )
 
-                    explanation, value = parse_qa_value(value)  # type: ignore
+                    explanation, value = parse_math_value(value)  # type: ignore
                     values.append(
                         {"node_idx": idx, "explanation": explanation, "value": value}
                     )
@@ -713,25 +720,19 @@ class LATSQAStrategy(LATSBaseStrategy):
         self.root = None
 
 
-class LATSHotQAStrategy(LATSQAStrategy):
-    """A strategy class for the HotpotQA benchmark using the LATS agent."""
+class LATSGSM8KStrategy(LATSMathStrategy):
+    """A strategy class for the GSM8K benchmark using the LATS agent."""
 
     pass
 
 
-class LATSTriviaQAStrategy(LATSQAStrategy):
-    """A strategy class for the TriviaQA benchmark using the LATS agent."""
+class LATSSVAMPStrategy(LATSMathStrategy):
+    """A strategy class for the SVAMP benchmark using the LATS agent."""
 
     pass
 
 
-class LATSAmbigNQStrategy(LATSQAStrategy):
-    """A strategy class for the AmbigNQ benchmark using the LATS agent."""
-
-    pass
-
-
-class LATSFEVERStrategy(LATSQAStrategy):
-    """A strategy class for the FEVER benchmark using the LATS agent."""
+class LATSTabMWPStrategy(LATSMathStrategy):
+    """A strategy class for the TabMWP benchmark using the LATS agent."""
 
     pass
