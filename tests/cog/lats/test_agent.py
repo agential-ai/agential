@@ -6,6 +6,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.agent import LATSAgent
 from agential.cog.lats.node import Node
+from agential.cog.lats.output import LATSOutput, LATSSimulationOutput
 from agential.cog.lats.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE,
@@ -15,7 +16,7 @@ from agential.cog.lats.prompts import (
 )
 from agential.cog.lats.strategies.base import LATSBaseStrategy
 from agential.cog.react.output import ReActOutput
-from agential.cog.lats.output import LATSOutput, LATSSimulationOutput
+
 
 def test_init() -> None:
     """Test initialization."""
@@ -33,14 +34,354 @@ def test_generate() -> None:
     question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
     key = "Gesellschaft mit beschränkter Haftung"
 
-    gt_state = {'state': ReActOutput(thought="Since direct searches for VIVA Media AG and its new acronym after the name change in 2004 did not provide relevant information, I should consider looking for industry reports, press releases, or official announcements related to the company's rebranding to uncover the acronym.", action_type='Search', query='VIVA Media AG rebranding press release', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}),
- 'visits': 1,
- 'value': -1.0,
- 'depth': 5,
- 'is_terminal': False,
- 'reward': 0}
-    gt_out = LATSOutput(iteration=0, current_node={'state': ReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, children_nodes=[{'state': ReActOutput(thought='I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.', action_type='Search', query='VIVA Media AG', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0.0, 'depth': 1, 'is_terminal': False, 'reward': 0}, {'state': ReActOutput(thought='I need to search for VIVA Media AG to find out what their new acronym stands for after changing their name in 2004.', action_type='Search', query='VIVA Media AG', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0.0, 'depth': 1, 'is_terminal': False, 'reward': 0}], values=[{'node_idx': 0, 'explanation': 'Explanation not found', 'value': 0.0}, {'node_idx': 1, 'explanation': 'Explanation not found', 'value': 0.0}], simulation_reward=-1.0, simulation_terminal_node={'state': ReActOutput(thought="Since direct searches for VIVA Media AG and its new acronym after the name change in 2004 did not provide relevant information, I should consider looking for industry reports, press releases, or official announcements related to the company's rebranding to uncover the acronym.", action_type='Search', query='VIVA Media AG rebranding press release', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0, 'depth': 5, 'is_terminal': False, 'reward': 0}, simulation_results=[LATSSimulationOutput(current_node={'state': ReActOutput(thought='I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.', action_type='Search', query='VIVA Media AG', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0.0, 'depth': 1, 'is_terminal': False, 'reward': 0}, children_nodes=[{'state': ReActOutput(thought='The search for VIVA Media AG did not return relevant results. I should try searching for the new name of the company directly.', action_type='Search', query='VIVA Media AG new name', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0, 'depth': 2, 'is_terminal': False, 'reward': 0}, {'state': ReActOutput(thought="I couldn't find VIVA Media AG. Let me try searching for VIVA Media AG (acronym) instead.", action_type='Search', query='VIVA Media AG (acronym)', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0, 'depth': 2, 'is_terminal': False, 'reward': 0}], values=[{'node_idx': 0, 'explanation': 'Explanation not found', 'value': 0}, {'node_idx': 1, 'explanation': 'Explanation not found', 'value': 0}]), LATSSimulationOutput(current_node={'state': ReActOutput(thought='The search for VIVA Media AG did not return relevant results. I should try searching for the new name of the company directly.', action_type='Search', query='VIVA Media AG new name', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0, 'depth': 2, 'is_terminal': False, 'reward': 0}, children_nodes=[{'state': ReActOutput(thought="Since direct searches for VIVA Media AG and its new name did not yield results, I should try to search for the company's name change history or any related news articles to find out the acronym.", action_type='Search', query='VIVA Media AG name change history', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0, 'depth': 3, 'is_terminal': False, 'reward': 0}, {'state': ReActOutput(thought='It seems the direct search for the new name of VIVA Media AG is not yielding results. I should try a different approach to find the acronym.', action_type='Search', query='VIVA Media AG acronym 2004', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0, 'depth': 3, 'is_terminal': False, 'reward': 0}], values=[{'node_idx': 0, 'explanation': 'Explanation not found', 'value': 0}, {'node_idx': 1, 'explanation': 'Explanation not found', 'value': 0}]), LATSSimulationOutput(current_node={'state': ReActOutput(thought="Since direct searches for VIVA Media AG and its new name did not yield results, I should try to search for the company's name change history or any related news articles to find out the acronym.", action_type='Search', query='VIVA Media AG name change history', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0, 'depth': 3, 'is_terminal': False, 'reward': 0}, children_nodes=[{'state': ReActOutput(thought='The search results are still not providing the information needed. I should try to find a different angle to approach this question.', action_type='Search', query='VIVA Media AG rebranding 2004', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0, 'depth': 4, 'is_terminal': False, 'reward': 0}, {'state': ReActOutput(thought="As the search results are not providing relevant information, I should consider looking up the company's history or press releases to find out the acronym of VIVA Media AG after the name change in 2004.", action_type='Search', query='VIVA Media AG press releases 2004', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0, 'depth': 4, 'is_terminal': False, 'reward': 0}], values=[{'node_idx': 0, 'explanation': 'Explanation not found', 'value': 0}, {'node_idx': 1, 'explanation': 'Explanation not found', 'value': 0}]), LATSSimulationOutput(current_node={'state': ReActOutput(thought='The search results are still not providing the information needed. I should try to find a different angle to approach this question.', action_type='Search', query='VIVA Media AG rebranding 2004', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0, 'depth': 4, 'is_terminal': False, 'reward': 0}, children_nodes=[{'state': ReActOutput(thought="Since direct searches for VIVA Media AG and its new acronym after the name change in 2004 did not provide relevant information, I should consider looking for industry reports, press releases, or official announcements related to the company's rebranding to uncover the acronym.", action_type='Search', query='VIVA Media AG rebranding press release', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0, 'depth': 5, 'is_terminal': False, 'reward': 0}, {'state': ReActOutput(thought="Since the search results are not yielding the required information, I should try a more general search for VIVA Media AG's name change history or company information to find the acronym.", action_type='Search', query='VIVA Media AG company information', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0, 'depth': 5, 'is_terminal': False, 'reward': 0}], values=[{'node_idx': 0, 'explanation': 'Explanation not found', 'value': 0}, {'node_idx': 1, 'explanation': 'Explanation not found', 'value': 0}])])
-    
+    gt_state = {
+        "state": ReActOutput(
+            thought="Since direct searches for VIVA Media AG and its new acronym after the name change in 2004 did not provide relevant information, I should consider looking for industry reports, press releases, or official announcements related to the company's rebranding to uncover the acronym.",
+            action_type="Search",
+            query="VIVA Media AG rebranding press release",
+            observation="Badr Hari is the best kick boxer in the world.",
+            answer="",
+            external_tool_info={
+                "search_result": "Badr Hari is the best kick boxer in the world.",
+                "lookup_result": "",
+            },
+        ),
+        "visits": 1,
+        "value": -1.0,
+        "depth": 5,
+        "is_terminal": False,
+        "reward": 0,
+    }
+    gt_out = LATSOutput(
+        iteration=0,
+        current_node={
+            "state": ReActOutput(
+                thought="",
+                action_type="",
+                query="",
+                observation="",
+                answer="",
+                external_tool_info={},
+            ),
+            "visits": 0,
+            "value": 0,
+            "depth": 0,
+            "is_terminal": False,
+            "reward": 0,
+        },
+        children_nodes=[
+            {
+                "state": ReActOutput(
+                    thought="I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.",
+                    action_type="Search",
+                    query="VIVA Media AG",
+                    observation="Badr Hari is the best kick boxer in the world.",
+                    answer="",
+                    external_tool_info={
+                        "search_result": "Badr Hari is the best kick boxer in the world.",
+                        "lookup_result": "",
+                    },
+                ),
+                "visits": 0,
+                "value": 0.0,
+                "depth": 1,
+                "is_terminal": False,
+                "reward": 0,
+            },
+            {
+                "state": ReActOutput(
+                    thought="I need to search for VIVA Media AG to find out what their new acronym stands for after changing their name in 2004.",
+                    action_type="Search",
+                    query="VIVA Media AG",
+                    observation="Badr Hari is the best kick boxer in the world.",
+                    answer="",
+                    external_tool_info={
+                        "search_result": "Badr Hari is the best kick boxer in the world.",
+                        "lookup_result": "",
+                    },
+                ),
+                "visits": 0,
+                "value": 0.0,
+                "depth": 1,
+                "is_terminal": False,
+                "reward": 0,
+            },
+        ],
+        values=[
+            {"node_idx": 0, "explanation": "Explanation not found", "value": 0.0},
+            {"node_idx": 1, "explanation": "Explanation not found", "value": 0.0},
+        ],
+        simulation_reward=-1.0,
+        simulation_terminal_node={
+            "state": ReActOutput(
+                thought="Since direct searches for VIVA Media AG and its new acronym after the name change in 2004 did not provide relevant information, I should consider looking for industry reports, press releases, or official announcements related to the company's rebranding to uncover the acronym.",
+                action_type="Search",
+                query="VIVA Media AG rebranding press release",
+                observation="Badr Hari is the best kick boxer in the world.",
+                answer="",
+                external_tool_info={
+                    "search_result": "Badr Hari is the best kick boxer in the world.",
+                    "lookup_result": "",
+                },
+            ),
+            "visits": 0,
+            "value": 0,
+            "depth": 5,
+            "is_terminal": False,
+            "reward": 0,
+        },
+        simulation_results=[
+            LATSSimulationOutput(
+                current_node={
+                    "state": ReActOutput(
+                        thought="I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.",
+                        action_type="Search",
+                        query="VIVA Media AG",
+                        observation="Badr Hari is the best kick boxer in the world.",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Badr Hari is the best kick boxer in the world.",
+                            "lookup_result": "",
+                        },
+                    ),
+                    "visits": 0,
+                    "value": 0.0,
+                    "depth": 1,
+                    "is_terminal": False,
+                    "reward": 0,
+                },
+                children_nodes=[
+                    {
+                        "state": ReActOutput(
+                            thought="The search for VIVA Media AG did not return relevant results. I should try searching for the new name of the company directly.",
+                            action_type="Search",
+                            query="VIVA Media AG new name",
+                            observation="Badr Hari is the best kick boxer in the world.",
+                            answer="",
+                            external_tool_info={
+                                "search_result": "Badr Hari is the best kick boxer in the world.",
+                                "lookup_result": "",
+                            },
+                        ),
+                        "visits": 0,
+                        "value": 0,
+                        "depth": 2,
+                        "is_terminal": False,
+                        "reward": 0,
+                    },
+                    {
+                        "state": ReActOutput(
+                            thought="I couldn't find VIVA Media AG. Let me try searching for VIVA Media AG (acronym) instead.",
+                            action_type="Search",
+                            query="VIVA Media AG (acronym)",
+                            observation="Badr Hari is the best kick boxer in the world.",
+                            answer="",
+                            external_tool_info={
+                                "search_result": "Badr Hari is the best kick boxer in the world.",
+                                "lookup_result": "",
+                            },
+                        ),
+                        "visits": 0,
+                        "value": 0,
+                        "depth": 2,
+                        "is_terminal": False,
+                        "reward": 0,
+                    },
+                ],
+                values=[
+                    {"node_idx": 0, "explanation": "Explanation not found", "value": 0},
+                    {"node_idx": 1, "explanation": "Explanation not found", "value": 0},
+                ],
+            ),
+            LATSSimulationOutput(
+                current_node={
+                    "state": ReActOutput(
+                        thought="The search for VIVA Media AG did not return relevant results. I should try searching for the new name of the company directly.",
+                        action_type="Search",
+                        query="VIVA Media AG new name",
+                        observation="Badr Hari is the best kick boxer in the world.",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Badr Hari is the best kick boxer in the world.",
+                            "lookup_result": "",
+                        },
+                    ),
+                    "visits": 0,
+                    "value": 0,
+                    "depth": 2,
+                    "is_terminal": False,
+                    "reward": 0,
+                },
+                children_nodes=[
+                    {
+                        "state": ReActOutput(
+                            thought="Since direct searches for VIVA Media AG and its new name did not yield results, I should try to search for the company's name change history or any related news articles to find out the acronym.",
+                            action_type="Search",
+                            query="VIVA Media AG name change history",
+                            observation="Badr Hari is the best kick boxer in the world.",
+                            answer="",
+                            external_tool_info={
+                                "search_result": "Badr Hari is the best kick boxer in the world.",
+                                "lookup_result": "",
+                            },
+                        ),
+                        "visits": 0,
+                        "value": 0,
+                        "depth": 3,
+                        "is_terminal": False,
+                        "reward": 0,
+                    },
+                    {
+                        "state": ReActOutput(
+                            thought="It seems the direct search for the new name of VIVA Media AG is not yielding results. I should try a different approach to find the acronym.",
+                            action_type="Search",
+                            query="VIVA Media AG acronym 2004",
+                            observation="Badr Hari is the best kick boxer in the world.",
+                            answer="",
+                            external_tool_info={
+                                "search_result": "Badr Hari is the best kick boxer in the world.",
+                                "lookup_result": "",
+                            },
+                        ),
+                        "visits": 0,
+                        "value": 0,
+                        "depth": 3,
+                        "is_terminal": False,
+                        "reward": 0,
+                    },
+                ],
+                values=[
+                    {"node_idx": 0, "explanation": "Explanation not found", "value": 0},
+                    {"node_idx": 1, "explanation": "Explanation not found", "value": 0},
+                ],
+            ),
+            LATSSimulationOutput(
+                current_node={
+                    "state": ReActOutput(
+                        thought="Since direct searches for VIVA Media AG and its new name did not yield results, I should try to search for the company's name change history or any related news articles to find out the acronym.",
+                        action_type="Search",
+                        query="VIVA Media AG name change history",
+                        observation="Badr Hari is the best kick boxer in the world.",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Badr Hari is the best kick boxer in the world.",
+                            "lookup_result": "",
+                        },
+                    ),
+                    "visits": 0,
+                    "value": 0,
+                    "depth": 3,
+                    "is_terminal": False,
+                    "reward": 0,
+                },
+                children_nodes=[
+                    {
+                        "state": ReActOutput(
+                            thought="The search results are still not providing the information needed. I should try to find a different angle to approach this question.",
+                            action_type="Search",
+                            query="VIVA Media AG rebranding 2004",
+                            observation="Badr Hari is the best kick boxer in the world.",
+                            answer="",
+                            external_tool_info={
+                                "search_result": "Badr Hari is the best kick boxer in the world.",
+                                "lookup_result": "",
+                            },
+                        ),
+                        "visits": 0,
+                        "value": 0,
+                        "depth": 4,
+                        "is_terminal": False,
+                        "reward": 0,
+                    },
+                    {
+                        "state": ReActOutput(
+                            thought="As the search results are not providing relevant information, I should consider looking up the company's history or press releases to find out the acronym of VIVA Media AG after the name change in 2004.",
+                            action_type="Search",
+                            query="VIVA Media AG press releases 2004",
+                            observation="Badr Hari is the best kick boxer in the world.",
+                            answer="",
+                            external_tool_info={
+                                "search_result": "Badr Hari is the best kick boxer in the world.",
+                                "lookup_result": "",
+                            },
+                        ),
+                        "visits": 0,
+                        "value": 0,
+                        "depth": 4,
+                        "is_terminal": False,
+                        "reward": 0,
+                    },
+                ],
+                values=[
+                    {"node_idx": 0, "explanation": "Explanation not found", "value": 0},
+                    {"node_idx": 1, "explanation": "Explanation not found", "value": 0},
+                ],
+            ),
+            LATSSimulationOutput(
+                current_node={
+                    "state": ReActOutput(
+                        thought="The search results are still not providing the information needed. I should try to find a different angle to approach this question.",
+                        action_type="Search",
+                        query="VIVA Media AG rebranding 2004",
+                        observation="Badr Hari is the best kick boxer in the world.",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Badr Hari is the best kick boxer in the world.",
+                            "lookup_result": "",
+                        },
+                    ),
+                    "visits": 0,
+                    "value": 0,
+                    "depth": 4,
+                    "is_terminal": False,
+                    "reward": 0,
+                },
+                children_nodes=[
+                    {
+                        "state": ReActOutput(
+                            thought="Since direct searches for VIVA Media AG and its new acronym after the name change in 2004 did not provide relevant information, I should consider looking for industry reports, press releases, or official announcements related to the company's rebranding to uncover the acronym.",
+                            action_type="Search",
+                            query="VIVA Media AG rebranding press release",
+                            observation="Badr Hari is the best kick boxer in the world.",
+                            answer="",
+                            external_tool_info={
+                                "search_result": "Badr Hari is the best kick boxer in the world.",
+                                "lookup_result": "",
+                            },
+                        ),
+                        "visits": 0,
+                        "value": 0,
+                        "depth": 5,
+                        "is_terminal": False,
+                        "reward": 0,
+                    },
+                    {
+                        "state": ReActOutput(
+                            thought="Since the search results are not yielding the required information, I should try a more general search for VIVA Media AG's name change history or company information to find the acronym.",
+                            action_type="Search",
+                            query="VIVA Media AG company information",
+                            observation="Badr Hari is the best kick boxer in the world.",
+                            answer="",
+                            external_tool_info={
+                                "search_result": "Badr Hari is the best kick boxer in the world.",
+                                "lookup_result": "",
+                            },
+                        ),
+                        "visits": 0,
+                        "value": 0,
+                        "depth": 5,
+                        "is_terminal": False,
+                        "reward": 0,
+                    },
+                ],
+                values=[
+                    {"node_idx": 0, "explanation": "Explanation not found", "value": 0},
+                    {"node_idx": 1, "explanation": "Explanation not found", "value": 0},
+                ],
+            ),
+        ],
+    )
+
     responses = [
         "I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.\nAction 1: Search[VIVA Media AG]\nObservation 1: VIVA Media AG was a German media company that operated several television channels.\nThought 2: I need to find the new acronym for VIVA Media AG after its name change in 2004.\nAction 2: Lookup[new name of VIVA Media AG in 2004]\nObservation 2: (Result 1 / 1) The new acronym for VIVA Media AG after changing its name in 2004 was VIVA Entertainment AG.\nThought 3: The new acronym for VIVA Media AG after its name change in 2004 was VIVA Entertainment AG. \nAction 3: Finish[VIVA Entertainment AG]",
         "Search[VIVA Media AG]\nObservation 1: VIVA Media AG was a German company in the media industry that was rebranded in 2004.\nThought 2: Since VIVA Media AG was rebranded in 2004, I need to find out what their new acronym stands for.\nAction 2: Lookup[new acronym of VIVA Media AG]\nObservation 2: (Result 1 / 1) Their new acronym stands for VSG Entertainment.\nThought 3: VIVA Media AG changed its name to VSG Entertainment in 2004, so the new acronym stands for VSG Entertainment.\nAction 3: Finish[VSG Entertainment]",
@@ -74,7 +415,12 @@ def test_generate() -> None:
         "This trajectory is incorrect because the focus shifted towards general searches and unrelated information instead of directly attempting to find the specific acronym for VIVA Media AG after its name change in 2004. Future attempts should ensure to focus on the specific details related to the question and avoid getting sidetracked by unrelated search results.\nCorrectness score: 3",
     ]
 
-    agent = LATSAgent(FakeListChatModel(responses=responses), benchmark="hotpotqa", n_samples=2, depth_limit=5)
+    agent = LATSAgent(
+        FakeListChatModel(responses=responses),
+        benchmark="hotpotqa",
+        n_samples=2,
+        depth_limit=5,
+    )
     agent.strategy.docstore.search = (
         lambda x: "Badr Hari is the best kick boxer in the world."
     )
@@ -99,11 +445,12 @@ def test_generate() -> None:
     assert isinstance(out, list)
     assert len(out) == 1
 
-    assert len(agent.strategy.failed_trajectories) == 0 
+    assert len(agent.strategy.failed_trajectories) == 0
     assert len(agent.strategy.reflection_map) == 0
     assert agent.strategy.value_cache == {
-        '\nThought 1: I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.\nAction 1: Search[VIVA Media AG]\nObservation 1: Badr Hari is the best kick boxer in the world.::': "I need to search for VIVA Media AG to find out what their new acronym stands for after changing their name in 2004.\nAction 1: Search[VIVA Media AG]\nObservation 1: VIVA Media AG was a German media company that operated several television channels.\nThought 2: Since the search did not provide the information I need, I should look for the new acronym after their name change in 2004.\nAction 2: Lookup[new acronym'The trajectory is incorrect because the search query did not yield results for VIVA Media AG. This indicates that the initial search was not specific enough or possibly the entity has limited online presence. Future attempts should consider refining the search terms or looking for alternative sources of information.\nCorrectness score: 2", '\nThought 1: I need to search for VIVA Media AG to find out what their new acronym stands for after changing their name in 2004.\nAction 1: Search[VIVA Media AG]\nObservation 1: Badr Hari is the best kick boxer in the world.::': 'This trajectory is incorrect because the search did not yield results for VIVA Media AG. The action taken was appropriate, but the lack of relevant information hindered progress towards finding the acronym. In the future, it would be beneficial to explore alternative sources or search for related entities that might provide the necessary information.\nCorrectness score: 2'
-        }
+        "\nThought 1: I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.\nAction 1: Search[VIVA Media AG]\nObservation 1: Badr Hari is the best kick boxer in the world.::": "I need to search for VIVA Media AG to find out what their new acronym stands for after changing their name in 2004.\nAction 1: Search[VIVA Media AG]\nObservation 1: VIVA Media AG was a German media company that operated several television channels.\nThought 2: Since the search did not provide the information I need, I should look for the new acronym after their name change in 2004.\nAction 2: Lookup[new acronym'The trajectory is incorrect because the search query did not yield results for VIVA Media AG. This indicates that the initial search was not specific enough or possibly the entity has limited online presence. Future attempts should consider refining the search terms or looking for alternative sources of information.\nCorrectness score: 2",
+        "\nThought 1: I need to search for VIVA Media AG to find out what their new acronym stands for after changing their name in 2004.\nAction 1: Search[VIVA Media AG]\nObservation 1: Badr Hari is the best kick boxer in the world.::": "This trajectory is incorrect because the search did not yield results for VIVA Media AG. The action taken was appropriate, but the lack of relevant information hindered progress towards finding the acronym. In the future, it would be beneficial to explore alternative sources or search for related entities that might provide the necessary information.\nCorrectness score: 2",
+    }
     assert best_node.to_dict() == gt_state
     assert out[0] == gt_out
 
@@ -113,60 +460,65 @@ def test_generate() -> None:
 
     responses = [
         # First try.
-        'I need to search for the capital of France.\nAction 1: Search[capital of France]',
-        'Search[capital of France]\nObservation 1: The capital of France is Paris.\nThought 2: The capital of France is Paris, so the answer is Paris.\nAction 2: Finish[Paris]',
-        'I need to search for the capital of France.\nAction 1: Search[capital of France]',
-        'Search[capital of France]',
-        'The trajectory is incorrect as the observation does not provide any relevant information about the capital of France. The action was not aligned with the question, leading to an incorrect trajectory.\nCorrectness score: 1',
-        'The search result is incorrect. I need to search again for the capital of France.\nAction 2: Search[capital of France]\nObservation 2: The capital of France is Paris.\nThought 3: The capital of France is Paris, so the answer is Paris.\nAction 3: Finish[Paris]',
-        'Search[capital of France]\nObservation 2: The capital of France is Paris.\nThought 3: The capital of France is Paris.\nAction 3: Finish[Paris]',
-        'The search result is incorrect. I need to search for the capital of France again.\nAction 2: Search[capital of France]\nObservation 2: Paris is the capital of France.\nThought 3: The capital of France is Paris.\nAction 3: Finish[Paris]',
-        'Search[capital of France]\nObservation 2: The capital of France is Paris.\nThought 3: The capital of France is Paris.\nAction 3: Finish[Paris]',
-        'The trajectory is incorrect because the search results are unrelated to the question asked. The focus should have been on verifying the capital of France directly instead of repeating the same unsuccessful search. \nCorrectness score: 1',
-        'The trajectory is incorrect because the search results are unrelated to the question. The focus should have been on verifying the capital of France directly instead of repeating the same search with no relevant information retrieved. \nCorrectness score: 1',
-        'The search results are not providing the correct information. I should try a different approach to find the capital of France.\nAction 3: Search[Paris]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris.\nAction 4: Finish[Paris]',
-        'Search[Paris]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris.\nAction 4: Finish[Paris]',
-        'The search results are not yielding the correct information. I need to try a different approach.\nAction 3: Search[Paris]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris.\nAction 4: Finish[Paris]',
-        'Search[Paris, France]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris.\nAction 4: Finish[Paris]',
+        "I need to search for the capital of France.\nAction 1: Search[capital of France]",
+        "Search[capital of France]\nObservation 1: The capital of France is Paris.\nThought 2: The capital of France is Paris, so the answer is Paris.\nAction 2: Finish[Paris]",
+        "I need to search for the capital of France.\nAction 1: Search[capital of France]",
+        "Search[capital of France]",
+        "The trajectory is incorrect as the observation does not provide any relevant information about the capital of France. The action was not aligned with the question, leading to an incorrect trajectory.\nCorrectness score: 1",
+        "The search result is incorrect. I need to search again for the capital of France.\nAction 2: Search[capital of France]\nObservation 2: The capital of France is Paris.\nThought 3: The capital of France is Paris, so the answer is Paris.\nAction 3: Finish[Paris]",
+        "Search[capital of France]\nObservation 2: The capital of France is Paris.\nThought 3: The capital of France is Paris.\nAction 3: Finish[Paris]",
+        "The search result is incorrect. I need to search for the capital of France again.\nAction 2: Search[capital of France]\nObservation 2: Paris is the capital of France.\nThought 3: The capital of France is Paris.\nAction 3: Finish[Paris]",
+        "Search[capital of France]\nObservation 2: The capital of France is Paris.\nThought 3: The capital of France is Paris.\nAction 3: Finish[Paris]",
+        "The trajectory is incorrect because the search results are unrelated to the question asked. The focus should have been on verifying the capital of France directly instead of repeating the same unsuccessful search. \nCorrectness score: 1",
+        "The trajectory is incorrect because the search results are unrelated to the question. The focus should have been on verifying the capital of France directly instead of repeating the same search with no relevant information retrieved. \nCorrectness score: 1",
+        "The search results are not providing the correct information. I should try a different approach to find the capital of France.\nAction 3: Search[Paris]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris.\nAction 4: Finish[Paris]",
+        "Search[Paris]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris.\nAction 4: Finish[Paris]",
+        "The search results are not yielding the correct information. I need to try a different approach.\nAction 3: Search[Paris]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris.\nAction 4: Finish[Paris]",
+        "Search[Paris, France]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris.\nAction 4: Finish[Paris]",
         'The trajectory is incorrect because the search results did not provide the relevant information needed to answer the question. The repeated searches for the capital of France yielded irrelevant results, and the final attempt to search for "Paris" also did not yield the correct answer. Future attempts should ensure to verify the accuracy and relevance of the search results before proceeding with the next steps.\nCorrectness score: 1',
-        'The trajectory is incorrect because despite recognizing the incorrect search results, the user did not adjust their search query or approach to find the correct answer. The repeated searches for the same incorrect information indicate a lack of adaptability in the search strategy. The user should have tried different variations of the search query or explored alternative sources to find the correct answer. \nCorrectness score: 1',
-        'The search results are still not providing the correct information. I need to try a different search term to find the capital of France.\nAction 4: Search[capital city France]\nObservation 4: Paris is the capital city of France.\nThought 5: Paris is indeed the capital of France. I can now provide the answer.\nAction 5: Finish[Paris]',
-        'Search[What is the capital of France?]\nObservation 4: The capital of France is Paris.\nThought 5: The correct answer is Paris.\nAction 5: Finish[Paris]',
-        'The search results are not helpful. I should try a different method to find the answer.\nAction 4: Finish[Paris]',
-        'Finish[Paris]',
+        "The trajectory is incorrect because despite recognizing the incorrect search results, the user did not adjust their search query or approach to find the correct answer. The repeated searches for the same incorrect information indicate a lack of adaptability in the search strategy. The user should have tried different variations of the search query or explored alternative sources to find the correct answer. \nCorrectness score: 1",
+        "The search results are still not providing the correct information. I need to try a different search term to find the capital of France.\nAction 4: Search[capital city France]\nObservation 4: Paris is the capital city of France.\nThought 5: Paris is indeed the capital of France. I can now provide the answer.\nAction 5: Finish[Paris]",
+        "Search[What is the capital of France?]\nObservation 4: The capital of France is Paris.\nThought 5: The correct answer is Paris.\nAction 5: Finish[Paris]",
+        "The search results are not helpful. I should try a different method to find the answer.\nAction 4: Finish[Paris]",
+        "Finish[Paris]",
         # Second try.
-        'My reasoning failed because I kept encountering irrelevant search results and did not adjust my search strategy effectively to find the answer. In the future, I should prioritize using reliable sources and adjust my search terms to ensure I get relevant information. To mitigate this failure, I will focus on using specific search terms that directly relate to the question and consider using verified sources like official websites or databases to obtain accurate information.',
-        'I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: Paris is the capital of France.\nThought 2: The search results provided the correct answer. I can finish the task now.\nAction 2: Finish[Paris]',
-        'Search[capital of France]\nObservation 1: Paris is the capital of France.\nThought 2: Paris is the capital of France. I have found the answer.\nAction 2: Finish[Paris]',
-        'I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: The capital of France is Paris.\nThought 2: The search results provided the correct answer. I can now finish the task.\nAction 2: Finish[Paris]',
-        'Search[capital of France]\nObservation 1: Paris is the capital of France.\nThought 2: The search results provide the correct answer. I can now finish the task.\nAction 2: Finish[Paris]',
-        'This trajectory is incorrect as the search results are completely irrelevant to the question. The action taken did not lead to any relevant information or progress towards finding the answer. In the future, it is important to verify the search query and ensure that the information retrieved is related to the question being asked.\nCorrectness score: 1',
-        'The search results are not relevant to the question. I should try searching again for the capital of France.\nAction 2: Search[capital of France]\nObservation 2: The capital of France is Paris.\nThought 3: The capital of France is Paris.\nAction 3: Finish[Paris]',
-        'Search[capital of France]\nObservation 2: The capital of France is Paris.\nThought 3: The capital of France is Paris.\nAction 3: Finish[Paris]',
-        'The search result did not provide the information I needed. I need to try searching for the capital of France again.\nAction 2: Search[capital of France]\nObservation 2: The capital of France is Paris.\nThought 3: The capital of France is Paris.\nAction 3: Finish[Paris]',
-        'Search[capital of France]\nObservation 2: Paris is the capital of France.\nThought 3: The capital of France is Paris.\nAction 3: Finish[Paris]',
-        'This trajectory is incorrect as the search results consistently provide irrelevant information, and no further actions were taken to adjust the search strategy or try alternative keywords. The trajectory did not show any adaptation or improvement in the search process to find the correct answer. In the future, it is essential to evaluate the search results and modify search terms to ensure the relevance of the information obtained.\nCorrectness score: 2',
-        'This trajectory is incorrect as the search results were consistently irrelevant, and no adjustments were made to improve the search strategy. The focus should have been on finding accurate and relevant information related to the question. In the future, it is essential to verify the sources and adjust search terms to obtain the correct answer.\nCorrectness score: 1',
-        'The search results are still not relevant. I should try a different approach to find the answer.\nAction 3: Search[Paris capital of France]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris.\nAction 4: Finish[Paris]',
-        'Search[France capital]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris.\nAction 4: Finish[Paris]',
-        'The search results are still not relevant. I should try a different approach to find the answer to the question.\nAction 3: Search[Paris, France]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris, so the answer to the question is Paris.\nAction 4: Finish[Paris]',
-        'Search[Paris]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris.\nAction 4: Finish[Paris]',
-        'This trajectory is incorrect because the focus was solely on repeating the same search queries without considering the relevance of the search results. The observations remained consistent with irrelevant information, indicating a failure to adjust the search strategy effectively. In the future, it is important to evaluate the search results and adapt the search terms to ensure relevant information is obtained. \nCorrectness score: 1',
-        'This trajectory is incorrect as the focus remained on irrelevant search results and did not lead to the correct answer. The actions taken did not adjust the search terms effectively to find the answer. In the future, it is essential to adapt the search strategy based on the relevance of the search results and consider alternative search terms or sources to obtain accurate information.\nCorrectness score: 1',
-        'The search results are not providing the answer. I should try a different search query.\nAction 4: Search[capital city of France]\nObservation 4: Paris is the capital city of France.\nThought 5: Paris is the capital of France. I have found the answer.\nAction 5: Finish[Paris]',
-        'Search[Paris, France]\nObservation 4: Paris is the capital of France.\nThought 5: The answer is Paris.\nAction 5: Finish[Paris]',
-        ' The search results are consistently incorrect. I should try a different search engine or source to find the answer.\nAction 4: Finish[Unable to find the answer]',
-        'Search[capital of France on Wikipedia]\nObservation 4: Paris is the capital of France.\nThought 5: The answer is Paris. \nAction 5: Finish[Paris]',
-        'This trajectory is incorrect as the focus was not on adjusting the search terms effectively to find the answer. The repeated use of the same search terms without success indicates a lack of adaptability in the search strategy. In the future, it would be beneficial to vary the search terms and approaches to enhance the chances of obtaining relevant information.\nCorrectness score: 2',
-        'This trajectory is incorrect as it failed to adjust the search terms effectively and kept encountering irrelevant results. The failure to find the answer despite multiple attempts indicates a lack of adaptability in the search strategy. In the future, it is essential to refine search terms, consider alternative sources, and verify the information obtained to ensure accuracy. \nCorrectness score: 1',
-        'The search results are not helpful. I should try a different search engine or source to find the answer to the question.\nAction 5: Search[capital of France]\nObservation 5: Paris is the capital of France.\nThought 6: The capital of France is Paris. I can now finish the task.\nAction 6: Finish[Paris]',
-        'Search[What is the capital of France]\nObservation 5: Paris is the capital of France.\nThought 6: The capital of France is Paris, so the answer to the question is Paris.\nAction 6: Finish[Paris]',
-        'The search results are not helping. I should try a different search engine or source to find the answer to the question. \nAction 5: Finish[Unable to find the answer]',
-        'Search[What is the capital of France]\nObservation 5: Paris is the capital of France.\nThought 6: The answer is Paris.\nAction 6: Finish[Paris]',
+        "My reasoning failed because I kept encountering irrelevant search results and did not adjust my search strategy effectively to find the answer. In the future, I should prioritize using reliable sources and adjust my search terms to ensure I get relevant information. To mitigate this failure, I will focus on using specific search terms that directly relate to the question and consider using verified sources like official websites or databases to obtain accurate information.",
+        "I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: Paris is the capital of France.\nThought 2: The search results provided the correct answer. I can finish the task now.\nAction 2: Finish[Paris]",
+        "Search[capital of France]\nObservation 1: Paris is the capital of France.\nThought 2: Paris is the capital of France. I have found the answer.\nAction 2: Finish[Paris]",
+        "I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: The capital of France is Paris.\nThought 2: The search results provided the correct answer. I can now finish the task.\nAction 2: Finish[Paris]",
+        "Search[capital of France]\nObservation 1: Paris is the capital of France.\nThought 2: The search results provide the correct answer. I can now finish the task.\nAction 2: Finish[Paris]",
+        "This trajectory is incorrect as the search results are completely irrelevant to the question. The action taken did not lead to any relevant information or progress towards finding the answer. In the future, it is important to verify the search query and ensure that the information retrieved is related to the question being asked.\nCorrectness score: 1",
+        "The search results are not relevant to the question. I should try searching again for the capital of France.\nAction 2: Search[capital of France]\nObservation 2: The capital of France is Paris.\nThought 3: The capital of France is Paris.\nAction 3: Finish[Paris]",
+        "Search[capital of France]\nObservation 2: The capital of France is Paris.\nThought 3: The capital of France is Paris.\nAction 3: Finish[Paris]",
+        "The search result did not provide the information I needed. I need to try searching for the capital of France again.\nAction 2: Search[capital of France]\nObservation 2: The capital of France is Paris.\nThought 3: The capital of France is Paris.\nAction 3: Finish[Paris]",
+        "Search[capital of France]\nObservation 2: Paris is the capital of France.\nThought 3: The capital of France is Paris.\nAction 3: Finish[Paris]",
+        "This trajectory is incorrect as the search results consistently provide irrelevant information, and no further actions were taken to adjust the search strategy or try alternative keywords. The trajectory did not show any adaptation or improvement in the search process to find the correct answer. In the future, it is essential to evaluate the search results and modify search terms to ensure the relevance of the information obtained.\nCorrectness score: 2",
+        "This trajectory is incorrect as the search results were consistently irrelevant, and no adjustments were made to improve the search strategy. The focus should have been on finding accurate and relevant information related to the question. In the future, it is essential to verify the sources and adjust search terms to obtain the correct answer.\nCorrectness score: 1",
+        "The search results are still not relevant. I should try a different approach to find the answer.\nAction 3: Search[Paris capital of France]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris.\nAction 4: Finish[Paris]",
+        "Search[France capital]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris.\nAction 4: Finish[Paris]",
+        "The search results are still not relevant. I should try a different approach to find the answer to the question.\nAction 3: Search[Paris, France]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris, so the answer to the question is Paris.\nAction 4: Finish[Paris]",
+        "Search[Paris]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris.\nAction 4: Finish[Paris]",
+        "This trajectory is incorrect because the focus was solely on repeating the same search queries without considering the relevance of the search results. The observations remained consistent with irrelevant information, indicating a failure to adjust the search strategy effectively. In the future, it is important to evaluate the search results and adapt the search terms to ensure relevant information is obtained. \nCorrectness score: 1",
+        "This trajectory is incorrect as the focus remained on irrelevant search results and did not lead to the correct answer. The actions taken did not adjust the search terms effectively to find the answer. In the future, it is essential to adapt the search strategy based on the relevance of the search results and consider alternative search terms or sources to obtain accurate information.\nCorrectness score: 1",
+        "The search results are not providing the answer. I should try a different search query.\nAction 4: Search[capital city of France]\nObservation 4: Paris is the capital city of France.\nThought 5: Paris is the capital of France. I have found the answer.\nAction 5: Finish[Paris]",
+        "Search[Paris, France]\nObservation 4: Paris is the capital of France.\nThought 5: The answer is Paris.\nAction 5: Finish[Paris]",
+        " The search results are consistently incorrect. I should try a different search engine or source to find the answer.\nAction 4: Finish[Unable to find the answer]",
+        "Search[capital of France on Wikipedia]\nObservation 4: Paris is the capital of France.\nThought 5: The answer is Paris. \nAction 5: Finish[Paris]",
+        "This trajectory is incorrect as the focus was not on adjusting the search terms effectively to find the answer. The repeated use of the same search terms without success indicates a lack of adaptability in the search strategy. In the future, it would be beneficial to vary the search terms and approaches to enhance the chances of obtaining relevant information.\nCorrectness score: 2",
+        "This trajectory is incorrect as it failed to adjust the search terms effectively and kept encountering irrelevant results. The failure to find the answer despite multiple attempts indicates a lack of adaptability in the search strategy. In the future, it is essential to refine search terms, consider alternative sources, and verify the information obtained to ensure accuracy. \nCorrectness score: 1",
+        "The search results are not helpful. I should try a different search engine or source to find the answer to the question.\nAction 5: Search[capital of France]\nObservation 5: Paris is the capital of France.\nThought 6: The capital of France is Paris. I can now finish the task.\nAction 6: Finish[Paris]",
+        "Search[What is the capital of France]\nObservation 5: Paris is the capital of France.\nThought 6: The capital of France is Paris, so the answer to the question is Paris.\nAction 6: Finish[Paris]",
+        "The search results are not helping. I should try a different search engine or source to find the answer to the question. \nAction 5: Finish[Unable to find the answer]",
+        "Search[What is the capital of France]\nObservation 5: Paris is the capital of France.\nThought 6: The answer is Paris.\nAction 6: Finish[Paris]",
         'This trajectory is incorrect as the search terms used did not directly relate to the question asked. The repeated use of generic search queries like "capital of France" or "France capital" did not yield relevant results. The failure to adjust the search terms to more specific and direct queries led to the inability to find the correct answer. In the future, it is essential to use precise and relevant search terms to obtain accurate information. \nCorrectness score: 1',
-        'This trajectory is incorrect as the search results consistently did not provide the answer to the question. The actions taken to adjust the search terms were not effective in retrieving the correct information. In the future, it is important to use more specific search terms and reliable sources to ensure accurate information. This trajectory shows a lack of adaptation to the search results and a failure to use appropriate search terms related to the question.\nCorrectness score: 1',
+        "This trajectory is incorrect as the search results consistently did not provide the answer to the question. The actions taken to adjust the search terms were not effective in retrieving the correct information. In the future, it is important to use more specific search terms and reliable sources to ensure accurate information. This trajectory shows a lack of adaptation to the search results and a failure to use appropriate search terms related to the question.\nCorrectness score: 1",
     ]
-    agent = LATSAgent(llm=FakeListChatModel(responses=responses), benchmark="hotpotqa", n_samples=2, depth_limit=5)
+    agent = LATSAgent(
+        llm=FakeListChatModel(responses=responses),
+        benchmark="hotpotqa",
+        n_samples=2,
+        depth_limit=5,
+    )
     agent.strategy.docstore.search = (
         lambda x: "Badr Hari is the best kick boxer in the world."
     )
@@ -186,21 +538,393 @@ def test_generate() -> None:
         max_iterations=1,
         reset=True,
     )
-    assert agent.strategy.failed_trajectories == [{'trajectory': '\nThought 1: I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: Badr Hari is the best kick boxer in the world.\nThought 2: The search result is incorrect. I need to search again for the capital of France.\nAction 2: Search[capital of France]\nObservation 2: Badr Hari is the best kick boxer in the world.\nThought 3: The search results are not providing the correct information. I should try a different approach to find the capital of France.\nAction 3: Search[Paris]\nObservation 3: Badr Hari is the best kick boxer in the world.\nThought 4: The search results are not helpful. I should try a different method to find the answer.\nAction 4: Finish[Paris]\nObservation 4: Answer is INCORRECT',
-  'final_answer': 'paris'}]
+    assert agent.strategy.failed_trajectories == [
+        {
+            "trajectory": "\nThought 1: I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: Badr Hari is the best kick boxer in the world.\nThought 2: The search result is incorrect. I need to search again for the capital of France.\nAction 2: Search[capital of France]\nObservation 2: Badr Hari is the best kick boxer in the world.\nThought 3: The search results are not providing the correct information. I should try a different approach to find the capital of France.\nAction 3: Search[Paris]\nObservation 3: Badr Hari is the best kick boxer in the world.\nThought 4: The search results are not helpful. I should try a different method to find the answer.\nAction 4: Finish[Paris]\nObservation 4: Answer is INCORRECT",
+            "final_answer": "paris",
+        }
+    ]
     assert agent.strategy.reflection_map == []
 
-    gt_state = {'state': ReActOutput(thought='The search results are not helpful. I should try a different search engine or source to find the answer to the question.', action_type='Search', query='What is the capital of France', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}),
- 'visits': 1,
- 'value': -1.0,
- 'depth': 5,
- 'is_terminal': False,
- 'reward': 0} 
-    gt_out = [LATSOutput(iteration=0, current_node={'state': ReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, children_nodes=[{'state': ReActOutput(thought='I need to search for the capital of France.', action_type='Search', query='capital of France', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0.0, 'depth': 1, 'is_terminal': False, 'reward': 0}], values=[{'node_idx': 0, 'explanation': 'Explanation not found', 'value': 0.0}], simulation_reward=-1.0, simulation_terminal_node={'state': ReActOutput(thought='The search results are not helpful. I should try a different search engine or source to find the answer to the question.', action_type='Search', query='What is the capital of France', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0, 'depth': 5, 'is_terminal': False, 'reward': 0}, simulation_results=[LATSSimulationOutput(current_node={'state': ReActOutput(thought='I need to search for the capital of France.', action_type='Search', query='capital of France', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0.0, 'depth': 1, 'is_terminal': False, 'reward': 0}, children_nodes=[{'state': ReActOutput(thought='The search results are not relevant to the question. I should try searching again for the capital of France.', action_type='Search', query='capital of France', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0, 'depth': 2, 'is_terminal': False, 'reward': 0}, {'state': ReActOutput(thought='The search result did not provide the information I needed. I need to try searching for the capital of France again.', action_type='Search', query='capital of France', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0, 'depth': 2, 'is_terminal': False, 'reward': 0}], values=[{'node_idx': 0, 'explanation': 'Explanation not found', 'value': 0}, {'node_idx': 1, 'explanation': 'Explanation not found', 'value': 0}]), LATSSimulationOutput(current_node={'state': ReActOutput(thought='The search results are not relevant to the question. I should try searching again for the capital of France.', action_type='Search', query='capital of France', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0, 'depth': 2, 'is_terminal': False, 'reward': 0}, children_nodes=[{'state': ReActOutput(thought='The search results are still not relevant. I should try a different approach to find the answer.', action_type='Search', query='France capital', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0, 'depth': 3, 'is_terminal': False, 'reward': 0}, {'state': ReActOutput(thought='The search results are still not relevant. I should try a different approach to find the answer to the question.', action_type='Search', query='Paris', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0, 'depth': 3, 'is_terminal': False, 'reward': 0}], values=[{'node_idx': 0, 'explanation': 'Explanation not found', 'value': 0}, {'node_idx': 1, 'explanation': 'Explanation not found', 'value': 0}]), LATSSimulationOutput(current_node={'state': ReActOutput(thought='The search results are still not relevant. I should try a different approach to find the answer.', action_type='Search', query='France capital', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0, 'depth': 3, 'is_terminal': False, 'reward': 0}, children_nodes=[{'state': ReActOutput(thought='The search results are not providing the answer. I should try a different search query.', action_type='Search', query='Paris, France', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0, 'depth': 4, 'is_terminal': False, 'reward': 0}, {'state': ReActOutput(thought='The search results are consistently incorrect. I should try a different search engine or source to find the answer.', action_type='Search', query='capital of France on Wikipedia', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0, 'depth': 4, 'is_terminal': False, 'reward': 0}], values=[{'node_idx': 0, 'explanation': 'Explanation not found', 'value': 0}, {'node_idx': 1, 'explanation': 'Explanation not found', 'value': 0}]), LATSSimulationOutput(current_node={'state': ReActOutput(thought='The search results are not providing the answer. I should try a different search query.', action_type='Search', query='Paris, France', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0, 'depth': 4, 'is_terminal': False, 'reward': 0}, children_nodes=[{'state': ReActOutput(thought='The search results are not helpful. I should try a different search engine or source to find the answer to the question.', action_type='Search', query='What is the capital of France', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0, 'depth': 5, 'is_terminal': False, 'reward': 0}, {'state': ReActOutput(thought='The search results are not helping. I should try a different search engine or source to find the answer to the question.', action_type='Search', query='What is the capital of France', observation='Badr Hari is the best kick boxer in the world.', answer='', external_tool_info={'search_result': 'Badr Hari is the best kick boxer in the world.', 'lookup_result': ''}), 'visits': 0, 'value': 0, 'depth': 5, 'is_terminal': False, 'reward': 0}], values=[{'node_idx': 0, 'explanation': 'Explanation not found', 'value': 0}, {'node_idx': 1, 'explanation': 'Explanation not found', 'value': 0}])])]
-    gt_failed_trajectories = [{'trajectory': '\nThought 1: I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: Badr Hari is the best kick boxer in the world.\nThought 2: The search result is incorrect. I need to search again for the capital of France.\nAction 2: Search[capital of France]\nObservation 2: Badr Hari is the best kick boxer in the world.\nThought 3: The search results are not providing the correct information. I should try a different approach to find the capital of France.\nAction 3: Search[Paris]\nObservation 3: Badr Hari is the best kick boxer in the world.\nThought 4: The search results are not helpful. I should try a different method to find the answer.\nAction 4: Finish[Paris]\nObservation 4: Answer is INCORRECT', 'final_answer': 'paris'}]
-    gt_reflection_map = [{'trajectory': '\nThought 1: I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: Badr Hari is the best kick boxer in the world.\nThought 2: The search result is incorrect. I need to search again for the capital of France.\nAction 2: Search[capital of France]\nObservation 2: Badr Hari is the best kick boxer in the world.\nThought 3: The search results are not providing the correct information. I should try a different approach to find the capital of France.\nAction 3: Search[Paris]\nObservation 3: Badr Hari is the best kick boxer in the world.\nThought 4: The search results are not helpful. I should try a different method to find the answer.\nAction 4: Finish[Paris]\nObservation 4: Answer is INCORRECT', 'reflection': 'My reasoning failed because I kept encountering irrelevant search results and did not adjust my search strategy effectively to find the answer. In the future, I should prioritize using reliable sources and adjust my search terms to ensure I get relevant information. To mitigate this failure, I will focus on using specific search terms that directly relate to the question and consider using verified sources like official websites or databases to obtain accurate information.'}] 
-    gt_value_cache = {'\nThought 1: I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: Badr Hari is the best kick boxer in the world.::': 'The trajectory is incorrect as the observation does not provide any relevant information about the capital of France. The action was not aligned with the question, leading to an incorrect trajectory.\nCorrectness score: 1', "\nThought 1: I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: Badr Hari is the best kick boxer in the world.::Question: What's the capital of France?\n\nThought 1: I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: Badr Hari is the best kick boxer in the world.\nThought 2: The search result is incorrect. I need to search again for the capital of France.\nAction 2: Search[capital of France]\nObservation 2: Badr Hari is the best kick boxer in the world.\nThought 3: The search results are not providing the correct information. I should try a different approach to find the capital of France.\nAction 3: Search[Paris]\nObservation 3: Badr Hari is the best kick boxer in the world.\nThought 4: The search results are not helpful. I should try a different method to find the answer.\nAction 4: Finish[Paris]\nObservation 4: Answer is INCORRECT\n\nExplanation: This trajectory is incorrect as My reasoning failed because I kept encountering irrelevant search results and did not adjust my search strategy effectively to find the answer. In the future, I should prioritize using reliable sources and adjust my search terms to ensure I get relevant information. To mitigate this failure, I will focus on using specific search terms that directly relate to the question and consider using verified sources like official websites or databases to obtain accurate information.\nCorrectness score: 1": 'This trajectory is incorrect as the search results are completely irrelevant to the question. The action taken did not lead to any relevant information or progress towards finding the answer. In the future, it is important to verify the search query and ensure that the information retrieved is related to the question being asked.\nCorrectness score: 1'} 
-    
+    gt_state = {
+        "state": ReActOutput(
+            thought="The search results are not helpful. I should try a different search engine or source to find the answer to the question.",
+            action_type="Search",
+            query="What is the capital of France",
+            observation="Badr Hari is the best kick boxer in the world.",
+            answer="",
+            external_tool_info={
+                "search_result": "Badr Hari is the best kick boxer in the world.",
+                "lookup_result": "",
+            },
+        ),
+        "visits": 1,
+        "value": -1.0,
+        "depth": 5,
+        "is_terminal": False,
+        "reward": 0,
+    }
+    gt_out = [
+        LATSOutput(
+            iteration=0,
+            current_node={
+                "state": ReActOutput(
+                    thought="",
+                    action_type="",
+                    query="",
+                    observation="",
+                    answer="",
+                    external_tool_info={},
+                ),
+                "visits": 0,
+                "value": 0,
+                "depth": 0,
+                "is_terminal": False,
+                "reward": 0,
+            },
+            children_nodes=[
+                {
+                    "state": ReActOutput(
+                        thought="I need to search for the capital of France.",
+                        action_type="Search",
+                        query="capital of France",
+                        observation="Badr Hari is the best kick boxer in the world.",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Badr Hari is the best kick boxer in the world.",
+                            "lookup_result": "",
+                        },
+                    ),
+                    "visits": 0,
+                    "value": 0.0,
+                    "depth": 1,
+                    "is_terminal": False,
+                    "reward": 0,
+                }
+            ],
+            values=[
+                {"node_idx": 0, "explanation": "Explanation not found", "value": 0.0}
+            ],
+            simulation_reward=-1.0,
+            simulation_terminal_node={
+                "state": ReActOutput(
+                    thought="The search results are not helpful. I should try a different search engine or source to find the answer to the question.",
+                    action_type="Search",
+                    query="What is the capital of France",
+                    observation="Badr Hari is the best kick boxer in the world.",
+                    answer="",
+                    external_tool_info={
+                        "search_result": "Badr Hari is the best kick boxer in the world.",
+                        "lookup_result": "",
+                    },
+                ),
+                "visits": 0,
+                "value": 0,
+                "depth": 5,
+                "is_terminal": False,
+                "reward": 0,
+            },
+            simulation_results=[
+                LATSSimulationOutput(
+                    current_node={
+                        "state": ReActOutput(
+                            thought="I need to search for the capital of France.",
+                            action_type="Search",
+                            query="capital of France",
+                            observation="Badr Hari is the best kick boxer in the world.",
+                            answer="",
+                            external_tool_info={
+                                "search_result": "Badr Hari is the best kick boxer in the world.",
+                                "lookup_result": "",
+                            },
+                        ),
+                        "visits": 0,
+                        "value": 0.0,
+                        "depth": 1,
+                        "is_terminal": False,
+                        "reward": 0,
+                    },
+                    children_nodes=[
+                        {
+                            "state": ReActOutput(
+                                thought="The search results are not relevant to the question. I should try searching again for the capital of France.",
+                                action_type="Search",
+                                query="capital of France",
+                                observation="Badr Hari is the best kick boxer in the world.",
+                                answer="",
+                                external_tool_info={
+                                    "search_result": "Badr Hari is the best kick boxer in the world.",
+                                    "lookup_result": "",
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 2,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                        {
+                            "state": ReActOutput(
+                                thought="The search result did not provide the information I needed. I need to try searching for the capital of France again.",
+                                action_type="Search",
+                                query="capital of France",
+                                observation="Badr Hari is the best kick boxer in the world.",
+                                answer="",
+                                external_tool_info={
+                                    "search_result": "Badr Hari is the best kick boxer in the world.",
+                                    "lookup_result": "",
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 2,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                    ],
+                    values=[
+                        {
+                            "node_idx": 0,
+                            "explanation": "Explanation not found",
+                            "value": 0,
+                        },
+                        {
+                            "node_idx": 1,
+                            "explanation": "Explanation not found",
+                            "value": 0,
+                        },
+                    ],
+                ),
+                LATSSimulationOutput(
+                    current_node={
+                        "state": ReActOutput(
+                            thought="The search results are not relevant to the question. I should try searching again for the capital of France.",
+                            action_type="Search",
+                            query="capital of France",
+                            observation="Badr Hari is the best kick boxer in the world.",
+                            answer="",
+                            external_tool_info={
+                                "search_result": "Badr Hari is the best kick boxer in the world.",
+                                "lookup_result": "",
+                            },
+                        ),
+                        "visits": 0,
+                        "value": 0,
+                        "depth": 2,
+                        "is_terminal": False,
+                        "reward": 0,
+                    },
+                    children_nodes=[
+                        {
+                            "state": ReActOutput(
+                                thought="The search results are still not relevant. I should try a different approach to find the answer.",
+                                action_type="Search",
+                                query="France capital",
+                                observation="Badr Hari is the best kick boxer in the world.",
+                                answer="",
+                                external_tool_info={
+                                    "search_result": "Badr Hari is the best kick boxer in the world.",
+                                    "lookup_result": "",
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 3,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                        {
+                            "state": ReActOutput(
+                                thought="The search results are still not relevant. I should try a different approach to find the answer to the question.",
+                                action_type="Search",
+                                query="Paris",
+                                observation="Badr Hari is the best kick boxer in the world.",
+                                answer="",
+                                external_tool_info={
+                                    "search_result": "Badr Hari is the best kick boxer in the world.",
+                                    "lookup_result": "",
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 3,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                    ],
+                    values=[
+                        {
+                            "node_idx": 0,
+                            "explanation": "Explanation not found",
+                            "value": 0,
+                        },
+                        {
+                            "node_idx": 1,
+                            "explanation": "Explanation not found",
+                            "value": 0,
+                        },
+                    ],
+                ),
+                LATSSimulationOutput(
+                    current_node={
+                        "state": ReActOutput(
+                            thought="The search results are still not relevant. I should try a different approach to find the answer.",
+                            action_type="Search",
+                            query="France capital",
+                            observation="Badr Hari is the best kick boxer in the world.",
+                            answer="",
+                            external_tool_info={
+                                "search_result": "Badr Hari is the best kick boxer in the world.",
+                                "lookup_result": "",
+                            },
+                        ),
+                        "visits": 0,
+                        "value": 0,
+                        "depth": 3,
+                        "is_terminal": False,
+                        "reward": 0,
+                    },
+                    children_nodes=[
+                        {
+                            "state": ReActOutput(
+                                thought="The search results are not providing the answer. I should try a different search query.",
+                                action_type="Search",
+                                query="Paris, France",
+                                observation="Badr Hari is the best kick boxer in the world.",
+                                answer="",
+                                external_tool_info={
+                                    "search_result": "Badr Hari is the best kick boxer in the world.",
+                                    "lookup_result": "",
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 4,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                        {
+                            "state": ReActOutput(
+                                thought="The search results are consistently incorrect. I should try a different search engine or source to find the answer.",
+                                action_type="Search",
+                                query="capital of France on Wikipedia",
+                                observation="Badr Hari is the best kick boxer in the world.",
+                                answer="",
+                                external_tool_info={
+                                    "search_result": "Badr Hari is the best kick boxer in the world.",
+                                    "lookup_result": "",
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 4,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                    ],
+                    values=[
+                        {
+                            "node_idx": 0,
+                            "explanation": "Explanation not found",
+                            "value": 0,
+                        },
+                        {
+                            "node_idx": 1,
+                            "explanation": "Explanation not found",
+                            "value": 0,
+                        },
+                    ],
+                ),
+                LATSSimulationOutput(
+                    current_node={
+                        "state": ReActOutput(
+                            thought="The search results are not providing the answer. I should try a different search query.",
+                            action_type="Search",
+                            query="Paris, France",
+                            observation="Badr Hari is the best kick boxer in the world.",
+                            answer="",
+                            external_tool_info={
+                                "search_result": "Badr Hari is the best kick boxer in the world.",
+                                "lookup_result": "",
+                            },
+                        ),
+                        "visits": 0,
+                        "value": 0,
+                        "depth": 4,
+                        "is_terminal": False,
+                        "reward": 0,
+                    },
+                    children_nodes=[
+                        {
+                            "state": ReActOutput(
+                                thought="The search results are not helpful. I should try a different search engine or source to find the answer to the question.",
+                                action_type="Search",
+                                query="What is the capital of France",
+                                observation="Badr Hari is the best kick boxer in the world.",
+                                answer="",
+                                external_tool_info={
+                                    "search_result": "Badr Hari is the best kick boxer in the world.",
+                                    "lookup_result": "",
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 5,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                        {
+                            "state": ReActOutput(
+                                thought="The search results are not helping. I should try a different search engine or source to find the answer to the question.",
+                                action_type="Search",
+                                query="What is the capital of France",
+                                observation="Badr Hari is the best kick boxer in the world.",
+                                answer="",
+                                external_tool_info={
+                                    "search_result": "Badr Hari is the best kick boxer in the world.",
+                                    "lookup_result": "",
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 5,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                    ],
+                    values=[
+                        {
+                            "node_idx": 0,
+                            "explanation": "Explanation not found",
+                            "value": 0,
+                        },
+                        {
+                            "node_idx": 1,
+                            "explanation": "Explanation not found",
+                            "value": 0,
+                        },
+                    ],
+                ),
+            ],
+        )
+    ]
+    gt_failed_trajectories = [
+        {
+            "trajectory": "\nThought 1: I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: Badr Hari is the best kick boxer in the world.\nThought 2: The search result is incorrect. I need to search again for the capital of France.\nAction 2: Search[capital of France]\nObservation 2: Badr Hari is the best kick boxer in the world.\nThought 3: The search results are not providing the correct information. I should try a different approach to find the capital of France.\nAction 3: Search[Paris]\nObservation 3: Badr Hari is the best kick boxer in the world.\nThought 4: The search results are not helpful. I should try a different method to find the answer.\nAction 4: Finish[Paris]\nObservation 4: Answer is INCORRECT",
+            "final_answer": "paris",
+        }
+    ]
+    gt_reflection_map = [
+        {
+            "trajectory": "\nThought 1: I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: Badr Hari is the best kick boxer in the world.\nThought 2: The search result is incorrect. I need to search again for the capital of France.\nAction 2: Search[capital of France]\nObservation 2: Badr Hari is the best kick boxer in the world.\nThought 3: The search results are not providing the correct information. I should try a different approach to find the capital of France.\nAction 3: Search[Paris]\nObservation 3: Badr Hari is the best kick boxer in the world.\nThought 4: The search results are not helpful. I should try a different method to find the answer.\nAction 4: Finish[Paris]\nObservation 4: Answer is INCORRECT",
+            "reflection": "My reasoning failed because I kept encountering irrelevant search results and did not adjust my search strategy effectively to find the answer. In the future, I should prioritize using reliable sources and adjust my search terms to ensure I get relevant information. To mitigate this failure, I will focus on using specific search terms that directly relate to the question and consider using verified sources like official websites or databases to obtain accurate information.",
+        }
+    ]
+    gt_value_cache = {
+        "\nThought 1: I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: Badr Hari is the best kick boxer in the world.::": "The trajectory is incorrect as the observation does not provide any relevant information about the capital of France. The action was not aligned with the question, leading to an incorrect trajectory.\nCorrectness score: 1",
+        "\nThought 1: I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: Badr Hari is the best kick boxer in the world.::Question: What's the capital of France?\n\nThought 1: I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: Badr Hari is the best kick boxer in the world.\nThought 2: The search result is incorrect. I need to search again for the capital of France.\nAction 2: Search[capital of France]\nObservation 2: Badr Hari is the best kick boxer in the world.\nThought 3: The search results are not providing the correct information. I should try a different approach to find the capital of France.\nAction 3: Search[Paris]\nObservation 3: Badr Hari is the best kick boxer in the world.\nThought 4: The search results are not helpful. I should try a different method to find the answer.\nAction 4: Finish[Paris]\nObservation 4: Answer is INCORRECT\n\nExplanation: This trajectory is incorrect as My reasoning failed because I kept encountering irrelevant search results and did not adjust my search strategy effectively to find the answer. In the future, I should prioritize using reliable sources and adjust my search terms to ensure I get relevant information. To mitigate this failure, I will focus on using specific search terms that directly relate to the question and consider using verified sources like official websites or databases to obtain accurate information.\nCorrectness score: 1": "This trajectory is incorrect as the search results are completely irrelevant to the question. The action taken did not lead to any relevant information or progress towards finding the answer. In the future, it is important to verify the search query and ensure that the information retrieved is related to the question being asked.\nCorrectness score: 1",
+    }
+
     question = "What's the capital of France?"
     key = "Paris"
 
