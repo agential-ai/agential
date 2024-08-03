@@ -4,13 +4,14 @@ Original Paper: https://arxiv.org/pdf/2310.04406
 Paper Repository: https://github.com/lapisrocks/LanguageAgentTreeSearch
 """
 
-from typing import Any
+from typing import Any, Tuple, List, Dict
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.base.agent import BaseAgent
 from agential.cog.lats.factory import LATSFactory
 from agential.cog.lats.output import LATSOutput, LATSSimulationOutput
+from agential.cog.lats.node import Node
 
 
 class LATSAgent(BaseAgent):
@@ -19,6 +20,7 @@ class LATSAgent(BaseAgent):
     Attributes:
         llm: The language model used by the LATS agent.
         benchmark: The benchmark or task the agent is designed to solve.
+        **strategy_kwargs (Any): Additional keyword arguments for the strategy.
     """
 
     def __init__(
@@ -41,20 +43,20 @@ class LATSAgent(BaseAgent):
 
     def generate(
         self,
-        question,
-        key,
-        examples,
-        reflect_examples,
-        value_examples,
-        prompt,
-        reflect_prompt,
-        value_prompt,
-        additional_keys,
-        reflect_additional_keys,
-        value_additional_keys,
+        question: str,
+        key: str,
+        examples: str,
+        reflect_examples: str,
+        value_examples: str,
+        prompt: str,
+        reflect_prompt: str,
+        value_prompt: str,        
+        additional_keys: Dict[str, str],
+        reflect_additional_keys: Dict[str, str],
+        value_additional_keys: Dict[str, str],        
         max_iterations=30,
         reset=True,
-    ):
+    ) -> Tuple[Node, List[LATSOutput]]:
         """Generate an output for the given question.
 
         Args:
@@ -97,9 +99,6 @@ class LATSAgent(BaseAgent):
                 additional_keys=additional_keys,
                 reflect_additional_keys=reflect_additional_keys,
             )
-            print(
-                "<===========================================================EXPAND NODE END===========================================================>"
-            )
 
             for child_node in children_nodes:
                 if self.strategy.halting_condition(child_node):
@@ -125,9 +124,6 @@ class LATSAgent(BaseAgent):
                 prompt=value_prompt,
                 additional_keys=value_additional_keys,
             )
-            print(
-                "<===========================================================EVALUATE NODE END===========================================================>"
-            )
 
             simulation_reward, simulation_terminal_node, simulation_results = (
                 self.strategy.simulate_node(
@@ -146,9 +142,6 @@ class LATSAgent(BaseAgent):
                     reflect_additional_keys=reflect_additional_keys,
                     value_additional_keys=value_additional_keys,
                 )
-            )
-            print(
-                "<===========================================================SIMULATE NODE END===========================================================>"
             )
 
             simulation_results = [
