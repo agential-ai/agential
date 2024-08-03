@@ -76,7 +76,6 @@ class LATSMathStrategy(LATSBaseStrategy):
 
     Attributes:
         llm: The language model to be used for generating responses.
-        docstore (DocstoreExplorer): Document store explorer, defaults to Wikipedia.
         n_samples (int): Number of samples to generate, default is 5.
         max_reflections (int): Maximum number of reflections allowed, default is 4.
         depth_limit (int): Maximum depth of the search tree, default is 7.
@@ -90,7 +89,6 @@ class LATSMathStrategy(LATSBaseStrategy):
     def __init__(
         self,
         llm: BaseChatModel,
-        docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
         n_samples: int = 5,
         max_reflections: int = 4,
         depth_limit: int = 7,
@@ -99,7 +97,6 @@ class LATSMathStrategy(LATSBaseStrategy):
     ) -> None:
         """Initialize."""
         super().__init__(llm)
-        self.docstore = docstore
         self.n_samples = n_samples
         self.max_reflections = max_reflections
         self.depth_limit = depth_limit
@@ -302,9 +299,9 @@ class LATSMathStrategy(LATSBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        action = remove_newline(action).split("Observation")[0]
-        trajectory += " " + action
-        action_type, query = parse_qa_action(action)
+        action = action.split("Observation")[0].strip()
+        action_type, query = parse_math_action(action)
+        trajectory += f" {action_type}[\n```python\n{query}\n```\n]"
 
         return trajectory, action_type, query
 
