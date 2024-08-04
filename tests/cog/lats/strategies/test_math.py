@@ -20,7 +20,6 @@ from agential.cog.lats.strategies.math import (
     parse_math_value,
 )
 from agential.cog.react.output import ReActOutput
-from agential.utils.docstore import DocstoreExplorer
 
 
 def test_get_node_trajectory_math() -> None:
