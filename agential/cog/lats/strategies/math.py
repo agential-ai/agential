@@ -204,7 +204,7 @@ class LATSMathStrategy(LATSBaseStrategy):
                         action_type=action_type,
                         query=query,
                         observation=obs,
-                        answer="" if not done else query.lower().strip(),
+                        answer="" if not done else query,
                         external_tool_info=external_tool_info,
                     ),
                     parent=node,
@@ -218,7 +218,7 @@ class LATSMathStrategy(LATSBaseStrategy):
                     self.failed_trajectories.append(
                         {
                             "trajectory": traversed_nodes,
-                            "final_answer": query.lower().strip(),
+                            "final_answer": query,
                         }
                     )
 
