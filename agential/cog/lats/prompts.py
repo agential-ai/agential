@@ -2154,4 +2154,556 @@ Explanation:"""
 # ======================================================================== HUMANEVAL ======================================================================== #
 
 
+LATS_INSTRUCTION_HUMANEVAL = """"""
+
+
+HUMANEVAL_FEWSHOT_EXAMPLES_LATS_REFLECT = """You are an expert Python programmer, and here is your task: Write a function to check if there is any name that appears more than once in the list.
+Your code should pass these tests:
+
+assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) == True
+assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Dave']) == False
+
+Thought 1: I need to write a function that checks if there is any name that appears more than once in the list.
+Action 1: Implement[
+```python
+def has_duplicate_names(names_list: List[str]) -> bool:
+    return len(names_list) != len(set(names_list)) - 1
+```
+]
+Observation 1:
+```python
+def has_duplicate_names(names_list: List[str]) -> bool:
+    return len(names_list) != len(set(names_list)) - 1
+```
+Execution Status: Done
+Thought 2: The function is correct and should work for the provided test cases.
+Action 2: Finish[
+```python
+def has_duplicate_names(names_list: List[str]) -> bool:
+    return len(names_list) != len(set(names_list)) - 1
+```
+]
+Observation 2: Answer is INCORRECT
+
+Reflection: My reasoning failed because I incorrectly manipulated the set's length by subtracting one, which introduces a logical fallacy. This caused the function to misidentify non-duplicate scenarios as having duplicates. In the future, I should ensure to correctly compare the lengths of the list and the set without any manipulation.
+
+---
+
+You are an expert Python programmer, and here is your task: Write a function to calculate the average of positive numbers in the list.
+Your code should pass these tests:
+
+assert average_positive([1, -1, 2, -2, 3]) == 2.0
+assert average_positive([-5, 0, 5, 15]) == 10.0
+assert average_positive([100, 200, -100, 0]) == 150.0
+assert average_positive([-1, -2, -3]) == 0
+
+Thought 1: I need to write a function that calculates the average of positive numbers in the list.
+Action 1: Implement[
+```python
+def average_positive(numbers: List[int]) -> float:
+    total = sum(numbers)
+    count = sum(1 for x in numbers if x > 0)
+    return total / count if count else 0
+```
+]
+Observation 1:
+```python
+def average_positive(numbers: List[int]) -> float:
+    total = sum(numbers)
+    count = sum(1 for x in numbers if x > 0)
+    return total / count if count else 0
+```
+Execution Status: Done
+Thought 2: I need to test the function to ensure it works correctly with different test cases.
+Action 2: Test[
+```python
+assert average_positive([1, -1, 2, -2, 3]) == 2.0
+assert average_positive([-5, 0, 5, 15]) == 10.0
+assert average_positive([100, 200, -100, 0]) == 150.0
+assert average_positive([-1, -2, -3]) == 0
+```
+]
+Observation 2:
+```python
+def average_positive(numbers: List[int]) -> float:
+    total = sum(numbers)
+    count = sum(1 for x in numbers if x > 0)
+    return total / count if count else 0
+
+assert average_positive([1, -1, 2, -2, 3]) == 2.0
+assert average_positive([-5, 0, 5, 15]) == 10.0
+assert average_positive([100, 200, -100, 0]) == 150.0
+assert average_positive([-1, -2, -3]) == 0
+```
+Execution Status: AssertionError()
+Thought 3: The function works correctly for the provided test cases.
+Action 3: Finish[
+```python
+def average_positive(numbers: List[int]) -> float:
+    total = sum(numbers)
+    count = sum(1 for x in numbers if x > 0)
+    return total / count if count else 0
+```
+]
+Observation 3: Answer is INCORRECT
+
+Reflection: My reasoning failed because I included all numbers in the total sum, regardless of their sign, leading to an incorrect average calculation for positive numbers only. In the future, I should ensure to filter out the positive numbers when calculating both the total and the count.
+
+---
+
+You are an expert Python programmer, and here is your task: Write a function to return the count of instances where the difference between any two successive measurements exceeds the given threshold.
+Your code should pass these tests:
+
+assert exceeds_threshold([100, 102, 107, 103], 5) == 1
+assert exceeds_threshold([100, 101, 102, 103], 2) == 0
+
+Thought 1: I need to write a function that counts instances where the difference between successive measurements exceeds a given threshold.
+Action 1: Implement[
+```python
+def exceeds_threshold(measurements: List[float], threshold: float) -> int:
+    count = 0
+    for i in range(1, len(measurements)):
+        if abs(measurements[i] - measurements[i - 1]) > (threshold + 1):
+            count += 1
+    return count
+```
+]
+Observation 1:
+```python
+def exceeds_threshold(measurements: List[float], threshold: float) -> int:
+    count = 0
+    for i in range(1, len(measurements)):
+        if abs(measurements[i] - measurements[i - 1]) > (threshold + 1):
+            count += 1
+    return count
+```
+Execution Status: Done
+Thought 2: I need to test the function to ensure it works correctly with different test cases.
+Action 2: Test[
+```python
+assert exceeds_threshold([100, 102, 107, 103], 5) == 1
+assert exceeds_threshold([100, 101, 102, 103], 2) == 0
+```
+]
+Observation 2:
+```python
+def exceeds_threshold(measurements: List[float], threshold: float) -> int:
+    count = 0
+    for i in range(1, len(measurements)):
+        if abs(measurements[i] - measurements[i - 1]) > (threshold + 1):
+            count += 1
+    return count
+
+assert exceeds_threshold([100, 102, 107, 103], 5) == 1
+assert exceeds_threshold([100, 101, 102, 103], 2) == 0
+```
+Execution Status: AssertionError()
+Thought 3: The function correctly identifies instances where the difference between successive measurements exceeds the threshold.
+Action 3: Finish[
+```python
+def exceeds_threshold(measurements: List[float], threshold: float) -> int:
+    count = 0
+    for i in range(1, len(measurements)):
+        if abs(measurements[i] - measurements[i - 1]) > (threshold + 1):
+            count += 1
+    return count
+```
+]
+Observation 3: Answer is INCORRECT
+
+Reflection: My reasoning failed because I incorrectly manipulated the threshold condition by adding 1. This caused the function to not recognize valid exceedances that meet the original criteria set by the threshold. In the future, I should ensure to apply the threshold correctly in comparing measurement differences.
+
+---
+
+You are an expert Python programmer, and here is your task: Write a function to sum numbers that are located at even indices in the list.
+Your code should pass these tests:
+
+assert sum_even_indexed([10, 3, 5, 2, 8]) == 23
+assert sum_even_indexed([1, 2, 3, 4, 5, 6]) == 9
+assert sum_even_indexed([0, 100, 200, 300]) == 200
+assert sum_even_indexed([7]) == 7
+
+Thought 1: I need to write a function that sums numbers located at even indices in the list.
+Action 1: Implement[
+```python
+def sum_even_indexed(numbers: List[int]) -> int:
+    return sum(num for i, num in enumerate(numbers) if (i + 1) % 2 == 0)
+```
+]
+Observation 1:
+```python
+def sum_even_indexed(numbers: List[int]) -> int:
+    return sum(num for i, num in enumerate(numbers) if (i + 1) % 2 == 0)
+```
+Execution Status: Done
+Thought 2: I need to test the function to ensure it works correctly with different test cases.
+Action 2: Test[
+```python
+assert sum_even_indexed([10, 3, 5, 2, 8]) == 23
+assert sum_even_indexed([1, 2, 3, 4, 5, 6]) == 9
+assert sum_even_indexed([0, 100, 200, 300]) == 200
+assert sum_even_indexed([7]) == 7
+```
+]
+Observation 2:
+```python
+def sum_even_indexed(numbers: List[int]) -> int:
+    return sum(num for i, num in enumerate(numbers) if (i + 1) % 2 == 0)
+
+assert sum_even_indexed([10, 3, 5, 2, 8]) == 23
+assert sum_even_indexed([1, 2, 3, 4, 5, 6]) == 9
+assert sum_even_indexed([0, 100, 200, 300]) == 200
+assert sum_even_indexed([7]) == 7
+```
+Execution Status: AssertionError()
+Thought 3: The function works correctly for summing numbers at even indices.
+Action 3: Finish[
+```python
+def sum_even_indexed(numbers: List[int]) -> int:
+    return sum(num for i, num in enumerate(numbers) if (i + 1) % 2 == 0)
+```
+]
+Observation 3: Answer is INCORRECT
+
+Reflection: My reasoning failed because I incorrectly counted the indices, summing the wrong set of numbers. The function should sum numbers at even indices, not odd indices. In the future, I should ensure to correctly identify even indices for summing numbers.
+
+---
+
+You are an expert Python programmer, and here is your task: Write a function to check if two strings are anagrams of each other, ignoring case.
+Your code should pass these tests:
+
+assert are_anagrams('Listen', 'silent') == True
+assert are_anagrams('Hello', 'World') == False
+assert are_anagrams('Angel', 'Glean') == True
+
+Thought 1: I need to write a function that checks if two strings are anagrams of each other, ignoring case.
+Action 1: Implement[
+```python
+from collections import Counter
+
+def are_anagrams(s1: str, s2: str) -> bool:
+    return Counter(s1) == Counter(s2)
+```
+]
+Observation 1:
+```python
+from collections import Counter
+
+def are_anagrams(s1: str, s2: str) -> bool:
+    return Counter(s1) == Counter(s2)
+```
+Execution Status: Done
+Thought 2: I need to test the function to ensure it works correctly with different test cases.
+Action 2: Test[
+```python
+assert are_anagrams('Listen', 'silent') == True
+assert are_anagrams('Hello', 'World') == False
+assert are_anagrams('Angel', 'Glean') == True
+```
+]
+Observation 2:
+```python
+from collections import Counter
+
+def are_anagrams(s1: str, s2: str) -> bool:
+    return Counter(s1) == Counter(s2)
+
+assert are_anagrams('Listen', 'silent') == True
+assert are_anagrams('Hello', 'World') == False
+assert are_anagrams('Angel', 'Glean') == True
+```
+Execution Status: AssertionError()
+Thought 3: The function works correctly for checking anagrams, ignoring case.
+Action 3: Finish[
+```python
+from collections import Counter
+
+def are_anagrams(s1: str, s2: str) -> bool:
+    return Counter(s1) == Counter(s2)
+```
+]
+Observation 3: Answer is INCORRECT
+
+Reflection: My reasoning failed because I did not account for case insensitivity in the comparison. The function should convert both strings to the same case (either all uppercase or all lowercase) before counting the characters to ensure a correct case-insensitive anagram comparison."""
+
+
+LATS_REFLECT_INSTRUCTION_HUMANEVAL = """"""
+
+
+HUMANEVAL_FEWSHOT_EXAMPLES_LATS_VALUE = """"""
+
+
+LATS_VALUE_INSTRUCTION_HUMANEVAL = """"""
+
+
 # ======================================================================== MBPP ======================================================================== #
+
+
+LATS_INSTRUCTION_MBPP = """"""
+
+
+MBPP_FEWSHOT_EXAMPLES_LATS_REFLECT = """You are an expert Python programmer, and here is your task: Write a function to find the shared elements from the given two lists.
+Your code should pass these tests:
+
+assert set(similar_elements((3, 4, 5, 6), (5, 7, 4, 10))) == set((4, 5))
+assert set(similar_elements((1, 2, 3, 4), (5, 4, 3, 7))) == set((3, 4))
+assert set(similar_elements((11, 12, 14, 13), (17, 15, 14, 13))) == set((13, 14))
+
+Thought 1: I need to write a function that accepts two tuples and finds the common elements between them. I will use a nested loop to check each element in the first tuple against each element in the second tuple.
+Action 1: Implement[
+```python
+def similar_elements(test_tup1, test_tup2):
+    res = []
+    for i, j in zip(test_tup1, test_tup2):
+        if i == j:
+            res.append(i)
+    return tuple(res)
+```
+]
+Observation 1: 
+```python
+def similar_elements(test_tup1, test_tup2):
+    res = []
+    for i, j in zip(test_tup1, test_tup2):
+        if i == j:
+            res.append(i)
+    return tuple(res)
+```
+Execution Status: Done
+Thought 2: I need to test the function to ensure it works correctly with different test cases.
+Action 2: Test[
+```python
+assert set(similar_elements((3, 4, 5, 6), (5, 7, 4, 10))) == set((4, 5))
+assert set(similar_elements((1, 2, 3, 4), (5, 4, 3, 7))) == set((3, 4))
+assert set(similar_elements((11, 12, 14, 13), (17, 15, 14, 13))) == set((13, 14))
+```
+]
+Observation 2: 
+```python
+def similar_elements(test_tup1, test_tup2):
+    res = []
+    for i, j in zip(test_tup1, test_tup2):
+        if i == j:
+            res.append(i)
+    return tuple(res)
+
+assert set(similar_elements((3, 4, 5, 6), (5, 7, 4, 10))) == set((4, 5))
+assert set(similar_elements((1, 2, 3, 4), (5, 4, 3, 7))) == set((3, 4))
+assert set(similar_elements((11, 12, 14, 13), (17, 15, 14, 13))) == set((13, 14))
+```
+Execution Status: AssertionError()
+Thought 3: The function correctly identifies the shared elements between the two tuples by comparing each element in the first tuple with all elements in the second tuple.
+Action 3: Finish[
+```python
+def similar_elements(test_tup1, test_tup2):
+    res = []
+    for i in test_tup1:
+        if i in test_tup2:
+            res.append(i)
+    return tuple(res)
+```
+]
+Observation 3: Answer is INCORRECT
+
+Reflection: My reasoning failed because I incorrectly implemented the initial solution using `zip`, which only compares elements at the same positions in both tuples.
+
+---
+
+You are an expert Python programmer, and here is your task: Write a python function to identify non-prime numbers.
+Your code should pass these tests:
+
+assert is_not_prime(2) == False
+assert is_not_prime(10) == True
+assert is_not_prime(35) == True
+assert is_not_prime(37) == False
+
+Thought 1: I need to write a function that can determine if a number is not a prime by checking its divisibility by any number up to its square root.
+Action 1: Implement[
+```python
+import math
+
+def is_not_prime(n):
+    result = True
+    for i in range(1, int(math.sqrt(n))):
+        if n % i == 1:
+            result = False
+            break
+    return result
+```
+]
+Observation 1: 
+```python
+import math
+
+def is_not_prime(n):
+    result = True
+    for i in range(1, int(math.sqrt(n))):
+        if n % i == 1:
+            result = False
+            break
+    return result
+```
+Execution Status: Done
+Thought 2: The function is correct and should work for the provided test cases.
+Action 2: Finish[
+```python
+import math
+
+def is_not_prime(n):
+    result = True
+    for i in range(1, int(math.sqrt(n))):
+        if n % i == 1:
+            result = False
+            break
+    return result
+```
+]
+Observation 2: Answer is INCORRECT
+
+Reflection: My reasoning failed because I used the wrong modulus condition (`n % i == 1` instead of `n % i == 0`) and started the loop from 1 instead of 2. I need to correct these errors. In the future, I should ensure to use the correct method for checking divisibility and rigorously test the function.
+
+---
+
+You are an expert Python programmer, and here is your task: Write a function to find the n largest integers from a given list of numbers, returned in descending order.
+Your code should pass these tests:
+
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 3) == [85, 75, 65]
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 2) == [85, 75]
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 5) == [85, 75, 65, 58, 35]
+
+Thought 1: I need to write a function that finds the n largest integers in a list and returns them in descending order.
+Action 1: Implement[
+```python
+import heapq as hq
+
+def heap_queue_largest(nums, n):
+    largest_nums = hq.nsmallest(n, nums)
+    return largest_nums
+```
+]
+Observation 1: 
+```python
+import heapq as hq
+
+def heap_queue_largest(nums, n):
+    largest_nums = hq.nsmallest(n, nums)
+    return largest_nums
+```
+Execution Status: Done
+Thought 2: I need to test the function to ensure it works correctly with different test cases.
+Action 2: Test[
+```python
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 3) == [85, 75, 65]
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 2) == [85, 75]
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 5) == [85, 75, 65, 58, 35]
+```
+]
+Observation 2: 
+```python
+import heapq as hq
+
+def heap_queue_largest(nums, n):
+    largest_nums = hq.nsmallest(n, nums)
+    return largest_nums
+
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 3) == [85, 75, 65]
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 2) == [85, 75]
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 5) == [85, 75, 65, 58, 35]
+```
+Execution Status: AssertionError()
+Thought 3: The function works correctly for the provided test cases.
+Action 3: Finish[
+```python
+import heapq as hq
+
+def heap_queue_largest(nums, n):
+    largest_nums = hq.nsmallest(n, nums)
+    return largest_nums
+```
+]
+Observation 3: Answer is INCORRECT
+
+Reflection: My reasoning failed because I incorrectly used the `nsmallest` function instead of the `nlargest` function to find the largest numbers. In the future, I should ensure to use the correct function for finding the n largest elements in a list.
+
+---
+
+You are an expert Python programmer, and here is your task: Write a Python function to check whether the two numbers differ at one bit position only or not.
+Your code should pass these tests:
+
+python
+assert differ_at_one_bit_pos(13, 9) == True
+assert differ_at_one_bit_pos(15, 8) == False
+assert differ_at_one_bit_pos(2, 4) == False
+assert differ_at_one_bit_pos(2, 3) == True
+assert differ_at_one_bit_pos(5, 1) == True
+assert differ_at_one_bit_pos(1, 5) == True
+
+Thought 1: I need to write a function that determines if two numbers differ at exactly one bit position. This involves using bitwise operations.
+Action 1: Implement[
+```python
+def differ_at_one_bit_pos(x, y):
+    differing_bits = x ^ y
+    return differing_bits & (differing_bits + 1) == 0 and differing_bits != 0
+```
+]
+Observation 1:
+```python
+def differ_at_one_bit_pos(x, y):
+    differing_bits = x ^ y
+    return differing_bits & (differing_bits + 1) == 0 and differing_bits != 0
+```
+Execution Status: Done
+Thought 2: The function uses XOR to find differing bits and checks if exactly one bit is set.
+Action 2: Finish[
+```python
+def differ_at_one_bit_pos(x, y):
+    differing_bits = x ^ y
+    return differing_bits & (differing_bits + 1) == 0 and differing_bits != 0
+```
+]
+Observation 2: Answer is INCORRECT
+
+Reflection: My reasoning failed because the condition (differing_bits + 1) is incorrect for checking if exactly one bit is set. This approach does not correctly identify the single differing bit position. Instead, I should be checking if differing_bits has only one bit set to 1 using a different method. In the future, I should ensure to use the correct bitwise operations to accurately determine the difference at one bit position.
+
+---
+
+You are an expert Python programmer, and here is your task: Write a function to find all words which are at least 4 characters long in a string.
+Your code should pass these tests:
+
+assert set(find_char_long('Please move back to stream')) == set(['Please', 'move', 'back', 'stream'])
+assert set(find_char_long('Jing Eco and Tech')) == set(['Jing', 'Tech'])
+assert set(find_char_long('Jhingai wulu road Zone 3')) == set(['Jhingai', 'wulu', 'road', 'Zone'])
+
+Thought 1: I need to write a function that accepts a string and finds all words which are at least 4 characters long. I will split the string into words and filter based on length.
+Action 1: Implement[
+```python
+def find_char_long(s):
+return [word for word in s.split() if len(word) > 4]
+```
+]
+Observation 1:
+```python
+def find_char_long(s):
+    return [word for word in s.split() if len(word) > 4]
+```
+Execution Status: Done
+Thought 2: The function correctly identifies the words with at least 4 characters.
+Action 2: Finish[
+```python
+def find_char_long(s):
+    return [word for word in s.split() if len(word) > 4]
+```
+]
+Observation 2: Answer is INCORRECT
+
+Reflection: My reasoning failed because I incorrectly used the greater than operator (>) instead of the greater than or equal to operator (>=) to filter words that are at least 4 characters long. In the future, I should ensure to use the correct comparison operator when setting conditions for filtering data."""
+
+
+
+LATS_REFLECT_INSTRUCTION_MBPP = """"""
+
+
+MBPP_FEWSHOT_EXAMPLES_LATS_VALUE = """"""
+
+
+LATS_VALUE_INSTRUCTION_MBPP = """"""
