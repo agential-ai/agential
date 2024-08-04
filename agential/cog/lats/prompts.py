@@ -341,8 +341,7 @@ Here are some examples:
 (END OF EXAMPLES)
 
 Previous trial:
-Claim: {question}
-{trajectory}
+Claim: {question}{trajectory}
 
 Reflection:"""
 
@@ -540,8 +539,7 @@ Here are some examples:
 (END OF EXAMPLES)
 
 Previous trial:
-Question: {question}
-{trajectory}
+Question: {question}{trajectory}
 
 Reflection:"""
 
@@ -734,8 +732,7 @@ Here are some examples:
 (END OF EXAMPLES)
 
 Previous trial:
-Question: {question}
-{trajectory}
+Question: {question}{trajectory}
 
 Reflection:"""
 
@@ -1054,8 +1051,7 @@ Here are some examples:
 (END OF EXAMPLES)
 
 Previous trial:
-Question: {question}
-{trajectory}
+Question: {question}{trajectory}
 
 Reflection:"""
 
