@@ -22,6 +22,15 @@ from agential.cog.lats.strategies.qa import (
     LATSHotQAStrategy,
     LATSTriviaQAStrategy,
 )
+from agential.cog.lats.strategies.math import (
+    LATSGSM8KStrategy,
+    LATSSVAMPStrategy,
+    LATSTabMWPStrategy,
+)
+from agential.cog.lats.strategies.code import (
+    LATSHEvalStrategy,
+    LATSMBPPStrategy,
+)
 
 
 def test_LATS_factory_get_strategy() -> None:
@@ -44,6 +53,30 @@ def test_LATS_factory_get_strategy() -> None:
     assert isinstance(
         LATSFactory.get_strategy(Benchmarks.FEVER, llm=llm),
         LATSFEVERStrategy,
+    )
+
+    # Math benchmarks.
+    assert isinstance(
+        LATSFactory.get_strategy(Benchmarks.GSM8K, llm=llm),
+        LATSGSM8KStrategy,
+    )
+    assert isinstance(
+        LATSFactory.get_strategy(Benchmarks.SVAMP, llm=llm),
+        LATSSVAMPStrategy,
+    )
+    assert isinstance(
+        LATSFactory.get_strategy(Benchmarks.TABMWP, llm=llm),
+        LATSTabMWPStrategy,
+    )
+
+    # Code benchmarks.
+    assert isinstance(
+        LATSFactory.get_strategy(Benchmarks.HUMANEVAL, llm=llm),
+        LATSHEvalStrategy,
+    )
+    assert isinstance(
+        LATSFactory.get_strategy(Benchmarks.MBPP, llm=llm),
+        LATSMBPPStrategy,
     )
 
     # Unsupported benchmark.
