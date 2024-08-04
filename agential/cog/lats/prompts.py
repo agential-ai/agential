@@ -836,10 +836,9 @@ Explanation:"""
 # ======================================================================== GSM8K ======================================================================== #
 
 
-LATS_INSTRUCTION_GSM8K = """Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: 
-(1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
-(2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
-(3) Finish[answer], which returns the answer and finishes the task.
+LATS_INSTRUCTION_GSM8K = """Answer a math question with interleaving Thought, Action, Observation steps. Thought can reason about the current question and plan the retrieval steps, and Action can be two types:
+(1) Calculate[code], which implements code to answer the math question, saving the answer as the `answer` variable.
+(2) Finish[code], which returns the code to answer the math question and finishes the task, saving the answer as the `answer` variable.
 
 Here are some examples:
 {examples}
@@ -848,6 +847,7 @@ Here are some examples:
 {reflections}
 
 Question: {question}{trajectory}"""
+
 
 GSM8K_FEWSHOT_EXAMPLES_LATS_REFLECT = """Question: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops did Jason give to Denny?
 Thought 1: First, I need to find out how many lollipops Jason gave to Denny.
@@ -1049,7 +1049,16 @@ Observation 3: Answer is INCORRECT
 Reflection: My reasoning failed because I incorrectly added the golf balls lost to the initial number of golf balls instead of subtracting them. Initially, I correctly subtracted the losses from the total, but I doubted my correct method and made a mistake in the verification step. In the future, I should ensure to trust the initial correct arithmetic operations and avoid unnecessary recalculations that lead to errors. The correct answer should have been 33 golf balls."""
 
 
-LATS_REFLECT_INSTRUCTION_GSM8K = """"""
+LATS_REFLECT_INSTRUCTION_GSM8K = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Previous trial:
+Question: {question}
+{trajectory}
+
+Reflection:"""
 
 
 GSM8K_FEWSHOT_EXAMPLES_LATS_VALUE = """Previous Trial:
@@ -1217,7 +1226,25 @@ Explanation: The trajectory is correct because it accurately calculates the tota
 Correctness score: 10"""
 
 
-LATS_VALUE_INSTRUCTION_GSM8K = """"""
+LATS_VALUE_INSTRUCTION_GSM8K = """Analyze the trajectories of a solution to a math task. The trajectories are labeled by environmental observations about the situation, thoughts that can reason about the current situation and actions that can be two types: 
+(1) Calculate[code], which implements code to answer the math question, saving the answer as the `answer` variable.
+(2) Finish[code], which returns the code to answer the math question and finishes the task, saving the answer as the `answer` variable.
+
+Given a question and a trajectory, evaluate its correctness by focusing on the latest thought, action, and observation. Then, provide a score between 1 and 10.
+Incomplete trajectories can be correct if the thoughts and actions so far are correct, even if the answer is not found yet. Do not generate additional thoughts or actions. 
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Here are some failed trajectories and their explanations and correctness scores:
+
+{failed_trajectories}
+
+Previous Trial:
+Question: {question}{trajectory}
+
+Explanation:"""
 
 
 # ======================================================================== SVAMP ======================================================================== #
