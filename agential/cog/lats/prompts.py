@@ -2154,7 +2154,23 @@ Explanation:"""
 # ======================================================================== HUMANEVAL ======================================================================== #
 
 
-LATS_INSTRUCTION_HUMANEVAL = """"""
+LATS_INSTRUCTION_HUMANEVAL = """Answer a coding question with interleaving Thought, Action, Observation steps. Thought can reason about the current question and plan the retrieval steps, and Action can be three types:
+(1) Implement[<insert your code here>], which implements the function to answer the question.
+(2) Test[<insert your code here>], which implements assert statement test cases to test the implemented code.
+(3) Finish[<insert your answer here>], which returns the code implementation and finishes the task.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+```python
+{question}
+    pass
+```
+
+{reflections}
+
+{trajectory}"""
 
 
 HUMANEVAL_FEWSHOT_EXAMPLES_LATS_REFLECT = """You are an expert Python programmer, and here is your task: Write a function to check if there is any name that appears more than once in the list.
@@ -2427,19 +2443,67 @@ Observation 3: Answer is INCORRECT
 Reflection: My reasoning failed because I did not account for case insensitivity in the comparison. The function should convert both strings to the same case (either all uppercase or all lowercase) before counting the characters to ensure a correct case-insensitive anagram comparison."""
 
 
-LATS_REFLECT_INSTRUCTION_HUMANEVAL = """"""
+LATS_REFLECT_INSTRUCTION_HUMANEVAL = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Previous trial:
+```python
+{question}
+    pass
+```
+
+{trajectory}
+
+Reflection:"""
 
 
 HUMANEVAL_FEWSHOT_EXAMPLES_LATS_VALUE = """"""
 
 
-LATS_VALUE_INSTRUCTION_HUMANEVAL = """"""
+LATS_VALUE_INSTRUCTION_HUMANEVAL = """Analyze the trajectories of a solution to a coding task. The trajectories are labeled by environmental observations about the situation, thoughts that can reason about the current situation and actions that can be three types: 
+(1) Implement[<insert your code here>], which implements the function to answer the question.
+(2) Test[<insert your code here>], which implements assert statement test cases to test the implemented code.
+(3) Finish[<insert your answer here>], which returns the code implementation and finishes the task.
+
+Given a question and a trajectory, evaluate its correctness by focusing on the latest thought, action, and observation. Then, provide a score between 1 and 10.
+Incomplete trajectories can be correct if the thoughts and actions so far are correct, even if the answer is not found yet. Do not generate additional thoughts or actions. 
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Here are some failed trajectories and their explanations and correctness scores:
+
+{failed_trajectories}
+
+Previous Trial:
+Question: {question}{trajectory}
+
+Explanation:"""
 
 
 # ======================================================================== MBPP ======================================================================== #
 
 
-LATS_INSTRUCTION_MBPP = """"""
+LATS_INSTRUCTION_MBPP = """Answer a coding question with interleaving Thought, Action, Observation steps. Thought can reason about the current question and plan the retrieval steps, and Action can be three types:
+(1) Implement[<insert your code here>], which implements the function to answer the question.
+(2) Test[<insert your code here>], which implements assert statement test cases to test the implemented code.
+(3) Finish[<insert your answer here>], which returns the code implementation and finishes the task.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+You are an expert Python programmer, and here is your task: {question}.
+Your code should pass these tests:
+
+{tests}
+
+{reflections}
+
+{trajectory}"""
 
 
 MBPP_FEWSHOT_EXAMPLES_LATS_REFLECT = """You are an expert Python programmer, and here is your task: Write a function to find the shared elements from the given two lists.
@@ -2700,10 +2764,47 @@ Reflection: My reasoning failed because I incorrectly used the greater than oper
 
 
 
-LATS_REFLECT_INSTRUCTION_MBPP = """"""
+LATS_REFLECT_INSTRUCTION_MBPP = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Previous trial:
+You are an expert Python programmer, and here is your task: {question}.
+Your code should pass these tests:
+
+{tests}
+
+{trajectory}
+
+Reflection:"""
 
 
 MBPP_FEWSHOT_EXAMPLES_LATS_VALUE = """"""
 
 
-LATS_VALUE_INSTRUCTION_MBPP = """"""
+LATS_VALUE_INSTRUCTION_MBPP = """Analyze the trajectories of a solution to a coding task. The trajectories are labeled by environmental observations about the situation, thoughts that can reason about the current situation and actions that can be three types: 
+(1) Implement[<insert your code here>], which implements the function to answer the question.
+(2) Test[<insert your code here>], which implements assert statement test cases to test the implemented code.
+(3) Finish[<insert your answer here>], which returns the code implementation and finishes the task.
+
+Given a question and a trajectory, evaluate its correctness by focusing on the latest thought, action, and observation. Then, provide a score between 1 and 10.
+Incomplete trajectories can be correct if the thoughts and actions so far are correct, even if the answer is not found yet. Do not generate additional thoughts or actions. 
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Here are some failed trajectories and their explanations and correctness scores:
+
+{failed_trajectories}
+
+Previous Trial:
+You are an expert Python programmer, and here is your task: {question}.
+Your code should pass these tests:
+
+{tests}
+
+{trajectory}
+
+Explanation:"""
