@@ -89,6 +89,17 @@ The following are some experience you gather on a similar task of question answe
 Question: {question}{scratchpad}"""
 
 
+EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Previous Trial:
+Question: {question}{scratchpad}
+
+Reflection:"""
+
+
 # ======================================================================== FEVER ======================================================================== #
 
 
@@ -108,6 +119,17 @@ The following are some experience you gather on a similar task of question answe
 {reflections}
 
 Claim: {question}{scratchpad}"""
+
+
+EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_FEVER = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Previous Trial:
+Claim: {question}{scratchpad}
+
+Reflection:"""
 
 
 # ======================================================================== AMBIGNQ ======================================================================== #
@@ -131,6 +153,17 @@ The following are some experience you gather on a similar task of question answe
 Question: {question}{scratchpad}"""
 
 
+EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_AMBIGNQ = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Previous Trial:
+Question: {question}{scratchpad}
+
+Reflection:"""
+
+
 # ======================================================================== TRIVIAQA ======================================================================== #
 
 
@@ -150,6 +183,17 @@ The following are some experience you gather on a similar task of question answe
 {reflections}
 
 Question: {question}{scratchpad}"""
+
+
+EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_TRIVIAQA = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Previous Trial:
+Question: {question}{scratchpad}
+
+Reflection:"""
 
 
 # ======================================================================== GSM8K ======================================================================== #
@@ -172,6 +216,17 @@ The following are some experience you gather on a similar task of math reasoning
 Question: {question}{scratchpad}"""
 
 
+EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_GSM8K = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Previous Trial:
+Question: {question}{scratchpad}
+
+Reflection:"""
+
+
 # ======================================================================== SVAMP ======================================================================== #
 
 
@@ -190,6 +245,17 @@ The following are some experience you gather on a similar task of math reasoning
 {reflections}
 
 Question: {question}{scratchpad}"""
+
+
+EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_SVAMP = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Previous Trial:
+Question: {question}{scratchpad}
+
+Reflection:"""
 
 
 # ======================================================================== TABMWP ======================================================================== #
@@ -211,6 +277,18 @@ The following are some experience you gather on a similar task of math reasoning
 
 {question}
 {scratchpad}"""
+
+
+EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_TABMWP = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Previous Trial:
+{question}
+{scratchpad}
+
+Reflection:"""
 
 
 # ======================================================================== HUMANEVAL ======================================================================== #
@@ -239,6 +317,22 @@ The following are some experience you gather on a similar programming task using
 {scratchpad}"""
 
 
+EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_HUMANEVAL = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Previous Trial:
+```python
+{question}
+    pass
+```
+
+{scratchpad}
+
+Reflection:"""
+
+
 # ======================================================================== MBPP ======================================================================== #
 
 
@@ -263,3 +357,19 @@ The following are some experience you gather on a similar programming task using
 {reflections}
 
 {scratchpad}"""
+
+
+EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_MBPP = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Previous Trial:
+You are an expert Python programmer, and here is your task: {question}.
+Your code should pass these tests:
+
+{tests}
+
+{scratchpad}
+
+Reflection:"""
