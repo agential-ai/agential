@@ -35,9 +35,9 @@ def parse_latest_implement(text: str) -> str:
         str: The extracted Python code as a string if found, or "" if no implementation is found.
     """
     pattern = re.compile(r"Implement\[\s*```python(.*?)```", re.DOTALL)
-    
+
     matches = pattern.findall(text)
-    
+
     if matches:
         latest_implement = matches[-1].strip()
         return latest_implement
@@ -407,7 +407,7 @@ class LATSCodeStrategy(LATSBaseStrategy):
             obs = f"\n```python\n{obs}\n```\nExecution Status: {execution_status}"
         else:
             obs = "Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer]."
-        
+
         trajectory += obs
 
         return trajectory, reward, obs, done, external_tool_info
@@ -778,4 +778,3 @@ class LATSMBPPStrategy(LATSCodeStrategy):
     """A strategy class for the MBPP benchmark using the LATS agent."""
 
     pass
-

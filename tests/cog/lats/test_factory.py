@@ -16,20 +16,20 @@ from agential.cog.lats.prompts import (
     LATS_REFLECT_INSTRUCTION_HOTPOTQA,
     LATS_VALUE_INSTRUCTION_HOTPOTQA,
 )
-from agential.cog.lats.strategies.qa import (
-    LATSAmbigNQStrategy,
-    LATSFEVERStrategy,
-    LATSHotQAStrategy,
-    LATSTriviaQAStrategy,
+from agential.cog.lats.strategies.code import (
+    LATSHEvalStrategy,
+    LATSMBPPStrategy,
 )
 from agential.cog.lats.strategies.math import (
     LATSGSM8KStrategy,
     LATSSVAMPStrategy,
     LATSTabMWPStrategy,
 )
-from agential.cog.lats.strategies.code import (
-    LATSHEvalStrategy,
-    LATSMBPPStrategy,
+from agential.cog.lats.strategies.qa import (
+    LATSAmbigNQStrategy,
+    LATSFEVERStrategy,
+    LATSHotQAStrategy,
+    LATSTriviaQAStrategy,
 )
 
 

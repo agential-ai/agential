@@ -12,8 +12,8 @@ from agential.cog.lats.prompts import (
     LATS_VALUE_INSTRUCTION_GSM8K,
 )
 from agential.cog.lats.strategies.math import (
-    LATSMathStrategy,
     LATSGSM8KStrategy,
+    LATSMathStrategy,
     LATSSVAMPStrategy,
     LATSTabMWPStrategy,
     get_node_trajectory_math,
