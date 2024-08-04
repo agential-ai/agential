@@ -1657,7 +1657,18 @@ Explanation:"""
 # ======================================================================== TABMWP ======================================================================== #
 
 
-LATS_INSTRUCTION_TABMWP = """"""
+LATS_INSTRUCTION_TABMWP = """Answer a math question with interleaving Thought, Action, Observation steps. Thought can reason about the current question and plan the retrieval steps, and Action can be two types:
+(1) Calculate[code], which implements code to answer the math question, saving the answer as the `answer` variable.
+(2) Finish[code], which returns the code to answer the math question and finishes the task, saving the answer as the `answer` variable.
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+{reflections}
+
+{question}
+{trajectory}"""
 
 
 TABMWP_FEWSHOT_EXAMPLES_LATS_REFLECT = """Read the following table regarding "Coin collections" and then write Python code to answer a question:
@@ -1903,7 +1914,16 @@ Observation 3: Answer is INCORRECT
 Reflection: My reasoning failed because I mistakenly calculated the total apples harvested from 1 to 5 apple trees instead of focusing on the specific question about 6 apple trees. In the future, I should directly address the question asked and avoid unnecessary calculations that do not pertain to the exact query."""
 
 
-LATS_REFLECT_INSTRUCTION_TABMWP = """"""
+LATS_REFLECT_INSTRUCTION_TABMWP = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Previous trial:
+{question}
+{trajectory}
+
+Reflection:"""
 
 
 TABMWP_FEWSHOT_EXAMPLES_LATS_VALUE = """Read the following table regarding "Coin collections" and then write Python code to answer a question:
@@ -2109,5 +2129,24 @@ Explanation: The trajectory is correct as it accurately follows the thought proc
 Correctness score: 10"""
 
 
-LATS_VALUE_INSTRUCTION_TABMWP = """"""
+LATS_VALUE_INSTRUCTION_TABMWP = """Analyze the trajectories of a solution to a math task. The trajectories are labeled by environmental observations about the situation, thoughts that can reason about the current situation and actions that can be two types: 
+(1) Calculate[code], which implements code to answer the math question, saving the answer as the `answer` variable.
+(2) Finish[code], which returns the code to answer the math question and finishes the task, saving the answer as the `answer` variable.
+
+Given a question and a trajectory, evaluate its correctness by focusing on the latest thought, action, and observation. Then, provide a score between 1 and 10.
+Incomplete trajectories can be correct if the thoughts and actions so far are correct, even if the answer is not found yet. Do not generate additional thoughts or actions. 
+
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
+
+Here are some failed trajectories and their explanations and correctness scores:
+
+{failed_trajectories}
+
+Previous Trial:
+{question}
+{trajectory}
+
+Explanation:"""
 
