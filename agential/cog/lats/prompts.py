@@ -29,8 +29,7 @@ Here are some examples:
 Question: {question}{trajectory}"""
 
 
-HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT = """Previous Trial:
-Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT = """Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
 Thought 1: The Colorado orogeny is a mountain-building event in the western United States, so the elevation range should be quite high.
 Action 1: Search[eastern sector of the Colorado orogeny]
 Observation 1: The Colorado orogeny was an episode of mountain building (an orogeny) in Colorado and surrounding areas. This took place from 1780 to 1650 million years ago (Mya), during the Paleoproterozoic (Statherian Period). It is recorded in the Colorado orogen, a >500-km-wide belt of oceanic arc rock that extends southward into New Mexico. The Colorado orogeny was likely part of the larger Yavapai orogeny.
@@ -54,7 +53,6 @@ Reflection: My reasoning for the elevation range of the eastern sector of the Co
 
 ---
 
-Previous Trial:
 Question: Musician and satirist Allie Goertz wrote a song about the "The Simpsons" character Milhouse, who Matt Groening named after who?
 Thought 1: The question simplifies to "The Simpsons" character Milhouse is named after who. I only need to search Milhouse and find who it is named after.
 Action 1: Search[Milhouse]
@@ -70,7 +68,6 @@ Reflection: My reasoning for the naming of the character Milhouse in "The Simpso
 
 ---
 
-Previous Trial:
 Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
 Thought 1: I need to search Adam Clayton Powell and The Saimaa Gesture, and find which documentary is about Finnish rock groups.
 Action 1: Search[Adam Clayton Powell]
@@ -87,7 +84,6 @@ Reflection: My reasoning failed because I assumed that a documentary with signif
 
 ---
 
-Previous Trial:
 Question: What profession does Nicholas Ray and Elia Kazan have in common?
 Thought 1: I need to search Nicholas Ray and Elia Kazan, find their professions, then find the profession they have in common.
 Action 1: Search[Nicholas Ray]
@@ -103,7 +99,6 @@ Reflection: My reasoning failed because I overcomplicated the answer by includin
 
 ---
 
-Previous Trial:
 Question: Which magazine was started first Arthur's Magazine or First for Women?
 Thought 1: I need to search Arthur's Magazine and First for Women, and find which was started first.
 Action 1: Search[Arthur's Magazine]
@@ -129,8 +124,7 @@ Question: {question}{trajectory}
 Reflection:"""
 
 
-HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE = """Previous Trial:
-Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE = """Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
 Thought 1: The Colorado orogeny is a mountain-building event in the western United States, so the elevation range should be quite high.
 Action 1: Search[eastern sector of the Colorado orogeny]
 Observation 1: The Colorado orogeny was an episode of mountain building (an orogeny) in Colorado and surrounding areas. This took place from 1780 to 1650 million years ago (Mya), during the Paleoproterozoic (Statherian Period). It is recorded in the Colorado orogen, a >500-km-wide belt of oceanic arc rock that extends southward into New Mexico. The Colorado orogeny was likely part of the larger Yavapai orogeny.
@@ -155,7 +149,6 @@ Correctness score: 2
 
 ---
 
-Previous Trial:
 Question: Musician and satirist Allie Goertz wrote a song about the "The Simpsons" character Milhouse, who Matt Groening named after who?
 Thought 1: The question simplifies to "The Simpsons" character Milhouse is named after who. I only need to search Milhouse and find who it is named after.
 Action 1: Search[Milhouse]
@@ -171,7 +164,6 @@ Correctness score: 10
 
 ---
 
-Previous Trial:
 Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
 Thought 1: I need to search Adam Clayton Powell and The Saimaa Gesture, and find which documentary is about Finnish rock groups.
 Action 1: Search[Adam Clayton Powell]
@@ -188,7 +180,6 @@ Correctness score: 2
 
 ---
 
-Previous Trial:
 Question: What profession does Nicholas Ray and Elia Kazan have in common?
 Thought 1: I need to search Nicholas Ray and Elia Kazan, find their professions, then find the profession they have in common.
 Action 1: Search[Nicholas Ray]
@@ -204,7 +195,6 @@ Correctness score: 5
 
 ---
 
-Previous Trial:
 Question: Which magazine was started first Arthur's Magazine or First for Women?
 Thought 1: I need to search Arthur's Magazine and First for Women, and find which was started first.
 Action 1: Search[Arthur's Magazine]
@@ -253,8 +243,7 @@ Here are some examples:
 Claim: {question}{trajectory}"""
 
 
-FEVER_FEWSHOT_EXAMPLES_LATS_REFLECT = """Previous Trial:
-Claim: Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.
+FEVER_FEWSHOT_EXAMPLES_LATS_REFLECT = """Claim: Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.
 Thought 1: I need to search Nikolaj Coster-Waldau and find if he has worked with the Fox Broadcasting Company.
 Action 1: Search[Nikolaj Coster-Waldau]
 Observation 1: Nikolaj William Coster-Waldau (born 27 July 1970) is a Danish actor and producer. He graduated from the Danish National School of Performing Arts in Copenhagen in 1993,[1] and had his breakthrough role in Denmark with the film Nightwatch (1994). He played Jaime Lannister in the HBO fantasy drama series Game of Thrones, for which he received two Primetime Emmy Award nominations for Outstanding Supporting Actor in a Drama Series. Coster-Waldau has appeared in numerous films in his native Denmark and Scandinavia, including Headhunters (2011) and A Thousand Times Good Night (2013). In the U.S, his debut film role was in the war film Black Hawk Down (2001), playing Medal of Honor recipient Gary Gordon.[2] He then played a detective in the short-lived Fox television series New Amsterdam (2008), and appeared in the 2009 Fox television film Virtuality, originally intended as a pilot.
@@ -266,7 +255,6 @@ Reflection: My reasoning failed because I assumed that significant work with one
 
 ---
 
-Previous Trial:
 Claim: Stranger Things is set in Bloomington, Indiana.
 Thought 1: I should search for Stranger Things, and see if it is set in Bloomington, Indiana.
 Action 1: Search[Stranger Things]
@@ -279,7 +267,6 @@ Reflection: My reasoning failed because I incorrectly assumed that a fictional t
 
 ---
 
-Previous Trial:
 Claim: "Beautiful" by Christina Aguilera reached number two on the Billboard Hot 100 in 2003.
 Thought 1: I need to search the song Beautiful and find if it reached number two on the Billboard Hot 100 in 2003.
 Action 1: Search[Beautiful]
@@ -298,7 +285,6 @@ Reflection: My reasoning failed because I doubted the information even though it
 
 ---
 
-Previous Trial:
 Claim: Tim Burton didn't direct the film "Edward Scissorhands."
 Thought 1: I need to search for the film "Edward Scissorhands" to verify who directed it.
 Action 1: Search[Edward Scissorhands]
@@ -314,7 +300,6 @@ Reflection: My reasoning failed because I overcomplicated the situation by doubt
 
 ---
 
-Previous Trial:
 Claim: "The Great Gatsby" was written by F. Scott Fitzgerald.
 Thought 1: I need to verify the author of "The Great Gatsby" by searching for its author.
 Action 1: Search["The Great Gatsby" author]
@@ -346,8 +331,7 @@ Claim: {question}{trajectory}
 Reflection:"""
 
 
-FEVER_FEWSHOT_EXAMPLES_LATS_VALUE = """Previous Trial:
-Claim: Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.
+FEVER_FEWSHOT_EXAMPLES_LATS_VALUE = """Claim: Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.
 Thought 1: I need to search Nikolaj Coster-Waldau and find if he has worked with the Fox Broadcasting Company.
 Action 1: Search[Nikolaj Coster-Waldau]
 Observation 1: Nikolaj William Coster-Waldau (born 27 July 1970) is a Danish actor and producer. He graduated from the Danish National School of Performing Arts in Copenhagen in 1993,[1] and had his breakthrough role in Denmark with the film Nightwatch (1994). He played Jaime Lannister in the HBO fantasy drama series Game of Thrones, for which he received two Primetime Emmy Award nominations for Outstanding Supporting Actor in a Drama Series. Coster-Waldau has appeared in numerous films in his native Denmark and Scandinavia, including Headhunters (2011) and A Thousand Times Good Night (2013). In the U.S, his debut film role was in the war film Black Hawk Down (2001), playing Medal of Honor recipient Gary Gordon.[2] He then played a detective in the short-lived Fox television series New Amsterdam (2008), and appeared in the 2009 Fox television film Virtuality, originally intended as a pilot.
@@ -360,7 +344,6 @@ Correctness score: 2
 
 ---
 
-Previous Trial:
 Claim: Stranger Things is set in Bloomington, Indiana.
 Thought 1: I should search for Stranger Things, and see if it is set in Bloomington, Indiana.
 Action 1: Search[Stranger Things]
@@ -374,7 +357,6 @@ Correctness score: 1
 
 ---
 
-Previous Trial:
 Claim: "Beautiful" by Christina Aguilera reached number two on the Billboard Hot 100 in 2003.
 Thought 1: I need to search the song Beautiful and find if it reached number two on the Billboard Hot 100 in 2003.
 Action 1: Search[Beautiful]
@@ -394,7 +376,6 @@ Correctness score: 2
 
 ---
 
-Previous Trial:
 Claim: Tim Burton didn't direct the film "Edward Scissorhands."
 Thought 1: I need to search for the film "Edward Scissorhands" to verify who directed it.
 Action 1: Search[Edward Scissorhands]
@@ -408,7 +389,6 @@ Correctness score: 10
 
 ---
 
-Previous Trial:
 Claim: "The Great Gatsby" was written by F. Scott Fitzgerald.
 Thought 1: I need to verify who wrote "The Great Gatsby."
 Action 1: Search["The Great Gatsby"]
@@ -463,8 +443,7 @@ Here are some examples:
 Question: {question}{trajectory}"""
 
 
-AMBIGNQ_FEWSHOT_EXAMPLES_LATS_REFLECT = """Previous Trial:
-Question: When did men's figure skating become a summer Olympic sport?
+AMBIGNQ_FEWSHOT_EXAMPLES_LATS_REFLECT = """Question: When did men's figure skating become a summer Olympic sport?
 Thought 1: Let's search the question in google.
 Action 1: Search[When did men's figure skating become a summer Olympic sport?]
 Observation 1: [Figure skating at the Olympic Games - Wikipedia] According to some sources, men's figure skating became a summer Olympic sport during the 1912 Stockholm Olympics.
@@ -479,7 +458,6 @@ Reflection: My reasoning failed because I accepted an unverified claim without c
 
 ---
 
-Previous Trial:
 Question: When was the last time the USA men's national soccer team missed the World Cup?
 Thought 1: Let's search the question in google
 Action 1: Search[When was the last time the USA men's national soccer team missed the World Cup? site: wikipedia.org]
@@ -492,7 +470,6 @@ Reflection: My reasoning failed because I misinterpreted the evidence and did no
 
 ---
 
-Previous Trial:
 Question: What does barium do in a ct scan?
 Thought 1: Let's search the question in google
 Action 1: Search[What does barium do in a ct scan? site: wikipedia.org]
@@ -508,7 +485,6 @@ Reflection: My reasoning failed because I generalized the use of barium in CT sc
 
 ---
 
-Previous Trial:
 Question: Where was the fort located at which the first shot of the civil war was fired?
 Thought 1: Let's search the question in google
 Action 1: Search[Where was the fort located at which the first shot of the civil war was fired?]
@@ -521,7 +497,6 @@ Reflection: My reasoning failed because I ignored the specific information provi
 
 ---
 
-Previous Trial:
 Question: When did Nando's come to the UK?
 Thought 1: Let's search the question in google
 Action 1: Search[When did Nando's come to the UK? site: wikipedia.org]
@@ -544,8 +519,7 @@ Question: {question}{trajectory}
 Reflection:"""
 
 
-AMBIGNQ_FEWSHOT_EXAMPLES_LATS_VALUE = """Previous Trial:
-Question: When did men's figure skating become a summer Olympic sport?
+AMBIGNQ_FEWSHOT_EXAMPLES_LATS_VALUE = """Question: When did men's figure skating become a summer Olympic sport?
 Thought 1: Let's search the question in google.
 Action 1: Search[When did men's figure skating become a summer Olympic sport?]
 Observation 1: [Figure skating at the Olympic Games - Wikipedia] According to some sources, men's figure skating became a summer Olympic sport during the 1912 Stockholm Olympics.
@@ -561,7 +535,6 @@ Correctness score: 2
 
 ---
 
-Previous Trial:
 Question: When was the last time the USA men's national soccer team missed the World Cup?
 Thought 1: Let's search the question in google
 Action 1: Search[When was the last time the USA men's national soccer team missed the World Cup? site: wikipedia.org]
@@ -575,7 +548,6 @@ Correctness score: 3
 
 ---
 
-Previous Trial:
 Question: What does barium do in a ct scan?
 Thought 1: Let's search the question in google
 Action 1: Search[What does barium do in a ct scan? site: wikipedia.org]
@@ -592,7 +564,6 @@ Correctness score: 4
 
 ---
 
-Previous Trial:
 Question: Where was the fort located at which the first shot of the civil war was fired?
 Thought 1: Let's search the question in google
 Action 1: Search[Where was the fort located at which the first shot of the civil war was fired?]
@@ -603,7 +574,6 @@ Correctness score: 10
 
 ---
 
-Previous Trial:
 Question: When did Nando's come to the UK?
 Thought 1: Let's search for the information about Nando's entry into the UK.
 Action 1: Search[When did Nando's come to the UK?]
@@ -655,8 +625,7 @@ Here are some examples:
 Question: {question}{trajectory}"""
 
 
-TRIVIAQA_FEWSHOT_EXAMPLES_LATS_REFLECT = """Previous Trial:
-Question: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842?
+TRIVIAQA_FEWSHOT_EXAMPLES_LATS_REFLECT = """Question: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842?
 Thought 1: Let's search the question in Google to find the answer.
 Action 1: Search[Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842? site
 .org]
@@ -672,7 +641,6 @@ Reflection: My reasoning failed because I questioned the clear evidence provided
 
 ---
 
-Previous Trial:
 Question: "Christ in the House of his Parents" is one of the best known paintings of which artist?
 Thought 1: Let's search the question in google
 Action 1: Search["Christ in the House of his Parents" is one of the best known paintings of which artist? site:wikipedia.org]
@@ -685,7 +653,6 @@ Reflection: My reasoning failed because I ignored the clear evidence provided by
 
 ---
 
-Previous Trial:
 Question: Who designed the National Theatre building on the South Bank in London?
 Thought 1: Let's search the question in google
 Action 1: Search[Who designed the National Theatre building on the South Bank in London? site:wikipedia.org]
@@ -698,7 +665,6 @@ Reflection: My reasoning failed because I ignored the clear evidence provided by
 
 ---
 
-Previous Trial:
 Question: Also a two-time World Champion, which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics?
 Thought 1: Let's search the question in google
 Action 1: Search[Which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics? site:wikipedia.org]
@@ -711,7 +677,6 @@ Reflection: My reasoning failed because I doubted the clear evidence provided by
 
 ---
 
-Previous Trial:
 Question: Which English author wrote the novel "1984"?
 Thought 1: Let's search the question in google.
 Action 1: Search[Which English author wrote the novel "1984"? site:wikipedia.org]
@@ -737,8 +702,7 @@ Question: {question}{trajectory}
 Reflection:"""
 
 
-TRIVIAQA_FEWSHOT_EXAMPLES_LATS_VALUE = """Previous Trial:
-Question: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842?
+TRIVIAQA_FEWSHOT_EXAMPLES_LATS_VALUE = """Question: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842?
 Thought 1: Let's search the question in Google to find the answer.
 Action 1: Search[Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842? site
 .org]
@@ -755,7 +719,6 @@ Correctness Score: 2
 
 ---
 
-Previous Trial:
 Question: "Christ in the House of his Parents" is one of the best known paintings of which artist?
 Thought 1: Let's search the question in google
 Action 1: Search["Christ in the House of his Parents" is one of the best known paintings of which artist? site:wikipedia.org]
@@ -769,7 +732,6 @@ Correctness Score: 2
 
 ---
 
-Previous Trial:
 Question: Who designed the National Theatre building on the South Bank in London?
 Thought 1: Let's search the question in google
 Action 1: Search[Who designed the National Theatre building on the South Bank in London? site:wikipedia.org]
@@ -783,7 +745,6 @@ Correctness Score: 3
 
 ---
 
-Previous Trial:
 Question: Also a two-time World Champion, which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics?
 Thought 1: Let's search the question in google
 Action 1: Search[Which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics? site:wikipedia.org]
@@ -794,7 +755,6 @@ Correctness Score: 10
 
 ---
 
-Previous Trial:
 Question: Which English author wrote the novel "1984"?
 Thought 1: Let's search for the author of the novel "1984."
 Action 1: Search[Which English author wrote the novel "1984"?]
@@ -845,8 +805,7 @@ Here are some examples:
 Question: {question}{trajectory}"""
 
 
-GSM8K_FEWSHOT_EXAMPLES_LATS_REFLECT = """Previous Trial:
-Question: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops did Jason give to Denny?
+GSM8K_FEWSHOT_EXAMPLES_LATS_REFLECT = """Question: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops did Jason give to Denny?
 Thought 1: First, I need to find out how many lollipops Jason gave to Denny.
 Action 1: Calculate[
 ```python
@@ -875,7 +834,6 @@ Reflection: My reasoning failed because I added the remaining lollipops to the i
 
 ---
 
-Previous Trial:
 Question: There are 15 trees in the grove. Grove workers will plant trees in the grove today. After they are done, there will be 21 trees. How many trees did the grove workers plant today?
 Thought 1: I need to determine how many trees were planted.
 Action 1: Calculate[
@@ -905,7 +863,6 @@ Reflection: My reasoning failed because I subtracted the final number of trees f
 
 ---
 
-Previous Trial:
 Question: Shawn has five toys. For Christmas, he got two toys each from his mom and dad. How many toys does he have now?
 Thought 1: I need to calculate the total number of toys Shawn has after receiving gifts from his parents.
 Action 1: Calculate[
@@ -953,7 +910,6 @@ Reflection: My reasoning failed because I mistakenly multiplied the number of to
 
 ---
 
-Previous Trial:
 Question: There were nine computers in the server room. Five more computers were installed each day, from Monday to Thursday. How many computers are now in the server room?
 Thought 1: I need to calculate the total number of computers installed from Monday to Thursday.
 Action 1: Calculate[
@@ -1005,7 +961,6 @@ Reflection: My reasoning failed because I incorrectly recalculated the total num
 
 ---
 
-Previous Trial:
 Question: Michael had 58 golf balls. On Tuesday, he lost 23 golf balls. On Wednesday, he lost 2 more. How many golf balls did he have at the end of Wednesday?
 Thought 1: I need to find out how many golf balls Michael has after losing some on Tuesday and Wednesday.
 Action 1: Calculate[
@@ -1061,8 +1016,7 @@ Question: {question}{trajectory}
 Reflection:"""
 
 
-GSM8K_FEWSHOT_EXAMPLES_LATS_VALUE = """Previous Trial:
-Question: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops did Jason give to Denny?
+GSM8K_FEWSHOT_EXAMPLES_LATS_VALUE = """Question: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops did Jason give to Denny?
 Thought 1: First, I need to find out how many lollipops Jason gave to Denny.
 Action 1: Calculate[
 ```python
@@ -1092,7 +1046,6 @@ Correctness score: 1
 
 ---
 
-Previous Trial:
 Question: There are 15 trees in the grove. Grove workers will plant trees in the grove today. After they are done, there will be 21 trees. How many trees did the grove workers plant today?
 Thought 1: I need to determine how many trees were planted.
 Action 1: Calculate[
@@ -1123,7 +1076,6 @@ Correctness score: 2
 
 ---
 
-Previous Trial:
 Question: Shawn has five toys. For Christmas, he got two toys each from his mom and dad. How many toys does he have now?
 Thought 1: I need to calculate the total number of toys Shawn has after receiving gifts from his parents.
 Action 1: Calculate[
@@ -1172,7 +1124,6 @@ Correctness score: 6
 
 ---
 
-Previous Trial:
 Question: There were nine computers in the server room. Five more computers were installed each day, from Monday to Thursday. How many computers are now in the server room?
 Thought 1: I need to calculate the total number of computers installed from Monday to Thursday.
 Action 1: Calculate[
@@ -1199,7 +1150,6 @@ Correctness score: 10
 
 ---
 
-Previous Trial:
 Question: Michael had 58 golf balls. On Tuesday, he lost 23 golf balls. On Wednesday, he lost 2 more. How many golf balls did he have at the end of Wednesday?
 Thought 1: I need to determine how many golf balls Michael had at the end of Wednesday.
 Action 1: Calculate[
@@ -1263,8 +1213,7 @@ Here are some examples:
 Question: {question}{trajectory}"""
 
 
-SVAMP_FEWSHOT_EXAMPLES_LATS_REFLECT = """Previous Trial:
-Question: James bought 93 red and 10 blue stickers, he used 31 red stickers on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
+SVAMP_FEWSHOT_EXAMPLES_LATS_REFLECT = """Question: James bought 93 red and 10 blue stickers, he used 31 red stickers on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
 Thought 1: First, I need to find out how many red stickers James has left after using some on his fridge.
 Action 1: Calculate[
 ```python
@@ -1309,7 +1258,6 @@ Reflection: My reasoning failed because I incorrectly doubled the number of red 
 
 ---
 
-Previous Trial:
 Question: Allen went to the supermarket to buy eggs, each egg costs 80 dollars, if the discount is 29 dollars. How much do you have to pay to buy each egg?
 Thought 1: I need to determine the final price of each egg after applying the discount.
 Action 1: Calculate[
@@ -1339,7 +1287,6 @@ Reflection: My reasoning failed because I incorrectly doubled the discount amoun
 
 ---
 
-Previous Trial:
 Question: Dianna collects both cases and books. He bought 22 cases and 5 books from the store. Now he has 57 cases and 25 books. How many books did Danny have at first?
 Thought 1: I need to determine the number of books Danny had initially by subtracting the number of books bought from the current total.
 Action 1: Calculate[
@@ -1385,7 +1332,6 @@ Reflection: My reasoning failed because I incorrectly added the number of books 
 
 ---
 
-Previous Trial:
 Question: There were 108 chickens and 20 sheep at the farm, some of the chickens and sheep were sold. There are 87 chickens and 18 sheep left now. How many chickens were sold?
 Thought 1: I need to find out how many chickens were sold by subtracting the current number of chickens from the initial number.
 Action 1: Calculate[
@@ -1431,7 +1377,6 @@ Reflection: My reasoning failed because I incorrectly added the current number o
 
 ---
 
-Previous Trial:
 Question: Katty scored 2 goals on Monday, 8 goals on Tuesday and 9 goals on Wednesday. How many did Katty score on Monday and Wednesday?
 Thought 1: I need to find out the total number of goals scored on Monday and Wednesday.
 Action 1: Calculate[
@@ -1471,8 +1416,7 @@ Question: {question}{trajectory}
 Reflection:"""
 
 
-SVAMP_FEWSHOT_EXAMPLES_LATS_VALUE = """Previous Trial:
-Question: James bought 93 red and 10 blue stickers, he used 31 red stickers on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
+SVAMP_FEWSHOT_EXAMPLES_LATS_VALUE = """Question: James bought 93 red and 10 blue stickers, he used 31 red stickers on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
 Thought 1: First, I need to find out how many red stickers James has left after using some on his fridge.
 Action 1: Calculate[
 ```python
@@ -1518,7 +1462,6 @@ Correctness score: 4
 
 ---
 
-Previous Trial:
 Question: Allen went to the supermarket to buy eggs, each egg costs 80 dollars, if the discount is 29 dollars. How much do you have to pay to buy each egg?
 Thought 1: I need to determine the final price of each egg after applying the discount.
 Action 1: Calculate[
@@ -1549,7 +1492,6 @@ Correctness score: 3
 
 ---
 
-Previous Trial:
 Question: Dianna collects both cases and books. He bought 22 cases and 5 books from the store. Now he has 57 cases and 25 books. How many books did Danny have at first?
 Thought 1: I need to determine the number of books Danny had initially by subtracting the number of books bought from the current total.
 Action 1: Calculate[
@@ -1596,7 +1538,6 @@ Correctness score: 4
 
 ---
 
-Previous Trial:
 Question: There were 108 chickens and 20 sheep at the farm, some of the chickens and sheep were sold. There are 87 chickens and 18 sheep left now. How many chickens were sold?
 Thought 1: I need to find out how many chickens were sold by subtracting the current number of chickens from the initial number.
 Action 1: Calculate[
@@ -1618,7 +1559,6 @@ Correctness score: 10
 
 ---
 
-Previous Trial:
 Question: Katty scored 2 goals on Monday, 8 goals on Tuesday and 9 goals on Wednesday. How many did Katty score on Monday and Wednesday?
 Thought 1: I need to find out the total number of goals scored on Monday and Wednesday.
 Action 1: Calculate[
@@ -1686,8 +1626,7 @@ Here are some examples:
 {trajectory}"""
 
 
-TABMWP_FEWSHOT_EXAMPLES_LATS_REFLECT = """Previous Trial:
-Read the following table regarding "Coin collections" and then write Python code to answer a question:
+TABMWP_FEWSHOT_EXAMPLES_LATS_REFLECT = """Read the following table regarding "Coin collections" and then write Python code to answer a question:
 
 Name | Number of coins
 Braden | 76
@@ -1726,7 +1665,6 @@ Reflection: My reasoning failed because I incorrectly divided the sum of the num
 
 ---
 
-Previous Trial:
 Read the following table regarding "" and then write Python code to answer a question:
 
 Price | Quantity demanded | Quantity supplied
@@ -1771,7 +1709,6 @@ Reflection: My reasoning failed because I incorrectly used the less than operato
 
 ---
 
-Previous Trial:
 Read the following table regarding "Cans of food collected" and then write Python code to answer a question:
 
 Samir | 7
@@ -1813,7 +1750,6 @@ Reflection: My reasoning failed because I incorrectly averaged the two middle nu
 
 ---
 
-Previous Trial:
 Read the following table regarding "" and then write Python code to answer a question:
 
 toy boat | $5.54
@@ -1882,7 +1818,6 @@ Reflection: My reasoning failed because I initially used the correct comparison 
 
 ---
 
-Previous Trial:
 Read the following table and then write Python code to answer a question:
 
 Number of apple trees | Number of apples harvested
@@ -1946,8 +1881,7 @@ Previous Trial:
 Reflection:"""
 
 
-TABMWP_FEWSHOT_EXAMPLES_LATS_VALUE = """Previous Trial:
-Read the following table regarding "Coin collections" and then write Python code to answer a question:
+TABMWP_FEWSHOT_EXAMPLES_LATS_VALUE = """Read the following table regarding "Coin collections" and then write Python code to answer a question:
 
 Name | Number of coins
 Braden | 76
@@ -1987,7 +1921,6 @@ Correctness score: 3
 
 ---
 
-Previous Trial:
 Read the following table regarding "" and then write Python code to answer a question:
 
 Price | Quantity demanded | Quantity supplied
@@ -2033,7 +1966,6 @@ Correctness score: 4
 
 ---
 
-Previous Trial:
 Read the following table regarding "Cans of food collected" and then write Python code to answer a question:
 
 Samir | 7
@@ -2076,7 +2008,6 @@ Correctness score: 3
 
 ---
 
-Previous Trial:
 Read the following table regarding "" and then write Python code to answer a question:
 
 toy boat | $5.54
@@ -2114,7 +2045,6 @@ Correctness Score: 7
 
 ---
 
-Previous Trial:
 Read the following table and then write Python code to answer a question:
 
 Number of apple trees | Number of apples harvested
@@ -2198,8 +2128,7 @@ Here are some examples:
 {trajectory}"""
 
 
-HUMANEVAL_FEWSHOT_EXAMPLES_LATS_REFLECT = """Previous Trial:
-You are an expert Python programmer, and here is your task: Write a function to check if there is any name that appears more than once in the list.
+HUMANEVAL_FEWSHOT_EXAMPLES_LATS_REFLECT = """You are an expert Python programmer, and here is your task: Write a function to check if there is any name that appears more than once in the list.
 Your code should pass these tests:
 
 assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) == True
@@ -2231,7 +2160,6 @@ Reflection: My reasoning failed because I incorrectly manipulated the set's leng
 
 ---
 
-Previous Trial:
 You are an expert Python programmer, and here is your task: Write a function to calculate the average of positive numbers in the list.
 Your code should pass these tests:
 
@@ -2294,7 +2222,6 @@ Reflection: My reasoning failed because I included all numbers in the total sum,
 
 ---
 
-Previous Trial:
 You are an expert Python programmer, and here is your task: Write a function to return the count of instances where the difference between any two successive measurements exceeds the given threshold.
 Your code should pass these tests:
 
@@ -2359,7 +2286,6 @@ Reflection: My reasoning failed because I incorrectly manipulated the threshold 
 
 ---
 
-Previous Trial:
 You are an expert Python programmer, and here is your task: Write a function to sum numbers that are located at even indices in the list.
 Your code should pass these tests:
 
@@ -2414,7 +2340,6 @@ Reflection: My reasoning failed because I incorrectly counted the indices, summi
 
 ---
 
-Previous Trial:
 You are an expert Python programmer, and here is your task: Write a function to check if two strings are anagrams of each other, ignoring case.
 Your code should pass these tests:
 
@@ -2489,8 +2414,7 @@ Previous Trial:
 Reflection:"""
 
 
-HUMANEVAL_FEWSHOT_EXAMPLES_LATS_VALUE = """Previous Trial:
-You are an expert Python programmer, and here is your task: Write a function to check if there is any name that appears more than once in the list.
+HUMANEVAL_FEWSHOT_EXAMPLES_LATS_VALUE = """You are an expert Python programmer, and here is your task: Write a function to check if there is any name that appears more than once in the list.
 Your code should pass these tests:
 
 assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) == True
@@ -2523,7 +2447,6 @@ Correctness score: 2
 
 ---
 
-Previous Trial:
 You are an expert Python programmer, and here is your task: Write a function to calculate the average of positive numbers in the list.
 Your code should pass these tests:
 
@@ -2587,7 +2510,6 @@ Correctness score: 4
 
 ---
 
-Previous Trial:
 You are an expert Python programmer, and here is your task: Write a function to return the count of instances where the difference between any two successive measurements exceeds the given threshold.
 Your code should pass these tests:
 
@@ -2653,7 +2575,6 @@ Correctness score: 3
 
 ---
 
-Previous Trial:
 You are an expert Python programmer, and here is your task: Write a function to sum numbers that are located at even indices in the list.
 Your code should pass these tests:
 
@@ -2681,7 +2602,6 @@ Correctness score: 5
 
 ---
 
-Previous Trial:
 You are an expert Python programmer, and here is your task: Write a function to check if two strings are anagrams of each other, ignoring case.
 Your code should pass these tests:
 
@@ -2777,8 +2697,7 @@ Your code should pass these tests:
 {trajectory}"""
 
 
-MBPP_FEWSHOT_EXAMPLES_LATS_REFLECT = """Previous Trial:
-You are an expert Python programmer, and here is your task: Write a function to find the shared elements from the given two lists.
+MBPP_FEWSHOT_EXAMPLES_LATS_REFLECT = """You are an expert Python programmer, and here is your task: Write a function to find the shared elements from the given two lists.
 Your code should pass these tests:
 
 assert set(similar_elements((3, 4, 5, 6), (5, 7, 4, 10))) == set((4, 5))
@@ -2845,7 +2764,6 @@ Reflection: My reasoning failed because I incorrectly implemented the initial so
 
 ---
 
-Previous Trial:
 You are an expert Python programmer, and here is your task: Write a python function to identify non-prime numbers.
 Your code should pass these tests:
 
@@ -2901,7 +2819,6 @@ Reflection: My reasoning failed because I used the wrong modulus condition (`n %
 
 ---
 
-Previous Trial:
 You are an expert Python programmer, and here is your task: Write a function to find the n largest integers from a given list of numbers, returned in descending order.
 Your code should pass these tests:
 
@@ -2965,7 +2882,6 @@ Reflection: My reasoning failed because I incorrectly used the `nsmallest` funct
 
 ---
 
-Previous Trial:
 You are an expert Python programmer, and here is your task: Write a Python function to check whether the two numbers differ at one bit position only or not.
 Your code should pass these tests:
 
@@ -3006,7 +2922,6 @@ Reflection: My reasoning failed because the condition (differing_bits + 1) is in
 
 ---
 
-Previous Trial:
 You are an expert Python programmer, and here is your task: Write a function to find all words which are at least 4 characters long in a string.
 Your code should pass these tests:
 
