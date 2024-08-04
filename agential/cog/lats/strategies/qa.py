@@ -22,7 +22,8 @@ from agential.eval.em import EM
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
 
-def get_node_trajectory(node: Node) -> str:
+
+def get_node_trajectory_qa(node: Node) -> str:
     """Generates a string representation of the trajectory from the given node to the root.
 
     Args:
@@ -49,6 +50,7 @@ def get_node_trajectory(node: Node) -> str:
         node = node.parent  # type: ignore
 
     return "\n".join(reversed(trajectory))
+
 
 def parse_qa_action(string: str) -> Tuple[str, str]:
     """Parses an action string into an action type and its argument.
@@ -184,7 +186,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                     + "\n\n"
                 )
 
-        trajectory = get_node_trajectory(node)
+        trajectory = get_node_trajectory_qa(node)
 
         unique_states = set()
         children_nodes = []
@@ -236,7 +238,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                 )
 
                 if new_node.is_terminal and reward == 0:
-                    traversed_nodes = get_node_trajectory(new_node)
+                    traversed_nodes = get_node_trajectory_qa(new_node)
                     self.failed_trajectories.append(
                         {
                             "trajectory": traversed_nodes,
@@ -480,7 +482,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             List[Dict[str, Any]]: A list of dictionaries containing evaluation results for each child node.
         """
         children_trajectories = [
-            {"child_trajectory": get_node_trajectory(child), "idx": idx}
+            {"child_trajectory": get_node_trajectory_qa(child), "idx": idx}
             for idx, child in enumerate(node.children)
             if not child.is_terminal
         ]
@@ -600,7 +602,7 @@ class LATSQAStrategy(LATSBaseStrategy):
 
             for idx, child in enumerate(children_nodes):
                 if not child.is_terminal:
-                    child_trajectory = get_node_trajectory(child)
+                    child_trajectory = get_node_trajectory_qa(child)
                     failed_trajectories = ""
                     if len(self.reflection_map) > 0:
                         for trajectory_reflection in self.reflection_map:

@@ -17,16 +17,16 @@ from agential.cog.lats.strategies.qa import (
     LATSFEVERStrategy,
     LATSHotQAStrategy,
     LATSTriviaQAStrategy,
+    get_node_trajectory_qa,
     parse_qa_action,
     parse_qa_value,
-    get_node_trajectory
 )
 from agential.cog.react.output import ReActOutput
 from agential.utils.docstore import DocstoreExplorer
 
 
-def test_get_node_trajectory() -> None:
-    """Tests the get_node_trajectory() function."""
+def test_get_node_trajectory_qa() -> None:
+    """Tests the get_node_trajectory_qa() function."""
     root = Node(
         state=ReActOutput(
             **{
@@ -67,11 +67,11 @@ def test_get_node_trajectory() -> None:
     )
 
     expected_trajectory = "\nThought 1: Child1 thought\nAction 1: Lookup[topic]\nThought 2: Child2 thought\nAction 2: Finish[answer]\nObservation 2: Answer correct"
-    assert get_node_trajectory(child2) == expected_trajectory
+    assert get_node_trajectory_qa(child2) == expected_trajectory
 
     # Test root node.
     root = Node()
-    assert get_node_trajectory(root) == ""
+    assert get_node_trajectory_qa(root) == ""
 
 
 def test_parse_qa_action():
@@ -158,7 +158,6 @@ def test_initialize() -> None:
     assert strategy.root.state.query == ""
     assert strategy.root.state.observation == ""
     assert strategy.root.state.external_tool_info == {}
-
 
 
 def test_generate_thought() -> None:

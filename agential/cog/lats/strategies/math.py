@@ -22,7 +22,8 @@ from agential.eval.em import EM
 from agential.utils.general import safe_execute
 from agential.utils.parse import remove_newline
 
-def get_node_trajectory(node: Node) -> str:
+
+def get_node_trajectory_math(node: Node) -> str:
     """Generates a string representation of the trajectory from the given node to the root.
 
     Args:
@@ -40,7 +41,7 @@ def get_node_trajectory(node: Node) -> str:
                 step.append(f"Thought {node.depth}: {node.state.thought}")
             if node.state.action_type and node.state.query:
                 step.append(
-                    f"Action {node.depth}: {node.state.action_type}[```python\n{node.state.query}]"
+                    f"Action {node.depth}: {node.state.action_type}[\n```python\n{node.state.query}\n```\n]"
                 )
             if node.state.observation:
                 step.append(f"Observation {node.depth}: {node.state.observation}")
@@ -49,7 +50,8 @@ def get_node_trajectory(node: Node) -> str:
         node = node.parent  # type: ignore
 
     return "\n".join(reversed(trajectory))
-    
+
+
 def parse_math_action(action: str) -> Tuple[str, str]:
     """Parses an action string to extract the action type and code content.
 
@@ -188,7 +190,7 @@ class LATSMathStrategy(LATSBaseStrategy):
                     + "\n\n"
                 )
 
-        trajectory = get_node_trajectory(node)
+        trajectory = get_node_trajectory_math(node)
 
         unique_states = set()
         children_nodes = []
@@ -240,7 +242,7 @@ class LATSMathStrategy(LATSBaseStrategy):
                 )
 
                 if new_node.is_terminal and reward == 0:
-                    traversed_nodes = get_node_trajectory(new_node)
+                    traversed_nodes = get_node_trajectory_math(new_node)
                     self.failed_trajectories.append(
                         {
                             "trajectory": traversed_nodes,
@@ -481,7 +483,7 @@ class LATSMathStrategy(LATSBaseStrategy):
             List[Dict[str, Any]]: A list of dictionaries containing evaluation results for each child node.
         """
         children_trajectories = [
-            {"child_trajectory": get_node_trajectory(child), "idx": idx}
+            {"child_trajectory": get_node_trajectory_math(child), "idx": idx}
             for idx, child in enumerate(node.children)
             if not child.is_terminal
         ]
@@ -601,7 +603,7 @@ class LATSMathStrategy(LATSBaseStrategy):
 
             for idx, child in enumerate(children_nodes):
                 if not child.is_terminal:
-                    child_trajectory = get_node_trajectory(child)
+                    child_trajectory = get_node_trajectory_math(child)
                     failed_trajectories = ""
                     if len(self.reflection_map) > 0:
                         for trajectory_reflection in self.reflection_map:
