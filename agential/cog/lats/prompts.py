@@ -831,3 +831,58 @@ Previous Trial:
 Question: {question}{trajectory}
 
 Explanation:"""
+
+
+# ======================================================================== GSM8K ======================================================================== #
+
+
+LATS_INSTRUCTION_GSM8K = """"""
+
+
+GSM8K_FEWSHOT_EXAMPLES_LATS_REFLECT = """"""
+
+
+LATS_REFLECT_INSTRUCTION_GSM8K = """"""
+
+
+GSM8K_FEWSHOT_EXAMPLES_LATS_VALUE = """"""
+
+
+LATS_VALUE_INSTRUCTION_GSM8K = """"""
+
+
+# ======================================================================== SVAMP ======================================================================== #
+
+
+LATS_INSTRUCTION_SVAMP = """"""
+
+
+SVAMP_FEWSHOT_EXAMPLES_LATS_REFLECT = """"""
+
+
+LATS_REFLECT_INSTRUCTION_SVAMP = """"""
+
+
+SVAMP_FEWSHOT_EXAMPLES_LATS_VALUE = """"""
+
+
+LATS_VALUE_INSTRUCTION_SVAMP = """"""
+
+
+# ======================================================================== TABMWP ======================================================================== #
+
+
+LATS_INSTRUCTION_TABMWP = """"""
+
+
+TABMWP_FEWSHOT_EXAMPLES_LATS_REFLECT = """"""
+
+
+LATS_REFLECT_INSTRUCTION_TABMWP = """"""
+
+
+TABMWP_FEWSHOT_EXAMPLES_LATS_VALUE = """"""
+
+
+LATS_VALUE_INSTRUCTION_TABMWP = """"""
+
