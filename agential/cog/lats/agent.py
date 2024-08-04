@@ -116,6 +116,8 @@ class LATSAgent(BaseAgent):
                 reflect_additional_keys=reflect_additional_keys,
             )
 
+            print("<========================================== EXPAND NODE END =======================================>")
+
             for child_node in children_nodes:
                 if self.strategy.halting_condition(child_node):
                     output.append(
@@ -141,6 +143,8 @@ class LATSAgent(BaseAgent):
                 additional_keys=value_additional_keys,
             )
 
+            print("<========================================== EVALUATE NODE END =======================================>")
+
             simulation_reward, simulation_terminal_node, simulation_results = (
                 self.strategy.simulate_node(
                     node=max(
@@ -159,6 +163,8 @@ class LATSAgent(BaseAgent):
                     value_additional_keys=value_additional_keys,
                 )
             )
+
+            print("<========================================== SIMULATE NODE END =======================================>")
 
             simulation_results_output = [
                 LATSSimulationOutput(
@@ -190,6 +196,8 @@ class LATSAgent(BaseAgent):
             self.strategy.backpropagate_node(
                 node=simulation_terminal_node, value=simulation_reward
             )
+
+            print("<========================================== BACKPROPAGATE NODE END =======================================>")
 
         return simulation_terminal_node, output
 
