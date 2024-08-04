@@ -11,7 +11,7 @@ from agential.cog.expel.factory import (
 from agential.cog.expel.prompts import (
     EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-    HOTPOTQA_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT
+    HOTPOTQA_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
 )
 from agential.cog.expel.strategies.code import (
     ExpeLHEvalStrategy,
