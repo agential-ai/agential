@@ -151,8 +151,8 @@ Certainly! Here's the section organized with each benchmark in a single row and 
 | **AmbigNQ**   | 1. Incorrect assumption/Insufficient info<br>2. Insufficient info<br>3. Knowledge error<br>4. Incorrect answer format<br>5. Misread context | 1.  wrong (2)<br>2.  wrong (3)<br>3.  wrong (4)<br>4.  wip (10)<br>5.  right (10) |
 | **TriviaQA**  | 1. Ignore context<br>2. Ignore context<br>3. Ignore context<br>4. Ignore context<br>5. Ignore context | 1. wrong (2)<br>2. wrong (2)<br>3. wrong (3)<br>4. wip (10)<br>5. right (10) |
 | **GSM8K**     | 1. Logical error/Misinterpret question<br>2. Logical error/Misinterpret question<br>3. Logical error/Re-calculation error<br>4. Logical error/Re-calculation error<br>5. Logical error/Misinterpret question | 1. wrong (1)<br>2. wrong (2)<br>3. wrong (6)<br>4. wip (10)<br>5. right (10) |
-| **SVAMP**     | 1. Misinterpret question<br>2. Logical error<br>3. Logical error<br>4. Logical error<br>5. Logical error |                |
-| **TabMWP**    | 1. Misinterpret question<br>2. Logical error<br>3. Logical error<br>4. Re-calculation error<br>5. Logical error |                |
+| **SVAMP**     | 1. Misinterpret question<br>2. Logical error<br>3. Logical error<br>4. Logical error<br>5. Logical error | 1. wrong (4)<br>2. wrong (3)<br>3. wrong (4)<br>4. wip (10)<br>5. right (10) |
+| **TabMWP**    | 1. Misinterpret question<br>2. Logical error<br>3. Logical error<br>4. Re-calculation error<br>5. Logical error | 1. wrong (3)<br>2. wrong (4)<br>3. wrong (3)<br>4. wip (7)<br>5. right (10) |
 | **HumanEval** | 1. Logical error<br>2. Logical error<br>3. Logical error<br>4. Logical error<br>5. Logical error |                |
 | **MBPP**      | 1. Incorrect function implementation<br>2. Logical error<br>3. Incorrect function usage<br>4. Logical error<br>5. Logical error |                |
 
