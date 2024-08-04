@@ -1,4 +1,4 @@
-"""Unit tests for LATS QA strategies."""
+"""Unit tests for LATS Math strategies."""
 
 from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_community.docstore.wikipedia import Wikipedia
@@ -18,14 +18,14 @@ from agential.cog.lats.strategies.math import (
     LATSTabMWPStrategy,
     parse_math_action,
     parse_math_value,
-    get_node_trajectory
+    get_node_trajectory_math
 )
 from agential.cog.react.output import ReActOutput
 from agential.utils.docstore import DocstoreExplorer
 
 
-def test_get_node_trajectory() -> None:
-    """Tests the get_node_trajectory() function."""
+def test_get_node_trajectory_math() -> None:
+    """Tests the get_node_trajectory_math() function."""
     root = Node(
         state=ReActOutput(
             **{
@@ -65,12 +65,12 @@ def test_get_node_trajectory() -> None:
         parent=child1,
     )
 
-    expected_trajectory = "\nThought 1: Child1 thought\nAction 1: Lookup[topic]\nThought 2: Child2 thought\nAction 2: Finish[answer]\nObservation 2: Answer correct"
-    assert get_node_trajectory(child2) == expected_trajectory
+    expected_trajectory = '\nThought 1: Child1 thought\nAction 1: Lookup[\n```python\ntopic\n```\n]\nThought 2: Child2 thought\nAction 2: Finish[\n```python\nanswer\n```\n]\nObservation 2: Answer correct'
+    assert get_node_trajectory_math(child2) == expected_trajectory
 
     # Test root node.
     root = Node()
-    assert get_node_trajectory(root) == ""
+    assert get_node_trajectory_math(root) == ""
 
 
 def test_parse_math_action():
@@ -944,7 +944,7 @@ def test_reset() -> None:
 
 
 def test_instantiate_strategies() -> None:
-    """Test the instantiation of various LATS QA strategies."""
+    """Test the instantiation of various LATS Math strategies."""
     llm = FakeListChatModel(responses=[])
     gsm8k_strategy = LATSGSM8KStrategy(llm=llm)
     svamp_strategy = LATSSVAMPStrategy(llm=llm)
