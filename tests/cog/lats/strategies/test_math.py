@@ -13,6 +13,7 @@ from agential.cog.lats.prompts import (
 )
 from agential.cog.lats.strategies.math import (
     LATSMathStrategy,
+    LATSGSM8KStrategy,
     LATSSVAMPStrategy,
     LATSTabMWPStrategy,
     get_node_trajectory_math,
@@ -882,10 +883,10 @@ def test_reset() -> None:
 def test_instantiate_strategies() -> None:
     """Test the instantiation of various LATS Math strategies."""
     llm = FakeListChatModel(responses=[])
-    gsm8k_strategy = LATSMathStrategy(llm=llm)
+    gsm8k_strategy = LATSGSM8KStrategy(llm=llm)
     svamp_strategy = LATSSVAMPStrategy(llm=llm)
     tabmwp_strategy = LATSTabMWPStrategy(llm=llm)
 
-    assert isinstance(gsm8k_strategy, LATSMathStrategy)
+    assert isinstance(gsm8k_strategy, LATSGSM8KStrategy)
     assert isinstance(svamp_strategy, LATSSVAMPStrategy)
     assert isinstance(tabmwp_strategy, LATSTabMWPStrategy)
