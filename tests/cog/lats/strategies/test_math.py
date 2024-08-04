@@ -75,15 +75,36 @@ def test_get_node_trajectory_math() -> None:
 
 def test_parse_math_action():
     """Test the parse_math_action function."""
-    # Test valid action strings.
-    assert parse_math_action("Search[query]") == ("Search", "query")
-    assert parse_math_action("Lookup[term]") == ("Lookup", "term")
-    assert parse_math_action("Finish[answer]") == ("Finish", "answer")
+    test_cases = [
+        {
+            "input": "Calculate[```python\ndef add(a, b): return a + b\n```]",
+            "expected": ("Calculate", "def add(a, b): return a + b"),
+        },
+        {
+            "input": "FINISH[```python\nassert add(2, 3) == 5\n```]",
+            "expected": ("Finish", "assert add(2, 3) == 5"),
+        },
+        {
+            "input": "calculate[```python\ndef subtract(a, b): return a - b\n```]",
+            "expected": ("Calculate", "def subtract(a, b): return a - b"),
+        },
+        {
+            "input": "Invalid[```python\nThis should not match\n```]",
+            "expected": ("", ""),
+        },
+        {
+            "input": "Calculate[```python\n \n```]",
+            "expected": ("Calculate", ""),
+        },
+        {
+            "input": "Something else entirely",
+            "expected": ("", ""),
+        },
+    ]
 
-    # Test invalid action strings.
-    assert parse_math_action("InvalidAction") == ("", "")
-    assert parse_math_action("") == ("", "")
-    assert parse_math_action("Action[]") == ("", "")
+    for case in test_cases:
+        result = parse_math_action(case["input"])
+        assert result == case["expected"], f"Failed for input: {case['input']}"
 
 
 def test_parse_math_value():
