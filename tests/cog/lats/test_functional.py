@@ -129,6 +129,7 @@ def test__prompt_agent() -> None:
     assert isinstance(out, str)
     assert out == "Agent Output"
 
+
 def test_get_unique_trajectories() -> None:
     """Tests the get_unique_trajectories() function."""
     failed_trajectories = [
