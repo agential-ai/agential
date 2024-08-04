@@ -13,7 +13,6 @@ from agential.cog.lats.functional import (
     _prompt_agent,
     _prompt_reflection,
     _prompt_value,
-    get_node_trajectory,
     get_unique_trajectories,
 )
 from agential.cog.lats.node import Node
@@ -23,7 +22,34 @@ from agential.eval.em import EM
 from agential.utils.general import safe_execute
 from agential.utils.parse import remove_newline
 
+def get_node_trajectory(node: Node) -> str:
+    """Generates a string representation of the trajectory from the given node to the root.
 
+    Args:
+        node (Node): The current node in the tree.
+
+    Returns:
+        str: A string representation of the trajectory, including thoughts, actions, and observations.
+    """
+    trajectory = []
+
+    while node:
+        step = []
+        if node.depth > 0:
+            if node.state.thought:
+                step.append(f"Thought {node.depth}: {node.state.thought}")
+            if node.state.action_type and node.state.query:
+                step.append(
+                    f"Action {node.depth}: {node.state.action_type}[```python\n{node.state.query}]"
+                )
+            if node.state.observation:
+                step.append(f"Observation {node.depth}: {node.state.observation}")
+        step_str = "\n".join(step)
+        trajectory.append(step_str)
+        node = node.parent  # type: ignore
+
+    return "\n".join(reversed(trajectory))
+    
 def parse_math_action(action: str) -> Tuple[str, str]:
     """Parses an action string to extract the action type and code content.
 

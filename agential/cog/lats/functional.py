@@ -304,35 +304,6 @@ def _prompt_agent(
     return out
 
 
-def get_node_trajectory(node: Node) -> str:
-    """Generates a string representation of the trajectory from the given node to the root.
-
-    Args:
-        node (Node): The current node in the tree.
-
-    Returns:
-        str: A string representation of the trajectory, including thoughts, actions, and observations.
-    """
-    trajectory = []
-
-    while node:
-        step = []
-        if node.depth > 0:
-            if node.state.thought:
-                step.append(f"Thought {node.depth}: {node.state.thought}")
-            if node.state.action_type and node.state.query:
-                step.append(
-                    f"Action {node.depth}: {node.state.action_type}[{node.state.query}]"
-                )
-            if node.state.observation:
-                step.append(f"Observation {node.depth}: {node.state.observation}")
-        step_str = "\n".join(step)
-        trajectory.append(step_str)
-        node = node.parent  # type: ignore
-
-    return "\n".join(reversed(trajectory))
-
-
 def get_unique_trajectories(
     failed_trajectories: List[Dict[str, str]], max_unique: int
 ) -> List[str]:

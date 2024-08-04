@@ -19,9 +19,59 @@ from agential.cog.lats.strategies.qa import (
     LATSTriviaQAStrategy,
     parse_qa_action,
     parse_qa_value,
+    get_node_trajectory
 )
 from agential.cog.react.output import ReActOutput
 from agential.utils.docstore import DocstoreExplorer
+
+
+def test_get_node_trajectory() -> None:
+    """Tests the get_node_trajectory() function."""
+    root = Node(
+        state=ReActOutput(
+            **{
+                "thought": "Root thought",
+                "action_type": "",
+                "query": "",
+                "observation": "",
+                "answer": "",
+                "external_tool_info": {},
+            }
+        )
+    )
+    child1 = Node(
+        state=ReActOutput(
+            **{
+                "thought": "Child1 thought",
+                "action_type": "Lookup",
+                "query": "topic",
+                "observation": "",
+                "answer": "",
+                "external_tool_info": {},
+            }
+        ),
+        parent=root,
+    )
+    child2 = Node(
+        state=ReActOutput(
+            **{
+                "thought": "Child2 thought",
+                "action_type": "Finish",
+                "query": "answer",
+                "observation": "Answer correct",
+                "answer": "",
+                "external_tool_info": {},
+            }
+        ),
+        parent=child1,
+    )
+
+    expected_trajectory = "\nThought 1: Child1 thought\nAction 1: Lookup[topic]\nThought 2: Child2 thought\nAction 2: Finish[answer]\nObservation 2: Answer correct"
+    assert get_node_trajectory(child2) == expected_trajectory
+
+    # Test root node.
+    root = Node()
+    assert get_node_trajectory(root) == ""
 
 
 def test_parse_qa_action():
@@ -108,6 +158,7 @@ def test_initialize() -> None:
     assert strategy.root.state.query == ""
     assert strategy.root.state.observation == ""
     assert strategy.root.state.external_tool_info == {}
+
 
 
 def test_generate_thought() -> None:

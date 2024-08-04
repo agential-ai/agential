@@ -23,8 +23,15 @@ from agential.cog.lats.prompts import (
     LATS_VALUE_INSTRUCTION_FEVER,
     LATS_VALUE_INSTRUCTION_HOTPOTQA,
     LATS_VALUE_INSTRUCTION_TRIVIAQA,
+    SVAMP_FEWSHOT_EXAMPLES_LATS_REFLECT,
+    SVAMP_FEWSHOT_EXAMPLES_LATS_VALUE,
+    TABMWP_FEWSHOT_EXAMPLES_LATS_REFLECT,
+    TABMWP_FEWSHOT_EXAMPLES_LATS_VALUE,
     TRIVIAQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
     TRIVIAQA_FEWSHOT_EXAMPLES_LATS_VALUE,
+    GSM8K_FEWSHOT_EXAMPLES_LATS_REFLECT,
+    GSM8K_FEWSHOT_EXAMPLES_LATS_VALUE
+
 )
 from agential.cog.lats.strategies.base import LATSBaseStrategy
 from agential.cog.lats.strategies.qa import (
@@ -32,6 +39,11 @@ from agential.cog.lats.strategies.qa import (
     LATSFEVERStrategy,
     LATSHotQAStrategy,
     LATSTriviaQAStrategy,
+)
+from agential.cog.lats.strategies.math import (
+    LATSGSM8KStrategy,
+    LATSSVAMPStrategy,
+    LATSTabMWPStrategy
 )
 
 LATS_BENCHMARK_FEWSHOTS = {
@@ -111,9 +123,15 @@ LATS_FEWSHOTS = {
         "reflect_examples": AMBIGNQ_FEWSHOT_EXAMPLES_LATS_REFLECT,
         "value_examples": AMBIGNQ_FEWSHOT_EXAMPLES_LATS_VALUE,
     },
-    Benchmarks.GSM8K: {"reflect_examples": "", "value_examples": ""},
-    Benchmarks.SVAMP: {"reflect_examples": "", "value_examples": ""},
-    Benchmarks.TABMWP: {"reflect_examples": "", "value_examples": ""},
+    Benchmarks.GSM8K: {"reflect_examples": GSM8K_FEWSHOT_EXAMPLES_LATS_REFLECT,
+                        "value_examples": GSM8K_FEWSHOT_EXAMPLES_LATS_VALUE
+                        },
+    Benchmarks.SVAMP: {"reflect_examples": SVAMP_FEWSHOT_EXAMPLES_LATS_REFLECT,
+                        "value_examples": SVAMP_FEWSHOT_EXAMPLES_LATS_VALUE
+                        },
+    Benchmarks.TABMWP: {"reflect_examples": TABMWP_FEWSHOT_EXAMPLES_LATS_REFLECT,
+                        "value_examples": TABMWP_FEWSHOT_EXAMPLES_LATS_VALUE
+                      },
     Benchmarks.HUMANEVAL: {"reflect_examples": "", "value_examples": ""},
     Benchmarks.MBPP: {"reflect_examples": "", "value_examples": ""},
 }
@@ -123,11 +141,10 @@ LATS_STRATEGIES = {
     Benchmarks.FEVER: LATSFEVERStrategy,
     Benchmarks.TRIVIAQA: LATSTriviaQAStrategy,
     Benchmarks.AMBIGNQ: LATSAmbigNQStrategy,
-    Benchmarks.GSM8K: None,
-    Benchmarks.SVAMP: None,
-    Benchmarks.TABMWP: None,
+    Benchmarks.GSM8K: LATSGSM8KStrategy,
+    Benchmarks.SVAMP: LATSSVAMPStrategy,
+    Benchmarks.TABMWP: LATSTabMWPStrategy,
     Benchmarks.HUMANEVAL: None,
-    Benchmarks.MBPP: None,
 }
 
 

@@ -12,7 +12,6 @@ from agential.cog.lats.functional import (
     _prompt_agent,
     _prompt_reflection,
     _prompt_value,
-    get_node_trajectory,
     get_unique_trajectories,
 )
 from agential.cog.lats.node import Node
@@ -129,56 +128,6 @@ def test__prompt_agent() -> None:
     )
     assert isinstance(out, str)
     assert out == "Agent Output"
-
-
-def test_get_node_trajectory() -> None:
-    """Tests the get_node_trajectory() function."""
-    root = Node(
-        state=ReActOutput(
-            **{
-                "thought": "Root thought",
-                "action_type": "",
-                "query": "",
-                "observation": "",
-                "answer": "",
-                "external_tool_info": {},
-            }
-        )
-    )
-    child1 = Node(
-        state=ReActOutput(
-            **{
-                "thought": "Child1 thought",
-                "action_type": "Lookup",
-                "query": "topic",
-                "observation": "",
-                "answer": "",
-                "external_tool_info": {},
-            }
-        ),
-        parent=root,
-    )
-    child2 = Node(
-        state=ReActOutput(
-            **{
-                "thought": "Child2 thought",
-                "action_type": "Finish",
-                "query": "answer",
-                "observation": "Answer correct",
-                "answer": "",
-                "external_tool_info": {},
-            }
-        ),
-        parent=child1,
-    )
-
-    expected_trajectory = "\nThought 1: Child1 thought\nAction 1: Lookup[topic]\nThought 2: Child2 thought\nAction 2: Finish[answer]\nObservation 2: Answer correct"
-    assert get_node_trajectory(child2) == expected_trajectory
-
-    # Test root node.
-    root = Node()
-    assert get_node_trajectory(root) == ""
-
 
 def test_get_unique_trajectories() -> None:
     """Tests the get_unique_trajectories() function."""
