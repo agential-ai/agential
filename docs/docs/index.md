@@ -51,7 +51,7 @@
 | CRITIC                   | :octicons-check-16:  | :octicons-check-16:  |
 | Self-Refine              | :octicons-check-16:  | :octicons-check-16:  |
 | ExpeL                    | :octicons-check-16:  | :octicons-check-16:  |
-| LATS                     |                      |                      |
+| LATS                     | :material-check-all: | :material-check-all: |
 
 | **Methods / Benchmarks** | ALFWorld | WebShop | AgentBench |
 | ------------------------ | :------: | :-----: | :--------: |
