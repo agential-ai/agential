@@ -142,7 +142,6 @@ def test_init() -> None:
     docstore = DocstoreExplorer(Wikipedia())
     strategy = LATSGSM8KStrategy(
         llm=llm,
-        docstore=docstore,
         n_samples=5,
         max_reflections=4,
         depth_limit=7,
@@ -151,7 +150,6 @@ def test_init() -> None:
     )
 
     assert strategy.llm == llm
-    assert isinstance(strategy.docstore, DocstoreExplorer)
     assert strategy.n_samples == 5
     assert strategy.max_reflections == 4
     assert strategy.depth_limit == 7
