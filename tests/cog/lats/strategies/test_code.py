@@ -14,6 +14,60 @@ from agential.cog.react.output import ReActOutput
 from agential.cog.lats.node import Node
 
 
+def test_parse_latest_implement() -> None:
+    """Test parse_latest_implement function."""
+    
+    # Test case with single implementation.
+    single_impl = """
+    Some text
+    Implement[```python
+    def add(a, b):
+        return a + b
+    ```]
+    More text
+    """
+    assert parse_latest_implement(single_impl) == "def add(a, b):\n        return a + b"
+
+    # Test case with multiple implementations.
+    multiple_impl = """
+    Implement[```python
+    def subtract(a, b):
+        return a - b
+    ```]
+    Some text
+    Implement[```python
+    def multiply(a, b):
+        return a * b
+    ```]
+    """
+    assert parse_latest_implement(multiple_impl) == "def multiply(a, b):\n        return a * b"
+
+    # Test case with no implementation.
+    no_impl = "Some text without any implementation"
+    assert parse_latest_implement(no_impl) == ""
+
+    # Test case with empty implementation.
+    empty_impl = "Implement[```python\n```]"
+    assert parse_latest_implement(empty_impl) == ""
+
+    # Test case with multiple lines in implementation.
+    multi_line_impl = """
+    Implement[```python
+    def complex_function(x):
+        if x > 0:
+            return x * 2
+        else:
+            return x * -1
+    ```]
+    """
+    expected_multi_line = """def complex_function(x):
+        if x > 0:
+            return x * 2
+        else:
+            return x * -1"""
+    assert parse_latest_implement(multi_line_impl) == expected_multi_line
+
+
 def test_get_node_trajectory_code() -> None:
     """Tests the get_node_trajectory_code() function."""
     root = Node(
