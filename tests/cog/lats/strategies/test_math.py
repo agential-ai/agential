@@ -209,28 +209,25 @@ def test_generate_thought() -> None:
 
 def test_generate_action() -> None:
     """Test the generate_action method."""
-    llm = FakeListChatModel(responses=["Search[capital of France]"])
+    llm = FakeListChatModel(responses=["Calculate[```python\nresult = 2 + 2\n```]"])
     strategy = LATSGSM8KStrategy(llm=llm)
 
-    question = "What is the capital of France?"
+    question = "What is 2 + 2?"
     examples = "Example 1\nExample 2"
-    trajectory = (
-        "Thought 2: I should search for information about the capital of France."
-    )
+    trajectory = "Thought 1: I need to calculate 2 + 2."
     reflections = "Reflection 1\nReflection 2"
-    depth = 1
+    depth = 0
     prompt = "Generate an action"
     additional_keys = {"key": "value"}
 
     trajectory, action_type, query = strategy.generate_action(
         question, examples, trajectory, reflections, depth, prompt, additional_keys
     )
-    assert (
-        trajectory
-        == "Thought 2: I should search for information about the capital of France.\nAction 2: Search[capital of France]"
-    )
-    assert action_type == "Search"
-    assert query == "capital of France"
+    
+    assert trajectory == "Thought 1: I need to calculate 2 + 2.\nAction 1: Calculate[\n```python\nresult = 2 + 2\n```\n]"
+    assert action_type == "Calculate"
+    assert query == "result = 2 + 2"
+
 
 
 def test_generate_observation() -> None:
