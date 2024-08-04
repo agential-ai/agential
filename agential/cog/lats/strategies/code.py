@@ -22,6 +22,28 @@ from agential.utils.general import safe_execute
 from agential.utils.parse import remove_newline
 
 
+def parse_latest_implement(text: str) -> str:
+    """Extract the latest Python code implementation from the given text.
+
+    This function searches for the last occurrence of Python code enclosed in
+    'Implement[```python ... ```]' blocks within the input text.
+
+    Args:
+        text (str): The input text containing one or more code implementations.
+
+    Returns:
+        str: The extracted Python code as a string if found, or "" if no implementation is found.
+    """
+    pattern = re.compile(r"Implement\[\s*```python(.*?)```", re.DOTALL)
+    
+    matches = pattern.findall(text)
+    
+    if matches:
+        latest_implement = matches[-1].strip()
+        return latest_implement
+    return ""
+
+
 def get_node_trajectory_code(node: Node) -> str:
     """Generates a string representation of the trajectory from the given node to the root.
 
@@ -377,12 +399,12 @@ class LATSCodeStrategy(LATSBaseStrategy):
 
             obs = f"\n```python\n{query}\n```\nExecution Status: {execution_status}"
         elif action_type.lower() == "test":
-            obs = f"{self._answer}\n\n{query}"
+            answer = parse_latest_implement(trajectory)
+            obs = f"{answer}\n\n{query}"
             _, execution_status = safe_execute(obs)
             external_tool_info["execution_status"] = execution_status
 
             obs = f"\n```python\n{obs}\n```\nExecution Status: {execution_status}"
-        
         else:
             obs = (
                 "Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
