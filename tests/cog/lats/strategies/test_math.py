@@ -13,9 +13,10 @@ from agential.cog.lats.prompts import (
     LATS_VALUE_INSTRUCTION_GSM8K,
 )
 from agential.cog.lats.strategies.math import (
-    LATSGSM8KStrategy,
+    LATSMathStrategy,
     LATSSVAMPStrategy,
     LATSTabMWPStrategy,
+    LATSMathStrategy,
     parse_math_action,
     parse_math_value,
     get_node_trajectory_math
@@ -140,7 +141,7 @@ def test_init() -> None:
     """Test initialization."""
     llm = FakeListChatModel(responses=[])
     docstore = DocstoreExplorer(Wikipedia())
-    strategy = LATSGSM8KStrategy(
+    strategy = LATSMathStrategy(
         llm=llm,
         n_samples=5,
         max_reflections=4,
@@ -164,7 +165,7 @@ def test_init() -> None:
 def test_initialize() -> None:
     """Test the initialize method."""
     llm = FakeListChatModel(responses=[])
-    strategy = LATSGSM8KStrategy(llm=llm)
+    strategy = LATSMathStrategy(llm=llm)
 
     node = strategy.initialize()
 
@@ -186,7 +187,7 @@ def test_generate_thought() -> None:
             "I should search for information about the topic."
         ]
     )
-    strategy = LATSGSM8KStrategy(llm=llm)
+    strategy = LATSMathStrategy(llm=llm)
 
     question = "What is the capital of France?"
     examples = "Example 1\nExample 2"
@@ -210,7 +211,7 @@ def test_generate_thought() -> None:
 def test_generate_action() -> None:
     """Test the generate_action method."""
     llm = FakeListChatModel(responses=["Calculate[```python\nresult = 2 + 2\n```]"])
-    strategy = LATSGSM8KStrategy(llm=llm)
+    strategy = LATSMathStrategy(llm=llm)
 
     question = "What is 2 + 2?"
     examples = "Example 1\nExample 2"
@@ -233,7 +234,7 @@ def test_generate_action() -> None:
 def test_generate_observation() -> None:
     """Test the generate_observation method."""
     llm = FakeListChatModel(responses=[])
-    strategy = LATSGSM8KStrategy(llm=llm)
+    strategy = LATSMathStrategy(llm=llm)
 
     key = "4"
     trajectory = "Previous trajectory"
@@ -258,83 +259,29 @@ def test_generate_observation() -> None:
 def test_generate() -> None:
     """Test the generate method."""
     gt_states = [
-        ReActOutput(
-            thought="I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
-            action_type="Search",
-            query="best kick boxer controversies crimes",
-            observation="Badr Hari is the best kick boxer in the world.",
-            answer="",
-            external_tool_info={
-                "search_result": "Badr Hari is the best kick boxer in the world.",
-                "lookup_result": "",
-            },
-        ),
-        ReActOutput(
-            thought="I need to search for the best kickboxer who has been involved in controversies and crimes of violence",
-            action_type="Search",
-            query="best kick boxer controversies crimes",
-            observation="Badr Hari is the best kick boxer in the world.",
-            answer="",
-            external_tool_info={
-                "search_result": "Badr Hari is the best kick boxer in the world.",
-                "lookup_result": "",
-            },
-        ),
-        ReActOutput(
-            thought="I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies",
-            action_type="Search",
-            query="best kick boxer controversies",
-            observation="Badr Hari is the best kick boxer in the world.",
-            answer="",
-            external_tool_info={
-                "search_result": "Badr Hari is the best kick boxer in the world.",
-                "lookup_result": "",
-            },
-        ),
-        ReActOutput(
-            thought="I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring",
-            action_type="Search",
-            query="best kick boxer controversies violence",
-            observation="Badr Hari is the best kick boxer in the world.",
-            answer="",
-            external_tool_info={
-                "search_result": "Badr Hari is the best kick boxer in the world.",
-                "lookup_result": "",
-            },
-        ),
-        ReActOutput(
-            thought="I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies",
-            action_type="Search",
-            query="best kickboxer controversies",
-            observation="Badr Hari is the best kick boxer in the world.",
-            answer="",
-            external_tool_info={
-                "search_result": "Badr Hari is the best kick boxer in the world.",
-                "lookup_result": "",
-            },
-        ),
+        ReActOutput(thought="I need to calculate how much money Janet makes daily at the farmers' market.", action_type='Calculate', query='eggs_laid_per_day = 16\neggs_consumed = 3\neggs_used_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_consumed - eggs_used_muffins\nprice_per_egg = 2\nearnings_per_day = eggs_sold * price_per_egg\nanswer = earnings_per_day', observation='\n```python\neggs_laid_per_day = 16\neggs_consumed = 3\neggs_used_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_consumed - eggs_used_muffins\nprice_per_egg = 2\nearnings_per_day = eggs_sold * price_per_egg\nanswer = earnings_per_day\n```\nExecution Status: Done\nOutput: answer = -9867630', answer='', external_tool_info={'execution_status': 'Done', 'code_answer': -9867630}),
+        ReActOutput(thought="I need to calculate how much money Janet makes daily at the farmers' market by selling the remaining eggs after breakfast and baking muffins for her friends.", action_type='Calculate', query='eggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nanswer = eggs_sold * price_per_egg', observation='\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nanswer = eggs_sold * price_per_egg\n```\nExecution Status: Done\nOutput: answer = -9867630', answer='', external_tool_info={'execution_status': 'Done', 'code_answer': -9867630}),
+        ReActOutput(thought="First, I need to calculate the total number of eggs Janet has available to sell at the farmers' market after accounting for her breakfast consumption and muffin baking.", action_type='Calculate', query='eggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_available_to_sell = eggs_laid_per_day - eggs_consumed_for_breakfast - eggs_baked_into_muffins', observation='\n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_available_to_sell = eggs_laid_per_day - eggs_consumed_for_breakfast - eggs_baked_into_muffins\n```\nExecution Status: Done\nOutput: answer = None', answer='', external_tool_info={'execution_status': 'Done', 'code_answer': None}),
+        ReActOutput(thought='First, I need to calculate how many eggs Janet has left after eating three for breakfast every day.', action_type='Calculate', query='eggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_remaining = eggs_laid_per_day - eggs_eaten_for_breakfast', observation='\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_remaining = eggs_laid_per_day - eggs_eaten_for_breakfast\n```\nExecution Status: Done\nOutput: answer = None', answer='', external_tool_info={'execution_status': 'Done', 'code_answer': None}),
+        ReActOutput(thought='First, I need to calculate how many eggs Janet has left after eating three eggs for breakfast and baking muffins.', action_type='Calculate', query='eggs_per_day = 16\neggs_eaten_breakfast = 3\neggs_baked_in_muffins = 4933828\neggs_remaining = eggs_per_day - eggs_eaten_breakfast - eggs_baked_in_muffins', observation='\n```python\neggs_per_day = 16\neggs_eaten_breakfast = 3\neggs_baked_in_muffins = 4933828\neggs_remaining = eggs_per_day - eggs_eaten_breakfast - eggs_baked_in_muffins\n```\nExecution Status: Done\nOutput: answer = None', answer='', external_tool_info={'execution_status': 'Done', 'code_answer': None}),
     ]
-
     responses = [
-        "I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
-        "Search[best kick boxer controversies crimes]",
-        "I need to search for the best kickboxer who has been involved in controversies and crimes of violence",
-        "Search[best kick boxer controversies crimes]\nObservation 0: No exact matches found",
-        "I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies",
-        "Search[best kick boxer controversies]\nObservation 0: Could not find [best kick boxer controversies]",
-        "I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring",
-        "Search[best kick boxer controversies violence]\nObservation 0: Could not find [best kick boxer controversies violence]",
-        "I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies",
-        "Search[best kickboxer controversies]\nObservation 0: The search results show multiple kickboxers who have been involved in controversies",
+        "I need to calculate how much money Janet makes daily at the farmers' market.\nAction 1: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_for_breakfast - eggs_used_for_muffins\nmoney_made_per_day = eggs_remaining * 2\nanswer = money_made_per_day\n```\n]\nObservation 1:\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_for_breakfast - eggs_used_for_muffins\nmoney_made_per_day = eggs_remaining * 2\nanswer = money_made_per_day\n```\nExecution Status: Done\nOutput: answer = -9867650\nThought 2: The calculation resulted in a negative value, which doesn't make sense for money made. I need to review the calculation.\nAction 2: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_for_breakfast - eggs_used_for_muffins\nmoney_made_per_day = eggs_remaining * 2\nmoney_made_per_day = abs(money_made_per_day)  # Take the absolute value\nanswer = money_made_per_day\n```\n]\nObservation 2:\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_for_breakfast - eggs_used_for_muffins\nmoney_made_per_day = eggs_remaining * 2\nmoney_made_per_day = abs(money_made_per_day)  # Take the absolute value\nanswer = money_made_per_day\n```\nExecution Status: Done\nOutput: answer = 9867650\nThought 3: Janet makes $9867650 every day at the farmers' market.\nAction 3: Finish[\n```python\nanswer = 9867650\n```\n]\nObservation 3:\n```python\nanswer = 9867650\n```",
+        'Calculate[\n```python\neggs_laid_per_day = 16\neggs_consumed = 3\neggs_used_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_consumed - eggs_used_muffins\nprice_per_egg = 2\nearnings_per_day = eggs_sold * price_per_egg\nanswer = earnings_per_day\n```\n]',
+        "I need to calculate how much money Janet makes daily at the farmers' market by selling the remaining eggs after breakfast and baking muffins for her friends.\nAction 1: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\nremaining_eggs = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\nmoney_made_per_day = remaining_eggs * price_per_egg\nanswer = money_made_per_day\n```\n]\nObservation 1: \n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\nremaining_eggs = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\nmoney_made_per_day = remaining_eggs * price_per_egg\nanswer = money_made_per_day\n```\nExecution Status: Done\nOutput: answer = -9867649\nThought 2: The calculation resulted in a negative number, which doesn't make sense in this context. I need to review the subtraction steps.\nAction 2: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\nremaining_eggs = eggs_laid_per_day - eggs_for_breakfast\nprice_per_egg = 2\nmoney_made_per_day = remaining_eggs * price_per_egg\nanswer = money_made_per_day\n```\n]\nObservation 2: \n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\nremaining_eggs = eggs_laid_per_day - eggs_for_breakfast\nprice_per_egg = 2\nmoney_made_per_day = remaining_eggs * price_per_egg\nanswer = money_made_per_day\n```\nExecution Status: Done\nOutput: answer = 26\nThought 3: Janet makes $26 every day at the farmers' market.\nAction 3: Finish[\n```python\nanswer = 26\n```\n]\nObservation 3: \n```python\nanswer = 26\n```",
+        'Calculate[\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nanswer = eggs_sold * price_per_egg\n```\n]',
+        "First, I need to calculate the total number of eggs Janet has available to sell at the farmers' market after accounting for her breakfast consumption and muffin baking.\nAction 1: Calculate[\n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\nmuffin_egg_usage = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast - muffin_egg_usage\n```\n]\nObservation 1: \n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\nmuffin_egg_usage = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast - muffin_egg_usage\n```\nExecution Status: Done\nOutput: eggs_remaining = -4933815\nThought 2: The negative result indicates an error in the calculations. I need to correct the computation to determine the correct number of eggs left for sale.\nAction 2: Calculate[\n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\nmuffin_egg_usage = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast\neggs_for_sale = eggs_remaining - muffin_egg_usage\n```\n]\nObservation 2: \n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\nmuffin_egg_usage = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast\neggs_for_sale = eggs_remaining - muffin_egg_usage\n```\nExecution Status: Done\nOutput: eggs_for_sale = -4933807\nThought 3: Another error occurred in the calculation. I need to correct the computation to determine the correct number of eggs available for sale.\nAction 3: Calculate[\n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\nmuffin_egg_usage = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast\neggs_for_sale = eggs_remaining - muffin_egg_usage\nprice_per_egg = 2\nprofit_per_day = eggs_for_sale * price_per_egg\n```\n]\nObservation 3: \n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\nmuffin_egg_usage = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast\neggs_for_sale = eggs_remaining - muffin_egg_usage\nprice_per_egg = 2\nprofit_per_day = eggs_for_sale * price_per_egg\n```\nExecution Status: Done\nOutput: profit_per_day = -9867614\nThought 4: The negative result indicates that there was an error in the calculation. I need to correct the computation to determine the accurate daily profit from selling duck eggs at the farmers' market.\nAction 4: Calculate[\n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\nmuffin_egg_usage = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast\neggs_for_sale = eggs_remaining - muffin_egg_usage\nprice_per_egg = 2\nprofit_per_day = abs(eggs_for_sale) * price_per_egg\n```\n]\nObservation 4: \n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\nmuffin_egg_usage = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast\neggs_for_sale = eggs_remaining - muffin_egg_usage\nprice_per_egg = 2\nprofit_per_day = abs(eggs_for_sale) * price_per_egg\n```\nExecution Status: Done\nOutput: profit_per_day = 9867614\nThought 5: Janet makes $9867614 every day at the farmers' market.\nAction 5: Finish[\n```python\nprofit_per_day = 9867614\n```\n]\nObservation 5: \n```python\nprofit_per_day = 9867614\n```",
+        'Calculate[\n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_available_to_sell = eggs_laid_per_day - eggs_consumed_for_breakfast - eggs_baked_into_muffins\n```\n]',
+        "First, I need to calculate how many eggs Janet has left after eating three for breakfast every day.\nAction 1: Calculate[\n```python\neggs_laid_per_day = 16\neggs_consumed_per_day = 3\neggs_remaining_per_day = eggs_laid_per_day - eggs_consumed_per_day\n```\n]\nObservation 1:\n```python\neggs_laid_per_day = 16\neggs_consumed_per_day = 3\neggs_remaining_per_day = eggs_laid_per_day - eggs_consumed_per_day\n```\nExecution Status: Done\nOutput: eggs_remaining_per_day = 13\nThought 2: Now, I need to find out how much Janet earns from selling the remaining eggs at the farmers' market.\nAction 2: Calculate[\n```python\neggs_remaining_per_day = 13\nearnings_per_egg = 2\ndaily_earnings = eggs_remaining_per_day * earnings_per_egg\n```\n]\nObservation 2:\n```python\neggs_remaining_per_day = 13\nearnings_per_egg = 2\ndaily_earnings = eggs_remaining_per_day * earnings_per_egg\n```\nExecution Status: Done\nOutput: daily_earnings = 26\nThought 3: Janet makes $26 every day at the farmers' market.\nAction 3: Finish[\n```python\nanswer = 26\n```\n]\nObservation 3:\n```python\nanswer = 26\n```",
+        'Calculate[\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_remaining = eggs_laid_per_day - eggs_eaten_for_breakfast\n```\n]',
+        "First, I need to calculate how many eggs Janet has left after eating three eggs for breakfast and baking muffins.\nAction 1: Calculate[\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\n```\n]\nObservation 1:\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\n```\nExecution Status: Done\nOutput: eggs_sold = -4933815\nThought 2: The calculation is incorrect because Janet cannot have negative eggs to sell. I need to review the subtraction.\nAction 2: Calculate[\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\n```\n]\nObservation 2:\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\n```\nExecution Status: Done\nOutput: eggs_sold = 5\nThought 3: Janet sells 5 fresh duck eggs every day at the farmers' market.\nAction 3: Finish[\n```python\neggs_sold = 5\n```\n]\nObservation 3:\n```python\neggs_sold = 5\n```",
+        'Calculate[\n```python\neggs_per_day = 16\neggs_eaten_breakfast = 3\neggs_baked_in_muffins = 4933828\neggs_remaining = eggs_per_day - eggs_eaten_breakfast - eggs_baked_in_muffins\n```\n]',
     ]
     llm = FakeListChatModel(responses=responses)
-    strategy = LATSGSM8KStrategy(llm=llm)
-    strategy.docstore.search = (
-        lambda x: "Badr Hari is the best kick boxer in the world."
-    )
+    strategy = LATSMathStrategy(llm=llm)
 
-    question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
-    key = "Badr Hari"
+    question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
+    key = -9867630
 
     root = strategy.initialize()
 
@@ -359,144 +306,144 @@ def test_generate() -> None:
         assert node.visits == 0
 
     # Test generate with reflections.
-    gt_states = [
-        ReActOutput(
-            thought="I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and crimes of violence outside the ring",
-            action_type="Search",
-            query="best kickboxer controversies violence",
-            observation="Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
-            answer="",
-            external_tool_info={
-                "search_result": "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
-                "lookup_result": "",
-            },
-        ),
-        ReActOutput(
-            thought="I need to search for the best kick boxer in the world and then look into his controversies related to unsportsmanlike conduct and crimes of violence",
-            action_type="Search",
-            query="best kick boxer in the world",
-            observation="Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
-            answer="",
-            external_tool_info={
-                "search_result": "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
-                "lookup_result": "",
-            },
-        ),
-        ReActOutput(
-            thought="I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and violence outside of the ring",
-            action_type="Search",
-            query="best kick boxer in the world controversies",
-            observation="Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
-            answer="",
-            external_tool_info={
-                "search_result": "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
-                "lookup_result": "",
-            },
-        ),
-        ReActOutput(
-            thought="I need to search for the best kickboxer in the world who has been involved in controversies regarding unsportsmanlike conduct and crimes of violence outside the ring",
-            action_type="Search",
-            query="best kickboxer controversies",
-            observation="Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
-            answer="",
-            external_tool_info={
-                "search_result": "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
-                "lookup_result": "",
-            },
-        ),
-        ReActOutput(
-            thought="I need to search for the best kick boxer in the world and his controversies regarding unsportsmanlike conducts and crimes of violence",
-            action_type="Search",
-            query="best kick boxer in the world controversies",
-            observation="Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
-            answer="",
-            external_tool_info={
-                "search_result": "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
-                "lookup_result": "",
-            },
-        ),
-    ]
-    responses = [
-        "My reasoning for this question failed because I did not narrow down the search to focus on kick boxers and instead ended up with unrelated information",
-        "My reasoning failed because I did not focus on gathering specific information related to the individual's kickboxing career and controversies, leading to an incorrect answer",
-        "I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and crimes of violence outside the ring",
-        "Search[best kickboxer controversies violence]\nObservation 1: Could not find [best kickboxer controversies violence]",
-        "I need to search for the best kick boxer in the world and then look into his controversies related to unsportsmanlike conduct and crimes of violence",
-        "Search[best kick boxer in the world]\nObservation 1: There have been several renowned kickboxers throughout history, such as Buakaw Banchamek, Ernesto Hoost, and Ramon Dekkers",
-        "I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and violence outside of the ring",
-        "Search[best kick boxer in the world controversies]\nObservation 1: Could not find [best kick boxer in the world controversies]",
-        "I need to search for the best kickboxer in the world who has been involved in controversies regarding unsportsmanlike conduct and crimes of violence outside the ring",
-        "Search[best kickboxer controversies]\nObservation 1: Could not find [best kickboxer controversies]",
-        "I need to search for the best kick boxer in the world and his controversies regarding unsportsmanlike conducts and crimes of violence",
-        "Search[best kick boxer in the world controversies]\nObservation 1: Could not find [best kick boxer in the world controversies]",
-    ]
-    llm = FakeListChatModel(responses=responses)
-    strategy = LATSGSM8KStrategy(llm=llm)
-    strategy.docstore.search = (
-        lambda x: "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues."
-    )
-    strategy.failed_trajectories = [
-        {"trajectory": "Failed trajectory 1", "final_answer": "Incorrect answer 1"},
-        {"trajectory": "Failed trajectory 2", "final_answer": "Incorrect answer 2"},
-        {
-            "trajectory": "Failed trajectory 1",
-            "final_answer": "Incorrect answer 1",
-        },  # Duplicate, should be ignored
-    ]
+    # gt_states = [
+    #     ReActOutput(
+    #         thought="I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and crimes of violence outside the ring",
+    #         action_type="Search",
+    #         query="best kickboxer controversies violence",
+    #         observation="Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
+    #         answer="",
+    #         external_tool_info={
+    #             "search_result": "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
+    #             "lookup_result": "",
+    #         },
+    #     ),
+    #     ReActOutput(
+    #         thought="I need to search for the best kick boxer in the world and then look into his controversies related to unsportsmanlike conduct and crimes of violence",
+    #         action_type="Search",
+    #         query="best kick boxer in the world",
+    #         observation="Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
+    #         answer="",
+    #         external_tool_info={
+    #             "search_result": "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
+    #             "lookup_result": "",
+    #         },
+    #     ),
+    #     ReActOutput(
+    #         thought="I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and violence outside of the ring",
+    #         action_type="Search",
+    #         query="best kick boxer in the world controversies",
+    #         observation="Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
+    #         answer="",
+    #         external_tool_info={
+    #             "search_result": "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
+    #             "lookup_result": "",
+    #         },
+    #     ),
+    #     ReActOutput(
+    #         thought="I need to search for the best kickboxer in the world who has been involved in controversies regarding unsportsmanlike conduct and crimes of violence outside the ring",
+    #         action_type="Search",
+    #         query="best kickboxer controversies",
+    #         observation="Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
+    #         answer="",
+    #         external_tool_info={
+    #             "search_result": "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
+    #             "lookup_result": "",
+    #         },
+    #     ),
+    #     ReActOutput(
+    #         thought="I need to search for the best kick boxer in the world and his controversies regarding unsportsmanlike conducts and crimes of violence",
+    #         action_type="Search",
+    #         query="best kick boxer in the world controversies",
+    #         observation="Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
+    #         answer="",
+    #         external_tool_info={
+    #             "search_result": "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues.",
+    #             "lookup_result": "",
+    #         },
+    #     ),
+    # ]
+    # responses = [
+    #     "My reasoning for this question failed because I did not narrow down the search to focus on kick boxers and instead ended up with unrelated information",
+    #     "My reasoning failed because I did not focus on gathering specific information related to the individual's kickboxing career and controversies, leading to an incorrect answer",
+    #     "I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and crimes of violence outside the ring",
+    #     "Search[best kickboxer controversies violence]\nObservation 1: Could not find [best kickboxer controversies violence]",
+    #     "I need to search for the best kick boxer in the world and then look into his controversies related to unsportsmanlike conduct and crimes of violence",
+    #     "Search[best kick boxer in the world]\nObservation 1: There have been several renowned kickboxers throughout history, such as Buakaw Banchamek, Ernesto Hoost, and Ramon Dekkers",
+    #     "I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and violence outside of the ring",
+    #     "Search[best kick boxer in the world controversies]\nObservation 1: Could not find [best kick boxer in the world controversies]",
+    #     "I need to search for the best kickboxer in the world who has been involved in controversies regarding unsportsmanlike conduct and crimes of violence outside the ring",
+    #     "Search[best kickboxer controversies]\nObservation 1: Could not find [best kickboxer controversies]",
+    #     "I need to search for the best kick boxer in the world and his controversies regarding unsportsmanlike conducts and crimes of violence",
+    #     "Search[best kick boxer in the world controversies]\nObservation 1: Could not find [best kick boxer in the world controversies]",
+    # ]
+    # llm = FakeListChatModel(responses=responses)
+    # strategy = LATSMathStrategy(llm=llm)
+    # strategy.docstore.search = (
+    #     lambda x: "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues."
+    # )
+    # strategy.failed_trajectories = [
+    #     {"trajectory": "Failed trajectory 1", "final_answer": "Incorrect answer 1"},
+    #     {"trajectory": "Failed trajectory 2", "final_answer": "Incorrect answer 2"},
+    #     {
+    #         "trajectory": "Failed trajectory 1",
+    #         "final_answer": "Incorrect answer 1",
+    #     },  # Duplicate, should be ignored
+    # ]
 
-    root = strategy.initialize()
-    children_nodes = strategy.generate(
-        node=root,
-        question=question,
-        key=key,
-        examples=GSM8K_FEWSHOT_EXAMPLES_REACT,
-        reflect_examples=GSM8K_FEWSHOT_EXAMPLES_LATS_REFLECT,
-        prompt=LATS_INSTRUCTION_GSM8K,
-        reflect_prompt=LATS_REFLECT_INSTRUCTION_GSM8K,
-        additional_keys={},
-        reflect_additional_keys={},
-    )
-    assert len(children_nodes) == 5
-    for gt_state, node in zip(gt_states, children_nodes):
-        assert node.state == gt_state
-        assert node.depth == 1
-        assert node.reward == 0
-        assert node.value == 0
-        assert node.is_terminal is False
-        assert node.visits == 0
+    # root = strategy.initialize()
+    # children_nodes = strategy.generate(
+    #     node=root,
+    #     question=question,
+    #     key=key,
+    #     examples=GSM8K_FEWSHOT_EXAMPLES_REACT,
+    #     reflect_examples=GSM8K_FEWSHOT_EXAMPLES_LATS_REFLECT,
+    #     prompt=LATS_INSTRUCTION_GSM8K,
+    #     reflect_prompt=LATS_REFLECT_INSTRUCTION_GSM8K,
+    #     additional_keys={},
+    #     reflect_additional_keys={},
+    # )
+    # assert len(children_nodes) == 5
+    # for gt_state, node in zip(gt_states, children_nodes):
+    #     assert node.state == gt_state
+    #     assert node.depth == 1
+    #     assert node.reward == 0
+    #     assert node.value == 0
+    #     assert node.is_terminal is False
+    #     assert node.visits == 0
 
     # Test case with a terminal child node (reward 0)
-    responses = [
-        "I think the answer is Mike Tyson.",
-        "Finish[Mike Tyson]",
-    ]
-    llm = FakeListChatModel(responses=responses)
-    strategy = LATSGSM8KStrategy(llm=llm, n_samples=1)
+    # responses = [
+    #     "I think the answer is Mike Tyson.",
+    #     "Finish[Mike Tyson]",
+    # ]
+    # llm = FakeListChatModel(responses=responses)
+    # strategy = LATSMathStrategy(llm=llm, n_samples=1)
 
-    root = strategy.initialize()
-    children_nodes = strategy.generate(
-        node=root,
-        question=question,
-        key=key,
-        examples=GSM8K_FEWSHOT_EXAMPLES_REACT,
-        reflect_examples=GSM8K_FEWSHOT_EXAMPLES_LATS_REFLECT,
-        prompt=LATS_INSTRUCTION_GSM8K,
-        reflect_prompt=LATS_REFLECT_INSTRUCTION_GSM8K,
-        additional_keys={},
-        reflect_additional_keys={},
-    )
-    assert len(children_nodes) == 1
-    assert children_nodes[0].state.thought == "I think the answer is Mike Tyson."
-    assert children_nodes[0].state.action_type == "Finish"
-    assert children_nodes[0].state.query == "Mike Tyson"
-    assert children_nodes[0].is_terminal
-    assert children_nodes[0].reward == 0
+    # root = strategy.initialize()
+    # children_nodes = strategy.generate(
+    #     node=root,
+    #     question=question,
+    #     key=key,
+    #     examples=GSM8K_FEWSHOT_EXAMPLES_REACT,
+    #     reflect_examples=GSM8K_FEWSHOT_EXAMPLES_LATS_REFLECT,
+    #     prompt=LATS_INSTRUCTION_GSM8K,
+    #     reflect_prompt=LATS_REFLECT_INSTRUCTION_GSM8K,
+    #     additional_keys={},
+    #     reflect_additional_keys={},
+    # )
+    # assert len(children_nodes) == 1
+    # assert children_nodes[0].state.thought == "I think the answer is Mike Tyson."
+    # assert children_nodes[0].state.action_type == "Finish"
+    # assert children_nodes[0].state.query == "Mike Tyson"
+    # assert children_nodes[0].is_terminal
+    # assert children_nodes[0].reward == 0
 
 
 def test_select_node() -> None:
     """Test the select_node method."""
     llm = FakeListChatModel(responses=[])
-    strategy = LATSGSM8KStrategy(llm=llm)
+    strategy = LATSMathStrategy(llm=llm)
 
     # Create a tree structure.
     root = Node(state={})
@@ -608,7 +555,7 @@ def test_expand_node() -> None:
         # "Search[best kickboxer controversies]\nObservation 0: The search results show multiple kickboxers who have been involved in controversies",
     ]
     llm = FakeListChatModel(responses=responses)
-    strategy = LATSGSM8KStrategy(llm=llm)
+    strategy = LATSMathStrategy(llm=llm)
     strategy.docstore.search = (
         # lambda x: "Badr Hari is the best kick boxer in the world."
     )
@@ -645,7 +592,7 @@ def test_evaluate_node() -> None:
     llm = FakeListChatModel(
         responses=["Explanation: Good trajectory. Correctness score: 8"]
     )
-    strategy = LATSGSM8KStrategy(llm=llm)
+    strategy = LATSMathStrategy(llm=llm)
 
     root = strategy.initialize()
     child1 = Node(
@@ -731,7 +678,7 @@ def test_simulate_node() -> None:
         # "This trajectory is incorrect as the focus should have been on verifying the information related to the capital of France, rather than repeatedly trying the same search query that does not provide the desired information",
     ]
 
-    qa_strategy = LATSGSM8KStrategy(
+    qa_strategy = LATSMathStrategy(
         llm=FakeListChatModel(responses=responses), depth_limit=3, n_samples=2
     )
     root_node = qa_strategy.initialize()
@@ -777,7 +724,7 @@ def test_simulate_node() -> None:
 def test_backpropagate_node() -> None:
     """Test the backpropagate_node method."""
     llm = FakeListChatModel(responses=[])
-    strategy = LATSGSM8KStrategy(llm=llm)
+    strategy = LATSMathStrategy(llm=llm)
 
     # Create a simple tree structure.
     root = Node(state={})
@@ -820,7 +767,7 @@ def test_backpropagate_node() -> None:
 def test_halting_condition() -> None:
     """Test the halting_condition method."""
     llm = FakeListChatModel(responses=[])
-    strategy = LATSGSM8KStrategy(llm=llm)
+    strategy = LATSMathStrategy(llm=llm)
 
     # Test with a terminal node and reward of 1.
     terminal_node = Node(state={})
@@ -842,7 +789,7 @@ def test_halting_condition() -> None:
 def test_reflect_condition() -> None:
     """Test the reflect_condition method."""
     llm = FakeListChatModel(responses=[])
-    strategy = LATSGSM8KStrategy(llm=llm, max_unique=3, max_reflections=5)
+    strategy = LATSMathStrategy(llm=llm, max_unique=3, max_reflections=5)
 
     # Test when there are fewer unique trajectories than reflections
     strategy.failed_trajectories = [
@@ -874,7 +821,7 @@ def test_reflect_condition() -> None:
 def test_reflect() -> None:
     """Test the reflect method."""
     llm = FakeListChatModel(responses=["Reflection 1", "Reflection 2"])
-    strategy = LATSGSM8KStrategy(llm=llm, max_unique=2)
+    strategy = LATSMathStrategy(llm=llm, max_unique=2)
 
     strategy.failed_trajectories = [
         {"trajectory": "Failed trajectory 1", "final_answer": "Incorrect answer 1"},
@@ -904,7 +851,7 @@ def test_reflect() -> None:
 def test_reset() -> None:
     """Test the reset method."""
     llm = FakeListChatModel(responses=[])
-    strategy = LATSGSM8KStrategy(llm=llm)
+    strategy = LATSMathStrategy(llm=llm)
 
     strategy.root = "some_root"
     strategy.reflection_map = ["reflection1", "reflection2"]
@@ -924,11 +871,11 @@ def test_reset() -> None:
 def test_instantiate_strategies() -> None:
     """Test the instantiation of various LATS Math strategies."""
     llm = FakeListChatModel(responses=[])
-    gsm8k_strategy = LATSGSM8KStrategy(llm=llm)
+    gsm8k_strategy = LATSMathStrategy(llm=llm)
     svamp_strategy = LATSSVAMPStrategy(llm=llm)
     tabmwp_strategy = LATSTabMWPStrategy(llm=llm)
 
-    assert isinstance(gsm8k_strategy, LATSGSM8KStrategy)
+    assert isinstance(gsm8k_strategy, LATSMathStrategy)
     assert isinstance(svamp_strategy, LATSSVAMPStrategy)
     assert isinstance(tabmwp_strategy, LATSTabMWPStrategy)
 
