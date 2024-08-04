@@ -402,3 +402,36 @@ def test_generate() -> None:
         assert node.value == 0
         assert node.is_terminal is False
         assert node.visits == 0
+
+    # Test case with a terminal child node (reward 0)
+    responses = [
+        'We need to iterate through the list of numbers and check if any two numbers are closer to each other than the threshold.\n\nAction 1:\nImplement the has_close_elements function.\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nObservation 1: We have implemented the function to check if any two numbers are closer to each other than the threshold.\n\nAction 2:\nTest the implemented function with test cases.\n\n```python\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n```\n\nObservation 2: The implemented function passed the test cases.\n\nAction 3:\nFinish the task.\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```',
+        'Implement\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nThought 2: Now that we have implemented the function, we need to test it with some test cases.\nAction 2: \n\n```python\nTest\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n```\n\nThought 3: The function passed the test cases successfully. Now we can finish by providing the final implementation.\nAction 3: \n\n```python\nFinish\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```',
+    ]
+    llm = FakeListChatModel(responses=responses)
+    strategy = LATSCodeStrategy(llm=llm, n_samples=1)
+
+    root = strategy.initialize()
+    children_nodes = strategy.generate(
+        node=root,
+        question=question,
+        key=key,
+        examples=HUMANEVAL_FEWSHOT_EXAMPLES_REACT,
+        reflect_examples=HUMANEVAL_FEWSHOT_EXAMPLES_LATS_REFLECT,
+        prompt=LATS_INSTRUCTION_HUMANEVAL,
+        reflect_prompt=LATS_REFLECT_INSTRUCTION_HUMANEVAL,
+        additional_keys={},
+        reflect_additional_keys={},
+    )
+    assert len(children_nodes) == 1
+    assert (
+        children_nodes[0].state.thought
+        == 'We need to iterate through the list of numbers and check if any two numbers are closer to each other than the threshold.'
+    )
+    assert children_nodes[0].state.action_type == "Implement"
+    assert (
+        children_nodes[0].state.query
+        == 'from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False'
+    )
+    assert not children_nodes[0].is_terminal
+    assert children_nodes[0].reward == 0
