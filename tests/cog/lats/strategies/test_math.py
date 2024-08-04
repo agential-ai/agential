@@ -103,7 +103,7 @@ def test_parse_math_action():
 
     for case in test_cases:
         result = parse_math_action(case["input"])
-        assert result == case["expected"], f"Failed for input: {case['input']}"
+        assert result == case["expected"]
 
 
 def test_parse_math_value():

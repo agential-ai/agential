@@ -61,3 +61,41 @@ def test_get_node_trajectory_code() -> None:
     # Test root node.
     root = Node()
     assert get_node_trajectory_code(root) == ""
+
+
+def test_parse_code_action() -> None:
+    """Test parse_code_action function."""
+    test_cases = [
+        {
+            "input": "Implement[```python\ndef add(a, b): return a + b\n```]",
+            "expected": ("Implement", "def add(a, b): return a + b"),
+        },
+        {
+            "input": "TEST[```python\nassert add(2, 3) == 5\n```]",
+            "expected": ("Test", "assert add(2, 3) == 5"),
+        },
+        {
+            "input": "finish[```python\nprint('Done')\n```]",
+            "expected": ("Finish", "print('Done')"),
+        },
+        {
+            "input": "Invalid[```python\nThis should not match\n```]",
+            "expected": ("", ""),
+        },
+        {
+            "input": "Implement[```python\n \n```]",
+            "expected": ("Implement", ""),
+        },
+        {
+            "input": "Something else entirely",
+            "expected": ("", ""),
+        },
+    ]
+
+    for case in test_cases:
+        result = parse_code_action(case["input"])
+        assert result == case["expected"]
+
+    exception_case = "Implement[```python\nincomplete code"
+    result = parse_code_action(exception_case)
+    assert result == ('Implement', 'incomplete code')
