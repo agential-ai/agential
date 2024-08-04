@@ -233,64 +233,26 @@ def test_generate_action() -> None:
 def test_generate_observation() -> None:
     """Test the generate_observation method."""
     llm = FakeListChatModel(responses=[])
-    docstore = DocstoreExplorer(None)
-    docstore.search = lambda x: "Paris is the capital of France."
-    docstore.lookup = lambda x: "Paris is a city in France."
-    strategy = LATSGSM8KStrategy(llm=llm, docstore=docstore)
+    strategy = LATSGSM8KStrategy(llm=llm)
 
-    key = "Paris"
+    key = "4"
     trajectory = "Previous trajectory"
 
     # Test Finish action.
-    finish_result = strategy.generate_observation(key, "Finish", "Paris", trajectory, 1)
-    assert finish_result[0] == "Previous trajectory\nObservation 2: Answer is CORRECT"
-    assert finish_result[1] == 1
-    assert finish_result[2] == "Answer is CORRECT"
-    assert finish_result[3] is True
-    assert finish_result[4] == {"search_result": "", "lookup_result": ""}
+    finish_result = strategy.generate_observation(key, "Finish", "4", trajectory, 1)
+    assert finish_result == ('Previous trajectory\nObservation 2: Answer is INCORRECT', 0, 'Answer is INCORRECT', True, {'execution_status': 'Done', 'code_answer': None})
 
-    # Test Search action.
-    search_result = strategy.generate_observation(
-        key, "Search", "capital of France", trajectory, 2
+    # Test Calculate action.
+    calculate_result = strategy.generate_observation(
+        key, "Calculate", "result = 2 + 2", trajectory, 2
     )
-    assert (
-        search_result[0]
-        == "Previous trajectory\nObservation 3: Paris is the capital of France."
-    )
-    assert search_result[1] == 0
-    assert search_result[2] == "Paris is the capital of France."
-    assert search_result[3] is False
-    assert search_result[4] == {
-        "search_result": "Paris is the capital of France.",
-        "lookup_result": "",
-    }
-
-    # Test Lookup action.
-    lookup_result = strategy.generate_observation(key, "Lookup", "Paris", trajectory, 3)
-    assert lookup_result[0].endswith("Observation 4: Paris is a city in France.")
-    assert lookup_result[1] == 0
-    assert lookup_result[2] == "Paris is a city in France."
-    assert lookup_result[3] is False
-    assert lookup_result[4] == {
-        "search_result": "",
-        "lookup_result": "Paris is a city in France.",
-    }
+    assert calculate_result == ('Previous trajectory\nObservation 3: \n```python\nresult = 2 + 2\n```\nExecution Status: Done\nOutput: answer = None', 0, '\n```python\nresult = 2 + 2\n```\nExecution Status: Done\nOutput: answer = None', False, {'execution_status': 'Done', 'code_answer': None})
 
     # Test invalid action.
     invalid_result = strategy.generate_observation(
-        key, "Invalid", "query", trajectory, 4
+        key, "Invalid", "query", trajectory, 3
     )
-    assert (
-        invalid_result[0]
-        == "Previous trajectory\nObservation 5: Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
-    )
-    assert invalid_result[1] == 0
-    assert (
-        invalid_result[2]
-        == "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
-    )
-    assert invalid_result[3] is False
-    assert invalid_result[4] == {"search_result": "", "lookup_result": ""}
+    assert invalid_result == ('Previous trajectory\nObservation 4: Invalid Action. Valid Actions are Calculate[code] and Finish[answer].', 0, 'Invalid Action. Valid Actions are Calculate[code] and Finish[answer].', False, {'execution_status': '', 'code_answer': ''})
 
 
 def test_generate() -> None:
