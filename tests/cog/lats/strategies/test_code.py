@@ -155,7 +155,7 @@ def test_parse_code_action() -> None:
     assert result == ('Implement', 'incomplete code')
 
 
-def test_parse_code_value():
+def test_parse_code_value() -> None:
     """Test the parse_code_value function."""
     # Test valid value strings.
     valid_input = (
@@ -182,3 +182,116 @@ def test_parse_code_value():
         "Tricky: score.",
         7,
     )
+
+
+def test_init() -> None:
+    """Test initialization."""
+    llm = FakeListChatModel(responses=[])
+    strategy = LATSCodeStrategy(
+        llm=llm,
+        n_samples=5,
+        max_reflections=4,
+        depth_limit=7,
+        max_unique=5,
+        cache_values=True,
+    )
+
+    assert strategy.llm == llm
+    assert strategy.n_samples == 5
+    assert strategy.max_reflections == 4
+    assert strategy.depth_limit == 7
+    assert strategy.max_unique == 5
+    assert strategy.cache_values is True
+    assert strategy.root is None
+    assert strategy.failed_trajectories == []
+    assert strategy.reflection_map == []
+    assert strategy.value_cache == {}
+
+
+def test_initialize() -> None:
+    """Test the initialize method."""
+    llm = FakeListChatModel(responses=[])
+    strategy = LATSCodeStrategy(llm=llm)
+
+    node = strategy.initialize()
+
+    assert strategy.root == node
+    assert strategy.root is not None
+    assert isinstance(strategy.root, Node)
+    assert strategy.root.state.thought == ""
+    assert strategy.root.state.action_type == ""
+    assert strategy.root.state.query == ""
+    assert strategy.root.state.observation == ""
+    assert strategy.root.state.external_tool_info == {}
+
+
+def test_generate_thought() -> None:
+    """Test the generate_thought method."""
+    llm = FakeListChatModel(
+        responses=["I should search for information about the topic."]
+    )
+    strategy = LATSCodeStrategy(llm=llm)
+
+    question = "What is the capital of France?"
+    examples = "Example 1\nExample 2"
+    trajectory = "Previous thought"
+    reflections = "Reflection 1\nReflection 2"
+    depth = 1
+    prompt = "Generate a thought"
+    additional_keys = {"key": "value"}
+
+    updated_trajectory, thought = strategy.generate_thought(
+        question, examples, trajectory, reflections, depth, prompt, additional_keys
+    )
+
+    assert thought == "I should search for information about the topic."
+    assert (
+        updated_trajectory
+        == "Previous thought\nThought 2: I should search for information about the topic."
+    )
+
+
+def test_generate_action() -> None:
+    """Test the generate_action method."""
+    llm = FakeListChatModel(responses=["Implement[```python\nresult = 2 + 2\n```]"])
+    strategy = LATSCodeStrategy(llm=llm)
+
+    question = "What is 2 + 2?"
+    examples = "Example 1\nExample 2"
+    trajectory = "Thought 1: I need to calculate 2 + 2."
+    reflections = "Reflection 1\nReflection 2"
+    depth = 0
+    prompt = "Generate an action"
+    additional_keys = {"key": "value"}
+
+    trajectory, action_type, query = strategy.generate_action(
+        question, examples, trajectory, reflections, depth, prompt, additional_keys
+    )
+
+    assert (
+        trajectory
+        == "Thought 1: I need to calculate 2 + 2.\nAction 1: Implement[\n```python\nresult = 2 + 2\n```\n]"
+    )
+    assert action_type == "Implement"
+    assert query == "result = 2 + 2"
+
+
+def test_generate_observation() -> None:
+    """Test the generate_observation method."""
+    strategy = LATSCodeStrategy(llm=FakeListChatModel(responses=[]))
+
+    # Test Finish action.
+    finish_result = strategy.generate_observation("assert x == 10", "Finish", "x = 10", "Previous trajectory", 1)
+    assert finish_result == ('Previous trajectory\nObservation 2: Answer is CORRECT', 1, 'Answer is CORRECT', True, {'execution_status': 'Done'})
+
+    # Test Implement action.
+    implement_result = strategy.generate_observation("", "Implement", "def add(a, b): return a + b", "Previous trajectory", 2)
+    assert implement_result == ('Previous trajectory\nObservation 3: \n```python\ndef add(a, b): return a + b\n```\nExecution Status: ', 0, '\n```python\ndef add(a, b): return a + b\n```\nExecution Status: ', False, {'execution_status': 'Done'})
+
+    # Test Test action.
+    test_result = strategy.generate_observation("", "Test", "assert add(2, 3) == 5", "Previous trajectory\nImplement[```python\ndef add(a, b): return a + b\n```]", 3)
+    assert test_result == ('Previous trajectory\nImplement[```python\ndef add(a, b): return a + b\n```]\nObservation 4: \n```python\ndef add(a, b): return a + b\n\nassert add(2, 3) == 5\n```\nExecution Status: Done', 0, '\n```python\ndef add(a, b): return a + b\n\nassert add(2, 3) == 5\n```\nExecution Status: Done', False, {'execution_status': 'Done'})
+
+    # Test invalid action.
+    invalid_result = strategy.generate_observation("", "Invalid", "query", "Previous trajectory", 4)
+    assert invalid_result == ('Previous trajectory\nObservation 5: Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer].', 0, 'Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer].', False, {'execution_status': ''})
