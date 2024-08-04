@@ -99,3 +99,32 @@ def test_parse_code_action() -> None:
     exception_case = "Implement[```python\nincomplete code"
     result = parse_code_action(exception_case)
     assert result == ('Implement', 'incomplete code')
+
+
+def test_parse_code_value():
+    """Test the parse_code_value function."""
+    # Test valid value strings.
+    valid_input = (
+        "Some text. Explanation: This is the explanation. Correctness score: 5"
+    )
+    assert parse_code_value(valid_input) == ("This is the explanation.", 5)
+
+    # Test invalid value strings.
+    assert parse_code_value("No explanation or score") == ("Explanation not found", 0)
+    assert parse_code_value("Explanation: Only explanation") == (
+        "Explanation not found",
+        0,
+    )
+    assert parse_code_value("Correctness score: 5") == ("Explanation not found", 0)
+
+    # Test edge cases.
+    assert parse_code_value("Explanation: Empty. Correctness score: 0") == ("Empty.", 0)
+    assert parse_code_value(
+        "Explanation: Multi-line\nexplanation. Correctness score: 10"
+    ) == ("Multi-line\nexplanation.", 10)
+
+    # Test with unexpected format.
+    assert parse_code_value("Explanation: Tricky: score. Correctness score: 7") == (
+        "Tricky: score.",
+        7,
+    )
