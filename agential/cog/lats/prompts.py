@@ -836,16 +836,385 @@ Explanation:"""
 # ======================================================================== GSM8K ======================================================================== #
 
 
-LATS_INSTRUCTION_GSM8K = """"""
+LATS_INSTRUCTION_GSM8K = """Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: 
+(1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
+(2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.
+(3) Finish[answer], which returns the answer and finishes the task.
 
+Here are some examples:
+{examples}
+(END OF EXAMPLES)
 
-GSM8K_FEWSHOT_EXAMPLES_LATS_REFLECT = """"""
+{reflections}
+
+Question: {question}{trajectory}"""
+
+GSM8K_FEWSHOT_EXAMPLES_LATS_REFLECT = """Question: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops did Jason give to Denny?
+Thought 1: First, I need to find out how many lollipops Jason gave to Denny.
+Action 1: Calculate[
+```python
+jason_lollipops_initial = 20
+jason_lollipops_after = 12
+answer = jason_lollipops_after + jason_lollipops_initial
+```
+]
+Observation 1: 
+```python
+jason_lollipops_initial = 20
+jason_lollipops_after = 12
+answer = jason_lollipops_after + jason_lollipops_initial
+```
+Execution Status: Done
+Output: answer = 32
+Thought 2: The answer seems too high, but I will proceed with this calculation.
+Action 2: Finish[
+```python
+answer = 32
+```
+]
+Observation 2: Answer is INCORRECT
+
+Reflection: My reasoning failed because I added the remaining lollipops to the initial count instead of subtracting the remaining from the initial to find out how many were given away. In the future, I should ensure to carefully review the mathematical operations required to solve the problem accurately. The correct operation should have been subtraction, not addition.
+
+---
+
+Question: There are 15 trees in the grove. Grove workers will plant trees in the grove today. After they are done, there will be 21 trees. How many trees did the grove workers plant today?
+Thought 1: I need to determine how many trees were planted.
+Action 1: Calculate[
+```python
+trees_initial = 15
+trees_after = 21
+answer = trees_initial - trees_after
+```
+]
+Observation 1: 
+```python
+trees_initial = 15
+trees_after = 21
+answer = trees_initial - trees_after
+```
+Execution Status: Done
+Output: answer = -6
+Thought 2: The answer should be positive because trees are being added, not removed. However, I will proceed with the subtraction result.
+Action 2: Finish[
+```python
+answer = -6
+```
+]
+Observation 2: Answer is INCORRECT
+
+Reflection: My reasoning failed because I subtracted the final number of trees from the initial number instead of the correct operation, which is subtracting the initial number of trees from the final number. In the future, I should ensure to carefully review the mathematical operations required to solve the problem accurately. The correct answer should be obtained by reversing the subtraction to reflect the addition of trees.
+
+---
+
+Question: Shawn has five toys. For Christmas, he got two toys each from his mom and dad. How many toys does he have now?
+Thought 1: I need to calculate the total number of toys Shawn has after receiving gifts from his parents.
+Action 1: Calculate[
+```python
+toys_initial = 5
+toys_received_mom = 2
+toys_received_dad = 2
+answer = toys_initial + toys_received_mom + toys_received_dad
+```
+]
+Observation 1: 
+```python
+toys_initial = 5
+toys_received_mom = 2
+toys_received_dad = 2
+answer = toys_initial + toys_received_mom + toys_received_dad
+```
+Execution Status: Done
+Output: answer = 9
+Thought 2: I realize that I calculated the total toys received correctly. However, I will double-check by using another method.
+Action 2: Calculate[
+```python
+toys_initial = 5
+toys_received = 2 * 3
+answer = toys_initial + toys_received
+```
+]
+Observation 2: 
+```python
+toys_initial = 5
+toys_received = 2 * 3
+answer = toys_initial + toys_received
+```
+Execution Status: Done
+Output: answer = 11
+Thought 3: According to my second calculation, Shawn has 11 toys now. I need to confirm the total number of toys.
+Action 3: Finish[
+```python
+answer = 11
+```
+]
+Observation 3: Answer is INCORRECT
+
+Reflection: My reasoning failed because I mistakenly multiplied the number of toys received instead of adding the correct amounts. Initially, I calculated correctly by adding the 2 toys received from mom and 2 toys received from dad to the initial 5 toys. However, my second method was incorrect as I wrongly multiplied the toys received. In the future, I should ensure to stick with the correct arithmetic operations and verify my calculations accurately. The correct answer should be 9 toys.
+
+---
+
+Question: There were nine computers in the server room. Five more computers were installed each day, from Monday to Thursday. How many computers are now in the server room?
+Thought 1: I need to calculate the total number of computers installed from Monday to Thursday.
+Action 1: Calculate[
+```python
+computers_initial = 9
+computers_per_day = 5
+num_days = 4  # 4 days between Monday and Thursday
+computers_added = computers_per_day * num_days
+answer = computers_initial + computers_added
+```
+]
+Observation 1: 
+```python
+computers_initial = 9
+computers_per_day = 5
+num_days = 4  # 4 days between Monday and Thursday
+computers_added = computers_per_day * num_days
+answer = computers_initial + computers_added
+```
+Execution Status: Done
+Output: answer = 29
+Thought 2: The total number of computers seems high. Let me verify by recalculating step-by-step.
+Action 2: Calculate[
+```python
+computers_per_day = 5
+num_days = 4
+computers_added = computers_per_day + num_days
+answer = computers_initial + computers_added
+```
+]
+Observation 2: 
+```python
+computers_per_day = 5
+num_days = 4
+computers_added = computers_per_day + num_days
+answer = computers_initial + computers_added
+```
+Execution Status: Done
+Output: answer = 18
+Thought 3: The recalculated total is 18 computers.
+Action 3: Finish[
+```python
+answer = 18
+```
+]
+Observation 3: Answer is INCORRECT
+
+Reflection: My reasoning failed because I incorrectly recalculated the total number of computers added by summing the computers per day and the number of days instead of multiplying them. The correct approach was in my initial calculation, where I correctly multiplied the number of computers installed per day by the number of days and added that to the initial number of computers. In the future, I should ensure to carefully review my calculations and verify the arithmetic operations used. The correct answer should have been 29 computers.
+
+---
+
+Question: Michael had 58 golf balls. On Tuesday, he lost 23 golf balls. On Wednesday, he lost 2 more. How many golf balls did he have at the end of Wednesday?
+Thought 1: I need to find out how many golf balls Michael has after losing some on Tuesday and Wednesday.
+Action 1: Calculate[
+```python
+golf_balls_initial = 58
+golf_balls_lost_tuesday = 23
+golf_balls_lost_wednesday = 2
+answer = golf_balls_initial - golf_balls_lost_tuesday - golf_balls_lost_wednesday
+```
+]
+Observation 1: 
+```python
+golf_balls_initial = 58
+golf_balls_lost_tuesday = 23
+golf_balls_lost_wednesday = 2
+answer = golf_balls_initial - golf_balls_lost_tuesday - golf_balls_lost_wednesday
+```
+Execution Status: Done
+Output: answer = 33
+Thought 2: The answer seems low. I should verify my calculations by adding the losses instead of subtracting directly.
+Action 2: Calculate[
+```python
+total_golf_balls_lost = golf_balls_lost_tuesday + golf_balls_lost_wednesday
+answer = golf_balls_initial + total_golf_balls_lost
+```
+]
+Observation 2: 
+```python
+total_golf_balls_lost = golf_balls_lost_tuesday + golf_balls_lost_wednesday
+answer = golf_balls_initial + total_golf_balls_lost
+```
+Execution Status: Done
+Output: answer = 83
+Thought 3: The recalculated total is 83 golf balls.
+Action 3: Finish[
+```python
+answer = 83
+```
+]
+Observation 3: Answer is INCORRECT
+
+Reflection: My reasoning failed because I incorrectly added the golf balls lost to the initial number of golf balls instead of subtracting them. Initially, I correctly subtracted the losses from the total, but I doubted my correct method and made a mistake in the verification step. In the future, I should ensure to trust the initial correct arithmetic operations and avoid unnecessary recalculations that lead to errors. The correct answer should have been 33 golf balls."""
 
 
 LATS_REFLECT_INSTRUCTION_GSM8K = """"""
 
 
-GSM8K_FEWSHOT_EXAMPLES_LATS_VALUE = """"""
+GSM8K_FEWSHOT_EXAMPLES_LATS_VALUE = """Previous Trial:
+Question: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops did Jason give to Denny?
+Thought 1: First, I need to find out how many lollipops Jason gave to Denny.
+Action 1: Calculate[
+```python
+jason_lollipops_initial = 20
+jason_lollipops_after = 12
+answer = jason_lollipops_after + jason_lollipops_initial
+```
+]
+Observation 1: 
+```python
+jason_lollipops_initial = 20
+jason_lollipops_after = 12
+answer = jason_lollipops_after + jason_lollipops_initial
+```
+Execution Status: Done
+Output: answer = 32
+Thought 2: The answer seems too high, but I will proceed with this calculation.
+Action 2: Finish[
+```python
+answer = 32
+```
+]
+Observation 2: Answer is INCORRECT
+
+Explanation: the trajectory is wrong because it adds the lollipops Jason has left to the initial amount instead of finding the difference between them. The correct approach is to subtract the number of lollipops Jason has after giving some away from the number he initially had.
+Correctness score: 1
+
+---
+
+Previous Trial:
+Question: There are 15 trees in the grove. Grove workers will plant trees in the grove today. After they are done, there will be 21 trees. How many trees did the grove workers plant today?
+Thought 1: I need to determine how many trees were planted.
+Action 1: Calculate[
+```python
+trees_initial = 15
+trees_after = 21
+answer = trees_initial - trees_after
+```
+]
+Observation 1: 
+```python
+trees_initial = 15
+trees_after = 21
+answer = trees_initial - trees_after
+```
+Execution Status: Done
+Output: answer = -6
+Thought 2: The answer should be positive because trees are being added, not removed. However, I will proceed with the subtraction result.
+Action 2: Finish[
+```python
+answer = -6
+```
+]
+Observation 2: Answer is INCORRECT
+
+Explanation: The trajectory is wrong because it uses subtraction instead of addition to determine how many trees were planted. Since the number of trees increased, you need to subtract the initial number from the final number to find out how many were added.
+Correctness score: 2
+
+---
+
+Previous Trial:
+Question: Shawn has five toys. For Christmas, he got two toys each from his mom and dad. How many toys does he have now?
+Thought 1: I need to calculate the total number of toys Shawn has after receiving gifts from his parents.
+Action 1: Calculate[
+```python
+toys_initial = 5
+toys_received_mom = 2
+toys_received_dad = 2
+answer = toys_initial + toys_received_mom + toys_received_dad
+```
+]
+Observation 1: 
+```python
+toys_initial = 5
+toys_received_mom = 2
+toys_received_dad = 2
+answer = toys_initial + toys_received_mom + toys_received_dad
+```
+Execution Status: Done
+Output: answer = 9
+Thought 2: I realize that I calculated the total toys received correctly. However, I will double-check by using another method.
+Action 2: Calculate[
+```python
+toys_initial = 5
+toys_received = 2 * 3
+answer = toys_initial + toys_received
+```
+]
+Observation 2: 
+```python
+toys_initial = 5
+toys_received = 2 * 3
+answer = toys_initial + toys_received
+```
+Execution Status: Done
+Output: answer = 11
+Thought 3: According to my second calculation, Shawn has 11 toys now. I need to confirm the total number of toys.
+Action 3: Finish[
+```python
+answer = 11
+```
+]
+Observation 3: Answer is INCORRECT
+
+Explanation: The trajectory is wrong because the second calculation incorrectly multiplied the number of toys received by 3, rather than adding them individually. This led to an overestimation of the total number of toys. The correct approach is to add the toys received from each parent to the initial number of toys.
+Correctness score: 6
+
+---
+
+Previous Trial:
+Question: There were nine computers in the server room. Five more computers were installed each day, from Monday to Thursday. How many computers are now in the server room?
+Thought 1: I need to calculate the total number of computers installed from Monday to Thursday.
+Action 1: Calculate[
+```python
+computers_initial = 9
+computers_per_day = 5
+num_days = 4  # 4 days between Monday and Thursday
+computers_added = computers_per_day * num_days
+```
+]
+Observation 1: 
+```python
+computers_initial = 9
+computers_per_day = 5
+num_days = 4  # 4 days between Monday and Thursday
+answer = computers_per_day * num_days
+```
+Execution Status: Done
+Output: answer = 20
+
+
+Explanation: The trajectory correctly calculates the total number of computers added.
+Correctness score: 10
+
+---
+
+Previous Trial:
+Question: Michael had 58 golf balls. On Tuesday, he lost 23 golf balls. On Wednesday, he lost 2 more. How many golf balls did he have at the end of Wednesday?
+Thought 1: I need to determine how many golf balls Michael had at the end of Wednesday.
+Action 1: Calculate[
+```python
+initial_golf_balls = 58
+lost_on_tuesday = 23
+lost_on_wednesday = 2
+total_lost = lost_on_tuesday + lost_on_wednesday
+answer = initial_golf_balls - total_lost
+```
+]
+Observation 1: 
+```python
+initial_golf_balls = 58
+lost_on_tuesday = 23
+lost_on_wednesday = 2
+total_lost = lost_on_tuesday + lost_on_wednesday
+answer = initial_golf_balls - total_lost
+```
+Execution Status: Done
+Output: answer = 33
+
+Explanation: The trajectory is correct because it accurately calculates the total number of golf balls lost and subtracts this from the initial number of golf balls to find the remaining amount.
+Correctness score: 10"""
 
 
 LATS_VALUE_INSTRUCTION_GSM8K = """"""
