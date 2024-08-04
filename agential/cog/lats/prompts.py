@@ -1252,7 +1252,197 @@ Explanation:"""
 LATS_INSTRUCTION_SVAMP = """"""
 
 
-SVAMP_FEWSHOT_EXAMPLES_LATS_REFLECT = """"""
+SVAMP_FEWSHOT_EXAMPLES_LATS_REFLECT = """Question: James bought 93 red and 10 blue stickers, he used 31 red stickers on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
+Thought 1: First, I need to find out how many red stickers James has left after using some on his fridge.
+Action 1: Calculate[
+```python
+original_red_stickers = 93
+used_red_stickers = 31
+answer = original_red_stickers + used_red_stickers
+```
+]
+Observation 1: 
+```python
+original_red_stickers = 93
+used_red_stickers = 31
+answer = original_red_stickers + used_red_stickers
+```
+Execution Status: Done
+Output: answer = 124
+Thought 2: The answer seems high. Let me verify by considering another approach.
+Action 2: Calculate[
+```python
+original_red_stickers = 93
+used_red_stickers = 31
+answer = original_red_stickers - (2 * used_red_stickers)
+```
+]
+Observation 2: 
+```python
+original_red_stickers = 93
+used_red_stickers = 31
+answer = original_red_stickers - (2 * used_red_stickers)
+```
+Execution Status: Done
+Output: answer = 31
+Thought 3: James has 31 red stickers left.
+Action 3: Finish[
+```python
+answer = 31
+```
+]
+Observation 3: Answer is INCORRECT
+
+Reflection: My reasoning failed because I incorrectly doubled the number of red stickers used in the second calculation instead of just subtracting the used stickers once. Initially, I incorrectly added the used stickers to the total, and then I overcompensated by subtracting twice the amount of used stickers. In the future, I should ensure to use the correct operation (subtraction) and verify my calculations accurately. The correct answer should have been obtained by subtracting the used stickers from the original number, resulting in 62 red stickers left.
+
+---
+
+Question: Allen went to the supermarket to buy eggs, each egg costs 80 dollars, if the discount is 29 dollars. How much do you have to pay to buy each egg?
+Thought 1: I need to determine the final price of each egg after applying the discount.
+Action 1: Calculate[
+```python
+original_egg_price_in_dollars = 80
+discount_dollars = 29
+answer = original_egg_price_in_dollars - (2 * discount_dollars)
+```
+]
+Observation 1: 
+```python
+original_egg_price_in_dollars = 80
+discount_dollars = 29
+answer = original_egg_price_in_dollars - (2 * discount_dollars)
+```
+Execution Status: Done
+Output: answer = 22
+Thought 2: Each egg costs 22 dollars after the discount.
+Action 2: Finish[
+```python
+answer = 22
+```
+]
+Observation 2: Answer is INCORRECT
+
+Reflection: My reasoning failed because I incorrectly doubled the discount amount in the second calculation instead of just subtracting the discount once. Initially, I incorrectly added the discount to the original price, and then I overcompensated by subtracting twice the amount of the discount. In the future, I should ensure to use the correct operation (subtraction) and verify my calculations accurately. The correct answer should have been obtained by subtracting the discount from the original price, resulting in 51 dollars per egg.
+
+---
+
+Question: Dianna collects both cases and books. He bought 22 cases and 5 books from the store. Now he has 57 cases and 25 books. How many books did Danny have at first?
+Thought 1: I need to determine the number of books Danny had initially by subtracting the number of books bought from the current total.
+Action 1: Calculate[
+```python
+num_books_bought_at_store = 5
+num_books_now = 25
+answer = num_books_now + num_books_bought_at_store
+```
+]
+Observation 1: 
+```python
+num_books_bought_at_store = 5
+num_books_now = 25
+answer = num_books_now + num_books_bought_at_store
+```
+Execution Status: Done
+Output: answer = 30
+Thought 2: The answer seems high. Let me verify by considering another approach.
+Action 2: Calculate[
+```python
+num_books_bought_at_store = 5
+num_books_now = 25
+answer = num_books_now - (2 * num_books_bought_at_store)
+```
+]
+Observation 2: 
+```python
+num_books_bought_at_store = 5
+num_books_now = 25
+answer = num_books_now - (2 * num_books_bought_at_store)
+```
+Execution Status: Done
+Output: answer = 15
+Thought 3: Danny had 15 books initially.
+Action 3: Finish[
+```python
+answer = 15
+```
+]
+Observation 3: Answer is INCORRECT
+
+Reflection: My reasoning failed because I incorrectly added the number of books bought to the current total in the first calculation and then subtracted twice the number of books bought in the second calculation. Initially, I should have simply subtracted the number of books bought from the current total to find the initial number of books. In the future, I should ensure to use the correct operation and verify my calculations accurately. The correct answer should have been obtained by subtracting the books bought from the total, resulting in 20 books initially.
+
+---
+
+Question: There were 108 chickens and 20 sheep at the farm, some of the chickens and sheep were sold. There are 87 chickens and 18 sheep left now. How many chickens were sold?
+Thought 1: I need to find out how many chickens were sold by subtracting the current number of chickens from the initial number.
+Action 1: Calculate[
+```python
+num_chicken_before = 108
+num_chicken_now = 87
+answer = num_chicken_before + num_chicken_now
+```
+]
+Observation 1: 
+```python
+num_chicken_before = 108
+num_chicken_now = 87
+answer = num_chicken_before + num_chicken_now
+```
+Execution Status: Done
+Output: answer = 195
+Thought 2: The answer seems incorrect. I need to subtract the current number of chickens from the initial number to get the correct answer.
+Action 2: Calculate[
+```python
+num_chicken_before = 108
+num_chicken_now = 87
+answer = num_chicken_before - (2 * num_chicken_now)
+```
+]
+Observation 2: 
+```python
+num_chicken_before = 108
+num_chicken_now = 87
+answer = num_chicken_before - (2 * num_chicken_now)
+```
+Execution Status: Done
+Output: answer = -66
+Thought 3: The answer looks correct. Let's finish and return the answer.
+Action 3: Finish[
+```python
+answer = -66
+```
+]
+Observation 3: Answer is INCORRECT
+
+Reflection: My reasoning failed because I incorrectly added the current number of chickens to the initial number in the first calculation and then subtracted twice the current number of chickens in the second calculation. Initially, I should have simply subtracted the current number of chickens from the initial number to find the number of chickens sold. In the future, I should ensure to use the correct operation and verify my calculations accurately. The correct answer should have been obtained by subtracting the current number of chickens from the initial number, resulting in 21 chickens sold.
+
+---
+
+Question: Katty scored 2 goals on Monday, 8 goals on Tuesday and 9 goals on Wednesday. How many did Katty score on Monday and Wednesday?
+Thought 1: I need to find out the total number of goals scored on Monday and Wednesday.
+Action 1: Calculate[
+```python
+num_goals_on_monday = 2
+num_goals_on_wednesday = 9
+answer = num_goals_on_monday - num_goals_on_wednesday
+```
+]
+Observation 1: 
+```python
+num_goals_on_monday = 2
+num_goals_on_wednesday = 9
+answer = num_goals_on_monday - num_goals_on_wednesday
+```
+Execution Status: Done
+Output: answer = -7
+Thought 2: The answer seems correct.
+Action 2: Finish[
+```python
+answer = -7
+```
+]
+Observation 2: Answer is INCORRECT
+
+Reflection: My reasoning failed because I incorrectly subtracted the number of goals scored on Monday and Wednesday in calculation. I should have simply added the number of goals scored on Monday and Wednesday to find the total number of goals."""
+
 
 
 LATS_REFLECT_INSTRUCTION_SVAMP = """"""
