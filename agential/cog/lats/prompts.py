@@ -124,8 +124,7 @@ Here are some examples:
 (END OF EXAMPLES)
 
 Previous trial:
-Question: {question}
-{trajectory}
+Question: {question}{trajectory}
 
 Reflection:"""
 
@@ -1259,7 +1258,176 @@ SVAMP_FEWSHOT_EXAMPLES_LATS_REFLECT = """"""
 LATS_REFLECT_INSTRUCTION_SVAMP = """"""
 
 
-SVAMP_FEWSHOT_EXAMPLES_LATS_VALUE = """"""
+SVAMP_FEWSHOT_EXAMPLES_LATS_VALUE = """Question: James bought 93 red and 10 blue stickers, he used 31 red stickers on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
+Thought 1: First, I need to find out how many red stickers James has left after using some on his fridge.
+Action 1: Calculate[
+```python
+original_red_stickers = 93
+used_red_stickers = 31
+answer = original_red_stickers + used_red_stickers
+```
+]
+Observation 1: 
+```python
+original_red_stickers = 93
+used_red_stickers = 31
+answer = original_red_stickers + used_red_stickers
+```
+Execution Status: Done
+Output: answer = 124
+Thought 2: The answer seems high. Let me verify by considering another approach.
+Action 2: Calculate[
+```python
+original_red_stickers = 93
+used_red_stickers = 31
+answer = original_red_stickers - (2 * used_red_stickers)
+```
+]
+Observation 2: 
+```python
+original_red_stickers = 93
+used_red_stickers = 31
+answer = original_red_stickers - (2 * used_red_stickers)
+```
+Execution Status: Done
+Output: answer = 31
+Thought 3: James has 31 red stickers left.
+Action 3: Finish[
+```python
+answer = 31
+```
+]
+Observation 3: Answer is INCORRECT
+
+Explanation: The trajectory is wrong because the first calculation mistakenly adds the number of used red stickers to the original amount instead of subtracting it. The second calculation incorrectly doubles the used stickers before subtracting, which is not appropriate for this problem. The correct approach is to subtract the number of used red stickers from the original number to find how many are left.
+Correctness score: 4
+
+---
+
+Question: Allen went to the supermarket to buy eggs, each egg costs 80 dollars, if the discount is 29 dollars. How much do you have to pay to buy each egg?
+Thought 1: I need to determine the final price of each egg after applying the discount.
+Action 1: Calculate[
+```python
+original_egg_price_in_dollars = 80
+discount_dollars = 29
+answer = original_egg_price_in_dollars - (2 * discount_dollars)
+```
+]
+Observation 1: 
+```python
+original_egg_price_in_dollars = 80
+discount_dollars = 29
+answer = original_egg_price_in_dollars - (2 * discount_dollars)
+```
+Execution Status: Done
+Output: answer = 22
+Thought 2: Each egg costs 22 dollars after the discount.
+Action 2: Finish[
+```python
+answer = 22
+```
+]
+Observation 2: Answer is INCORRECT
+
+Explanation: The trajectory is wrong because the discount amount was incorrectly doubled in the calculation instead of being subtracted once from the original price. Initially, the discount was not applied correctly, leading to an incorrect final price.
+Correctness score: 3
+
+---
+
+Question: Dianna collects both cases and books. He bought 22 cases and 5 books from the store. Now he has 57 cases and 25 books. How many books did Danny have at first?
+Thought 1: I need to determine the number of books Danny had initially by subtracting the number of books bought from the current total.
+Action 1: Calculate[
+```python
+num_books_bought_at_store = 5
+num_books_now = 25
+answer = num_books_now + num_books_bought_at_store
+```
+]
+Observation 1: 
+```python
+num_books_bought_at_store = 5
+num_books_now = 25
+answer = num_books_now + num_books_bought_at_store
+```
+Execution Status: Done
+Output: answer = 30
+Thought 2: The answer seems high. Let me verify by considering another approach.
+Action 2: Calculate[
+```python
+num_books_bought_at_store = 5
+num_books_now = 25
+answer = num_books_now - (2 * num_books_bought_at_store)
+```
+]
+Observation 2: 
+```python
+num_books_bought_at_store = 5
+num_books_now = 25
+answer = num_books_now - (2 * num_books_bought_at_store)
+```
+Execution Status: Done
+Output: answer = 15
+Thought 3: Danny had 15 books initially.
+Action 3: Finish[
+```python
+answer = 15
+```
+]
+Observation 3: Answer is INCORRECT
+
+Explanation: The trajectory is incorrect because the approach used involves adding and then incorrectly doubling the number of books bought instead of just subtracting the books bought from the current total.
+Correctness score: 4
+
+---
+
+Question: There were 108 chickens and 20 sheep at the farm, some of the chickens and sheep were sold. There are 87 chickens and 18 sheep left now. How many chickens were sold?
+Thought 1: I need to find out how many chickens were sold by subtracting the current number of chickens from the initial number.
+Action 1: Calculate[
+```python
+num_chicken_before = 108
+answer = 87
+```
+]
+Observation 1: 
+```python
+num_chicken_before = 108
+answer = 87
+```
+Execution Status: Done
+Output: answer = 87
+
+Explanation: The trajectory is correct in identifying that the number of chickens sold should be determined by subtracting the current number from the initial number,
+Correctness score: 10
+
+---
+
+Question: Katty scored 2 goals on Monday, 8 goals on Tuesday and 9 goals on Wednesday. How many did Katty score on Monday and Wednesday?
+Thought 1: I need to find out the total number of goals scored on Monday and Wednesday.
+Action 1: Calculate[
+```python
+goals_monday = 2
+goals_wednesday = 9
+answer = goals_monday + goals_wednesday
+```
+]
+Observation 1: 
+```python
+goals_monday = 2
+goals_wednesday = 9
+answer = goals_monday + goals_wednesday
+```
+Execution Status: Done
+Output: answer = 11
+Thought 2: The answer seems correct.
+Action 2: Finish[
+```python
+answer = 11
+```
+]
+Observation 2: Answer is CORRECT
+
+Explanation: The trajectory is correct because it accurately calculates the total number of goals scored on Monday and Wednesday by adding the goals from these two days.
+Correctness score: 10"""
 
 
 LATS_VALUE_INSTRUCTION_SVAMP = """"""
