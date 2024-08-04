@@ -482,65 +482,17 @@ def test_select_node() -> None:
 def test_expand_node() -> None:
     """Test the expand_node method."""
     gt_states = [
-        ReActOutput(
-            thought="I need to calculate how much money Janet makes daily at the farmers' market.",
-            action_type="Calculate",
-            query="eggs_laid_per_day = 16\neggs_consumed = 3\neggs_used_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_consumed - eggs_used_muffins\nprice_per_egg = 2\nearnings_per_day = eggs_sold * price_per_egg\nanswer = earnings_per_day",
-            observation="\n```python\neggs_laid_per_day = 16\neggs_consumed = 3\neggs_used_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_consumed - eggs_used_muffins\nprice_per_egg = 2\nearnings_per_day = eggs_sold * price_per_egg\nanswer = earnings_per_day\n```\nExecution Status: Done\nOutput: answer = -9867630",
-            answer="",
-            external_tool_info={"execution_status": "Done", "code_answer": -9867630},
-        ),
-        ReActOutput(
-            thought="I need to calculate how much money Janet makes daily at the farmers' market by selling the remaining eggs after breakfast and baking muffins for her friends.",
-            action_type="Calculate",
-            query="eggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nanswer = eggs_sold * price_per_egg",
-            observation="\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nanswer = eggs_sold * price_per_egg\n```\nExecution Status: Done\nOutput: answer = -9867630",
-            answer="",
-            external_tool_info={"execution_status": "Done", "code_answer": -9867630},
-        ),
-        ReActOutput(
-            thought="First, I need to calculate the total number of eggs Janet has available to sell at the farmers' market after accounting for her breakfast consumption and muffin baking.",
-            action_type="Calculate",
-            query="eggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_available_to_sell = eggs_laid_per_day - eggs_consumed_for_breakfast - eggs_baked_into_muffins",
-            observation="\n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_available_to_sell = eggs_laid_per_day - eggs_consumed_for_breakfast - eggs_baked_into_muffins\n```\nExecution Status: Done\nOutput: answer = None",
-            answer="",
-            external_tool_info={"execution_status": "Done", "code_answer": None},
-        ),
-        ReActOutput(
-            thought="First, I need to calculate how many eggs Janet has left after eating three for breakfast every day.",
-            action_type="Calculate",
-            query="eggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_remaining = eggs_laid_per_day - eggs_eaten_for_breakfast",
-            observation="\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_remaining = eggs_laid_per_day - eggs_eaten_for_breakfast\n```\nExecution Status: Done\nOutput: answer = None",
-            answer="",
-            external_tool_info={"execution_status": "Done", "code_answer": None},
-        ),
-        ReActOutput(
-            thought="First, I need to calculate how many eggs Janet has left after eating three eggs for breakfast and baking muffins.",
-            action_type="Calculate",
-            query="eggs_per_day = 16\neggs_eaten_breakfast = 3\neggs_baked_in_muffins = 4933828\neggs_remaining = eggs_per_day - eggs_eaten_breakfast - eggs_baked_in_muffins",
-            observation="\n```python\neggs_per_day = 16\neggs_eaten_breakfast = 3\neggs_baked_in_muffins = 4933828\neggs_remaining = eggs_per_day - eggs_eaten_breakfast - eggs_baked_in_muffins\n```\nExecution Status: Done\nOutput: answer = None",
-            answer="",
-            external_tool_info={"execution_status": "Done", "code_answer": None},
-        ),
+
     ]
 
     responses = [
-        "I need to calculate how much money Janet makes daily at the farmers' market.\nAction 1: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_for_breakfast - eggs_used_for_muffins\nmoney_made_per_day = eggs_remaining * 2\nanswer = money_made_per_day\n```\n]\nObservation 1:\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_for_breakfast - eggs_used_for_muffins\nmoney_made_per_day = eggs_remaining * 2\nanswer = money_made_per_day\n```\nExecution Status: Done\nOutput: answer = -9867650\nThought 2: The calculation resulted in a negative value, which doesn't make sense for money made. I need to review the calculation.\nAction 2: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_for_breakfast - eggs_used_for_muffins\nmoney_made_per_day = eggs_remaining * 2\nmoney_made_per_day = abs(money_made_per_day)  # Take the absolute value\nanswer = money_made_per_day\n```\n]\nObservation 2:\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_for_breakfast - eggs_used_for_muffins\nmoney_made_per_day = eggs_remaining * 2\nmoney_made_per_day = abs(money_made_per_day)  # Take the absolute value\nanswer = money_made_per_day\n```\nExecution Status: Done\nOutput: answer = 9867650\nThought 3: Janet makes $9867650 every day at the farmers' market.\nAction 3: Finish[\n```python\nanswer = 9867650\n```\n]\nObservation 3:\n```python\nanswer = 9867650\n```",
-        "Calculate[\n```python\neggs_laid_per_day = 16\neggs_consumed = 3\neggs_used_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_consumed - eggs_used_muffins\nprice_per_egg = 2\nearnings_per_day = eggs_sold * price_per_egg\nanswer = earnings_per_day\n```\n]",
-        "I need to calculate how much money Janet makes daily at the farmers' market by selling the remaining eggs after breakfast and baking muffins for her friends.\nAction 1: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\nremaining_eggs = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\nmoney_made_per_day = remaining_eggs * price_per_egg\nanswer = money_made_per_day\n```\n]\nObservation 1: \n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\nremaining_eggs = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\nmoney_made_per_day = remaining_eggs * price_per_egg\nanswer = money_made_per_day\n```\nExecution Status: Done\nOutput: answer = -9867649\nThought 2: The calculation resulted in a negative number, which doesn't make sense in this context. I need to review the subtraction steps.\nAction 2: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\nremaining_eggs = eggs_laid_per_day - eggs_for_breakfast\nprice_per_egg = 2\nmoney_made_per_day = remaining_eggs * price_per_egg\nanswer = money_made_per_day\n```\n]\nObservation 2: \n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\nremaining_eggs = eggs_laid_per_day - eggs_for_breakfast\nprice_per_egg = 2\nmoney_made_per_day = remaining_eggs * price_per_egg\nanswer = money_made_per_day\n```\nExecution Status: Done\nOutput: answer = 26\nThought 3: Janet makes $26 every day at the farmers' market.\nAction 3: Finish[\n```python\nanswer = 26\n```\n]\nObservation 3: \n```python\nanswer = 26\n```",
-        "Calculate[\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nanswer = eggs_sold * price_per_egg\n```\n]",
-        "First, I need to calculate the total number of eggs Janet has available to sell at the farmers' market after accounting for her breakfast consumption and muffin baking.\nAction 1: Calculate[\n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\nmuffin_egg_usage = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast - muffin_egg_usage\n```\n]\nObservation 1: \n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\nmuffin_egg_usage = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast - muffin_egg_usage\n```\nExecution Status: Done\nOutput: eggs_remaining = -4933815\nThought 2: The negative result indicates an error in the calculations. I need to correct the computation to determine the correct number of eggs left for sale.\nAction 2: Calculate[\n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\nmuffin_egg_usage = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast\neggs_for_sale = eggs_remaining - muffin_egg_usage\n```\n]\nObservation 2: \n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\nmuffin_egg_usage = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast\neggs_for_sale = eggs_remaining - muffin_egg_usage\n```\nExecution Status: Done\nOutput: eggs_for_sale = -4933807\nThought 3: Another error occurred in the calculation. I need to correct the computation to determine the correct number of eggs available for sale.\nAction 3: Calculate[\n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\nmuffin_egg_usage = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast\neggs_for_sale = eggs_remaining - muffin_egg_usage\nprice_per_egg = 2\nprofit_per_day = eggs_for_sale * price_per_egg\n```\n]\nObservation 3: \n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\nmuffin_egg_usage = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast\neggs_for_sale = eggs_remaining - muffin_egg_usage\nprice_per_egg = 2\nprofit_per_day = eggs_for_sale * price_per_egg\n```\nExecution Status: Done\nOutput: profit_per_day = -9867614\nThought 4: The negative result indicates that there was an error in the calculation. I need to correct the computation to determine the accurate daily profit from selling duck eggs at the farmers' market.\nAction 4: Calculate[\n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\nmuffin_egg_usage = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast\neggs_for_sale = eggs_remaining - muffin_egg_usage\nprice_per_egg = 2\nprofit_per_day = abs(eggs_for_sale) * price_per_egg\n```\n]\nObservation 4: \n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\nmuffin_egg_usage = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast\neggs_for_sale = eggs_remaining - muffin_egg_usage\nprice_per_egg = 2\nprofit_per_day = abs(eggs_for_sale) * price_per_egg\n```\nExecution Status: Done\nOutput: profit_per_day = 9867614\nThought 5: Janet makes $9867614 every day at the farmers' market.\nAction 5: Finish[\n```python\nprofit_per_day = 9867614\n```\n]\nObservation 5: \n```python\nprofit_per_day = 9867614\n```",
-        "Calculate[\n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_available_to_sell = eggs_laid_per_day - eggs_consumed_for_breakfast - eggs_baked_into_muffins\n```\n]",
-        "First, I need to calculate how many eggs Janet has left after eating three for breakfast every day.\nAction 1: Calculate[\n```python\neggs_laid_per_day = 16\neggs_consumed_per_day = 3\neggs_remaining_per_day = eggs_laid_per_day - eggs_consumed_per_day\n```\n]\nObservation 1:\n```python\neggs_laid_per_day = 16\neggs_consumed_per_day = 3\neggs_remaining_per_day = eggs_laid_per_day - eggs_consumed_per_day\n```\nExecution Status: Done\nOutput: eggs_remaining_per_day = 13\nThought 2: Now, I need to find out how much Janet earns from selling the remaining eggs at the farmers' market.\nAction 2: Calculate[\n```python\neggs_remaining_per_day = 13\nearnings_per_egg = 2\ndaily_earnings = eggs_remaining_per_day * earnings_per_egg\n```\n]\nObservation 2:\n```python\neggs_remaining_per_day = 13\nearnings_per_egg = 2\ndaily_earnings = eggs_remaining_per_day * earnings_per_egg\n```\nExecution Status: Done\nOutput: daily_earnings = 26\nThought 3: Janet makes $26 every day at the farmers' market.\nAction 3: Finish[\n```python\nanswer = 26\n```\n]\nObservation 3:\n```python\nanswer = 26\n```",
-        "Calculate[\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_remaining = eggs_laid_per_day - eggs_eaten_for_breakfast\n```\n]",
-        "First, I need to calculate how many eggs Janet has left after eating three eggs for breakfast and baking muffins.\nAction 1: Calculate[\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\n```\n]\nObservation 1:\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\n```\nExecution Status: Done\nOutput: eggs_sold = -4933815\nThought 2: The calculation is incorrect because Janet cannot have negative eggs to sell. I need to review the subtraction.\nAction 2: Calculate[\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\n```\n]\nObservation 2:\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\n```\nExecution Status: Done\nOutput: eggs_sold = 5\nThought 3: Janet sells 5 fresh duck eggs every day at the farmers' market.\nAction 3: Finish[\n```python\neggs_sold = 5\n```\n]\nObservation 3:\n```python\neggs_sold = 5\n```",
-        "Calculate[\n```python\neggs_per_day = 16\neggs_eaten_breakfast = 3\neggs_baked_in_muffins = 4933828\neggs_remaining = eggs_per_day - eggs_eaten_breakfast - eggs_baked_in_muffins\n```\n]",
     ]
     llm = FakeListChatModel(responses=responses)
-    strategy = LATSMathStrategy(llm=llm)
+    strategy = LATSCodeStrategy(llm=llm)
 
-    question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
-    key = -9867630
+    inst = {"task_id": "HumanEval/0", "prompt": "from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    \"\"\" Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)\n    False\n    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)\n    True\n    \"\"\"\n", "entry_point": "has_close_elements", "canonical_solution": "    for idx, elem in enumerate(numbers):\n        for idx2, elem2 in enumerate(numbers):\n            if idx != idx2:\n                distance = abs(elem - elem2)\n                if distance < threshold:\n                    return True\n\n    return False\n", "test": "\n\nMETADATA = {\n    'author': 'jt',\n    'dataset': 'test'\n}\n\n\ndef check(candidate):\n    assert candidate([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.3) == True\n    assert candidate([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.05) == False\n    assert candidate([1.0, 2.0, 5.9, 4.0, 5.0], 0.95) == True\n    assert candidate([1.0, 2.0, 5.9, 4.0, 5.0], 0.8) == False\n    assert candidate([1.0, 2.0, 3.0, 4.0, 5.0, 2.0], 0.1) == True\n    assert candidate([1.1, 2.2, 3.1, 4.1, 5.1], 1.0) == True\n    assert candidate([1.1, 2.2, 3.1, 4.1, 5.1], 0.5) == False\n\n"}
+    question = inst['prompt']
+    key = f"{inst['test']}\ncheck({inst['entry_point']})"
 
     root = strategy.initialize()
 
@@ -548,10 +500,10 @@ def test_expand_node() -> None:
         node=root,
         question=question,
         key=key,
-        examples=GSM8K_FEWSHOT_EXAMPLES_REACT,
-        reflect_examples=GSM8K_FEWSHOT_EXAMPLES_LATS_REFLECT,
-        prompt=LATS_INSTRUCTION_GSM8K,
-        reflect_prompt=LATS_REFLECT_INSTRUCTION_GSM8K,
+        examples=HUMANEVAL_FEWSHOT_EXAMPLES_REACT,
+        reflect_examples=HUMANEVAL_FEWSHOT_EXAMPLES_LATS_REFLECT,
+        prompt=LATS_INSTRUCTION_HUMANEVAL,
+        reflect_prompt=LATS_REFLECT_INSTRUCTION_HUMANEVAL,
         additional_keys={},
         reflect_additional_keys={},
     )
