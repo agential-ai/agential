@@ -361,31 +361,32 @@ def test_generate() -> None:
         assert node.visits == 0
 
     # Test case with a terminal child node (reward 0)
-    # responses = [
-    #     "I think the answer is Mike Tyson.",
-    #     "Finish[Mike Tyson]",
-    # ]
-    # llm = FakeListChatModel(responses=responses)
-    # strategy = LATSMathStrategy(llm=llm, n_samples=1)
+    gt_states = []
+    responses = [
+        "First, I need to calculate how many eggs Janet has left after eating three for breakfast and using some for muffins.\nAction 1: Calculate[\n```python\neggs_per_day = 16\neggs_breakfast = 3\neggs_muffins = 4933828\neggs_used = eggs_breakfast + eggs_muffins\neggs_remain = eggs_per_day - eggs_used\n```\n]\nObservation 1: \n```python\neggs_per_day = 16\neggs_breakfast = 3\neggs_muffins = 4933828\neggs_used = eggs_breakfast + eggs_muffins\neggs_remain = eggs_per_day - eggs_used\n```\nExecution Status: Done\nOutput: eggs_remain = -4933815\nThought 2: The calculation is incorrect because it resulted in a negative value for remaining eggs. I need to revise the calculation to account for the total eggs left.\nAction 2: Calculate[\n```python\neggs_per_day = 16\neggs_breakfast = 3\neggs_muffins = 4933828\neggs_used = eggs_breakfast + eggs_muffins\neggs_remain = eggs_per_day - eggs_used\ntotal_income = eggs_remain * 2\n```\n]\nObservation 2: \n```python\neggs_per_day = 16\neggs_breakfast = 3\neggs_muffins = 4933828\neggs_used = eggs_breakfast + eggs_muffins\neggs_remain = eggs_per_day - eggs_used\ntotal_income = eggs_remain * 2\n```\nExecution Status: Done\nOutput: total_income = -9867630\nThought 3: The calculation for total income is also incorrect because it resulted in a negative value. I need to correct the calculation to ensure the revenue is correctly calculated.\nAction 3: Calculate[\n```python\neggs_per_day = 16\neggs_breakfast = 3\neggs_muffins = 4933828\neggs_used = eggs_breakfast + eggs_muffins\neggs_remain = eggs_per_day - eggs_used\nif eggs_remain > 0:\n    total_income = eggs_remain * 2\nelse:\n    total_income = 0\n```\n]\nObservation 3: \n```python\neggs_per_day = 16\neggs_breakfast = 3\neggs_muffins = 4933828\neggs_used = eggs_breakfast + eggs_muffins\neggs_remain = eggs_per_day - eggs_used\nif eggs_remain > 0:\n    total_income = eggs_remain * 2\nelse:\n    total_income = 0\n```\nExecution Status: Done\nOutput: total_income = 2\nThought 4: Janet makes $2 every day at the farmers' market.\nAction 4: Finish[\n```python\nanswer = total_income\n```\n]\nObservation 4: \n```python\nanswer = 2\n```",
+        'Calculate[\n```python\neggs_laid_per_day = 16\neggs_breakfast = 3\neggs_muffins = 4933828\neggs_used = eggs_breakfast + eggs_muffins\neggs_remaining = eggs_laid_per_day - eggs_used\n```\n]',
+    ]
+    llm = FakeListChatModel(responses=responses)
+    strategy = LATSMathStrategy(llm=llm, n_samples=1)
 
-    # root = strategy.initialize()
-    # children_nodes = strategy.generate(
-    #     node=root,
-    #     question=question,
-    #     key=key,
-    #     examples=GSM8K_FEWSHOT_EXAMPLES_REACT,
-    #     reflect_examples=GSM8K_FEWSHOT_EXAMPLES_LATS_REFLECT,
-    #     prompt=LATS_INSTRUCTION_GSM8K,
-    #     reflect_prompt=LATS_REFLECT_INSTRUCTION_GSM8K,
-    #     additional_keys={},
-    #     reflect_additional_keys={},
-    # )
-    # assert len(children_nodes) == 1
-    # assert children_nodes[0].state.thought == "I think the answer is Mike Tyson."
-    # assert children_nodes[0].state.action_type == "Finish"
-    # assert children_nodes[0].state.query == "Mike Tyson"
-    # assert children_nodes[0].is_terminal
-    # assert children_nodes[0].reward == 0
+    root = strategy.initialize()
+    children_nodes = strategy.generate(
+        node=root,
+        question=question,
+        key=key,
+        examples=GSM8K_FEWSHOT_EXAMPLES_REACT,
+        reflect_examples=GSM8K_FEWSHOT_EXAMPLES_LATS_REFLECT,
+        prompt=LATS_INSTRUCTION_GSM8K,
+        reflect_prompt=LATS_REFLECT_INSTRUCTION_GSM8K,
+        additional_keys={},
+        reflect_additional_keys={},
+    )
+    assert len(children_nodes) == 1
+    assert children_nodes[0].state.thought == 'First, I need to calculate how many eggs Janet has left after eating three for breakfast and using some for muffins.'
+    assert children_nodes[0].state.action_type == 'Calculate'
+    assert children_nodes[0].state.query == 'eggs_laid_per_day = 16\neggs_breakfast = 3\neggs_muffins = 4933828\neggs_used = eggs_breakfast + eggs_muffins\neggs_remaining = eggs_laid_per_day - eggs_used'
+    assert not children_nodes[0].is_terminal
+    assert children_nodes[0].reward == 0
 
 
 def test_select_node() -> None:
