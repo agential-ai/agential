@@ -67,7 +67,7 @@ def parse_code_action(action: str) -> Tuple[str, str]:
         and the extracted code content.
     """
     action_split = action.split("```python", maxsplit=1)
-    match = re.search(r"\b(Finish|Calculate)\b", action_split[0], re.IGNORECASE)
+    match = re.search(r"\b(Finish|Test|Implement)\b", action_split[0], re.IGNORECASE)
 
     action_type = match.group(0).lower().capitalize() if match else ""
     try:
@@ -353,26 +353,36 @@ class LATSCodeStrategy(LATSBaseStrategy):
             Tuple[str, int, str, bool, Dict[str, str]]: A tuple containing the updated trajectory,
             reward, observation, done flag, and external tool information.
         """
-        external_tool_info = {"execution_status": "", "code_answer": ""}
-        code_answer, execution_status = safe_execute(query)
+        external_tool_info = {"execution_status": ""}
 
         reward, done = 0, False
         trajectory += f"\nObservation {depth + 1}: "
         if action_type.lower() == "finish":
-            external_tool_info["code_answer"] = code_answer[0]
+            obs = f"{query}\n\n{key}"
+            _, execution_status = safe_execute(obs)
             external_tool_info["execution_status"] = execution_status
 
-            if EM(code_answer[0], key, normalize=False):
+            if EM(execution_status, "Done", normalize=False):
                 obs = "Answer is CORRECT"
-                reward = int(EM(code_answer[0], key, normalize=False))
+                reward = int(EM(execution_status, "Done", normalize=False))
             else:
                 obs = "Answer is INCORRECT"
             done = True
-        elif action_type.lower() == "calculate":
-            external_tool_info["code_answer"] = code_answer[0]
+        elif action_type.lower() == "implement":
+            _, execution_status = safe_execute(query)
+            external_tool_info["execution_status"] = execution_status
+            execution_status = (
+                ""  # Execution status may be done, but not necessarily correct.
+            )
+
+            obs = f"\n```python\n{query}\n```\nExecution Status: {execution_status}"
+        elif action_type.lower() == "test":
+            obs = f"{self._answer}\n\n{query}"
+            _, execution_status = safe_execute(obs)
             external_tool_info["execution_status"] = execution_status
 
-            obs = f"\n```python\n{query}\n```\nExecution Status: {execution_status}\nOutput: answer = {code_answer[0]}"
+            obs = f"\n```python\n{obs}\n```\nExecution Status: {execution_status}"
+        
         else:
             obs = (
                 "Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
