@@ -703,11 +703,7 @@ class LATSMathStrategy(LATSBaseStrategy):
         return reflections
 
     def reset(self) -> None:
-        """Reset the strategy to its initial state.
-
-        Returns:
-            None
-        """
+        """Reset the strategy to its initial state."""
         self.failed_trajectories = []
         self.reflection_map = []
         self.value_cache = {}
