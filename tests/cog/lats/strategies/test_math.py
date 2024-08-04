@@ -456,7 +456,6 @@ def test_expand_node() -> None:
     llm = FakeListChatModel(responses=responses)
     strategy = LATSMathStrategy(llm=llm)
 
-
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
     key = -9867630
 
@@ -605,9 +604,7 @@ def test_simulate_node() -> None:
     assert isinstance(simulation_results, list)
 
     assert final_node.depth <= qa_strategy.depth_limit
-
     assert len(simulation_results) > 0
-
     assert -1 <= reward <= 1
 
 
