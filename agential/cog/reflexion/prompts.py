@@ -63,7 +63,7 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Previous trial:
+Previous Trial:
 Question: {question}{scratchpad}
 
 Reflection:"""
@@ -100,14 +100,13 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Previous trial:
+Previous Trial:
 Question: {question}{scratchpad}
 
 Reflection:"""
 
 
-HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """Previous Trial:
-Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
+HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """Question: What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?
 Thought 1: The Colorado orogeny is a mountain-building event in the western United States, so the elevation range should be quite high.
 Action 1: Search[eastern sector of the Colorado orogeny]
 Observation 1: The Colorado orogeny was an episode of mountain building (an orogeny) in Colorado and surrounding areas. This took place from 1780 to 1650 million years ago (Mya), during the Paleoproterozoic (Statherian Period). It is recorded in the Colorado orogen, a >500-km-wide belt of oceanic arc rock that extends southward into New Mexico. The Colorado orogeny was likely part of the larger Yavapai orogeny.
@@ -131,7 +130,6 @@ Reflection: My reasoning for the elevation range of the eastern sector of the Co
 
 ---
 
-Previous Trial:
 Question: Musician and satirist Allie Goertz wrote a song about the "The Simpsons" character Milhouse, who Matt Groening named after who?
 Thought 1: The question simplifies to "The Simpsons" character Milhouse is named after who. I only need to search Milhouse and find who it is named after.
 Action 1: Search[Milhouse]
@@ -147,7 +145,6 @@ Reflection: My reasoning for the naming of the character Milhouse in "The Simpso
 
 ---
 
-Previous Trial:
 Question: Which documentary is about Finnish rock groups, Adam Clayton Powell or The Saimaa Gesture?
 Thought 1: I need to search Adam Clayton Powell and The Saimaa Gesture, and find which documentary is about Finnish rock groups.
 Action 1: Search[Adam Clayton Powell]
@@ -164,7 +161,6 @@ Reflection: My reasoning failed because I assumed that a documentary with signif
 
 ---
 
-Previous Trial:
 Question: What profession does Nicholas Ray and Elia Kazan have in common?
 Thought 1: I need to search Nicholas Ray and Elia Kazan, find their professions, then find the profession they have in common.
 Action 1: Search[Nicholas Ray]
@@ -180,7 +176,6 @@ Reflection: My reasoning failed because I overcomplicated the answer by includin
 
 ---
 
-Previous Trial:
 Question: Which magazine was started first Arthur's Magazine or First for Women?
 Thought 1: I need to search Arthur's Magazine and First for Women, and find which was started first.
 Action 1: Search[Arthur's Magazine]
@@ -248,7 +243,7 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Previous trial:
+Previous Trial:
 Claim: {question}{scratchpad}
 
 Reflection:"""
@@ -285,14 +280,13 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Previous trial:
+Previous Trial:
 Claim: {question}{scratchpad}
 
 Reflection:"""
 
 
-FEVER_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """Previous Trial:
-Claim: Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.
+FEVER_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """Claim: Nikolaj Coster-Waldau worked with the Fox Broadcasting Company.
 Thought 1: I need to search Nikolaj Coster-Waldau and find if he has worked with the Fox Broadcasting Company.
 Action 1: Search[Nikolaj Coster-Waldau]
 Observation 1: Nikolaj William Coster-Waldau (born 27 July 1970) is a Danish actor and producer. He graduated from the Danish National School of Performing Arts in Copenhagen in 1993,[1] and had his breakthrough role in Denmark with the film Nightwatch (1994). He played Jaime Lannister in the HBO fantasy drama series Game of Thrones, for which he received two Primetime Emmy Award nominations for Outstanding Supporting Actor in a Drama Series. Coster-Waldau has appeared in numerous films in his native Denmark and Scandinavia, including Headhunters (2011) and A Thousand Times Good Night (2013). In the U.S, his debut film role was in the war film Black Hawk Down (2001), playing Medal of Honor recipient Gary Gordon.[2] He then played a detective in the short-lived Fox television series New Amsterdam (2008), and appeared in the 2009 Fox television film Virtuality, originally intended as a pilot.
@@ -304,7 +298,6 @@ Reflection: My reasoning failed because I assumed that significant work with one
 
 ---
 
-Previous Trial:
 Claim: Stranger Things is set in Bloomington, Indiana.
 Thought 1: I should search for Stranger Things, and see if it is set in Bloomington, Indiana.
 Action 1: Search[Stranger Things]
@@ -317,7 +310,6 @@ Reflection: My reasoning failed because I incorrectly assumed that a fictional t
 
 ---
 
-Previous Trial:
 Claim: "Beautiful" by Christina Aguilera reached number two on the Billboard Hot 100 in 2003.
 Thought 1: I need to search the song Beautiful and find if it reached number two on the Billboard Hot 100 in 2003.
 Action 1: Search[Beautiful]
@@ -336,7 +328,6 @@ Reflection: My reasoning failed because I doubted the information even though it
 
 ---
 
-Previous Trial:
 Claim: Tim Burton didn't direct the film "Edward Scissorhands."
 Thought 1: I need to search for the film "Edward Scissorhands" to verify who directed it.
 Action 1: Search[Edward Scissorhands]
@@ -352,7 +343,6 @@ Reflection: My reasoning failed because I overcomplicated the situation by doubt
 
 ---
 
-Previous Trial:
 Claim: "The Great Gatsby" was written by F. Scott Fitzgerald.
 Thought 1: I need to verify the author of "The Great Gatsby" by searching for its author.
 Action 1: Search["The Great Gatsby" author]
@@ -426,7 +416,7 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Previous trial:
+Previous Trial:
 Question: {question}{scratchpad}
 
 Reflection:"""
@@ -463,14 +453,13 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Previous trial:
+Previous Trial:
 Question: {question}{scratchpad}
 
 Reflection:"""
 
 
-AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """Previous Trial:
-Question: When did men's figure skating become a summer Olympic sport?
+AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """Question: When did men's figure skating become a summer Olympic sport?
 Thought 1: Let's search the question in google.
 Action 1: Search[When did men's figure skating become a summer Olympic sport?]
 Observation 1: [Figure skating at the Olympic Games - Wikipedia] According to some sources, men's figure skating became a summer Olympic sport during the 1912 Stockholm Olympics.
@@ -485,7 +474,6 @@ Reflection: My reasoning failed because I accepted an unverified claim without c
 
 ---
 
-Previous Trial:
 Question: When was the last time the USA men's national soccer team missed the World Cup?
 Thought 1: Let's search the question in google
 Action 1: Search[When was the last time the USA men's national soccer team missed the World Cup? site: wikipedia.org]
@@ -498,7 +486,6 @@ Reflection: My reasoning failed because I misinterpreted the evidence and did no
 
 ---
 
-Previous Trial:
 Question: What does barium do in a ct scan?
 Thought 1: Let's search the question in google
 Action 1: Search[What does barium do in a ct scan? site: wikipedia.org]
@@ -514,7 +501,6 @@ Reflection: My reasoning failed because I generalized the use of barium in CT sc
 
 ---
 
-Previous Trial:
 Question: Where was the fort located at which the first shot of the civil war was fired?
 Thought 1: Let's search the question in google
 Action 1: Search[Where was the fort located at which the first shot of the civil war was fired?]
@@ -527,7 +513,6 @@ Reflection: My reasoning failed because I ignored the specific information provi
 
 ---
 
-Previous Trial:
 Question: When did Nando's come to the UK?
 Thought 1: Let's search the question in google
 Action 1: Search[When did Nando's come to the UK? site: wikipedia.org]
@@ -592,7 +577,7 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Previous trial:
+Previous Trial:
 Question: {question}{scratchpad}
 
 Reflection:"""
@@ -629,14 +614,13 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Previous trial:
+Previous Trial:
 Question: {question}{scratchpad}
 
 Reflection:"""
 
 
-TRIVIAQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """Previous Trial:
-Question: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842?
+TRIVIAQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT = """Question: Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842?
 Thought 1: Let's search the question in Google to find the answer.
 Action 1: Search[Mendelssohn's 'Wedding March' was originally written as incidental music for which Shakespeare play in 1842? site
 .org]
@@ -652,7 +636,6 @@ Reflection: My reasoning failed because I questioned the clear evidence provided
 
 ---
 
-Previous Trial:
 Question: "Christ in the House of his Parents" is one of the best known paintings of which artist?
 Thought 1: Let's search the question in google
 Action 1: Search["Christ in the House of his Parents" is one of the best known paintings of which artist? site:wikipedia.org]
@@ -665,7 +648,6 @@ Reflection: My reasoning failed because I ignored the clear evidence provided by
 
 ---
 
-Previous Trial:
 Question: Who designed the National Theatre building on the South Bank in London?
 Thought 1: Let's search the question in google
 Action 1: Search[Who designed the National Theatre building on the South Bank in London? site:wikipedia.org]
@@ -678,7 +660,6 @@ Reflection: My reasoning failed because I ignored the clear evidence provided by
 
 ---
 
-Previous Trial:
 Question: Also a two-time World Champion, which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics?
 Thought 1: Let's search the question in google
 Action 1: Search[Which American skier won the gold medal in the Men's Combined at the 2010 Winter Olympics? site:wikipedia.org]
@@ -691,7 +672,6 @@ Reflection: My reasoning failed because I doubted the clear evidence provided by
 
 ---
 
-Previous Trial:
 Question: Which English author wrote the novel "1984"?
 Thought 1: Let's search the question in google.
 Action 1: Search[Which English author wrote the novel "1984"? site:wikipedia.org]
@@ -799,7 +779,7 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Previous trial:
+Previous Trial:
 Question: {question}{scratchpad}
 
 Reflection:"""
@@ -835,7 +815,7 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Previous trial:
+Previous Trial:
 Question: {question}{scratchpad}
 
 Reflection:"""
@@ -1129,7 +1109,7 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Previous trial:
+Previous Trial:
 Question: {question}{scratchpad}
 
 Reflection:"""
@@ -1165,7 +1145,7 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Previous trial:
+Previous Trial:
 Question: {question}{scratchpad}
 
 Reflection:"""
@@ -1504,7 +1484,7 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Previous trial:
+Previous Trial:
 {question}
 {scratchpad}
 
@@ -1543,7 +1523,7 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Previous trial:
+Previous Trial:
 {question}
 {scratchpad}
 
@@ -1796,8 +1776,7 @@ Reflection: My reasoning failed because I mistakenly calculated the total apples
 # ======================================================================== HUMANEVAL ======================================================================== #
 
 
-HUMANEVAL_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """Previous trial:
-```python
+HUMANEVAL_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT = """```python
 def has_duplicate_names(names_list: List[str]) -> bool:
     \"\"\"Check if there is any name that appears more than once in the list.
     >>> has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice'])
@@ -1812,7 +1791,6 @@ Reflection: Overall, the function does not perform as expected due to a critical
 
 ---
 
-Previous trial:
 ```python
 def average_positive(numbers: List[int]) -> float:
     \"\"\"Calculate the average of positive numbers in the list.
@@ -1834,7 +1812,6 @@ Reflection: Overall, the function does not perform as expected due to a critical
 
 ---
 
-Previous trial:
 ```python
 def exceeds_threshold(measurements: List[float], threshold: float) -> int:
     \"\"\"Return the count of instances where the difference between any two successive measurements exceeds the given threshold.
@@ -1854,7 +1831,6 @@ Reflection: Overall, the function fails to perform as expected because it incorr
 
 ---
 
-Previous trial:
 ```python
 def sum_even_indexed(numbers: List[int]) -> int:
     \"\"\"Sum numbers that are located at even indices in the list.
@@ -1874,7 +1850,6 @@ Reflection: Overall, the function does not perform as expected because of a subt
 
 ---
 
-Previous trial:
 ```python
 from collections import Counter
 
@@ -1898,7 +1873,7 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Previous trial:
+Previous Trial:
 ```python
 {question}
     pass
@@ -1942,7 +1917,7 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Previous trial:
+Previous Trial:
 ```python
 {question}
     pass
@@ -2346,7 +2321,7 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Previous trial:
+Previous Trial:
 You are an expert Python programmer, and here is your task: {question}.
 Your code should pass these tests:
 
@@ -2397,7 +2372,7 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Previous trial:
+Previous Trial:
 You are an expert Python programmer, and here is your task: {question}.
 Your code should pass these tests:
 
