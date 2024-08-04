@@ -183,7 +183,7 @@ def test_generate_thought() -> None:
     """Test the generate_thought method."""
     llm = FakeListChatModel(
         responses=[
-            "I should search for information about the topic. Action: Search[topic]"
+            "I should search for information about the topic."
         ]
     )
     strategy = LATSGSM8KStrategy(llm=llm)
