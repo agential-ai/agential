@@ -406,9 +406,8 @@ class LATSCodeStrategy(LATSBaseStrategy):
 
             obs = f"\n```python\n{obs}\n```\nExecution Status: {execution_status}"
         else:
-            obs = (
-                "Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
-            )
+            obs = "Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer]."
+        
         trajectory += obs
 
         return trajectory, reward, obs, done, external_tool_info
