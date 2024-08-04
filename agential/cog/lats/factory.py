@@ -31,6 +31,25 @@ from agential.cog.lats.prompts import (
     TABMWP_FEWSHOT_EXAMPLES_LATS_VALUE,
     TRIVIAQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
     TRIVIAQA_FEWSHOT_EXAMPLES_LATS_VALUE,
+    LATS_INSTRUCTION_GSM8K,
+    LATS_REFLECT_INSTRUCTION_GSM8K,
+    LATS_VALUE_INSTRUCTION_GSM8K,
+    LATS_INSTRUCTION_SVAMP,
+    LATS_REFLECT_INSTRUCTION_SVAMP,
+    LATS_VALUE_INSTRUCTION_SVAMP,
+    LATS_INSTRUCTION_TABMWP,
+    LATS_REFLECT_INSTRUCTION_TABMWP,
+    LATS_VALUE_INSTRUCTION_TABMWP,
+    MBPP_FEWSHOT_EXAMPLES_LATS_REFLECT,
+    LATS_INSTRUCTION_MBPP,
+    LATS_REFLECT_INSTRUCTION_MBPP,
+    MBPP_FEWSHOT_EXAMPLES_LATS_VALUE,
+    LATS_VALUE_INSTRUCTION_MBPP,
+    HUMANEVAL_FEWSHOT_EXAMPLES_LATS_REFLECT,
+    LATS_INSTRUCTION_HUMANEVAL,
+    LATS_REFLECT_INSTRUCTION_HUMANEVAL,
+    HUMANEVAL_FEWSHOT_EXAMPLES_LATS_VALUE,
+    LATS_VALUE_INSTRUCTION_HUMANEVAL,
 )
 from agential.cog.lats.strategies.base import LATSBaseStrategy
 from agential.cog.lats.strategies.math import (
@@ -43,6 +62,10 @@ from agential.cog.lats.strategies.qa import (
     LATSFEVERStrategy,
     LATSHotQAStrategy,
     LATSTriviaQAStrategy,
+)
+from agential.cog.lats.strategies.code import (
+    LATSMBPPStrategy,
+    LATSHEvalStrategy,
 )
 
 LATS_BENCHMARK_FEWSHOTS = {
@@ -79,29 +102,29 @@ LATS_PROMPTS = {
         "value_prompt": LATS_VALUE_INSTRUCTION_AMBIGNQ,
     },
     Benchmarks.GSM8K: {
-        "prompt": "",
-        "reflect_prompt": "",
-        "value_prompt": "",
+        "prompt": LATS_INSTRUCTION_GSM8K,
+        "reflect_prompt": LATS_REFLECT_INSTRUCTION_GSM8K,
+        "value_prompt": LATS_VALUE_INSTRUCTION_GSM8K,
     },
     Benchmarks.SVAMP: {
-        "prompt": "",
-        "reflect_prompt": "",
-        "value_prompt": "",
+        "prompt": LATS_INSTRUCTION_SVAMP,
+        "reflect_prompt": LATS_REFLECT_INSTRUCTION_SVAMP,
+        "value_prompt": LATS_VALUE_INSTRUCTION_SVAMP,
     },
     Benchmarks.TABMWP: {
-        "prompt": "",
-        "reflect_prompt": "",
-        "value_prompt": "",
+        "prompt": LATS_INSTRUCTION_TABMWP,
+        "reflect_prompt": LATS_REFLECT_INSTRUCTION_TABMWP,
+        "value_prompt": LATS_VALUE_INSTRUCTION_TABMWP,
     },
     Benchmarks.HUMANEVAL: {
-        "prompt": "",
-        "reflect_prompt": "",
-        "value_prompt": "",
+        "prompt": LATS_INSTRUCTION_HUMANEVAL,
+        "reflect_prompt": LATS_REFLECT_INSTRUCTION_HUMANEVAL,
+        "value_prompt": LATS_VALUE_INSTRUCTION_HUMANEVAL,
     },
     Benchmarks.MBPP: {
-        "prompt": "",
-        "reflect_prompt": "",
-        "value_prompt": "",
+        "prompt": LATS_INSTRUCTION_MBPP,
+        "reflect_prompt": LATS_REFLECT_INSTRUCTION_MBPP,
+        "value_prompt": LATS_VALUE_INSTRUCTION_MBPP,
     },
 }
 
@@ -134,8 +157,14 @@ LATS_FEWSHOTS = {
         "reflect_examples": TABMWP_FEWSHOT_EXAMPLES_LATS_REFLECT,
         "value_examples": TABMWP_FEWSHOT_EXAMPLES_LATS_VALUE,
     },
-    Benchmarks.HUMANEVAL: {"reflect_examples": "", "value_examples": ""},
-    Benchmarks.MBPP: {"reflect_examples": "", "value_examples": ""},
+    Benchmarks.HUMANEVAL: {
+        "reflect_examples": HUMANEVAL_FEWSHOT_EXAMPLES_LATS_REFLECT,
+        "value_examples": HUMANEVAL_FEWSHOT_EXAMPLES_LATS_VALUE,
+    },
+    Benchmarks.MBPP: {
+        "reflect_examples": MBPP_FEWSHOT_EXAMPLES_LATS_REFLECT,
+        "value_examples": MBPP_FEWSHOT_EXAMPLES_LATS_VALUE,
+    },
 }
 
 LATS_STRATEGIES = {
@@ -146,7 +175,8 @@ LATS_STRATEGIES = {
     Benchmarks.GSM8K: LATSGSM8KStrategy,
     Benchmarks.SVAMP: LATSSVAMPStrategy,
     Benchmarks.TABMWP: LATSTabMWPStrategy,
-    Benchmarks.HUMANEVAL: None,
+    Benchmarks.HUMANEVAL: LATSHEvalStrategy,
+    Benchmarks.MBPP: LATSMBPPStrategy,
 }
 
 
