@@ -123,7 +123,7 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Previous trial:
+Previous Trial:
 Question: {question}{trajectory}
 
 Reflection:"""
@@ -340,7 +340,7 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Previous trial:
+Previous Trial:
 Claim: {question}{trajectory}
 
 Reflection:"""
@@ -538,7 +538,7 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Previous trial:
+Previous Trial:
 Question: {question}{trajectory}
 
 Reflection:"""
@@ -731,7 +731,7 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Previous trial:
+Previous Trial:
 Question: {question}{trajectory}
 
 Reflection:"""
@@ -845,7 +845,8 @@ Here are some examples:
 Question: {question}{trajectory}"""
 
 
-GSM8K_FEWSHOT_EXAMPLES_LATS_REFLECT = """Question: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops did Jason give to Denny?
+GSM8K_FEWSHOT_EXAMPLES_LATS_REFLECT = """Previous Trial:
+Question: Jason had 20 lollipops. He gave Denny some lollipops. Now Jason has 12 lollipops. How many lollipops did Jason give to Denny?
 Thought 1: First, I need to find out how many lollipops Jason gave to Denny.
 Action 1: Calculate[
 ```python
@@ -874,6 +875,7 @@ Reflection: My reasoning failed because I added the remaining lollipops to the i
 
 ---
 
+Previous Trial:
 Question: There are 15 trees in the grove. Grove workers will plant trees in the grove today. After they are done, there will be 21 trees. How many trees did the grove workers plant today?
 Thought 1: I need to determine how many trees were planted.
 Action 1: Calculate[
@@ -903,6 +905,7 @@ Reflection: My reasoning failed because I subtracted the final number of trees f
 
 ---
 
+Previous Trial:
 Question: Shawn has five toys. For Christmas, he got two toys each from his mom and dad. How many toys does he have now?
 Thought 1: I need to calculate the total number of toys Shawn has after receiving gifts from his parents.
 Action 1: Calculate[
@@ -950,6 +953,7 @@ Reflection: My reasoning failed because I mistakenly multiplied the number of to
 
 ---
 
+Previous Trial:
 Question: There were nine computers in the server room. Five more computers were installed each day, from Monday to Thursday. How many computers are now in the server room?
 Thought 1: I need to calculate the total number of computers installed from Monday to Thursday.
 Action 1: Calculate[
@@ -1001,6 +1005,7 @@ Reflection: My reasoning failed because I incorrectly recalculated the total num
 
 ---
 
+Previous Trial:
 Question: Michael had 58 golf balls. On Tuesday, he lost 23 golf balls. On Wednesday, he lost 2 more. How many golf balls did he have at the end of Wednesday?
 Thought 1: I need to find out how many golf balls Michael has after losing some on Tuesday and Wednesday.
 Action 1: Calculate[
@@ -1050,7 +1055,7 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Previous trial:
+Previous Trial:
 Question: {question}{trajectory}
 
 Reflection:"""
@@ -1258,7 +1263,8 @@ Here are some examples:
 Question: {question}{trajectory}"""
 
 
-SVAMP_FEWSHOT_EXAMPLES_LATS_REFLECT = """Question: James bought 93 red and 10 blue stickers, he used 31 red stickers on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
+SVAMP_FEWSHOT_EXAMPLES_LATS_REFLECT = """Previous Trial:
+Question: James bought 93 red and 10 blue stickers, he used 31 red stickers on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
 Thought 1: First, I need to find out how many red stickers James has left after using some on his fridge.
 Action 1: Calculate[
 ```python
@@ -1303,6 +1309,7 @@ Reflection: My reasoning failed because I incorrectly doubled the number of red 
 
 ---
 
+Previous Trial:
 Question: Allen went to the supermarket to buy eggs, each egg costs 80 dollars, if the discount is 29 dollars. How much do you have to pay to buy each egg?
 Thought 1: I need to determine the final price of each egg after applying the discount.
 Action 1: Calculate[
@@ -1332,6 +1339,7 @@ Reflection: My reasoning failed because I incorrectly doubled the discount amoun
 
 ---
 
+Previous Trial:
 Question: Dianna collects both cases and books. He bought 22 cases and 5 books from the store. Now he has 57 cases and 25 books. How many books did Danny have at first?
 Thought 1: I need to determine the number of books Danny had initially by subtracting the number of books bought from the current total.
 Action 1: Calculate[
@@ -1377,6 +1385,7 @@ Reflection: My reasoning failed because I incorrectly added the number of books 
 
 ---
 
+Previous Trial:
 Question: There were 108 chickens and 20 sheep at the farm, some of the chickens and sheep were sold. There are 87 chickens and 18 sheep left now. How many chickens were sold?
 Thought 1: I need to find out how many chickens were sold by subtracting the current number of chickens from the initial number.
 Action 1: Calculate[
@@ -1422,6 +1431,7 @@ Reflection: My reasoning failed because I incorrectly added the current number o
 
 ---
 
+Previous Trial:
 Question: Katty scored 2 goals on Monday, 8 goals on Tuesday and 9 goals on Wednesday. How many did Katty score on Monday and Wednesday?
 Thought 1: I need to find out the total number of goals scored on Monday and Wednesday.
 Action 1: Calculate[
@@ -1455,13 +1465,14 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Previous trial:
+Previous Trial:
 Question: {question}{trajectory}
 
 Reflection:"""
 
 
-SVAMP_FEWSHOT_EXAMPLES_LATS_VALUE = """Question: James bought 93 red and 10 blue stickers, he used 31 red stickers on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
+SVAMP_FEWSHOT_EXAMPLES_LATS_VALUE = """Previous Trial:
+Question: James bought 93 red and 10 blue stickers, he used 31 red stickers on his fridge and 7 blue stickers on his laptop. How many red stickers does James have?
 Thought 1: First, I need to find out how many red stickers James has left after using some on his fridge.
 Action 1: Calculate[
 ```python
@@ -1507,6 +1518,7 @@ Correctness score: 4
 
 ---
 
+Previous Trial:
 Question: Allen went to the supermarket to buy eggs, each egg costs 80 dollars, if the discount is 29 dollars. How much do you have to pay to buy each egg?
 Thought 1: I need to determine the final price of each egg after applying the discount.
 Action 1: Calculate[
@@ -1537,6 +1549,7 @@ Correctness score: 3
 
 ---
 
+Previous Trial:
 Question: Dianna collects both cases and books. He bought 22 cases and 5 books from the store. Now he has 57 cases and 25 books. How many books did Danny have at first?
 Thought 1: I need to determine the number of books Danny had initially by subtracting the number of books bought from the current total.
 Action 1: Calculate[
@@ -1583,6 +1596,7 @@ Correctness score: 4
 
 ---
 
+Previous Trial:
 Question: There were 108 chickens and 20 sheep at the farm, some of the chickens and sheep were sold. There are 87 chickens and 18 sheep left now. How many chickens were sold?
 Thought 1: I need to find out how many chickens were sold by subtracting the current number of chickens from the initial number.
 Action 1: Calculate[
@@ -1604,6 +1618,7 @@ Correctness score: 10
 
 ---
 
+Previous Trial:
 Question: Katty scored 2 goals on Monday, 8 goals on Tuesday and 9 goals on Wednesday. How many did Katty score on Monday and Wednesday?
 Thought 1: I need to find out the total number of goals scored on Monday and Wednesday.
 Action 1: Calculate[
@@ -1671,7 +1686,8 @@ Here are some examples:
 {trajectory}"""
 
 
-TABMWP_FEWSHOT_EXAMPLES_LATS_REFLECT = """Read the following table regarding "Coin collections" and then write Python code to answer a question:
+TABMWP_FEWSHOT_EXAMPLES_LATS_REFLECT = """Previous Trial:
+Read the following table regarding "Coin collections" and then write Python code to answer a question:
 
 Name | Number of coins
 Braden | 76
@@ -1710,6 +1726,7 @@ Reflection: My reasoning failed because I incorrectly divided the sum of the num
 
 ---
 
+Previous Trial:
 Read the following table regarding "" and then write Python code to answer a question:
 
 Price | Quantity demanded | Quantity supplied
@@ -1754,6 +1771,7 @@ Reflection: My reasoning failed because I incorrectly used the less than operato
 
 ---
 
+Previous Trial:
 Read the following table regarding "Cans of food collected" and then write Python code to answer a question:
 
 Samir | 7
@@ -1795,6 +1813,7 @@ Reflection: My reasoning failed because I incorrectly averaged the two middle nu
 
 ---
 
+Previous Trial:
 Read the following table regarding "" and then write Python code to answer a question:
 
 toy boat | $5.54
@@ -1863,6 +1882,7 @@ Reflection: My reasoning failed because I initially used the correct comparison 
 
 ---
 
+Previous Trial:
 Read the following table and then write Python code to answer a question:
 
 Number of apple trees | Number of apples harvested
@@ -1919,14 +1939,15 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Previous trial:
+Previous Trial:
 {question}
 {trajectory}
 
 Reflection:"""
 
 
-TABMWP_FEWSHOT_EXAMPLES_LATS_VALUE = """Read the following table regarding "Coin collections" and then write Python code to answer a question:
+TABMWP_FEWSHOT_EXAMPLES_LATS_VALUE = """Previous Trial:
+Read the following table regarding "Coin collections" and then write Python code to answer a question:
 
 Name | Number of coins
 Braden | 76
@@ -1966,6 +1987,7 @@ Correctness score: 3
 
 ---
 
+Previous Trial:
 Read the following table regarding "" and then write Python code to answer a question:
 
 Price | Quantity demanded | Quantity supplied
@@ -2011,6 +2033,7 @@ Correctness score: 4
 
 ---
 
+Previous Trial:
 Read the following table regarding "Cans of food collected" and then write Python code to answer a question:
 
 Samir | 7
@@ -2053,6 +2076,7 @@ Correctness score: 3
 
 ---
 
+Previous Trial:
 Read the following table regarding "" and then write Python code to answer a question:
 
 toy boat | $5.54
@@ -2090,6 +2114,7 @@ Correctness Score: 7
 
 ---
 
+Previous Trial:
 Read the following table and then write Python code to answer a question:
 
 Number of apple trees | Number of apples harvested
@@ -2173,7 +2198,8 @@ Here are some examples:
 {trajectory}"""
 
 
-HUMANEVAL_FEWSHOT_EXAMPLES_LATS_REFLECT = """You are an expert Python programmer, and here is your task: Write a function to check if there is any name that appears more than once in the list.
+HUMANEVAL_FEWSHOT_EXAMPLES_LATS_REFLECT = """Previous Trial:
+You are an expert Python programmer, and here is your task: Write a function to check if there is any name that appears more than once in the list.
 Your code should pass these tests:
 
 assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) == True
@@ -2205,6 +2231,7 @@ Reflection: My reasoning failed because I incorrectly manipulated the set's leng
 
 ---
 
+Previous Trial:
 You are an expert Python programmer, and here is your task: Write a function to calculate the average of positive numbers in the list.
 Your code should pass these tests:
 
@@ -2267,6 +2294,7 @@ Reflection: My reasoning failed because I included all numbers in the total sum,
 
 ---
 
+Previous Trial:
 You are an expert Python programmer, and here is your task: Write a function to return the count of instances where the difference between any two successive measurements exceeds the given threshold.
 Your code should pass these tests:
 
@@ -2331,6 +2359,7 @@ Reflection: My reasoning failed because I incorrectly manipulated the threshold 
 
 ---
 
+Previous Trial:
 You are an expert Python programmer, and here is your task: Write a function to sum numbers that are located at even indices in the list.
 Your code should pass these tests:
 
@@ -2385,6 +2414,7 @@ Reflection: My reasoning failed because I incorrectly counted the indices, summi
 
 ---
 
+Previous Trial:
 You are an expert Python programmer, and here is your task: Write a function to check if two strings are anagrams of each other, ignoring case.
 Your code should pass these tests:
 
@@ -2448,7 +2478,7 @@ Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Previous trial:
+Previous Trial:
 ```python
 {question}
     pass
@@ -2459,7 +2489,8 @@ Previous trial:
 Reflection:"""
 
 
-HUMANEVAL_FEWSHOT_EXAMPLES_LATS_VALUE = """You are an expert Python programmer, and here is your task: Write a function to check if there is any name that appears more than once in the list.
+HUMANEVAL_FEWSHOT_EXAMPLES_LATS_VALUE = """Previous Trial:
+You are an expert Python programmer, and here is your task: Write a function to check if there is any name that appears more than once in the list.
 Your code should pass these tests:
 
 assert has_duplicate_names(['Alice', 'Bob', 'Charlie', 'Alice']) == True
@@ -2492,6 +2523,7 @@ Correctness score: 2
 
 ---
 
+Previous Trial:
 You are an expert Python programmer, and here is your task: Write a function to calculate the average of positive numbers in the list.
 Your code should pass these tests:
 
@@ -2555,6 +2587,7 @@ Correctness score: 4
 
 ---
 
+Previous Trial:
 You are an expert Python programmer, and here is your task: Write a function to return the count of instances where the difference between any two successive measurements exceeds the given threshold.
 Your code should pass these tests:
 
@@ -2620,6 +2653,7 @@ Correctness score: 3
 
 ---
 
+Previous Trial:
 You are an expert Python programmer, and here is your task: Write a function to sum numbers that are located at even indices in the list.
 Your code should pass these tests:
 
@@ -2647,6 +2681,7 @@ Correctness score: 5
 
 ---
 
+Previous Trial:
 You are an expert Python programmer, and here is your task: Write a function to check if two strings are anagrams of each other, ignoring case.
 Your code should pass these tests:
 
@@ -2675,8 +2710,24 @@ assert are_anagrams('Hello', 'World') == False
 assert are_anagrams('Angel', 'Glean') == True
 ```
 ]
-Observation 2: Answer is CORRECT
+Observation 2: 
+```python
+def are_anagrams(str1: str, str2: str) -> bool:
+    return sorted(str1.lower()) == sorted(str2.lower())
+
+assert are_anagrams('Listen', 'silent') == True
+assert are_anagrams('Hello', 'World') == False
+assert are_anagrams('Angel', 'Glean') == True
+```
 Execution Status: Done
+Thought 3: The function works correctly for checking anagrams.
+Action 3: Finish[
+```python
+def are_anagrams(str1: str, str2: str) -> bool:
+    return sorted(str1.lower()) == sorted(str2.lower())
+```
+]
+Observation 3: Answer is CORRECT
 
 Explanation: The function correctly converts both strings to lowercase and then checks if their sorted versions are equal.
 Correctness score: 10"""
@@ -2726,7 +2777,8 @@ Your code should pass these tests:
 {trajectory}"""
 
 
-MBPP_FEWSHOT_EXAMPLES_LATS_REFLECT = """You are an expert Python programmer, and here is your task: Write a function to find the shared elements from the given two lists.
+MBPP_FEWSHOT_EXAMPLES_LATS_REFLECT = """Previous Trial:
+You are an expert Python programmer, and here is your task: Write a function to find the shared elements from the given two lists.
 Your code should pass these tests:
 
 assert set(similar_elements((3, 4, 5, 6), (5, 7, 4, 10))) == set((4, 5))
@@ -2793,6 +2845,7 @@ Reflection: My reasoning failed because I incorrectly implemented the initial so
 
 ---
 
+Previous Trial:
 You are an expert Python programmer, and here is your task: Write a python function to identify non-prime numbers.
 Your code should pass these tests:
 
@@ -2848,6 +2901,7 @@ Reflection: My reasoning failed because I used the wrong modulus condition (`n %
 
 ---
 
+Previous Trial:
 You are an expert Python programmer, and here is your task: Write a function to find the n largest integers from a given list of numbers, returned in descending order.
 Your code should pass these tests:
 
@@ -2911,6 +2965,7 @@ Reflection: My reasoning failed because I incorrectly used the `nsmallest` funct
 
 ---
 
+Previous Trial:
 You are an expert Python programmer, and here is your task: Write a Python function to check whether the two numbers differ at one bit position only or not.
 Your code should pass these tests:
 
@@ -2951,6 +3006,7 @@ Reflection: My reasoning failed because the condition (differing_bits + 1) is in
 
 ---
 
+Previous Trial:
 You are an expert Python programmer, and here is your task: Write a function to find all words which are at least 4 characters long in a string.
 Your code should pass these tests:
 
@@ -2983,13 +3039,12 @@ Observation 2: Answer is INCORRECT
 Reflection: My reasoning failed because I incorrectly used the greater than operator (>) instead of the greater than or equal to operator (>=) to filter words that are at least 4 characters long. In the future, I should ensure to use the correct comparison operator when setting conditions for filtering data."""
 
 
-
 LATS_REFLECT_INSTRUCTION_MBPP = """You are an advanced reasoning agent that can improve based on self refection. You will be given a previous reasoning trial in which you were given access to an Docstore API environment and a question to answer. You were unsuccessful in answering the question either because you guessed the wrong answer with Finish[<answer>], or you used up your set number of reasoning steps. In a few sentences, Diagnose a possible reason for failure and devise a new, concise, high level plan that aims to mitigate the same failure. Use complete sentences.  
 Here are some examples:
 {examples}
 (END OF EXAMPLES)
 
-Previous trial:
+Previous Trial:
 You are an expert Python programmer, and here is your task: {question}.
 Your code should pass these tests:
 
@@ -3000,7 +3055,263 @@ Your code should pass these tests:
 Reflection:"""
 
 
-MBPP_FEWSHOT_EXAMPLES_LATS_VALUE = """"""
+MBPP_FEWSHOT_EXAMPLES_LATS_VALUE = """You are an expert Python programmer, and here is your task: Write a function to find the shared elements from the given two lists.
+Your code should pass these tests:
+
+assert set(similar_elements((3, 4, 5, 6), (5, 7, 4, 10))) == set((4, 5))
+assert set(similar_elements((1, 2, 3, 4), (5, 4, 3, 7))) == set((3, 4))
+assert set(similar_elements((11, 12, 14, 13), (17, 15, 14, 13))) == set((13, 14))
+
+Thought 1: I need to write a function that accepts two tuples and finds the common elements between them. I will use a nested loop to check each element in the first tuple against each element in the second tuple.
+Action 1: Implement[
+```python
+def similar_elements(test_tup1, test_tup2):
+    res = []
+    for i, j in zip(test_tup1, test_tup2):
+        if i == j:
+            res.append(i)
+    return tuple(res)
+```
+]
+Observation 1: 
+```python
+def similar_elements(test_tup1, test_tup2):
+    res = []
+    for i, j in zip(test_tup1, test_tup2):
+        if i == j:
+            res.append(i)
+    return tuple(res)
+```
+Execution Status: Done
+Thought 2: I need to test the function to ensure it works correctly with different test cases.
+Action 2: Test[
+```python
+assert set(similar_elements((3, 4, 5, 6), (5, 7, 4, 10))) == set((4, 5))
+assert set(similar_elements((1, 2, 3, 4), (5, 4, 3, 7))) == set((3, 4))
+assert set(similar_elements((11, 12, 14, 13), (17, 15, 14, 13))) == set((13, 14))
+```
+]
+Observation 2: 
+```python
+def similar_elements(test_tup1, test_tup2):
+    res = []
+    for i, j in zip(test_tup1, test_tup2):
+        if i == j:
+            res.append(i)
+    return tuple(res)
+
+assert set(similar_elements((3, 4, 5, 6), (5, 7, 4, 10))) == set((4, 5))
+assert set(similar_elements((1, 2, 3, 4), (5, 4, 3, 7))) == set((3, 4))
+assert set(similar_elements((11, 12, 14, 13), (17, 15, 14, 13))) == set((13, 14))
+```
+Execution Status: AssertionError()
+Thought 3: The function correctly identifies the shared elements between the two tuples by comparing each element in the first tuple with all elements in the second tuple.
+Action 3: Finish[
+```python
+def similar_elements(test_tup1, test_tup2):
+    res = []
+    for i in test_tup1:
+        if i in test_tup2:
+            res.append(i)
+    return tuple(res)
+```
+]
+Observation 3: Answer is INCORRECT
+
+Explanation: The trajectory is wrong because the function only compares elements at the same indices instead of finding all shared elements between the tuples.
+Correctness score: 3
+
+---
+
+You are an expert Python programmer, and here is your task: Write a python function to identify non-prime numbers.
+Your code should pass these tests:
+
+assert is_not_prime(2) == False
+assert is_not_prime(10) == True
+assert is_not_prime(35) == True
+assert is_not_prime(37) == False
+
+Thought 1: I need to write a function that can determine if a number is not a prime by checking its divisibility by any number up to its square root.
+Action 1: Implement[
+```python
+import math
+
+def is_not_prime(n):
+    result = True
+    for i in range(1, int(math.sqrt(n))):
+        if n % i == 1:
+            result = False
+            break
+    return result
+```
+]
+Observation 1: 
+```python
+import math
+
+def is_not_prime(n):
+    result = True
+    for i in range(1, int(math.sqrt(n))):
+        if n % i == 1:
+            result = False
+            break
+    return result
+```
+Execution Status: Done
+Thought 2: The function is correct and should work for the provided test cases.
+Action 2: Finish[
+```python
+import math
+
+def is_not_prime(n):
+    result = True
+    for i in range(1, int(math.sqrt(n))):
+        if n % i == 1:
+            result = False
+            break
+    return result
+```
+]
+Observation 2: Answer is INCORRECT
+
+Explanation: The trajectory is wrong because the loop starts from 1, and the condition n % i == 1 is incorrect for checking divisibility. The correct approach is to start from 2 and check n % i == 0.
+Correctness score: 2
+
+---
+
+You are an expert Python programmer, and here is your task: Write a function to find the n largest integers from a given list of numbers, returned in descending order.
+Your code should pass these tests:
+
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 3) == [85, 75, 65]
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 2) == [85, 75]
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 5) == [85, 75, 65, 58, 35]
+
+Thought 1: I need to write a function that finds the n largest integers in a list and returns them in descending order.
+Action 1: Implement[
+```python
+import heapq as hq
+
+def heap_queue_largest(nums, n):
+    largest_nums = hq.nsmallest(n, nums)
+    return largest_nums
+```
+]
+Observation 1: 
+```python
+import heapq as hq
+
+def heap_queue_largest(nums, n):
+    largest_nums = hq.nsmallest(n, nums)
+    return largest_nums
+```
+Execution Status: Done
+Thought 2: I need to test the function to ensure it works correctly with different test cases.
+Action 2: Test[
+```python
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 3) == [85, 75, 65]
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 2) == [85, 75]
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 5) == [85, 75, 65, 58, 35]
+```
+]
+Observation 2: 
+```python
+import heapq as hq
+
+def heap_queue_largest(nums, n):
+    largest_nums = hq.nsmallest(n, nums)
+    return largest_nums
+
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 3) == [85, 75, 65]
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 2) == [85, 75]
+assert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 5) == [85, 75, 65, 58, 35]
+```
+Execution Status: AssertionError()
+Thought 3: The function works correctly for the provided test cases.
+Action 3: Finish[
+```python
+import heapq as hq
+
+def heap_queue_largest(nums, n):
+    largest_nums = hq.nsmallest(n, nums)
+    return largest_nums
+```
+]
+Observation 3: Answer is INCORRECT
+
+Explanation: The trajectory is wrong because hq.nsmallest(n, nums) finds the n smallest elements, not the n largest. The correct function should use hq.nlargest.
+Correctness score: 3
+
+---
+
+You are an expert Python programmer, and here is your task: Write a Python function to check whether the two numbers differ at one bit position only or not.
+Your code should pass these tests:
+
+python
+assert differ_at_one_bit_pos(13, 9) == True
+assert differ_at_one_bit_pos(15, 8) == False
+assert differ_at_one_bit_pos(2, 4) == False
+assert differ_at_one_bit_pos(2, 3) == True
+assert differ_at_one_bit_pos(5, 1) == True
+assert differ_at_one_bit_pos(1, 5) == True
+
+Thought 1: I need to write a function that determines if two numbers differ at exactly one bit position. This involves using bitwise operations.
+Action 1: Implement[
+```python
+def differ_at_one_bit_pos(x, y):
+    differing_bits = x ^ y
+    return differing_bits & (differing_bits + 1) == 0
+```
+]
+Observation 1:
+```python
+def differ_at_one_bit_pos(x, y):
+    differing_bits = x ^ y
+    return differing_bits & (differing_bits + 1) == 0
+```
+Execution Status: Done
+
+Explanation: The trajectory is right because it uses the XOR operation to identify differing bits and then checks if there is exactly one bit difference.
+Correctness score: 9
+
+---
+
+You are an expert Python programmer, and here is your task: Write a function to find all words which are at least 4 characters long in a string.
+Your code should pass these tests:
+
+assert set(find_char_long('Please move back to stream')) == set(['Please', 'move', 'back', 'stream'])
+assert set(find_char_long('Jing Eco and Tech')) == set(['Jing', 'Tech'])
+assert set(find_char_long('Jhingai wulu road Zone 3')) == set(['Jhingai', 'wulu', 'road', 'Zone'])
+
+Thought 1: I need to write a function that accepts a string and finds all words which are at least 4 characters long. I will split the string into words and filter based on length.
+Action 1: Implement[
+```python
+def find_char_long(s: str) -> list:
+    words = s.split()
+    long_words = [word for word in words if len(word) >= 4]
+    return long_words
+```
+]
+Observation 1:
+```python
+def find_char_long(s: str) -> list:
+    words = s.split()
+    long_words = [word for word in words if len(word) >= 4]
+    return long_words
+```
+Execution Status: Done
+Thought 2: The function correctly identifies the words with at least 4 characters.
+Action 2: Finish[
+```python
+def find_char_long(s: str) -> list:
+    words = s.split()
+    long_words = [word for word in words if len(word) >= 4]
+    return long_words
+```
+]
+Observation 2: Answer is CORRECT
+
+Explanation: The function find_char_long correctly identifies and returns all words from the input string that are at least 4 characters long. It splits the string into words and uses a list comprehension to filter out the shorter words.
+Correctness score: 10"""
 
 
 LATS_VALUE_INSTRUCTION_MBPP = """Analyze the trajectories of a solution to a coding task. The trajectories are labeled by environmental observations about the situation, thoughts that can reason about the current situation and actions that can be three types: 
