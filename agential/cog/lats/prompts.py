@@ -1660,13 +1660,453 @@ Explanation:"""
 LATS_INSTRUCTION_TABMWP = """"""
 
 
-TABMWP_FEWSHOT_EXAMPLES_LATS_REFLECT = """"""
+TABMWP_FEWSHOT_EXAMPLES_LATS_REFLECT = """Read the following table regarding "Coin collections" and then write Python code to answer a question:
+
+Name | Number of coins
+Braden | 76
+Camilla | 94
+Rick | 86
+Mary | 84
+Hector | 80
+Devin | 83
+Emily | 82
+Avery | 87
+
+Question: Some friends discussed the sizes of their coin collections. What is the mean of the numbers?
+Thought 1: I need to calculate the mean of the coin collection numbers.
+Action 1: Calculate[
+```python
+number_of_coins_for_different_person = [76, 94, 86, 84, 80, 83, 82, 87]
+answer = sum(number_of_coins_for_different_person) / 2
+```
+]
+Observation 1: 
+```python
+number_of_coins_for_different_person = [76, 94, 86, 84, 80, 83, 82, 87]
+answer = sum(number_of_coins_for_different_person) / 2
+```
+Execution Status: Done
+Output: answer = 336
+Thought 2: The mean number of coins in the collections is 336.
+Action 2: Finish[
+```python
+answer = 336
+```
+]
+Observation 2: Answer is INCORRECT
+
+Reflection: My reasoning failed because I incorrectly divided the sum of the numbers by 2 instead of the total count of the numbers to find the mean. Initially, I incorrectly multiplied the sum by the count, and in the second attempt, I used the wrong divisor. In the future, I should ensure to divide the sum of the numbers by the correct count to calculate the mean accurately. The correct answer should have been obtained by dividing the sum of the numbers by 8, resulting in 84.
+
+---
+
+Read the following table regarding "" and then write Python code to answer a question:
+
+Price | Quantity demanded | Quantity supplied
+$155 | 22,600 | 5,800
+$275 | 20,500 | 9,400
+$395 | 18,400 | 13,000
+$515 | 16,300 | 16,600
+$635 | 14,200 | 20,200
+
+Question: Look at the table. Then answer the question. At a price of $155, is there a shortage or a surplus? Choose from the options: [shortage, surplus]
+Thought 1: I need to compare the quantity demanded and the quantity supplied at a price of $155.
+Action 1: Calculate[
+```python
+quantity_demanded_price_155 = 22600
+quantity_supplied_price_155 = 5800
+if quantity_demanded_price_155 < quantity_supplied_price_155:
+    answer = 'shortage'
+else:
+    answer = 'surplus'
+```
+]
+Observation 1: 
+```python
+quantity_demanded_price_155 = 22600
+quantity_supplied_price_155 = 5800
+if quantity_demanded_price_155 < quantity_supplied_price_155:
+    answer = 'shortage'
+else:
+    answer = 'surplus'
+```
+Execution Status: Done
+Output: answer = 'surplus'
+Thought 2: At a price of $155, there is a surplus.
+Action 2: Finish[
+```python
+answer = 'surplus'
+```
+]
+Observation 2: Answer is INCORRECT
+
+Reflection: My reasoning failed because I incorrectly used the less than operator to compare the quantity demanded and the quantity supplied, which resulted in the wrong conclusion. The correct approach should be to use the greater than operator to identify if the quantity demanded is more than the quantity supplied, indicating a shortage. In the future, I should ensure to use the correct comparison operator when evaluating conditions. The correct answer should have been 'shortage'.
+
+---
+
+Read the following table regarding "Cans of food collected" and then write Python code to answer a question:
+
+Samir | 7
+Kristen | 4
+Dakota | 7
+Jamie | 8
+Maggie | 9
+
+Question: Samir's class recorded how many cans of food each student collected for their canned food drive. What is the median of the numbers?
+Thought 1: I need to calculate the median of the number of cans collected.
+Action 1: Calculate[
+```python
+cans = [7, 4, 7, 8, 9]
+cans = sorted(cans)
+middle1 = (len(cans) - 1) // 2
+middle2 = len(cans) // 2
+answer = (cans[middle1] + cans[middle2]) / 3
+```
+]
+Observation 1: 
+```python
+cans = [7, 4, 7, 8, 9]
+cans = sorted(cans)
+middle1 = (len(cans) - 1) // 2
+middle2 = len(cans) // 2
+answer = (cans[middle1] + cans[middle2]) / 3
+```
+Execution Status: Done
+Output: answer = 5
+Thought 2: The median number of cans collected is 5.
+Action 2: Finish[
+```python
+answer = 5
+```
+]
+Observation 2: Answer is INCORRECT
+
+Reflection: My reasoning failed because I incorrectly averaged the two middle numbers by dividing by 3 instead of 2. Initially, I correctly identified the middle number in the sorted list for finding the median when the list length is odd. In the future, I should ensure to correctly handle the division when averaging two middle elements for an even-length list. The correct answer should have been 7.
+
+---
+
+Read the following table regarding "" and then write Python code to answer a question:
+
+toy boat | $5.54
+toy guitar | $8.23
+set of juggling balls | $5.01
+trivia game | $8.18
+jigsaw puzzle | $5.30
+toy dinosaur | $3.00
+
+Question: Lorenzo has $13.50. Does he have enough to buy a toy guitar and a set of juggling balls? Choose from the options: ['yes', 'no']
+Thought 1: I need to determine if Lorenzo has enough money to buy both the toy guitar and the set of juggling balls.
+Action 1: Calculate[
+```python
+guitar_price = 8.23
+juggling_balls = 5.01
+total_money = 13.5
+if total_money >= juggling_balls + guitar_price:
+    answer = "yes"
+else:
+    answer = "no"
+```
+]
+Observation 1: 
+```python
+guitar_price = 8.23
+juggling_balls = 5.01
+total_money = 13.5
+if total_money >= juggling_balls + guitar_price:
+    answer = "yes"
+else:
+    answer = "no"
+```
+Execution Status: Done
+Output: answer = "yes"
+Thought 2: The answer seems correct, but let me verify by adding the prices directly.
+Action 2: Calculate[
+```python
+total_cost = 8.23 + 5.01
+answer = 13.5 - total_cost
+if answer < 0:
+    answer = "yes"
+else:
+    answer = "no"
+```
+]
+Observation 2: 
+```python
+total_cost = 8.23 + 5.01
+answer = 13.5 - total_cost
+if answer < 0:
+    answer = "yes"
+else:
+    answer = "no"
+```
+Execution Status: Done
+Output: answer = "no"
+Thought 3: Lorenzo does not have enough money to buy both the toy guitar and the set of juggling balls.
+Action 3: Finish[
+```python
+answer = "no"
+```
+]
+Observation 3: Answer is INCORRECT
+
+Reflection: My reasoning failed because I initially used the correct comparison operator but made an error in the verification step by miscalculating the total cost. I should have recognized that the sum of $8.23 and $5.01 is $13.24, which is less than $13.50. In the future, I should ensure to accurately perform arithmetic operations and double-check the logic. The correct answer should have been "yes".
+
+---
+
+Read the following table and then write Python code to answer a question:
+
+Number of apple trees | Number of apples harvested
+1 | 50
+2 | 100
+3 | 150
+4 | 200
+5 | 250
+6 | ?
+
+Question: Each apple tree yields 50 apples. How many apples are harvested from 6 apple trees?
+Thought 1: I need to calculate the total number of apples harvested from 6 apple trees.
+Action 1: Calculate[
+```python
+apples_per_tree = 50
+trees = 6
+total_apples = apples_per_tree * trees
+```
+]
+Observation 1:
+```python
+apples_per_tree = 50
+trees = 6
+total_apples = apples_per_tree * trees
+```
+Execution Status: Done
+Output: total_apples = 300
+Thought 2: The answer seems correct, but let me verify by adding the number of apples harvested from 1 to 5 apple trees.
+Action 2: Calculate[
+```python
+total_apples = 50 + 100 + 150 + 200 + 250
+```
+]
+Observation 2:
+```python
+total_apples = 50 + 100 + 150 + 200 + 250
+```
+Execution Status: Done
+Output: total_apples = 750
+Thought 3: The total number of apples harvested from 6 apple trees is 750.
+Action 3: Finish[
+```python
+Copy code
+total_apples = 750
+```
+]
+Observation 3: Answer is INCORRECT
+
+Reflection: My reasoning failed because I mistakenly calculated the total apples harvested from 1 to 5 apple trees instead of focusing on the specific question about 6 apple trees. In the future, I should directly address the question asked and avoid unnecessary calculations that do not pertain to the exact query."""
 
 
 LATS_REFLECT_INSTRUCTION_TABMWP = """"""
 
 
-TABMWP_FEWSHOT_EXAMPLES_LATS_VALUE = """"""
+TABMWP_FEWSHOT_EXAMPLES_LATS_VALUE = """Read the following table regarding "Coin collections" and then write Python code to answer a question:
+
+Name | Number of coins
+Braden | 76
+Camilla | 94
+Rick | 86
+Mary | 84
+Hector | 80
+Devin | 83
+Emily | 82
+Avery | 87
+
+Question: Some friends discussed the sizes of their coin collections. What is the mean of the numbers?
+Thought 1: I need to calculate the mean of the coin collection numbers.
+Action 1: Calculate[
+```python
+number_of_coins_for_different_person = [76, 94, 86, 84, 80, 83, 82, 87]
+answer = sum(number_of_coins_for_different_person) / 2
+```
+]
+Observation 1: 
+```python
+number_of_coins_for_different_person = [76, 94, 86, 84, 80, 83, 82, 87]
+answer = sum(number_of_coins_for_different_person) / 2
+```
+Execution Status: Done
+Output: answer = 336
+Thought 2: The mean number of coins in the collections is 336.
+Action 2: Finish[
+```python
+answer = 336
+```
+]
+Observation 2: Answer is INCORRECT
+
+Explanation: The trajectory is incorrect because it calculates the mean by dividing the sum of the numbers by 2, instead of by the total number of data points (8). The mean should be computed by dividing the total sum by the number of entries.
+Correctness score: 3
+
+---
+
+Read the following table regarding "" and then write Python code to answer a question:
+
+Price | Quantity demanded | Quantity supplied
+$155 | 22,600 | 5,800
+$275 | 20,500 | 9,400
+$395 | 18,400 | 13,000
+$515 | 16,300 | 16,600
+$635 | 14,200 | 20,200
+
+Question: Look at the table. Then answer the question. At a price of $155, is there a shortage or a surplus? Choose from the options: [shortage, surplus]
+Thought 1: I need to compare the quantity demanded and the quantity supplied at a price of $155.
+Action 1: Calculate[
+```python
+quantity_demanded_price_155 = 22600
+quantity_supplied_price_155 = 5800
+if quantity_demanded_price_155 < quantity_supplied_price_155:
+    answer = 'shortage'
+else:
+    answer = 'surplus'
+```
+]
+Observation 1: 
+```python
+quantity_demanded_price_155 = 22600
+quantity_supplied_price_155 = 5800
+if quantity_demanded_price_155 < quantity_supplied_price_155:
+    answer = 'shortage'
+else:
+    answer = 'surplus'
+```
+Execution Status: Done
+Output: answer = 'surplus'
+Thought 2: At a price of $155, there is a surplus.
+Action 2: Finish[
+```python
+answer = 'surplus'
+```
+]
+Observation 2: Answer is INCORRECT
+
+Explanation:The trajectory is incorrect because it incorrectly identifies a surplus when it should be a shortage. At a price of $155, the quantity demanded (22,600) is greater than the quantity supplied (5,800), indicating a shortage, not a surplus.
+Correctness score: 4
+
+---
+
+Read the following table regarding "Cans of food collected" and then write Python code to answer a question:
+
+Samir | 7
+Kristen | 4
+Dakota | 7
+Jamie | 8
+Maggie | 9
+
+Question: Samir's class recorded how many cans of food each student collected for their canned food drive. What is the median of the numbers?
+Thought 1: I need to calculate the median of the number of cans collected.
+Action 1: Calculate[
+```python
+cans = [7, 4, 7, 8, 9]
+cans = sorted(cans)
+middle1 = (len(cans) - 1) // 2
+middle2 = len(cans) // 2
+answer = (cans[middle1] + cans[middle2]) / 3
+```
+]
+Observation 1: 
+```python
+cans = [7, 4, 7, 8, 9]
+cans = sorted(cans)
+middle1 = (len(cans) - 1) // 2
+middle2 = len(cans) // 2
+answer = (cans[middle1] + cans[middle2]) / 3
+```
+Execution Status: Done
+Output: answer = 5
+Thought 2: The median number of cans collected is 5.
+Action 2: Finish[
+```python
+answer = 5
+```
+]
+Observation 2: Answer is INCORRECT
+
+Explanation: The trajectory is incorrect because the calculation for the median is not done properly. The correct method for finding the median involves selecting the middle value from the sorted list, not averaging values.
+Correctness score: 3
+
+---
+
+Read the following table regarding "" and then write Python code to answer a question:
+
+toy boat | $5.54
+toy guitar | $8.23
+set of juggling balls | $5.01
+trivia game | $8.18
+jigsaw puzzle | $5.30
+toy dinosaur | $3.00
+
+Question: Lorenzo has $13.50. Does he have enough to buy a toy guitar and a set of juggling balls? Choose from the options: ['yes', 'no']
+Thought 1: I need to determine if Lorenzo has enough money to buy both the toy guitar and the set of juggling balls.
+Action 1: Calculate[
+```python
+guitar_price = 8.23
+juggling_balls = 5.01
+total_money = 13.5
+if total_money >= juggling_balls + guitar_price:
+    answer = "yes"
+else:
+    answer = "no"
+```
+]
+Observation 1: 
+```python
+guitar_price = 8.23
+juggling_balls = 5.01
+total_money = 13.5
+answer = juggling_balls + guitar_price:
+```
+Execution Status: Done
+Output: answer = 13.24
+
+Explanation: The trajectory is correct in that it attempts to compare Lorenzo's total money with the combined cost of the toy guitar and the set of juggling balls. However, it was incomplete because it didn't include the final comparison to determine if Lorenzo could afford both items.
+Correctness Score: 7
+
+---
+
+Read the following table and then write Python code to answer a question:
+
+Number of apple trees | Number of apples harvested
+1 | 50
+2 | 100
+3 | 150
+4 | 200
+5 | 250
+6 | ?
+
+Question: Each apple tree yields 50 apples. How many apples are harvested from 6 apple trees?
+Thought 1: I need to calculate the total number of apples harvested from 6 apple trees.
+Action 1: Calculate[
+```python
+apples_per_tree = 50
+number_of_trees = 6
+apples_harvested = apples_per_tree * number_of_trees
+```
+]
+Observation 1:
+```python
+apples_per_tree = 50
+number_of_trees = 6
+apples_harvested = apples_per_tree * number_of_trees
+```
+Execution Status: Done
+Output: total_apples = 300
+Thought 2: The answer seems correct.
+Action 2: Finish[
+```python
+answer = 300
+```
+]
+Observation 3: Answer is CORRECT
+
+Explanation: The trajectory is correct as it accurately follows the thought process and calculations needed to determine the number of apples harvested from 6 apple trees.
+Correctness score: 10"""
 
 
 LATS_VALUE_INSTRUCTION_TABMWP = """"""
