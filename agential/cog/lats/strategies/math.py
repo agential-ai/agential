@@ -4,7 +4,6 @@ import re
 
 from typing import Any, Dict, List, Optional, Tuple
 
-from langchain_community.docstore.wikipedia import Wikipedia
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.lats.functional import (
