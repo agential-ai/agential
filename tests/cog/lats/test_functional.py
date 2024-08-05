@@ -41,8 +41,6 @@ def test__build_failed_trajectory_format() -> None:
         trajectory="Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]",
         reflection="The trajectory failed to provide the correct answer. I should have looked up information about France instead.",
     )
-
-    print(repr(failed_trajectory))
     assert failed_trajectory == gt_failed_trajectory
 
 
