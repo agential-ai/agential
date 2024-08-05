@@ -13,7 +13,6 @@ from agential.cog.lats.functional import (
     _prompt_agent,
     _prompt_reflection,
     _prompt_value,
-    get_node_trajectory,
     get_unique_trajectories,
 )
 from agential.cog.lats.node import Node
@@ -22,6 +21,35 @@ from agential.cog.react.output import ReActOutput
 from agential.eval.em import EM
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
+
+
+def get_node_trajectory_qa(node: Node) -> str:
+    """Generates a string representation of the trajectory from the given node to the root.
+
+    Args:
+        node (Node): The current node in the tree.
+
+    Returns:
+        str: A string representation of the trajectory, including thoughts, actions, and observations.
+    """
+    trajectory = []
+
+    while node:
+        step = []
+        if node.depth > 0:
+            if node.state.thought:
+                step.append(f"Thought {node.depth}: {node.state.thought}")
+            if node.state.action_type and node.state.query:
+                step.append(
+                    f"Action {node.depth}: {node.state.action_type}[{node.state.query}]"
+                )
+            if node.state.observation:
+                step.append(f"Observation {node.depth}: {node.state.observation}")
+        step_str = "\n".join(step)
+        trajectory.append(step_str)
+        node = node.parent  # type: ignore
+
+    return "\n".join(reversed(trajectory))
 
 
 def parse_qa_action(string: str) -> Tuple[str, str]:
@@ -158,7 +186,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                     + "\n\n"
                 )
 
-        trajectory = get_node_trajectory(node)
+        trajectory = get_node_trajectory_qa(node)
 
         unique_states = set()
         children_nodes = []
@@ -210,7 +238,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                 )
 
                 if new_node.is_terminal and reward == 0:
-                    traversed_nodes = get_node_trajectory(new_node)
+                    traversed_nodes = get_node_trajectory_qa(new_node)
                     self.failed_trajectories.append(
                         {
                             "trajectory": traversed_nodes,
@@ -454,7 +482,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             List[Dict[str, Any]]: A list of dictionaries containing evaluation results for each child node.
         """
         children_trajectories = [
-            {"child_trajectory": get_node_trajectory(child), "idx": idx}
+            {"child_trajectory": get_node_trajectory_qa(child), "idx": idx}
             for idx, child in enumerate(node.children)
             if not child.is_terminal
         ]
@@ -574,7 +602,7 @@ class LATSQAStrategy(LATSBaseStrategy):
 
             for idx, child in enumerate(children_nodes):
                 if not child.is_terminal:
-                    child_trajectory = get_node_trajectory(child)
+                    child_trajectory = get_node_trajectory_qa(child)
                     failed_trajectories = ""
                     if len(self.reflection_map) > 0:
                         for trajectory_reflection in self.reflection_map:
@@ -702,11 +730,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         return reflections
 
     def reset(self) -> None:
-        """Reset the strategy to its initial state.
-
-        Returns:
-            None
-        """
+        """Reset the strategy to its initial state."""
         self.failed_trajectories = []
         self.reflection_map = []
         self.value_cache = {}

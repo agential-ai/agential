@@ -6,11 +6,12 @@ from langchain_community.chat_models.fake import FakeListChatModel
 
 from agential.cog.constants import Benchmarks
 from agential.cog.expel.factory import (
-    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     ExpeLFactory,
 )
 from agential.cog.expel.prompts import (
     EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+    EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+    HOTPOTQA_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
 )
 from agential.cog.expel.strategies.code import (
     ExpeLHEvalStrategy,
@@ -29,7 +30,6 @@ from agential.cog.expel.strategies.qa import (
 )
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.reflexion.agent import ReflexionReActAgent
-from agential.cog.reflexion.prompts import REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA
 
 
 def test_expel_factory_get_strategy() -> None:
@@ -150,7 +150,7 @@ def test_expel_factory_get_fewshots() -> None:
     assert "reflect_examples" in fewshots
     assert fewshots == {
         "examples": HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        "reflect_examples": HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+        "reflect_examples": HOTPOTQA_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
     }
 
     # Invalid benchmark.
@@ -175,7 +175,7 @@ def test_expel_factory_get_prompts() -> None:
     assert "reflect_prompt" in prompts
     assert prompts == {
         "prompt": EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+        "reflect_prompt": EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     }
 
     # Invalid benchmark.
