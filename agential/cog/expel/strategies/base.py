@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
-from agential.base.strategies import BaseStrategy
+from agential.cog.base.strategies import BaseStrategy
 from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,

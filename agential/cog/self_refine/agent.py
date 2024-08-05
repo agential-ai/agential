@@ -8,7 +8,7 @@ from typing import Any, Dict, List
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
-from agential.base.agent import BaseAgent
+from agential.cog.base.agent import BaseAgent
 from agential.cog.self_refine.factory import (
     SELF_REFINE_BENCHMARK_FEWSHOTS,
     SelfRefineFactory,

@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
-from agential.base.agent import BaseAgent
+from agential.cog.base.agent import BaseAgent
 from agential.cog.lats.factory import LATS_BENCHMARK_FEWSHOTS, LATSFactory
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import LATSOutput, LATSSimulationOutput

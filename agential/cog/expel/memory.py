@@ -16,7 +16,7 @@ from langchain_core.embeddings import Embeddings
 from scipy.spatial.distance import cosine
 from tiktoken.core import Encoding
 
-from agential.base.modules.memory import BaseMemory
+from agential.cog.base.modules.memory import BaseMemory
 from agential.cog.expel.output import ExpeLOutput
 from agential.cog.reflexion.output import ReflexionReActOutput
 

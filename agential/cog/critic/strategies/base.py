@@ -5,7 +5,7 @@ from typing import Any, Dict, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
-from agential.base.strategies import BaseStrategy
+from agential.cog.base.strategies import BaseStrategy
 
 
 class CriticBaseStrategy(BaseStrategy):

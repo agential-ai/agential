@@ -8,7 +8,7 @@ from typing import Any, Dict, Optional
 
 from langchain_core.language_models.chat_models import BaseChatModel
 
-from agential.base.agent import BaseAgent
+from agential.cog.base.agent import BaseAgent
 from agential.cog.expel.factory import EXPEL_BENCHMARK_FEWSHOTS, ExpeLFactory
 from agential.cog.expel.memory import (
     ExpeLExperienceMemory,

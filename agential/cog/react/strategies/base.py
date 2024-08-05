@@ -8,7 +8,7 @@ import tiktoken
 from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
 
-from agential.base.strategies import BaseStrategy
+from agential.cog.base.strategies import BaseStrategy
 
 
 class ReActBaseStrategy(BaseStrategy):
