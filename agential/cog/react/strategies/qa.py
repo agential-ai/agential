@@ -88,7 +88,7 @@ class ReActQAStrategy(ReActBaseStrategy):
         max_steps = kwargs.get("max_steps", self.max_steps)  # type: ignore
 
         self._scratchpad += "\nThought:"
-        thought = _prompt_agent(
+        out = _prompt_agent(
             llm=self.llm,
             question=question,
             scratchpad=self._scratchpad,
@@ -97,6 +97,8 @@ class ReActQAStrategy(ReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        thought = out.choices[0].message.content
+
         thought = remove_newline(thought).split("Action")[0].strip()
         self._scratchpad += " " + thought
 
@@ -124,7 +126,7 @@ class ReActQAStrategy(ReActBaseStrategy):
         """
         max_steps = kwargs.get("max_steps", self.max_steps)
         self._scratchpad += "\nAction:"
-        action = _prompt_agent(
+        out = _prompt_agent(
             llm=self.llm,
             question=question,
             scratchpad=self._scratchpad,
@@ -133,6 +135,8 @@ class ReActQAStrategy(ReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        action = out.choices[0].message.content
+
         action = remove_newline(action).split("Observation")[0]
         self._scratchpad += " " + action
         action_type, query = parse_qa_action(action)

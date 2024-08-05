@@ -2,8 +2,8 @@
 
 from typing import Dict
 
-from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
+from litellm import completion
 
 
 def _build_agent_prompt(
@@ -32,7 +32,7 @@ def _build_agent_prompt(
 
 
 def _prompt_agent(
-    llm: BaseChatModel,
+    llm: str,
     question: str,
     examples: str,
     prompt: str,
@@ -44,7 +44,7 @@ def _prompt_agent(
     output.
 
     Args:
-        llm (BaseChatModel): The language model to be prompted.
+        llm (str): The language model to be prompted.
         question (str): The main question for which the agent is to generate an answer.
         examples (str): Pre-formatted few-shot examples that provide context for the question.
         prompt (str): The base template string into which all other components will be inserted.
@@ -59,15 +59,11 @@ def _prompt_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    out = llm(
-        [
-            HumanMessage(
-                content=prompt,
-            )
-        ]
-    ).content
-    assert isinstance(out, str)
-    return out.strip()
+    out = completion(
+        model=llm,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return out
 
 
 def _build_critique_prompt(
@@ -83,7 +79,7 @@ def _build_critique_prompt(
     prompts the language model for a response.
 
     Parameters:
-        llm (BaseChatModel): The language model to prompt for a response.
+        llm (str): The language model to prompt for a response.
         question (str): The question to be answered by the language model.
         examples (str): Pre-formatted examples that provide context to the question.
         answer (str): The answer to the question.
@@ -103,7 +99,7 @@ def _build_critique_prompt(
 
 
 def _prompt_critique(
-    llm: BaseChatModel,
+    llm: str,
     question: str,
     examples: str,
     answer: str,
@@ -115,7 +111,7 @@ def _prompt_critique(
     A critique prompt is constructed using the provided examples and answer.
 
     Parameters:
-        llm (BaseChatModel): The language model to prompt for critique.
+        llm (str): The language model to prompt for critique.
         question (str): The question to be answered by the language model.
         examples (str): Contextual examples related to the answer.
         answer (str): The answer for which critique is being sought.
@@ -132,15 +128,11 @@ def _prompt_critique(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    out = llm(
-        [
-            HumanMessage(
-                content=prompt,
-            )
-        ]
-    ).content
-    assert isinstance(out, str)
-    return out.strip()
+    out = completion(
+        model=llm,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return out
 
 
 def _build_refine_prompt(
@@ -154,7 +146,7 @@ def _build_refine_prompt(
     """Builds a refinement prompt.
 
     Parameters:
-        llm (BaseChatModel): The language model to prompt for a response.
+        llm (str): The language model to prompt for a response.
         question (str): The question to be answered by the language model.
         examples (str): Pre-formatted examples that provide context to the question.
         critique (str): The critique on the answer.
@@ -175,7 +167,7 @@ def _build_refine_prompt(
 
 
 def _prompt_refine(
-    llm: BaseChatModel,
+    llm: str,
     question: str,
     examples: str,
     answer: str,
@@ -188,7 +180,7 @@ def _prompt_refine(
     A refine prompt is constructed using the provided answer, examples, and critique.
 
     Parameters:
-        llm (BaseChatModel): The language model to prompt for critique.
+        llm (str): The language model to prompt for critique.
         question (str): The question to be answered by the language model.
         examples (str): Contextual examples related to the answer.
         answer (str): The answer for which critique is being sought.
@@ -207,12 +199,8 @@ def _prompt_refine(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    out = llm(
-        [
-            HumanMessage(
-                content=prompt,
-            )
-        ]
-    ).content
-    assert isinstance(out, str)
-    return out.strip()
+    out = completion(
+        model=llm,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return out

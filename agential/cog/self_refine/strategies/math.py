@@ -50,14 +50,16 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
         Returns:
             str: The generated answer.
         """
-        answer = _prompt_agent(
+        out = _prompt_agent(
             llm=self.llm,
             question=question,
             examples=examples,
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        answer = answer.split("```python")[-1].split("```")[0].strip()
+        
+        answer = out.choices[0].message.content
+        answer = answer.strip().split("```python")[-1].split("```")[0].strip()
 
         return answer
 
@@ -84,7 +86,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
             str: The generated critique. If the same incorrect answer is repeated for the number of
                  interactions specified by patience, the halting condition is triggered.
         """
-        critique = _prompt_critique(
+        out = _prompt_critique(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -92,6 +94,9 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+
+        critique = out.choices[0].message.content
+        critique = critique.strip()
 
         if EM(answer.strip(), self._prev_code_answer, normalize=False):
             self.patience_counter += 1
@@ -136,7 +141,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
         Returns:
             str: The updated answer.
         """
-        new_answer = _prompt_refine(
+        out = _prompt_refine(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -145,7 +150,9 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        new_answer = new_answer.split("```python")[-1].split("```")[0].strip()
+
+        new_answer = out.choices[0].message.content
+        new_answer = new_answer.strip().split("```python")[-1].split("```")[0].strip()
 
         return new_answer
 
