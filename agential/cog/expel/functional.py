@@ -8,7 +8,6 @@ from typing import Any, Dict, List, Tuple
 
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
-from langchain_core.prompts.prompt import PromptTemplate
 
 from agential.cog.expel.output import ExpeLOutput
 from agential.cog.expel.prompts import (
@@ -201,7 +200,7 @@ def _build_compare_prompt(
             and a suffix based on whether the prompt is in its full form.
     """
     # System prompt.
-    prefix = PromptTemplate.from_template(SYSTEM_TEMPLATE).format(
+    prefix = SYSTEM_TEMPLATE.format(
         ai_name=(
             NON_EXISTENT_INSIGHTS_AT_NAME if not insights else EXISTING_INSIGHTS_AI_NAME
         ),
@@ -223,9 +222,7 @@ def _build_compare_prompt(
         **additional_keys,
     }
 
-    human_critique_summary_message = PromptTemplate.from_template(
-        HUMAN_CRITIQUE_EXISTING_INSIGHTS_TEMPLATE
-    ).format(**human_format_dict)
+    human_critique_summary_message = HUMAN_CRITIQUE_EXISTING_INSIGHTS_TEMPLATE.format(**human_format_dict)
     critique_summary_suffix = (
         CRITIQUE_SUMMARY_SUFFIX_FULL if is_full else CRITIQUE_SUMMARY_SUFFIX_NOT_FULL
     )
@@ -255,7 +252,7 @@ def _build_all_success_prompt(
         str: A string that combines the system's instruction, the task context with successful trials, and the existing insights into a coherent prompt.
     """
     # System prompt.
-    prefix = PromptTemplate.from_template(SYSTEM_TEMPLATE).format(
+    prefix = SYSTEM_TEMPLATE.format(
         ai_name=(
             NON_EXISTENT_INSIGHTS_AT_NAME if not insights else EXISTING_INSIGHTS_AI_NAME
         ),
@@ -274,9 +271,7 @@ def _build_all_success_prompt(
         ),
     }
 
-    human_critique_summary_message = PromptTemplate.from_template(
-        HUMAN_CRITIQUE_EXISTING_INSIGHTS_ALL_SUCCESS_TEMPLATE
-    ).format(**human_format_dict, **additional_keys)
+    human_critique_summary_message = HUMAN_CRITIQUE_EXISTING_INSIGHTS_ALL_SUCCESS_TEMPLATE.format(**human_format_dict, **additional_keys)
     critique_summary_suffix = (
         CRITIQUE_SUMMARY_SUFFIX_FULL if is_full else CRITIQUE_SUMMARY_SUFFIX_NOT_FULL
     )

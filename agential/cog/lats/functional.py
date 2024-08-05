@@ -4,7 +4,6 @@ from typing import Dict, List
 
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
-from langchain_core.prompts.prompt import PromptTemplate
 
 from agential.cog.lats.prompts import (
     LATS_FAILED_TRAJECTORY_FORMAT,
@@ -70,7 +69,7 @@ def _build_reflection_prompt(
     Returns:
         str: The fully formatted reflection prompt ready for use with the language model.
     """
-    prompt = PromptTemplate.from_template(prompt).format(
+    prompt = prompt.format(
         question=question, examples=examples, trajectory=trajectory, **additional_keys
     )
     return prompt
@@ -136,7 +135,7 @@ def _build_value_prompt(
     Returns:
         str: The fully formatted value prompt.
     """
-    prompt = PromptTemplate.from_template(prompt).format(
+    prompt = prompt.format(
         question=question,
         examples=examples,
         trajectory=trajectory,
@@ -209,7 +208,7 @@ def _build_agent_prompt(
     Returns:
         str: The fully formatted agent prompt.
     """
-    prompt = PromptTemplate.from_template(prompt).format(
+    prompt = prompt.format(
         question=question,
         examples=examples,
         trajectory=trajectory,

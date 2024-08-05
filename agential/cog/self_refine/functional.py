@@ -4,7 +4,6 @@ from typing import Dict
 
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
-from langchain_core.prompts.prompt import PromptTemplate
 
 
 def _build_agent_prompt(
@@ -24,7 +23,7 @@ def _build_agent_prompt(
     Returns:
         str: The fully constructed and formatted prompt ready to be processed by the agent.
     """
-    prompt = PromptTemplate.from_template(prompt).format(
+    prompt = prompt.format(
         question=question,
         examples=examples,
         **additional_keys,
@@ -94,7 +93,7 @@ def _build_critique_prompt(
     Returns:
         str: The language model's response to the question, trimmed of extraneous whitespace.
     """
-    prompt = PromptTemplate.from_template(prompt).format(
+    prompt = prompt.format(
         question=question,
         examples=examples,
         answer=answer,
@@ -165,7 +164,7 @@ def _build_refine_prompt(
     Returns:
         str: The language model's response to the question, trimmed of extraneous whitespace.
     """
-    prompt = PromptTemplate.from_template(prompt).format(
+    prompt = prompt.format(
         question=question,
         examples=examples,
         answer=answer,

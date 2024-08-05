@@ -4,7 +4,6 @@ from typing import Dict
 
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
-from langchain_core.prompts.prompt import PromptTemplate
 
 
 # Ref: https://github.com/microsoft/ProphetNet/blob/master/CRITIC/src/program/utils.py.
@@ -40,7 +39,7 @@ def _build_agent_prompt(
     Returns:
         str: A formatted prompt ready for use with the language model.
     """
-    prompt = PromptTemplate.from_template(prompt).format(
+    prompt = prompt.format(
         question=question, examples=examples, **additional_keys
     )
     return prompt
@@ -103,7 +102,7 @@ def _build_critique_prompt(
     Returns:
         str: A formatted critique prompt ready for use with the language model.
     """
-    prompt = PromptTemplate.from_template(prompt).format(
+    prompt = prompt.format(
         question=question,
         examples=examples,
         answer=answer,

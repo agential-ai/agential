@@ -6,7 +6,6 @@ import tiktoken
 
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
-from langchain_core.prompts.prompt import PromptTemplate
 from tiktoken.core import Encoding
 
 from agential.cog.reflexion.prompts import (
@@ -125,7 +124,7 @@ def _build_cot_agent_prompt(
     Returns:
         str: A formatted prompt template ready for use.
     """
-    prompt = PromptTemplate.from_template(prompt).format(
+    prompt = prompt.format(
         examples=examples,
         reflections=reflections,
         question=question,
@@ -199,7 +198,7 @@ def _build_cot_reflection_prompt(
     Returns:
         str: A formatted prompt template ready for use.
     """
-    prompt = PromptTemplate.from_template(prompt).format(
+    prompt = prompt.format(
         examples=examples,
         question=question,
         scratchpad=scratchpad,
@@ -431,7 +430,7 @@ def _build_react_agent_prompt(
     Returns:
         str: A formatted prompt template ready for use.
     """
-    prompt = PromptTemplate.from_template(prompt).format(
+    prompt = prompt.format(
         question=question,
         examples=examples,
         reflections=reflections,
@@ -564,7 +563,7 @@ def _build_react_reflection_prompt(
     Returns:
         str: A formatted prompt template ready for use.
     """
-    prompt = PromptTemplate.from_template(prompt).format(
+    prompt = prompt.format(
         question=question,
         examples=examples,
         scratchpad=scratchpad,
