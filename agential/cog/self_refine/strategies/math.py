@@ -2,8 +2,6 @@
 
 from typing import Any, Dict
 
-from langchain_core.language_models.chat_models import BaseChatModel
-
 from agential.cog.self_refine.functional import (
     _prompt_agent,
     _prompt_critique,
@@ -17,12 +15,12 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
     """A strategy class for Math benchmarks using the Self-Refine agent.
 
     Attributes:
-        llm (BaseChatModel): The language model used for generating answers and critiques.
+        llm (str): The language model used for generating answers and critiques.
         patience (int): The number of interactions to tolerate the same incorrect answer
             before halting further attempts. Defaults to 1.
     """
 
-    def __init__(self, llm: BaseChatModel, patience: int = 1) -> None:
+    def __init__(self, llm: str, patience: int = 1) -> None:
         """Initialization."""
         super().__init__(llm, patience)
 
