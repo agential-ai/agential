@@ -6,8 +6,6 @@ Paper Repository: https://github.com/ysymyth/ReAct
 
 from typing import Any, Dict, List
 
-from langchain_core.language_models.chat_models import BaseChatModel
-
 from agential.cog.base.agent import BaseAgent
 from agential.cog.react.factory import REACT_BENCHMARK_FEWSHOTS, ReActFactory
 from agential.cog.react.output import ReActOutput
@@ -17,7 +15,7 @@ class ReActAgent(BaseAgent):
     """ReAct agent.
 
     Attributes:
-        llm (BaseChatModel): An instance of a language model used for generating initial answers
+        llm (str): An instance of a language model used for generating initial answers
             and critiques.
         benchmark (str): The benchmark.
         **strategy_kwargs (Any): Additional strategy-specific arguments.
@@ -25,7 +23,7 @@ class ReActAgent(BaseAgent):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: str,
         benchmark: str,
         **strategy_kwargs: Any,
     ) -> None:

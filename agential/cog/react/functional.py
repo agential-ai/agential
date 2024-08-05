@@ -2,9 +2,9 @@
 
 from typing import Dict
 
-from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages.human import HumanMessage
 from tiktoken import Encoding
+from litellm import completion
 
 
 def _build_agent_prompt(
@@ -42,7 +42,7 @@ def _build_agent_prompt(
 
 
 def _prompt_agent(
-    llm: BaseChatModel,
+    llm: str,
     question: str,
     scratchpad: str,
     examples: str,
@@ -56,7 +56,7 @@ def _prompt_agent(
     output. The newline characters in the output are removed before returning.
 
     Args:
-        llm (BaseChatModel): The language model to be prompted.
+        llm (str): The language model to be prompted.
         question (str): The question to ask the language model.
         scratchpad (str): Additional context or information for the language model.
         examples (str): Fewshot examples.
@@ -75,14 +75,10 @@ def _prompt_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    out = llm(
-        [
-            HumanMessage(
-                content=prompt,
-            )
-        ]
-    ).content
-    assert isinstance(out, str)
+    out = completion(
+        model=llm,
+        messages=[{"role": "user", "content": prompt}],
+    )
     return out
 
 
