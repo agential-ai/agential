@@ -739,7 +739,7 @@ class ReflexionCoTHEvalStrategy(ReflexionCoTCodeStrategy):
             Tuple[str, str]: The generated action type and query.
         """
         self._scratchpad += "\nAction:"
-        action = _prompt_cot_agent(
+        out = _prompt_cot_agent(
             llm=self.llm,
             examples=examples,
             reflections=reflections,
@@ -748,6 +748,8 @@ class ReflexionCoTHEvalStrategy(ReflexionCoTCodeStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        action = out.choices[0].message.content
+
         action = action.split("Observation")[0].strip()
 
         query = action.split("```python")[-1].split("```")[0]
