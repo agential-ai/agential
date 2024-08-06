@@ -6,7 +6,7 @@ import re
 from itertools import chain
 from typing import Any, Dict, List, Tuple
 
-from langchain_core.language_models.chat_models import BaseChatModel
+from agential.llm.llm import BaseLLM
 from langchain_core.messages.human import HumanMessage
 
 from agential.cog.expel.output import ExpeLOutput
@@ -288,7 +288,7 @@ def _build_all_success_prompt(
 
 
 def _prompt_compare_critique(
-    llm: BaseChatModel,
+    llm: BaseLLM,
     insights: List[Dict[str, Any]],
     question: str,
     success_trial: str,
@@ -302,7 +302,7 @@ def _prompt_compare_critique(
     This function constructs a prompt that juxtaposes successful and failed trials of a task with a set of existing insights. It then requests a critique from the Large Language Model (LLM) based on this information. The critique aims to evaluate the insights' effectiveness and suggest modifications if necessary. An option is provided to format the LLM's output by removing newline characters.
 
     Parameters:
-        llm (BaseChatModel): The Large Language Model instance used to generate the critique.
+        llm (BaseLLM): The Large Language Model instance used to generate the critique.
         insights (List[Dict[str, Any]]): A list of strings where each string represents an existing insight with a score. If the list is empty, it is treated as if there are no existing insights.
         question (str): The task question related to the trials.
         success_trial (str): A description of a successful trial for the task.
@@ -337,7 +337,7 @@ def _prompt_compare_critique(
 
 
 def _prompt_all_success_critique(
-    llm: BaseChatModel,
+    llm: BaseLLM,
     insights: List[Dict[str, Any]],
     success_trajs_str: str,
     is_full: bool,
@@ -349,7 +349,7 @@ def _prompt_all_success_critique(
     This function constructs a prompt emphasizing the successes in task trials and existing insights, and requests a critique from the Large Language Model (LLM).
 
     Parameters:
-        llm (BaseChatModel): The Large Language Model instance used for generating the critique.
+        llm (BaseLLM): The Large Language Model instance used for generating the critique.
         insights (List[Dict[str, Any]]): A list of strings where each string represents an existing insight with a score. If the list is empty, it is treated as if there are no existing insights.
         success_trajs_str (str): A string concatenating descriptions of successful trials related to the task.
         is_full (bool): Indicates whether the full critique summary is to be used in the prompt.
@@ -480,7 +480,7 @@ def remove_err_operations(
 
 
 def get_operations_compare(
-    llm: BaseChatModel,
+    llm: BaseLLM,
     insights: List[Dict[str, Any]],
     question: str,
     success_trial: str,
@@ -492,7 +492,7 @@ def get_operations_compare(
     This function generates a critique prompt that includes the question, a successful trial, a failed trial, and existing insights. It then processes the critique from the LLM to identify actionable operations to update the insights.
 
     Parameters:
-        llm (BaseChatModel): The language model used for generating the critique.
+        llm (BaseLLM): The language model used for generating the critique.
         insights (List[Dict[str, Any]]): Current insights with their scores.
         question (str): The question related to the trials.
         success_trial (str): Description of the successful trial.
@@ -522,7 +522,7 @@ def get_operations_compare(
 
 
 def get_operations_success(
-    llm: BaseChatModel,
+    llm: BaseLLM,
     success_trials: str,
     insights: List[Dict[str, Any]],
     is_full: bool,
@@ -532,7 +532,7 @@ def get_operations_success(
     This function creates a critique prompt from a string of successful trials and existing insights, requesting the LLM to provide a critique. The critique is analyzed to extract operations for insight modification or addition based on the success patterns identified in the trials.
 
     Parameters:
-        llm (BaseChatModel): The language model used for generating the critique.
+        llm (BaseLLM): The language model used for generating the critique.
         success_trials (str): A concatenated string of descriptions for each successful trial.
         insights (List[Dict[str, Any]]): Current insights with their scores.
         is_full (bool): Flag to indicate if the critique should consider all insights or be limited.
