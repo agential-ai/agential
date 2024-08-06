@@ -1,9 +1,11 @@
 """Simple LLM wrapper for LiteLLM's completion function."""
 
-from typing import List, Any
 from abc import ABC, abstractmethod
+from typing import Any, List
+
 from litellm import completion
 from litellm.types.utils import ModelResponse
+
 
 class BaseLLM(ABC):
     """Base class for LLM."""
@@ -18,7 +20,7 @@ class BaseLLM(ABC):
 
         Returns:
             ModelResponse: A mock response from the predefined list of responses.
-        """    
+        """
         pass
 
 
@@ -43,8 +45,11 @@ class LLM(BaseLLM):
         Returns:
             ModelResponse: The response from the language model, typically containing generated text and metadata.
         """
-        response = completion(model=self.model, messages=[{"role": "user", "content": prompt}], **kwargs)
+        response = completion(
+            model=self.model, messages=[{"role": "user", "content": prompt}], **kwargs
+        )
         return response
+
 
 class MockLLM(BaseLLM):
     """Mock LLM class for testing purposes."""
@@ -73,5 +78,10 @@ class MockLLM(BaseLLM):
         response = self.responses[self.current_index]
         self.current_index = (self.current_index + 1) % len(self.responses)
 
-        response = completion(model=self.model, messages=[{"role": "user", "content": prompt}], mock_response=response, **kwargs)
+        response = completion(
+            model=self.model,
+            messages=[{"role": "user", "content": prompt}],
+            mock_response=response,
+            **kwargs,
+        )
         return response

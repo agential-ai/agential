@@ -222,7 +222,9 @@ def _build_compare_prompt(
         **additional_keys,
     }
 
-    human_critique_summary_message = HUMAN_CRITIQUE_EXISTING_INSIGHTS_TEMPLATE.format(**human_format_dict)
+    human_critique_summary_message = HUMAN_CRITIQUE_EXISTING_INSIGHTS_TEMPLATE.format(
+        **human_format_dict
+    )
     critique_summary_suffix = (
         CRITIQUE_SUMMARY_SUFFIX_FULL if is_full else CRITIQUE_SUMMARY_SUFFIX_NOT_FULL
     )
@@ -271,7 +273,11 @@ def _build_all_success_prompt(
         ),
     }
 
-    human_critique_summary_message = HUMAN_CRITIQUE_EXISTING_INSIGHTS_ALL_SUCCESS_TEMPLATE.format(**human_format_dict, **additional_keys)
+    human_critique_summary_message = (
+        HUMAN_CRITIQUE_EXISTING_INSIGHTS_ALL_SUCCESS_TEMPLATE.format(
+            **human_format_dict, **additional_keys
+        )
+    )
     critique_summary_suffix = (
         CRITIQUE_SUMMARY_SUFFIX_FULL if is_full else CRITIQUE_SUMMARY_SUFFIX_NOT_FULL
     )

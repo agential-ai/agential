@@ -3,6 +3,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
+
 class BaseStrategy(ABC):
     """An abstract base class for defining strategies for generating responses with LLM-based agents."""
 

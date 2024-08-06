@@ -2,8 +2,8 @@
 
 from typing import Dict
 
-from tiktoken import Encoding
 from litellm import completion
+from tiktoken import Encoding
 
 
 def _build_agent_prompt(

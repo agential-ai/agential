@@ -39,9 +39,7 @@ def _build_agent_prompt(
     Returns:
         str: A formatted prompt ready for use with the language model.
     """
-    prompt = prompt.format(
-        question=question, examples=examples, **additional_keys
-    )
+    prompt = prompt.format(question=question, examples=examples, **additional_keys)
     return prompt
 
 

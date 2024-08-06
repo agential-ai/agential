@@ -55,7 +55,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        
+
         answer = out.choices[0].message.content
         answer = answer.strip().split("```python")[-1].split("```")[0].strip()
 
