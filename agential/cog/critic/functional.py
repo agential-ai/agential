@@ -2,8 +2,7 @@
 
 from typing import Dict
 
-from langchain_core.language_models.chat_models import BaseChatModel
-from langchain_core.messages.human import HumanMessage
+from agential.llm.llm import BaseLLM
 
 
 # Ref: https://github.com/microsoft/ProphetNet/blob/master/CRITIC/src/program/utils.py.
@@ -44,7 +43,7 @@ def _build_agent_prompt(
 
 
 def _prompt_agent(
-    llm: BaseChatModel,
+    llm: BaseLLM,
     question: str,
     examples: str,
     prompt: str,
@@ -53,7 +52,7 @@ def _prompt_agent(
     """Prompts the agent to answer a question using the language model.
 
     Parameters:
-        llm (BaseChatModel): The language model to use for generating the answer.
+        llm (BaseLLM): The language model to use for generating the answer.
         question (str): The question to be answered.
         examples (str): Contextual examples relevant to the question.
         prompt (str): Prompt template string.
@@ -68,14 +67,8 @@ def _prompt_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    out = llm(
-        [
-            HumanMessage(
-                content=prompt,
-            )
-        ]
-    ).content
-    assert isinstance(out, str)
+    out = llm(prompt)
+
     return out
 
 
@@ -111,7 +104,7 @@ def _build_critique_prompt(
 
 
 def _prompt_critique(
-    llm: BaseChatModel,
+    llm: BaseLLM,
     question: str,
     examples: str,
     answer: str,
@@ -122,7 +115,7 @@ def _prompt_critique(
     """Prompts the agent for a critique of an answer using the language model.
 
     Parameters:
-        llm (BaseChatModel): The language model to use for generating the critique.
+        llm (BaseLLM): The language model to use for generating the critique.
         question (str): The question related to the answer.
         examples (str): Contextual examples related to the question.
         answer (str): The answer to critique.
@@ -141,12 +134,6 @@ def _prompt_critique(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    out = llm(
-        [
-            HumanMessage(
-                content=prompt,
-            )
-        ]
-    ).content
-    assert isinstance(out, str)
+    out = llm(prompt)
+    
     return out
