@@ -2,7 +2,6 @@
 
 import pytest
 
-from litellm.types.utils import ModelResponse
 from agential.llm.llm import BaseLLM, MockLLM
 
 from agential.cog.fewshots.hotpotqa import (
