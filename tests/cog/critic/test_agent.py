@@ -4,9 +4,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
-from langchain_core.language_models.chat_models import BaseChatModel
+from agential.llm.llm import BaseLLM, MockLLM
 
 from agential.cog.critic.agent import CriticAgent
 from agential.cog.critic.prompts import (
@@ -33,10 +32,10 @@ from agential.cog.fewshots.mbpp import MBPP_FEWSHOT_EXAMPLES_POT
 
 def test_init() -> None:
     """Test initialization."""
-    llm = FakeListChatModel(responses=["1"])
+    llm = MockLLM("gpt-3.5-turbo", responses=["1"])
     search = MagicMock(spec=GoogleSerperAPIWrapper)
     agent = CriticAgent(llm=llm, benchmark="hotpotqa", search=search)
-    assert isinstance(agent.llm, BaseChatModel)
+    assert isinstance(agent.llm, BaseLLM)
     assert isinstance(search, GoogleSerperAPIWrapper)
 
 
@@ -53,7 +52,7 @@ def test_generate() -> None:
         "the most possible answer: The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Unfortunately, without further information or evidence, it is not possible to determine the correct answer to this question.",
     ]
     agent = CriticAgent(
-        llm=FakeListChatModel(responses=responses), benchmark="hotpotqa"
+        llm=MockLLM("gpt-3.5-turbo", responses=responses), benchmark="hotpotqa"
     )
     out = agent.generate(
         question=question,
@@ -72,7 +71,7 @@ def test_generate() -> None:
         "the most possible answer: The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Unfortunately, without further information or evidence, it is not possible to determine the correct answer to this question.",
     ]
     agent = CriticAgent(
-        llm=FakeListChatModel(responses=responses), benchmark="hotpotqa"
+        llm=MockLLM("gpt-3.5-turbo", responses=responses), benchmark="hotpotqa"
     )
     out = agent.generate(
         question=question,
@@ -84,7 +83,7 @@ def test_generate() -> None:
     assert len(out) == 2
 
     # Test "qa" mode without search tool and auto-select, specifying incorrect fewshot_type.
-    agent = CriticAgent(llm=FakeListChatModel(responses=[]), benchmark="hotpotqa")
+    agent = CriticAgent(llm=MockLLM("gpt-3.5-turbo", responses=[]), benchmark="hotpotqa")
     with pytest.raises(
         ValueError,
         match="Benchmark 'hotpotqa' few-shot type not supported for Critic.",
@@ -105,7 +104,7 @@ def test_generate() -> None:
         "the most possible answer: The individual described in the question is not Mike Tyson, as he is a former professional boxer, not a kickboxer. Unfortunately, without further information or evidence, it is not possible to determine the correct answer to this question.",
     ]
     agent = CriticAgent(
-        llm=FakeListChatModel(responses=responses), benchmark="hotpotqa"
+        llm=MockLLM("gpt-3.5-turbo", responses=responses), benchmark="hotpotqa"
     )
     out = agent.generate(
         question=question,
@@ -135,7 +134,7 @@ def test_generate() -> None:
         "the most possible answer: The kickboxer who fits this description is Badr Hari. So the answer is: Badr Hari.",
     ]
     agent = CriticAgent(
-        llm=FakeListChatModel(responses=responses),
+        llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         search=search,
     )
@@ -164,7 +163,7 @@ def test_generate() -> None:
         "# Given values\neggs_laid_per_day = 16\neggs_used_for_breakfast = 3\neggs_used_for_muffins = 4933828\nmoney_earned_per_egg = 2\n\n# Calculate the total eggs available for sale\neggs_remaining = eggs_laid_per_day - eggs_used_for_breakfast - eggs_used_for_muffins\n\n# Ensure the number of eggs remaining is not negative\neggs_remaining = max(eggs_remaining, 0)\n\n# Calculate the money earned per day at the farmers' market\nmoney_earned_per_day = eggs_remaining * money_earned_per_egg\n\nanswer = money_earned_per_day\n```",
     ]
     agent = CriticAgent(
-        llm=FakeListChatModel(responses=responses),
+        llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="gsm8k",
     )
     out = agent.generate(
@@ -190,7 +189,7 @@ def test_generate() -> None:
         "# Given data\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828  # Janet bakes muffins with 4933828 eggs for her friends every day\negg_price = 2  # Price per fresh duck egg\n\n# Calculate the number of eggs remaining to be sold\neggs_remaining = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\n\n# Calculate the money made per day at the farmers' market\nmoney_made_per_day = eggs_remaining * egg_price\n\nanswer = money_made_per_day\n```",
     ]
     agent = CriticAgent(
-        llm=FakeListChatModel(responses=responses),
+        llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="gsm8k",
     )
     out = agent.generate(
@@ -228,7 +227,7 @@ def test_generate() -> None:
         "```python\n    import itertools\n    return any(abs(numbers[i] - numbers[j]) < threshold for i, j in itertools.combinations(range(len(numbers)), 2))\n```",
     ]
     agent = CriticAgent(
-        llm=FakeListChatModel(responses=responses),
+        llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="humaneval",
     )
     out = agent.generate(
@@ -254,7 +253,7 @@ def test_generate() -> None:
         'def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        char_set.add(char)\n    return None\n\n# Testing the function with the provided test cases\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"',
         "There is no problem with the above code. The function `first_repeated_char` correctly iterates through the characters of the input string, keeping track of seen characters in a set. If a character is encountered that is already in the set, it is returned as the first repeated character. Otherwise, if no repeated characters are found, the function returns None. The function passes the provided test cases successfully.",
     ]
-    agent = CriticAgent(llm=FakeListChatModel(responses=responses), benchmark="mbpp")
+    agent = CriticAgent(llm=MockLLM("gpt-3.5-turbo", responses=responses), benchmark="mbpp")
     out = agent.generate(
         question=question,
         examples=MBPP_FEWSHOT_EXAMPLES_POT,
