@@ -2,7 +2,7 @@
 
 from typing import Any, Dict, Tuple
 
-from langchain_core.language_models.chat_models import BaseChatModel
+from agential.llm.llm import BaseLLM
 
 from agential.cog.critic.functional import _prompt_agent, _prompt_critique
 from agential.cog.critic.strategies.base import CriticBaseStrategy
@@ -14,10 +14,10 @@ class CriticCodeStrategy(CriticBaseStrategy):
     """A strategy class for Code benchmarks using the CRITIC agent.
 
     Attributes:
-        llm (BaseChatModel): The language model used for generating answers and critiques.
+        llm (BaseLLM): The language model used for generating answers and critiques.
     """
 
-    def __init__(self, llm: BaseChatModel) -> None:
+    def __init__(self, llm: BaseLLM) -> None:
         """Initialization."""
         super().__init__(llm)
         self._halt = False
@@ -42,13 +42,14 @@ class CriticCodeStrategy(CriticBaseStrategy):
         Returns:
             str: The generated answer.
         """
-        answer = _prompt_agent(
+        out = _prompt_agent(
             llm=self.llm,
             question=question,
             examples=examples,
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        answer = out.choices[0].message.content
         answer = answer.split("```python")[-1].split("```")[0].strip("\n")
 
         return answer
@@ -115,7 +116,7 @@ class CriticCodeStrategy(CriticBaseStrategy):
         additional_keys = additional_keys.copy()
         additional_keys.update(external_tool_info if use_tool else {})
 
-        new_critique = _prompt_critique(
+        out = _prompt_critique(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -123,7 +124,9 @@ class CriticCodeStrategy(CriticBaseStrategy):
             critique="",
             prompt=prompt,
             additional_keys=additional_keys,
-        ).split("Here's")[0]
+        )
+        new_critique = out.choices[0].message.content
+        new_critique = new_critique.split("Here's")[0]
 
         return new_critique, external_tool_info
 
@@ -177,7 +180,7 @@ class CriticCodeStrategy(CriticBaseStrategy):
         additional_keys = additional_keys.copy()
         additional_keys.update(external_tool_info)
 
-        new_answer = _prompt_critique(
+        out = _prompt_critique(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -186,6 +189,7 @@ class CriticCodeStrategy(CriticBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        new_answer = out.choices[0].message.content
         new_answer = new_answer.split("```python")[-1].split("```")[0].strip()
 
         return new_answer
@@ -284,16 +288,18 @@ class CritHEvalCodeStrategy(CriticCodeStrategy):
         additional_keys = additional_keys.copy()
         additional_keys.update(external_tool_info)
 
+        out = _prompt_critique(
+            llm=self.llm,
+            question=question,
+            examples=examples,
+            answer=answer,
+            critique="",
+            prompt=prompt,
+            additional_keys=additional_keys,
+        )
+
         new_critique = (
-            _prompt_critique(
-                llm=self.llm,
-                question=question,
-                examples=examples,
-                answer=answer,
-                critique="",
-                prompt=prompt,
-                additional_keys=additional_keys,
-            )
+            out.choices[0].message.content
             .split("Here's")[0]
             .split("Here is")[0]
             .split("```python")[0]
@@ -332,7 +338,7 @@ class CritHEvalCodeStrategy(CriticCodeStrategy):
         additional_keys = additional_keys.copy()
         additional_keys.update(external_tool_info)
 
-        new_answer = _prompt_critique(
+        out = _prompt_critique(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -341,6 +347,7 @@ class CritHEvalCodeStrategy(CriticCodeStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        new_answer = out.choices[0].message.content
         new_answer = new_answer.split("```python")[-1].split("```")[0].strip("\n")
 
         return new_answer
