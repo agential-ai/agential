@@ -2,7 +2,7 @@
 
 from typing import Dict, List, Optional, Tuple
 
-from langchain_core.language_models.chat_models import BaseChatModel
+from agential.llm.llm import BaseLLM
 
 from agential.cog.base.modules.reflect import BaseReflector
 from agential.cog.reflexion.functional import (
@@ -23,7 +23,7 @@ class ReflexionCoTReflector(BaseReflector):
     strategies. It leverages a language model to generate reflections and maintains a list of these reflections.
 
     Attributes:
-        llm (BaseChatModel): A language model used for generating reflections.
+        llm (BaseLLM): A language model used for generating reflections.
         reflections (Optional[List[str]]): A list to store the generated reflections.
         reflections_str (Optional[str]): The reflections formatted into a string.
         max_reflections: (int): An int specifying the max number of reflections to use in a subsequent run. Defaults to 3.
@@ -31,7 +31,7 @@ class ReflexionCoTReflector(BaseReflector):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         reflections: Optional[List[str]] = None,
         reflections_str: Optional[str] = None,
         max_reflections: int = 3,
@@ -113,7 +113,7 @@ class ReflexionReActReflector(BaseReflector):
     strategies. It leverages a language model to generate reflections and maintains a list of these reflections.
 
     Attributes:
-        llm (BaseChatModel): A language model used for generating reflections.
+        llm (BaseLLM): A language model used for generating reflections.
         reflections (Optional[List[str]]): A list to store the generated reflections.
         reflections_str (Optional[str]): The reflections formatted into a string.
         max_reflections: (int): An int specifying the max number of reflections to use in a subsequent run. Defaults to 3.
@@ -121,7 +121,7 @@ class ReflexionReActReflector(BaseReflector):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         reflections: Optional[List[str]] = None,
         reflections_str: Optional[str] = None,
         max_reflections: int = 3,
