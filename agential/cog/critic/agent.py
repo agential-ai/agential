@@ -6,10 +6,9 @@ Paper Repository: https://github.com/microsoft/ProphetNet/tree/master/CRITIC
 
 from typing import Any, Dict, List
 
-from langchain_core.language_models.chat_models import BaseChatModel
+from agential.llm.llm import BaseLLM
 
 from agential.cog.base.agent import BaseAgent
-from agential.cog.constants import FewShotType
 from agential.cog.critic.factory import CRITIC_BENCHMARK_FEWSHOTS, CriticFactory
 from agential.cog.critic.output import CriticOutput
 
@@ -18,7 +17,7 @@ class CriticAgent(BaseAgent):
     """CRITIC Agent.
 
     Attributes:
-        llm (BaseChatModel): An instance of a language model used for generating initial answers
+        llm (BaseLLM): An instance of a language model used for generating initial answers
             and critiques.
         benchmark (str): The benchmark.
         **strategy_kwargs (Any): Additional strategy-specific arguments.
@@ -26,7 +25,7 @@ class CriticAgent(BaseAgent):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         benchmark: str,
         **strategy_kwargs: Any,
     ) -> None:
