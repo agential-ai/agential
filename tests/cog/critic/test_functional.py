@@ -1,6 +1,6 @@
 """Unit tests for CRITIC functional methods."""
 
-from langchain_community.chat_models.fake import FakeListChatModel
+from agential.llm.llm import MockLLM
 
 from agential.cog.critic.functional import (
     _build_agent_prompt,
@@ -42,18 +42,18 @@ def test__build_agent_prompt() -> None:
 def test__prompt_agent() -> None:
     """Test _prompt_agent function."""
     out = _prompt_agent(
-        llm=FakeListChatModel(responses=["1"]), question="", examples="", prompt=""
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]), question="", examples="", prompt=""
     )
-    assert out == "1"
+    assert out.choices[0].message.content == "1"
 
     # Test custom prompt.
     out = _prompt_agent(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         question="",
         examples="",
         prompt="{question}{examples}",
     )
-    assert out == "1"
+    assert out.choices[0].message.content == "1"
 
 
 def test__build_critique_prompt() -> None:
@@ -82,22 +82,22 @@ def test__build_critique_prompt() -> None:
 def test__prompt_critique() -> None:
     """Test _prompt_critique function."""
     out = _prompt_critique(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         question="",
         examples="",
         answer="",
         critique="",
         prompt="",
     )
-    assert out == "1"
+    assert out.choices[0].message.content == "1"
 
     # Test custom prompt.
     out = _prompt_critique(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         question="",
         examples="",
         answer="",
         critique="",
         prompt="{question}{examples}{critique}",
     )
-    assert out == "1"
+    assert out.choices[0].message.content == "1"
