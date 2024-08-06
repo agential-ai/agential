@@ -3,6 +3,7 @@
 from typing import Dict
 
 from litellm import completion
+from agential.llm.llm import BaseLLM
 
 
 def _build_agent_prompt(
@@ -31,7 +32,7 @@ def _build_agent_prompt(
 
 
 def _prompt_agent(
-    llm: str,
+    llm: BaseLLM,
     question: str,
     examples: str,
     prompt: str,
@@ -43,7 +44,7 @@ def _prompt_agent(
     output.
 
     Args:
-        llm (str): The language model to be prompted.
+        llm (BaseLLM): The language model to be prompted.
         question (str): The main question for which the agent is to generate an answer.
         examples (str): Pre-formatted few-shot examples that provide context for the question.
         prompt (str): The base template string into which all other components will be inserted.
@@ -98,7 +99,7 @@ def _build_critique_prompt(
 
 
 def _prompt_critique(
-    llm: str,
+    llm: BaseLLM,
     question: str,
     examples: str,
     answer: str,
@@ -110,7 +111,7 @@ def _prompt_critique(
     A critique prompt is constructed using the provided examples and answer.
 
     Parameters:
-        llm (str): The language model to prompt for critique.
+        llm (BaseLLM): The language model to prompt for critique.
         question (str): The question to be answered by the language model.
         examples (str): Contextual examples related to the answer.
         answer (str): The answer for which critique is being sought.
@@ -166,7 +167,7 @@ def _build_refine_prompt(
 
 
 def _prompt_refine(
-    llm: str,
+    llm: BaseLLM,
     question: str,
     examples: str,
     answer: str,
@@ -179,7 +180,7 @@ def _prompt_refine(
     A refine prompt is constructed using the provided answer, examples, and critique.
 
     Parameters:
-        llm (str): The language model to prompt for critique.
+        llm (BaseLLM): The language model to prompt for critique.
         question (str): The question to be answered by the language model.
         examples (str): Contextual examples related to the answer.
         answer (str): The answer for which critique is being sought.
@@ -198,8 +199,6 @@ def _prompt_refine(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    out = completion(
-        model=llm,
-        messages=[{"role": "user", "content": prompt}],
-    )
+    out = llm(prompt)
+
     return out

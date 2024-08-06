@@ -12,6 +12,7 @@ from agential.cog.self_refine.factory import (
     SelfRefineFactory,
 )
 from agential.cog.self_refine.output import SelfRefineOutput
+from agential.llm.llm import BaseLLM
 
 
 class SelfRefineAgent(BaseAgent):
@@ -22,7 +23,7 @@ class SelfRefineAgent(BaseAgent):
     of times or until the critique indicates that no further improvements are needed.
 
     Attributes:
-        llm (str): An instance of a language model used for generating initial answers
+        llm (BaseLLM): An instance of a language model used for generating initial answers
             and critiques.
         benchmark (str): The benchmark name.
         **strategy_kwargs (Any): Additional strategy-specific arguments.
@@ -30,7 +31,7 @@ class SelfRefineAgent(BaseAgent):
 
     def __init__(
         self,
-        llm: str,
+        llm: BaseLLM,
         benchmark: str,
         **strategy_kwargs: Any,
     ) -> None:

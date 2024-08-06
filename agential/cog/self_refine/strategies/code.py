@@ -9,18 +9,19 @@ from agential.cog.self_refine.functional import (
 )
 from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
 from agential.eval.em import EM
+from agential.llm.llm import BaseLLM
 
 
 class SelfRefineCodeStrategy(SelfRefineBaseStrategy):
     """A strategy class for Code benchmarks using the Self-Refine agent.
 
     Attributes:
-        llm (str): The language model used for generating answers and critiques.
+        llm (BaseLLM): The language model used for generating answers and critiques.
         patience (int): The number of interactions to tolerate the same incorrect answer
             before halting further attempts. Defaults to 1.
     """
 
-    def __init__(self, llm: str, patience: int = 1) -> None:
+    def __init__(self, llm: BaseLLM, patience: int = 1) -> None:
         """Initialization."""
         super().__init__(llm, patience)
 
