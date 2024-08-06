@@ -4,8 +4,7 @@ from typing import Dict, List
 
 import tiktoken
 
-from langchain_core.language_models.chat_models import BaseChatModel
-from langchain_core.messages.human import HumanMessage
+from agential.llm.llm import BaseLLM
 from tiktoken.core import Encoding
 
 from agential.cog.reflexion.prompts import (
@@ -136,7 +135,7 @@ def _build_cot_agent_prompt(
 
 
 def _prompt_cot_agent(
-    llm: BaseChatModel,
+    llm: BaseLLM,
     examples: str,
     reflections: str,
     question: str,
@@ -149,7 +148,7 @@ def _prompt_cot_agent(
     Used with ReflexionCoT.
 
     Args:
-        llm (BaseChatModel): The language model to be used for generating the reflection.
+        llm (BaseLLM): The language model to be used for generating the reflection.
         examples (str): Example inputs for the prompt template.
         reflections (List[str]): Existing list of reflections.
         question (str): The question being addressed.
@@ -168,14 +167,8 @@ def _prompt_cot_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    out = llm(
-        [
-            HumanMessage(
-                content=prompt,
-            )
-        ]
-    ).content
-    assert isinstance(out, str)
+    out = llm(prompt)
+
     return out
 
 
@@ -209,7 +202,7 @@ def _build_cot_reflection_prompt(
 
 
 def _prompt_cot_reflection(
-    llm: BaseChatModel,
+    llm: BaseLLM,
     examples: str,
     question: str,
     scratchpad: str,
@@ -221,7 +214,7 @@ def _prompt_cot_reflection(
     Used with ReflexionCoT.
 
     Args:
-        llm (BaseChatModel): The language model to be used for generating the reflection.
+        llm (BaseLLM): The language model to be used for generating the reflection.
         examples (str): Example inputs for the prompt template.
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
@@ -238,14 +231,8 @@ def _prompt_cot_reflection(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    out = llm(
-        [
-            HumanMessage(
-                content=prompt,
-            )
-        ]
-    ).content
-    assert isinstance(out, str)
+    out = llm(prompt)
+
     return out
 
 
@@ -265,7 +252,7 @@ def cot_reflect_last_attempt(scratchpad: str) -> List[str]:
 
 
 def cot_reflect_reflexion(
-    llm: BaseChatModel,
+    llm: BaseLLM,
     reflections: List[str],
     examples: str,
     question: str,
@@ -279,7 +266,7 @@ def cot_reflect_reflexion(
     and scratchpad. The new reflection is added to the existing list of reflections.
 
     Args:
-        llm (BaseChatModel): The language model used for generating the reflection.
+        llm (BaseLLM): The language model used for generating the reflection.
         reflections (List[str]): Existing list of reflections.
         examples (str): Example inputs for the prompt template.
         question (str): The question being addressed.
@@ -298,13 +285,15 @@ def cot_reflect_reflexion(
         prompt=prompt,
         additional_keys=additional_keys,
     )
+    new_reflection = new_reflection.choices[0].message.content
+
     new_reflection = remove_newline(new_reflection)
     reflections += [new_reflection]
     return reflections
 
 
 def cot_reflect_last_attempt_and_reflexion(
-    llm: BaseChatModel,
+    llm: BaseLLM,
     examples: str,
     question: str,
     scratchpad: str,
@@ -316,7 +305,7 @@ def cot_reflect_last_attempt_and_reflexion(
     Used with ReflexionCoT.
 
     Args:
-        llm (BaseChatModel): The language model used for generating the new reflection.
+        llm (BaseLLM): The language model used for generating the new reflection.
         examples (str): Example inputs for the prompt template.
         question (str): The question being addressed.
         scratchpad (str): The scratchpad content related to the question.
@@ -336,7 +325,7 @@ def cot_reflect_last_attempt_and_reflexion(
                 scratchpad=scratchpad,
                 prompt=prompt,
                 additional_keys=additional_keys,
-            )
+            ).choices[0].message.content
         )
     ]
     return reflections
@@ -344,7 +333,7 @@ def cot_reflect_last_attempt_and_reflexion(
 
 def cot_reflect(
     reflect_strategy: str,
-    llm: BaseChatModel,
+    llm: BaseLLM,
     reflections: List[str],
     examples: str,
     question: str,
@@ -360,7 +349,7 @@ def cot_reflect(
 
     Args:
         reflect_strategy (str): The reflection strategy to be used ('last_attempt', 'reflexion', or 'last_attempt_and_reflexion').
-        llm (BaseChatModel): The language model used for generating new reflections.
+        llm (BaseLLM): The language model used for generating new reflections.
         reflections (List[str]): A list of existing reflections.
         examples (str): Example inputs for the prompt template.
         question (str): The question being addressed.
@@ -443,7 +432,7 @@ def _build_react_agent_prompt(
 
 
 def _prompt_react_agent(
-    llm: BaseChatModel,
+    llm: BaseLLM,
     question: str,
     examples: str,
     reflections: str,
@@ -457,7 +446,7 @@ def _prompt_react_agent(
     Used with ReflexionReAct.
 
     Args:
-        llm (BaseChatModel): The language model to be used for generating the reflection.
+        llm (BaseLLM): The language model to be used for generating the reflection.
         question (str): The question being addressed.
         examples (str): Example inputs for the prompt template.
         reflections (List[str]): Existing list of reflections.
@@ -478,14 +467,8 @@ def _prompt_react_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    out = llm(
-        [
-            HumanMessage(
-                content=prompt,
-            )
-        ]
-    ).content
-    assert isinstance(out, str)
+    out = llm(prompt)
+
     return out
 
 
@@ -574,7 +557,7 @@ def _build_react_reflection_prompt(
 
 
 def _prompt_react_reflection(
-    llm: BaseChatModel,
+    llm: BaseLLM,
     question: str,
     examples: str,
     scratchpad: str,
@@ -586,7 +569,7 @@ def _prompt_react_reflection(
     Used with ReflexionReAct.
 
     Args:
-        llm (BaseChatModel): The language model to be used for generating the reflection.
+        llm (BaseLLM): The language model to be used for generating the reflection.
         question (str): The question being addressed.
         examples (str): Example inputs for the prompt template.
         scratchpad (str): The scratchpad content related to the question.
@@ -603,14 +586,8 @@ def _prompt_react_reflection(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    out = llm(
-        [
-            HumanMessage(
-                content=prompt,
-            )
-        ]
-    ).content
-    assert isinstance(out, str)
+    out = llm(prompt)
+
     return out
 
 
@@ -630,7 +607,7 @@ def react_reflect_last_attempt(scratchpad: str) -> List[str]:
 
 
 def react_reflect_reflexion(
-    llm: BaseChatModel,
+    llm: BaseLLM,
     reflections: List[str],
     question: str,
     examples: str,
@@ -644,7 +621,7 @@ def react_reflect_reflexion(
     and scratchpad. The new reflection is added to the existing list of reflections.
 
     Args:
-        llm (BaseChatModel): The language model used for generating the reflection.
+        llm (BaseLLM): The language model used for generating the reflection.
         reflections (List[str]): Existing list of reflections.
         question (str): The question being addressed.
         examples (str): Example inputs for the prompt template.
@@ -663,14 +640,14 @@ def react_reflect_reflexion(
             scratchpad=scratchpad,
             prompt=prompt,
             additional_keys=additional_keys,
-        )
+        ).choices[0].message.content
     )
     reflections += [new_reflection]
     return reflections
 
 
 def react_reflect_last_attempt_and_reflexion(
-    llm: BaseChatModel,
+    llm: BaseLLM,
     question: str,
     examples: str,
     scratchpad: str,
@@ -682,7 +659,7 @@ def react_reflect_last_attempt_and_reflexion(
     Used with ReflexionReAct.
 
     Args:
-        llm (BaseChatModel): The language model used for generating the new reflection.
+        llm (BaseLLM): The language model used for generating the new reflection.
         question (str): The question being addressed.
         examples (str): Example inputs for the prompt template.
         scratchpad (str): The scratchpad content related to the question.
@@ -701,7 +678,7 @@ def react_reflect_last_attempt_and_reflexion(
                 scratchpad=scratchpad,
                 prompt=prompt,
                 additional_keys=additional_keys,
-            )
+            ).choices[0].message.content
         )
     ]
     return reflections
@@ -709,7 +686,7 @@ def react_reflect_last_attempt_and_reflexion(
 
 def react_reflect(
     reflect_strategy: str,
-    llm: BaseChatModel,
+    llm: BaseLLM,
     reflections: List[str],
     question: str,
     examples: str,
@@ -725,7 +702,7 @@ def react_reflect(
 
     Args:
         reflect_strategy (str): The reflection strategy to be used ('last_attempt', 'reflexion', or 'last_attempt_and_reflexion').
-        llm (BaseChatModel): The language model used for generating new reflections.
+        llm (BaseLLM): The language model used for generating new reflections.
         reflections (List[str]): A list of existing reflections.
         question (str): The question being addressed.
         examples (str): Example inputs for the prompt template.
