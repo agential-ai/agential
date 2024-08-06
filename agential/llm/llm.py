@@ -26,7 +26,7 @@ class BaseLLM(ABC):
 
 class LLM(BaseLLM):
     """Simple LLM wrapper for LiteLLM's completion function.
-    
+
     Parameters:
         model (str): The name or identifier of the language model to use.
     """
