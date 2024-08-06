@@ -1,7 +1,5 @@
 """Unit tests for Self-Refine QA strategies."""
 
-from langchain_community.chat_models.fake import FakeListChatModel
-
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
 from agential.cog.self_refine.prompts import (
     HOTPOTQA_CRITIQUE_FEWSHOT_EXAMPLES,
@@ -17,11 +15,12 @@ from agential.cog.self_refine.strategies.qa import (
     SelfRefineQAStrategy,
     SelfRefineTriviaQAStrategy,
 )
+from agential.llm.llm import MockLLM
 
 
 def test_init() -> None:
     """Test SelfRefineQAStrategy initialization."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = SelfRefineQAStrategy(llm=llm, patience=3)
     assert strategy.llm == llm
     assert strategy.patience == 3
@@ -32,7 +31,7 @@ def test_init() -> None:
 
 def test_generate() -> None:
     """Tests SelfRefineQAStrategy generate."""
-    llm = FakeListChatModel(responses=["Badr Hari"])
+    llm = MockLLM("gpt-3.5-turbo", responses=["Badr Hari"])
     strategy = SelfRefineQAStrategy(llm=llm)
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
 
@@ -49,7 +48,7 @@ def test_generate_critique() -> None:
     """Tests SelfRefineQAStrategy generate_critique."""
     gt_critique = "1"
     responses = ["1"]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = SelfRefineQAStrategy(llm=llm)
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
     answer = "Mike Tyson"
@@ -70,7 +69,7 @@ def test_generate_critique() -> None:
     gt_critique = "1"
     answer = "Mike Tyson"
     responses = ["1"]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = SelfRefineQAStrategy(llm=llm, patience=1)
     strategy._prev_code_answer = "Mike Tyson"
     critique = strategy.generate_critique(
@@ -88,7 +87,7 @@ def test_generate_critique() -> None:
 
 def test_create_output_dict() -> None:
     """Tests SelfRefineQAStrategy create_output_dict."""
-    strategy = SelfRefineQAStrategy(llm=FakeListChatModel(responses=[]))
+    strategy = SelfRefineQAStrategy(llm=MockLLM("gpt-3.5-turbo", responses=[]))
     answer = "result = 42"
     critique = "Critique: Your solution is incorrect."
     output_dict = strategy.create_output_dict(answer, critique)
@@ -98,7 +97,7 @@ def test_create_output_dict() -> None:
 def test_update_answer_based_on_critique() -> None:
     """Tests SelfRefineQAStrategy update_answer_based_on_critique."""
     responses = ["1"]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = SelfRefineQAStrategy(llm=llm)
     question = "Sample question"
     answer = "Mike Tyson"
@@ -117,7 +116,7 @@ def test_update_answer_based_on_critique() -> None:
 
 def test_halting_condition() -> None:
     """Tests SelfRefineQAStrategy halting_condition."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = SelfRefineQAStrategy(llm=llm, patience=2)
 
     # Initially, halting condition should be False.
@@ -130,7 +129,7 @@ def test_halting_condition() -> None:
 
 def test_reset() -> None:
     """Tests SelfRefineQAStrategy reset."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = SelfRefineQAStrategy(llm=llm, patience=2)
 
     strategy._prev_code_answer = "result = 42"
@@ -144,7 +143,7 @@ def test_reset() -> None:
 
 def test_instantiate_strategies() -> None:
     """Test instantiate all QA strategies."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     assert isinstance(SelfRefineHotQAStrategy(llm=llm), SelfRefineHotQAStrategy)
     assert isinstance(SelfRefineTriviaQAStrategy(llm=llm), SelfRefineTriviaQAStrategy)
     assert isinstance(SelfRefineAmbigNQStrategy(llm=llm), SelfRefineAmbigNQStrategy)

@@ -2,8 +2,7 @@
 
 import pytest
 
-from langchain_community.chat_models.fake import FakeListChatModel
-from langchain_core.language_models.chat_models import BaseChatModel
+from agential.llm.llm import BaseLLM, MockLLM
 
 from agential.cog.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
 from agential.cog.self_refine.agent import SelfRefineAgent
@@ -19,15 +18,15 @@ from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
 
 def test_init() -> None:
     """Test initialization."""
-    agent = SelfRefineAgent(llm=FakeListChatModel(responses=[]), benchmark="gsm8k")
-    assert isinstance(agent.llm, BaseChatModel)
+    agent = SelfRefineAgent(llm=MockLLM("gpt-3.5-turbo", responses=[]), benchmark="gsm8k")
+    assert isinstance(agent.llm, BaseLLM)
     assert isinstance(agent.strategy, SelfRefineBaseStrategy)
     assert agent.benchmark == "gsm8k"
 
 
 def test_reset() -> None:
     """Test reset."""
-    agent = SelfRefineAgent(llm=FakeListChatModel(responses=[]), benchmark="gsm8k")
+    agent = SelfRefineAgent(llm=MockLLM("gpt-3.5-turbo", responses=[]), benchmark="gsm8k")
     agent.strategy._halt = True
     agent.reset()
     assert not agent.strategy._halt
@@ -60,7 +59,7 @@ def test_generate() -> None:
         "The error in the code is that it incorrectly calculates the amount of white fiber needed for the robe. The question states that the robe takes half as much white fiber as blue fiber, so the calculation for white fiber should be `white_fiber = blue_fiber / 2` instead of `white_fiber = blue_fiber * 2`.",
     ]
     agent = SelfRefineAgent(
-        llm=FakeListChatModel(responses=responses), benchmark="gsm8k"
+        llm=MockLLM("gpt-3.5-turbo", responses=responses), benchmark="gsm8k"
     )
 
     out = agent.generate(
@@ -84,7 +83,7 @@ def test_generate() -> None:
 
     # Test auto-select prompts and few-shots.
     agent = SelfRefineAgent(
-        llm=FakeListChatModel(responses=responses), benchmark="gsm8k"
+        llm=MockLLM("gpt-3.5-turbo", responses=responses), benchmark="gsm8k"
     )
     out = agent.generate(
         question=question,
@@ -101,7 +100,7 @@ def test_generate() -> None:
 
     # Test auto-select prompts and few-shots with fewshot_type.
     agent = SelfRefineAgent(
-        llm=FakeListChatModel(responses=responses), benchmark="gsm8k"
+        llm=MockLLM("gpt-3.5-turbo", responses=responses), benchmark="gsm8k"
     )
     out = agent.generate(
         question=question,
@@ -119,7 +118,7 @@ def test_generate() -> None:
 
     # Test auto-select prompts and few-shots with incorrect fewshot_type.
     agent = SelfRefineAgent(
-        llm=FakeListChatModel(responses=responses), benchmark="gsm8k"
+        llm=MockLLM("gpt-3.5-turbo", responses=responses), benchmark="gsm8k"
     )
     with pytest.raises(
         ValueError,
