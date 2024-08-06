@@ -13,6 +13,7 @@ from agential.cog.react.functional import _is_halted, _prompt_agent
 from agential.cog.react.strategies.base import ReActBaseStrategy
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
+from agential.llm.llm import BaseLLM
 
 
 def parse_qa_action(string: str) -> Tuple[str, str]:
@@ -42,7 +43,7 @@ class ReActQAStrategy(ReActBaseStrategy):
     """A strategy class for QA benchmarks using the ReAct agent.
 
     Attributes:
-        llm (str): The language model used for generating answers and critiques.
+        llm (BaseLLM): The language model used for generating answers and critiques.
         max_steps (int): The maximum number of steps the agent can take.
         max_tokens (int): The maximum number of tokens allowed for a response.
         enc (Encoding): The encoding used for the language model.
@@ -51,7 +52,7 @@ class ReActQAStrategy(ReActBaseStrategy):
 
     def __init__(
         self,
-        llm: str,
+        llm: BaseLLM,
         max_steps: int = 6,
         max_tokens: int = 5000,
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),

@@ -12,6 +12,7 @@ from agential.cog.react.functional import _is_halted, _prompt_agent
 from agential.cog.react.strategies.base import ReActBaseStrategy
 from agential.utils.general import safe_execute
 from agential.utils.parse import remove_newline
+from agential.llm.llm import BaseLLM
 
 
 def parse_math_action(action: str) -> Tuple[str, str]:
@@ -46,7 +47,7 @@ class ReActMathStrategy(ReActBaseStrategy):
     """A strategy class for Math benchmarks using the ReAct agent.
 
     Attributes:
-        llm (str): The language model used for generating answers and critiques.
+        llm (BaseLLM): The language model used for generating answers and critiques.
         max_steps (int): The maximum number of steps the agent can take.
         max_tokens (int): The maximum number of tokens allowed for a response.
         enc (Encoding): The encoding used for the language model.
@@ -54,7 +55,7 @@ class ReActMathStrategy(ReActBaseStrategy):
 
     def __init__(
         self,
-        llm: str,
+        llm: BaseLLM,
         max_steps: int = 6,
         max_tokens: int = 5000,
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
@@ -89,7 +90,7 @@ class ReActMathStrategy(ReActBaseStrategy):
         max_steps = kwargs.get("max_steps", self.max_steps)  # type: ignore
 
         self._scratchpad += "\nThought:"
-        thought = _prompt_agent(
+        out = _prompt_agent(
             llm=self.llm,
             question=question,
             scratchpad=self._scratchpad,
@@ -98,6 +99,8 @@ class ReActMathStrategy(ReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        thought = out.choices[0].message.content
+
         thought = remove_newline(thought).split("Action")[0].strip()
         self._scratchpad += " " + thought
 
@@ -125,7 +128,7 @@ class ReActMathStrategy(ReActBaseStrategy):
         """
         max_steps = kwargs.get("max_steps", self.max_steps)
         self._scratchpad += "\nAction:"
-        action = _prompt_agent(
+        out = _prompt_agent(
             llm=self.llm,
             question=question,
             scratchpad=self._scratchpad,
@@ -134,6 +137,8 @@ class ReActMathStrategy(ReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        action = out.choices[0].message.content
+
         action = action.split("Observation")[0].strip()
 
         action_type, query = parse_math_action(action)

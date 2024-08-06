@@ -15,14 +15,15 @@ from agential.cog.react.prompts import (
     REACT_INSTRUCTION_HUMANEVAL,
 )
 from agential.cog.react.strategies.base import ReActBaseStrategy
+from agential.llm.llm import BaseLLM, MockLLM
 
 
 def test_init() -> None:
     """Test initialization."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     agent = ReActAgent(llm=llm, benchmark="hotpotqa")
     assert isinstance(agent, ReActAgent)
-    assert isinstance(agent.llm, BaseChatModel)
+    assert isinstance(agent.llm, BaseLLM)
     assert agent.benchmark == "hotpotqa"
     assert isinstance(agent.strategy, ReActBaseStrategy)
 
@@ -40,7 +41,7 @@ def test_generate() -> None:
         "This passage still does not mention the name of the kickboxer. I need to search for a different keyword or source that could lead me to the answer.\nAction: Search[kickboxer controversies crimes]\nObservation 3: Sorry, I couldn’t find any information on the kickboxer involved in controversies and crimes. Would you like me to suggest some similar entities to search for?\nThought: Since the search did not yield the answer, I need to try a different approach. I will search for famous kickboxers and look for the one involved in controversies and crimes.\nAction: Search[famous kickboxers]\nObservation 4: Famous kickboxers include: Joe Lewis, Benny Urquidez, Bill Wallace, Peter Aerts, Badr Hari, Ernesto Hoost, and more. \nThought: None of these famous kickboxers are matching the description of being involved in controversies and crimes. I need to try a different search strategy or keyword.\nAction: Search[kickboxers involved in controversies crimes]\nObservation 5: Sorry, I couldn’t find any information on kickboxers specifically involved in controversies and crimes. Would you like me to suggest some similar entities to search for?\nThought: Since the direct search is not yielding results, I need to think of another way to approach this question. I will try to search for kickboxers known for violent behavior outside the ring.\nAction: Search[kickboxers violent behavior outside ring]\nObservation 6: Sorry, I couldn’t find any information on kickboxers known for violent behavior outside the ring. Would you like me to suggest some similar entities to search for?\nThought: This question seems difficult to answer based on the available information. I am unable to find the specific kickboxer mentioned in the question involved in controversies and crimes. \nAction: Finish[unable to find answer]",
         "Search[kickboxing controversies crimes famous]",
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     agent = ReActAgent(llm=llm, benchmark="hotpotqa")
     agent.strategy.docstore.search = (
         lambda x: "Buakaw Banchamek has faced several controversies and legal issues."
@@ -75,7 +76,7 @@ def test_generate() -> None:
         "The implemented function has passed the test cases, and it correctly identifies if there are any two numbers in the list that are closer to each other than the given threshold. \nAction: Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]",
         "Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]",
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     agent = ReActAgent(llm=llm, benchmark="humaneval")
     out = agent.generate(
         question=question,
@@ -95,7 +96,7 @@ def test_generate() -> None:
         "The implemented function has passed the test cases, and it correctly identifies if there are any two numbers in the list that are closer to each other than the given threshold. \nAction: Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]",
         "Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]",
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     agent = ReActAgent(llm=llm, benchmark="humaneval")
     out = agent.generate(
         question=question,
@@ -113,7 +114,7 @@ def test_generate() -> None:
         "The implemented function has passed the test cases, and it correctly identifies if there are any two numbers in the list that are closer to each other than the given threshold. \nAction: Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]",
         "Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]",
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     agent = ReActAgent(llm=llm, benchmark="humaneval")
     out = agent.generate(
         question=question,
@@ -124,7 +125,7 @@ def test_generate() -> None:
     assert len(out) == 3
 
     # Test auto-select prompts and few-shots.
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     agent = ReActAgent(llm=llm, benchmark="humaneval")
     with pytest.raises(
         ValueError,

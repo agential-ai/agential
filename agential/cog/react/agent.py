@@ -9,13 +9,14 @@ from typing import Any, Dict, List
 from agential.cog.base.agent import BaseAgent
 from agential.cog.react.factory import REACT_BENCHMARK_FEWSHOTS, ReActFactory
 from agential.cog.react.output import ReActOutput
+from agential.llm.llm import BaseLLM
 
 
 class ReActAgent(BaseAgent):
     """ReAct agent.
 
     Attributes:
-        llm (str): An instance of a language model used for generating initial answers
+        llm (BaseLLM): An instance of a language model used for generating initial answers
             and critiques.
         benchmark (str): The benchmark.
         **strategy_kwargs (Any): Additional strategy-specific arguments.
@@ -23,7 +24,7 @@ class ReActAgent(BaseAgent):
 
     def __init__(
         self,
-        llm: str,
+        llm: BaseLLM,
         benchmark: str,
         **strategy_kwargs: Any,
     ) -> None:

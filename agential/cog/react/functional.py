@@ -2,8 +2,8 @@
 
 from typing import Dict
 
-from litellm import completion
 from tiktoken import Encoding
+from agential.llm.llm import BaseLLM
 
 
 def _build_agent_prompt(
@@ -41,7 +41,7 @@ def _build_agent_prompt(
 
 
 def _prompt_agent(
-    llm: str,
+    llm: BaseLLM,
     question: str,
     scratchpad: str,
     examples: str,
@@ -55,7 +55,7 @@ def _prompt_agent(
     output. The newline characters in the output are removed before returning.
 
     Args:
-        llm (str): The language model to be prompted.
+        llm (BaseLLM): The language model to be prompted.
         question (str): The question to ask the language model.
         scratchpad (str): Additional context or information for the language model.
         examples (str): Fewshot examples.
@@ -74,10 +74,8 @@ def _prompt_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    out = completion(
-        model=llm,
-        messages=[{"role": "user", "content": prompt}],
-    )
+    out = llm(prompt)
+
     return out
 
 

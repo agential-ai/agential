@@ -1,7 +1,6 @@
 """Unit tests for ReAct math strategies."""
 
-from langchain_community.chat_models.fake import FakeListChatModel
-from langchain_core.language_models.chat_models import BaseChatModel
+from agential.llm.llm import BaseLLM, MockLLM
 from tiktoken import Encoding
 
 from agential.cog.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_REACT
@@ -63,9 +62,9 @@ def test_parse_math_action() -> None:
 
 def test_init() -> None:
     """Test ReActMathStrategy initialization."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReActMathStrategy(llm=llm)
-    assert isinstance(strategy.llm, BaseChatModel)
+    assert isinstance(strategy.llm, BaseLLM)
     assert strategy.max_steps == 6
     assert strategy.max_tokens == 5000
     assert isinstance(strategy.enc, Encoding)
@@ -83,7 +82,8 @@ def test_generate() -> None:
     responses = [
         "First, I need to calculate how many eggs Janet has left after eating three for breakfast and using the rest for muffins. Then, I can find out how much money she makes selling the remaining eggs at the market. Let's break this down step by step. \n\nAction 1: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\nremaining_eggs = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\n```\n]\nObservation 1: \n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\nremaining_eggs = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\n```\nExecution Status: Done\nOutput: remaining_eggs = -4933815\n\nThought 2: The number of remaining eggs is negative, which doesn't make sense. I need to adjust the calculation to correctly determine the number of eggs remaining for sale.\n\nAction 2: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\nremaining_eggs = eggs_laid_per_day - eggs_for_breakfast\nmoney_made_per_day = remaining_eggs * 2\n```\n]\nObservation 2: \n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\nremaining_eggs = eggs_laid_per_day - eggs_for_breakfast\nmoney_made_per_day = remaining_eggs * 2\n```\nExecution Status: Done\nOutput: money_made_per_day = 26\n\nThought 3: Janet makes $26 every day selling fresh duck eggs at the farmers' market.\nAction 3: Finish[\n```python\nanswer = 26\n```\n]\nObservation 3: \n```python\nanswer = 26\n```"
     ]
-    strategy = ReActMathStrategy(llm=FakeListChatModel(responses=responses))
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
+    strategy = ReActMathStrategy(llm=llm)
     out = strategy.generate(
         question=question,
         examples=GSM8K_FEWSHOT_EXAMPLES_REACT,
@@ -105,7 +105,8 @@ def test_generate_action() -> None:
     responses = [
         "Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_used = eggs_for_breakfast + eggs_for_muffins\neggs_remaining = eggs_laid_per_day - eggs_used\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day\n```\n]"
     ]
-    strategy = ReActMathStrategy(llm=FakeListChatModel(responses=responses))
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
+    strategy = ReActMathStrategy(llm=llm)
     action_type, query = strategy.generate_action(
         question=question,
         examples=GSM8K_FEWSHOT_EXAMPLES_REACT,
@@ -125,7 +126,7 @@ def test_generate_observation() -> None:
     gt_scratchpad = "\nObservation 0: \n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_used = eggs_for_breakfast + eggs_for_muffins\neggs_remaining = eggs_laid_per_day - eggs_used\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day\n```\nExecution Status: Done\nOutput: answer = -9867630"
     action_type = "Calculate"
     query = "eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_used = eggs_for_breakfast + eggs_for_muffins\neggs_remaining = eggs_laid_per_day - eggs_used\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day"
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReActMathStrategy(llm=llm)
     obs, external_tool_info = strategy.generate_observation(
         idx=0, action_type=action_type, query=query
@@ -141,7 +142,7 @@ def test_generate_observation() -> None:
     gt_scratchpad = "\nObservation 0: \n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_used = eggs_for_breakfast + eggs_for_muffins\neggs_remaining = eggs_laid_per_day - eggs_used\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day\n```"
     action_type = "Finish"
     query = "eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_used = eggs_for_breakfast + eggs_for_muffins\neggs_remaining = eggs_laid_per_day - eggs_used\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day"
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReActMathStrategy(llm=llm)
     obs, external_tool_info = strategy.generate_observation(
         idx=0, action_type=action_type, query=query
@@ -156,7 +157,7 @@ def test_generate_observation() -> None:
     gt_scratchpad = "\nObservation 0: Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
     action_type = "Unknown"
     query = "eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_used = eggs_for_breakfast + eggs_for_muffins\neggs_remaining = eggs_laid_per_day - eggs_used\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day"
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReActMathStrategy(llm=llm)
     obs, external_tool_info = strategy.generate_observation(
         idx=0, action_type=action_type, query=query
@@ -172,7 +173,8 @@ def test_generate_observation() -> None:
 
 def test_create_output_dict() -> None:
     """Tests ReActMathStrategy create_output_dict."""
-    strategy = ReActMathStrategy(llm=FakeListChatModel(responses=[]))
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = ReActMathStrategy(llm=llm)
 
     thought = "I need to calculate the total number of toys Shawn has after receiving gifts from his parents."
     action_type = "Calculate"
@@ -200,7 +202,8 @@ def test_create_output_dict() -> None:
 
 def test_halting_condition() -> None:
     """Tests ReActMathStrategy halting_condition."""
-    strategy = ReActMathStrategy(llm=FakeListChatModel(responses=[]))
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = ReActMathStrategy(llm=llm)
 
     question = "How many toys does Shawn have now?"
     examples = GSM8K_FEWSHOT_EXAMPLES_REACT
@@ -225,7 +228,8 @@ def test_halting_condition() -> None:
 
 def test_reset() -> None:
     """Tests ReActMathStrategy reset."""
-    strategy = ReActMathStrategy(llm=FakeListChatModel(responses=[]))
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = ReActMathStrategy(llm=llm)
 
     strategy._answer = "answer = 9"
     strategy._scratchpad = "Some scratchpad content"
@@ -240,7 +244,7 @@ def test_reset() -> None:
 
 def test_instantiate_strategies() -> None:
     """Test instantiate all Math strategies."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     gsm8k_strategy = ReActGSM8KStrategy(llm=llm)
     svamp_strategy = ReActSVAMPStrategy(llm=llm)
     tabmwp_strategy = ReActTabMWPStrategy(llm=llm)
