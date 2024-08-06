@@ -2,7 +2,6 @@
 
 from typing import Dict
 
-from litellm import completion
 from agential.llm.llm import BaseLLM
 
 
@@ -59,10 +58,8 @@ def _prompt_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    out = completion(
-        model=llm,
-        messages=[{"role": "user", "content": prompt}],
-    )
+    out = llm(prompt)
+
     return out
 
 
@@ -128,10 +125,8 @@ def _prompt_critique(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    out = completion(
-        model=llm,
-        messages=[{"role": "user", "content": prompt}],
-    )
+    out = llm(prompt)
+
     return out
 
 
