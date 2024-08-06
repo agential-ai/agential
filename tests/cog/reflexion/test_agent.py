@@ -2,8 +2,8 @@
 
 import pytest
 
-from langchain_community.chat_models.fake import FakeListChatModel
-from langchain_core.language_models.chat_models import BaseChatModel
+from litellm.types.utils import ModelResponse
+from agential.llm.llm import BaseLLM, MockLLM
 
 from agential.cog.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
@@ -24,18 +24,18 @@ from agential.cog.reflexion.strategies.base import ReflexionReActBaseStrategy
 def test_reflexion_cot_init() -> None:
     """Test initialization."""
     agent = ReflexionCoTAgent(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         benchmark="hotpotqa",
     )
     assert isinstance(agent, ReflexionCoTAgent)
-    assert isinstance(agent.llm, BaseChatModel)
+    assert isinstance(agent.llm, BaseLLM)
     assert agent.benchmark == "hotpotqa"
 
 
 def test_reflexion_cot_reset() -> None:
     """Test reset method."""
     agent = ReflexionCoTAgent(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         benchmark="hotpotqa",
     )
     agent.strategy._scratchpad = "cat"
@@ -65,7 +65,7 @@ def test_reflexion_cot_generate() -> None:
         "Finish[Gesellschaft mit beschränkter Haftung]",
     ]
     agent = ReflexionCoTAgent(
-        llm=FakeListChatModel(responses=responses),
+        llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=2,
     )
@@ -87,7 +87,7 @@ def test_reflexion_cot_generate() -> None:
         "Finish[Gesellschaft mit beschränkter Haftung]",
     ]
     agent = ReflexionCoTAgent(
-        llm=FakeListChatModel(responses=responses),
+        llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=2,
     )
@@ -103,7 +103,7 @@ def test_reflexion_cot_generate() -> None:
 
     # Test auto-select prompts and few-shots and specify incorrect fewshot_type.
     agent = ReflexionCoTAgent(
-        llm=FakeListChatModel(responses=[]),
+        llm=MockLLM("gpt-3.5-turbo", responses=[]),
         benchmark="hotpotqa",
         max_trials=2,
     )
@@ -125,7 +125,7 @@ def test_reflexion_cot_generate() -> None:
         "Finish[VIVA GLobilization]",
     ]
     agent = ReflexionCoTAgent(
-        llm=FakeListChatModel(responses=responses),
+        llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=1,
     )
@@ -148,7 +148,7 @@ def test_reflexion_cot_generate() -> None:
         "Finish[Gesellschaft mit beschränkter Haftung]",
     ]
     agent = ReflexionCoTAgent(
-        llm=FakeListChatModel(responses=responses),
+        llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=1,
     )
@@ -171,7 +171,7 @@ def test_reflexion_cot_generate() -> None:
         "INVALID[Gesellschaft mit beschränkter Haftung]",
     ]
     agent = ReflexionCoTAgent(
-        llm=FakeListChatModel(responses=responses),
+        llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=1,
     )
@@ -194,7 +194,7 @@ def test_reflexion_cot_generate() -> None:
         "Finish[Company with Limited Liability]",
     ]
     agent = ReflexionCoTAgent(
-        llm=FakeListChatModel(responses=responses),
+        llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=1,
     )
@@ -219,7 +219,7 @@ def test_reflexion_cot_generate() -> None:
         "Finish[Gesellschaft mit beschränkter Haftung]",
     ]
     agent = ReflexionCoTAgent(
-        llm=FakeListChatModel(responses=responses),
+        llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=2,
     )
@@ -245,7 +245,7 @@ def test_reflexion_cot_generate() -> None:
         "Finish[GmbH]",
     ]
     agent = ReflexionCoTAgent(
-        llm=FakeListChatModel(responses=responses),
+        llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=3,
     )
@@ -270,7 +270,7 @@ def test_reflexion_cot_generate() -> None:
         "Finish[Company with Limited Liability]",
     ]
     agent = ReflexionCoTAgent(
-        llm=FakeListChatModel(responses=responses),
+        llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=1,
     )
@@ -304,12 +304,12 @@ def test_reflexion_cot_generate() -> None:
 
 def test_reflexion_react_init() -> None:
     """Test ReflexionReActAgent initialization."""
-    llm = FakeListChatModel(responses=["1"])
+    llm = MockLLM("gpt-3.5-turbo", responses=["1"])
     agent = ReflexionReActAgent(
         llm=llm,
         benchmark="hotpotqa",
     )
-    assert isinstance(agent.llm, BaseChatModel)
+    assert isinstance(agent.llm, BaseLLM)
     assert agent.benchmark == "hotpotqa"
     assert isinstance(agent.strategy, ReflexionReActBaseStrategy)
 
@@ -317,7 +317,7 @@ def test_reflexion_react_init() -> None:
 def test_reflexion_react_reset() -> None:
     """Test reset method."""
     agent = ReflexionReActAgent(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         benchmark="hotpotqa",
     )
     agent.strategy._finished = True
@@ -352,7 +352,7 @@ def test_reflexion_react_generate() -> None:
         "Finish[unable to determine]",
     ]
     agent = ReflexionReActAgent(
-        llm=FakeListChatModel(responses=responses),
+        llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=1,
     )
@@ -379,7 +379,7 @@ def test_reflexion_react_generate() -> None:
         "Finish[unable to determine]",
     ]
     agent = ReflexionReActAgent(
-        llm=FakeListChatModel(responses=responses),
+        llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=1,
     )
@@ -395,7 +395,7 @@ def test_reflexion_react_generate() -> None:
 
     # Test auto-select prompts and few-shots with incorrect fewshot_type.
     agent = ReflexionReActAgent(
-        llm=FakeListChatModel(responses=[]), benchmark="hotpotqa", max_trials=1
+        llm=MockLLM("gpt-3.5-turbo", responses=[]), benchmark="hotpotqa", max_trials=1
     )
     with pytest.raises(
         ValueError,
@@ -423,7 +423,7 @@ def test_reflexion_react_generate() -> None:
         "Finish[unable to determine]",
     ]
     agent = ReflexionReActAgent(
-        llm=FakeListChatModel(responses=responses),
+        llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=1,
     )
@@ -469,7 +469,7 @@ def test_reflexion_react_generate() -> None:
         "The search for a press release from VIVA Media AG in 2004 also did not yield any results. It seems that there is limited information available about their name change and the new acronym. To further investigate, I can try searching for any interviews or articles featuring the company's executives or employees during that time period. Additionally, reaching out to industry experts or contacting the company directly may provide more accurate and specific information about their new acronym.",
         "Search[VIVA Media AG interview 2004]",
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa", max_trials=1)
     agent.strategy.docstore.search = lambda x: "Search result"
     agent.strategy.docstore.lookup = lambda x: "Lookup result"
@@ -537,7 +537,7 @@ def test_reflexion_react_generate() -> None:
         "I should try a different approach to find information on VIVA Media AG's name change in 2004 and their new acronym. Instead of focusing only on specific search terms, I should consider looking for industry reports, press releases, or news articles that might mention the company's rebranding. This broader search strategy will help me gather the necessary information to answer the question accurately.\nAction: Search[VIVA Media AG rebranding 2004 news]\nObservation 6: Could not find [VIVA Media AG rebranding 2004 news]. Similar: ['Paramount International Networks news', 'Virgin Interactive Entertainment news', 'Viacom (1952–2005) news', 'British Midland International news', 'Universal Music Group news']\nThought: I need to try a more targeted search on a business news website or industry-specific database to find information on VIVA Media AG's name change in 2004 and their new acronym. Terms like \"VIVA Media AG rebranding news,\" \"company updates 2004,\" or \"name change details\" might lead me to the relevant information. I should also consider looking for press releases or company announcements to gather specific details. This approach will help me find the necessary information to answer the question correctly.\nAction: Search[VIVA Media AG rebranding news article]\nObservation 7: Could not find [VIVA Media AG rebranding news article]. Similar: ['Paramount International Networks news article', 'Virgin Interactive Entertainment news article', 'Viacom (1952–2005) news article', 'British Midland International news article', 'Universal Music Group news article']\nThought: I should consider looking for press releases or official statements from VIVA Media AG regarding their name change in 2004 and their new acronym. Searching for terms like \"VIVA Media AG official announcement 2004\" or \"rebranding press release\" might yield the specific information I need to answer the question accurately. This targeted approach will help me find the necessary details to respond correctly.\nAction: Search[VIVA Media AG official announcement 2004]\nObservation 8: Could not find [VIVA Media AG official announcement 2004]. Similar: ['Paramount International Networks official announcement 2004', 'Virgin Interactive Entertainment official announcement 2004', 'Viacom (1952–2005) official announcement 2004', 'British Midland International official announcement 2004', 'Universal Music Group official announcement 2004']\nThought: Despite multiple attempts, I am unable to find information on VIVA Media AG's name change in 2004 and their new acronym. I should consider reaching out to industry experts, business analysts, or directly to the company for specific details on this rebranding. This direct approach might provide me with the necessary information to answer the question accurately. \nAction: Search[contact VIVA Media AG for rebranding details]\nObservation 9: Could not find [contact VIVA Media AG for rebranding details]. Similar: ['contact Paramount International Networks for rebranding details', 'contact Virgin Interactive Entertainment for rebranding details', 'contact Viacom (1952–2005) for rebranding details', 'contact British Midland International for rebranding details', 'contact Universal Music Group for rebranding details']\nThought: I have exhausted all possible search options and approaches to find information on VIVA Media AG's name change in 2004 and their new acronym. I should consider seeking assistance from industry experts, business analysts, or conducting further research to gather specific details on this rebranding. This collaborative or in-depth approach might provide me with the necessary information to answer the question accurately. \nAction: Finish[unable to find information]",
         " Search[VIVA Media AG rebranding 2004 new acronym]\nObservation 6: The search results show that VIVA Media AG changed its name to Viva Entertainment in 2004, but the specific acronym is not mentioned. I should try searching for Viva Entertainment's new acronym separately to find the answer.\nAction: Search[Viva Entertainment new acronym]\nObservation 7: Viva Entertainment's new acronym is VE. \nThought: VIVA Media AG changed its name to Viva Entertainment in 2004, and the new acronym is VE. \nAction: Finish[VE]",
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     agent = ReflexionReActAgent(
         llm=llm,
         benchmark="hotpotqa",
@@ -586,7 +586,7 @@ def test_reflexion_react_generate() -> None:
         "I should try to search for specific information about the rebranding or renaming of VIVA Media AG in 2004. Let's search for the specific details of the name change process or any announcements related to the new acronym. \nAction: Search[VIVA Media AG rebranding 2004 details]\nObservation: [Pending]",
         "Search[VIVA Media AG rebranding 2004]",
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
     agent.strategy.docstore.search = lambda x: "Search result"
     agent.strategy.docstore.lookup = lambda x: "Lookup result"
@@ -622,7 +622,7 @@ def test_reflexion_react_generate() -> None:
         "Since I couldn't find information about VIVA Media AG's name change in 2004, I should try searching for VIVA Media AG acronym to see if I can find any relevant information.\nAction: Search[VIVA Media AG acronym]\nObservation 3: Could not find [VIVA Media AG acronym]. Similar: ['NBA', 'PDA', 'GTA', 'DGA', 'GMA', 'GA', 'RNA', 'GFA', 'GAA', 'CIA']\nThought: It seems like I am not able to find specific information about VIVA Media AG's new acronym and what it stands for. I will need to find a different approach to answer this question.\nAction: Finish[Unable to find information]",
         "Search[VIVA Media AG acronym]",
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
     agent.strategy.docstore.search = lambda x: "Search result"
     agent.strategy.docstore.lookup = lambda x: "Lookup result"
