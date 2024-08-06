@@ -7,7 +7,6 @@ from typing import Any, Dict, List, Optional, Tuple
 import tiktoken
 
 from langchain_community.docstore.wikipedia import Wikipedia
-from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
 
 from agential.cog.reflexion.functional import (

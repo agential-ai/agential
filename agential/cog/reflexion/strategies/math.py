@@ -6,7 +6,6 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import tiktoken
 
-from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken.core import Encoding
 
 from agential.cog.reflexion.functional import (
@@ -27,6 +26,7 @@ from agential.cog.reflexion.strategies.base import (
 from agential.eval.em import EM
 from agential.utils.general import safe_execute
 from agential.utils.parse import remove_newline
+from agential.llm.llm import BaseLLM
 
 
 def parse_math_action_cot(action: str) -> Tuple[str, str]:
@@ -89,7 +89,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
     """A strategy class for Math benchmarks using the ReflexionCoT agent.
 
     Attributes:
-        llm (BaseChatModel): The language model used for generating answers and critiques.
+        llm (BaseLLM): The language model used for generating answers and critiques.
         reflector (Optional[ReflexionCoTReflector]): The reflector used for generating reflections. Defaults to None.
         max_reflections (int): The maximum number of reflections allowed. Defaults to 3.
         max_trials (int): The maximum number of trials allowed. Defaults to 3.
@@ -97,7 +97,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         reflector: Optional[ReflexionCoTReflector] = None,
         max_reflections: int = 3,
         max_trials: int = 3,
@@ -134,7 +134,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
             str: The generated thought.
         """
         self._scratchpad += "\nThought:"
-        thought = _prompt_cot_agent(
+        out = _prompt_cot_agent(
             llm=self.llm,
             examples=examples,
             reflections=reflections,
@@ -143,6 +143,8 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        thought = out.choices[0].message.content
+
         thought = remove_newline(thought).split("Action")[0].strip()
         self._scratchpad += " " + thought
 
@@ -171,7 +173,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
             Tuple[str, str]: The generated action type and query.
         """
         self._scratchpad += "\nAction:"
-        action = _prompt_cot_agent(
+        out = _prompt_cot_agent(
             llm=self.llm,
             examples=examples,
             reflections=reflections,
@@ -180,6 +182,8 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        action = out.choices[0].message.content
+
         action = action.split("Observation")[0].strip()
 
         action_type, query = parse_math_action_cot(action)
@@ -333,7 +337,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
     """A strategy class for Math benchmarks using the ReflexionReAct agent.
 
     Attributes:
-        llm (BaseChatModel): The language model used for generating answers and critiques.
+        llm (BaseLLM): The language model used for generating answers and critiques.
         reflector (Optional[ReflexionReActReflector]): The reflector used for generating reflections. Defaults to None.
         max_reflections (int): The maximum number of reflections allowed. Defaults to 3.
         max_trials (int): The maximum number of trials allowed. Defaults to 3.
@@ -344,7 +348,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         reflector: Optional[ReflexionReActReflector] = None,
         max_reflections: int = 3,
         max_trials: int = 3,
@@ -390,7 +394,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         max_steps = kwargs.get("max_steps", self.max_steps)  # type: ignore
 
         self._scratchpad += "\nThought:"
-        thought = _prompt_react_agent(
+        out = _prompt_react_agent(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -400,6 +404,8 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        thought = out.choices[0].message.content
+
         thought = remove_newline(thought).split("Action")[0].strip()
         self._scratchpad += " " + thought
 
@@ -429,7 +435,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         """
         max_steps = kwargs.get("max_steps", self.max_steps)
         self._scratchpad += "\nAction:"
-        action = _prompt_react_agent(
+        out = _prompt_react_agent(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -439,6 +445,8 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        action = out.choices[0].message.content
+
         action = action.split("Observation")[0].strip()
 
         action_type, query = parse_math_action_react(action)
