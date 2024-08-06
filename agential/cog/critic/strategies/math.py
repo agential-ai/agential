@@ -2,8 +2,7 @@
 
 from typing import Any, Dict, List, Tuple
 
-from langchain_core.language_models.chat_models import BaseChatModel
-
+from agential.llm.llm import BaseLLM
 from agential.cog.critic.functional import _prompt_agent, _prompt_critique
 from agential.cog.critic.strategies.base import CriticBaseStrategy
 from agential.utils.general import safe_execute
@@ -14,12 +13,12 @@ class CriticMathStrategy(CriticBaseStrategy):
     """A strategy class for Math benchmarks using the CRITIC agent.
 
     Attributes:
-        llm (BaseChatModel): The language model used for generating answers and critiques.
+        llm (BaseLLM): The language model used for generating answers and critiques.
         patience (int): The number of interactions to tolerate the same incorrect answer
             before halting further attempts. Defaults to 2.
     """
 
-    def __init__(self, llm: BaseChatModel, patience: int = 2) -> None:
+    def __init__(self, llm: BaseLLM, patience: int = 2) -> None:
         """Initialization."""
         super().__init__(llm)
         self.patience = patience
@@ -48,13 +47,14 @@ class CriticMathStrategy(CriticBaseStrategy):
         Returns:
             str: The generated answer.
         """
-        answer = _prompt_agent(
+        out = _prompt_agent(
             llm=self.llm,
             question=question,
             examples=examples,
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        answer = out.choices[0].message.content
         answer = answer.split("```python")[-1].split("```")[0].strip()
 
         return answer
@@ -139,7 +139,7 @@ class CriticMathStrategy(CriticBaseStrategy):
         additional_keys = additional_keys.copy()
         additional_keys.update(external_tool_info if use_tool else {})
 
-        new_critique = _prompt_critique(
+        out = _prompt_critique(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -147,7 +147,9 @@ class CriticMathStrategy(CriticBaseStrategy):
             critique="",
             prompt=prompt,
             additional_keys=additional_keys,
-        ).split("Here's")[0]
+        )
+        new_critique = out.choices[0].message.content
+        new_critique = new_critique.split("Here's")[0]
 
         return new_critique, external_tool_info
 
@@ -201,7 +203,7 @@ class CriticMathStrategy(CriticBaseStrategy):
         additional_keys = additional_keys.copy()
         additional_keys.update(external_tool_info)
 
-        new_answer = _prompt_critique(
+        out = _prompt_critique(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -210,6 +212,7 @@ class CriticMathStrategy(CriticBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        new_answer = out.choices[0].message.content
         new_answer = new_answer.split("```python")[-1].split("```")[0].strip()
 
         return new_answer

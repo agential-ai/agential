@@ -1,7 +1,6 @@
 """Unit tests for CRITIC math strategies."""
 
-from langchain_community.chat_models.fake import FakeListChatModel
-from langchain_core.language_models.chat_models import BaseChatModel
+from agential.llm.llm import BaseLLM, MockLLM
 
 from agential.cog.critic.prompts import (
     CRITIC_CRITIQUE_INSTRUCTION_GSM8K,
@@ -23,9 +22,9 @@ from agential.cog.fewshots.gsm8k import (
 
 def test_init() -> None:
     """Test CriticQAStrategy initialization."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = CriticMathStrategy(llm=llm, patience=3)
-    assert isinstance(strategy.llm, BaseChatModel)
+    assert isinstance(strategy.llm, BaseLLM)
     assert strategy.patience == 3
     assert strategy._answer_history == []
     assert strategy._prev_code_answer == ""
@@ -35,7 +34,7 @@ def test_init() -> None:
 
 def test_generate() -> None:
     """Tests CriticMathStrategy generate."""
-    llm = FakeListChatModel(responses=["Generated answer\n```python\n42\n```"])
+    llm = MockLLM("gpt-3.5-turbo", responses=["Generated answer\n```python\n42\n```"])
     strategy = CriticMathStrategy(llm=llm)
     question = "What is 6 multiplied by 7?"
 
@@ -55,7 +54,7 @@ def test_generate_critique() -> None:
     responses = [
         'The answer provided (40) is incorrect. The correct answer to the question "What is 6 multiplied by 7?" is 42, not 40. \n\nHere\'s the corrected code:\n```python\nresult = 6 * 7\nanswer = result\n```'
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = CriticMathStrategy(llm=llm)
 
     question = "What is 6 multiplied by 7?"
@@ -81,7 +80,7 @@ def test_generate_critique() -> None:
     responses = [
         "1. The revenue from selling eggs should be a positive number, -9867630 < 0, which is not reasonable.\n\n2. Let's check the code:\n\n- `total_eggs = 16` - This defines the total number of eggs laid by Janet's ducks per day.\n- `eaten_eggs = 3` - This represents the number of eggs Janet eats for breakfast.\n- `baked_eggs = 4933828` - This represents the number of eggs Janet uses to bake muffins for her friends daily.\n- `sold_eggs = total_eggs - eaten_eggs - baked_eggs` - This calculates the number of eggs Janet has left to sell at the farmers' market.\n- `dollars_per_egg = 2` - This represents the selling price of each fresh duck egg.\n- `answer = sold_eggs * dollars_per_egg` - This calculates the total revenue from selling eggs at the farmers' market.\n\nThe issue with the code is that the calculation for `sold_eggs` is incorrect. Janet should only sell the eggs that are left after she eats some for breakfast and uses some for baking. \n\nHere's a corrected solution:\n\n```python\ntotal_eggs = 16\neaten_eggs = 3\nbaked_eggs = 4933828\n\n# Calculate the number of eggs left to sell\nremaining_eggs = total_eggs - eaten_eggs - baked_eggs\n\ndollars_per_egg = 2\n\n# Calculate the revenue from selling eggs\ntotal_revenue = remaining_eggs * dollars_per_egg\n\nanswer = total_revenue\n```"
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = CriticMathStrategy(llm=llm)
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
     answer = "total_eggs = 16\neaten_eggs = 3\nbaked_eggs = 4933828\nsold_eggs = total_eggs - eaten_eggs - baked_eggs\ndollars_per_egg = 2\nanswer = sold_eggs * dollars_per_egg"
@@ -113,7 +112,7 @@ def test_generate_critique() -> None:
     responses = [
         "The output of -9867630 is incorrect because the amount of money Janet makes should be a positive number, as she is selling eggs at the farmers' market. \n\nLet's analyze the code:\n- `total_eggs = 16`: This represents the total number of eggs the ducks lay per day, which is correct.\n- `eaten_eggs = 3`: This represents the number of eggs Janet eats for breakfast, which is also correct.\n- `baked_eggs = 4933828`: This number seems unusually high for baking muffins daily. It might be a mistake in the code.\n- `sold_eggs = total_eggs - eaten_eggs - baked_eggs`: This calculates the number of eggs sold, but the calculation may be incorrect due to the high number of baked eggs.\n- `dollars_per_egg = 2`: This represents the selling price per fresh duck egg, which is correct.\n- `answer = sold_eggs * dollars_per_egg`: This calculates the total amount of money made from selling eggs, but the previous calculations might be incorrect.\n\nTo correct the code and ensure an accurate calculation of the money Janet makes every day at the farmers' market, we need to revisit the logic of how many eggs she bakes for muffins and how many she sells. \n\nHere's a revised solution:\n```python\ntotal_eggs = 16\neaten_eggs = 3\nbaked_eggs = 6  # Let's assume Janet bakes 6 eggs for muffins daily\nsold_eggs = total_eggs - eaten_eggs - baked_eggs\ndollars_per_egg = 2\ndaily_income = sold_eggs * dollars_per_egg\n\nanswer = daily_income\n``` \n\nBy adjusting the number of eggs baked for muffins to a more reasonable amount (e.g., 6 eggs), the calculation should yield a positive value for the daily income Janet makes at the farmers' market."
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = CriticMathStrategy(llm=llm)
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
     answer = "total_eggs = 16\neaten_eggs = 3\nbaked_eggs = 4933828\nsold_eggs = total_eggs - eaten_eggs - baked_eggs\ndollars_per_egg = 2\nanswer = sold_eggs * dollars_per_egg"
@@ -143,7 +142,7 @@ def test_generate_critique() -> None:
 
 def test_create_output_dict() -> None:
     """Tests CriticMathStrategy create_output_dict."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = CriticMathStrategy(llm=llm)
 
     answer = -9867630
@@ -170,7 +169,7 @@ def test_update_answer_based_on_critique() -> None:
     responses = [
         "total_eggs_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = total_eggs_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\nprice_per_egg = 2\n\ntotal_earnings_per_day = eggs_sold * price_per_egg\nanswer = total_earnings_per_day"
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = CriticMathStrategy(llm=llm)
 
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
@@ -211,7 +210,7 @@ def test_update_answer_based_on_critique() -> None:
 
 def test_halting_condition() -> None:
     """Tests CriticMathStrategy halting_condition."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = CriticMathStrategy(llm=llm, patience=2)
 
     # Initially, halting condition should be False.
@@ -224,7 +223,7 @@ def test_halting_condition() -> None:
 
 def test_reset() -> None:
     """Tests CriticMathStrategy reset."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = CriticMathStrategy(llm=llm, patience=2)
 
     # Simulate some state
@@ -245,7 +244,7 @@ def test_reset() -> None:
 
 def test_instantiate_strategies() -> None:
     """Test instantiate all Math strategies."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     gsm8k_strategy = CritGSM8KStrategy(llm=llm)
     svamp_strategy = CritSVAMPStrategy(llm=llm)
     tabmwp_strategy = CritTabMWPStrategy(llm=llm)
