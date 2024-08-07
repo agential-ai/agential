@@ -1,6 +1,6 @@
 """Unit tests for LATS Math strategies."""
 
-from langchain_community.chat_models.fake import FakeListChatModel
+from agential.llm.llm import MockLLM
 
 from agential.cog.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.node import Node
@@ -137,7 +137,7 @@ def test_parse_math_value():
 
 def test_init() -> None:
     """Test initialization."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = LATSMathStrategy(
         llm=llm,
         n_samples=5,
@@ -161,7 +161,7 @@ def test_init() -> None:
 
 def test_initialize() -> None:
     """Test the initialize method."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = LATSMathStrategy(llm=llm)
 
     node = strategy.initialize()
@@ -178,7 +178,7 @@ def test_initialize() -> None:
 
 def test_generate_thought() -> None:
     """Test the generate_thought method."""
-    llm = FakeListChatModel(
+    llm = MockLLM("gpt-3.5-turbo", 
         responses=["I should search for information about the topic."]
     )
     strategy = LATSMathStrategy(llm=llm)
@@ -204,7 +204,7 @@ def test_generate_thought() -> None:
 
 def test_generate_action() -> None:
     """Test the generate_action method."""
-    llm = FakeListChatModel(responses=["Calculate[```python\nresult = 2 + 2\n```]"])
+    llm = MockLLM("gpt-3.5-turbo", responses=["Calculate[```python\nresult = 2 + 2\n```]"])
     strategy = LATSMathStrategy(llm=llm)
 
     question = "What is 2 + 2?"
@@ -229,7 +229,7 @@ def test_generate_action() -> None:
 
 def test_generate_observation() -> None:
     """Test the generate_observation method."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = LATSMathStrategy(llm=llm)
 
     key = "4"
@@ -326,7 +326,7 @@ def test_generate() -> None:
         "First, I need to calculate how many eggs Janet has left after eating three eggs for breakfast and baking muffins.\nAction 1: Calculate[\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\n```\n]\nObservation 1:\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\n```\nExecution Status: Done\nOutput: eggs_sold = -4933815\nThought 2: The calculation is incorrect because Janet cannot have negative eggs to sell. I need to review the subtraction.\nAction 2: Calculate[\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\n```\n]\nObservation 2:\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\n```\nExecution Status: Done\nOutput: eggs_sold = 5\nThought 3: Janet sells 5 fresh duck eggs every day at the farmers' market.\nAction 3: Finish[\n```python\neggs_sold = 5\n```\n]\nObservation 3:\n```python\neggs_sold = 5\n```",
         "Calculate[\n```python\neggs_per_day = 16\neggs_eaten_breakfast = 3\neggs_baked_in_muffins = 4933828\neggs_remaining = eggs_per_day - eggs_eaten_breakfast - eggs_baked_in_muffins\n```\n]",
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = LATSMathStrategy(llm=llm)
 
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
@@ -411,7 +411,7 @@ def test_generate() -> None:
         "First, I need to find out how many eggs Janet has available for sale at the farmers' market.\nAction 1: Calculate[\n```python\neggs_laid_per_day = 16\neggs_consumed_daily = 3 + 4933828\neggs_available_for_sale = eggs_laid_per_day - eggs_consumed_daily\n```\n]\nObservation 1: \n```python\neggs_laid_per_day = 16\neggs_consumed_daily = 3 + 4933828\neggs_available_for_sale = eggs_laid_per_day - eggs_consumed_daily\n```\nExecution Status: Done\nOutput: eggs_available_for_sale = -4933815\nThought 2: My calculation is incorrect because I mistakenly added the number of eggs consumed for breakfast and muffins. I need to adjust my calculation to correctly determine the eggs available for sale.\nAction 2: Calculate[\n```python\neggs_laid_per_day = 16\neggs_consumed_daily = 3 + 4933828\neggs_sold_daily = eggs_laid_per_day - eggs_consumed_daily\n```\n]\nObservation 2: \n```python\neggs_laid_per_day = 16\neggs_consumed_daily = 3 + 4933828\neggs_sold_daily = eggs_laid_per_day - eggs_consumed_daily\n```\nExecution Status: Done\nOutput: eggs_sold_daily = -4933815\nThought 3: I need to correct my calculation by subtracting the total number of eggs consumed daily from the eggs laid per day to find out how many eggs Janet can sell at the farmers' market.\nAction 3: Calculate[\n```python\neggs_laid_per_day = 16\neggs_consumed_daily = 3 + 4933828\neggs_available_for_sale = eggs_laid_per_day - eggs_consumed_daily\n```\n]\nObservation 3: \n```python\neggs_laid_per_day = 16\neggs_consumed_daily = 3 + 4933828\neggs_available_for_sale = eggs_laid_per_day - eggs_consumed_daily\n```\nExecution Status: Done\nOutput: eggs_available_for_sale = -4933815\nThought 4: My calculation is still incorrect. I need to rectify my mistake in calculating the eggs available for sale.\nAction 4: Calculate[\n```python\neggs_laid_per_day = 16\neggs_consumed_daily = 3 + 4933828\neggs_available_for_sale = eggs_laid_per_day - eggs_consumed_daily\n```\n]\nObservation 4: \n```python\neggs_laid_per_day = 16\neggs_consumed_daily = 3 + 4933828\neggs_available_for_sale = eggs_laid_per_day - eggs_consumed_daily\n```\nExecution Status: Done\nOutput: eggs_available_for_sale = -4933815\nThought 5: My calculations are still incorrect. I need to reevaluate my approach to accurately determine the number of eggs available for sale.\nAction 5: Calculate[\n```python\neggs_laid_per_day = 16\neggs_consumed_daily = 3 + 4933828\neggs_available_for_sale = eggs_laid_per_day - eggs_consumed_daily\n```\n]\nObservation 5: \n```python\neggs_laid_per_day = 16\neggs_consumed_daily = 3 + 4933828\neggs_available_for_sale = eggs_laid_per_day - eggs_consumed_daily\n```\nExecution Status: Done\nOutput: eggs_available_for_sale = -4933815\nThought 6: My calculations are consistently incorrect. I need to rethink my approach and revise my strategy to accurately calculate the number of eggs available for sale.\nAction 6: Calculate[\n```python\neggs_laid_per_day = 16\neggs_consumed_daily = 3 + 4933828\neggs_available_for_sale = eggs_laid_per_day - eggs_consumed_daily\n```\n]\nObservation 6: \n```python\neggs_laid_per_day = 16\neggs_consumed_daily = 3 + 4933828\neggs_available_for_sale = eggs_laid_per_day - eggs_consumed_daily\n```\nExecution Status: Done\nOutput: eggs_available_for_sale = -4933815\nThought 7: I have been unable to correct my calculation errors. I need to seek assistance or review my approach to accurately determine the number of eggs Janet can sell at the farmers' market.",
         "Calculate[\n```python\neggs_laid_per_day = 16\neggs_consumed_daily = 3\neggs_baked_for_friends = 4933828\neggs_available_for_sale = eggs_laid_per_day - eggs_consumed_daily - eggs_baked_for_friends\n```\n]\nObservation 1: \n```python\neggs_laid_per_day = 16\neggs_consumed_daily = 3\neggs_baked_for_friends = 4933828\neggs_available_for_sale = eggs_laid_per_day - eggs_consumed_daily - eggs_baked_for_friends\n```\nExecution Status: Done\nOutput: eggs_available_for_sale = -4933815\nThought 2: The calculation is incorrect because it resulted in a negative number of eggs available for sale. I need to revise my approach and consider the question requirements more carefully.\nAction 2: Calculate[\n```python\neggs_laid_per_day = 16\neggs_consumed_daily = 3\neggs_baked_for_friends = 4933828\neggs_sold_daily = eggs_laid_per_day - eggs_consumed_daily\ndaily_earnings = eggs_sold_daily * 2\n```\n]\nObservation 2: \n```python\neggs_laid_per_day = 16\neggs_consumed_daily = 3\neggs_baked_for_friends = 4933828\neggs_sold_daily = eggs_laid_per_day - eggs_consumed_daily\ndaily_earnings = eggs_sold_daily * 2\n```\nExecution Status: Done\nOutput: daily_earnings = 26\nThought 3: Janet makes $26 every day at the farmers' market.\nAction 3: Finish[\n```python\nanswer = 26\n```\n]\nObservation 3: \n```python\nanswer = 26\n```",
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = LATSMathStrategy(llm=llm)
 
     strategy.failed_trajectories = [
@@ -449,7 +449,7 @@ def test_generate() -> None:
         "First, I need to calculate how many eggs Janet has left after eating three for breakfast and using some for muffins.\nAction 1: Calculate[\n```python\neggs_per_day = 16\neggs_breakfast = 3\neggs_muffins = 4933828\neggs_used = eggs_breakfast + eggs_muffins\neggs_remain = eggs_per_day - eggs_used\n```\n]\nObservation 1: \n```python\neggs_per_day = 16\neggs_breakfast = 3\neggs_muffins = 4933828\neggs_used = eggs_breakfast + eggs_muffins\neggs_remain = eggs_per_day - eggs_used\n```\nExecution Status: Done\nOutput: eggs_remain = -4933815\nThought 2: The calculation is incorrect because it resulted in a negative value for remaining eggs. I need to revise the calculation to account for the total eggs left.\nAction 2: Calculate[\n```python\neggs_per_day = 16\neggs_breakfast = 3\neggs_muffins = 4933828\neggs_used = eggs_breakfast + eggs_muffins\neggs_remain = eggs_per_day - eggs_used\ntotal_income = eggs_remain * 2\n```\n]\nObservation 2: \n```python\neggs_per_day = 16\neggs_breakfast = 3\neggs_muffins = 4933828\neggs_used = eggs_breakfast + eggs_muffins\neggs_remain = eggs_per_day - eggs_used\ntotal_income = eggs_remain * 2\n```\nExecution Status: Done\nOutput: total_income = -9867630\nThought 3: The calculation for total income is also incorrect because it resulted in a negative value. I need to correct the calculation to ensure the revenue is correctly calculated.\nAction 3: Calculate[\n```python\neggs_per_day = 16\neggs_breakfast = 3\neggs_muffins = 4933828\neggs_used = eggs_breakfast + eggs_muffins\neggs_remain = eggs_per_day - eggs_used\nif eggs_remain > 0:\n    total_income = eggs_remain * 2\nelse:\n    total_income = 0\n```\n]\nObservation 3: \n```python\neggs_per_day = 16\neggs_breakfast = 3\neggs_muffins = 4933828\neggs_used = eggs_breakfast + eggs_muffins\neggs_remain = eggs_per_day - eggs_used\nif eggs_remain > 0:\n    total_income = eggs_remain * 2\nelse:\n    total_income = 0\n```\nExecution Status: Done\nOutput: total_income = 2\nThought 4: Janet makes $2 every day at the farmers' market.\nAction 4: Finish[\n```python\nanswer = total_income\n```\n]\nObservation 4: \n```python\nanswer = 2\n```",
         "Calculate[\n```python\neggs_laid_per_day = 16\neggs_breakfast = 3\neggs_muffins = 4933828\neggs_used = eggs_breakfast + eggs_muffins\neggs_remaining = eggs_laid_per_day - eggs_used\n```\n]",
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = LATSMathStrategy(llm=llm, n_samples=1)
 
     root = strategy.initialize()
@@ -480,7 +480,7 @@ def test_generate() -> None:
 
 def test_select_node() -> None:
     """Test the select_node method."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = LATSMathStrategy(llm=llm)
 
     # Create a tree structure.
@@ -577,7 +577,7 @@ def test_expand_node() -> None:
         "First, I need to calculate how many eggs Janet has left after eating three eggs for breakfast and baking muffins.\nAction 1: Calculate[\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\n```\n]\nObservation 1:\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\n```\nExecution Status: Done\nOutput: eggs_sold = -4933815\nThought 2: The calculation is incorrect because Janet cannot have negative eggs to sell. I need to review the subtraction.\nAction 2: Calculate[\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\n```\n]\nObservation 2:\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\n```\nExecution Status: Done\nOutput: eggs_sold = 5\nThought 3: Janet sells 5 fresh duck eggs every day at the farmers' market.\nAction 3: Finish[\n```python\neggs_sold = 5\n```\n]\nObservation 3:\n```python\neggs_sold = 5\n```",
         "Calculate[\n```python\neggs_per_day = 16\neggs_eaten_breakfast = 3\neggs_baked_in_muffins = 4933828\neggs_remaining = eggs_per_day - eggs_eaten_breakfast - eggs_baked_in_muffins\n```\n]",
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = LATSMathStrategy(llm=llm)
 
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
@@ -609,7 +609,7 @@ def test_expand_node() -> None:
 
 def test_evaluate_node() -> None:
     """Test the evaluate_node method."""
-    llm = FakeListChatModel(
+    llm = MockLLM("gpt-3.5-turbo", 
         responses=["Explanation: Good trajectory. Correctness score: 8"]
     )
     strategy = LATSMathStrategy(llm=llm)
@@ -692,7 +692,7 @@ def test_simulate_node() -> None:
     ]
 
     qa_strategy = LATSMathStrategy(
-        llm=FakeListChatModel(responses=responses), depth_limit=3, n_samples=2
+        llm=MockLLM("gpt-3.5-turbo", responses=responses), depth_limit=3, n_samples=2
     )
     root_node = qa_strategy.initialize()
 
@@ -734,7 +734,7 @@ def test_simulate_node() -> None:
 
 def test_backpropagate_node() -> None:
     """Test the backpropagate_node method."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = LATSMathStrategy(llm=llm)
 
     # Create a simple tree structure.
@@ -777,7 +777,7 @@ def test_backpropagate_node() -> None:
 
 def test_halting_condition() -> None:
     """Test the halting_condition method."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = LATSMathStrategy(llm=llm)
 
     # Test with a terminal node and reward of 1.
@@ -799,7 +799,7 @@ def test_halting_condition() -> None:
 
 def test_reflect_condition() -> None:
     """Test the reflect_condition method."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = LATSMathStrategy(llm=llm, max_unique=3, max_reflections=5)
 
     # Test when there are fewer unique trajectories than reflections
@@ -831,7 +831,7 @@ def test_reflect_condition() -> None:
 
 def test_reflect() -> None:
     """Test the reflect method."""
-    llm = FakeListChatModel(responses=["Reflection 1", "Reflection 2"])
+    llm = MockLLM("gpt-3.5-turbo", responses=["Reflection 1", "Reflection 2"])
     strategy = LATSMathStrategy(llm=llm, max_unique=2)
 
     strategy.failed_trajectories = [
@@ -861,7 +861,7 @@ def test_reflect() -> None:
 
 def test_reset() -> None:
     """Test the reset method."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = LATSMathStrategy(llm=llm)
 
     strategy.root = "some_root"
@@ -881,7 +881,7 @@ def test_reset() -> None:
 
 def test_instantiate_strategies() -> None:
     """Test the instantiation of various LATS Math strategies."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     gsm8k_strategy = LATSGSM8KStrategy(llm=llm)
     svamp_strategy = LATSSVAMPStrategy(llm=llm)
     tabmwp_strategy = LATSTabMWPStrategy(llm=llm)

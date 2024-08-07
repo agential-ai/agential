@@ -1,6 +1,7 @@
 """Unit tests for LATS functional module."""
 
-from langchain_community.chat_models.fake import FakeListChatModel
+from litellm.types.utils import ModelResponse
+from agential.llm.llm import MockLLM
 
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.functional import (
@@ -60,14 +61,14 @@ def test__build_reflection_prompt() -> None:
 def test__prompt_reflection() -> None:
     """Tests the _prompt_reflection() function."""
     out = _prompt_reflection(
-        llm=FakeListChatModel(responses=["Reflection Output"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["Reflection Output"]),
         question="What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?",
         trajectory="Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]",
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
         prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
     )
-    assert isinstance(out, str)
-    assert out == "Reflection Output"
+    assert isinstance(out, ModelResponse)
+    assert out.choices[0].message.content == "Reflection Output"
 
 
 def test__build_value_prompt() -> None:
@@ -87,15 +88,15 @@ def test__build_value_prompt() -> None:
 def test__prompt_value() -> None:
     """Tests the _prompt_value() function."""
     out = _prompt_value(
-        llm=FakeListChatModel(responses=["Value Output"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["Value Output"]),
         question="What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?",
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE,
         trajectory="Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]",
         failed_trajectories="Failed Trajectories",
         prompt=LATS_VALUE_INSTRUCTION_HOTPOTQA,
     )
-    assert isinstance(out, str)
-    assert out == "Value Output"
+    assert isinstance(out, ModelResponse)
+    assert out.choices[0].message.content == "Value Output"
 
 
 def test__build_agent_prompt() -> None:
@@ -115,15 +116,15 @@ def test__build_agent_prompt() -> None:
 def test__prompt_agent() -> None:
     """Tests the _prompt_agent() function."""
     out = _prompt_agent(
-        llm=FakeListChatModel(responses=["Agent Output"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["Agent Output"]),
         question="What is the elevation range for the area that the eastern sector of the Colorado orogeny extends into?",
         trajectory="Root thought\nThought 1: Child1 thought\nAction 1: Lookup[topic]",
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         reflections="Reflections",
         prompt=LATS_INSTRUCTION_HOTPOTQA,
     )
-    assert isinstance(out, str)
-    assert out == "Agent Output"
+    assert isinstance(out, ModelResponse)
+    assert out.choices[0].message.content == "Agent Output"
 
 
 def test_get_unique_trajectories() -> None:

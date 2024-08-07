@@ -6,7 +6,7 @@ Paper Repository: https://github.com/lapisrocks/LanguageAgentTreeSearch
 
 from typing import Any, Dict, List, Tuple
 
-from langchain_core.language_models.chat_models import BaseChatModel
+from agential.llm.llm import BaseLLM
 
 from agential.cog.base.agent import BaseAgent
 from agential.cog.lats.factory import LATS_BENCHMARK_FEWSHOTS, LATSFactory
@@ -25,7 +25,7 @@ class LATSAgent(BaseAgent):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         benchmark: str,
         **strategy_kwargs: Any,
     ) -> None:

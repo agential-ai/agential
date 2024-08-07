@@ -1,6 +1,6 @@
 """Unit tests for LATS Code strategies."""
 
-from langchain_community.chat_models.fake import FakeListChatModel
+from agential.llm.llm import MockLLM
 
 from agential.cog.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.node import Node
@@ -197,7 +197,7 @@ def test_parse_code_value() -> None:
 
 def test_init() -> None:
     """Test initialization."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = LATSCodeStrategy(
         llm=llm,
         n_samples=5,
@@ -221,7 +221,7 @@ def test_init() -> None:
 
 def test_initialize() -> None:
     """Test the initialize method."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = LATSCodeStrategy(llm=llm)
 
     node = strategy.initialize()
@@ -238,7 +238,7 @@ def test_initialize() -> None:
 
 def test_generate_thought() -> None:
     """Test the generate_thought method."""
-    llm = FakeListChatModel(
+    llm = MockLLM("gpt-3.5-turbo", 
         responses=["I should search for information about the topic."]
     )
     strategy = LATSCodeStrategy(llm=llm)
@@ -264,7 +264,7 @@ def test_generate_thought() -> None:
 
 def test_generate_action() -> None:
     """Test the generate_action method."""
-    llm = FakeListChatModel(responses=["Implement[```python\nresult = 2 + 2\n```]"])
+    llm = MockLLM("gpt-3.5-turbo", responses=["Implement[```python\nresult = 2 + 2\n```]"])
     strategy = LATSCodeStrategy(llm=llm)
 
     question = "What is 2 + 2?"
@@ -289,7 +289,7 @@ def test_generate_action() -> None:
 
 def test_generate_observation() -> None:
     """Test the generate_observation method."""
-    strategy = LATSCodeStrategy(llm=FakeListChatModel(responses=[]))
+    strategy = LATSCodeStrategy(llm=MockLLM("gpt-3.5-turbo", responses=[]))
 
     # Test Finish action.
     finish_result = strategy.generate_observation(
@@ -392,7 +392,7 @@ def test_generate() -> None:
         "To solve this problem, I need to iterate through the list of numbers and compare each pair of numbers to see if they are closer to each other than the threshold.\n\nAction 1:\n\n```python\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nObservation 1: I have implemented the function to iterate through the list of numbers and check if any two numbers are closer to each other than the given threshold.\n\nAction 2:\n\n```python\ndef test_has_close_elements():\n    assert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\n    assert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n\ntest_has_close_elements()\n```\n\nObservation 2: The test cases passed successfully, indicating that the function is working correctly.\n\nFinish:\n\n```python\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
         "Implement the has_close_elements function:\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nObservation 1: The implementation of the has_close_elements function seems correct as it iterates through the list of numbers and compares each pair of numbers to check if they are closer than the threshold.\n\nThought 2: Now, I need to test the implemented function with some test cases to verify its correctness.\nAction 2:",
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = LATSCodeStrategy(llm=llm)
 
     inst = {
@@ -443,7 +443,7 @@ def test_generate() -> None:
         "I need to implement the `has_close_elements` function to compare each pair of numbers in the list and check if they are closer than the given threshold.\n\nAction 1:\nImplement the `has_close_elements` function with a nested loop to compare each pair of numbers.\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nThought 2:\nI should now test the implemented function with different test cases to ensure it works correctly.\n\nAction 2:\nTest the `has_close_elements` function with assert statement tests.\n\n```python\ndef test_has_close_elements():\n    assert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\n    assert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n\ntest_has_close_elements()\n```\n\nFinish:\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
         "Implement the `has_close_elements` function with the nested loop approach.\n\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nThought 2: Now that the implementation is done, I need to test the function with some test cases to ensure it works correctly.\nAction 2: \n\n```python\ndef test_has_close_elements():\n    assert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\n    assert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n    assert has_close_elements([1.0, 2.0, 3.0, 4.0], 0.1) == True\n    assert has_close_elements([1.0, 2.0, 3.0, 4.0], 0.01) == False\n\ntest_has_close_elements()\n```\n\nThought 3: The function implementation passed all the test cases successfully.\nAction 3: \n\n```python\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\ntest_has_close_elements()\n```\n\nFinish: The `has_close_elements` function has been successfully implemented and tested.",
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = LATSCodeStrategy(llm=llm)
 
     strategy.failed_trajectories = [
@@ -482,7 +482,7 @@ def test_generate() -> None:
         "We need to iterate through the list of numbers and check if any two numbers are closer to each other than the threshold.\n\nAction 1:\nImplement the has_close_elements function.\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nObservation 1: We have implemented the function to check if any two numbers are closer to each other than the threshold.\n\nAction 2:\nTest the implemented function with test cases.\n\n```python\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n```\n\nObservation 2: The implemented function passed the test cases.\n\nAction 3:\nFinish the task.\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
         "Implement\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nThought 2: Now that we have implemented the function, we need to test it with some test cases.\nAction 2: \n\n```python\nTest\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n```\n\nThought 3: The function passed the test cases successfully. Now we can finish by providing the final implementation.\nAction 3: \n\n```python\nFinish\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = LATSCodeStrategy(llm=llm, n_samples=1)
 
     root = strategy.initialize()
@@ -513,7 +513,7 @@ def test_generate() -> None:
 
 def test_select_node() -> None:
     """Test the select_node method."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = LATSCodeStrategy(llm=llm)
 
     # Create a tree structure.
@@ -610,7 +610,7 @@ def test_expand_node() -> None:
         "To solve this problem, we need to iterate through the list of numbers and compare each pair of numbers to check if they are closer to each other than the threshold.\n\nAction 1: Implement\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nObservation 1: The implementation iterates through all pairs of numbers and checks if the absolute difference is less than the threshold. If such a pair is found, it returns True. Otherwise, it returns False.\n\nThought 2: We need to test the implemented code with some test cases to ensure it works correctly.\n\nAction 2: Test\n\n```python\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n```\n\nObservation 2: The test cases passed successfully, indicating that the implementation is correct.\n\nThought 3: The implementation is correct, so we can finalize the code.\n\nAction 3: Finish\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
         "Implement the has_close_elements function:\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nObservation 1: The implementation looks correct as it iterates through the list of numbers and compares each pair of numbers to check if they are closer to each other than the threshold.\n\nThought 2: We need to test the implemented function with different test cases to ensure it works as expected.\nAction 2: ",
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = LATSCodeStrategy(llm=llm)
 
     inst = {
@@ -649,7 +649,7 @@ def test_expand_node() -> None:
 
 def test_evaluate_node() -> None:
     """Test the evaluate_node method."""
-    llm = FakeListChatModel(
+    llm = MockLLM("gpt-3.5-turbo", 
         responses=["Explanation: Good trajectory. Correctness score: 8"]
     )
     strategy = LATSCodeStrategy(llm=llm)
@@ -738,7 +738,7 @@ def test_simulate_node() -> None:
     ]
 
     strategy = LATSCodeStrategy(
-        llm=FakeListChatModel(responses=responses), depth_limit=3, n_samples=2
+        llm=MockLLM("gpt-3.5-turbo", responses=responses), depth_limit=3, n_samples=2
     )
     root_node = strategy.initialize()
 
@@ -788,7 +788,7 @@ def test_simulate_node() -> None:
 
 def test_backpropagate_node() -> None:
     """Test the backpropagate_node method."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = LATSCodeStrategy(llm=llm)
 
     # Create a simple tree structure.
@@ -831,7 +831,7 @@ def test_backpropagate_node() -> None:
 
 def test_halting_condition() -> None:
     """Test the halting_condition method."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = LATSCodeStrategy(llm=llm)
 
     # Test with a terminal node and reward of 1.
@@ -853,7 +853,7 @@ def test_halting_condition() -> None:
 
 def test_reflect_condition() -> None:
     """Test the reflect_condition method."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = LATSCodeStrategy(llm=llm, max_unique=3, max_reflections=5)
 
     # Test when there are fewer unique trajectories than reflections
@@ -885,7 +885,7 @@ def test_reflect_condition() -> None:
 
 def test_reflect() -> None:
     """Test the reflect method."""
-    llm = FakeListChatModel(responses=["Reflection 1", "Reflection 2"])
+    llm = MockLLM("gpt-3.5-turbo", responses=["Reflection 1", "Reflection 2"])
     strategy = LATSCodeStrategy(llm=llm, max_unique=2)
 
     strategy.failed_trajectories = [
@@ -915,7 +915,7 @@ def test_reflect() -> None:
 
 def test_reset() -> None:
     """Test the reset method."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = LATSCodeStrategy(llm=llm)
 
     strategy.root = "some_root"
@@ -935,7 +935,7 @@ def test_reset() -> None:
 
 def test_instantiate_strategies() -> None:
     """Test the instantiation of various LATS strategies."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     heval_strategy = LATSHEvalStrategy(llm=llm)
     mbpp_strategy = LATSMBPPStrategy(llm=llm)
 

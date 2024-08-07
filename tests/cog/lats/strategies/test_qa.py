@@ -1,6 +1,6 @@
 """Unit tests for LATS QA strategies."""
 
-from langchain_community.chat_models.fake import FakeListChatModel
+from agential.llm.llm import MockLLM
 from langchain_community.docstore.wikipedia import Wikipedia
 
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
@@ -118,7 +118,7 @@ def test_parse_qa_value():
 
 def test_init() -> None:
     """Test initialization."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     docstore = DocstoreExplorer(Wikipedia())
     strategy = LATSHotQAStrategy(
         llm=llm,
@@ -145,7 +145,7 @@ def test_init() -> None:
 
 def test_initialize() -> None:
     """Test the initialize method."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = LATSHotQAStrategy(llm=llm)
 
     node = strategy.initialize()
@@ -162,7 +162,7 @@ def test_initialize() -> None:
 
 def test_generate_thought() -> None:
     """Test the generate_thought method."""
-    llm = FakeListChatModel(
+    llm = MockLLM("gpt-3.5-turbo", 
         responses=[
             "I should search for information about the topic. Action: Search[topic]"
         ]
@@ -190,7 +190,7 @@ def test_generate_thought() -> None:
 
 def test_generate_action() -> None:
     """Test the generate_action method."""
-    llm = FakeListChatModel(responses=["Search[capital of France]"])
+    llm = MockLLM("gpt-3.5-turbo", responses=["Search[capital of France]"])
     strategy = LATSHotQAStrategy(llm=llm)
 
     question = "What is the capital of France?"
@@ -216,7 +216,7 @@ def test_generate_action() -> None:
 
 def test_generate_observation() -> None:
     """Test the generate_observation method."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     docstore = DocstoreExplorer(None)
     docstore.search = lambda x: "Paris is the capital of France."
     docstore.lookup = lambda x: "Paris is a city in France."
@@ -349,7 +349,7 @@ def test_generate() -> None:
         "I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies",
         "Search[best kickboxer controversies]\nObservation 0: The search results show multiple kickboxers who have been involved in controversies",
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = LATSHotQAStrategy(llm=llm)
     strategy.docstore.search = (
         lambda x: "Badr Hari is the best kick boxer in the world."
@@ -452,7 +452,7 @@ def test_generate() -> None:
         "I need to search for the best kick boxer in the world and his controversies regarding unsportsmanlike conducts and crimes of violence",
         "Search[best kick boxer in the world controversies]\nObservation 1: Could not find [best kick boxer in the world controversies]",
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = LATSHotQAStrategy(llm=llm)
     strategy.docstore.search = (
         lambda x: "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues."
@@ -492,7 +492,7 @@ def test_generate() -> None:
         "I think the answer is Mike Tyson.",
         "Finish[Mike Tyson]",
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = LATSHotQAStrategy(llm=llm, n_samples=1)
 
     root = strategy.initialize()
@@ -517,7 +517,7 @@ def test_generate() -> None:
 
 def test_select_node() -> None:
     """Test the select_node method."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = LATSHotQAStrategy(llm=llm)
 
     # Create a tree structure.
@@ -629,7 +629,7 @@ def test_expand_node() -> None:
         "I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies",
         "Search[best kickboxer controversies]\nObservation 0: The search results show multiple kickboxers who have been involved in controversies",
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = LATSHotQAStrategy(llm=llm)
     strategy.docstore.search = (
         lambda x: "Badr Hari is the best kick boxer in the world."
@@ -664,7 +664,7 @@ def test_expand_node() -> None:
 
 def test_evaluate_node() -> None:
     """Test the evaluate_node method."""
-    llm = FakeListChatModel(
+    llm = MockLLM("gpt-3.5-turbo", 
         responses=["Explanation: Good trajectory. Correctness score: 8"]
     )
     strategy = LATSHotQAStrategy(llm=llm)
@@ -754,7 +754,7 @@ def test_simulate_node() -> None:
     ]
 
     qa_strategy = LATSHotQAStrategy(
-        llm=FakeListChatModel(responses=responses), depth_limit=3, n_samples=2
+        llm=MockLLM("gpt-3.5-turbo", responses=responses), depth_limit=3, n_samples=2
     )
     root_node = qa_strategy.initialize()
 
@@ -798,7 +798,7 @@ def test_simulate_node() -> None:
 
 def test_backpropagate_node() -> None:
     """Test the backpropagate_node method."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = LATSHotQAStrategy(llm=llm)
 
     # Create a simple tree structure.
@@ -841,7 +841,7 @@ def test_backpropagate_node() -> None:
 
 def test_halting_condition() -> None:
     """Test the halting_condition method."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = LATSHotQAStrategy(llm=llm)
 
     # Test with a terminal node and reward of 1.
@@ -863,7 +863,7 @@ def test_halting_condition() -> None:
 
 def test_reflect_condition() -> None:
     """Test the reflect_condition method."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = LATSHotQAStrategy(llm=llm, max_unique=3, max_reflections=5)
 
     # Test when there are fewer unique trajectories than reflections
@@ -895,7 +895,7 @@ def test_reflect_condition() -> None:
 
 def test_reflect() -> None:
     """Test the reflect method."""
-    llm = FakeListChatModel(responses=["Reflection 1", "Reflection 2"])
+    llm = MockLLM("gpt-3.5-turbo", responses=["Reflection 1", "Reflection 2"])
     strategy = LATSHotQAStrategy(llm=llm, max_unique=2)
 
     strategy.failed_trajectories = [
@@ -925,7 +925,7 @@ def test_reflect() -> None:
 
 def test_reset() -> None:
     """Test the reset method."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = LATSHotQAStrategy(llm=llm)
 
     strategy.root = "some_root"
@@ -945,7 +945,7 @@ def test_reset() -> None:
 
 def test_instantiate_strategies() -> None:
     """Test the instantiation of various LATS QA strategies."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     hotqa_strategy = LATSHotQAStrategy(llm=llm)
     triviaqa_strategy = LATSTriviaQAStrategy(llm=llm)
     ambignq_strategy = LATSAmbigNQStrategy(llm=llm)
