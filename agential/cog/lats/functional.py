@@ -22,7 +22,7 @@ def _build_reflection_format(trajectory: str, reflection: str) -> str:
         reflection (str): The reflection string to be included in the format.
 
     Returns:
-        str: A formatted string combining the trajectory and reflection using
+        ModelResponse: A formatted string combining the trajectory and reflection using
              the LATS_REFLECTION_FORMAT template.
     """
     return LATS_REFLECTION_FORMAT.format(trajectory=trajectory, reflection=reflection)
@@ -42,7 +42,7 @@ def _build_failed_trajectory_format(
         reflection (str): The reflection on the failed trajectory.
 
     Returns:
-        str: A formatted string combining the question, trajectory, and reflection using
+        ModelResponse: A formatted string combining the question, trajectory, and reflection using
              the LATS_FAILED_TRAJECTORY_FORMAT template.
     """
     return LATS_FAILED_TRAJECTORY_FORMAT.format(
@@ -67,7 +67,7 @@ def _build_reflection_prompt(
         additional_keys (Dict[str, str], optional): Additional key-value pairs for formatting the prompt. Defaults to {}.
 
     Returns:
-        str: The fully formatted reflection prompt ready for use with the language model.
+        ModelResponse: The fully formatted reflection prompt ready for use with the language model.
     """
     prompt = prompt.format(
         question=question, examples=examples, trajectory=trajectory, **additional_keys
@@ -94,7 +94,7 @@ def _prompt_reflection(
         additional_keys (Dict[str, str], optional): Additional formatting keys. Defaults to {}.
 
     Returns:
-        str: The generated reflection content.
+        ModelResponse: The generated reflection content.
     """
     prompt = _build_reflection_prompt(
         question=question,
@@ -127,7 +127,7 @@ def _build_value_prompt(
         additional_keys (Dict[str, str], optional): Additional formatting keys. Defaults to {}.
 
     Returns:
-        str: The fully formatted value prompt.
+        ModelResponse: The fully formatted value prompt.
     """
     prompt = prompt.format(
         question=question,
@@ -160,7 +160,7 @@ def _prompt_value(
         additional_keys (Dict[str, str], optional): Additional formatting keys. Defaults to {}.
 
     Returns:
-        str: The generated value assessment content.
+        ModelResponse: The generated value assessment content.
     """
     prompt = _build_value_prompt(
         question=question,
@@ -194,7 +194,7 @@ def _build_agent_prompt(
         additional_keys (Dict[str, str], optional): Additional formatting keys. Defaults to {}.
 
     Returns:
-        str: The fully formatted agent prompt.
+        ModelResponse: The fully formatted agent prompt.
     """
     prompt = prompt.format(
         question=question,
@@ -227,7 +227,7 @@ def _prompt_agent(
         additional_keys (Dict[str, str], optional): Additional formatting keys. Defaults to {}.
 
     Returns:
-        str: The generated agent response content.
+        ModelResponse: The generated agent response content.
     """
     prompt = _build_agent_prompt(
         question=question,
@@ -252,7 +252,7 @@ def get_unique_trajectories(
         max_unique (int): The maximum number of unique trajectories to return.
 
     Returns:
-        List[str]: A list of unique trajectory strings, up to the specified number.
+        List[ModelResponse]: A list of unique trajectory strings, up to the specified number.
     """
     unique_trajectories = []
     seen_final_answers = set()
