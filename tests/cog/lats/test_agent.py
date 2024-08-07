@@ -1,7 +1,6 @@
 """Test LATS agent."""
 
-from langchain_community.chat_models.fake import FakeListChatModel
-from langchain_core.language_models.chat_models import BaseChatModel
+from agential.llm.llm import BaseLLM, MockLLM
 
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.agent import LATSAgent
@@ -20,11 +19,11 @@ from agential.cog.react.output import ReActOutput
 
 def test_init() -> None:
     """Test initialization."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
 
     agent = LATSAgent(llm=llm, benchmark="hotpotqa")
     assert isinstance(agent, LATSAgent)
-    assert isinstance(agent.llm, BaseChatModel)
+    assert isinstance(agent.llm, BaseLLM)
     assert isinstance(agent.strategy, LATSBaseStrategy)
     assert agent.benchmark == "hotpotqa"
 
@@ -416,7 +415,7 @@ def test_generate() -> None:
     ]
 
     agent = LATSAgent(
-        FakeListChatModel(responses=responses),
+        MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         n_samples=2,
         depth_limit=5,
@@ -514,7 +513,7 @@ def test_generate() -> None:
         "This trajectory is incorrect as the search results consistently did not provide the answer to the question. The actions taken to adjust the search terms were not effective in retrieving the correct information. In the future, it is important to use more specific search terms and reliable sources to ensure accurate information. This trajectory shows a lack of adaptation to the search results and a failure to use appropriate search terms related to the question.\nCorrectness score: 1",
     ]
     agent = LATSAgent(
-        llm=FakeListChatModel(responses=responses),
+        llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         n_samples=2,
         depth_limit=5,
@@ -952,7 +951,7 @@ def test_generate() -> None:
 
 def test_reset() -> None:
     """Test the reset method."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     agent = LATSAgent(llm=llm, benchmark="hotpotqa")
 
     agent.strategy.root = "some_root"

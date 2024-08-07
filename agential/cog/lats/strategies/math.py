@@ -4,7 +4,7 @@ import re
 
 from typing import Any, Dict, List, Optional, Tuple
 
-from langchain_core.language_models.chat_models import BaseChatModel
+from agential.llm.llm import BaseLLM
 
 from agential.cog.lats.functional import (
     _build_failed_trajectory_format,
@@ -115,7 +115,7 @@ class LATSMathStrategy(LATSBaseStrategy):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         n_samples: int = 5,
         max_reflections: int = 4,
         depth_limit: int = 7,
@@ -278,7 +278,7 @@ class LATSMathStrategy(LATSBaseStrategy):
             Tuple[str, str]: A tuple containing the updated trajectory and the generated thought.
         """
         trajectory += f"\nThought {depth + 1}:"
-        thought = _prompt_agent(
+        out = _prompt_agent(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -287,6 +287,8 @@ class LATSMathStrategy(LATSBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        thought = out.choices[0].message.content
+
         thought = remove_newline(thought).split("Action")[0].strip()
         trajectory += " " + thought
 
@@ -317,7 +319,7 @@ class LATSMathStrategy(LATSBaseStrategy):
             Tuple[str, str, str]: A tuple containing the updated trajectory, action type, and query.
         """
         trajectory += f"\nAction {depth + 1}:"
-        action = _prompt_agent(
+        out = _prompt_agent(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -326,6 +328,8 @@ class LATSMathStrategy(LATSBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        action = out.choices[0].message.content
+
         action = action.split("Observation")[0].strip()
         action_type, query = parse_math_action(action)
         trajectory += f" {action_type}[\n```python\n{query}\n```\n]"
@@ -512,7 +516,7 @@ class LATSMathStrategy(LATSBaseStrategy):
                 if self.cache_values and unique_key in self.value_cache:
                     value_str = self.value_cache[unique_key]
                 else:
-                    value_str = _prompt_value(
+                    value_str_out = _prompt_value(
                         llm=self.llm,
                         question=question,
                         examples=examples,
@@ -521,6 +525,7 @@ class LATSMathStrategy(LATSBaseStrategy):
                         prompt=prompt,
                         additional_keys=additional_keys,
                     )
+                    value_str = value_str_out.choices[0].message.content
 
                     if self.cache_values:
                         self.value_cache[unique_key] = value_str
@@ -616,7 +621,7 @@ class LATSMathStrategy(LATSBaseStrategy):
                             )
                         failed_trajectories = failed_trajectories.rstrip("\n\n")
 
-                    value = _prompt_value(
+                    value_str_out = _prompt_value(
                         llm=self.llm,
                         question=question,
                         examples=value_examples,
@@ -625,8 +630,9 @@ class LATSMathStrategy(LATSBaseStrategy):
                         prompt=value_prompt,
                         additional_keys=value_additional_keys,
                     )
+                    value_str = value_str_out.choices[0].message.content
 
-                    explanation, value = parse_math_value(value)  # type: ignore
+                    explanation, value = parse_math_value(value_str)  # type: ignore
                     values.append(
                         {"node_idx": idx, "explanation": explanation, "value": value}
                     )
@@ -714,7 +720,7 @@ class LATSMathStrategy(LATSBaseStrategy):
 
         reflections = []
         for trajectory in unique_trajectories:
-            reflection = _prompt_reflection(
+            reflection_out = _prompt_reflection(
                 self.llm,
                 question=question,
                 examples=examples,
@@ -722,6 +728,7 @@ class LATSMathStrategy(LATSBaseStrategy):
                 prompt=prompt,
                 additional_keys=additional_keys,
             )
+            reflection = reflection_out.choices[0].message.content
 
             reflections.append({"trajectory": trajectory, "reflection": reflection})
 
