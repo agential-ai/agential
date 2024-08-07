@@ -2,7 +2,7 @@
 
 from typing import Any, Dict, List, Optional, Tuple
 
-from langchain_core.language_models.chat_models import BaseChatModel
+from agential.llm.llm import BaseLLM
 
 from agential.cog.expel.functional import (
     categorize_experiences,
@@ -26,7 +26,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
     """A general strategy class for the ExpeL agent.
 
     Attributes:
-    llm (BaseChatModel): The language model used for generating answers and critiques.
+    llm (BaseLLM): The language model used for generating answers and critiques.
     reflexion_react_agent (ReflexionReActAgent): The ReflexionReAct agent.
     experience_memory (ExpeLExperienceMemory): Memory module for storing experiences. Default is None.
     insight_memory (ExpeLInsightMemory): Memory module for storing insights derived from experiences. Default is None.
@@ -35,7 +35,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         reflexion_react_agent: ReflexionReActAgent,
         experience_memory: Optional[ExpeLExperienceMemory] = None,
         insight_memory: Optional[ExpeLInsightMemory] = None,
