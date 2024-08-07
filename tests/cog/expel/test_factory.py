@@ -2,8 +2,7 @@
 
 import pytest
 
-from langchain_community.chat_models.fake import FakeListChatModel
-
+from agential.llm.llm import MockLLM
 from agential.cog.constants import Benchmarks
 from agential.cog.expel.factory import (
     ExpeLFactory,
@@ -34,7 +33,7 @@ from agential.cog.reflexion.agent import ReflexionReActAgent
 
 def test_expel_factory_get_strategy() -> None:
     """Tests ExpeLFactory get_strategy method."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
 
     # QA benchmarks.
     assert isinstance(
