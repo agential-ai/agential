@@ -2,6 +2,7 @@
 
 from typing import Dict
 
+from litellm.types.utils import ModelResponse
 from agential.llm.llm import BaseLLM
 
 
@@ -36,7 +37,7 @@ def _prompt_agent(
     examples: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> str:
+) -> ModelResponse:
     """Generates a response from the LLM based on a given question with fewshot examples.
 
     This function creates a prompt using `_build_agent_prompt` and then gets the LLM's
@@ -84,7 +85,7 @@ def _build_critique_prompt(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        ModelResponse: The language model's response to the question, trimmed of extraneous whitespace.
+        str: The language model's response to the question, trimmed of extraneous whitespace.
     """
     prompt = prompt.format(
         question=question,
@@ -102,7 +103,7 @@ def _prompt_critique(
     answer: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> str:
+) -> ModelResponse:
     """Requests critique from the language model based on a provided answer and contextual examples.
 
     A critique prompt is constructed using the provided examples and answer.
@@ -149,7 +150,7 @@ def _build_refine_prompt(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        ModelResponse: The language model's response to the question, trimmed of extraneous whitespace.
+        str: The language model's response to the question, trimmed of extraneous whitespace.
     """
     prompt = prompt.format(
         question=question,
@@ -169,7 +170,7 @@ def _prompt_refine(
     critique: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> str:
+) -> ModelResponse:
     """Refines answer based on critique from the language model.
 
     A refine prompt is constructed using the provided answer, examples, and critique.
