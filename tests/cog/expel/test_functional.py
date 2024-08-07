@@ -2,7 +2,7 @@
 
 import joblib
 
-from langchain_community.chat_models.fake import FakeListChatModel
+from agential.llm.llm import MockLLM
 
 from agential.cog.expel.functional import (
     _build_all_success_prompt,
@@ -29,7 +29,7 @@ from agential.cog.reflexion.prompts import (
 def test_gather_experience() -> None:
     """Test gather_experience."""
     agent = ReflexionReActAgent(
-        llm=FakeListChatModel(responses=[]), benchmark="hotpotqa"
+        llm=MockLLM("gpt-3.5-turbo", responses=[]), benchmark="hotpotqa"
     )
     questions = [""]
     keys = [""]
@@ -226,7 +226,7 @@ def test_get_operations_compare() -> None:
         "ADD 11: When unable to find specific information, consider looking for related topics or broader context that may lead to the desired answer.\nREMOVE 3: Search for specific terms in the API environment should include relevant keywords to ensure accurate results.\nEDIT 5: Refine search queries by including additional relevant keywords or context to increase the chances of finding the desired information.\nAGREE 7: Use alternative search engines or sources of information if initial search attempts are unsuccessful."
     ]
     operations = get_operations_compare(
-        FakeListChatModel(responses=responses),
+        MockLLM("gpt-3.5-turbo", responses=responses),
         insights,
         question,
         success_trial,
@@ -260,6 +260,6 @@ def test_get_operations_success() -> None:
         "ADD 4: When searching for specific information, try using the full name or specific search terms related to the topic to increase the chances of finding the desired answer."
     ]
     operations = get_operations_success(
-        FakeListChatModel(responses=responses), success_trials, insights, is_full
+        MockLLM("gpt-3.5-turbo", responses=responses), success_trials, insights, is_full
     )
     assert operations == gt_operations

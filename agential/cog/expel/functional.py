@@ -294,7 +294,6 @@ def _prompt_compare_critique(
     success_trial: str,
     failed_trial: str,
     is_full: bool,
-    replace_newline: bool = False,
     additional_keys: Dict[str, str] = {},
 ) -> str:
     """Generates a critique from an LLM based on a comparison between successful and failed task trials, within the context of existing insights.
@@ -308,7 +307,6 @@ def _prompt_compare_critique(
         success_trial (str): A description of a successful trial for the task.
         failed_trial (str): A description of a failed trial for the task.
         is_full (bool): A flag indicating if the full version of the critique summary should be used.
-        replace_newline (bool, optional): If `True`, newline characters in the LLM's output will be replaced with empty strings, defaulting to `False`.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
@@ -322,17 +320,8 @@ def _prompt_compare_critique(
         is_full=is_full,
         additional_keys=additional_keys,
     )
-    out = llm(
-        [
-            HumanMessage(
-                content=prompt,
-            )
-        ]
-    ).content
-    out = out.strip("\n").strip()  # type: ignore
+    out = llm(prompt)
 
-    if replace_newline:
-        out = out.replace("\n", "")
     return out
 
 
@@ -341,7 +330,6 @@ def _prompt_all_success_critique(
     insights: List[Dict[str, Any]],
     success_trajs_str: str,
     is_full: bool,
-    replace_newline: bool = False,
     additional_keys: Dict[str, str] = {},
 ) -> str:
     """Generates a critique from an LLM based on a compilation of successful task trials in the context of existing insights.
@@ -353,7 +341,6 @@ def _prompt_all_success_critique(
         insights (List[Dict[str, Any]]): A list of strings where each string represents an existing insight with a score. If the list is empty, it is treated as if there are no existing insights.
         success_trajs_str (str): A string concatenating descriptions of successful trials related to the task.
         is_full (bool): Indicates whether the full critique summary is to be used in the prompt.
-        replace_newline (bool, optional): If set to `True`, newline characters in the LLM output will be replaced with empty strings. The default is `False`.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
@@ -365,17 +352,8 @@ def _prompt_all_success_critique(
         is_full=is_full,
         additional_keys=additional_keys,
     )
-    out = llm(
-        [
-            HumanMessage(
-                content=prompt,
-            )
-        ]
-    ).content
-    out = out.strip("\n").strip()  # type: ignore
+    out = llm(prompt)
 
-    if replace_newline:
-        out = out.replace("\n", "")
     return out
 
 
@@ -511,6 +489,8 @@ def get_operations_compare(
         failed_trial,
         is_full,
     )
+    out = out.choices[0].message.content
+    out = out.strip("\n").strip()
 
     # Parse.
     operations = parse_insights(out)
@@ -542,7 +522,9 @@ def get_operations_success(
     """
     # Prompt.
     out = _prompt_all_success_critique(llm, insights, success_trials, is_full)
-
+    out = out.choices[0].message.content
+    out = out.strip("\n").strip()
+    
     # Parse.
     operations = parse_insights(out)
 
