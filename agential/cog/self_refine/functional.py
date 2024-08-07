@@ -50,7 +50,7 @@ def _prompt_agent(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        str: The processed response from the language model.
+        ModelResponse: The processed response from the language model.
     """
     prompt = _build_agent_prompt(
         question=question,
@@ -84,7 +84,7 @@ def _build_critique_prompt(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        str: The language model's response to the question, trimmed of extraneous whitespace.
+        ModelResponse: The language model's response to the question, trimmed of extraneous whitespace.
     """
     prompt = prompt.format(
         question=question,
@@ -116,7 +116,7 @@ def _prompt_critique(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        str: The language model's critique, with no leading or trailing whitespace.
+        ModelResponse: The language model's critique, with no leading or trailing whitespace.
     """
     prompt = _build_critique_prompt(
         question=question,
@@ -149,7 +149,7 @@ def _build_refine_prompt(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        str: The language model's response to the question, trimmed of extraneous whitespace.
+        ModelResponse: The language model's response to the question, trimmed of extraneous whitespace.
     """
     prompt = prompt.format(
         question=question,
@@ -184,7 +184,7 @@ def _prompt_refine(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        str: The language model's critique, with no leading or trailing whitespace.
+        ModelResponse: The language model's critique, with no leading or trailing whitespace.
     """
     prompt = _build_refine_prompt(
         question=question,

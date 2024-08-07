@@ -29,7 +29,7 @@ def _build_agent_prompt(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        str: A formatted prompt template ready for use.
+        ModelResponse: A formatted prompt template ready for use.
     """
     prompt = prompt.format(
         question=question,
@@ -65,7 +65,7 @@ def _prompt_agent(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        str: The processed response from the language model.
+        ModelResponse: The processed response from the language model.
     """
     prompt = _build_agent_prompt(
         question=question,
@@ -111,7 +111,7 @@ def _is_halted(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        bool: True if the operation should be halted, False otherwise.
+        ModelResponse: True if the operation should be halted, False otherwise.
     """
     over_max_steps = idx > max_steps
     over_token_limit = (
