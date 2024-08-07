@@ -13,7 +13,7 @@ def remove_comment(code: str) -> str:
         code (str): A string containing the block of code from which comments and empty lines will be removed.
 
     Returns:
-        str: The code with all comment lines that start with '#' and empty lines removed.
+        ModelResponse: The code with all comment lines that start with '#' and empty lines removed.
     """
     code_lines = code.split("\n")
     code_lines = [line for line in code_lines if not line.startswith("#")]
@@ -36,7 +36,7 @@ def _build_agent_prompt(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        str: A formatted prompt ready for use with the language model.
+        ModelResponse: A formatted prompt ready for use with the language model.
     """
     prompt = prompt.format(question=question, examples=examples, **additional_keys)
     return prompt
@@ -59,7 +59,7 @@ def _prompt_agent(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        str: The answer from the language model, with no leading or trailing whitespace.
+        ModelResponse: The answer from the language model, with no leading or trailing whitespace.
     """
     prompt = _build_agent_prompt(
         question=question,
@@ -91,7 +91,7 @@ def _build_critique_prompt(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        str: A formatted critique prompt ready for use with the language model.
+        ModelResponse: A formatted critique prompt ready for use with the language model.
     """
     prompt = prompt.format(
         question=question,
@@ -124,7 +124,7 @@ def _prompt_critique(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        str: The critique from the language model, with no leading or trailing whitespace.
+        ModelResponse: The critique from the language model, with no leading or trailing whitespace.
     """
     prompt = _build_critique_prompt(
         question=question,

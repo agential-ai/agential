@@ -252,7 +252,7 @@ def get_unique_trajectories(
         max_unique (int): The maximum number of unique trajectories to return.
 
     Returns:
-        List[ModelResponse]: A list of unique trajectory strings, up to the specified number.
+        ModelResponse: A list of unique trajectory strings, up to the specified number.
     """
     unique_trajectories = []
     seen_final_answers = set()
