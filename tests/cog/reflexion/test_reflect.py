@@ -3,7 +3,6 @@
 import pytest
 
 from langchain_community.chat_models.fake import FakeListChatModel
-from agential.llm.llm import BaseLLM, MockLLM
 
 from agential.cog.reflexion.functional import (
     _format_reflections,
@@ -15,6 +14,7 @@ from agential.cog.reflexion.reflect import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )
+from agential.llm.llm import BaseLLM, MockLLM
 
 
 def test_reflexion_cot_init() -> None:

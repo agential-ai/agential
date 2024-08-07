@@ -2,13 +2,13 @@
 
 from typing import Dict, List
 
-from litellm.types.utils import ModelResponse 
-from agential.llm.llm import BaseLLM
+from litellm.types.utils import ModelResponse
 
 from agential.cog.lats.prompts import (
     LATS_FAILED_TRAJECTORY_FORMAT,
     LATS_REFLECTION_FORMAT,
 )
+from agential.llm.llm import BaseLLM
 
 
 def _build_reflection_format(trajectory: str, reflection: str) -> str:
@@ -238,7 +238,7 @@ def _prompt_agent(
         additional_keys=additional_keys,
     )
     out = llm(prompt)
-    
+
     return out
 
 

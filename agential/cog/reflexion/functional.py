@@ -4,8 +4,8 @@ from typing import Dict, List
 
 import tiktoken
 
-from tiktoken.core import Encoding
 from litellm.types.utils import ModelResponse
+from tiktoken.core import Encoding
 
 from agential.cog.reflexion.prompts import (
     LAST_TRIAL_HEADER,

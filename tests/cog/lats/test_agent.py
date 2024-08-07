@@ -1,7 +1,5 @@
 """Test LATS agent."""
 
-from agential.llm.llm import BaseLLM, MockLLM
-
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.agent import LATSAgent
 from agential.cog.lats.node import Node
@@ -15,6 +13,7 @@ from agential.cog.lats.prompts import (
 )
 from agential.cog.lats.strategies.base import LATSBaseStrategy
 from agential.cog.react.output import ReActOutput
+from agential.llm.llm import BaseLLM, MockLLM
 
 
 def test_init() -> None:

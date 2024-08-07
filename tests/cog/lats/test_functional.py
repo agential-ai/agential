@@ -1,7 +1,6 @@
 """Unit tests for LATS functional module."""
 
 from litellm.types.utils import ModelResponse
-from agential.llm.llm import MockLLM
 
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.functional import (
@@ -22,6 +21,7 @@ from agential.cog.lats.prompts import (
     LATS_REFLECT_INSTRUCTION_HOTPOTQA,
     LATS_VALUE_INSTRUCTION_HOTPOTQA,
 )
+from agential.llm.llm import MockLLM
 
 
 def test__build_reflection_format() -> None:

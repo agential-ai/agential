@@ -7,6 +7,7 @@ from itertools import chain
 from typing import Any, Dict, List, Tuple
 
 from litellm.types.utils import ModelResponse
+
 from agential.cog.expel.output import ExpeLOutput
 from agential.cog.expel.prompts import (
     CRITIQUE_SUMMARY_SUFFIX_FULL,

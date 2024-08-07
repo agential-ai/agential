@@ -2,9 +2,9 @@
 
 from typing import Dict
 
+from litellm.types.utils import ModelResponse
 from tiktoken import Encoding
 
-from litellm.types.utils import ModelResponse
 from agential.llm.llm import BaseLLM
 
 

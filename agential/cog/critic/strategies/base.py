@@ -3,9 +3,8 @@
 from abc import abstractmethod
 from typing import Any, Dict, Tuple
 
-from agential.llm.llm import BaseLLM
-
 from agential.cog.base.strategies import BaseStrategy
+from agential.llm.llm import BaseLLM
 
 
 class CriticBaseStrategy(BaseStrategy):
