@@ -2,8 +2,7 @@
 
 import joblib
 
-from langchain_community.chat_models.fake import FakeListChatModel
-from langchain_core.language_models.chat_models import BaseChatModel
+from agential.llm.llm import BaseLLM, MockLLM
 
 from agential.cog.expel.agent import ExpeLAgent
 from agential.cog.expel.memory import (
@@ -28,10 +27,10 @@ from agential.cog.reflexion.prompts import (
 
 def test_init(expel_experiences_10_fake_path: str) -> None:
     """Test initialization."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
 
     agent = ExpeLAgent(llm=llm, benchmark="hotpotqa")
-    assert isinstance(agent.llm, BaseChatModel)
+    assert isinstance(agent.llm, BaseLLM)
     assert isinstance(agent.strategy.reflexion_react_agent, ReflexionReActAgent)
     assert isinstance(agent.strategy.experience_memory, ExpeLExperienceMemory)
     assert isinstance(agent.strategy.insight_memory, ExpeLInsightMemory)
@@ -51,7 +50,7 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
         ),
         success_batch_size=10,
     )
-    assert isinstance(agent.llm, BaseChatModel)
+    assert isinstance(agent.llm, BaseLLM)
     assert isinstance(agent.strategy.reflexion_react_agent, ReflexionReActAgent)
     assert isinstance(agent.strategy.experience_memory, ExpeLExperienceMemory)
     assert isinstance(agent.strategy.insight_memory, ExpeLInsightMemory)
@@ -88,7 +87,7 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
 
 def test_reset() -> None:
     """Test reset."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
 
     agent = ExpeLAgent(llm=llm, benchmark="hotpotqa")
     agent.strategy.reflexion_react_agent.strategy._scratchpad == "cat"
@@ -197,7 +196,7 @@ def test_generate(expel_experiences_10_fake_path: str) -> None:
     ]
 
     agent = ExpeLAgent(
-        llm=FakeListChatModel(responses=responses),
+        llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         experience_memory=ExpeLExperienceMemory(experiences),
     )

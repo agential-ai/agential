@@ -6,7 +6,7 @@ Paper Repository: https://github.com/LeapLabTHU/ExpeL
 
 from typing import Any, Dict, Optional
 
-from langchain_core.language_models.chat_models import BaseChatModel
+from agential.llm.llm import BaseLLM
 
 from agential.cog.base.agent import BaseAgent
 from agential.cog.expel.factory import EXPEL_BENCHMARK_FEWSHOTS, ExpeLFactory
@@ -22,7 +22,7 @@ class ExpeLAgent(BaseAgent):
     """Implements ExpeL, a reflective, experiential learning agent.
 
     Attributes:
-        llm (BaseChatModel): Primary language model for general tasks.
+        llm (BaseLLM): Primary language model for general tasks.
         benchmark (str): The benchmark name.
         reflexion_react_strategy_kwargs (Dict[str, Any]): Configuration options for the ReflexionReAct agent.
             Defaults max_steps=7 and max_trials=3 for the ReflexionReActAgent.
@@ -42,7 +42,7 @@ class ExpeLAgent(BaseAgent):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         benchmark: str,
         reflexion_react_agent: Optional[ReflexionReActAgent] = None,
         experience_memory: Optional[ExpeLExperienceMemory] = None,
