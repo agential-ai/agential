@@ -5,6 +5,7 @@ from typing import Dict, List
 import tiktoken
 
 from tiktoken.core import Encoding
+from litellm.types.utils import ModelResponse
 
 from agential.cog.reflexion.prompts import (
     LAST_TRIAL_HEADER,
@@ -32,7 +33,7 @@ def _truncate_scratchpad(
         tokenizer (Encoding, optional): The tiktoken tokenizer used for counting tokens. Defaults to tiktoken's "gpt-3.5-turbo".
 
     Returns:
-        ModelResponse: The truncated scratchpad content.
+        str: The truncated scratchpad content.
     """
     # Split the scratchpad content into lines.
     lines = scratchpad.split("\n")
@@ -61,7 +62,7 @@ def _format_reflections(reflections: List[str], header: str = REFLECTION_HEADER)
         header (str, optional): A header to prepend to the formatted reflections. Defaults to REFLECTION_HEADER.
 
     Returns:
-        ModelResponse: The formatted string of reflections.
+        str: The formatted string of reflections.
     """
     # Return formatted reflections if not empty.
     if reflections:
@@ -87,7 +88,7 @@ def _format_last_attempt(
         tokenizer (Encoding, optional): The tokenizer used for processing the scratchpad. Defaults to gpt3_5_turbo_enc.
 
     Returns:
-        ModelResponse: The formatted last attempt.
+        str: The formatted last attempt.
     """
     # Format the last attempt using the provided question and scratchpad.
     return (
@@ -121,7 +122,7 @@ def _build_cot_agent_prompt(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        ModelResponse: A formatted prompt template ready for use.
+        str: A formatted prompt template ready for use.
     """
     prompt = prompt.format(
         examples=examples,
@@ -142,7 +143,7 @@ def _prompt_cot_agent(
     scratchpad: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> str:
+) -> ModelResponse:
     """Generates a CoT prompt for thought and action.
 
     Used with ReflexionCoT.
@@ -189,7 +190,7 @@ def _build_cot_reflection_prompt(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        ModelResponse: A formatted prompt template ready for use.
+        str: A formatted prompt template ready for use.
     """
     prompt = prompt.format(
         examples=examples,
@@ -208,7 +209,7 @@ def _prompt_cot_reflection(
     scratchpad: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> str:
+) -> ModelResponse:
     """Generates a reflection prompt.
 
     Used with ReflexionCoT.
@@ -246,7 +247,7 @@ def cot_reflect_last_attempt(scratchpad: str) -> List[str]:
         scratchpad (str): The scratchpad content from the last attempt.
 
     Returns:
-        List[ModelResponse]: A list with the scratchpad content.
+        List[str]: A list with the scratchpad content.
     """
     return [scratchpad]
 
@@ -314,7 +315,7 @@ def cot_reflect_last_attempt_and_reflexion(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}
 
     Returns:
-        List[ModelResponse:]: A list with the new reflections.
+        List[str]: A list with the new reflections.
     """
     reflections = [
         remove_newline(
@@ -360,7 +361,7 @@ def cot_reflect(
         additional_keys (Dict[str, str], optional): Additional keys to be passed to the prompt template. Defaults to {}
 
     Returns:
-        List[ModelResponse]: A list of reflections.
+        List[str]: A list of reflections.
 
     Raises:
         NotImplementedError: If an unknown reflection strategy is specified.
@@ -419,7 +420,7 @@ def _build_react_agent_prompt(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        ModelResponse: A formatted prompt template ready for use.
+        str: A formatted prompt template ready for use.
     """
     prompt = prompt.format(
         question=question,
@@ -442,7 +443,7 @@ def _prompt_react_agent(
     max_steps: int,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> str:
+) -> ModelResponse:
     """Generates a ReAct prompt for thought and action.
 
     Used with ReflexionReAct.
@@ -507,7 +508,7 @@ def _is_halted(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to
 
     Returns:
-        ModelResponse: True if the operation should be halted, False otherwise.
+        bool: True if the operation should be halted, False otherwise.
     """
     over_max_steps = step_idx > max_steps
     over_token_limit = (
@@ -546,7 +547,7 @@ def _build_react_reflection_prompt(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        ModelResponse: A formatted prompt template ready for use.
+        str: A formatted prompt template ready for use.
     """
     prompt = prompt.format(
         question=question,
@@ -565,7 +566,7 @@ def _prompt_react_reflection(
     scratchpad: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> str:
+) -> ModelResponse:
     """Generates a reflection prompt.
 
     Used with ReflexionReAct.
@@ -603,7 +604,7 @@ def react_reflect_last_attempt(scratchpad: str) -> List[str]:
         scratchpad (str): The scratchpad content from the last attempt.
 
     Returns:
-        List[ModelResponse]: A list with the scratchpad content.
+        List[str]: A list with the scratchpad content.
     """
     return [scratchpad]
 
@@ -632,7 +633,7 @@ def react_reflect_reflexion(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        List[ModelResponse]: An updated list of reflections.
+        List[str]: An updated list of reflections.
     """
     new_reflection = remove_newline(
         _prompt_react_reflection(
@@ -671,7 +672,7 @@ def react_reflect_last_attempt_and_reflexion(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        List[ModelResponse]: A list with the new reflections.
+        List[str]: A list with the new reflections.
     """
     reflections = [
         remove_newline(
@@ -717,7 +718,7 @@ def react_reflect(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        List[ModelResponse]: A tuple containing the updated list of reflections.
+        List[str]: A tuple containing the updated list of reflections.
 
     Raises:
         NotImplementedError: If an unknown reflection strategy is specified.
