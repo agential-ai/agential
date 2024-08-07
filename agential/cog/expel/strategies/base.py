@@ -3,7 +3,7 @@
 from abc import abstractmethod
 from typing import Any, Dict, List, Optional, Tuple
 
-from langchain_core.language_models.chat_models import BaseChatModel
+from agential.llm.llm import BaseLLM
 
 from agential.cog.base.strategies import BaseStrategy
 from agential.cog.expel.memory import (
@@ -18,7 +18,7 @@ class ExpeLBaseStrategy(BaseStrategy):
     """An abstract base class for defining strategies for the ExpeL Agent.
 
     Attributes:
-        llm (BaseChatModel): The language model used for generating answers and critiques.
+        llm (BaseLLM): The language model used for generating answers and critiques.
         reflexion_react_agent (ReflexionReActAgent): The ReflexionReAct agent.
         experience_memory (ExpeLExperienceMemory): Memory module for storing experiences.
         insight_memory (ExpeLInsightMemory): Memory module for storing insights derived from experiences.
@@ -27,7 +27,7 @@ class ExpeLBaseStrategy(BaseStrategy):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         reflexion_react_agent: ReflexionReActAgent,
         experience_memory: ExpeLExperienceMemory,
         insight_memory: ExpeLInsightMemory,

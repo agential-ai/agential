@@ -3,7 +3,7 @@
 import pytest
 
 from langchain_community.chat_models.fake import FakeListChatModel
-from langchain_core.language_models.chat_models import BaseChatModel
+from agential.llm.llm import BaseLLM
 
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT

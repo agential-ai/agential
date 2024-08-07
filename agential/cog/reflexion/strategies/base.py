@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import tiktoken
 
-from langchain_core.language_models.chat_models import BaseChatModel
+from agential.llm.llm import BaseLLM
 from tiktoken import Encoding
 
 from agential.cog.base.strategies import BaseStrategy
@@ -20,7 +20,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
     """An abstract base class for defining strategies for the ReflexionCoT Agent.
 
     Attributes:
-        llm (BaseChatModel): The language model used for generating answers and critiques.
+        llm (BaseLLM): The language model used for generating answers and critiques.
         reflector (Optional[ReflexionCoTReflector]): The reflector used for generating reflections.
         max_reflections (int): The maximum number of reflections allowed.
         max_trials (int): The maximum number of trials allowed.
@@ -28,7 +28,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         reflector: ReflexionCoTReflector,
         max_reflections: int,
         max_trials: int,
@@ -159,7 +159,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
     """An abstract base class for defining strategies for the ReflexionReAct Agent.
 
     Attributes:
-        llm (BaseChatModel): The language model used for generating answers and critiques.
+        llm (BaseLLM): The language model used for generating answers and critiques.
         reflector (Optional[ReflexionReActReflector]): The reflector used for generating reflections.
         max_reflections (int): The maximum number of reflections allowed.
         max_trials (int): The maximum number of trials allowed.
@@ -170,7 +170,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         reflector: ReflexionReActReflector,
         max_reflections: int,
         max_trials: int,
