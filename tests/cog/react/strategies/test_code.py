@@ -2,7 +2,6 @@
 
 from tiktoken import Encoding
 
-from agential.llm.llm import BaseLLM, MockLLM
 from agential.cog.fewshots.mbpp import MBPP_FEWSHOT_EXAMPLES_REACT
 from agential.cog.react.prompts import REACT_INSTRUCTION_MBPP
 from agential.cog.react.strategies.code import (
@@ -11,6 +10,7 @@ from agential.cog.react.strategies.code import (
     ReActMBPPStrategy,
     parse_code_action,
 )
+from agential.llm.llm import BaseLLM, MockLLM
 
 
 def test_parse_code_action() -> None:

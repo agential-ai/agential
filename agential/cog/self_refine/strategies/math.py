@@ -11,6 +11,7 @@ from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
 
+
 class SelfRefineMathStrategy(SelfRefineBaseStrategy):
     """A strategy class for Math benchmarks using the Self-Refine agent.
 

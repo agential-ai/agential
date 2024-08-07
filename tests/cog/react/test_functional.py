@@ -2,8 +2,8 @@
 
 import tiktoken
 
-from agential.llm.llm import MockLLM
 from litellm.types.utils import ModelResponse
+
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.react.functional import (
     _build_agent_prompt,
@@ -11,6 +11,7 @@ from agential.cog.react.functional import (
     _prompt_agent,
 )
 from agential.cog.react.prompts import REACT_INSTRUCTION_HOTPOTQA
+from agential.llm.llm import MockLLM
 
 
 def test__build_agent_prompt() -> None:

@@ -3,10 +3,10 @@
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
-from agential.llm.llm import BaseLLM
 
 from agential.cog.critic.functional import _prompt_agent, _prompt_critique
 from agential.cog.critic.strategies.base import CriticBaseStrategy
+from agential.llm.llm import BaseLLM
 
 
 class CriticQAStrategy(CriticBaseStrategy):

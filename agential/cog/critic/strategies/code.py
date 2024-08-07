@@ -2,10 +2,9 @@
 
 from typing import Any, Dict, Tuple
 
-from agential.llm.llm import BaseLLM
-
 from agential.cog.critic.functional import _prompt_agent, _prompt_critique
 from agential.cog.critic.strategies.base import CriticBaseStrategy
+from agential.llm.llm import BaseLLM
 from agential.utils.general import safe_execute
 from agential.utils.validation import validate_overlapping_keys
 
@@ -299,8 +298,8 @@ class CritHEvalCodeStrategy(CriticCodeStrategy):
         )
 
         new_critique = (
-            out.choices[0].message.content
-            .split("Here's")[0]
+            out.choices[0]
+            .message.content.split("Here's")[0]
             .split("Here is")[0]
             .split("```python")[0]
             .strip("\n")

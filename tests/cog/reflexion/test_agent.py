@@ -2,8 +2,6 @@
 
 import pytest
 
-from agential.llm.llm import BaseLLM, MockLLM
-
 from agential.cog.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
     HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
@@ -18,6 +16,7 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.reflexion.strategies.base import ReflexionReActBaseStrategy
+from agential.llm.llm import BaseLLM, MockLLM
 
 
 def test_reflexion_cot_init() -> None:

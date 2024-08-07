@@ -1,6 +1,5 @@
 """Unit tests for ReAct QA strategies."""
 
-from agential.llm.llm import BaseLLM, MockLLM
 from tiktoken import Encoding
 
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
@@ -15,6 +14,7 @@ from agential.cog.react.strategies.qa import (
     ReActTriviaQAStrategy,
     parse_qa_action,
 )
+from agential.llm.llm import BaseLLM, MockLLM
 from agential.utils.docstore import DocstoreExplorer
 
 

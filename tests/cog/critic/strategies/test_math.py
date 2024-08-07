@@ -1,7 +1,5 @@
 """Unit tests for CRITIC math strategies."""
 
-from agential.llm.llm import BaseLLM, MockLLM
-
 from agential.cog.critic.prompts import (
     CRITIC_CRITIQUE_INSTRUCTION_GSM8K,
     CRITIC_CRITIQUE_NO_TOOL_INSTRUCTION_GSM8K,
@@ -18,6 +16,7 @@ from agential.cog.critic.strategies.math import (
 from agential.cog.fewshots.gsm8k import (
     GSM8K_FEWSHOT_EXAMPLES_POT,
 )
+from agential.llm.llm import BaseLLM, MockLLM
 
 
 def test_init() -> None:

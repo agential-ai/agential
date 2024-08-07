@@ -6,7 +6,6 @@ import re
 from itertools import chain
 from typing import Any, Dict, List, Tuple
 
-from agential.llm.llm import BaseLLM
 from langchain_core.messages.human import HumanMessage
 
 from agential.cog.expel.output import ExpeLOutput
@@ -22,6 +21,7 @@ from agential.cog.expel.prompts import (
     SYSTEM_TEMPLATE,
 )
 from agential.cog.reflexion.agent import ReflexionReActAgent
+from agential.llm.llm import BaseLLM
 
 # ============================================== Experience Gathering ==============================================
 
@@ -524,7 +524,7 @@ def get_operations_success(
     out = _prompt_all_success_critique(llm, insights, success_trials, is_full)
     out = out.choices[0].message.content
     out = out.strip("\n").strip()
-    
+
     # Parse.
     operations = parse_insights(out)
 

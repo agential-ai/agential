@@ -4,13 +4,13 @@ from typing import Dict, List
 
 import tiktoken
 
-from agential.llm.llm import BaseLLM
 from tiktoken.core import Encoding
 
 from agential.cog.reflexion.prompts import (
     LAST_TRIAL_HEADER,
     REFLECTION_HEADER,
 )
+from agential.llm.llm import BaseLLM
 from agential.utils.parse import remove_newline
 
 gpt3_5_turbo_enc = tiktoken.encoding_for_model(
@@ -325,7 +325,9 @@ def cot_reflect_last_attempt_and_reflexion(
                 scratchpad=scratchpad,
                 prompt=prompt,
                 additional_keys=additional_keys,
-            ).choices[0].message.content
+            )
+            .choices[0]
+            .message.content
         )
     ]
     return reflections
@@ -640,7 +642,9 @@ def react_reflect_reflexion(
             scratchpad=scratchpad,
             prompt=prompt,
             additional_keys=additional_keys,
-        ).choices[0].message.content
+        )
+        .choices[0]
+        .message.content
     )
     reflections += [new_reflection]
     return reflections
@@ -678,7 +682,9 @@ def react_reflect_last_attempt_and_reflexion(
                 scratchpad=scratchpad,
                 prompt=prompt,
                 additional_keys=additional_keys,
-            ).choices[0].message.content
+            )
+            .choices[0]
+            .message.content
         )
     ]
     return reflections

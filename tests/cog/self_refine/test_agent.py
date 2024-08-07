@@ -2,8 +2,6 @@
 
 import pytest
 
-from agential.llm.llm import BaseLLM, MockLLM
-
 from agential.cog.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
 from agential.cog.self_refine.agent import SelfRefineAgent
 from agential.cog.self_refine.prompts import (
@@ -14,11 +12,14 @@ from agential.cog.self_refine.prompts import (
     SELF_REFINE_REFINE_INSTRUCTION_GSM8K,
 )
 from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
+from agential.llm.llm import BaseLLM, MockLLM
 
 
 def test_init() -> None:
     """Test initialization."""
-    agent = SelfRefineAgent(llm=MockLLM("gpt-3.5-turbo", responses=[]), benchmark="gsm8k")
+    agent = SelfRefineAgent(
+        llm=MockLLM("gpt-3.5-turbo", responses=[]), benchmark="gsm8k"
+    )
     assert isinstance(agent.llm, BaseLLM)
     assert isinstance(agent.strategy, SelfRefineBaseStrategy)
     assert agent.benchmark == "gsm8k"
@@ -26,7 +27,9 @@ def test_init() -> None:
 
 def test_reset() -> None:
     """Test reset."""
-    agent = SelfRefineAgent(llm=MockLLM("gpt-3.5-turbo", responses=[]), benchmark="gsm8k")
+    agent = SelfRefineAgent(
+        llm=MockLLM("gpt-3.5-turbo", responses=[]), benchmark="gsm8k"
+    )
     agent.strategy._halt = True
     agent.reset()
     assert not agent.strategy._halt

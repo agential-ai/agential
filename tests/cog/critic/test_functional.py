@@ -1,7 +1,5 @@
 """Unit tests for CRITIC functional methods."""
 
-from agential.llm.llm import MockLLM
-
 from agential.cog.critic.functional import (
     _build_agent_prompt,
     _build_critique_prompt,
@@ -13,6 +11,7 @@ from agential.cog.critic.prompts import (
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
     CRITIC_INSTRUCTION_HOTPOTQA,
 )
+from agential.llm.llm import MockLLM
 
 
 # Ref: https://github.com/microsoft/ProphetNet/blob/master/CRITIC/src/tools/interpreter_api.py.
@@ -42,7 +41,10 @@ def test__build_agent_prompt() -> None:
 def test__prompt_agent() -> None:
     """Test _prompt_agent function."""
     out = _prompt_agent(
-        llm=MockLLM("gpt-3.5-turbo", responses=["1"]), question="", examples="", prompt=""
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
+        question="",
+        examples="",
+        prompt="",
     )
     assert out.choices[0].message.content == "1"
 

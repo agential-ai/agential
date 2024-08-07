@@ -5,7 +5,6 @@ from unittest.mock import MagicMock
 import pytest
 
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
-from agential.llm.llm import BaseLLM, MockLLM
 
 from agential.cog.critic.agent import CriticAgent
 from agential.cog.critic.prompts import (
@@ -28,6 +27,7 @@ from agential.cog.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
 from agential.cog.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_POT
 from agential.cog.fewshots.mbpp import MBPP_FEWSHOT_EXAMPLES_POT
+from agential.llm.llm import BaseLLM, MockLLM
 
 
 def test_init() -> None:
@@ -83,7 +83,9 @@ def test_generate() -> None:
     assert len(out) == 2
 
     # Test "qa" mode without search tool and auto-select, specifying incorrect fewshot_type.
-    agent = CriticAgent(llm=MockLLM("gpt-3.5-turbo", responses=[]), benchmark="hotpotqa")
+    agent = CriticAgent(
+        llm=MockLLM("gpt-3.5-turbo", responses=[]), benchmark="hotpotqa"
+    )
     with pytest.raises(
         ValueError,
         match="Benchmark 'hotpotqa' few-shot type not supported for Critic.",
@@ -253,7 +255,9 @@ def test_generate() -> None:
         'def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        char_set.add(char)\n    return None\n\n# Testing the function with the provided test cases\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"',
         "There is no problem with the above code. The function `first_repeated_char` correctly iterates through the characters of the input string, keeping track of seen characters in a set. If a character is encountered that is already in the set, it is returned as the first repeated character. Otherwise, if no repeated characters are found, the function returns None. The function passes the provided test cases successfully.",
     ]
-    agent = CriticAgent(llm=MockLLM("gpt-3.5-turbo", responses=responses), benchmark="mbpp")
+    agent = CriticAgent(
+        llm=MockLLM("gpt-3.5-turbo", responses=responses), benchmark="mbpp"
+    )
     out = agent.generate(
         question=question,
         examples=MBPP_FEWSHOT_EXAMPLES_POT,

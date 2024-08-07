@@ -11,9 +11,9 @@ from tiktoken.core import Encoding
 
 from agential.cog.react.functional import _is_halted, _prompt_agent
 from agential.cog.react.strategies.base import ReActBaseStrategy
+from agential.llm.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
-from agential.llm.llm import BaseLLM
 
 
 def parse_qa_action(string: str) -> Tuple[str, str]:

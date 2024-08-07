@@ -1,6 +1,5 @@
 """Unit tests for Self-Refine code strategies."""
 
-from agential.llm.llm import MockLLM
 from agential.cog.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_POT
 from agential.cog.self_refine.prompts import (
     HUMANEVAL_CRITIQUE_FEWSHOT_EXAMPLES,
@@ -12,6 +11,7 @@ from agential.cog.self_refine.strategies.code import (
     SelfRefineHEvalStrategy,
     SelfRefineMBPPStrategy,
 )
+from agential.llm.llm import MockLLM
 
 
 def test_init() -> None:
@@ -27,10 +27,11 @@ def test_init() -> None:
 
 def test_generate() -> None:
     """Tests SelfRefineCodeStrategy generate."""
-    llm = MockLLM("gpt-3.5-turbo", 
+    llm = MockLLM(
+        "gpt-3.5-turbo",
         responses=[
             'from typing import List\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    """ Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    """\n    for i in range(len(numbers) - 1):\n        if abs(numbers[i] - numbers[i + 1]) < threshold:\n            return True\n    return False\n'
-        ]
+        ],
     )
 
     strategy = SelfRefineCodeStrategy(llm=llm)

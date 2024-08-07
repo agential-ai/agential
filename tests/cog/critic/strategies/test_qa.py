@@ -4,7 +4,6 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from agential.llm.llm import MockLLM, BaseLLM
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 
 from agential.cog.critic.prompts import (
@@ -22,6 +21,7 @@ from agential.cog.critic.strategies.qa import (
 from agential.cog.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
 )
+from agential.llm.llm import BaseLLM, MockLLM
 
 
 def test_init() -> None:

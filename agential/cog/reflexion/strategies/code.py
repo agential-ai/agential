@@ -6,7 +6,6 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import tiktoken
 
-from agential.llm.llm import BaseLLM
 from tiktoken.core import Encoding
 
 from agential.cog.reflexion.functional import (
@@ -25,6 +24,7 @@ from agential.cog.reflexion.strategies.base import (
     ReflexionReActBaseStrategy,
 )
 from agential.eval.em import EM
+from agential.llm.llm import BaseLLM
 from agential.utils.general import safe_execute
 from agential.utils.parse import remove_newline
 

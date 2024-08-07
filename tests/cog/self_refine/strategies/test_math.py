@@ -1,6 +1,5 @@
 """Unit tests for Self-Refine math strategies."""
 
-from agential.llm.llm import MockLLM
 from agential.cog.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
 from agential.cog.self_refine.prompts import (
     GSM8K_CRITIQUE_FEWSHOT_EXAMPLES,
@@ -15,6 +14,7 @@ from agential.cog.self_refine.strategies.math import (
     SelfRefineSVAMPStrategy,
     SelfRefineTabMWPStrategy,
 )
+from agential.llm.llm import MockLLM
 
 
 def test_init() -> None:

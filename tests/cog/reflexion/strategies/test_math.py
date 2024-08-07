@@ -1,7 +1,5 @@
 """Unit tests for Reflexion Math strategies."""
 
-from agential.llm.llm import BaseLLM, MockLLM
-
 from agential.cog.fewshots.gsm8k import (
     GSM8K_FEWSHOT_EXAMPLES_COT,
     GSM8K_FEWSHOT_EXAMPLES_REACT,
@@ -30,6 +28,7 @@ from agential.cog.reflexion.strategies.math import (
     parse_math_action_cot,
     parse_math_action_react,
 )
+from agential.llm.llm import BaseLLM, MockLLM
 
 
 def test_parse_math_action_cot() -> None:

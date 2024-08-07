@@ -6,11 +6,10 @@ Paper Repository: https://github.com/microsoft/ProphetNet/tree/master/CRITIC
 
 from typing import Any, Dict, List
 
-from agential.llm.llm import BaseLLM
-
 from agential.cog.base.agent import BaseAgent
 from agential.cog.critic.factory import CRITIC_BENCHMARK_FEWSHOTS, CriticFactory
 from agential.cog.critic.output import CriticOutput
+from agential.llm.llm import BaseLLM
 
 
 class CriticAgent(BaseAgent):

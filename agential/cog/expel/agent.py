@@ -6,8 +6,6 @@ Paper Repository: https://github.com/LeapLabTHU/ExpeL
 
 from typing import Any, Dict, Optional
 
-from agential.llm.llm import BaseLLM
-
 from agential.cog.base.agent import BaseAgent
 from agential.cog.expel.factory import EXPEL_BENCHMARK_FEWSHOTS, ExpeLFactory
 from agential.cog.expel.memory import (
@@ -16,6 +14,7 @@ from agential.cog.expel.memory import (
 )
 from agential.cog.expel.output import ExpeLOutput
 from agential.cog.reflexion.agent import ReflexionReActAgent
+from agential.llm.llm import BaseLLM
 
 
 class ExpeLAgent(BaseAgent):

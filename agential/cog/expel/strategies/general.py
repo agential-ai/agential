@@ -2,8 +2,6 @@
 
 from typing import Any, Dict, List, Optional, Tuple
 
-from agential.llm.llm import BaseLLM
-
 from agential.cog.expel.functional import (
     categorize_experiences,
     gather_experience,
@@ -19,6 +17,7 @@ from agential.cog.expel.memory import (
 from agential.cog.expel.output import ExpeLOutput
 from agential.cog.expel.strategies.base import ExpeLBaseStrategy
 from agential.cog.reflexion.agent import ReflexionReActAgent
+from agential.llm.llm import BaseLLM
 from agential.utils.general import shuffle_chunk_list
 
 

@@ -1,7 +1,5 @@
 """Unit tests for Reflexion Code strategies."""
 
-from agential.llm.llm import BaseLLM, MockLLM
-
 from agential.cog.fewshots.humaneval import (
     HUMANEVAL_FEWSHOT_EXAMPLES_COT,
 )
@@ -32,6 +30,7 @@ from agential.cog.reflexion.strategies.code import (
     parse_code_action_cot,
     parse_code_action_react,
 )
+from agential.llm.llm import BaseLLM, MockLLM
 
 
 def test_parse_code_action_cot() -> None:

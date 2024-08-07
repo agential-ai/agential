@@ -2,8 +2,6 @@
 
 import joblib
 
-from agential.llm.llm import BaseLLM, MockLLM
-
 from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
@@ -21,6 +19,7 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
+from agential.llm.llm import BaseLLM, MockLLM
 
 
 def test_init(expel_experiences_10_fake_path: str) -> None:

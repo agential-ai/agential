@@ -2,8 +2,6 @@
 
 from typing import Dict, List, Optional, Tuple
 
-from agential.llm.llm import BaseLLM
-
 from agential.cog.base.modules.reflect import BaseReflector
 from agential.cog.reflexion.functional import (
     _format_last_attempt,
@@ -14,6 +12,7 @@ from agential.cog.reflexion.functional import (
 from agential.cog.reflexion.prompts import (
     REFLECTION_AFTER_LAST_TRIAL_HEADER,
 )
+from agential.llm.llm import BaseLLM
 
 
 class ReflexionCoTReflector(BaseReflector):

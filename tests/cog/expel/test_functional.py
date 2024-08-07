@@ -2,8 +2,6 @@
 
 import joblib
 
-from agential.llm.llm import MockLLM
-
 from agential.cog.expel.functional import (
     _build_all_success_prompt,
     _build_compare_prompt,
@@ -24,6 +22,7 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
+from agential.llm.llm import MockLLM
 
 
 def test_gather_experience() -> None:

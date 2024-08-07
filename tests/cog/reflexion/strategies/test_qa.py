@@ -1,7 +1,5 @@
 """Unit tests for Reflexion QA strategies."""
 
-from agential.llm.llm import MockLLM, BaseLLM
-
 from agential.cog.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
     HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
@@ -31,6 +29,7 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActTriviaQAStrategy,
     parse_qa_action,
 )
+from agential.llm.llm import BaseLLM, MockLLM
 
 
 def test_parse_qa_action() -> None:

@@ -10,7 +10,6 @@ import re
 
 from typing import Any, Dict, List, Optional, Tuple
 
-from agential.llm.llm import BaseLLM
 from agential.cog.base.agent import BaseAgent
 from agential.cog.reflexion.factory import (
     REFLEXION_COT_BENCHMARK_FEWSHOTS,
@@ -27,6 +26,7 @@ from agential.cog.reflexion.reflect import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )
+from agential.llm.llm import BaseLLM
 
 
 def parse_action(string: str) -> Tuple[str, str]:

@@ -10,9 +10,9 @@ from tiktoken.core import Encoding
 
 from agential.cog.react.functional import _is_halted, _prompt_agent
 from agential.cog.react.strategies.base import ReActBaseStrategy
+from agential.llm.llm import BaseLLM
 from agential.utils.general import safe_execute
 from agential.utils.parse import remove_newline
-from agential.llm.llm import BaseLLM
 
 
 def parse_code_action(action: str) -> Tuple[str, str]:

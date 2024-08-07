@@ -2,8 +2,6 @@
 
 import pytest
 
-from agential.llm.llm import MockLLM
-
 from agential.cog.critic.prompts import (
     CRITIC_CRITIQUE_INSTRUCTION_HUMANEVAL,
     CRITIC_CRITIQUE_INSTRUCTION_MBPP,
@@ -23,6 +21,7 @@ from agential.cog.critic.strategies.code import (
 from agential.cog.fewshots.humaneval import (
     HUMANEVAL_FEWSHOT_EXAMPLES_POT,
 )
+from agential.llm.llm import MockLLM
 
 
 def test_init() -> None:

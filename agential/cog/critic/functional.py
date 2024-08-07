@@ -135,5 +135,5 @@ def _prompt_critique(
         additional_keys=additional_keys,
     )
     out = llm(prompt)
-    
+
     return out
