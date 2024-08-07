@@ -3,8 +3,6 @@
 from abc import abstractmethod
 from typing import Any, Dict, Tuple
 
-import tiktoken
-
 from tiktoken import Encoding
 
 from agential.cog.base.strategies import BaseStrategy

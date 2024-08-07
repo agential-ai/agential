@@ -3,8 +3,6 @@
 from abc import abstractmethod
 from typing import Any, Dict, List, Optional, Tuple
 
-import tiktoken
-
 from agential.llm.llm import BaseLLM
 from tiktoken import Encoding
 
