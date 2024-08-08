@@ -1,8 +1,8 @@
 """ExpeL Agent strategies for QA."""
 
+from copy import deepcopy
 from typing import Any, Dict, List, Optional, Tuple
 
-from copy import deepcopy
 from agential.cog.expel.functional import (
     categorize_experiences,
     gather_experience,
