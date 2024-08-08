@@ -1,7 +1,7 @@
 """Base LATS Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Any, Dict, List, Tuple, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from agential.cog.base.strategies import BaseStrategy
 from agential.cog.lats.node import Node
@@ -299,7 +299,7 @@ class LATSBaseStrategy(BaseStrategy):
         values: Optional[List[float]],
         simulation_reward: Optional[float],
         simulation_terminal_node: Optional[Node],
-        simulation_results: Optional[List[Dict[str, Any]]],    
+        simulation_results: Optional[List[Dict[str, Any]]],
     ) -> Dict[str, Any]:
         """Create a dictionary containing the output of a LATS iteration.
 
@@ -315,7 +315,6 @@ class LATSBaseStrategy(BaseStrategy):
         Returns:
             Dict[str, Any]: A dictionary containing the processed output of the LATS iteration.
         """
-        
         pass
 
     @abstractmethod

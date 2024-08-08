@@ -12,8 +12,8 @@ from agential.cog.lats.functional import (
     _prompt_value,
     get_unique_trajectories,
 )
-from agential.cog.lats.output import LATSSimulationOutput
 from agential.cog.lats.node import Node
+from agential.cog.lats.output import LATSSimulationOutput
 from agential.cog.lats.strategies.base import LATSBaseStrategy
 from agential.cog.react.output import ReActOutput
 from agential.eval.em import EM
@@ -775,7 +775,7 @@ class LATSCodeStrategy(LATSBaseStrategy):
         values: Optional[List[float]],
         simulation_reward: Optional[float],
         simulation_terminal_node: Optional[Node],
-        simulation_results: Optional[List[Dict[str, Any]]],    
+        simulation_results: Optional[List[Dict[str, Any]]],
     ) -> Dict[str, Any]:
         """Create a dictionary containing the output of a LATS iteration.
 
@@ -793,7 +793,6 @@ class LATSCodeStrategy(LATSBaseStrategy):
             including the current state, children nodes, values, simulation results, and other
             relevant information.
         """
-        
         if simulation_results:
             simulation_results = [
                 LATSSimulationOutput(
@@ -808,12 +807,12 @@ class LATSCodeStrategy(LATSBaseStrategy):
         return {
             "iteration": iteration,
             "current_node": current_node.to_dict(),
-            "children_nodes": [
-                child_node.to_dict() for child_node in children_nodes
-            ],
+            "children_nodes": [child_node.to_dict() for child_node in children_nodes],
             "values": values if values else [],
             "simulation_reward": simulation_reward if simulation_reward else 0,
-            "simulation_terminal_node": simulation_terminal_node.to_dict() if simulation_terminal_node else {},
+            "simulation_terminal_node": (
+                simulation_terminal_node.to_dict() if simulation_terminal_node else {}
+            ),
             "simulation_results": simulation_results if simulation_results else [],
         }
 
