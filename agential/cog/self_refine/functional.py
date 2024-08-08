@@ -22,7 +22,7 @@ def _build_agent_prompt(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        str: The fully constructed and formatted prompt ready to be processed by the agent.
+        ModelResponse: The fully constructed and formatted prompt ready to be processed by the agent.
     """
     prompt = prompt.format(
         question=question,
