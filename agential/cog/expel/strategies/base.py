@@ -125,7 +125,7 @@ class ExpeLBaseStrategy(BaseStrategy):
         Args:
             examples (str): The examples to be included in the output.
             additional_keys (Dict[str, str]): Additional key-value pairs to be included in the output.
-            experience (Dict[str, Any]): The current experience to be included in the output.
+            experience (List[Dict[str, Any]]): The current experience to be included in the output.
 
         Returns:
             Dict[str, Any]: A dictionary containing the current state of the agent, including examples, additional keys, and experience.

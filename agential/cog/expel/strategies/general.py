@@ -2,6 +2,7 @@
 
 from typing import Any, Dict, List, Optional, Tuple
 
+from copy import deepcopy
 from agential.cog.expel.functional import (
     categorize_experiences,
     gather_experience,
@@ -326,12 +327,17 @@ class ExpeLStrategy(ExpeLBaseStrategy):
         Args:
             examples (str): The examples to be included in the output.
             additional_keys (Dict[str, str]): Additional key-value pairs to be included in the output.
-            experience (Dict[str, Any]): The current experience to be included in the output.
+            experience (List[Dict[str, Any]]): The current experience to be included in the output.
 
         Returns:
             Dict[str, Any]: A dictionary containing the current state of the agent, including examples, additional keys, and experience.
-        """        
+        """
         output_dict = {
+            "examples": examples,
+            "insights": additional_keys.get("insights", ""),
+            "experience": {k: v for k, v in experience[0].items() if k not in ['question', 'key']},
+            "experience_memory": deepcopy(self.experience_memory.show_memories()),
+            "insight_memory": deepcopy(self.insight_memory.show_memories())
         }
         return output_dict
 
