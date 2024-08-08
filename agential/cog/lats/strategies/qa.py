@@ -783,7 +783,9 @@ class LATSQAStrategy(LATSBaseStrategy):
             "simulation_terminal_node": (
                 simulation_terminal_node.to_dict() if simulation_terminal_node else {}
             ),
-            "simulation_results": simulation_results_output if simulation_results else [],
+            "simulation_results": (
+                simulation_results_output if simulation_results else []
+            ),
         }
 
     def reset(self) -> None:
