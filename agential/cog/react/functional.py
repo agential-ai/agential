@@ -2,6 +2,7 @@
 
 from typing import Dict
 
+from litellm.types.utils import ModelResponse
 from tiktoken import Encoding
 
 from agential.llm.llm import BaseLLM
@@ -29,7 +30,7 @@ def _build_agent_prompt(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        ModelResponse: A formatted prompt template ready for use.
+        str: A formatted prompt template ready for use.
     """
     prompt = prompt.format(
         question=question,
@@ -49,7 +50,7 @@ def _prompt_agent(
     max_steps: int,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> str:
+) -> ModelResponse:
     """Generates a response from the LLM based on a given question and scratchpad.
 
     This function creates a prompt using `_build_agent_prompt` and then gets the LLM's
@@ -111,7 +112,7 @@ def _is_halted(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        ModelResponse: True if the operation should be halted, False otherwise.
+        bool: True if the operation should be halted, False otherwise.
     """
     over_max_steps = idx > max_steps
     over_token_limit = (

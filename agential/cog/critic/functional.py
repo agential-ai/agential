@@ -2,6 +2,8 @@
 
 from typing import Dict
 
+from litellm.types.utils import ModelResponse
+
 from agential.llm.llm import BaseLLM
 
 
@@ -13,7 +15,7 @@ def remove_comment(code: str) -> str:
         code (str): A string containing the block of code from which comments and empty lines will be removed.
 
     Returns:
-        ModelResponse: The code with all comment lines that start with '#' and empty lines removed.
+        str: The code with all comment lines that start with '#' and empty lines removed.
     """
     code_lines = code.split("\n")
     code_lines = [line for line in code_lines if not line.startswith("#")]
@@ -36,7 +38,7 @@ def _build_agent_prompt(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        ModelResponse: A formatted prompt ready for use with the language model.
+        str: A formatted prompt ready for use with the language model.
     """
     prompt = prompt.format(question=question, examples=examples, **additional_keys)
     return prompt
@@ -48,7 +50,7 @@ def _prompt_agent(
     examples: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> str:
+) -> ModelResponse:
     """Prompts the agent to answer a question using the language model.
 
     Parameters:
@@ -91,7 +93,7 @@ def _build_critique_prompt(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        ModelResponse: A formatted critique prompt ready for use with the language model.
+        str: A formatted critique prompt ready for use with the language model.
     """
     prompt = prompt.format(
         question=question,
@@ -111,7 +113,7 @@ def _prompt_critique(
     critique: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> str:
+) -> ModelResponse:
     """Prompts the agent for a critique of an answer using the language model.
 
     Parameters:

@@ -167,10 +167,18 @@ class ExpeLAgent(BaseAgent):
             **kwargs,
         )
 
+        out = ExpeLOutput(
+            **self.strategy.create_output_dict(
+                examples=examples,
+                additional_keys=additional_keys,
+                experience=experience,
+            )
+        )
+
         if extract_insights:
             self.strategy.extract_insights(experience)
 
-        return experience[0]
+        return out
 
     def reset(self) -> None:
         """Resets the agent's state.

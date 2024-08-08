@@ -1,6 +1,5 @@
 """Unit tests for LATS QA strategies."""
 
-from agential.llm.llm import MockLLM
 from langchain_community.docstore.wikipedia import Wikipedia
 
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
@@ -22,6 +21,7 @@ from agential.cog.lats.strategies.qa import (
     parse_qa_value,
 )
 from agential.cog.react.output import ReActOutput
+from agential.llm.llm import MockLLM
 from agential.utils.docstore import DocstoreExplorer
 
 
@@ -162,10 +162,11 @@ def test_initialize() -> None:
 
 def test_generate_thought() -> None:
     """Test the generate_thought method."""
-    llm = MockLLM("gpt-3.5-turbo", 
+    llm = MockLLM(
+        "gpt-3.5-turbo",
         responses=[
             "I should search for information about the topic. Action: Search[topic]"
-        ]
+        ],
     )
     strategy = LATSHotQAStrategy(llm=llm)
 
@@ -664,8 +665,9 @@ def test_expand_node() -> None:
 
 def test_evaluate_node() -> None:
     """Test the evaluate_node method."""
-    llm = MockLLM("gpt-3.5-turbo", 
-        responses=["Explanation: Good trajectory. Correctness score: 8"]
+    llm = MockLLM(
+        "gpt-3.5-turbo",
+        responses=["Explanation: Good trajectory. Correctness score: 8"],
     )
     strategy = LATSHotQAStrategy(llm=llm)
 

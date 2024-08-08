@@ -1,7 +1,5 @@
 """Unit tests for LATS Code strategies."""
 
-from agential.llm.llm import MockLLM
-
 from agential.cog.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.node import Node
 from agential.cog.lats.prompts import (
@@ -21,6 +19,7 @@ from agential.cog.lats.strategies.code import (
     parse_latest_implement,
 )
 from agential.cog.react.output import ReActOutput
+from agential.llm.llm import MockLLM
 
 
 def test_parse_latest_implement() -> None:
@@ -238,8 +237,8 @@ def test_initialize() -> None:
 
 def test_generate_thought() -> None:
     """Test the generate_thought method."""
-    llm = MockLLM("gpt-3.5-turbo", 
-        responses=["I should search for information about the topic."]
+    llm = MockLLM(
+        "gpt-3.5-turbo", responses=["I should search for information about the topic."]
     )
     strategy = LATSCodeStrategy(llm=llm)
 
@@ -264,7 +263,9 @@ def test_generate_thought() -> None:
 
 def test_generate_action() -> None:
     """Test the generate_action method."""
-    llm = MockLLM("gpt-3.5-turbo", responses=["Implement[```python\nresult = 2 + 2\n```]"])
+    llm = MockLLM(
+        "gpt-3.5-turbo", responses=["Implement[```python\nresult = 2 + 2\n```]"]
+    )
     strategy = LATSCodeStrategy(llm=llm)
 
     question = "What is 2 + 2?"
@@ -649,8 +650,9 @@ def test_expand_node() -> None:
 
 def test_evaluate_node() -> None:
     """Test the evaluate_node method."""
-    llm = MockLLM("gpt-3.5-turbo", 
-        responses=["Explanation: Good trajectory. Correctness score: 8"]
+    llm = MockLLM(
+        "gpt-3.5-turbo",
+        responses=["Explanation: Good trajectory. Correctness score: 8"],
     )
     strategy = LATSCodeStrategy(llm=llm)
 

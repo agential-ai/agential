@@ -4,8 +4,6 @@ import re
 
 from typing import Any, Dict, List, Optional, Tuple
 
-from agential.llm.llm import BaseLLM
-
 from agential.cog.lats.functional import (
     _build_failed_trajectory_format,
     _build_reflection_format,
@@ -18,6 +16,7 @@ from agential.cog.lats.node import Node
 from agential.cog.lats.strategies.base import LATSBaseStrategy
 from agential.cog.react.output import ReActOutput
 from agential.eval.em import EM
+from agential.llm.llm import BaseLLM
 from agential.utils.general import safe_execute
 from agential.utils.parse import remove_newline
 

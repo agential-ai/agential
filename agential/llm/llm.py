@@ -15,7 +15,7 @@ class BaseLLM(ABC):
         """Generate a mock response.
 
         Args:
-            prompt (str): The input prompt.
+            args (Any): Additional arguments.
             **kwargs (Any): Additional keyword arguments.
 
         Returns:

@@ -5,7 +5,6 @@ import re
 from typing import Any, Dict, List, Optional, Tuple
 
 from langchain_community.docstore.wikipedia import Wikipedia
-from agential.llm.llm import BaseLLM
 
 from agential.cog.lats.functional import (
     _build_failed_trajectory_format,
@@ -19,6 +18,7 @@ from agential.cog.lats.node import Node
 from agential.cog.lats.strategies.base import LATSBaseStrategy
 from agential.cog.react.output import ReActOutput
 from agential.eval.em import EM
+from agential.llm.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
 

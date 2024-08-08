@@ -6,12 +6,11 @@ Paper Repository: https://github.com/lapisrocks/LanguageAgentTreeSearch
 
 from typing import Any, Dict, List, Tuple
 
-from agential.llm.llm import BaseLLM
-
 from agential.cog.base.agent import BaseAgent
 from agential.cog.lats.factory import LATS_BENCHMARK_FEWSHOTS, LATSFactory
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import LATSOutput, LATSSimulationOutput
+from agential.llm.llm import BaseLLM
 
 
 class LATSAgent(BaseAgent):
