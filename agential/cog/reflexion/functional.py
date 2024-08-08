@@ -247,11 +247,7 @@ def cot_reflect_last_attempt(scratchpad: str) -> List[str]:
         scratchpad (str): The scratchpad content from the last attempt.
 
     Returns:
-<<<<<<< HEAD
-        ModelResponse : A list with the scratchpad content.
-=======
         List[str]: A list with the scratchpad content.
->>>>>>> 89daa6a8830e5c35804d63aa9061847a90869ef2
     """
     return [scratchpad]
 
@@ -319,11 +315,7 @@ def cot_reflect_last_attempt_and_reflexion(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}
 
     Returns:
-<<<<<<< HEAD
-        ModelResponse : A list with the new reflections.
-=======
         List[str]: A list with the new reflections.
->>>>>>> 89daa6a8830e5c35804d63aa9061847a90869ef2
     """
     reflections = [
         remove_newline(
@@ -369,11 +361,7 @@ def cot_reflect(
         additional_keys (Dict[str, str], optional): Additional keys to be passed to the prompt template. Defaults to {}
 
     Returns:
-<<<<<<< HEAD
-        ModelResponse : A list of reflections.
-=======
         List[str]: A list of reflections.
->>>>>>> 89daa6a8830e5c35804d63aa9061847a90869ef2
 
     Raises:
         NotImplementedError: If an unknown reflection strategy is specified.
@@ -616,11 +604,7 @@ def react_reflect_last_attempt(scratchpad: str) -> List[str]:
         scratchpad (str): The scratchpad content from the last attempt.
 
     Returns:
-<<<<<<< HEAD
-        ModelResponse : A list with the scratchpad content.
-=======
         List[str]: A list with the scratchpad content.
->>>>>>> 89daa6a8830e5c35804d63aa9061847a90869ef2
     """
     return [scratchpad]
 
@@ -649,11 +633,7 @@ def react_reflect_reflexion(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-<<<<<<< HEAD
-        ModelResponse : An updated list of reflections.
-=======
         List[str]: An updated list of reflections.
->>>>>>> 89daa6a8830e5c35804d63aa9061847a90869ef2
     """
     new_reflection = remove_newline(
         _prompt_react_reflection(
@@ -692,11 +672,7 @@ def react_reflect_last_attempt_and_reflexion(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-<<<<<<< HEAD
-        ModelResponse : A list with the new reflections.
-=======
         List[str]: A list with the new reflections.
->>>>>>> 89daa6a8830e5c35804d63aa9061847a90869ef2
     """
     reflections = [
         remove_newline(
@@ -742,11 +718,7 @@ def react_reflect(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-<<<<<<< HEAD
-        ModelResponse : A tuple containing the updated list of reflections.
-=======
         List[str]: A tuple containing the updated list of reflections.
->>>>>>> 89daa6a8830e5c35804d63aa9061847a90869ef2
 
     Raises:
         NotImplementedError: If an unknown reflection strategy is specified.
