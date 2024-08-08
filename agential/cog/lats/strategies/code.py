@@ -12,6 +12,7 @@ from agential.cog.lats.functional import (
     _prompt_value,
     get_unique_trajectories,
 )
+from agential.cog.lats.output import LATSSimulationOutput
 from agential.cog.lats.node import Node
 from agential.cog.lats.strategies.base import LATSBaseStrategy
 from agential.cog.react.output import ReActOutput
@@ -765,6 +766,56 @@ class LATSCodeStrategy(LATSBaseStrategy):
         self.reflection_map = reflections
 
         return reflections
+
+    def create_output_dict(
+        self,
+        iteration: int,
+        current_node: Node,
+        children_nodes: List[Node],
+        values: Optional[List[float]],
+        simulation_reward: Optional[float],
+        simulation_terminal_node: Optional[Node],
+        simulation_results: Optional[List[Dict[str, Any]]],    
+    ) -> Dict[str, Any]:
+        """Create a dictionary containing the output of a LATS iteration.
+
+        Args:
+            iteration (int): The current iteration number.
+            current_node (Node): The current node being processed.
+            children_nodes (List[Node]): List of child nodes of the current node.
+            values (Optional[List[float]]): List of values associated with the children nodes.
+            simulation_reward (Optional[float]): The reward obtained from the simulation.
+            simulation_terminal_node (Optional[Node]): The terminal node reached in the simulation.
+            simulation_results (Optional[List[Dict[str, Any]]]): Results from multiple simulations.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing the processed output of the LATS iteration,
+            including the current state, children nodes, values, simulation results, and other
+            relevant information.
+        """
+        
+        if simulation_results:
+            simulation_results = [
+                LATSSimulationOutput(
+                    current_node=result["current_node"].to_dict(),
+                    children_nodes=[
+                        child_node.to_dict() for child_node in result["children_nodes"]
+                    ],
+                    values=result["values"],
+                )
+                for result in simulation_results
+            ]
+        return {
+            "iteration": iteration,
+            "current_node": current_node.to_dict(),
+            "children_nodes": [
+                child_node.to_dict() for child_node in children_nodes
+            ],
+            "values": values if values else [],
+            "simulation_reward": simulation_reward if simulation_reward else 0,
+            "simulation_terminal_node": simulation_terminal_node.to_dict() if simulation_terminal_node else {},
+            "simulation_results": simulation_results if simulation_results else [],
+        }
 
     def reset(self) -> None:
         """Reset the strategy to its initial state."""

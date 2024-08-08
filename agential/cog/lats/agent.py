@@ -119,15 +119,15 @@ class LATSAgent(BaseAgent):
                 if self.strategy.halting_condition(child_node):
                     output.append(
                         LATSOutput(
-                            iteration=i,
-                            current_node=node.to_dict(),
-                            children_nodes=[
-                                child_node.to_dict() for child_node in children_nodes
-                            ],
-                            values=[],
-                            simulation_reward=0,
-                            simulation_terminal_node={},
-                            simulation_results=[],
+                            **self.strategy.create_output_dict(
+                                iteration=i,
+                                current_node=node,
+                                children_nodes=children_nodes,
+                                values=None,
+                                simulation_reward=None,
+                                simulation_terminal_node=None,
+                                simulation_results=None,
+                            )
                         )
                     )
                     return child_node, output
@@ -159,27 +159,17 @@ class LATSAgent(BaseAgent):
                 )
             )
 
-            simulation_results_output = [
-                LATSSimulationOutput(
-                    current_node=result["current_node"].to_dict(),
-                    children_nodes=[
-                        child_node.to_dict() for child_node in result["children_nodes"]
-                    ],
-                    values=result["values"],
-                )
-                for result in simulation_results
-            ]
             output.append(
                 LATSOutput(
-                    iteration=i,
-                    current_node=node.to_dict(),
-                    children_nodes=[
-                        child_node.to_dict() for child_node in children_nodes
-                    ],
-                    values=values,
-                    simulation_reward=simulation_reward,
-                    simulation_terminal_node=simulation_terminal_node.to_dict(),
-                    simulation_results=simulation_results_output,
+                    **self.strategy.create_output_dict(
+                        iteration=i,
+                        current_node=node,
+                        children_nodes=children_nodes,
+                        values=values,
+                        simulation_reward=simulation_reward,
+                        simulation_terminal_node=simulation_terminal_node,
+                        simulation_results=simulation_results,
+                    )
                 )
             )
 
