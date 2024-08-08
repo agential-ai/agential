@@ -17,7 +17,6 @@ from scipy.spatial.distance import cosine
 from tiktoken.core import Encoding
 
 from agential.cog.base.modules.memory import BaseMemory
-from agential.cog.expel.output import ExpeLOutput
 from agential.cog.reflexion.output import ReflexionReActOutput
 
 
@@ -25,7 +24,7 @@ class ExpeLExperienceMemory(BaseMemory):
     """ExpeL's experience pool memory.
 
     Attributes:
-        experiences (List[ExpeLOutput]): A list of experiences. Defaults to [].
+        experiences (List[Dict[str, Any]]): A list of experiences. Defaults to [].
         strategy (str): The strategy employed for handling and vectorizing experiences. Defaults to "task".
         embedder (Embeddings): An embedding object used for generating vector embeddings of documents. Defaults to HuggingFaceEmbeddings.
         encoder (Encoding): An encoder object used for token counting within documents. Defaults to gpt-3.5-turbo.
@@ -33,7 +32,7 @@ class ExpeLExperienceMemory(BaseMemory):
 
     def __init__(
         self,
-        experiences: Optional[List[ExpeLOutput]] = [],
+        experiences: Optional[List[Dict[str, Any]]] = [],
         strategy: str = "task",
         embedder: Embeddings = HuggingFaceEmbeddings(),
         encoder: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
@@ -51,7 +50,7 @@ class ExpeLExperienceMemory(BaseMemory):
         if len(self.experiences):
             success_traj_idxs = []
             for idx, experience in enumerate(self.experiences):
-                trajectory = experience.trajectory
+                trajectory = experience["trajectory"]
                 is_correct = (
                     trajectory[0].react_output[-1].is_correct
                 )  # Success on last step of the zero-th trial of this trajectory.
@@ -60,9 +59,9 @@ class ExpeLExperienceMemory(BaseMemory):
 
         self.success_traj_docs: List[Document] = []
         for idx in success_traj_idxs:
-            question = self.experiences[idx].question
+            question = self.experiences[idx]["question"]
             steps = (
-                self.experiences[idx].trajectory[0].react_output
+                self.experiences[idx]["trajectory"][0].react_output
             )  # Zero-th trial of trajectory.
 
             # Add the task.
@@ -156,12 +155,12 @@ class ExpeLExperienceMemory(BaseMemory):
 
         # Update experiences.
         experiences = [
-            ExpeLOutput(
-                question=question,
-                key=key,
-                trajectory=trajectory,
-                reflections=reflection,
-            )
+            {
+                "question": question,
+                "key": key,
+                "trajectory": trajectory,
+                "reflections": reflection,
+            }            
             for (question, key, trajectory, reflection) in zip(
                 questions, keys, trajectories, reflections
             )
@@ -176,9 +175,9 @@ class ExpeLExperienceMemory(BaseMemory):
                 success_traj_idxs.append(idx)
 
         for idx in success_traj_idxs:
-            question = self.experiences[idx].question
+            question = self.experiences[idx]["question"]
             steps = (
-                self.experiences[idx].trajectory[0].react_output
+                self.experiences[idx]["trajectory"][0].react_output
             )  # Zero-th trial of trajectory.
 
             # Add the task.
@@ -241,7 +240,7 @@ class ExpeLExperienceMemory(BaseMemory):
             int: The token count of the document's trajectory.
         """
         task_idx = fewshot_doc.metadata["task_idx"]
-        trajectory = self.experiences[task_idx].trajectory
+        trajectory = self.experiences[task_idx]["trajectory"]
         steps = trajectory[0].react_output  # A successful trial.
         steps_str = ""
         for step in steps:
@@ -335,8 +334,8 @@ class ExpeLExperienceMemory(BaseMemory):
         # or have already been selected as fewshot examples to avoid redundancy.
         for fewshot_doc in fewshot_docs:
             task_idx = fewshot_doc.metadata["task_idx"]
-            question = self.experiences[task_idx].question
-            trajectory = self.experiences[task_idx].trajectory
+            question = self.experiences[task_idx]["question"]
+            trajectory = self.experiences[task_idx]["trajectory"]
             steps = trajectory[0].react_output  # Zero-th successful trial.
             steps_str = ""
             for step in steps:
