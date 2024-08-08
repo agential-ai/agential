@@ -321,7 +321,12 @@ class ExpeLStrategy(ExpeLBaseStrategy):
                     [{"insight": operation_insight, "score": 2}]
                 )
 
-    def create_output_dict(self, examples: str, additional_keys: Dict[str, str], experience: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def create_output_dict(
+        self,
+        examples: str,
+        additional_keys: Dict[str, str],
+        experience: List[Dict[str, Any]],
+    ) -> Dict[str, Any]:
         """Creates and returns an output dictionary containing the current state of the agent.
 
         Args:
@@ -335,9 +340,11 @@ class ExpeLStrategy(ExpeLBaseStrategy):
         output_dict = {
             "examples": examples,
             "insights": additional_keys.get("insights", ""),
-            "experience": {k: v for k, v in experience[0].items() if k not in ['question', 'key']},
+            "experience": {
+                k: v for k, v in experience[0].items() if k not in ["question", "key"]
+            },
             "experience_memory": deepcopy(self.experience_memory.show_memories()),
-            "insight_memory": deepcopy(self.insight_memory.show_memories())
+            "insight_memory": deepcopy(self.insight_memory.show_memories()),
         }
         return output_dict
 

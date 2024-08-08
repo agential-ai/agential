@@ -17,13 +17,9 @@ class ExpeLOutput(BaseModel):
     """
 
     examples: str = Field(..., description="The examples to be included in the output.")
-    insights: str = Field("", description="Additional insights to be included in the output.")
-    experience: Dict[str, Any] = Field(
-        ..., description="The current experience."
+    insights: str = Field(
+        "", description="Additional insights to be included in the output."
     )
-    experience_memory: Dict[str, Any] = Field(
-        ..., description="The experience memory."
-    )
-    insight_memory: Dict[str, Any] = Field(
-        ..., description="The insight memory."
-    )
+    experience: Dict[str, Any] = Field(..., description="The current experience.")
+    experience_memory: Dict[str, Any] = Field(..., description="The experience memory.")
+    insight_memory: Dict[str, Any] = Field(..., description="The insight memory.")

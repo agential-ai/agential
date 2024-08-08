@@ -413,15 +413,29 @@ def test_create_output_dict() -> None:
         {"experience": "Experience 2"},
     ]
 
-    gt_output = {'examples': '', 'insights': 'some insight.', 'experience': {'other': 'Other'}, 'experience_memory': {'experiences': [{'experience': 'Experience 1'}, {'experience': 'Experience 2'}], 'success_traj_docs': [], 'vectorstore': None}, 'insight_memory': {'insights': [{'insight': 'Insight 1', 'score': 3}, {'insight': 'Insight 2', 'score': 4}]}} 
+    gt_output = {
+        "examples": "",
+        "insights": "some insight.",
+        "experience": {"other": "Other"},
+        "experience_memory": {
+            "experiences": [
+                {"experience": "Experience 1"},
+                {"experience": "Experience 2"},
+            ],
+            "success_traj_docs": [],
+            "vectorstore": None,
+        },
+        "insight_memory": {
+            "insights": [
+                {"insight": "Insight 1", "score": 3},
+                {"insight": "Insight 2", "score": 4},
+            ]
+        },
+    }
     output = strategy.create_output_dict(
-        examples="", 
+        examples="",
         additional_keys={"insights": "some insight.", "other": "other"},
-        experience=[{
-            "question": "question",
-            "key": "key",
-            "other": "Other"
-        }]
+        experience=[{"question": "question", "key": "key", "other": "Other"}],
     )
 
     assert output == gt_output
