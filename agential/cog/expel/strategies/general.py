@@ -321,7 +321,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
                     [{"insight": operation_insight, "score": 2}]
                 )
 
-    def create_output_dict(self, examples: str, additional_keys: Dict[str, str], experience: Dict[str, Any]) -> Dict[str, Any]:
+    def create_output_dict(self, examples: str, additional_keys: Dict[str, str], experience: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Creates and returns an output dictionary containing the current state of the agent.
 
         Args:
