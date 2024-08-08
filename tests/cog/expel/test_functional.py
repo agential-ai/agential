@@ -43,12 +43,12 @@ def test_gather_experience() -> None:
         reflect_strategy="reflexion",
     )
     gt_experiences = [
-        ExpeLOutput(
-            question="",
-            key="",
-            trajectory=[],
-            reflections=[],
-        )
+        {
+            "question": "",
+            "key": "",
+            "trajectory": [],
+            "reflections": [],
+        }    
     ]
     assert experiences == gt_experiences
 
