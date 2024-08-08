@@ -140,8 +140,8 @@ class CriticQAStrategy(CriticBaseStrategy):
                     prompt=prompt,
                     additional_keys=additional_keys,
                 )
-                search_result = search_result_out.choices[0].message.content
-                search_result = search_result.split("> Evidence: ")[0]
+                search_result = search_result_out.choices[0].message.content  # type: ignore
+                search_result = search_result.split("> Evidence: ")[0]  # type: ignore
 
                 new_critique = (
                     f"{critique}\n{new_critique}{search_result.strip()}"  # type: ignore

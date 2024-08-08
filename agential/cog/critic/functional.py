@@ -2,9 +2,7 @@
 
 from typing import Dict
 
-from litellm.types.utils import ModelResponse
-
-from agential.llm.llm import BaseLLM
+from agential.llm.llm import BaseLLM, ModelResponse
 
 
 # Ref: https://github.com/microsoft/ProphetNet/blob/master/CRITIC/src/program/utils.py.

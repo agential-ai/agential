@@ -2,10 +2,9 @@
 
 from typing import Dict
 
-from litellm.types.utils import ModelResponse
 from tiktoken import Encoding
 
-from agential.llm.llm import BaseLLM
+from agential.llm.llm import BaseLLM, ModelResponse
 
 
 def _build_agent_prompt(

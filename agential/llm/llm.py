@@ -4,7 +4,24 @@ from abc import ABC, abstractmethod
 from typing import Any, List
 
 from litellm import completion
-from litellm.types.utils import ModelResponse
+
+
+class Message:
+    """Represents a message with content."""
+
+    content: str
+
+
+class Choices:
+    """Represents a choice with a message."""
+
+    message: Message
+
+
+class ModelResponse:
+    """Represents a model response with choices."""
+
+    choices: List[Choices]
 
 
 class BaseLLM(ABC):

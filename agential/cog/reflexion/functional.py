@@ -4,14 +4,13 @@ from typing import Dict, List
 
 import tiktoken
 
-from litellm.types.utils import ModelResponse
 from tiktoken.core import Encoding
 
 from agential.cog.reflexion.prompts import (
     LAST_TRIAL_HEADER,
     REFLECTION_HEADER,
 )
-from agential.llm.llm import BaseLLM
+from agential.llm.llm import BaseLLM, ModelResponse
 from agential.utils.parse import remove_newline
 
 gpt3_5_turbo_enc = tiktoken.encoding_for_model(
