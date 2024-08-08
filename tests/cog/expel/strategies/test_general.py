@@ -397,6 +397,36 @@ def test_update_insights() -> None:
     assert strategy.insight_memory.insights == gt_insights
 
 
+def test_create_output_dict() -> None:
+    """Test create_output_dict method."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    reflexion_react_agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
+    strategy = ExpeLStrategy(llm=llm, reflexion_react_agent=reflexion_react_agent)
+
+    # Set up test data
+    strategy.insight_memory.insights = [
+        {"insight": "Insight 1", "score": 3},
+        {"insight": "Insight 2", "score": 4},
+    ]
+    strategy.experience_memory.experiences = [
+        {"experience": "Experience 1"},
+        {"experience": "Experience 2"},
+    ]
+
+    gt_output = {'examples': '', 'insights': 'some insight.', 'experience': {'other': 'Other'}, 'experience_memory': {'experiences': [{'experience': 'Experience 1'}, {'experience': 'Experience 2'}], 'success_traj_docs': [], 'vectorstore': None}, 'insight_memory': {'insights': [{'insight': 'Insight 1', 'score': 3}, {'insight': 'Insight 2', 'score': 4}]}} 
+    output = strategy.create_output_dict(
+        examples="", 
+        additional_keys={"insights": "some insight.", "other": "other"},
+        experience=[{
+            "question": "question",
+            "key": "key",
+            "other": "Other"
+        }]
+    )
+
+    assert output == gt_output
+
+
 def test_reset() -> None:
     """Test reset."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
