@@ -3,11 +3,12 @@
 import joblib
 
 from litellm.types.utils import ModelResponse
+
 from agential.cog.expel.functional import (
     _build_all_success_prompt,
     _build_compare_prompt,
-    _prompt_compare_critique,
     _prompt_all_success_critique,
+    _prompt_compare_critique,
     categorize_experiences,
     gather_experience,
     get_folds,
@@ -172,6 +173,7 @@ def test__prompt_compare_critique() -> None:
     assert isinstance(result, ModelResponse)
     assert result.choices[0].message.content == "1"
 
+
 def test__prompt_all_success_critique() -> None:
     """Test _prompt_all_success_critique."""
     llm = MockLLM("gpt-3.5-turbo", responses=["1"])
@@ -193,6 +195,7 @@ def test__prompt_all_success_critique() -> None:
     )
     assert isinstance(result, ModelResponse)
     assert result.choices[0].message.content == "1"
+
 
 def test_parse_insights() -> None:
     """Test parse_insights."""
@@ -312,8 +315,3 @@ def test_get_operations_success() -> None:
         MockLLM("gpt-3.5-turbo", responses=responses), success_trials, insights, is_full
     )
     assert operations == gt_operations
-
-
-
-
-

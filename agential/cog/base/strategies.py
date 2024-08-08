@@ -2,7 +2,9 @@
 
 from abc import ABC, abstractmethod
 from typing import Any
+
 from agential.llm.llm import BaseLLM
+
 
 class BaseStrategy(ABC):
     """An abstract base class for defining strategies for generating responses with LLM-based agents."""
