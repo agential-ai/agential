@@ -140,14 +140,14 @@ class CriticQAStrategy(CriticBaseStrategy):
                     prompt=prompt,
                     additional_keys=additional_keys,
                 )
-                search_result = search_result_out.choices[0].message.content  # type: ignore
-                search_result = search_result.split("> Evidence: ")[0]  # type: ignore
+                search_result_no_tool = search_result_out.choices[0].message.content
+                search_result_no_tool = search_result_no_tool.split("> Evidence: ")[0]
 
                 new_critique = (
-                    f"{critique}\n{new_critique}{search_result.strip()}"  # type: ignore
+                    f"{critique}\n{new_critique}{search_result_no_tool.strip()}"
                 )
             external_tool_info["search_query"] = search_query
-            external_tool_info["search_result"] = search_result  # type: ignore
+            external_tool_info["search_result"] = search_result if use_tool else search_result_no_tool  # type: ignore
         else:
             if "most possible answer: " not in new_critique:
                 new_critique = f"{critique}\n{new_critique}\nLet's give the most possible answer.\n\nQuestion: {question}\nHere's "
