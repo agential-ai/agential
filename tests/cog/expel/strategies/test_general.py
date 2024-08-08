@@ -422,8 +422,6 @@ def test_create_output_dict() -> None:
                 {"experience": "Experience 1"},
                 {"experience": "Experience 2"},
             ],
-            "success_traj_docs": [],
-            "vectorstore": None,
         },
         "insight_memory": {
             "insights": [
