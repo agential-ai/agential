@@ -357,20 +357,17 @@ class ExpeLExperienceMemory(BaseMemory):
     def show_memories(
         self,
         experiences_key: str = "experiences",
-        success_traj_docs_key: str = "success_traj_docs",
     ) -> Dict[str, Any]:
         """Displays the current set of stored experiences and vectorstore information.
 
         Args:
             experiences_key (str, optional): Key for accessing experiences. Defaults to "experiences".
-            success_traj_docs_key (str, optional): Key for accessing successful trajectory documents. Defaults to "success_traj_docs".
 
         Returns:
             Dict[str, Any]: A dictionary containing experiences, successful trajectory documents, and vectorstore details.
         """
         return {
             experiences_key: self.experiences,
-            success_traj_docs_key: self.success_traj_docs,
         }
 
 

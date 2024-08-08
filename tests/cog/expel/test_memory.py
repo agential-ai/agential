@@ -358,20 +358,16 @@ def test_expel_experience_memory_show_memories(
     memory_dict = memory.show_memories()
     assert list(memory_dict.keys()) == [
         "experiences",
-        "success_traj_docs",
     ]
     assert memory_dict["experiences"] == []
-    assert not memory_dict["success_traj_docs"]
 
     # Test with non-empty memory.
     memory = ExpeLExperienceMemory(experiences)
     memory_dict = memory.show_memories()
     assert list(memory_dict.keys()) == [
         "experiences",
-        "success_traj_docs",
     ]
     assert memory.experiences == memory_dict["experiences"]
-    assert len(memory_dict["success_traj_docs"]) == 23
 
 
 def test_expel_insight_memory_init() -> None:
