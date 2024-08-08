@@ -2,6 +2,7 @@
 
 from agential.cog.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.node import Node
+from agential.cog.lats.output import LATSSimulationOutput
 from agential.cog.lats.prompts import (
     GSM8K_FEWSHOT_EXAMPLES_LATS_REFLECT,
     GSM8K_FEWSHOT_EXAMPLES_LATS_VALUE,
@@ -18,7 +19,6 @@ from agential.cog.lats.strategies.math import (
     parse_math_action,
     parse_math_value,
 )
-from agential.cog.lats.output import LATSSimulationOutput
 from agential.cog.react.output import ReActOutput
 from agential.llm.llm import MockLLM
 
@@ -867,13 +867,81 @@ def test_create_output_dict() -> None:
     llm = MockLLM("gpt-3.5-turbo", responses=["1"])
     strategy = LATSMathStrategy(llm=llm, max_unique=2)
 
-    gt_out = {'iteration': 1, 'current_node': {'state': ReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, 'children_nodes': [{'state': ReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}], 'values': [{}], 'simulation_reward': 1.0, 'simulation_terminal_node': {'state': ReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, 'simulation_results': [LATSSimulationOutput(current_node={'state': ReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, children_nodes=[], values=[{}])]}
+    gt_out = {
+        "iteration": 1,
+        "current_node": {
+            "state": ReActOutput(
+                thought="",
+                action_type="",
+                query="",
+                observation="",
+                answer="",
+                external_tool_info={},
+            ),
+            "visits": 0,
+            "value": 0,
+            "depth": 0,
+            "is_terminal": False,
+            "reward": 0,
+        },
+        "children_nodes": [
+            {
+                "state": ReActOutput(
+                    thought="",
+                    action_type="",
+                    query="",
+                    observation="",
+                    answer="",
+                    external_tool_info={},
+                ),
+                "visits": 0,
+                "value": 0,
+                "depth": 0,
+                "is_terminal": False,
+                "reward": 0,
+            }
+        ],
+        "values": [{}],
+        "simulation_reward": 1.0,
+        "simulation_terminal_node": {
+            "state": ReActOutput(
+                thought="",
+                action_type="",
+                query="",
+                observation="",
+                answer="",
+                external_tool_info={},
+            ),
+            "visits": 0,
+            "value": 0,
+            "depth": 0,
+            "is_terminal": False,
+            "reward": 0,
+        },
+        "simulation_results": [
+            LATSSimulationOutput(
+                current_node={
+                    "state": ReActOutput(
+                        thought="",
+                        action_type="",
+                        query="",
+                        observation="",
+                        answer="",
+                        external_tool_info={},
+                    ),
+                    "visits": 0,
+                    "value": 0,
+                    "depth": 0,
+                    "is_terminal": False,
+                    "reward": 0,
+                },
+                children_nodes=[],
+                values=[{}],
+            )
+        ],
+    }
     simulation_results = [
-        {
-            "current_node": Node(),
-            "children_nodes": [],
-            "values": [{}]
-        }
+        {"current_node": Node(), "children_nodes": [], "values": [{}]}
     ]
     out = strategy.create_output_dict(
         iteration=1,
@@ -882,12 +950,50 @@ def test_create_output_dict() -> None:
         values=[{}],
         simulation_reward=1.0,
         simulation_terminal_node=Node(),
-        simulation_results=simulation_results
+        simulation_results=simulation_results,
     )
     assert out == gt_out
 
     # Test half empty.
-    gt_out = {'iteration': 1, 'current_node': {'state': ReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, 'children_nodes': [{'state': ReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}], 'values': [], 'simulation_reward': 0, 'simulation_terminal_node': {}, 'simulation_results': []}
+    gt_out = {
+        "iteration": 1,
+        "current_node": {
+            "state": ReActOutput(
+                thought="",
+                action_type="",
+                query="",
+                observation="",
+                answer="",
+                external_tool_info={},
+            ),
+            "visits": 0,
+            "value": 0,
+            "depth": 0,
+            "is_terminal": False,
+            "reward": 0,
+        },
+        "children_nodes": [
+            {
+                "state": ReActOutput(
+                    thought="",
+                    action_type="",
+                    query="",
+                    observation="",
+                    answer="",
+                    external_tool_info={},
+                ),
+                "visits": 0,
+                "value": 0,
+                "depth": 0,
+                "is_terminal": False,
+                "reward": 0,
+            }
+        ],
+        "values": [],
+        "simulation_reward": 0,
+        "simulation_terminal_node": {},
+        "simulation_results": [],
+    }
     out = strategy.create_output_dict(
         iteration=1,
         current_node=Node(),
@@ -895,7 +1001,7 @@ def test_create_output_dict() -> None:
         values=None,
         simulation_reward=None,
         simulation_terminal_node=None,
-        simulation_results=None    
+        simulation_results=None,
     )
     assert out == gt_out
 
