@@ -118,3 +118,15 @@ class ExpeLBaseStrategy(BaseStrategy):
             operations (List[Tuple[str, str]]): A list of tuples, where each tuple contains a key and a value to update in the insight memory.
         """
         pass
+
+    @abstractmethod
+    def create_output_dict(self, experience: Dict[str, Any]) -> Dict[str, Any]:
+        """Creates an output dictionary based on the provided experience.
+
+        Args:
+            experience (Dict[str, Any]): A dictionary containing the experience data.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing the output data.
+        """
+        pass
