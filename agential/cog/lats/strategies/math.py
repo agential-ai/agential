@@ -717,7 +717,7 @@ class LATSMathStrategy(LATSBaseStrategy):
             self.failed_trajectories, max_unique=self.max_unique
         )
 
-        reflections = []
+        reflections: List[Dict[str, str]] = []
         for trajectory in unique_trajectories:
             reflection_out = _prompt_reflection(
                 self.llm,
