@@ -246,7 +246,7 @@ def cot_reflect_last_attempt(scratchpad: str) -> List[str]:
         scratchpad (str): The scratchpad content from the last attempt.
 
     Returns:
-        List[ModelResponse]: A list with the scratchpad content.
+        ModelResponse : A list with the scratchpad content.
     """
     return [scratchpad]
 
@@ -275,7 +275,7 @@ def cot_reflect_reflexion(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}
 
     Returns:
-        List[str]: An updated list of reflections.
+        ModelResponse : An updated list of reflections.
     """
     new_reflection = _prompt_cot_reflection(
         llm=llm,
@@ -314,7 +314,7 @@ def cot_reflect_last_attempt_and_reflexion(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}
 
     Returns:
-        List[ModelResponse:]: A list with the new reflections.
+        ModelResponse : A list with the new reflections.
     """
     reflections = [
         remove_newline(
@@ -360,7 +360,7 @@ def cot_reflect(
         additional_keys (Dict[str, str], optional): Additional keys to be passed to the prompt template. Defaults to {}
 
     Returns:
-        List[ModelResponse]: A list of reflections.
+        ModelResponse : A list of reflections.
 
     Raises:
         NotImplementedError: If an unknown reflection strategy is specified.
@@ -603,7 +603,7 @@ def react_reflect_last_attempt(scratchpad: str) -> List[str]:
         scratchpad (str): The scratchpad content from the last attempt.
 
     Returns:
-        List[ModelResponse]: A list with the scratchpad content.
+        ModelResponse : A list with the scratchpad content.
     """
     return [scratchpad]
 
@@ -632,7 +632,7 @@ def react_reflect_reflexion(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        List[ModelResponse]: An updated list of reflections.
+        ModelResponse : An updated list of reflections.
     """
     new_reflection = remove_newline(
         _prompt_react_reflection(
@@ -671,7 +671,7 @@ def react_reflect_last_attempt_and_reflexion(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        List[ModelResponse]: A list with the new reflections.
+        ModelResponse : A list with the new reflections.
     """
     reflections = [
         remove_newline(
@@ -717,7 +717,7 @@ def react_reflect(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        List[ModelResponse]: A tuple containing the updated list of reflections.
+        ModelResponse : A tuple containing the updated list of reflections.
 
     Raises:
         NotImplementedError: If an unknown reflection strategy is specified.
