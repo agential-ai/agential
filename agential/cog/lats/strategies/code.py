@@ -772,7 +772,7 @@ class LATSCodeStrategy(LATSBaseStrategy):
         iteration: int,
         current_node: Node,
         children_nodes: List[Node],
-        values: Optional[List[float]],
+        values: Optional[List[Dict[str, Any]]],
         simulation_reward: Optional[float],
         simulation_terminal_node: Optional[Node],
         simulation_results: Optional[List[Dict[str, Any]]],
@@ -783,7 +783,7 @@ class LATSCodeStrategy(LATSBaseStrategy):
             iteration (int): The current iteration number.
             current_node (Node): The current node being processed.
             children_nodes (List[Node]): List of child nodes of the current node.
-            values (Optional[List[float]]): List of values associated with the children nodes.
+            values (Optional[List[Dict[str, Any]]]): List of values associated with the children nodes.
             simulation_reward (Optional[float]): The reward obtained from the simulation.
             simulation_terminal_node (Optional[Node]): The terminal node reached in the simulation.
             simulation_results (Optional[List[Dict[str, Any]]]): Results from multiple simulations.
@@ -794,7 +794,7 @@ class LATSCodeStrategy(LATSBaseStrategy):
             relevant information.
         """
         if simulation_results:
-            simulation_results = [
+            simulation_results_output = [
                 LATSSimulationOutput(
                     current_node=result["current_node"].to_dict(),
                     children_nodes=[
@@ -813,7 +813,7 @@ class LATSCodeStrategy(LATSBaseStrategy):
             "simulation_terminal_node": (
                 simulation_terminal_node.to_dict() if simulation_terminal_node else {}
             ),
-            "simulation_results": simulation_results if simulation_results else [],
+            "simulation_results": simulation_results_output if simulation_results else [],
         }
 
     def reset(self) -> None:
