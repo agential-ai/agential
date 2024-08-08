@@ -47,7 +47,7 @@ def test_gather_experience() -> None:
             "key": "",
             "trajectory": [],
             "reflections": [],
-        }    
+        }
     ]
     assert experiences == gt_experiences
 

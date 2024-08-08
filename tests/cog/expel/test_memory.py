@@ -110,7 +110,7 @@ def test_expel_experience_memory_add_memories(
         "key": success_keys[0],
         "trajectory": success_trajectories[0],
         "reflections": success_reflections[0],
-    }    
+    }
     assert len(memory.success_traj_docs) == 10
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
     assert memory.vectorstore
@@ -125,7 +125,7 @@ def test_expel_experience_memory_add_memories(
         "key": success_keys[0],
         "trajectory": success_trajectories[0],
         "reflections": success_reflections[0],
-    }    
+    }
     assert len(memory.success_traj_docs) == 20
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
     assert memory.success_traj_docs[-1].metadata["task_idx"] == 1
@@ -140,7 +140,7 @@ def test_expel_experience_memory_add_memories(
         "key": success_keys[0],
         "trajectory": success_trajectories[0],
         "reflections": success_reflections[0],
-    }    
+    }
     assert len(memory.success_traj_docs) == 30
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
     assert memory.success_traj_docs[20].metadata["task_idx"] == 2
@@ -154,13 +154,13 @@ def test_expel_experience_memory_add_memories(
         "key": fail_keys[0],
         "trajectory": fail_trajectories[0],
         "reflections": fail_reflections[0],
-    }    
+    }
     assert memory.experiences[4] == {
         "question": fail_questions[1],
         "key": fail_keys[1],
         "trajectory": fail_trajectories[1],
         "reflections": fail_reflections[1],
-    }    
+    }
     assert len(memory.success_traj_docs) == 43
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
     assert memory.success_traj_docs[20].metadata["task_idx"] == 2

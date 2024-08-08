@@ -92,7 +92,7 @@ def gather_experience(
             "key": key,
             "trajectory": trajectory,
             "reflections": selected_reflections,
-        }        
+        }
         experiences.append(experience)
 
     return experiences

@@ -2,8 +2,6 @@
 
 import pytest
 
-from agential.llm.llm import MockLLM
-
 from agential.cog.constants import Benchmarks
 from agential.cog.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
@@ -25,6 +23,7 @@ from agential.cog.react.strategies.qa import (
     ReActHotQAStrategy,
     ReActTriviaQAStrategy,
 )
+from agential.llm.llm import MockLLM
 
 
 def test_react_factory_get_strategy() -> None:

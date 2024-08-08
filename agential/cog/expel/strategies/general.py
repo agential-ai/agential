@@ -320,6 +320,21 @@ class ExpeLStrategy(ExpeLBaseStrategy):
                     [{"insight": operation_insight, "score": 2}]
                 )
 
+    def create_output_dict(self, examples: str, additional_keys: Dict[str, str], experience: Dict[str, Any]) -> Dict[str, Any]:
+        """Creates and returns an output dictionary containing the current state of the agent.
+
+        Args:
+            examples (str): The examples to be included in the output.
+            additional_keys (Dict[str, str]): Additional key-value pairs to be included in the output.
+            experience (Dict[str, Any]): The current experience to be included in the output.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing the current state of the agent, including examples, additional keys, and experience.
+        """        
+        output_dict = {
+        }
+        return output_dict
+
     def reset(self, only_reflexion: bool = False) -> None:
         """Resets the state of the `ReflexionReactAgent` and clears the `ExperienceMemory` and `InsightMemory` if `only_reflexion` is `False`.
 

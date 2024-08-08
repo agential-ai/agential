@@ -2,8 +2,6 @@
 
 import pytest
 
-from agential.llm.llm import MockLLM
-
 from agential.cog.reflexion.functional import (
     _format_reflections,
 )

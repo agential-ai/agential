@@ -3,7 +3,6 @@
 from abc import abstractmethod
 from typing import Any, Dict, List, Optional, Tuple
 
-from agential.llm.llm import BaseLLM
 from tiktoken import Encoding
 
 from agential.cog.base.strategies import BaseStrategy
@@ -12,6 +11,7 @@ from agential.cog.reflexion.reflect import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )
+from agential.llm.llm import BaseLLM
 
 
 class ReflexionCoTBaseStrategy(BaseStrategy):

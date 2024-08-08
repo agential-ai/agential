@@ -2,8 +2,6 @@
 
 import pytest
 
-from agential.llm.llm import BaseLLM, MockLLM
-
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
 from agential.cog.react.agent import (

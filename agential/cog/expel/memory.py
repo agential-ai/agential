@@ -60,9 +60,9 @@ class ExpeLExperienceMemory(BaseMemory):
         self.success_traj_docs: List[Document] = []
         for idx in success_traj_idxs:
             question = self.experiences[idx]["question"]
-            steps = (
-                self.experiences[idx]["trajectory"][0].react_output
-            )  # Zero-th trial of trajectory.
+            steps = self.experiences[idx]["trajectory"][
+                0
+            ].react_output  # Zero-th trial of trajectory.
 
             # Add the task.
             self.success_traj_docs.append(
@@ -160,7 +160,7 @@ class ExpeLExperienceMemory(BaseMemory):
                 "key": key,
                 "trajectory": trajectory,
                 "reflections": reflection,
-            }            
+            }
             for (question, key, trajectory, reflection) in zip(
                 questions, keys, trajectories, reflections
             )
@@ -176,9 +176,9 @@ class ExpeLExperienceMemory(BaseMemory):
 
         for idx in success_traj_idxs:
             question = self.experiences[idx]["question"]
-            steps = (
-                self.experiences[idx]["trajectory"][0].react_output
-            )  # Zero-th trial of trajectory.
+            steps = self.experiences[idx]["trajectory"][
+                0
+            ].react_output  # Zero-th trial of trajectory.
 
             # Add the task.
             self.success_traj_docs.append(

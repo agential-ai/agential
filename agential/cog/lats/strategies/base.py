@@ -3,10 +3,9 @@
 from abc import abstractmethod
 from typing import Any, Dict, List, Tuple
 
-from agential.llm.llm import BaseLLM
-
 from agential.cog.base.strategies import BaseStrategy
 from agential.cog.lats.node import Node
+from agential.llm.llm import BaseLLM
 
 
 class LATSBaseStrategy(BaseStrategy):

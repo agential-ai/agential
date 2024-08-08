@@ -2,8 +2,6 @@
 
 import pytest
 
-from agential.llm.llm import MockLLM
-
 from agential.cog.constants import Benchmarks, FewShotType
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_COT
 from agential.cog.self_refine.factory import (
@@ -27,6 +25,7 @@ from agential.cog.self_refine.strategies.qa import (
     SelfRefineHotQAStrategy,
     SelfRefineTriviaQAStrategy,
 )
+from agential.llm.llm import MockLLM
 
 
 def test_self_refine_factory_get_strategy() -> None:

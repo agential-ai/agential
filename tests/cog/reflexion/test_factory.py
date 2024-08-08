@@ -2,8 +2,6 @@
 
 import pytest
 
-from agential.llm.llm import MockLLM
-
 from agential.cog.constants import Benchmarks
 from agential.cog.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
@@ -45,6 +43,7 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActHotQAStrategy,
     ReflexionReActTriviaQAStrategy,
 )
+from agential.llm.llm import MockLLM
 
 
 def test_reflexion_cot_factory_get_strategy() -> None:

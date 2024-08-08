@@ -3,14 +3,13 @@
 from abc import abstractmethod
 from typing import Any, Dict, List, Optional, Tuple
 
-from agential.llm.llm import BaseLLM
-
 from agential.cog.base.strategies import BaseStrategy
 from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
 from agential.cog.reflexion.agent import ReflexionReActAgent
+from agential.llm.llm import BaseLLM
 
 
 class ExpeLBaseStrategy(BaseStrategy):
@@ -120,13 +119,15 @@ class ExpeLBaseStrategy(BaseStrategy):
         pass
 
     @abstractmethod
-    def create_output_dict(self, experience: Dict[str, Any]) -> Dict[str, Any]:
-        """Creates an output dictionary based on the provided experience.
+    def create_output_dict(self, examples: str, additional_keys: Dict[str, str], experience: Dict[str, Any]) -> Dict[str, Any]:
+        """Creates and returns an output dictionary containing the current state of the agent.
 
         Args:
-            experience (Dict[str, Any]): A dictionary containing the experience data.
+            examples (str): The examples to be included in the output.
+            additional_keys (Dict[str, str]): Additional key-value pairs to be included in the output.
+            experience (Dict[str, Any]): The current experience to be included in the output.
 
         Returns:
-            Dict[str, Any]: A dictionary containing the output data.
+            Dict[str, Any]: A dictionary containing the current state of the agent, including examples, additional keys, and experience.
         """
         pass

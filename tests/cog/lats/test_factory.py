@@ -2,7 +2,6 @@
 
 import pytest
 
-from agential.llm.llm import MockLLM
 from agential.cog.constants import Benchmarks
 from agential.cog.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
@@ -30,6 +29,7 @@ from agential.cog.lats.strategies.qa import (
     LATSHotQAStrategy,
     LATSTriviaQAStrategy,
 )
+from agential.llm.llm import MockLLM
 
 
 def test_LATS_factory_get_strategy() -> None:

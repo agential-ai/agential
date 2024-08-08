@@ -2,7 +2,6 @@
 
 import pytest
 
-from agential.llm.llm import MockLLM
 from agential.cog.constants import Benchmarks
 from agential.cog.critic.factory import CriticFactory
 from agential.cog.critic.prompts import (
@@ -28,6 +27,7 @@ from agential.cog.critic.strategies.qa import (
     CritTriviaQAStrategy,
 )
 from agential.cog.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
+from agential.llm.llm import MockLLM
 
 
 def test_critic_factory_get_strategy() -> None:
