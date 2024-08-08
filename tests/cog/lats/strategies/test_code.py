@@ -18,6 +18,7 @@ from agential.cog.lats.strategies.code import (
     parse_code_value,
     parse_latest_implement,
 )
+from agential.cog.lats.output import LATSSimulationOutput
 from agential.cog.react.output import ReActOutput
 from agential.llm.llm import MockLLM
 
@@ -913,6 +914,44 @@ def test_reflect() -> None:
     assert reflections[1]["reflection"] == "Reflection 2"
 
     assert strategy.reflection_map == reflections
+
+
+def test_create_output_dict() -> None:
+    """Test create_output_dict method."""
+    llm = MockLLM("gpt-3.5-turbo", responses=["1"])
+    strategy = LATSCodeStrategy(llm=llm, max_unique=2)
+
+    gt_out = {'iteration': 1, 'current_node': {'state': ReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, 'children_nodes': [{'state': ReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}], 'values': [{}], 'simulation_reward': 1.0, 'simulation_terminal_node': {'state': ReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, 'simulation_results': [LATSSimulationOutput(current_node={'state': ReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, children_nodes=[], values=[{}])]}
+    simulation_results = [
+        {
+            "current_node": Node(),
+            "children_nodes": [],
+            "values": [{}]
+        }
+    ]
+    out = strategy.create_output_dict(
+        iteration=1,
+        current_node=Node(),
+        children_nodes=[Node()],
+        values=[{}],
+        simulation_reward=1.0,
+        simulation_terminal_node=Node(),
+        simulation_results=simulation_results
+    )
+    assert out == gt_out
+
+    # Test half empty.
+    gt_out = {'iteration': 1, 'current_node': {'state': ReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, 'children_nodes': [{'state': ReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}], 'values': [], 'simulation_reward': 0, 'simulation_terminal_node': {}, 'simulation_results': []}
+    out = strategy.create_output_dict(
+        iteration=1,
+        current_node=Node(),
+        children_nodes=[Node()],
+        values=None,
+        simulation_reward=None,
+        simulation_terminal_node=None,
+        simulation_results=None    
+    )
+    assert out == gt_out
 
 
 def test_reset() -> None:

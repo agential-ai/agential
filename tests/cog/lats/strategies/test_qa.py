@@ -12,6 +12,7 @@ from agential.cog.lats.prompts import (
     LATS_VALUE_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.lats.strategies.qa import (
+    LATSQAStrategy,
     LATSAmbigNQStrategy,
     LATSFEVERStrategy,
     LATSHotQAStrategy,
@@ -20,6 +21,7 @@ from agential.cog.lats.strategies.qa import (
     parse_qa_action,
     parse_qa_value,
 )
+from agential.cog.lats.output import LATSSimulationOutput
 from agential.cog.react.output import ReActOutput
 from agential.llm.llm import MockLLM
 from agential.utils.docstore import DocstoreExplorer
@@ -120,7 +122,7 @@ def test_init() -> None:
     """Test initialization."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
     docstore = DocstoreExplorer(Wikipedia())
-    strategy = LATSHotQAStrategy(
+    strategy = LATSQAStrategy(
         llm=llm,
         docstore=docstore,
         n_samples=5,
@@ -146,7 +148,7 @@ def test_init() -> None:
 def test_initialize() -> None:
     """Test the initialize method."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    strategy = LATSHotQAStrategy(llm=llm)
+    strategy = LATSQAStrategy(llm=llm)
 
     node = strategy.initialize()
 
@@ -168,7 +170,7 @@ def test_generate_thought() -> None:
             "I should search for information about the topic. Action: Search[topic]"
         ],
     )
-    strategy = LATSHotQAStrategy(llm=llm)
+    strategy = LATSQAStrategy(llm=llm)
 
     question = "What is the capital of France?"
     examples = "Example 1\nExample 2"
@@ -192,7 +194,7 @@ def test_generate_thought() -> None:
 def test_generate_action() -> None:
     """Test the generate_action method."""
     llm = MockLLM("gpt-3.5-turbo", responses=["Search[capital of France]"])
-    strategy = LATSHotQAStrategy(llm=llm)
+    strategy = LATSQAStrategy(llm=llm)
 
     question = "What is the capital of France?"
     examples = "Example 1\nExample 2"
@@ -221,7 +223,7 @@ def test_generate_observation() -> None:
     docstore = DocstoreExplorer(None)
     docstore.search = lambda x: "Paris is the capital of France."
     docstore.lookup = lambda x: "Paris is a city in France."
-    strategy = LATSHotQAStrategy(llm=llm, docstore=docstore)
+    strategy = LATSQAStrategy(llm=llm, docstore=docstore)
 
     key = "Paris"
     trajectory = "Previous trajectory"
@@ -351,7 +353,7 @@ def test_generate() -> None:
         "Search[best kickboxer controversies]\nObservation 0: The search results show multiple kickboxers who have been involved in controversies",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    strategy = LATSHotQAStrategy(llm=llm)
+    strategy = LATSQAStrategy(llm=llm)
     strategy.docstore.search = (
         lambda x: "Badr Hari is the best kick boxer in the world."
     )
@@ -454,7 +456,7 @@ def test_generate() -> None:
         "Search[best kick boxer in the world controversies]\nObservation 1: Could not find [best kick boxer in the world controversies]",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    strategy = LATSHotQAStrategy(llm=llm)
+    strategy = LATSQAStrategy(llm=llm)
     strategy.docstore.search = (
         lambda x: "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues."
     )
@@ -494,7 +496,7 @@ def test_generate() -> None:
         "Finish[Mike Tyson]",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    strategy = LATSHotQAStrategy(llm=llm, n_samples=1)
+    strategy = LATSQAStrategy(llm=llm, n_samples=1)
 
     root = strategy.initialize()
     children_nodes = strategy.generate(
@@ -519,7 +521,7 @@ def test_generate() -> None:
 def test_select_node() -> None:
     """Test the select_node method."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    strategy = LATSHotQAStrategy(llm=llm)
+    strategy = LATSQAStrategy(llm=llm)
 
     # Create a tree structure.
     root = Node(state={})
@@ -631,7 +633,7 @@ def test_expand_node() -> None:
         "Search[best kickboxer controversies]\nObservation 0: The search results show multiple kickboxers who have been involved in controversies",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    strategy = LATSHotQAStrategy(llm=llm)
+    strategy = LATSQAStrategy(llm=llm)
     strategy.docstore.search = (
         lambda x: "Badr Hari is the best kick boxer in the world."
     )
@@ -669,7 +671,7 @@ def test_evaluate_node() -> None:
         "gpt-3.5-turbo",
         responses=["Explanation: Good trajectory. Correctness score: 8"],
     )
-    strategy = LATSHotQAStrategy(llm=llm)
+    strategy = LATSQAStrategy(llm=llm)
 
     root = strategy.initialize()
     child1 = Node(
@@ -755,7 +757,7 @@ def test_simulate_node() -> None:
         "This trajectory is incorrect as the focus should have been on verifying the information related to the capital of France, rather than repeatedly trying the same search query that does not provide the desired information",
     ]
 
-    qa_strategy = LATSHotQAStrategy(
+    qa_strategy = LATSQAStrategy(
         llm=MockLLM("gpt-3.5-turbo", responses=responses), depth_limit=3, n_samples=2
     )
     root_node = qa_strategy.initialize()
@@ -801,7 +803,7 @@ def test_simulate_node() -> None:
 def test_backpropagate_node() -> None:
     """Test the backpropagate_node method."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    strategy = LATSHotQAStrategy(llm=llm)
+    strategy = LATSQAStrategy(llm=llm)
 
     # Create a simple tree structure.
     root = Node(state={})
@@ -844,7 +846,7 @@ def test_backpropagate_node() -> None:
 def test_halting_condition() -> None:
     """Test the halting_condition method."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    strategy = LATSHotQAStrategy(llm=llm)
+    strategy = LATSQAStrategy(llm=llm)
 
     # Test with a terminal node and reward of 1.
     terminal_node = Node(state={})
@@ -866,7 +868,7 @@ def test_halting_condition() -> None:
 def test_reflect_condition() -> None:
     """Test the reflect_condition method."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    strategy = LATSHotQAStrategy(llm=llm, max_unique=3, max_reflections=5)
+    strategy = LATSQAStrategy(llm=llm, max_unique=3, max_reflections=5)
 
     # Test when there are fewer unique trajectories than reflections
     strategy.failed_trajectories = [
@@ -898,7 +900,7 @@ def test_reflect_condition() -> None:
 def test_reflect() -> None:
     """Test the reflect method."""
     llm = MockLLM("gpt-3.5-turbo", responses=["Reflection 1", "Reflection 2"])
-    strategy = LATSHotQAStrategy(llm=llm, max_unique=2)
+    strategy = LATSQAStrategy(llm=llm, max_unique=2)
 
     strategy.failed_trajectories = [
         {"trajectory": "Failed trajectory 1", "final_answer": "Incorrect answer 1"},
@@ -925,10 +927,48 @@ def test_reflect() -> None:
     assert strategy.reflection_map == reflections
 
 
+def test_create_output_dict() -> None:
+    """Test create_output_dict method."""
+    llm = MockLLM("gpt-3.5-turbo", responses=["1"])
+    strategy = LATSQAStrategy(llm=llm, max_unique=2)
+
+    gt_out = {'iteration': 1, 'current_node': {'state': ReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, 'children_nodes': [{'state': ReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}], 'values': [{}], 'simulation_reward': 1.0, 'simulation_terminal_node': {'state': ReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, 'simulation_results': [LATSSimulationOutput(current_node={'state': ReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, children_nodes=[], values=[{}])]}
+    simulation_results = [
+        {
+            "current_node": Node(),
+            "children_nodes": [],
+            "values": [{}]
+        }
+    ]
+    out = strategy.create_output_dict(
+        iteration=1,
+        current_node=Node(),
+        children_nodes=[Node()],
+        values=[{}],
+        simulation_reward=1.0,
+        simulation_terminal_node=Node(),
+        simulation_results=simulation_results
+    )
+    assert out == gt_out
+
+    # Test half empty.
+    gt_out = {'iteration': 1, 'current_node': {'state': ReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, 'children_nodes': [{'state': ReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}], 'values': [], 'simulation_reward': 0, 'simulation_terminal_node': {}, 'simulation_results': []}
+    out = strategy.create_output_dict(
+        iteration=1,
+        current_node=Node(),
+        children_nodes=[Node()],
+        values=None,
+        simulation_reward=None,
+        simulation_terminal_node=None,
+        simulation_results=None    
+    )
+    assert out == gt_out
+
+
 def test_reset() -> None:
     """Test the reset method."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    strategy = LATSHotQAStrategy(llm=llm)
+    strategy = LATSQAStrategy(llm=llm)
 
     strategy.root = "some_root"
     strategy.reflection_map = ["reflection1", "reflection2"]
