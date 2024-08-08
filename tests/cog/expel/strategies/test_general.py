@@ -6,7 +6,6 @@ from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
-from agential.cog.expel.output import ExpeLOutput
 from agential.cog.expel.strategies.general import ExpeLStrategy
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.reflexion.agent import (
@@ -87,10 +86,10 @@ def test_generate() -> None:
     key = "Oneida Limited"
 
     gt_new_experiences = [
-        ExpeLOutput(
-            question="What giant silverware company was started as a religious Utopian group and was for many years run by Pierrepont Noyes?",
-            key="Oneida Limited",
-            trajectory=[
+        {
+            "question": "What giant silverware company was started as a religious Utopian group and was for many years run by Pierrepont Noyes?",
+            "key": "Oneida Limited",
+            "trajectory": [
                 ReflexionReActOutput(
                     react_output=[
                         ReflexionReActStepOutput(
@@ -145,8 +144,8 @@ def test_generate() -> None:
                     reflections=[],
                 )
             ],
-            reflections=[],
-        )
+            "reflections": [],
+        }
     ]
 
     action_responses = [
@@ -223,10 +222,10 @@ def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
     hotpotqa = joblib.load(hotpotqa_distractor_sample_path)
 
     gt_new_experiences = [
-        ExpeLOutput(
-            question="What giant silverware company was started as a religious Utopian group and was for many years run by Pierrepont Noyes?",
-            key="Oneida Limited",
-            trajectory=[
+        {
+            "question": "What giant silverware company was started as a religious Utopian group and was for many years run by Pierrepont Noyes?",
+            "key": "Oneida Limited",
+            "trajectory": [
                 ReflexionReActOutput(
                     react_output=[
                         ReflexionReActStepOutput(
@@ -281,8 +280,8 @@ def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
                     reflections=[],
                 )
             ],
-            reflections=[],
-        )
+            "reflections": [],
+        }
     ]
 
     action_responses = [
