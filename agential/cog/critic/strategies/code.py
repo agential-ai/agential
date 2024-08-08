@@ -296,10 +296,11 @@ class CritHEvalCodeStrategy(CriticCodeStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        new_critique = out.choices[0].message.content
 
         new_critique = (
-            out.choices[0]
-            .message.content.split("Here's")[0]
+            new_critique
+            .split("Here's")[0]
             .split("Here is")[0]
             .split("```python")[0]
             .strip("\n")
