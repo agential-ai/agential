@@ -507,6 +507,7 @@ def test_generate() -> None:
             },
         ),
     ]
+    gt_prompt_metrics = {'thought': [{'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}], 'action': [{'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}], 'value': [], 'simulate_thought': [], 'simulate_action': [], 'simulate_value': [], 'reflection': [{'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}]}
     responses = [
         "My reasoning for this question failed because I did not narrow down the search to focus on kick boxers and instead ended up with unrelated information",
         "My reasoning failed because I did not focus on gathering specific information related to the individual's kickboxing career and controversies, leading to an incorrect answer",
@@ -556,8 +557,11 @@ def test_generate() -> None:
         assert node.value == 0
         assert node.is_terminal is False
         assert node.visits == 0
+    assert strategy._prompt_metrics == gt_prompt_metrics
 
     # Test case with a terminal child node (reward 0)
+    gt_prompt_metrics = {'thought': [{'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}], 'action': [{'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}], 'value': [], 'simulate_thought': [], 'simulate_action': [], 'simulate_value': [], 'reflection': []}
+
     responses = [
         "I think the answer is Mike Tyson.",
         "Finish[Mike Tyson]",
@@ -585,7 +589,7 @@ def test_generate() -> None:
     assert children_nodes[0].is_terminal
     assert children_nodes[0].reward == 0
 
-    assert strategy._prompt_metrics == {}
+    assert strategy._prompt_metrics == gt_prompt_metrics
 
 
 def test_select_node() -> None:
@@ -734,7 +738,6 @@ def test_expand_node() -> None:
         assert node.visits == 0
     assert strategy.root.children == children_nodes
 
-
 def test_evaluate_node() -> None:
     """Test the evaluate_node method."""
     gt_prompt_metrics = {
@@ -765,6 +768,8 @@ def test_evaluate_node() -> None:
         "simulate_value": [],
         "reflection": [],
     }
+
+    gt_prompt_metrics = {'thought': [], 'action': [], 'value': [{'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}], 'simulate_thought': [], 'simulate_action': [], 'simulate_value': [], 'reflection': []}    
 
     llm = MockLLM(
         "gpt-3.5-turbo",
@@ -812,6 +817,8 @@ def test_evaluate_node() -> None:
 
     values = strategy.evaluate_node(root, question, examples, prompt, {})
 
+    assert strategy._prompt_metrics == gt_prompt_metrics
+
     assert len(values) == 1  # Only one non-terminal child.
     assert "explanation" in values[0]
     assert "value" in values[0]
@@ -822,6 +829,7 @@ def test_evaluate_node() -> None:
     assert child2.value == 0  # Terminal node, value not updated.
 
     # Test caching.
+    gt_prompt_metrics = {'thought': [], 'action': [], 'value': [{'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}], 'simulate_thought': [], 'simulate_action': [], 'simulate_value': [], 'reflection': []}
     strategy.cache_values = True
     cached_values = strategy.evaluate_node(root, question, examples, prompt, {})
     assert cached_values == values
