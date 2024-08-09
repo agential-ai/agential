@@ -16,9 +16,8 @@ from agential.cog.lats.functional import (
     get_unique_trajectories,
 )
 from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSSimulationOutput
+from agential.cog.lats.output import LATSSimulationOutput, LATSReActOutput
 from agential.cog.lats.strategies.base import LATSBaseStrategy
-from agential.cog.react.output import ReActOutput
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
@@ -239,7 +238,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                 )
 
                 new_node = Node(
-                    state=ReActOutput(
+                    state=LATSReActOutput(
                         thought=thought,
                         action_type=action_type,
                         query=query,
@@ -840,7 +839,15 @@ class LATSQAStrategy(LATSBaseStrategy):
         self.reflection_map = []
         self.value_cache = {}
         self.root = None
-
+        self._prompt_metrics = {
+            "thought": [],
+            "action": [],
+            "value": [],
+            "simulate_thought": [],
+            "simulate_action": [],
+            "simulate_value": [],
+            "reflection": [],
+        }
 
 class LATSHotQAStrategy(LATSQAStrategy):
     """A strategy class for the HotpotQA benchmark using the LATS agent."""

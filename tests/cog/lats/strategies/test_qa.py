@@ -4,7 +4,7 @@ from langchain_community.docstore.wikipedia import Wikipedia
 
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSSimulationOutput
+from agential.cog.lats.output import LATSSimulationOutput, LATSReActOutput
 from agential.cog.lats.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE,
@@ -22,7 +22,6 @@ from agential.cog.lats.strategies.qa import (
     parse_qa_action,
     parse_qa_value,
 )
-from agential.cog.react.output import ReActOutput
 from agential.llm.llm import MockLLM
 from agential.utils.docstore import DocstoreExplorer
 
@@ -30,7 +29,7 @@ from agential.utils.docstore import DocstoreExplorer
 def test_get_node_trajectory_qa() -> None:
     """Tests the get_node_trajectory_qa() function."""
     root = Node(
-        state=ReActOutput(
+        state=LATSReActOutput(
             **{
                 "thought": "Root thought",
                 "action_type": "",
@@ -42,7 +41,7 @@ def test_get_node_trajectory_qa() -> None:
         )
     )
     child1 = Node(
-        state=ReActOutput(
+        state=LATSReActOutput(
             **{
                 "thought": "Child1 thought",
                 "action_type": "Lookup",
@@ -55,7 +54,7 @@ def test_get_node_trajectory_qa() -> None:
         parent=root,
     )
     child2 = Node(
-        state=ReActOutput(
+        state=LATSReActOutput(
             **{
                 "thought": "Child2 thought",
                 "action_type": "Finish",
@@ -181,7 +180,7 @@ def test_generate_thought() -> None:
     additional_keys = {"key": "value"}
 
     updated_trajectory, thought = strategy.generate_thought(
-        question, examples, trajectory, reflections, depth, prompt, additional_keys
+        question, examples, trajectory, reflections, depth, prompt, additional_keys, is_simulate=False
     )
 
     assert thought == "I should search for information about the topic."
@@ -207,7 +206,7 @@ def test_generate_action() -> None:
     additional_keys = {"key": "value"}
 
     trajectory, action_type, query = strategy.generate_action(
-        question, examples, trajectory, reflections, depth, prompt, additional_keys
+        question, examples, trajectory, reflections, depth, prompt, additional_keys, is_simulate=False
     )
     assert (
         trajectory
@@ -283,7 +282,7 @@ def test_generate_observation() -> None:
 def test_generate() -> None:
     """Test the generate method."""
     gt_states = [
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
             action_type="Search",
             query="best kick boxer controversies crimes",
@@ -294,7 +293,7 @@ def test_generate() -> None:
                 "lookup_result": "",
             },
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the best kickboxer who has been involved in controversies and crimes of violence",
             action_type="Search",
             query="best kick boxer controversies crimes",
@@ -305,7 +304,7 @@ def test_generate() -> None:
                 "lookup_result": "",
             },
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies",
             action_type="Search",
             query="best kick boxer controversies",
@@ -316,7 +315,7 @@ def test_generate() -> None:
                 "lookup_result": "",
             },
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring",
             action_type="Search",
             query="best kick boxer controversies violence",
@@ -327,7 +326,7 @@ def test_generate() -> None:
                 "lookup_result": "",
             },
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies",
             action_type="Search",
             query="best kickboxer controversies",
@@ -373,6 +372,7 @@ def test_generate() -> None:
         reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
         additional_keys={},
         reflect_additional_keys={},
+        is_simulate=False
     )
     assert len(children_nodes) == 5
     for gt_state, node in zip(gt_states, children_nodes):
@@ -385,7 +385,7 @@ def test_generate() -> None:
 
     # Test generate with reflections.
     gt_states = [
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and crimes of violence outside the ring",
             action_type="Search",
             query="best kickboxer controversies violence",
@@ -396,7 +396,7 @@ def test_generate() -> None:
                 "lookup_result": "",
             },
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the best kick boxer in the world and then look into his controversies related to unsportsmanlike conduct and crimes of violence",
             action_type="Search",
             query="best kick boxer in the world",
@@ -407,7 +407,7 @@ def test_generate() -> None:
                 "lookup_result": "",
             },
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and violence outside of the ring",
             action_type="Search",
             query="best kick boxer in the world controversies",
@@ -418,7 +418,7 @@ def test_generate() -> None:
                 "lookup_result": "",
             },
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the best kickboxer in the world who has been involved in controversies regarding unsportsmanlike conduct and crimes of violence outside the ring",
             action_type="Search",
             query="best kickboxer controversies",
@@ -429,7 +429,7 @@ def test_generate() -> None:
                 "lookup_result": "",
             },
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the best kick boxer in the world and his controversies regarding unsportsmanlike conducts and crimes of violence",
             action_type="Search",
             query="best kick boxer in the world controversies",
@@ -480,6 +480,7 @@ def test_generate() -> None:
         reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
         additional_keys={},
         reflect_additional_keys={},
+        is_simulate=False
     )
     assert len(children_nodes) == 5
     for gt_state, node in zip(gt_states, children_nodes):
@@ -509,6 +510,7 @@ def test_generate() -> None:
         reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
         additional_keys={},
         reflect_additional_keys={},
+        is_simulate=False
     )
     assert len(children_nodes) == 1
     assert children_nodes[0].state.thought == "I think the answer is Mike Tyson."
@@ -563,7 +565,7 @@ def test_select_node() -> None:
 def test_expand_node() -> None:
     """Test the expand_node method."""
     gt_states = [
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
             action_type="Search",
             query="best kick boxer controversies crimes",
@@ -574,7 +576,7 @@ def test_expand_node() -> None:
                 "lookup_result": "",
             },
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the best kickboxer who has been involved in controversies and crimes of violence",
             action_type="Search",
             query="best kick boxer controversies crimes",
@@ -585,7 +587,7 @@ def test_expand_node() -> None:
                 "lookup_result": "",
             },
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies",
             action_type="Search",
             query="best kick boxer controversies",
@@ -596,7 +598,7 @@ def test_expand_node() -> None:
                 "lookup_result": "",
             },
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring",
             action_type="Search",
             query="best kick boxer controversies violence",
@@ -607,7 +609,7 @@ def test_expand_node() -> None:
                 "lookup_result": "",
             },
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies",
             action_type="Search",
             query="best kickboxer controversies",
@@ -675,7 +677,7 @@ def test_evaluate_node() -> None:
 
     root = strategy.initialize()
     child1 = Node(
-        state=ReActOutput(
+        state=LATSReActOutput(
             thought="Child 1",
             action_type="",
             query="",
@@ -686,7 +688,7 @@ def test_evaluate_node() -> None:
         parent=root,
     )
     child2 = Node(
-        state=ReActOutput(
+        state=LATSReActOutput(
             thought="Child 2",
             action_type="",
             query="",
@@ -932,79 +934,7 @@ def test_create_output_dict() -> None:
     llm = MockLLM("gpt-3.5-turbo", responses=["1"])
     strategy = LATSQAStrategy(llm=llm, max_unique=2)
 
-    gt_out = {
-        "iteration": 1,
-        "current_node": {
-            "state": ReActOutput(
-                thought="",
-                action_type="",
-                query="",
-                observation="",
-                answer="",
-                external_tool_info={},
-            ),
-            "visits": 0,
-            "value": 0,
-            "depth": 0,
-            "is_terminal": False,
-            "reward": 0,
-        },
-        "children_nodes": [
-            {
-                "state": ReActOutput(
-                    thought="",
-                    action_type="",
-                    query="",
-                    observation="",
-                    answer="",
-                    external_tool_info={},
-                ),
-                "visits": 0,
-                "value": 0,
-                "depth": 0,
-                "is_terminal": False,
-                "reward": 0,
-            }
-        ],
-        "values": [{}],
-        "simulation_reward": 1.0,
-        "simulation_terminal_node": {
-            "state": ReActOutput(
-                thought="",
-                action_type="",
-                query="",
-                observation="",
-                answer="",
-                external_tool_info={},
-            ),
-            "visits": 0,
-            "value": 0,
-            "depth": 0,
-            "is_terminal": False,
-            "reward": 0,
-        },
-        "simulation_results": [
-            LATSSimulationOutput(
-                current_node={
-                    "state": ReActOutput(
-                        thought="",
-                        action_type="",
-                        query="",
-                        observation="",
-                        answer="",
-                        external_tool_info={},
-                    ),
-                    "visits": 0,
-                    "value": 0,
-                    "depth": 0,
-                    "is_terminal": False,
-                    "reward": 0,
-                },
-                children_nodes=[],
-                values=[{}],
-            )
-        ],
-    }
+    gt_out = {'iteration': 1, 'current_node': {'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, 'children_nodes': [{'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}], 'values': [{}], 'simulation_reward': 1.0, 'simulation_terminal_node': {'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, 'simulation_results': [LATSSimulationOutput(current_node={'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, children_nodes=[], values=[{}])], 'prompt_metrics': {'thought': [], 'action': [], 'value': [], 'simulate_thought': [], 'simulate_action': [], 'simulate_value': [], 'reflection': []}}
     simulation_results = [
         {"current_node": Node(), "children_nodes": [], "values": [{}]}
     ]
@@ -1020,45 +950,7 @@ def test_create_output_dict() -> None:
     assert out == gt_out
 
     # Test half empty.
-    gt_out = {
-        "iteration": 1,
-        "current_node": {
-            "state": ReActOutput(
-                thought="",
-                action_type="",
-                query="",
-                observation="",
-                answer="",
-                external_tool_info={},
-            ),
-            "visits": 0,
-            "value": 0,
-            "depth": 0,
-            "is_terminal": False,
-            "reward": 0,
-        },
-        "children_nodes": [
-            {
-                "state": ReActOutput(
-                    thought="",
-                    action_type="",
-                    query="",
-                    observation="",
-                    answer="",
-                    external_tool_info={},
-                ),
-                "visits": 0,
-                "value": 0,
-                "depth": 0,
-                "is_terminal": False,
-                "reward": 0,
-            }
-        ],
-        "values": [],
-        "simulation_reward": 0,
-        "simulation_terminal_node": {},
-        "simulation_results": [],
-    }
+    gt_out = {'iteration': 1, 'current_node': {'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, 'children_nodes': [{'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}], 'values': [], 'simulation_reward': 0, 'simulation_terminal_node': {}, 'simulation_results': [], 'prompt_metrics': {'thought': [], 'action': [], 'value': [], 'simulate_thought': [], 'simulate_action': [], 'simulate_value': [], 'reflection': []}}
     out = strategy.create_output_dict(
         iteration=1,
         current_node=Node(),

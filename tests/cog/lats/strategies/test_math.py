@@ -2,7 +2,7 @@
 
 from agential.cog.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSSimulationOutput
+from agential.cog.lats.output import LATSSimulationOutput, LATSReActOutput
 from agential.cog.lats.prompts import (
     GSM8K_FEWSHOT_EXAMPLES_LATS_REFLECT,
     GSM8K_FEWSHOT_EXAMPLES_LATS_VALUE,
@@ -19,14 +19,13 @@ from agential.cog.lats.strategies.math import (
     parse_math_action,
     parse_math_value,
 )
-from agential.cog.react.output import ReActOutput
 from agential.llm.llm import MockLLM
 
 
 def test_get_node_trajectory_math() -> None:
     """Tests the get_node_trajectory_math() function."""
     root = Node(
-        state=ReActOutput(
+        state=LATSReActOutput(
             **{
                 "thought": "Root thought",
                 "action_type": "",
@@ -38,7 +37,7 @@ def test_get_node_trajectory_math() -> None:
         )
     )
     child1 = Node(
-        state=ReActOutput(
+        state=LATSReActOutput(
             **{
                 "thought": "Child1 thought",
                 "action_type": "Lookup",
@@ -51,7 +50,7 @@ def test_get_node_trajectory_math() -> None:
         parent=root,
     )
     child2 = Node(
-        state=ReActOutput(
+        state=LATSReActOutput(
             **{
                 "thought": "Child2 thought",
                 "action_type": "Finish",
@@ -192,7 +191,7 @@ def test_generate_thought() -> None:
     additional_keys = {"key": "value"}
 
     updated_trajectory, thought = strategy.generate_thought(
-        question, examples, trajectory, reflections, depth, prompt, additional_keys
+        question, examples, trajectory, reflections, depth, prompt, additional_keys, is_simulate=False
     )
 
     assert thought == "I should search for information about the topic."
@@ -218,7 +217,7 @@ def test_generate_action() -> None:
     additional_keys = {"key": "value"}
 
     trajectory, action_type, query = strategy.generate_action(
-        question, examples, trajectory, reflections, depth, prompt, additional_keys
+        question, examples, trajectory, reflections, depth, prompt, additional_keys, is_simulate=False
     )
 
     assert (
@@ -275,7 +274,7 @@ def test_generate_observation() -> None:
 def test_generate() -> None:
     """Test the generate method."""
     gt_states = [
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to calculate how much money Janet makes daily at the farmers' market.",
             action_type="Calculate",
             query="eggs_laid_per_day = 16\neggs_consumed = 3\neggs_used_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_consumed - eggs_used_muffins\nprice_per_egg = 2\nearnings_per_day = eggs_sold * price_per_egg\nanswer = earnings_per_day",
@@ -283,7 +282,7 @@ def test_generate() -> None:
             answer="",
             external_tool_info={"execution_status": "Done", "code_answer": -9867630},
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to calculate how much money Janet makes daily at the farmers' market by selling the remaining eggs after breakfast and baking muffins for her friends.",
             action_type="Calculate",
             query="eggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nanswer = eggs_sold * price_per_egg",
@@ -291,7 +290,7 @@ def test_generate() -> None:
             answer="",
             external_tool_info={"execution_status": "Done", "code_answer": -9867630},
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="First, I need to calculate the total number of eggs Janet has available to sell at the farmers' market after accounting for her breakfast consumption and muffin baking.",
             action_type="Calculate",
             query="eggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_available_to_sell = eggs_laid_per_day - eggs_consumed_for_breakfast - eggs_baked_into_muffins",
@@ -299,7 +298,7 @@ def test_generate() -> None:
             answer="",
             external_tool_info={"execution_status": "Done", "code_answer": None},
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="First, I need to calculate how many eggs Janet has left after eating three for breakfast every day.",
             action_type="Calculate",
             query="eggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_remaining = eggs_laid_per_day - eggs_eaten_for_breakfast",
@@ -307,7 +306,7 @@ def test_generate() -> None:
             answer="",
             external_tool_info={"execution_status": "Done", "code_answer": None},
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="First, I need to calculate how many eggs Janet has left after eating three eggs for breakfast and baking muffins.",
             action_type="Calculate",
             query="eggs_per_day = 16\neggs_eaten_breakfast = 3\neggs_baked_in_muffins = 4933828\neggs_remaining = eggs_per_day - eggs_eaten_breakfast - eggs_baked_in_muffins",
@@ -346,6 +345,7 @@ def test_generate() -> None:
         reflect_prompt=LATS_REFLECT_INSTRUCTION_GSM8K,
         additional_keys={},
         reflect_additional_keys={},
+        is_simulate=False
     )
     assert len(children_nodes) == 5
     for gt_state, node in zip(gt_states, children_nodes):
@@ -358,7 +358,7 @@ def test_generate() -> None:
 
     # Test generate with reflections.
     gt_states = [
-        ReActOutput(
+        LATSReActOutput(
             thought="To calculate how much money Janet makes at the farmers' market daily, I need to first find out how many eggs she has available for sale after consuming some and using some for baking.",
             action_type="Calculate",
             query="eggs_laid_per_day = 16\neggs_consumed_daily = 3\neggs_used_for_baking = 4933828\neggs_available_for_sale = eggs_laid_per_day - eggs_consumed_daily - eggs_used_for_baking",
@@ -366,7 +366,7 @@ def test_generate() -> None:
             answer="",
             external_tool_info={"execution_status": "Done", "code_answer": None},
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to calculate how many eggs Janet has available for sale at the farmers' market after consuming some for breakfast and baking muffins.",
             action_type="Calculate",
             query="eggs_laid_per_day = 16\neggs_consumed_daily = 3 + 4933828\neggs_available_for_sale = eggs_laid_per_day - eggs_consumed_daily",
@@ -374,7 +374,7 @@ def test_generate() -> None:
             answer="",
             external_tool_info={"execution_status": "Done", "code_answer": None},
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="First, I need to calculate how many eggs Janet has available for sale at the farmers' market each day.",
             action_type="Calculate",
             query="eggs_laid_per_day = 16\neggs_consumed_daily = 3\neggs_remaining = eggs_laid_per_day - eggs_consumed_daily",
@@ -382,7 +382,7 @@ def test_generate() -> None:
             answer="",
             external_tool_info={"execution_status": "Done", "code_answer": None},
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to calculate the total earnings Janet makes by selling the remaining eggs at the farmers' market.",
             action_type="Calculate",
             query="eggs_laid_per_day = 16\neggs_consumed_daily = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_consumed_daily - eggs_used_for_muffins\nprice_per_egg = 2\ndaily_earnings = eggs_sold * price_per_egg\nanswer = daily_earnings",
@@ -390,7 +390,7 @@ def test_generate() -> None:
             answer="",
             external_tool_info={"execution_status": "Done", "code_answer": -9867630},
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="First, I need to find out how many eggs Janet has available for sale at the farmers' market.",
             action_type="Calculate",
             query="eggs_laid_per_day = 16\neggs_consumed_daily = 3\neggs_baked_for_friends = 4933828\neggs_available_for_sale = eggs_laid_per_day - eggs_consumed_daily - eggs_baked_for_friends",
@@ -436,6 +436,7 @@ def test_generate() -> None:
         reflect_prompt=LATS_REFLECT_INSTRUCTION_GSM8K,
         additional_keys={},
         reflect_additional_keys={},
+        is_simulate=False
     )
     assert len(children_nodes) == 5
     for gt_state, node in zip(gt_states, children_nodes):
@@ -465,6 +466,7 @@ def test_generate() -> None:
         reflect_prompt=LATS_REFLECT_INSTRUCTION_GSM8K,
         additional_keys={},
         reflect_additional_keys={},
+        is_simulate=False
     )
     assert len(children_nodes) == 1
     assert (
@@ -525,7 +527,7 @@ def test_select_node() -> None:
 def test_expand_node() -> None:
     """Test the expand_node method."""
     gt_states = [
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to calculate how much money Janet makes daily at the farmers' market.",
             action_type="Calculate",
             query="eggs_laid_per_day = 16\neggs_consumed = 3\neggs_used_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_consumed - eggs_used_muffins\nprice_per_egg = 2\nearnings_per_day = eggs_sold * price_per_egg\nanswer = earnings_per_day",
@@ -533,7 +535,7 @@ def test_expand_node() -> None:
             answer="",
             external_tool_info={"execution_status": "Done", "code_answer": -9867630},
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to calculate how much money Janet makes daily at the farmers' market by selling the remaining eggs after breakfast and baking muffins for her friends.",
             action_type="Calculate",
             query="eggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nanswer = eggs_sold * price_per_egg",
@@ -541,7 +543,7 @@ def test_expand_node() -> None:
             answer="",
             external_tool_info={"execution_status": "Done", "code_answer": -9867630},
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="First, I need to calculate the total number of eggs Janet has available to sell at the farmers' market after accounting for her breakfast consumption and muffin baking.",
             action_type="Calculate",
             query="eggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_available_to_sell = eggs_laid_per_day - eggs_consumed_for_breakfast - eggs_baked_into_muffins",
@@ -549,7 +551,7 @@ def test_expand_node() -> None:
             answer="",
             external_tool_info={"execution_status": "Done", "code_answer": None},
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="First, I need to calculate how many eggs Janet has left after eating three for breakfast every day.",
             action_type="Calculate",
             query="eggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_remaining = eggs_laid_per_day - eggs_eaten_for_breakfast",
@@ -557,7 +559,7 @@ def test_expand_node() -> None:
             answer="",
             external_tool_info={"execution_status": "Done", "code_answer": None},
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="First, I need to calculate how many eggs Janet has left after eating three eggs for breakfast and baking muffins.",
             action_type="Calculate",
             query="eggs_per_day = 16\neggs_eaten_breakfast = 3\neggs_baked_in_muffins = 4933828\neggs_remaining = eggs_per_day - eggs_eaten_breakfast - eggs_baked_in_muffins",
@@ -619,7 +621,7 @@ def test_evaluate_node() -> None:
 
     root = strategy.initialize()
     child1 = Node(
-        state=ReActOutput(
+        state=LATSReActOutput(
             thought="Child 1",
             action_type="",
             query="",
@@ -630,7 +632,7 @@ def test_evaluate_node() -> None:
         parent=root,
     )
     child2 = Node(
-        state=ReActOutput(
+        state=LATSReActOutput(
             thought="Child 2",
             action_type="",
             query="",
@@ -867,79 +869,7 @@ def test_create_output_dict() -> None:
     llm = MockLLM("gpt-3.5-turbo", responses=["1"])
     strategy = LATSMathStrategy(llm=llm, max_unique=2)
 
-    gt_out = {
-        "iteration": 1,
-        "current_node": {
-            "state": ReActOutput(
-                thought="",
-                action_type="",
-                query="",
-                observation="",
-                answer="",
-                external_tool_info={},
-            ),
-            "visits": 0,
-            "value": 0,
-            "depth": 0,
-            "is_terminal": False,
-            "reward": 0,
-        },
-        "children_nodes": [
-            {
-                "state": ReActOutput(
-                    thought="",
-                    action_type="",
-                    query="",
-                    observation="",
-                    answer="",
-                    external_tool_info={},
-                ),
-                "visits": 0,
-                "value": 0,
-                "depth": 0,
-                "is_terminal": False,
-                "reward": 0,
-            }
-        ],
-        "values": [{}],
-        "simulation_reward": 1.0,
-        "simulation_terminal_node": {
-            "state": ReActOutput(
-                thought="",
-                action_type="",
-                query="",
-                observation="",
-                answer="",
-                external_tool_info={},
-            ),
-            "visits": 0,
-            "value": 0,
-            "depth": 0,
-            "is_terminal": False,
-            "reward": 0,
-        },
-        "simulation_results": [
-            LATSSimulationOutput(
-                current_node={
-                    "state": ReActOutput(
-                        thought="",
-                        action_type="",
-                        query="",
-                        observation="",
-                        answer="",
-                        external_tool_info={},
-                    ),
-                    "visits": 0,
-                    "value": 0,
-                    "depth": 0,
-                    "is_terminal": False,
-                    "reward": 0,
-                },
-                children_nodes=[],
-                values=[{}],
-            )
-        ],
-    }
+    gt_out = {'iteration': 1, 'current_node': {'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, 'children_nodes': [{'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}], 'values': [{}], 'simulation_reward': 1.0, 'simulation_terminal_node': {'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, 'simulation_results': [LATSSimulationOutput(current_node={'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, children_nodes=[], values=[{}])], 'prompt_metrics': {'thought': [], 'action': [], 'value': [], 'simulate_thought': [], 'simulate_action': [], 'simulate_value': [], 'reflection': []}}
     simulation_results = [
         {"current_node": Node(), "children_nodes": [], "values": [{}]}
     ]
@@ -955,45 +885,7 @@ def test_create_output_dict() -> None:
     assert out == gt_out
 
     # Test half empty.
-    gt_out = {
-        "iteration": 1,
-        "current_node": {
-            "state": ReActOutput(
-                thought="",
-                action_type="",
-                query="",
-                observation="",
-                answer="",
-                external_tool_info={},
-            ),
-            "visits": 0,
-            "value": 0,
-            "depth": 0,
-            "is_terminal": False,
-            "reward": 0,
-        },
-        "children_nodes": [
-            {
-                "state": ReActOutput(
-                    thought="",
-                    action_type="",
-                    query="",
-                    observation="",
-                    answer="",
-                    external_tool_info={},
-                ),
-                "visits": 0,
-                "value": 0,
-                "depth": 0,
-                "is_terminal": False,
-                "reward": 0,
-            }
-        ],
-        "values": [],
-        "simulation_reward": 0,
-        "simulation_terminal_node": {},
-        "simulation_results": [],
-    }
+    gt_out = {'iteration': 1, 'current_node': {'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, 'children_nodes': [{'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}], 'values': [], 'simulation_reward': 0, 'simulation_terminal_node': {}, 'simulation_results': [], 'prompt_metrics': {'thought': [], 'action': [], 'value': [], 'simulate_thought': [], 'simulate_action': [], 'simulate_value': [], 'reflection': []}}
     out = strategy.create_output_dict(
         iteration=1,
         current_node=Node(),
@@ -1003,6 +895,7 @@ def test_create_output_dict() -> None:
         simulation_terminal_node=None,
         simulation_results=None,
     )
+    print(out)
     assert out == gt_out
 
 

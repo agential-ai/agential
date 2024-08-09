@@ -2,7 +2,7 @@
 
 from agential.cog.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSSimulationOutput
+from agential.cog.lats.output import LATSSimulationOutput, LATSReActOutput
 from agential.cog.lats.prompts import (
     HUMANEVAL_FEWSHOT_EXAMPLES_LATS_REFLECT,
     HUMANEVAL_FEWSHOT_EXAMPLES_LATS_VALUE,
@@ -19,7 +19,6 @@ from agential.cog.lats.strategies.code import (
     parse_code_value,
     parse_latest_implement,
 )
-from agential.cog.react.output import ReActOutput
 from agential.llm.llm import MockLLM
 
 
@@ -82,7 +81,7 @@ def test_parse_latest_implement() -> None:
 def test_get_node_trajectory_code() -> None:
     """Tests the get_node_trajectory_code() function."""
     root = Node(
-        state=ReActOutput(
+        state=LATSReActOutput(
             **{
                 "thought": "Root thought",
                 "action_type": "",
@@ -94,7 +93,7 @@ def test_get_node_trajectory_code() -> None:
         )
     )
     child1 = Node(
-        state=ReActOutput(
+        state=LATSReActOutput(
             **{
                 "thought": "Child1 thought",
                 "action_type": "Lookup",
@@ -107,7 +106,7 @@ def test_get_node_trajectory_code() -> None:
         parent=root,
     )
     child2 = Node(
-        state=ReActOutput(
+        state=LATSReActOutput(
             **{
                 "thought": "Child2 thought",
                 "action_type": "Finish",
@@ -252,7 +251,7 @@ def test_generate_thought() -> None:
     additional_keys = {"key": "value"}
 
     updated_trajectory, thought = strategy.generate_thought(
-        question, examples, trajectory, reflections, depth, prompt, additional_keys
+        question, examples, trajectory, reflections, depth, prompt, additional_keys, is_simulate=False
     )
 
     assert thought == "I should search for information about the topic."
@@ -278,7 +277,7 @@ def test_generate_action() -> None:
     additional_keys = {"key": "value"}
 
     trajectory, action_type, query = strategy.generate_action(
-        question, examples, trajectory, reflections, depth, prompt, additional_keys
+        question, examples, trajectory, reflections, depth, prompt, additional_keys, is_simulate=False
     )
 
     assert (
@@ -349,7 +348,7 @@ def test_generate_observation() -> None:
 def test_generate() -> None:
     """Test the generate method."""
     gt_states = [
-        ReActOutput(
+        LATSReActOutput(
             thought="We need to iterate through the list of numbers and check if any two numbers are closer to each other than the given threshold.",
             action_type="Implement",
             query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
@@ -357,7 +356,7 @@ def test_generate() -> None:
             answer="",
             external_tool_info={"execution_status": "Done"},
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to iterate through the list of numbers and compare each pair to see if they are closer to each other than the threshold.",
             action_type="Implement",
             query="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
@@ -365,7 +364,7 @@ def test_generate() -> None:
             answer="",
             external_tool_info={"execution_status": "Done"},
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="We need to iterate through the list of numbers and check if any two numbers are closer to each other than the given threshold.",
             action_type="Implement",
             query="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
@@ -373,7 +372,7 @@ def test_generate() -> None:
             answer="",
             external_tool_info={"execution_status": "Done"},
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="To solve this problem, I need to iterate through the list of numbers and compare each pair of numbers to see if they are closer to each other than the threshold.",
             action_type="Implement",
             query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
@@ -419,6 +418,7 @@ def test_generate() -> None:
         reflect_prompt=LATS_REFLECT_INSTRUCTION_HUMANEVAL,
         additional_keys={},
         reflect_additional_keys={},
+        is_simulate=False
     )
     assert len(children_nodes) == 4
     for gt_state, node in zip(gt_states, children_nodes):
@@ -468,6 +468,7 @@ def test_generate() -> None:
         reflect_prompt=LATS_REFLECT_INSTRUCTION_HUMANEVAL,
         additional_keys={},
         reflect_additional_keys={},
+        is_simulate=False
     )
 
     assert len(children_nodes) == 5
@@ -498,6 +499,7 @@ def test_generate() -> None:
         reflect_prompt=LATS_REFLECT_INSTRUCTION_HUMANEVAL,
         additional_keys={},
         reflect_additional_keys={},
+        is_simulate=False
     )
     assert len(children_nodes) == 1
     assert (
@@ -558,7 +560,7 @@ def test_select_node() -> None:
 def test_expand_node() -> None:
     """Test the expand_node method."""
     gt_states = [
-        ReActOutput(
+        LATSReActOutput(
             thought="To solve this problem, I need to iterate through the list of numbers and check if any two numbers are closer to each other than the given threshold.",
             action_type="Implement",
             query="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
@@ -566,7 +568,7 @@ def test_expand_node() -> None:
             answer="",
             external_tool_info={"execution_status": "Done"},
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to iterate through the list of numbers and check if any two numbers are closer to each other than the given threshold.",
             action_type="Implement",
             query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
@@ -574,7 +576,7 @@ def test_expand_node() -> None:
             answer="",
             external_tool_info={"execution_status": "Done"},
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to iterate through the list of numbers and compare each pair of numbers to see if they are closer than the threshold.",
             action_type="",
             query="",
@@ -582,7 +584,7 @@ def test_expand_node() -> None:
             answer="",
             external_tool_info={"execution_status": ""},
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="To solve this problem, I need to iterate through the list of numbers and compare each pair of numbers to see if they are closer to each other than the given threshold.",
             action_type="Implement",
             query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
@@ -590,7 +592,7 @@ def test_expand_node() -> None:
             answer="",
             external_tool_info={"execution_status": "Done"},
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="To solve this problem, we need to iterate through the list of numbers and compare each pair of numbers to check if they are closer to each other than the threshold.",
             action_type="Implement",
             query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
@@ -659,7 +661,7 @@ def test_evaluate_node() -> None:
 
     root = strategy.initialize()
     child1 = Node(
-        state=ReActOutput(
+        state=LATSReActOutput(
             thought="Child 1",
             action_type="",
             query="",
@@ -670,7 +672,7 @@ def test_evaluate_node() -> None:
         parent=root,
     )
     child2 = Node(
-        state=ReActOutput(
+        state=LATSReActOutput(
             thought="Child 2",
             action_type="",
             query="",
@@ -921,79 +923,7 @@ def test_create_output_dict() -> None:
     llm = MockLLM("gpt-3.5-turbo", responses=["1"])
     strategy = LATSCodeStrategy(llm=llm, max_unique=2)
 
-    gt_out = {
-        "iteration": 1,
-        "current_node": {
-            "state": ReActOutput(
-                thought="",
-                action_type="",
-                query="",
-                observation="",
-                answer="",
-                external_tool_info={},
-            ),
-            "visits": 0,
-            "value": 0,
-            "depth": 0,
-            "is_terminal": False,
-            "reward": 0,
-        },
-        "children_nodes": [
-            {
-                "state": ReActOutput(
-                    thought="",
-                    action_type="",
-                    query="",
-                    observation="",
-                    answer="",
-                    external_tool_info={},
-                ),
-                "visits": 0,
-                "value": 0,
-                "depth": 0,
-                "is_terminal": False,
-                "reward": 0,
-            }
-        ],
-        "values": [{}],
-        "simulation_reward": 1.0,
-        "simulation_terminal_node": {
-            "state": ReActOutput(
-                thought="",
-                action_type="",
-                query="",
-                observation="",
-                answer="",
-                external_tool_info={},
-            ),
-            "visits": 0,
-            "value": 0,
-            "depth": 0,
-            "is_terminal": False,
-            "reward": 0,
-        },
-        "simulation_results": [
-            LATSSimulationOutput(
-                current_node={
-                    "state": ReActOutput(
-                        thought="",
-                        action_type="",
-                        query="",
-                        observation="",
-                        answer="",
-                        external_tool_info={},
-                    ),
-                    "visits": 0,
-                    "value": 0,
-                    "depth": 0,
-                    "is_terminal": False,
-                    "reward": 0,
-                },
-                children_nodes=[],
-                values=[{}],
-            )
-        ],
-    }
+    gt_out = {'iteration': 1, 'current_node': {'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, 'children_nodes': [{'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}], 'values': [{}], 'simulation_reward': 1.0, 'simulation_terminal_node': {'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, 'simulation_results': [LATSSimulationOutput(current_node={'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, children_nodes=[], values=[{}])], 'prompt_metrics': {'thought': [], 'action': [], 'value': [], 'simulate_thought': [], 'simulate_action': [], 'simulate_value': [], 'reflection': []}}
     simulation_results = [
         {"current_node": Node(), "children_nodes": [], "values": [{}]}
     ]
@@ -1009,45 +939,7 @@ def test_create_output_dict() -> None:
     assert out == gt_out
 
     # Test half empty.
-    gt_out = {
-        "iteration": 1,
-        "current_node": {
-            "state": ReActOutput(
-                thought="",
-                action_type="",
-                query="",
-                observation="",
-                answer="",
-                external_tool_info={},
-            ),
-            "visits": 0,
-            "value": 0,
-            "depth": 0,
-            "is_terminal": False,
-            "reward": 0,
-        },
-        "children_nodes": [
-            {
-                "state": ReActOutput(
-                    thought="",
-                    action_type="",
-                    query="",
-                    observation="",
-                    answer="",
-                    external_tool_info={},
-                ),
-                "visits": 0,
-                "value": 0,
-                "depth": 0,
-                "is_terminal": False,
-                "reward": 0,
-            }
-        ],
-        "values": [],
-        "simulation_reward": 0,
-        "simulation_terminal_node": {},
-        "simulation_results": [],
-    }
+    gt_out = {'iteration': 1, 'current_node': {'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, 'children_nodes': [{'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}], 'values': [], 'simulation_reward': 0, 'simulation_terminal_node': {}, 'simulation_results': [], 'prompt_metrics': {'thought': [], 'action': [], 'value': [], 'simulate_thought': [], 'simulate_action': [], 'simulate_value': [], 'reflection': []}}
     out = strategy.create_output_dict(
         iteration=1,
         current_node=Node(),

@@ -4,6 +4,7 @@ import re
 
 from typing import Any, Dict, List, Optional, Tuple
 
+from copy import deepcopy
 from agential.cog.lats.functional import (
     _build_failed_trajectory_format,
     _build_reflection_format,
@@ -13,12 +14,11 @@ from agential.cog.lats.functional import (
     get_unique_trajectories,
 )
 from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSSimulationOutput
+from agential.cog.lats.output import LATSSimulationOutput, LATSReActOutput
 from agential.cog.lats.strategies.base import LATSBaseStrategy
-from agential.cog.react.output import ReActOutput
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
-from agential.utils.general import safe_execute
+from agential.utils.general import safe_execute, get_token_cost_time
 from agential.utils.parse import remove_newline
 
 
@@ -134,6 +134,15 @@ class LATSMathStrategy(LATSBaseStrategy):
         self.reflection_map: List[Dict[str, str]] = []
         self.value_cache: Dict[str, str] = {}
         self.root: Optional[Node] = None
+        self._prompt_metrics: Dict[str, Any] = {
+            "thought": [],
+            "action": [],
+            "value": [],
+            "simulate_thought": [],
+            "simulate_action": [],
+            "simulate_value": [],
+            "reflection": [],
+        }
 
     def initialize(self) -> Node:
         """Create and return the root node.
@@ -155,6 +164,7 @@ class LATSMathStrategy(LATSBaseStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
+        is_simulate: bool,
     ) -> List[Node]:
         """Generate child nodes for the given node.
 
@@ -168,6 +178,7 @@ class LATSMathStrategy(LATSBaseStrategy):
             reflect_prompt (str): The prompt template for reflection.
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
+            is_simulate (bool): Whether this method is called to simulate expansion or not.
 
         Returns:
             List[Node]: A list of generated child nodes.
@@ -202,6 +213,7 @@ class LATSMathStrategy(LATSBaseStrategy):
                 depth=node.depth,
                 prompt=prompt,
                 additional_keys=additional_keys,
+                is_simulate=is_simulate,
             )
             trajectory_i, action_type, query = self.generate_action(
                 question=question,
@@ -211,6 +223,7 @@ class LATSMathStrategy(LATSBaseStrategy):
                 depth=node.depth,
                 prompt=prompt,
                 additional_keys=additional_keys,
+                is_simulate=is_simulate,
             )
 
             unique_key = f"{thought}::{action_type}::{query}"
@@ -226,7 +239,7 @@ class LATSMathStrategy(LATSBaseStrategy):
                 )
 
                 new_node = Node(
-                    state=ReActOutput(
+                    state=LATSReActOutput(
                         thought=thought,
                         action_type=action_type,
                         query=query,
@@ -262,6 +275,7 @@ class LATSMathStrategy(LATSBaseStrategy):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
+        is_simulate: bool,
     ) -> Tuple[str, str]:
         """Generate a thought for the current step in the reasoning process.
 
@@ -273,6 +287,7 @@ class LATSMathStrategy(LATSBaseStrategy):
             depth (int): The current depth in the search tree.
             prompt (str): The prompt template for thought generation.
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
+            is_simulate (bool): Whether this method is called to simulate expansion or not.
 
         Returns:
             Tuple[str, str]: A tuple containing the updated trajectory and the generated thought.
@@ -287,6 +302,8 @@ class LATSMathStrategy(LATSBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        metric_key = "simulate_thought" if is_simulate else "thought"
+        self._prompt_metrics[metric_key].append(get_token_cost_time(out))
         thought = out.choices[0].message.content
 
         thought = remove_newline(thought).split("Action")[0].strip()
@@ -303,6 +320,7 @@ class LATSMathStrategy(LATSBaseStrategy):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
+        is_simulate: bool,
     ) -> Tuple[str, str, str]:
         """Generate an action for the current step in the reasoning process.
 
@@ -314,6 +332,7 @@ class LATSMathStrategy(LATSBaseStrategy):
             depth (int): The current depth in the search tree.
             prompt (str): The prompt template for action generation.
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
+            is_simulate (bool): Whether this method is called to simulate expansion or not.
 
         Returns:
             Tuple[str, str, str]: A tuple containing the updated trajectory, action type, and query.
@@ -328,6 +347,8 @@ class LATSMathStrategy(LATSBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        metric_key = "simulate_action" if is_simulate else "action"
+        self._prompt_metrics[metric_key].append(get_token_cost_time(out))
         action = out.choices[0].message.content
 
         action = action.split("Observation")[0].strip()
@@ -460,6 +481,7 @@ class LATSMathStrategy(LATSBaseStrategy):
             reflect_prompt=reflect_prompt,
             additional_keys=additional_keys,
             reflect_additional_keys=reflect_additional_keys,
+            is_simulate=False,
         )
         node.add_children(children_nodes)  # type: ignore
 
@@ -524,6 +546,9 @@ class LATSMathStrategy(LATSBaseStrategy):
                         failed_trajectories=failed_trajectories,
                         prompt=prompt,
                         additional_keys=additional_keys,
+                    )
+                    self._prompt_metrics["value"].append(
+                        get_token_cost_time(value_str_out)
                     )
                     value_str = value_str_out.choices[0].message.content
 
@@ -597,6 +622,7 @@ class LATSMathStrategy(LATSBaseStrategy):
                 reflect_prompt=reflect_prompt,
                 additional_keys=additional_keys,
                 reflect_additional_keys=reflect_additional_keys,
+                is_simulate=True,
             )
 
             result["children_nodes"] = children_nodes
@@ -630,6 +656,10 @@ class LATSMathStrategy(LATSBaseStrategy):
                         prompt=value_prompt,
                         additional_keys=value_additional_keys,
                     )
+                    self._prompt_metrics["simulate_value"].append(
+                        get_token_cost_time(value_str_out)
+                    )
+
                     value_str = value_str_out.choices[0].message.content
 
                     explanation, value = parse_math_value(value_str)  # type: ignore
@@ -728,6 +758,9 @@ class LATSMathStrategy(LATSBaseStrategy):
                 prompt=prompt,
                 additional_keys=additional_keys,
             )
+            self._prompt_metrics["reflection"].append(
+                get_token_cost_time(reflection_out)
+            )
             reflection = reflection_out.choices[0].message.content
 
             reflections.append({"trajectory": trajectory, "reflection": reflection})
@@ -773,7 +806,7 @@ class LATSMathStrategy(LATSBaseStrategy):
                 )
                 for result in simulation_results
             ]
-        return {
+        out = {
             "iteration": iteration,
             "current_node": current_node.to_dict(),
             "children_nodes": [child_node.to_dict() for child_node in children_nodes],
@@ -785,7 +818,18 @@ class LATSMathStrategy(LATSBaseStrategy):
             "simulation_results": (
                 simulation_results_output if simulation_results else []
             ),
+            "prompt_metrics": deepcopy(self._prompt_metrics)
         }
+        self._prompt_metrics = {
+            "thought": [],
+            "action": [],
+            "value": [],
+            "simulate_thought": [],
+            "simulate_action": [],
+            "simulate_value": [],
+            "reflection": [],
+        }
+        return out
 
     def reset(self) -> None:
         """Reset the strategy to its initial state."""
@@ -793,7 +837,15 @@ class LATSMathStrategy(LATSBaseStrategy):
         self.reflection_map = []
         self.value_cache = {}
         self.root = None
-
+        self._prompt_metrics = {
+            "thought": [],
+            "action": [],
+            "value": [],
+            "simulate_thought": [],
+            "simulate_action": [],
+            "simulate_value": [],
+            "reflection": [],
+        }
 
 class LATSGSM8KStrategy(LATSMathStrategy):
     """A strategy class for the GSM8K benchmark using the LATS agent."""
