@@ -22,7 +22,7 @@ from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
-
+from agential.utils.general import get_token_cost_time
 
 def get_node_trajectory_qa(node: Node) -> str:
     """Generates a string representation of the trajectory from the given node to the root.
@@ -132,6 +132,13 @@ class LATSQAStrategy(LATSBaseStrategy):
         self.reflection_map: List[Dict[str, str]] = []
         self.value_cache: Dict[str, str] = {}
         self.root: Optional[Node] = None
+        self._prompt_metrics: Dict[str, Any] = {
+            "thought": [], 
+            "action": [],
+            "value": [],
+            "simulate_value": [],
+            "reflection": []
+        }
 
     def initialize(self) -> Node:
         """Create and return the root node.
@@ -153,6 +160,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
+        is_simulate: bool
     ) -> List[Node]:
         """Generate child nodes for the given node.
 
@@ -166,7 +174,8 @@ class LATSQAStrategy(LATSBaseStrategy):
             reflect_prompt (str): The prompt template for reflection.
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
-
+            is_simulate (bool): Whether this method is called to simulate expansion or not.
+            
         Returns:
             List[Node]: A list of generated child nodes.
         """
@@ -285,6 +294,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics["thought"].append(get_token_cost_time(out))
         thought = out.choices[0].message.content
 
         thought = remove_newline(thought).split("Action")[0].strip()
@@ -326,6 +336,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics["action"].append(get_token_cost_time(out))
         action = out.choices[0].message.content
 
         action = remove_newline(action).split("Observation")[0]
@@ -461,6 +472,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             reflect_prompt=reflect_prompt,
             additional_keys=additional_keys,
             reflect_additional_keys=reflect_additional_keys,
+            is_simulate=False
         )
         node.add_children(children_nodes)  # type: ignore
 
@@ -526,6 +538,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                         prompt=prompt,
                         additional_keys=additional_keys,
                     )
+                    self._prompt_metrics["value"].append(get_token_cost_time(value_str_out))
                     value_str = value_str_out.choices[0].message.content
 
                     if self.cache_values:
@@ -598,6 +611,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                 reflect_prompt=reflect_prompt,
                 additional_keys=additional_keys,
                 reflect_additional_keys=reflect_additional_keys,
+                is_simulate=True,
             )
 
             result["children_nodes"] = children_nodes
@@ -631,6 +645,8 @@ class LATSQAStrategy(LATSBaseStrategy):
                         prompt=value_prompt,
                         additional_keys=value_additional_keys,
                     )
+                    self._prompt_metrics["simulate_value"].append(get_token_cost_time(value_str_out))
+
                     value_str = value_str_out.choices[0].message.content
 
                     explanation, value = parse_qa_value(value_str)  # type: ignore
@@ -729,6 +745,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                 prompt=prompt,
                 additional_keys=additional_keys,
             )
+            self._prompt_metrics["reflection"].append(get_token_cost_time(reflection_out))
             reflection = reflection_out.choices[0].message.content
 
             reflections.append({"trajectory": trajectory, "reflection": reflection})

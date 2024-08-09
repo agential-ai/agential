@@ -36,6 +36,7 @@ class LATSBaseStrategy(BaseStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
+        is_simulate: bool,
     ) -> List[Node]:
         """Generate child nodes for the given node.
 
@@ -49,7 +50,8 @@ class LATSBaseStrategy(BaseStrategy):
             reflect_prompt (str): The prompt template for reflection.
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
-
+            is_simulate (bool): Whether this method is called to simulate expansion or not.
+            
         Returns:
             List[Node]: A list of generated child nodes.
         """
