@@ -2,7 +2,7 @@
 
 import tiktoken
 
-from langchain_community.chat_models.fake import FakeListChatModel
+from litellm.types.utils import ModelResponse
 
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.react.functional import (
@@ -11,6 +11,7 @@ from agential.cog.react.functional import (
     _prompt_agent,
 )
 from agential.cog.react.prompts import REACT_INSTRUCTION_HOTPOTQA
+from agential.llm.llm import MockLLM
 
 
 def test__build_agent_prompt() -> None:
@@ -39,27 +40,27 @@ def test__build_agent_prompt() -> None:
 def test__prompt_agent() -> None:
     """Test _prompt_agent function."""
     out = _prompt_agent(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         question="",
         scratchpad="",
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         max_steps=1,
         prompt=REACT_INSTRUCTION_HOTPOTQA,
     )
-    assert isinstance(out, str)
-    assert out == "1"
+    assert isinstance(out, ModelResponse)
+    assert out.choices[0].message.content == "1"
 
     # Test with custom prompt template string.
     out = _prompt_agent(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         question="",
         scratchpad="",
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         max_steps=1,
         prompt="{question} {scratchpad} {examples} {max_steps}",
     )
-    assert isinstance(out, str)
-    assert out == "1"
+    assert isinstance(out, ModelResponse)
+    assert out.choices[0].message.content == "1"
 
 
 def test__is_halted() -> None:

@@ -6,9 +6,7 @@ Paper Repository: https://github.com/LeapLabTHU/ExpeL
 
 from typing import Any, Dict, Optional
 
-from langchain_core.language_models.chat_models import BaseChatModel
-
-from agential.base.agent import BaseAgent
+from agential.cog.base.agent import BaseAgent
 from agential.cog.expel.factory import EXPEL_BENCHMARK_FEWSHOTS, ExpeLFactory
 from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
@@ -16,13 +14,14 @@ from agential.cog.expel.memory import (
 )
 from agential.cog.expel.output import ExpeLOutput
 from agential.cog.reflexion.agent import ReflexionReActAgent
+from agential.llm.llm import BaseLLM
 
 
 class ExpeLAgent(BaseAgent):
     """Implements ExpeL, a reflective, experiential learning agent.
 
     Attributes:
-        llm (BaseChatModel): Primary language model for general tasks.
+        llm (BaseLLM): Primary language model for general tasks.
         benchmark (str): The benchmark name.
         reflexion_react_strategy_kwargs (Dict[str, Any]): Configuration options for the ReflexionReAct agent.
             Defaults max_steps=7 and max_trials=3 for the ReflexionReActAgent.
@@ -42,7 +41,7 @@ class ExpeLAgent(BaseAgent):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         benchmark: str,
         reflexion_react_agent: Optional[ReflexionReActAgent] = None,
         experience_memory: Optional[ExpeLExperienceMemory] = None,
@@ -168,10 +167,18 @@ class ExpeLAgent(BaseAgent):
             **kwargs,
         )
 
+        out = ExpeLOutput(
+            **self.strategy.create_output_dict(
+                examples=examples,
+                additional_keys=additional_keys,
+                experience=experience,
+            )
+        )
+
         if extract_insights:
             self.strategy.extract_insights(experience)
 
-        return experience[0]
+        return out
 
     def reset(self) -> None:
         """Resets the agent's state.

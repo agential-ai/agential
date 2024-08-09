@@ -10,9 +10,7 @@ import re
 
 from typing import Any, Dict, List, Optional, Tuple
 
-from langchain_core.language_models.chat_models import BaseChatModel
-
-from agential.base.agent import BaseAgent
+from agential.cog.base.agent import BaseAgent
 from agential.cog.reflexion.factory import (
     REFLEXION_COT_BENCHMARK_FEWSHOTS,
     REFLEXION_REACT_BENCHMARK_FEWSHOTS,
@@ -28,6 +26,7 @@ from agential.cog.reflexion.reflect import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )
+from agential.llm.llm import BaseLLM
 
 
 def parse_action(string: str) -> Tuple[str, str]:
@@ -57,7 +56,7 @@ class ReflexionCoTAgent(BaseAgent):
     """Reflexion with Chain-of-Thought actor.
 
     Attributes:
-        llm (BaseChatModel): The language model used to generate responses.
+        llm (BaseLLM): The language model used to generate responses.
         benchmark (str): The benchmark.
         reflector (Optional[ReflexionCoTReflector]): An optional reflector module for guided self-reflection.
         **strategy_kwargs (Any): Additional keyword arguments for the strategy.
@@ -69,7 +68,7 @@ class ReflexionCoTAgent(BaseAgent):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         benchmark: str,
         reflector: Optional[ReflexionCoTReflector] = None,
         **strategy_kwargs: Any,
@@ -222,7 +221,7 @@ class ReflexionReActAgent(BaseAgent):
     """Reflexion with ReAct actor.
 
     Attributes:
-        llm (BaseChatModel): The language model used to generate responses.
+        llm (BaseLLM): The language model used to generate responses.
         benchmark (str): The benchmark.
         reflector (Optional[ReflexionReActReflector]): An optional reflector module for guided self-reflection. Defaults to None.
         **strategy_kwargs (Any): Additional keyword arguments for the strategy.
@@ -234,7 +233,7 @@ class ReflexionReActAgent(BaseAgent):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         benchmark: str,
         reflector: Optional[ReflexionReActReflector] = None,
         **strategy_kwargs: Any,

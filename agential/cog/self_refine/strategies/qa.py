@@ -2,8 +2,6 @@
 
 from typing import Any, Dict
 
-from langchain_core.language_models.chat_models import BaseChatModel
-
 from agential.cog.self_refine.functional import (
     _prompt_agent,
     _prompt_critique,
@@ -11,18 +9,19 @@ from agential.cog.self_refine.functional import (
 )
 from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
 from agential.eval.em import EM
+from agential.llm.llm import BaseLLM
 
 
 class SelfRefineQAStrategy(SelfRefineBaseStrategy):
     """A strategy class for QA benchmarks using the Self-Refine agent.
 
     Attributes:
-        llm (BaseChatModel): The language model used for generating answers and critiques.
+        llm (BaseLLM): The language model used for generating answers and critiques.
         patience (int): The number of interactions to tolerate the same incorrect answer
             before halting further attempts. Defaults to 1.
     """
 
-    def __init__(self, llm: BaseChatModel, patience: int = 1) -> None:
+    def __init__(self, llm: BaseLLM, patience: int = 1) -> None:
         """Initialization."""
         super().__init__(llm, patience)
 
@@ -50,13 +49,16 @@ class SelfRefineQAStrategy(SelfRefineBaseStrategy):
         Returns:
             str: The generated answer.
         """
-        answer = _prompt_agent(
+        out = _prompt_agent(
             llm=self.llm,
             question=question,
             examples=examples,
             prompt=prompt,
             additional_keys=additional_keys,
-        ).strip()
+        )
+
+        answer = out.choices[0].message.content
+        answer = answer.strip()
 
         return answer
 
@@ -83,7 +85,7 @@ class SelfRefineQAStrategy(SelfRefineBaseStrategy):
             str: The generated critique. If the same incorrect answer is repeated for the number of
                  interactions specified by patience, the halting condition is triggered.
         """
-        critique = _prompt_critique(
+        out = _prompt_critique(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -91,6 +93,9 @@ class SelfRefineQAStrategy(SelfRefineBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+
+        critique = out.choices[0].message.content
+        critique = critique.strip()
 
         if EM(answer.strip(), self._prev_code_answer, normalize=False):
             self.patience_counter += 1
@@ -135,7 +140,7 @@ class SelfRefineQAStrategy(SelfRefineBaseStrategy):
         Returns:
             str: The updated answer.
         """
-        new_answer = _prompt_refine(
+        out = _prompt_refine(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -144,6 +149,8 @@ class SelfRefineQAStrategy(SelfRefineBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+
+        new_answer = out.choices[0].message.content
         new_answer = new_answer.strip()
 
         return new_answer

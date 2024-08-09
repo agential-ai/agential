@@ -2,14 +2,10 @@
 
 import joblib
 
-from langchain_community.chat_models.fake import FakeListChatModel
-from langchain_core.language_models.chat_models import BaseChatModel
-
 from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
-from agential.cog.expel.output import ExpeLOutput
 from agential.cog.expel.strategies.general import ExpeLStrategy
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.reflexion.agent import (
@@ -22,14 +18,15 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
+from agential.llm.llm import BaseLLM, MockLLM
 
 
 def test_init(expel_experiences_10_fake_path: str) -> None:
     """Test initialization."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     reflexion_react_agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
     strategy = ExpeLStrategy(llm=llm, reflexion_react_agent=reflexion_react_agent)
-    assert isinstance(strategy.llm, BaseChatModel)
+    assert isinstance(strategy.llm, BaseLLM)
     assert isinstance(strategy.reflexion_react_agent, ReflexionReActAgent)
     assert isinstance(strategy.experience_memory, ExpeLExperienceMemory)
     assert isinstance(strategy.insight_memory, ExpeLInsightMemory)
@@ -50,7 +47,7 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
         ),
         success_batch_size=10,
     )
-    assert isinstance(strategy.llm, BaseChatModel)
+    assert isinstance(strategy.llm, BaseLLM)
     assert isinstance(strategy.reflexion_react_agent, ReflexionReActAgent)
     assert isinstance(strategy.experience_memory, ExpeLExperienceMemory)
     assert isinstance(strategy.insight_memory, ExpeLInsightMemory)
@@ -89,10 +86,10 @@ def test_generate() -> None:
     key = "Oneida Limited"
 
     gt_new_experiences = [
-        ExpeLOutput(
-            question="What giant silverware company was started as a religious Utopian group and was for many years run by Pierrepont Noyes?",
-            key="Oneida Limited",
-            trajectory=[
+        {
+            "question": "What giant silverware company was started as a religious Utopian group and was for many years run by Pierrepont Noyes?",
+            "key": "Oneida Limited",
+            "trajectory": [
                 ReflexionReActOutput(
                     react_output=[
                         ReflexionReActStepOutput(
@@ -147,8 +144,8 @@ def test_generate() -> None:
                     reflections=[],
                 )
             ],
-            reflections=[],
-        )
+            "reflections": [],
+        }
     ]
 
     action_responses = [
@@ -161,7 +158,7 @@ def test_generate() -> None:
         "Oneida Limited was indeed started as a religious Utopian group. The answer to the question is Oneida Limited.\nAction: Finish[Oneida Limited]",
         "Finish[Oneida Limited]",
     ]
-    llm = FakeListChatModel(responses=action_responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=action_responses)
     reflexion_react_agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
     strategy = ExpeLStrategy(llm=llm, reflexion_react_agent=reflexion_react_agent)
     strategy.reflexion_react_agent.strategy.docstore.search = lambda x: "Search result"
@@ -198,11 +195,11 @@ def test_get_dynamic_examples(expel_experiences_10_fake_path: str) -> None:
         "ADD 13: Focus on identifying key creators or individuals related to the topic in order to gather relevant information quickly.",
         "ADD 1: Prioritize gathering information about key individuals related to the topic to quickly acquire relevant details.",
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ExpeLStrategy(
         llm=llm,
         reflexion_react_agent=ReflexionReActAgent(
-            llm=FakeListChatModel(responses=[]), benchmark="hotpotqa"
+            llm=MockLLM("gpt-3.5-turbo", responses=[]), benchmark="hotpotqa"
         ),
         experience_memory=ExpeLExperienceMemory(experiences),
     )
@@ -225,10 +222,10 @@ def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
     hotpotqa = joblib.load(hotpotqa_distractor_sample_path)
 
     gt_new_experiences = [
-        ExpeLOutput(
-            question="What giant silverware company was started as a religious Utopian group and was for many years run by Pierrepont Noyes?",
-            key="Oneida Limited",
-            trajectory=[
+        {
+            "question": "What giant silverware company was started as a religious Utopian group and was for many years run by Pierrepont Noyes?",
+            "key": "Oneida Limited",
+            "trajectory": [
                 ReflexionReActOutput(
                     react_output=[
                         ReflexionReActStepOutput(
@@ -283,8 +280,8 @@ def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
                     reflections=[],
                 )
             ],
-            reflections=[],
-        )
+            "reflections": [],
+        }
     ]
 
     action_responses = [
@@ -297,7 +294,7 @@ def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
         "Oneida Limited was indeed started as a religious Utopian group. The answer to the question is Oneida Limited.\nAction: Finish[Oneida Limited]",
         "Finish[Oneida Limited]",
     ]
-    llm = FakeListChatModel(responses=action_responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=action_responses)
     reflexion_react_agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
     strategy = ExpeLStrategy(llm=llm, reflexion_react_agent=reflexion_react_agent)
     strategy.reflexion_react_agent.strategy.docstore.search = lambda x: "Search result"
@@ -337,7 +334,7 @@ def test_extract_insights(expel_experiences_10_fake_path: str) -> None:
     responses = [
         "ADD 11: Always try multiple variations of search terms when looking for specific information.\nADD 12: If unable to find relevant information through initial searches, consider looking for official announcements or press releases from the company.\nREMOVE 3: Always use the exact search term provided in the question, do not try variations.\nEDIT 7: Make sure to exhaust all possible search options before concluding that the information is unavailable.",
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     reflexion_react_agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
     strategy = ExpeLStrategy(llm=llm, reflexion_react_agent=reflexion_react_agent)
 
@@ -353,7 +350,7 @@ def test_update_insights() -> None:
         {"insight": "Test 3", "score": 3},
     ]
     memory = ExpeLInsightMemory(insights, max_num_insights=3)
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     reflexion_react_agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
     strategy = ExpeLStrategy(
         llm=llm, reflexion_react_agent=reflexion_react_agent, insight_memory=memory
@@ -400,9 +397,51 @@ def test_update_insights() -> None:
     assert strategy.insight_memory.insights == gt_insights
 
 
+def test_create_output_dict() -> None:
+    """Test create_output_dict method."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    reflexion_react_agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
+    strategy = ExpeLStrategy(llm=llm, reflexion_react_agent=reflexion_react_agent)
+
+    # Set up test data
+    strategy.insight_memory.insights = [
+        {"insight": "Insight 1", "score": 3},
+        {"insight": "Insight 2", "score": 4},
+    ]
+    strategy.experience_memory.experiences = [
+        {"experience": "Experience 1"},
+        {"experience": "Experience 2"},
+    ]
+
+    gt_output = {
+        "examples": "",
+        "insights": "some insight.",
+        "experience": {"other": "Other"},
+        "experience_memory": {
+            "experiences": [
+                {"experience": "Experience 1"},
+                {"experience": "Experience 2"},
+            ],
+        },
+        "insight_memory": {
+            "insights": [
+                {"insight": "Insight 1", "score": 3},
+                {"insight": "Insight 2", "score": 4},
+            ]
+        },
+    }
+    output = strategy.create_output_dict(
+        examples="",
+        additional_keys={"insights": "some insight.", "other": "other"},
+        experience=[{"question": "question", "key": "key", "other": "Other"}],
+    )
+
+    assert output == gt_output
+
+
 def test_reset() -> None:
     """Test reset."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     reflexion_react_agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
     strategy = ExpeLStrategy(llm=llm, reflexion_react_agent=reflexion_react_agent)
 
@@ -415,7 +454,7 @@ def test_reset() -> None:
     assert strategy.insight_memory.insights == []
 
     # Test only_reflexion=True.
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     reflexion_react_agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
     strategy = ExpeLStrategy(llm=llm, reflexion_react_agent=reflexion_react_agent)
 

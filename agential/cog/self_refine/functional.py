@@ -2,9 +2,7 @@
 
 from typing import Dict
 
-from langchain_core.language_models.chat_models import BaseChatModel
-from langchain_core.messages.human import HumanMessage
-from langchain_core.prompts.prompt import PromptTemplate
+from agential.llm.llm import BaseLLM, ModelResponse
 
 
 def _build_agent_prompt(
@@ -24,7 +22,7 @@ def _build_agent_prompt(
     Returns:
         str: The fully constructed and formatted prompt ready to be processed by the agent.
     """
-    prompt = PromptTemplate.from_template(prompt).format(
+    prompt = prompt.format(
         question=question,
         examples=examples,
         **additional_keys,
@@ -33,26 +31,26 @@ def _build_agent_prompt(
 
 
 def _prompt_agent(
-    llm: BaseChatModel,
+    llm: BaseLLM,
     question: str,
     examples: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> str:
+) -> ModelResponse:
     """Generates a response from the LLM based on a given question with fewshot examples.
 
     This function creates a prompt using `_build_agent_prompt` and then gets the LLM's
     output.
 
     Args:
-        llm (BaseChatModel): The language model to be prompted.
+        llm (BaseLLM): The language model to be prompted.
         question (str): The main question for which the agent is to generate an answer.
         examples (str): Pre-formatted few-shot examples that provide context for the question.
         prompt (str): The base template string into which all other components will be inserted.
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        str: The processed response from the language model.
+        ModelResponse: The processed response from the language model.
     """
     prompt = _build_agent_prompt(
         question=question,
@@ -60,15 +58,9 @@ def _prompt_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    out = llm(
-        [
-            HumanMessage(
-                content=prompt,
-            )
-        ]
-    ).content
-    assert isinstance(out, str)
-    return out.strip()
+    out = llm(prompt)
+
+    return out
 
 
 def _build_critique_prompt(
@@ -84,7 +76,7 @@ def _build_critique_prompt(
     prompts the language model for a response.
 
     Parameters:
-        llm (BaseChatModel): The language model to prompt for a response.
+        llm (str): The language model to prompt for a response.
         question (str): The question to be answered by the language model.
         examples (str): Pre-formatted examples that provide context to the question.
         answer (str): The answer to the question.
@@ -94,7 +86,7 @@ def _build_critique_prompt(
     Returns:
         str: The language model's response to the question, trimmed of extraneous whitespace.
     """
-    prompt = PromptTemplate.from_template(prompt).format(
+    prompt = prompt.format(
         question=question,
         examples=examples,
         answer=answer,
@@ -104,19 +96,19 @@ def _build_critique_prompt(
 
 
 def _prompt_critique(
-    llm: BaseChatModel,
+    llm: BaseLLM,
     question: str,
     examples: str,
     answer: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> str:
+) -> ModelResponse:
     """Requests critique from the language model based on a provided answer and contextual examples.
 
     A critique prompt is constructed using the provided examples and answer.
 
     Parameters:
-        llm (BaseChatModel): The language model to prompt for critique.
+        llm (BaseLLM): The language model to prompt for critique.
         question (str): The question to be answered by the language model.
         examples (str): Contextual examples related to the answer.
         answer (str): The answer for which critique is being sought.
@@ -124,7 +116,7 @@ def _prompt_critique(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        str: The language model's critique, with no leading or trailing whitespace.
+        ModelResponse: The language model's critique, with no leading or trailing whitespace.
     """
     prompt = _build_critique_prompt(
         question=question,
@@ -133,15 +125,9 @@ def _prompt_critique(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    out = llm(
-        [
-            HumanMessage(
-                content=prompt,
-            )
-        ]
-    ).content
-    assert isinstance(out, str)
-    return out.strip()
+    out = llm(prompt)
+
+    return out
 
 
 def _build_refine_prompt(
@@ -155,7 +141,7 @@ def _build_refine_prompt(
     """Builds a refinement prompt.
 
     Parameters:
-        llm (BaseChatModel): The language model to prompt for a response.
+        llm (str): The language model to prompt for a response.
         question (str): The question to be answered by the language model.
         examples (str): Pre-formatted examples that provide context to the question.
         critique (str): The critique on the answer.
@@ -165,7 +151,7 @@ def _build_refine_prompt(
     Returns:
         str: The language model's response to the question, trimmed of extraneous whitespace.
     """
-    prompt = PromptTemplate.from_template(prompt).format(
+    prompt = prompt.format(
         question=question,
         examples=examples,
         answer=answer,
@@ -176,20 +162,20 @@ def _build_refine_prompt(
 
 
 def _prompt_refine(
-    llm: BaseChatModel,
+    llm: BaseLLM,
     question: str,
     examples: str,
     answer: str,
     critique: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> str:
+) -> ModelResponse:
     """Refines answer based on critique from the language model.
 
     A refine prompt is constructed using the provided answer, examples, and critique.
 
     Parameters:
-        llm (BaseChatModel): The language model to prompt for critique.
+        llm (BaseLLM): The language model to prompt for critique.
         question (str): The question to be answered by the language model.
         examples (str): Contextual examples related to the answer.
         answer (str): The answer for which critique is being sought.
@@ -198,7 +184,7 @@ def _prompt_refine(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        str: The language model's critique, with no leading or trailing whitespace.
+        ModelResponse: The language model's critique, with no leading or trailing whitespace.
     """
     prompt = _build_refine_prompt(
         question=question,
@@ -208,12 +194,6 @@ def _prompt_refine(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    out = llm(
-        [
-            HumanMessage(
-                content=prompt,
-            )
-        ]
-    ).content
-    assert isinstance(out, str)
-    return out.strip()
+    out = llm(prompt)
+
+    return out

@@ -1,8 +1,5 @@
 """Unit tests for Reflexion Code strategies."""
 
-from langchain_community.chat_models.fake import FakeListChatModel
-from langchain_core.language_models.chat_models import BaseChatModel
-
 from agential.cog.fewshots.humaneval import (
     HUMANEVAL_FEWSHOT_EXAMPLES_COT,
 )
@@ -33,6 +30,7 @@ from agential.cog.reflexion.strategies.code import (
     parse_code_action_cot,
     parse_code_action_react,
 )
+from agential.llm.llm import BaseLLM, MockLLM
 
 
 def test_parse_code_action_cot() -> None:
@@ -89,9 +87,9 @@ def test_parse_code_action_react() -> None:
 
 def test_reflexion_cot_init() -> None:
     """Tests ReflexionCoTCodeStrategy init."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReflexionCoTCodeStrategy(llm=llm)
-    assert isinstance(strategy.llm, BaseChatModel)
+    assert isinstance(strategy.llm, BaseLLM)
     assert isinstance(strategy.reflector, ReflexionCoTReflector)
     assert strategy.max_reflections == 3
     assert strategy.max_trials == 3
@@ -112,7 +110,7 @@ def test_reflexion_cot_generate() -> None:
     responses = [
         "Let's think step by step. We need to iterate through the string and keep track of characters we have seen so far to identify the first repeated character.\nAction: Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]"
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReflexionCoTCodeStrategy(llm=llm)
     out = strategy.generate(
         question=question,
@@ -138,7 +136,7 @@ def test_reflexion_cot_generate_action() -> None:
     responses = [
         "Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]"
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReflexionCoTCodeStrategy(llm=llm)
     action_type, query = strategy.generate_action(
         question=question,
@@ -174,7 +172,7 @@ def test_reflexion_cot_generate_action_humaneval() -> None:
     responses = [
         "To solve this problem, we need to iterate through the list of numbers and compare the absolute difference between each pair of numbers. If the absolute difference is less than the threshold, we return True. If we finish iterating through the list without finding any close elements, we return False.\n\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```"
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReflexionCoTHEvalStrategy(llm=llm)
     action_type, query = strategy.generate_action(
         question=question,
@@ -192,7 +190,7 @@ def test_reflexion_cot_generate_action_humaneval() -> None:
 
 def test_reflexion_cot_generate_observation() -> None:
     """Tests ReflexionCoTCodeStrategy generate_observation."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
 
     # Case 1: action_type is "Finish" and answer is correct.
     strategy = ReflexionCoTCodeStrategy(llm=llm)
@@ -233,7 +231,7 @@ def test_reflexion_cot_generate_observation() -> None:
 
 def test_reflexion_cot_create_output_dict() -> None:
     """Tests ReflexionCoTCodeStrategy create_output_dict."""
-    strategy = ReflexionCoTCodeStrategy(llm=FakeListChatModel(responses=[]))
+    strategy = ReflexionCoTCodeStrategy(llm=MockLLM("gpt-3.5-turbo", responses=[]))
 
     # Setting a dummy answer for testing.
     strategy._answer = "correct_answer"
@@ -278,7 +276,7 @@ def test_reflexion_cot_create_output_dict() -> None:
 
 def test_reflexion_cot_halting_condition() -> None:
     """Tests ReflexionCoTCodeStrategy halting_condition."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReflexionCoTCodeStrategy(llm=llm, max_trials=3)
 
     strategy._answer = "incorrect_answer"
@@ -293,7 +291,7 @@ def test_reflexion_cot_halting_condition() -> None:
 
 def test_reflexion_cot_reset() -> None:
     """Tests ReflexionCoTCodeStrategy reset."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReflexionCoTCodeStrategy(llm=llm, max_trials=3)
 
     strategy._scratchpad = "Initial scratchpad content"
@@ -324,7 +322,7 @@ def test_reflexion_cot_reflect() -> None:
     assert first_repeated_char("abc") == None
     assert first_repeated_char("123123") == "1\""""
 
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReflexionCoTCodeStrategy(llm=llm, max_trials=3)
 
     gt_out = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: Write a python function to find the first repeated character in a given string.\n\n(END PREVIOUS TRIAL)\n"
@@ -340,7 +338,7 @@ def test_reflexion_cot_reflect() -> None:
 
 def test_reflexion_cot_reflect_condition() -> None:
     """Tests ReflexionCoTCodeStrategy reflect_condition."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReflexionCoTCodeStrategy(llm)
 
     assert not strategy.reflect_condition(0, "strategy1", "key1")
@@ -351,7 +349,7 @@ def test_reflexion_cot_reflect_condition() -> None:
 
 def test_reflexion_cot_instantiate_strategies() -> None:
     """Tests ReflexionCoTCodeStrategy instantiate strategies."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     humaneval_strategy = ReflexionCoTHEvalStrategy(llm=llm)
     mbpp_strategy = ReflexionCoTMBPPStrategy(llm=llm)
 
@@ -361,9 +359,9 @@ def test_reflexion_cot_instantiate_strategies() -> None:
 
 def test_reflexion_react_init() -> None:
     """Tests ReflexionReActCodeStrategy init."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReflexionReActCodeStrategy(llm=llm)
-    assert isinstance(strategy.llm, BaseChatModel)
+    assert isinstance(strategy.llm, BaseLLM)
     assert isinstance(strategy.reflector, ReflexionReActReflector)
     assert strategy.max_reflections == 3
     assert strategy.max_trials == 3
@@ -384,7 +382,7 @@ def test_reflexion_react_generate() -> None:
     responses = [
         "Let's think step by step. We need to iterate through the string and keep track of characters we have seen so far. Once we encounter a character that has already been seen, we return it as the first repeated character.\nAction: Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]"
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReflexionReActCodeStrategy(llm=llm)
     out = strategy.generate(
         question=question,
@@ -411,7 +409,7 @@ def test_reflexion_react_generate_action() -> None:
     responses = [
         "Implement[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]"
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReflexionReActCodeStrategy(llm=llm)
     action_type, query = strategy.generate_action(
         question=question,
@@ -429,7 +427,7 @@ def test_reflexion_react_generate_action() -> None:
 
 def test_reflexion_react_generate_observation() -> None:
     """Tests ReflexionReActCodeStrategy generate_observation."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReflexionReActCodeStrategy(llm=llm)
 
     # Test Implement.
@@ -507,7 +505,7 @@ def test_reflexion_react_generate_observation() -> None:
 
 def test_reflexion_react_create_output_dict() -> None:
     """Tests ReflexionReActCodeStrategy create_output_dict."""
-    strategy = ReflexionReActCodeStrategy(llm=FakeListChatModel(responses=[]))
+    strategy = ReflexionReActCodeStrategy(llm=MockLLM("gpt-3.5-turbo", responses=[]))
     react_out = [
         {
             "thought": "First thought",
@@ -528,7 +526,7 @@ def test_reflexion_react_create_output_dict() -> None:
 
 def test_reflexion_react_react_create_output_dict() -> None:
     """Tests ReflexionReActCodeStrategy react_create_output_dict."""
-    strategy = ReflexionReActCodeStrategy(llm=FakeListChatModel(responses=[]))
+    strategy = ReflexionReActCodeStrategy(llm=MockLLM("gpt-3.5-turbo", responses=[]))
 
     # Test case 1: Valid output creation
     output = strategy.react_create_output_dict(
@@ -553,7 +551,7 @@ def test_reflexion_react_react_create_output_dict() -> None:
 
 def test_reflexion_react_halting_condition() -> None:
     """Tests ReflexionReActCodeStrategy halting_condition."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
 
     # Test case 1: Halting condition met because answer is incorrect and index is less than max_trials.
     strategy = ReflexionReActCodeStrategy(llm=llm, max_trials=5)
@@ -583,7 +581,7 @@ def test_reflexion_react_halting_condition() -> None:
 
 def test_reflexion_react_react_halting_condition() -> None:
     """Tests ReflexionReActCodeStrategy react_halting_condition."""
-    strategy = ReflexionReActCodeStrategy(llm=FakeListChatModel(responses=[]))
+    strategy = ReflexionReActCodeStrategy(llm=MockLLM("gpt-3.5-turbo", responses=[]))
 
     idx = 0
     question = "What is the capital of France?"
@@ -598,7 +596,7 @@ def test_reflexion_react_react_halting_condition() -> None:
 
 def test_reflexion_react_reset() -> None:
     """Tests ReflexionReActCodeStrategy reset."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReflexionReActCodeStrategy(llm=llm)
     strategy._scratchpad = "Some previous state"
     strategy._finished = True
@@ -617,7 +615,7 @@ def test_reflexion_react_reflect() -> None:
     assert first_repeated_char("123123") == "1\""""
 
     gt_reflections = "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
-    llm = FakeListChatModel(responses=["1"])
+    llm = MockLLM("gpt-3.5-turbo", responses=["1"])
     strategy = ReflexionReActCodeStrategy(llm=llm)
     _, reflections = strategy.reflect(
         reflect_strategy="reflexion",
@@ -636,7 +634,7 @@ def test_reflexion_react_reflect_condition() -> None:
     assert first_repeated_char("abc") == None
     assert first_repeated_char("123123") == "1\""""
 
-    llm = FakeListChatModel(responses=["1"])
+    llm = MockLLM("gpt-3.5-turbo", responses=["1"])
     strategy = ReflexionReActCodeStrategy(llm=llm)
     out = strategy.reflect_condition(
         step_idx=1,
@@ -652,7 +650,7 @@ def test_reflexion_react_reflect_condition() -> None:
 
 def test_reflexion_react_instantiate_strategies() -> None:
     """Tests ReflexionReActCodeStrategy instantiate strategies."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     humaneval_strategy = ReflexionReActHEvalStrategy(llm=llm)
     mbpp_strategy = ReflexionReActMBPPStrategy(llm=llm)
 

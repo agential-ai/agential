@@ -1,18 +1,17 @@
 """Base LATS Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
-from langchain_core.language_models.chat_models import BaseChatModel
-
-from agential.base.strategies import BaseStrategy
+from agential.cog.base.strategies import BaseStrategy
 from agential.cog.lats.node import Node
+from agential.llm.llm import BaseLLM
 
 
 class LATSBaseStrategy(BaseStrategy):
     """An abstract base class for defining strategies for the LATS Agent."""
 
-    def __init__(self, llm: BaseChatModel) -> None:
+    def __init__(self, llm: BaseLLM) -> None:
         """Initialization."""
         super().__init__(llm)
 
@@ -37,6 +36,7 @@ class LATSBaseStrategy(BaseStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
+        is_simulate: bool,
     ) -> List[Node]:
         """Generate child nodes for the given node.
 
@@ -50,6 +50,7 @@ class LATSBaseStrategy(BaseStrategy):
             reflect_prompt (str): The prompt template for reflection.
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
+            is_simulate (bool): Whether this method is called to simulate expansion or not.
 
         Returns:
             List[Node]: A list of generated child nodes.
@@ -66,6 +67,7 @@ class LATSBaseStrategy(BaseStrategy):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
+        is_simulate: bool,
     ) -> Tuple[str, str]:
         """Generate a thought for the current step in the reasoning process.
 
@@ -77,6 +79,7 @@ class LATSBaseStrategy(BaseStrategy):
             depth (int): The current depth in the search tree.
             prompt (str): The prompt template for thought generation.
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
+            is_simulate (bool): Whether this method is called to simulate expansion or not.
 
         Returns:
             Tuple[str, str]: A tuple containing the updated trajectory and the generated thought.
@@ -93,6 +96,7 @@ class LATSBaseStrategy(BaseStrategy):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
+        is_simulate: bool,
     ) -> Tuple[str, str, str]:
         """Generate an action for the current step in the reasoning process.
 
@@ -104,6 +108,7 @@ class LATSBaseStrategy(BaseStrategy):
             depth (int): The current depth in the search tree.
             prompt (str): The prompt template for action generation.
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
+            is_simulate (bool): Whether this method is called to simulate expansion or not.
 
         Returns:
             Tuple[str, str, str]: A tuple containing the updated trajectory, action type, and query.
@@ -288,6 +293,33 @@ class LATSBaseStrategy(BaseStrategy):
 
         Returns:
             List[Dict[str, str]]: A list of dictionaries containing reflection results.
+        """
+        pass
+
+    @abstractmethod
+    def create_output_dict(
+        self,
+        iteration: int,
+        current_node: Node,
+        children_nodes: List[Node],
+        values: Optional[List[Dict[str, Any]]],
+        simulation_reward: Optional[float],
+        simulation_terminal_node: Optional[Node],
+        simulation_results: Optional[List[Dict[str, Any]]],
+    ) -> Dict[str, Any]:
+        """Create a dictionary containing the output of a LATS iteration.
+
+        Args:
+            iteration (int): The current iteration number.
+            current_node (Node): The current node being processed.
+            children_nodes (List[Node]): List of child nodes of the current node.
+            values (Optional[List[Dict[str, Any]]]): List of values associated with the children nodes.
+            simulation_reward (Optional[float]): The reward obtained from the simulation.
+            simulation_terminal_node (Optional[Node]): The terminal node reached in the simulation.
+            simulation_results (Optional[List[Dict[str, Any]]]): Results from multiple simulations.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing the processed output of the LATS iteration.
         """
         pass
 

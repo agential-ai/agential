@@ -1,12 +1,9 @@
 """Test LATS agent."""
 
-from langchain_community.chat_models.fake import FakeListChatModel
-from langchain_core.language_models.chat_models import BaseChatModel
-
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.agent import LATSAgent
 from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSOutput, LATSSimulationOutput
+from agential.cog.lats.output import LATSOutput, LATSSimulationOutput, LATSReActOutput
 from agential.cog.lats.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE,
@@ -15,16 +12,16 @@ from agential.cog.lats.prompts import (
     LATS_VALUE_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.lats.strategies.base import LATSBaseStrategy
-from agential.cog.react.output import ReActOutput
+from agential.llm.llm import BaseLLM, MockLLM
 
 
 def test_init() -> None:
     """Test initialization."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
 
     agent = LATSAgent(llm=llm, benchmark="hotpotqa")
     assert isinstance(agent, LATSAgent)
-    assert isinstance(agent.llm, BaseChatModel)
+    assert isinstance(agent.llm, BaseLLM)
     assert isinstance(agent.strategy, LATSBaseStrategy)
     assert agent.benchmark == "hotpotqa"
 
@@ -35,7 +32,7 @@ def test_generate() -> None:
     key = "Gesellschaft mit beschränkter Haftung"
 
     gt_state = {
-        "state": ReActOutput(
+        "state": LATSReActOutput(
             thought="Since direct searches for VIVA Media AG and its new acronym after the name change in 2004 did not provide relevant information, I should consider looking for industry reports, press releases, or official announcements related to the company's rebranding to uncover the acronym.",
             action_type="Search",
             query="VIVA Media AG rebranding press release",
@@ -55,7 +52,7 @@ def test_generate() -> None:
     gt_out = LATSOutput(
         iteration=0,
         current_node={
-            "state": ReActOutput(
+            "state": LATSReActOutput(
                 thought="",
                 action_type="",
                 query="",
@@ -71,7 +68,7 @@ def test_generate() -> None:
         },
         children_nodes=[
             {
-                "state": ReActOutput(
+                "state": LATSReActOutput(
                     thought="I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.",
                     action_type="Search",
                     query="VIVA Media AG",
@@ -89,7 +86,7 @@ def test_generate() -> None:
                 "reward": 0,
             },
             {
-                "state": ReActOutput(
+                "state": LATSReActOutput(
                     thought="I need to search for VIVA Media AG to find out what their new acronym stands for after changing their name in 2004.",
                     action_type="Search",
                     query="VIVA Media AG",
@@ -113,7 +110,7 @@ def test_generate() -> None:
         ],
         simulation_reward=-1.0,
         simulation_terminal_node={
-            "state": ReActOutput(
+            "state": LATSReActOutput(
                 thought="Since direct searches for VIVA Media AG and its new acronym after the name change in 2004 did not provide relevant information, I should consider looking for industry reports, press releases, or official announcements related to the company's rebranding to uncover the acronym.",
                 action_type="Search",
                 query="VIVA Media AG rebranding press release",
@@ -133,7 +130,7 @@ def test_generate() -> None:
         simulation_results=[
             LATSSimulationOutput(
                 current_node={
-                    "state": ReActOutput(
+                    "state": LATSReActOutput(
                         thought="I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.",
                         action_type="Search",
                         query="VIVA Media AG",
@@ -152,7 +149,7 @@ def test_generate() -> None:
                 },
                 children_nodes=[
                     {
-                        "state": ReActOutput(
+                        "state": LATSReActOutput(
                             thought="The search for VIVA Media AG did not return relevant results. I should try searching for the new name of the company directly.",
                             action_type="Search",
                             query="VIVA Media AG new name",
@@ -170,7 +167,7 @@ def test_generate() -> None:
                         "reward": 0,
                     },
                     {
-                        "state": ReActOutput(
+                        "state": LATSReActOutput(
                             thought="I couldn't find VIVA Media AG. Let me try searching for VIVA Media AG (acronym) instead.",
                             action_type="Search",
                             query="VIVA Media AG (acronym)",
@@ -195,7 +192,7 @@ def test_generate() -> None:
             ),
             LATSSimulationOutput(
                 current_node={
-                    "state": ReActOutput(
+                    "state": LATSReActOutput(
                         thought="The search for VIVA Media AG did not return relevant results. I should try searching for the new name of the company directly.",
                         action_type="Search",
                         query="VIVA Media AG new name",
@@ -214,7 +211,7 @@ def test_generate() -> None:
                 },
                 children_nodes=[
                     {
-                        "state": ReActOutput(
+                        "state": LATSReActOutput(
                             thought="Since direct searches for VIVA Media AG and its new name did not yield results, I should try to search for the company's name change history or any related news articles to find out the acronym.",
                             action_type="Search",
                             query="VIVA Media AG name change history",
@@ -232,7 +229,7 @@ def test_generate() -> None:
                         "reward": 0,
                     },
                     {
-                        "state": ReActOutput(
+                        "state": LATSReActOutput(
                             thought="It seems the direct search for the new name of VIVA Media AG is not yielding results. I should try a different approach to find the acronym.",
                             action_type="Search",
                             query="VIVA Media AG acronym 2004",
@@ -257,7 +254,7 @@ def test_generate() -> None:
             ),
             LATSSimulationOutput(
                 current_node={
-                    "state": ReActOutput(
+                    "state": LATSReActOutput(
                         thought="Since direct searches for VIVA Media AG and its new name did not yield results, I should try to search for the company's name change history or any related news articles to find out the acronym.",
                         action_type="Search",
                         query="VIVA Media AG name change history",
@@ -276,7 +273,7 @@ def test_generate() -> None:
                 },
                 children_nodes=[
                     {
-                        "state": ReActOutput(
+                        "state": LATSReActOutput(
                             thought="The search results are still not providing the information needed. I should try to find a different angle to approach this question.",
                             action_type="Search",
                             query="VIVA Media AG rebranding 2004",
@@ -294,7 +291,7 @@ def test_generate() -> None:
                         "reward": 0,
                     },
                     {
-                        "state": ReActOutput(
+                        "state": LATSReActOutput(
                             thought="As the search results are not providing relevant information, I should consider looking up the company's history or press releases to find out the acronym of VIVA Media AG after the name change in 2004.",
                             action_type="Search",
                             query="VIVA Media AG press releases 2004",
@@ -319,7 +316,7 @@ def test_generate() -> None:
             ),
             LATSSimulationOutput(
                 current_node={
-                    "state": ReActOutput(
+                    "state": LATSReActOutput(
                         thought="The search results are still not providing the information needed. I should try to find a different angle to approach this question.",
                         action_type="Search",
                         query="VIVA Media AG rebranding 2004",
@@ -338,7 +335,7 @@ def test_generate() -> None:
                 },
                 children_nodes=[
                     {
-                        "state": ReActOutput(
+                        "state": LATSReActOutput(
                             thought="Since direct searches for VIVA Media AG and its new acronym after the name change in 2004 did not provide relevant information, I should consider looking for industry reports, press releases, or official announcements related to the company's rebranding to uncover the acronym.",
                             action_type="Search",
                             query="VIVA Media AG rebranding press release",
@@ -356,7 +353,7 @@ def test_generate() -> None:
                         "reward": 0,
                     },
                     {
-                        "state": ReActOutput(
+                        "state": LATSReActOutput(
                             thought="Since the search results are not yielding the required information, I should try a more general search for VIVA Media AG's name change history or company information to find the acronym.",
                             action_type="Search",
                             query="VIVA Media AG company information",
@@ -416,7 +413,7 @@ def test_generate() -> None:
     ]
 
     agent = LATSAgent(
-        FakeListChatModel(responses=responses),
+        MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         n_samples=2,
         depth_limit=5,
@@ -514,7 +511,7 @@ def test_generate() -> None:
         "This trajectory is incorrect as the search results consistently did not provide the answer to the question. The actions taken to adjust the search terms were not effective in retrieving the correct information. In the future, it is important to use more specific search terms and reliable sources to ensure accurate information. This trajectory shows a lack of adaptation to the search results and a failure to use appropriate search terms related to the question.\nCorrectness score: 1",
     ]
     agent = LATSAgent(
-        llm=FakeListChatModel(responses=responses),
+        llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         n_samples=2,
         depth_limit=5,
@@ -547,7 +544,7 @@ def test_generate() -> None:
     assert agent.strategy.reflection_map == []
 
     gt_state = {
-        "state": ReActOutput(
+        "state": LATSReActOutput(
             thought="The search results are not helpful. I should try a different search engine or source to find the answer to the question.",
             action_type="Search",
             query="What is the capital of France",
@@ -568,7 +565,7 @@ def test_generate() -> None:
         LATSOutput(
             iteration=0,
             current_node={
-                "state": ReActOutput(
+                "state": LATSReActOutput(
                     thought="",
                     action_type="",
                     query="",
@@ -584,7 +581,7 @@ def test_generate() -> None:
             },
             children_nodes=[
                 {
-                    "state": ReActOutput(
+                    "state": LATSReActOutput(
                         thought="I need to search for the capital of France.",
                         action_type="Search",
                         query="capital of France",
@@ -607,7 +604,7 @@ def test_generate() -> None:
             ],
             simulation_reward=-1.0,
             simulation_terminal_node={
-                "state": ReActOutput(
+                "state": LATSReActOutput(
                     thought="The search results are not helpful. I should try a different search engine or source to find the answer to the question.",
                     action_type="Search",
                     query="What is the capital of France",
@@ -627,7 +624,7 @@ def test_generate() -> None:
             simulation_results=[
                 LATSSimulationOutput(
                     current_node={
-                        "state": ReActOutput(
+                        "state": LATSReActOutput(
                             thought="I need to search for the capital of France.",
                             action_type="Search",
                             query="capital of France",
@@ -646,7 +643,7 @@ def test_generate() -> None:
                     },
                     children_nodes=[
                         {
-                            "state": ReActOutput(
+                            "state": LATSReActOutput(
                                 thought="The search results are not relevant to the question. I should try searching again for the capital of France.",
                                 action_type="Search",
                                 query="capital of France",
@@ -664,7 +661,7 @@ def test_generate() -> None:
                             "reward": 0,
                         },
                         {
-                            "state": ReActOutput(
+                            "state": LATSReActOutput(
                                 thought="The search result did not provide the information I needed. I need to try searching for the capital of France again.",
                                 action_type="Search",
                                 query="capital of France",
@@ -697,7 +694,7 @@ def test_generate() -> None:
                 ),
                 LATSSimulationOutput(
                     current_node={
-                        "state": ReActOutput(
+                        "state": LATSReActOutput(
                             thought="The search results are not relevant to the question. I should try searching again for the capital of France.",
                             action_type="Search",
                             query="capital of France",
@@ -716,7 +713,7 @@ def test_generate() -> None:
                     },
                     children_nodes=[
                         {
-                            "state": ReActOutput(
+                            "state": LATSReActOutput(
                                 thought="The search results are still not relevant. I should try a different approach to find the answer.",
                                 action_type="Search",
                                 query="France capital",
@@ -734,7 +731,7 @@ def test_generate() -> None:
                             "reward": 0,
                         },
                         {
-                            "state": ReActOutput(
+                            "state": LATSReActOutput(
                                 thought="The search results are still not relevant. I should try a different approach to find the answer to the question.",
                                 action_type="Search",
                                 query="Paris",
@@ -767,7 +764,7 @@ def test_generate() -> None:
                 ),
                 LATSSimulationOutput(
                     current_node={
-                        "state": ReActOutput(
+                        "state": LATSReActOutput(
                             thought="The search results are still not relevant. I should try a different approach to find the answer.",
                             action_type="Search",
                             query="France capital",
@@ -786,7 +783,7 @@ def test_generate() -> None:
                     },
                     children_nodes=[
                         {
-                            "state": ReActOutput(
+                            "state": LATSReActOutput(
                                 thought="The search results are not providing the answer. I should try a different search query.",
                                 action_type="Search",
                                 query="Paris, France",
@@ -804,7 +801,7 @@ def test_generate() -> None:
                             "reward": 0,
                         },
                         {
-                            "state": ReActOutput(
+                            "state": LATSReActOutput(
                                 thought="The search results are consistently incorrect. I should try a different search engine or source to find the answer.",
                                 action_type="Search",
                                 query="capital of France on Wikipedia",
@@ -837,7 +834,7 @@ def test_generate() -> None:
                 ),
                 LATSSimulationOutput(
                     current_node={
-                        "state": ReActOutput(
+                        "state": LATSReActOutput(
                             thought="The search results are not providing the answer. I should try a different search query.",
                             action_type="Search",
                             query="Paris, France",
@@ -856,7 +853,7 @@ def test_generate() -> None:
                     },
                     children_nodes=[
                         {
-                            "state": ReActOutput(
+                            "state": LATSReActOutput(
                                 thought="The search results are not helpful. I should try a different search engine or source to find the answer to the question.",
                                 action_type="Search",
                                 query="What is the capital of France",
@@ -874,7 +871,7 @@ def test_generate() -> None:
                             "reward": 0,
                         },
                         {
-                            "state": ReActOutput(
+                            "state": LATSReActOutput(
                                 thought="The search results are not helping. I should try a different search engine or source to find the answer to the question.",
                                 action_type="Search",
                                 query="What is the capital of France",
@@ -952,7 +949,7 @@ def test_generate() -> None:
 
 def test_reset() -> None:
     """Test the reset method."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     agent = LATSAgent(llm=llm, benchmark="hotpotqa")
 
     agent.strategy.root = "some_root"

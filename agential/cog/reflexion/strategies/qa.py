@@ -7,7 +7,6 @@ from typing import Any, Dict, List, Optional, Tuple
 import tiktoken
 
 from langchain_community.docstore.wikipedia import Wikipedia
-from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
 
 from agential.cog.reflexion.functional import (
@@ -26,6 +25,7 @@ from agential.cog.reflexion.strategies.base import (
     ReflexionReActBaseStrategy,
 )
 from agential.eval.em import EM
+from agential.llm.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
 
@@ -57,7 +57,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
     """A strategy class for QA benchmarks using the ReflexionCoT agent.
 
     Attributes:
-        llm (BaseChatModel): The language model used for generating answers and critiques.
+        llm (BaseLLM): The language model used for generating answers and critiques.
         reflector (Optional[ReflexionCoTReflector]): The reflector used for generating reflections. Defaults to None.
         max_reflections (int): The maximum number of reflections allowed. Defaults to 3.
         max_trials (int): The maximum number of trials allowed. Defaults to 3.
@@ -65,7 +65,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         reflector: Optional[ReflexionCoTReflector] = None,
         max_reflections: int = 3,
         max_trials: int = 3,
@@ -102,7 +102,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             str: The generated thought.
         """
         self._scratchpad += "\nThought:"
-        thought = _prompt_cot_agent(
+        out = _prompt_cot_agent(
             llm=self.llm,
             examples=examples,
             reflections=reflections,
@@ -111,6 +111,8 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        thought = out.choices[0].message.content
+
         thought = remove_newline(thought).split("Action")[0].strip()
         self._scratchpad += " " + thought
 
@@ -139,7 +141,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             Tuple[str, str]: The generated action type and query.
         """
         self._scratchpad += "\nAction:"
-        action = _prompt_cot_agent(
+        out = _prompt_cot_agent(
             llm=self.llm,
             examples=examples,
             reflections=reflections,
@@ -148,6 +150,8 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        action = out.choices[0].message.content
+
         action = remove_newline(action).strip()
         self._scratchpad += " " + action
         action_type, query = parse_qa_action(action)
@@ -300,7 +304,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
     """A strategy class for QA benchmarks using the ReflexionReAct agent.
 
     Attributes:
-        llm (BaseChatModel): The language model used for generating answers and critiques.
+        llm (BaseLLM): The language model used for generating answers and critiques.
         reflector (Optional[ReflexionReActReflector]): The reflector used for generating reflections. Defaults to None.
         max_reflections (int): The maximum number of reflections allowed. Defaults to 3.
         max_trials (int): The maximum number of trials allowed. Defaults to 3.
@@ -312,7 +316,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         reflector: Optional[ReflexionReActReflector] = None,
         max_reflections: int = 3,
         max_trials: int = 3,
@@ -360,7 +364,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         max_steps = kwargs.get("max_steps", self.max_steps)  # type: ignore
 
         self._scratchpad += "\nThought:"
-        thought = _prompt_react_agent(
+        out = _prompt_react_agent(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -370,6 +374,8 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        thought = out.choices[0].message.content
+
         thought = remove_newline(thought).split("Action")[0].strip()
         self._scratchpad += " " + thought
 
@@ -399,7 +405,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         """
         max_steps = kwargs.get("max_steps", self.max_steps)
         self._scratchpad += "\nAction:"
-        action = _prompt_react_agent(
+        out = _prompt_react_agent(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -409,6 +415,8 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        action = out.choices[0].message.content
+
         action = remove_newline(action).split("Observation")[0]
         self._scratchpad += " " + action
         action_type, query = parse_qa_action(action)

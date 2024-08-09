@@ -2,10 +2,9 @@
 
 from typing import Dict
 
-from langchain_core.language_models.chat_models import BaseChatModel
-from langchain_core.messages.human import HumanMessage
-from langchain_core.prompts.prompt import PromptTemplate
 from tiktoken import Encoding
+
+from agential.llm.llm import BaseLLM, ModelResponse
 
 
 def _build_agent_prompt(
@@ -32,7 +31,7 @@ def _build_agent_prompt(
     Returns:
         str: A formatted prompt template ready for use.
     """
-    prompt = PromptTemplate.from_template(prompt).format(
+    prompt = prompt.format(
         question=question,
         scratchpad=scratchpad,
         examples=examples,
@@ -43,21 +42,21 @@ def _build_agent_prompt(
 
 
 def _prompt_agent(
-    llm: BaseChatModel,
+    llm: BaseLLM,
     question: str,
     scratchpad: str,
     examples: str,
     max_steps: int,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> str:
+) -> ModelResponse:
     """Generates a response from the LLM based on a given question and scratchpad.
 
     This function creates a prompt using `_build_agent_prompt` and then gets the LLM's
     output. The newline characters in the output are removed before returning.
 
     Args:
-        llm (BaseChatModel): The language model to be prompted.
+        llm (BaseLLM): The language model to be prompted.
         question (str): The question to ask the language model.
         scratchpad (str): Additional context or information for the language model.
         examples (str): Fewshot examples.
@@ -66,7 +65,7 @@ def _prompt_agent(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        str: The processed response from the language model.
+        ModelResponse: The processed response from the language model.
     """
     prompt = _build_agent_prompt(
         question=question,
@@ -76,14 +75,8 @@ def _prompt_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    out = llm(
-        [
-            HumanMessage(
-                content=prompt,
-            )
-        ]
-    ).content
-    assert isinstance(out, str)
+    out = llm(prompt)
+
     return out
 
 

@@ -1,8 +1,7 @@
 """ExpeL Agent strategies for QA."""
 
+from copy import deepcopy
 from typing import Any, Dict, List, Optional, Tuple
-
-from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.expel.functional import (
     categorize_experiences,
@@ -16,9 +15,9 @@ from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
-from agential.cog.expel.output import ExpeLOutput
 from agential.cog.expel.strategies.base import ExpeLBaseStrategy
 from agential.cog.reflexion.agent import ReflexionReActAgent
+from agential.llm.llm import BaseLLM
 from agential.utils.general import shuffle_chunk_list
 
 
@@ -26,7 +25,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
     """A general strategy class for the ExpeL agent.
 
     Attributes:
-    llm (BaseChatModel): The language model used for generating answers and critiques.
+    llm (BaseLLM): The language model used for generating answers and critiques.
     reflexion_react_agent (ReflexionReActAgent): The ReflexionReAct agent.
     experience_memory (ExpeLExperienceMemory): Memory module for storing experiences. Default is None.
     insight_memory (ExpeLInsightMemory): Memory module for storing insights derived from experiences. Default is None.
@@ -35,7 +34,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         reflexion_react_agent: ReflexionReActAgent,
         experience_memory: Optional[ExpeLExperienceMemory] = None,
         insight_memory: Optional[ExpeLInsightMemory] = None,
@@ -68,7 +67,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
         reflect_additional_keys: Dict[str, Any],
         patience: int,
         **kwargs: Any,
-    ) -> List[ExpeLOutput]:
+    ) -> List[Dict[str, Any]]:
         """Generates a response based on the provided question, key, examples, prompt, reflect_examples, reflect_prompt, reflect_strategy, additional_keys, reflect_additional_keys, and patience.
 
         Args:
@@ -85,7 +84,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
             **kwargs (Any): Additional keyword arguments.
 
         Returns:
-            List[ExpeLOutput]: The generated response.
+            List[Dict[str, Any]]: The generated response.
         """
         experiences = self.gather_experience(
             questions=[question],
@@ -163,7 +162,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
         reflect_additional_keys: List[Dict[str, str]],
         patience: int,
         **kwargs: Any,
-    ) -> List[ExpeLOutput]:
+    ) -> List[Dict[str, Any]]:
         """Gathers experience data for the Reflexion React agent, including questions, keys, examples, prompts, and additional keys. The gathered experience is added to the experience memory and returned as a dictionary.
 
         Args:
@@ -180,7 +179,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
             **kwargs (Any): Additional keyword arguments to pass to the `gather_experience` function.
 
         Returns:
-            List[ExpeLOutput]: A list of experience outputs.
+            List[Dict[str, Any]]: A list of experience outputs.
         """
         experiences = gather_experience(
             reflexion_react_agent=self.reflexion_react_agent,
@@ -199,21 +198,21 @@ class ExpeLStrategy(ExpeLBaseStrategy):
         self.reflexion_react_agent.reset()
 
         self.experience_memory.add_memories(
-            questions=[exp.question for exp in experiences],
-            keys=[exp.key for exp in experiences],
-            trajectories=[exp.trajectory for exp in experiences],
-            reflections=[exp.reflections for exp in experiences],
+            questions=[exp["question"] for exp in experiences],
+            keys=[exp["key"] for exp in experiences],
+            trajectories=[exp["trajectory"] for exp in experiences],
+            reflections=[exp["reflections"] for exp in experiences],
         )
         return experiences
 
-    def extract_insights(self, experiences: List[ExpeLOutput]) -> None:
+    def extract_insights(self, experiences: List[Dict[str, Any]]) -> None:
         """Extracts insights from the provided experiences and updates the `InsightMemory` accordingly.
 
         This method is responsible for analyzing the successful and failed trials in the provided experiences, comparing them, and generating insights that are then stored in the `InsightMemory`. The insights are generated using the `get_operations_compare` and `get_operations_success` functions, and the `update_insights` method is used to apply the generated operations to the `InsightMemory`.
         The method first categorizes the experiences into "compare" and "success" categories, and then processes the experiences in batches. For the "compare" category, it compares the successful trial with all previous failed trials and generates insights using the `get_operations_compare` function. For the "success" category, it concatenates the successful trials and generates insights using the `get_operations_success` function.
 
         Args:
-            experiences (List[ExpeLOutput]): A dictionary containing the experiences to be processed, including questions, trajectories, and other relevant data.
+            experiences (List[Dict[str, Any]]): A dictionary containing the experiences to be processed, including questions, trajectories, and other relevant data.
         """
         # Extract insights.
         categories = categorize_experiences(experiences)
@@ -227,8 +226,8 @@ class ExpeLStrategy(ExpeLBaseStrategy):
 
             # Compare.
             for train_idx in train_category_idxs["compare"]:
-                question = experiences[train_idx].question
-                trajectory = experiences[train_idx].trajectory
+                question = experiences[train_idx]["question"]
+                trajectory = experiences[train_idx]["trajectory"]
 
                 # Compare the successful trial with all previous failed trials.
                 success_trial = "".join(
@@ -262,10 +261,10 @@ class ExpeLStrategy(ExpeLBaseStrategy):
 
                     # Concatenate batched successful trajectories.
                     concat_success_trajs = [
-                        f"{experiences[idx].question}\n"
+                        f"{experiences[idx]['question']}\n"
                         + "".join(
                             f"Thought: {step.thought}\nAction: {step.action_type}[{step.query}]\nObservation: {step.observation}\n"
-                            for step in experiences[idx].trajectory[0].react_output
+                            for step in experiences[idx]["trajectory"][0].react_output
                         )
                         for idx in success_idxs
                     ]
@@ -321,6 +320,33 @@ class ExpeLStrategy(ExpeLBaseStrategy):
                 self.insight_memory.add_memories(
                     [{"insight": operation_insight, "score": 2}]
                 )
+
+    def create_output_dict(
+        self,
+        examples: str,
+        additional_keys: Dict[str, str],
+        experience: List[Dict[str, Any]],
+    ) -> Dict[str, Any]:
+        """Creates and returns an output dictionary containing the current state of the agent.
+
+        Args:
+            examples (str): The examples to be included in the output.
+            additional_keys (Dict[str, str]): Additional key-value pairs to be included in the output.
+            experience (List[Dict[str, Any]]): The current experience to be included in the output.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing the current state of the agent, including examples, additional keys, and experience.
+        """
+        output_dict = {
+            "examples": examples,
+            "insights": additional_keys.get("insights", ""),
+            "experience": {
+                k: v for k, v in experience[0].items() if k not in ["question", "key"]
+            },
+            "experience_memory": deepcopy(self.experience_memory.show_memories()),
+            "insight_memory": deepcopy(self.insight_memory.show_memories()),
+        }
+        return output_dict
 
     def reset(self, only_reflexion: bool = False) -> None:
         """Resets the state of the `ReflexionReactAgent` and clears the `ExperienceMemory` and `InsightMemory` if `only_reflexion` is `False`.

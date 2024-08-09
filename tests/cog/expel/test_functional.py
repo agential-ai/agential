@@ -2,11 +2,13 @@
 
 import joblib
 
-from langchain_community.chat_models.fake import FakeListChatModel
+from litellm.types.utils import ModelResponse
 
 from agential.cog.expel.functional import (
     _build_all_success_prompt,
     _build_compare_prompt,
+    _prompt_all_success_critique,
+    _prompt_compare_critique,
     categorize_experiences,
     gather_experience,
     get_folds,
@@ -16,7 +18,6 @@ from agential.cog.expel.functional import (
     remove_err_operations,
     retrieve_insight_index,
 )
-from agential.cog.expel.output import ExpeLOutput
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.reflexion.agent import ReflexionReActAgent
 from agential.cog.reflexion.prompts import (
@@ -24,12 +25,13 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
+from agential.llm.llm import MockLLM
 
 
 def test_gather_experience() -> None:
     """Test gather_experience."""
     agent = ReflexionReActAgent(
-        llm=FakeListChatModel(responses=[]), benchmark="hotpotqa"
+        llm=MockLLM("gpt-3.5-turbo", responses=[]), benchmark="hotpotqa"
     )
     questions = [""]
     keys = [""]
@@ -44,12 +46,12 @@ def test_gather_experience() -> None:
         reflect_strategy="reflexion",
     )
     gt_experiences = [
-        ExpeLOutput(
-            question="",
-            key="",
-            trajectory=[],
-            reflections=[],
-        )
+        {
+            "question": "",
+            "key": "",
+            "trajectory": [],
+            "reflections": [],
+        }
     ]
     assert experiences == gt_experiences
 
@@ -145,6 +147,56 @@ def test__build_all_success_prompt() -> None:
     assert prompt == gt_prompt
 
 
+def test__prompt_compare_critique() -> None:
+    """Test _prompt_compare_critique."""
+    llm = MockLLM("gpt-3.5-turbo", responses=["1"])
+
+    insights = [
+        {"insight": "Insight 1", "score": 0.8},
+        {"insight": "Insight 2", "score": 0.6},
+    ]
+    question = "Sample question"
+    success_trial = "Successful trial"
+    failed_trial = "Failed trial"
+    is_full = True
+    additional_keys = {"key1": "value1", "key2": "value2"}
+
+    result = _prompt_compare_critique(
+        llm=llm,
+        insights=insights,
+        question=question,
+        success_trial=success_trial,
+        failed_trial=failed_trial,
+        is_full=is_full,
+        additional_keys=additional_keys,
+    )
+    assert isinstance(result, ModelResponse)
+    assert result.choices[0].message.content == "1"
+
+
+def test__prompt_all_success_critique() -> None:
+    """Test _prompt_all_success_critique."""
+    llm = MockLLM("gpt-3.5-turbo", responses=["1"])
+
+    insights = [
+        {"insight": "Insight 1", "score": 0.8},
+        {"insight": "Insight 2", "score": 0.6},
+    ]
+    success_trajs_str = "Successful trajectories"
+    is_full = True
+    additional_keys = {"key1": "value1", "key2": "value2"}
+
+    result = _prompt_all_success_critique(
+        llm=llm,
+        insights=insights,
+        success_trajs_str=success_trajs_str,
+        is_full=is_full,
+        additional_keys=additional_keys,
+    )
+    assert isinstance(result, ModelResponse)
+    assert result.choices[0].message.content == "1"
+
+
 def test_parse_insights() -> None:
     """Test parse_insights."""
     gt_rules = [
@@ -226,7 +278,7 @@ def test_get_operations_compare() -> None:
         "ADD 11: When unable to find specific information, consider looking for related topics or broader context that may lead to the desired answer.\nREMOVE 3: Search for specific terms in the API environment should include relevant keywords to ensure accurate results.\nEDIT 5: Refine search queries by including additional relevant keywords or context to increase the chances of finding the desired information.\nAGREE 7: Use alternative search engines or sources of information if initial search attempts are unsuccessful."
     ]
     operations = get_operations_compare(
-        FakeListChatModel(responses=responses),
+        MockLLM("gpt-3.5-turbo", responses=responses),
         insights,
         question,
         success_trial,
@@ -260,6 +312,6 @@ def test_get_operations_success() -> None:
         "ADD 4: When searching for specific information, try using the full name or specific search terms related to the topic to increase the chances of finding the desired answer."
     ]
     operations = get_operations_success(
-        FakeListChatModel(responses=responses), success_trials, insights, is_full
+        MockLLM("gpt-3.5-turbo", responses=responses), success_trials, insights, is_full
     )
     assert operations == gt_operations

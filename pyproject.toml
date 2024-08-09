@@ -29,6 +29,7 @@ scipy = "^1.13.1"
 sentence-transformers = "^2.2.2"
 torch = "2.2.0"
 google-api-python-client = ">=2.100.0"
+litellm = "^1.42.12"
 
 [tool.poetry.group.dev.dependencies]
 python-dotenv = "^1.0.0"
@@ -71,3 +72,4 @@ lines-between-types = 1
 [tool.mypy]
 ignore_missing_imports = "True"
 disallow_untyped_defs = "True"
+allow_redefinition = "True"

@@ -2,8 +2,6 @@
 
 import pytest
 
-from langchain_community.chat_models.fake import FakeListChatModel
-
 from agential.cog.constants import Benchmarks
 from agential.cog.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
@@ -45,11 +43,12 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActHotQAStrategy,
     ReflexionReActTriviaQAStrategy,
 )
+from agential.llm.llm import MockLLM
 
 
 def test_reflexion_cot_factory_get_strategy() -> None:
     """Tests ReflexionCoTFactory get_strategy method."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
 
     # QA benchmarks.
     assert isinstance(
@@ -102,7 +101,7 @@ def test_reflexion_cot_factory_get_strategy() -> None:
 
 def test_reflexion_react_factory_get_strategy() -> None:
     """Tests ReflexionReActFactory get_strategy method."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
 
     # QA benchmarks.
     assert isinstance(
