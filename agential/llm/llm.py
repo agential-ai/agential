@@ -116,10 +116,14 @@ class MockLLM(BaseLLM):
         response = self.responses[self.current_index]
         self.current_index = (self.current_index + 1) % len(self.responses)
 
+        start_time = time.time()
         response = completion(
             model=self.model,
             messages=[{"role": "user", "content": prompt}],
             mock_response=response,
             **kwargs,
         )
+        end_time = time.time()
+
+        response.time_taken = end_time - start_time
         return response
