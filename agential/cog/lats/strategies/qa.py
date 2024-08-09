@@ -4,6 +4,7 @@ import re
 
 from typing import Any, Dict, List, Optional, Tuple
 
+from copy import deepcopy
 from langchain_community.docstore.wikipedia import Wikipedia
 
 from agential.cog.lats.functional import (
@@ -21,8 +22,9 @@ from agential.cog.react.output import ReActOutput
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
-from agential.utils.parse import remove_newline
 from agential.utils.general import get_token_cost_time
+from agential.utils.parse import remove_newline
+
 
 def get_node_trajectory_qa(node: Node) -> str:
     """Generates a string representation of the trajectory from the given node to the root.
@@ -133,11 +135,13 @@ class LATSQAStrategy(LATSBaseStrategy):
         self.value_cache: Dict[str, str] = {}
         self.root: Optional[Node] = None
         self._prompt_metrics: Dict[str, Any] = {
-            "thought": [], 
+            "thought": [],
             "action": [],
             "value": [],
+            "simulate_thought": [],
+            "simulate_action": [],
             "simulate_value": [],
-            "reflection": []
+            "reflection": [],
         }
 
     def initialize(self) -> Node:
@@ -160,7 +164,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
-        is_simulate: bool
+        is_simulate: bool,
     ) -> List[Node]:
         """Generate child nodes for the given node.
 
@@ -175,7 +179,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
             is_simulate (bool): Whether this method is called to simulate expansion or not.
-            
+
         Returns:
             List[Node]: A list of generated child nodes.
         """
@@ -209,6 +213,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                 depth=node.depth,
                 prompt=prompt,
                 additional_keys=additional_keys,
+                is_simulate=is_simulate,
             )
             trajectory_i, action_type, query = self.generate_action(
                 question=question,
@@ -218,6 +223,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                 depth=node.depth,
                 prompt=prompt,
                 additional_keys=additional_keys,
+                is_simulate=is_simulate,
             )
 
             unique_key = f"{thought}::{action_type}::{query}"
@@ -269,6 +275,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
+        is_simulate: bool,
     ) -> Tuple[str, str]:
         """Generate a thought for the current step in the reasoning process.
 
@@ -280,6 +287,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             depth (int): The current depth in the search tree.
             prompt (str): The prompt template for thought generation.
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
+            is_simulate (bool): Whether this method is called to simulate expansion or not.
 
         Returns:
             Tuple[str, str]: A tuple containing the updated trajectory and the generated thought.
@@ -294,7 +302,8 @@ class LATSQAStrategy(LATSBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics["thought"].append(get_token_cost_time(out))
+        metric_key = "simulate_thought" if is_simulate else "thought"
+        self._prompt_metrics[metric_key].append(get_token_cost_time(out))
         thought = out.choices[0].message.content
 
         thought = remove_newline(thought).split("Action")[0].strip()
@@ -311,6 +320,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
+        is_simulate: bool,
     ) -> Tuple[str, str, str]:
         """Generate an action for the current step in the reasoning process.
 
@@ -322,6 +332,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             depth (int): The current depth in the search tree.
             prompt (str): The prompt template for action generation.
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
+            is_simulate (bool): Whether this method is called to simulate expansion or not.
 
         Returns:
             Tuple[str, str, str]: A tuple containing the updated trajectory, action type, and query.
@@ -336,7 +347,8 @@ class LATSQAStrategy(LATSBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics["action"].append(get_token_cost_time(out))
+        metric_key = "simulate_action" if is_simulate else "action"
+        self._prompt_metrics[metric_key].append(get_token_cost_time(out))
         action = out.choices[0].message.content
 
         action = remove_newline(action).split("Observation")[0]
@@ -472,7 +484,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             reflect_prompt=reflect_prompt,
             additional_keys=additional_keys,
             reflect_additional_keys=reflect_additional_keys,
-            is_simulate=False
+            is_simulate=False,
         )
         node.add_children(children_nodes)  # type: ignore
 
@@ -538,7 +550,9 @@ class LATSQAStrategy(LATSBaseStrategy):
                         prompt=prompt,
                         additional_keys=additional_keys,
                     )
-                    self._prompt_metrics["value"].append(get_token_cost_time(value_str_out))
+                    self._prompt_metrics["value"].append(
+                        get_token_cost_time(value_str_out)
+                    )
                     value_str = value_str_out.choices[0].message.content
 
                     if self.cache_values:
@@ -645,7 +659,9 @@ class LATSQAStrategy(LATSBaseStrategy):
                         prompt=value_prompt,
                         additional_keys=value_additional_keys,
                     )
-                    self._prompt_metrics["simulate_value"].append(get_token_cost_time(value_str_out))
+                    self._prompt_metrics["simulate_value"].append(
+                        get_token_cost_time(value_str_out)
+                    )
 
                     value_str = value_str_out.choices[0].message.content
 
@@ -745,7 +761,9 @@ class LATSQAStrategy(LATSBaseStrategy):
                 prompt=prompt,
                 additional_keys=additional_keys,
             )
-            self._prompt_metrics["reflection"].append(get_token_cost_time(reflection_out))
+            self._prompt_metrics["reflection"].append(
+                get_token_cost_time(reflection_out)
+            )
             reflection = reflection_out.choices[0].message.content
 
             reflections.append({"trajectory": trajectory, "reflection": reflection})
@@ -791,7 +809,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                 )
                 for result in simulation_results
             ]
-        return {
+        out = {
             "iteration": iteration,
             "current_node": current_node.to_dict(),
             "children_nodes": [child_node.to_dict() for child_node in children_nodes],
@@ -803,7 +821,18 @@ class LATSQAStrategy(LATSBaseStrategy):
             "simulation_results": (
                 simulation_results_output if simulation_results else []
             ),
+            "prompt_metrics": deepcopy(self._prompt_metrics)
         }
+        self._prompt_metrics = {
+            "thought": [],
+            "action": [],
+            "value": [],
+            "simulate_thought": [],
+            "simulate_action": [],
+            "simulate_value": [],
+            "reflection": [],
+        }
+        return out
 
     def reset(self) -> None:
         """Reset the strategy to its initial state."""

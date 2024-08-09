@@ -36,6 +36,7 @@ class LATSOutput(BaseModel):
         simulation_reward (float): The reward of the simulation from the current node's most valuable child node.
         simulation_terminal_node (Dict[str, Any]): The terminal node of the simulation.
         simulation_results (List[LATSSimulationOutput]): The results of the simulation.
+        prompt_metrics (Dict[str, Any]): The metrics of the prompt including token usage, cost, and latency.
     """
 
     iteration: int = Field(..., description="The iteration number.")
@@ -59,4 +60,8 @@ class LATSOutput(BaseModel):
     simulation_results: List[LATSSimulationOutput] = Field(
         ...,
         description="The results of the simulation.",
+    )
+    prompt_metrics: Dict[str, Any] = Field(
+        ...,
+        description="The metrics of the prompt.",
     )

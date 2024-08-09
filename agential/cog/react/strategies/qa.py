@@ -269,6 +269,8 @@ class ReActQAStrategy(ReActBaseStrategy):
         """
         self._scratchpad = ""
         self._finished = False
+        self._answer = ""
+        self._prompt_metrics = {"thought": None, "action": None}
 
 
 class ReActHotQAStrategy(ReActQAStrategy):

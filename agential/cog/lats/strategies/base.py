@@ -51,7 +51,7 @@ class LATSBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
             is_simulate (bool): Whether this method is called to simulate expansion or not.
-            
+
         Returns:
             List[Node]: A list of generated child nodes.
         """
@@ -67,6 +67,7 @@ class LATSBaseStrategy(BaseStrategy):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
+        is_simulate: bool,
     ) -> Tuple[str, str]:
         """Generate a thought for the current step in the reasoning process.
 
@@ -78,6 +79,7 @@ class LATSBaseStrategy(BaseStrategy):
             depth (int): The current depth in the search tree.
             prompt (str): The prompt template for thought generation.
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
+            is_simulate (bool): Whether this method is called to simulate expansion or not.
 
         Returns:
             Tuple[str, str]: A tuple containing the updated trajectory and the generated thought.
@@ -94,6 +96,7 @@ class LATSBaseStrategy(BaseStrategy):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
+        is_simulate: bool,
     ) -> Tuple[str, str, str]:
         """Generate an action for the current step in the reasoning process.
 
@@ -105,6 +108,7 @@ class LATSBaseStrategy(BaseStrategy):
             depth (int): The current depth in the search tree.
             prompt (str): The prompt template for action generation.
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
+            is_simulate (bool): Whether this method is called to simulate expansion or not.
 
         Returns:
             Tuple[str, str, str]: A tuple containing the updated trajectory, action type, and query.

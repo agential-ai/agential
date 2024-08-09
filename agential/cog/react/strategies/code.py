@@ -271,6 +271,7 @@ class ReActCodeStrategy(ReActBaseStrategy):
         self._answer = ""
         self._scratchpad = ""
         self._finished = False
+        self._prompt_metrics = {"thought": None, "action": None}
 
 
 class ReActMBPPStrategy(ReActCodeStrategy):

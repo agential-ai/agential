@@ -268,6 +268,7 @@ class ReActMathStrategy(ReActBaseStrategy):
         self._answer = ""
         self._scratchpad = ""
         self._finished = False
+        self._prompt_metrics = {"thought": None, "action": None}
 
 
 class ReActGSM8KStrategy(ReActMathStrategy):
