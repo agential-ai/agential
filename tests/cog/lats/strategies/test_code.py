@@ -445,6 +445,7 @@ def test_generate() -> None:
             external_tool_info={"execution_status": "Done"},
         ),
     ]
+    gt_prompt_metrics = {'thought': [{'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}], 'action': [{'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}], 'value': [], 'simulate_thought': [], 'simulate_action': [], 'simulate_value': [], 'reflection': []}
     responses = [
         "We need to iterate through the list of numbers and check if any two numbers are closer to each other than the given threshold.\n\nAction 1: Implement\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nObservation 1: The implementation checks for each pair of numbers in the list if they are closer than the threshold and returns True if found, otherwise False.\n\n\nThought 2: We should test the implemented function with some test cases.\n\nAction 2: Test\n\n```python\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n```\n\nObservation 2: The test cases pass successfully, indicating that the implementation is correct.\n\n\nThought 3: We have successfully implemented and tested the function. Now we can finish the task.\n\nAction 3: Finish\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
         "Implement the function to check if any two numbers in the list are closer to each other than the given threshold.\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nObservation 1: The implementation checks all pairs of numbers in the list and returns True if any two numbers are closer to each other than the threshold.\n\nThought 2: We need to test the implementation with some test cases to verify if it works correctly.\nAction 2: \n\n```python\ndef test_has_close_elements():\n    assert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\n    assert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n    assert has_close_elements([], 0.5) == False\n    assert has_close_elements([1.0, 2.0, 3.0], 2.0) == True\n    assert has_close_elements([1.0, 2.0, 3.0], 3.0) == True\n\ntest_has_close_elements()\n```\n\nObservation 2: All test cases passed successfully, indicating that the implementation is correct.\n\nFinish: \n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
@@ -492,9 +493,11 @@ def test_generate() -> None:
         assert node.value == 0
         assert node.is_terminal is False
         assert node.visits == 0
+    assert strategy._prompt_metrics == gt_prompt_metrics
 
     # Test generate with reflections.
     gt_states = []
+    gt_prompt_metrics = {'thought': [{'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}], 'action': [{'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}], 'value': [], 'simulate_thought': [], 'simulate_action': [], 'simulate_value': [], 'reflection': [{'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}]}
     responses = [
         "My reasoning failed in the previous trial because I did not iterate through the list to compare each pair of numbers against the threshold. To mitigate this failure, I should implement a nested loop to compare all possible pairs of numbers in the list and return True if any pair is closer than the threshold.\n\nHigh-level plan:\n1. Implement a nested loop to iterate through all possible pairs of numbers in the list.\n2. Calculate the absolute difference between each pair of numbers.\n3. Check if the absolute difference is less than the threshold.\n4. If any pair meets the condition, return True.\n5. If no pair meets the condition, return False.",
         "My reasoning potentially failed because I did not provide an implementation for the `has_close_elements` function, leaving it with a `pass` statement. To mitigate this failure, I should ensure to complete the implementation of the function by iterating over the list of numbers and comparing each pair to check if their difference falls below the given threshold."
@@ -543,8 +546,10 @@ def test_generate() -> None:
         assert node.value == 0
         assert node.is_terminal is False
         assert node.visits == 0
+    assert strategy._prompt_metrics == gt_prompt_metrics
 
     # Test case with a terminal child node (reward 0)
+    gt_prompt_metrics = {'thought': [{'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}], 'action': [{'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}], 'value': [], 'simulate_thought': [], 'simulate_action': [], 'simulate_value': [], 'reflection': []}
     responses = [
         "We need to iterate through the list of numbers and check if any two numbers are closer to each other than the threshold.\n\nAction 1:\nImplement the has_close_elements function.\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nObservation 1: We have implemented the function to check if any two numbers are closer to each other than the threshold.\n\nAction 2:\nTest the implemented function with test cases.\n\n```python\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n```\n\nObservation 2: The implemented function passed the test cases.\n\nAction 3:\nFinish the task.\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
         "Implement\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nThought 2: Now that we have implemented the function, we need to test it with some test cases.\nAction 2: \n\n```python\nTest\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n```\n\nThought 3: The function passed the test cases successfully. Now we can finish by providing the final implementation.\nAction 3: \n\n```python\nFinish\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
@@ -577,6 +582,7 @@ def test_generate() -> None:
     )
     assert not children_nodes[0].is_terminal
     assert children_nodes[0].reward == 0
+    assert strategy._prompt_metrics == gt_prompt_metrics
 
 
 def test_select_node() -> None:
@@ -717,6 +723,8 @@ def test_expand_node() -> None:
 
 def test_evaluate_node() -> None:
     """Test the evaluate_node method."""
+    gt_prompt_metrics = {'thought': [], 'action': [], 'value': [{'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}], 'simulate_thought': [], 'simulate_action': [], 'simulate_value': [], 'reflection': []}    
+
     llm = MockLLM(
         "gpt-3.5-turbo",
         responses=["Explanation: Good trajectory. Correctness score: 8"],
@@ -762,6 +770,7 @@ def test_evaluate_node() -> None:
     ]
 
     values = strategy.evaluate_node(root, question, examples, prompt, {})
+    assert strategy._prompt_metrics == gt_prompt_metrics
 
     assert len(values) == 1  # Only one non-terminal child.
     assert "explanation" in values[0]
@@ -773,6 +782,8 @@ def test_evaluate_node() -> None:
     assert child2.value == 0  # Terminal node, value not updated.
 
     # Test caching.
+    gt_prompt_metrics = {'thought': [], 'action': [], 'value': [{'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}], 'simulate_thought': [], 'simulate_action': [], 'simulate_value': [], 'reflection': []}
+
     strategy.cache_values = True
     cached_values = strategy.evaluate_node(root, question, examples, prompt, {})
     assert cached_values == values
@@ -783,10 +794,12 @@ def test_evaluate_node() -> None:
         root, question, examples, prompt, {}
     )
     assert empty_reflection_values == values
+    assert strategy._prompt_metrics == gt_prompt_metrics
 
 
 def test_simulate_node() -> None:
     """Test the simulate_node method."""
+    gt_prompt_metrics = {'thought': [], 'action': [], 'value': [], 'simulate_thought': [{'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}], 'simulate_action': [{'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}], 'simulate_value': [{'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}], 'reflection': []}
     responses = [
         "We need to iterate through the list of numbers and check if any two numbers are closer to each other than the given threshold.\n\nAction 1: Implement\n\n```python\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nThought 2: \n\nNow that we have implemented the function, we should test it with some test cases to verify its correctness.\n\nAction 2: Test\n\n```python\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n```\n\nThought 3: \n\nThe tests passed successfully, so we can consider the implementation complete.\n\nAction 3: Finish\n\n```python\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
         "Implement the `has_close_elements` function by iterating through the list and checking the absolute difference between each pair of numbers.\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nThought 2: Now we need to test the implemented function with some test cases to verify its correctness.\nAction 2: \n\nTest the `has_close_elements` function with test cases.\n```python\ndef test_has_close_elements():\n    assert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\n    assert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n\ntest_has_close_elements()\n```\n\nThought 3: The function passed the test cases successfully and is working as expected.\nAction 3: \n\nFinish by providing the final implementation of the `has_close_elements` function.\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
@@ -853,6 +866,8 @@ def test_simulate_node() -> None:
     assert final_node.depth <= strategy.depth_limit
     assert len(simulation_results) > 0
     assert -1 <= reward <= 1
+
+    assert strategy._prompt_metrics == gt_prompt_metrics
 
 
 def test_backpropagate_node() -> None:
@@ -954,6 +969,35 @@ def test_reflect_condition() -> None:
 
 def test_reflect() -> None:
     """Test the reflect method."""
+    gt_prompt_metrics = {
+        "thought": [],
+        "action": [],
+        "value": [],
+        "simulate_thought": [],
+        "simulate_action": [],
+        "simulate_value": [],
+        "reflection": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+        ],
+    }
+
     llm = MockLLM("gpt-3.5-turbo", responses=["Reflection 1", "Reflection 2"])
     strategy = LATSCodeStrategy(llm=llm, max_unique=2)
 
@@ -980,10 +1024,20 @@ def test_reflect() -> None:
     assert reflections[1]["reflection"] == "Reflection 2"
 
     assert strategy.reflection_map == reflections
+    assert strategy._prompt_metrics == gt_prompt_metrics
 
 
 def test_create_output_dict() -> None:
     """Test create_output_dict method."""
+    gt_prompt_metrics = {
+        "thought": [],
+        "action": [],
+        "value": [],
+        "simulate_thought": [],
+        "simulate_action": [],
+        "simulate_value": [],
+        "reflection": [],
+    }
     llm = MockLLM("gpt-3.5-turbo", responses=["1"])
     strategy = LATSCodeStrategy(llm=llm, max_unique=2)
 
@@ -1082,6 +1136,7 @@ def test_create_output_dict() -> None:
         simulation_results=simulation_results,
     )
     assert out == gt_out
+    assert strategy._prompt_metrics == gt_prompt_metrics
 
     # Test half empty.
     gt_out = {
@@ -1142,6 +1197,7 @@ def test_create_output_dict() -> None:
         simulation_results=None,
     )
     assert out == gt_out
+    assert strategy._prompt_metrics == gt_prompt_metrics
 
 
 def test_reset() -> None:
@@ -1162,7 +1218,15 @@ def test_reset() -> None:
     assert strategy.failed_trajectories == []
     assert strategy.reflection_map == []
     assert strategy.value_cache == {}
-
+    assert strategy._prompt_metrics == {
+        "thought": [],
+        "action": [],
+        "value": [],
+        "simulate_thought": [],
+        "simulate_action": [],
+        "simulate_value": [],
+        "reflection": [],
+    }
 
 def test_instantiate_strategies() -> None:
     """Test the instantiation of various LATS strategies."""

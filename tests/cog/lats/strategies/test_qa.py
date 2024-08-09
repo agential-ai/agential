@@ -740,35 +740,6 @@ def test_expand_node() -> None:
 
 def test_evaluate_node() -> None:
     """Test the evaluate_node method."""
-    gt_prompt_metrics = {
-        "thought": [],
-        "action": [],
-        "value": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-        ],
-        "simulate_thought": [],
-        "simulate_action": [],
-        "simulate_value": [],
-        "reflection": [],
-    }
-
     gt_prompt_metrics = {'thought': [], 'action': [], 'value': [{'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}], 'simulate_thought': [], 'simulate_action': [], 'simulate_value': [], 'reflection': []}    
 
     llm = MockLLM(
@@ -1345,6 +1316,7 @@ def test_create_output_dict() -> None:
         simulation_results=simulation_results,
     )
     assert out == gt_out
+    assert strategy._prompt_metrics == gt_prompt_metrics
 
     # Test half empty.
     gt_out = {
