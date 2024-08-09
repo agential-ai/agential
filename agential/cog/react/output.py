@@ -27,3 +27,6 @@ class ReActOutput(BaseModel):
     external_tool_info: Dict[str, Any] = Field(
         ..., description="The external tool outputs."
     )
+    prompt_metrics: Dict[str, Any] = Field(
+        ..., description="The prompt metrics including token usage, cost, and latency."
+    )

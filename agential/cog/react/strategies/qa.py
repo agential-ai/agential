@@ -66,7 +66,7 @@ class ReActQAStrategy(ReActBaseStrategy):
         self._scratchpad = ""
         self._answer = ""
         self._finished = False
-        self._token_usage = {"thought": [], "action": []}
+        self._prompt_metrics = {"thought": None, "action": None}
 
     def generate(
         self,
@@ -100,8 +100,7 @@ class ReActQAStrategy(ReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-
-        self._token_usage["thought"].append(get_token_cost_time(out))
+        self._prompt_metrics["thought"] = get_token_cost_time(out)
         thought = out.choices[0].message.content
 
         thought = remove_newline(thought).split("Action")[0].strip()
@@ -140,6 +139,7 @@ class ReActQAStrategy(ReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics["action"] = get_token_cost_time(out)
         action = out.choices[0].message.content
 
         action = remove_newline(action).split("Observation")[0]
@@ -216,6 +216,7 @@ class ReActQAStrategy(ReActBaseStrategy):
             "observation": obs,
             "answer": self._answer,
             "external_tool_info": external_tool_info,
+            "prompt_metrics": self._prompt_metrics,
         }
 
     def halting_condition(

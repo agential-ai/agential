@@ -279,6 +279,7 @@ def test_create_output_dict() -> None:
         "observation": obs,
         "answer": "",
         "external_tool_info": {"search_result": "", "lookup_result": ""},
+        "prompt_metrics": {"thought": None, "action": None}
     }
 
     assert (
