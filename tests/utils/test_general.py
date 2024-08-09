@@ -1,7 +1,7 @@
 """Unit tests for general util functions."""
 
 from agential.llm.llm import ModelResponse, Usage
-from agential.utils.general import get_token_and_cost, safe_execute, shuffle_chunk_list
+from agential.utils.general import get_token_cost_time, safe_execute, shuffle_chunk_list
 
 
 def test_shuffle_chunk_list() -> None:
@@ -34,8 +34,8 @@ def test_safe_execute() -> None:
     assert report == "Done"
 
 
-def test_get_token_and_cost() -> None:
-    """Test get_token_and_cost function."""
+def test_get_token_cost_time() -> None:
+    """Test get_token_cost_time function."""
     # Create a mock ModelResponse object.
 
     # Test with sample token counts and model.
@@ -54,7 +54,7 @@ def test_get_token_and_cost() -> None:
     response.model = model
     response.time_taken = 0.5
     
-    token_and_cost = get_token_and_cost(response)
+    token_and_cost = get_token_cost_time(response)
 
     assert isinstance(token_and_cost, dict)
     assert "prompt_tokens" in token_and_cost
@@ -97,7 +97,7 @@ def test_get_token_and_cost() -> None:
     response.model = model
     response.time_taken = 0.5
     
-    token_and_cost = get_token_and_cost(response)
+    token_and_cost = get_token_cost_time(response)
 
     assert isinstance(token_and_cost, dict)
     assert "prompt_tokens" in token_and_cost

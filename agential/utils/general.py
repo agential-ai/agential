@@ -78,7 +78,7 @@ def safe_execute(
     return an, report
 
 
-def get_token_and_cost(response: ModelResponse) -> Dict[str, float]:
+def get_token_cost_time(response: ModelResponse) -> Dict[str, float]:
     """Calculates the token usage and cost of a prompt and completion in dollars.
 
     Args:

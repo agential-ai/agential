@@ -13,7 +13,7 @@ from agential.cog.react.functional import _is_halted, _prompt_agent
 from agential.cog.react.strategies.base import ReActBaseStrategy
 from agential.llm.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
-from agential.utils.general import get_token_and_cost
+from agential.utils.general import get_token_cost_time
 from agential.utils.parse import remove_newline
 
 
@@ -101,7 +101,7 @@ class ReActQAStrategy(ReActBaseStrategy):
             additional_keys=additional_keys,
         )
 
-        self._token_usage["thought"].append(get_token_and_cost(out))
+        self._token_usage["thought"].append(get_token_cost_time(out))
         thought = out.choices[0].message.content
 
         thought = remove_newline(thought).split("Action")[0].strip()
