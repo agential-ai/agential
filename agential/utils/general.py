@@ -92,6 +92,7 @@ def get_token_and_cost(response: ModelResponse) -> Dict[str, float]:
             - "prompt_tokens_cost": The cost of the prompt tokens in dollars.
             - "completion_tokens_cost": The cost of the completion tokens in dollars.
             - "total_tokens_cost": The total cost of the prompt and completion tokens in dollars.
+            - "time_sec": The time taken to generate the response in seconds.
     """
     prompt_tokens_cost_usd_dollar, completion_tokens_cost_usd_dollar = cost_per_token(
         model=response.model,
@@ -106,4 +107,5 @@ def get_token_and_cost(response: ModelResponse) -> Dict[str, float]:
         "completion_tokens_cost": completion_tokens_cost_usd_dollar,
         "total_tokens_cost": prompt_tokens_cost_usd_dollar
         + completion_tokens_cost_usd_dollar,
+        "time_sec": response.time_taken
     }

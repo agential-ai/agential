@@ -52,7 +52,8 @@ def test_get_token_and_cost() -> None:
     response.choices = []
     response.usage = usage
     response.model = model
-
+    response.time_taken = 0.5
+    
     token_and_cost = get_token_and_cost(response)
 
     assert isinstance(token_and_cost, dict)
@@ -78,6 +79,7 @@ def test_get_token_and_cost() -> None:
     assert token_and_cost["total_tokens_cost"] == (
         token_and_cost["prompt_tokens_cost"] + token_and_cost["completion_tokens_cost"]
     )
+    assert token_and_cost["time_sec"] == 0.5
 
     # Test with different token counts and model.
     prompt_tokens = 200
@@ -93,7 +95,8 @@ def test_get_token_and_cost() -> None:
     response.choices = []
     response.usage = usage
     response.model = model
-
+    response.time_taken = 0.5
+    
     token_and_cost = get_token_and_cost(response)
 
     assert isinstance(token_and_cost, dict)
@@ -119,3 +122,4 @@ def test_get_token_and_cost() -> None:
     assert token_and_cost["total_tokens_cost"] == (
         token_and_cost["prompt_tokens_cost"] + token_and_cost["completion_tokens_cost"]
     )
+    assert token_and_cost["time_sec"] == 0.5
