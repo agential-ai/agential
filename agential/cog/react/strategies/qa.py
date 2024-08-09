@@ -13,8 +13,9 @@ from agential.cog.react.functional import _is_halted, _prompt_agent
 from agential.cog.react.strategies.base import ReActBaseStrategy
 from agential.llm.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
-from agential.utils.parse import remove_newline
 from agential.utils.general import get_token_and_cost
+from agential.utils.parse import remove_newline
+
 
 def parse_qa_action(string: str) -> Tuple[str, str]:
     """Parses an action string into an action type and its argument.
@@ -65,11 +66,7 @@ class ReActQAStrategy(ReActBaseStrategy):
         self._scratchpad = ""
         self._answer = ""
         self._finished = False
-        self._token_usage = {
-            "thought": [],
-            "action": []
-        }
-
+        self._token_usage = {"thought": [], "action": []}
 
     def generate(
         self,

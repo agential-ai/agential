@@ -1,7 +1,8 @@
 """Unit tests for general util functions."""
 
-from agential.utils.general import safe_execute, shuffle_chunk_list, get_token_and_cost
-from agential.llm.llm import Usage, ModelResponse
+from agential.llm.llm import ModelResponse, Usage
+from agential.utils.general import get_token_and_cost, safe_execute, shuffle_chunk_list
+
 
 def test_shuffle_chunk_list() -> None:
     """Test shuffle_chunk_list."""
@@ -92,7 +93,7 @@ def test_get_token_and_cost() -> None:
     response.choices = []
     response.usage = usage
     response.model = model
-    
+
     token_and_cost = get_token_and_cost(response)
 
     assert isinstance(token_and_cost, dict)
@@ -118,4 +119,3 @@ def test_get_token_and_cost() -> None:
     assert token_and_cost["total_tokens_cost"] == (
         token_and_cost["prompt_tokens_cost"] + token_and_cost["completion_tokens_cost"]
     )
-

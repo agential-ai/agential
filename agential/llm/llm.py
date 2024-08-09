@@ -20,6 +20,7 @@ class Choices:
 
 class Usage:
     """Represents usage information."""
+
     prompt_tokens: int
     completion_tokens: int
     total_tokens: int

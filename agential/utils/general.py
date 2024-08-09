@@ -6,8 +6,11 @@ import random
 import sys
 
 from typing import Any, Dict, List, Optional, Tuple
-from litellm import cost_per_token
+
 import func_timeout
+
+from litellm import cost_per_token
+
 from agential.llm.llm import ModelResponse
 
 
@@ -77,7 +80,7 @@ def safe_execute(
 
 def get_token_and_cost(response: ModelResponse) -> Dict[str, float]:
     """Calculates the token usage and cost of a prompt and completion in dollars.
-    
+
     Args:
         response (ModelResponse): The response object containing the usage information.
 
@@ -101,5 +104,6 @@ def get_token_and_cost(response: ModelResponse) -> Dict[str, float]:
         "total_tokens": response.usage.total_tokens,
         "prompt_tokens_cost": prompt_tokens_cost_usd_dollar,
         "completion_tokens_cost": completion_tokens_cost_usd_dollar,
-        "total_tokens_cost": prompt_tokens_cost_usd_dollar + completion_tokens_cost_usd_dollar
+        "total_tokens_cost": prompt_tokens_cost_usd_dollar
+        + completion_tokens_cost_usd_dollar,
     }
