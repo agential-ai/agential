@@ -1,6 +1,7 @@
 """Simple LLM wrapper for LiteLLM's completion function."""
 
 import time
+
 from abc import ABC, abstractmethod
 from typing import Any, List
 
@@ -78,13 +79,12 @@ class LLM(BaseLLM):
         Returns:
             ModelResponse: The response from the language model, typically containing generated text and metadata.
         """
-        
         start_time = time.time()
         response = completion(
             model=self.model, messages=[{"role": "user", "content": prompt}], **kwargs
         )
         end_time = time.time()
-        
+
         response.time_taken = end_time - start_time
         return response
 

@@ -107,5 +107,5 @@ def get_token_cost_time(response: ModelResponse) -> Dict[str, float]:
         "completion_tokens_cost": completion_tokens_cost_usd_dollar,
         "total_tokens_cost": prompt_tokens_cost_usd_dollar
         + completion_tokens_cost_usd_dollar,
-        "time_sec": response.time_taken
+        "time_sec": response.time_taken,
     }

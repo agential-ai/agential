@@ -66,7 +66,7 @@ class ReActQAStrategy(ReActBaseStrategy):
         self._scratchpad = ""
         self._answer = ""
         self._finished = False
-        self._prompt_metrics = {"thought": None, "action": None}
+        self._prompt_metrics: Dict[str, Any] = {"thought": None, "action": None}
 
     def generate(
         self,

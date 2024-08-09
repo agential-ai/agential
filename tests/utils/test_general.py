@@ -53,7 +53,7 @@ def test_get_token_cost_time() -> None:
     response.usage = usage
     response.model = model
     response.time_taken = 0.5
-    
+
     token_and_cost = get_token_cost_time(response)
 
     assert isinstance(token_and_cost, dict)
@@ -96,7 +96,7 @@ def test_get_token_cost_time() -> None:
     response.usage = usage
     response.model = model
     response.time_taken = 0.5
-    
+
     token_and_cost = get_token_cost_time(response)
 
     assert isinstance(token_and_cost, dict)
