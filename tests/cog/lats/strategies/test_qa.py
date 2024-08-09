@@ -4,7 +4,7 @@ from langchain_community.docstore.wikipedia import Wikipedia
 
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSSimulationOutput, LATSReActOutput
+from agential.cog.lats.output import LATSReActOutput, LATSSimulationOutput
 from agential.cog.lats.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE,
@@ -172,8 +172,25 @@ def test_initialize() -> None:
 
 def test_generate_thought() -> None:
     """Test the generate_thought method."""
-
-    gt_prompt_metrics = {'thought': [{'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}], 'action': [], 'value': [], 'simulate_thought': [], 'simulate_action': [], 'simulate_value': [], 'reflection': []} 
+    gt_prompt_metrics = {
+        "thought": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            }
+        ],
+        "action": [],
+        "value": [],
+        "simulate_thought": [],
+        "simulate_action": [],
+        "simulate_value": [],
+        "reflection": [],
+    }
 
     llm = MockLLM(
         "gpt-3.5-turbo",
@@ -192,7 +209,14 @@ def test_generate_thought() -> None:
     additional_keys = {"key": "value"}
 
     updated_trajectory, thought = strategy.generate_thought(
-        question, examples, trajectory, reflections, depth, prompt, additional_keys, is_simulate=False
+        question,
+        examples,
+        trajectory,
+        reflections,
+        depth,
+        prompt,
+        additional_keys,
+        is_simulate=False,
     )
 
     assert thought == "I should search for information about the topic."
@@ -205,6 +229,26 @@ def test_generate_thought() -> None:
 
 def test_generate_action() -> None:
     """Test the generate_action method."""
+    gt_prompt_metrics = {
+        "thought": [],
+        "action": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            }
+        ],
+        "value": [],
+        "simulate_thought": [],
+        "simulate_action": [],
+        "simulate_value": [],
+        "reflection": [],
+    }
+
     llm = MockLLM("gpt-3.5-turbo", responses=["Search[capital of France]"])
     strategy = LATSQAStrategy(llm=llm)
 
@@ -219,7 +263,14 @@ def test_generate_action() -> None:
     additional_keys = {"key": "value"}
 
     trajectory, action_type, query = strategy.generate_action(
-        question, examples, trajectory, reflections, depth, prompt, additional_keys, is_simulate=False
+        question,
+        examples,
+        trajectory,
+        reflections,
+        depth,
+        prompt,
+        additional_keys,
+        is_simulate=False,
     )
     assert (
         trajectory
@@ -227,6 +278,8 @@ def test_generate_action() -> None:
     )
     assert action_type == "Search"
     assert query == "capital of France"
+
+    assert strategy._prompt_metrics == gt_prompt_metrics
 
 
 def test_generate_observation() -> None:
@@ -385,7 +438,7 @@ def test_generate() -> None:
         reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
         additional_keys={},
         reflect_additional_keys={},
-        is_simulate=False
+        is_simulate=False,
     )
     assert len(children_nodes) == 5
     for gt_state, node in zip(gt_states, children_nodes):
@@ -493,7 +546,7 @@ def test_generate() -> None:
         reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
         additional_keys={},
         reflect_additional_keys={},
-        is_simulate=False
+        is_simulate=False,
     )
     assert len(children_nodes) == 5
     for gt_state, node in zip(gt_states, children_nodes):
@@ -523,7 +576,7 @@ def test_generate() -> None:
         reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
         additional_keys={},
         reflect_additional_keys={},
-        is_simulate=False
+        is_simulate=False,
     )
     assert len(children_nodes) == 1
     assert children_nodes[0].state.thought == "I think the answer is Mike Tyson."
@@ -531,6 +584,8 @@ def test_generate() -> None:
     assert children_nodes[0].state.query == "Mike Tyson"
     assert children_nodes[0].is_terminal
     assert children_nodes[0].reward == 0
+
+    assert strategy._prompt_metrics == {}
 
 
 def test_select_node() -> None:
@@ -682,6 +737,35 @@ def test_expand_node() -> None:
 
 def test_evaluate_node() -> None:
     """Test the evaluate_node method."""
+    gt_prompt_metrics = {
+        "thought": [],
+        "action": [],
+        "value": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+        ],
+        "simulate_thought": [],
+        "simulate_action": [],
+        "simulate_value": [],
+        "reflection": [],
+    }
+
     llm = MockLLM(
         "gpt-3.5-turbo",
         responses=["Explanation: Good trajectory. Correctness score: 8"],
@@ -749,9 +833,177 @@ def test_evaluate_node() -> None:
     )
     assert empty_reflection_values == values
 
+    assert strategy._prompt_metrics == gt_prompt_metrics
+
 
 def test_simulate_node() -> None:
     """Test the simulate_node method."""
+    gt_prompt_metrics = {
+        "thought": [],
+        "action": [],
+        "value": [],
+        "simulate_thought": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+        ],
+        "simulate_action": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+        ],
+        "simulate_value": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+        ],
+        "reflection": [],
+    }
+
     responses = [
         "I need to search for the capital of France",
         "Search[capital of France]",
@@ -813,6 +1065,8 @@ def test_simulate_node() -> None:
     assert len(simulation_results) > 0
 
     assert -1 <= reward <= 1
+
+    assert qa_strategy._prompt_metrics == gt_prompt_metrics
 
 
 def test_backpropagate_node() -> None:
@@ -914,6 +1168,35 @@ def test_reflect_condition() -> None:
 
 def test_reflect() -> None:
     """Test the reflect method."""
+    gt_prompt_metrics = {
+        "thought": [],
+        "action": [],
+        "value": [],
+        "simulate_thought": [],
+        "simulate_action": [],
+        "simulate_value": [],
+        "reflection": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+        ],
+    }
+
     llm = MockLLM("gpt-3.5-turbo", responses=["Reflection 1", "Reflection 2"])
     strategy = LATSQAStrategy(llm=llm, max_unique=2)
 
@@ -941,13 +1224,106 @@ def test_reflect() -> None:
 
     assert strategy.reflection_map == reflections
 
+    assert strategy._prompt_metrics == gt_prompt_metrics
+
 
 def test_create_output_dict() -> None:
     """Test create_output_dict method."""
+    gt_prompt_metrics = {
+        "thought": [],
+        "action": [],
+        "value": [],
+        "simulate_thought": [],
+        "simulate_action": [],
+        "simulate_value": [],
+        "reflection": [],
+    }
+
     llm = MockLLM("gpt-3.5-turbo", responses=["1"])
     strategy = LATSQAStrategy(llm=llm, max_unique=2)
 
-    gt_out = {'iteration': 1, 'current_node': {'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, 'children_nodes': [{'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}], 'values': [{}], 'simulation_reward': 1.0, 'simulation_terminal_node': {'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, 'simulation_results': [LATSSimulationOutput(current_node={'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, children_nodes=[], values=[{}])], 'prompt_metrics': {'thought': [], 'action': [], 'value': [], 'simulate_thought': [], 'simulate_action': [], 'simulate_value': [], 'reflection': []}}
+    gt_out = {
+        "iteration": 1,
+        "current_node": {
+            "state": LATSReActOutput(
+                thought="",
+                action_type="",
+                query="",
+                observation="",
+                answer="",
+                external_tool_info={},
+            ),
+            "visits": 0,
+            "value": 0,
+            "depth": 0,
+            "is_terminal": False,
+            "reward": 0,
+        },
+        "children_nodes": [
+            {
+                "state": LATSReActOutput(
+                    thought="",
+                    action_type="",
+                    query="",
+                    observation="",
+                    answer="",
+                    external_tool_info={},
+                ),
+                "visits": 0,
+                "value": 0,
+                "depth": 0,
+                "is_terminal": False,
+                "reward": 0,
+            }
+        ],
+        "values": [{}],
+        "simulation_reward": 1.0,
+        "simulation_terminal_node": {
+            "state": LATSReActOutput(
+                thought="",
+                action_type="",
+                query="",
+                observation="",
+                answer="",
+                external_tool_info={},
+            ),
+            "visits": 0,
+            "value": 0,
+            "depth": 0,
+            "is_terminal": False,
+            "reward": 0,
+        },
+        "simulation_results": [
+            LATSSimulationOutput(
+                current_node={
+                    "state": LATSReActOutput(
+                        thought="",
+                        action_type="",
+                        query="",
+                        observation="",
+                        answer="",
+                        external_tool_info={},
+                    ),
+                    "visits": 0,
+                    "value": 0,
+                    "depth": 0,
+                    "is_terminal": False,
+                    "reward": 0,
+                },
+                children_nodes=[],
+                values=[{}],
+            )
+        ],
+        "prompt_metrics": {
+            "thought": [],
+            "action": [],
+            "value": [],
+            "simulate_thought": [],
+            "simulate_action": [],
+            "simulate_value": [],
+            "reflection": [],
+        },
+    }
     simulation_results = [
         {"current_node": Node(), "children_nodes": [], "values": [{}]}
     ]
@@ -963,7 +1339,54 @@ def test_create_output_dict() -> None:
     assert out == gt_out
 
     # Test half empty.
-    gt_out = {'iteration': 1, 'current_node': {'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, 'children_nodes': [{'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}], 'values': [], 'simulation_reward': 0, 'simulation_terminal_node': {}, 'simulation_results': [], 'prompt_metrics': {'thought': [], 'action': [], 'value': [], 'simulate_thought': [], 'simulate_action': [], 'simulate_value': [], 'reflection': []}}
+    gt_out = {
+        "iteration": 1,
+        "current_node": {
+            "state": LATSReActOutput(
+                thought="",
+                action_type="",
+                query="",
+                observation="",
+                answer="",
+                external_tool_info={},
+            ),
+            "visits": 0,
+            "value": 0,
+            "depth": 0,
+            "is_terminal": False,
+            "reward": 0,
+        },
+        "children_nodes": [
+            {
+                "state": LATSReActOutput(
+                    thought="",
+                    action_type="",
+                    query="",
+                    observation="",
+                    answer="",
+                    external_tool_info={},
+                ),
+                "visits": 0,
+                "value": 0,
+                "depth": 0,
+                "is_terminal": False,
+                "reward": 0,
+            }
+        ],
+        "values": [],
+        "simulation_reward": 0,
+        "simulation_terminal_node": {},
+        "simulation_results": [],
+        "prompt_metrics": {
+            "thought": [],
+            "action": [],
+            "value": [],
+            "simulate_thought": [],
+            "simulate_action": [],
+            "simulate_value": [],
+            "reflection": [],
+        },
+    }
     out = strategy.create_output_dict(
         iteration=1,
         current_node=Node(),
@@ -974,6 +1397,8 @@ def test_create_output_dict() -> None:
         simulation_results=None,
     )
     assert out == gt_out
+
+    assert strategy._prompt_metrics == gt_prompt_metrics
 
 
 def test_reset() -> None:
@@ -994,6 +1419,15 @@ def test_reset() -> None:
     assert strategy.failed_trajectories == []
     assert strategy.reflection_map == []
     assert strategy.value_cache == {}
+    assert strategy._prompt_metrics == {
+        "thought": [],
+        "action": [],
+        "value": [],
+        "simulate_thought": [],
+        "simulate_action": [],
+        "simulate_value": [],
+        "reflection": [],
+    }
 
 
 def test_instantiate_strategies() -> None:

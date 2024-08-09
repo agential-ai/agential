@@ -2,9 +2,9 @@
 
 import re
 
+from copy import deepcopy
 from typing import Any, Dict, List, Optional, Tuple
 
-from copy import deepcopy
 from langchain_community.docstore.wikipedia import Wikipedia
 
 from agential.cog.lats.functional import (
@@ -16,7 +16,7 @@ from agential.cog.lats.functional import (
     get_unique_trajectories,
 )
 from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSSimulationOutput, LATSReActOutput
+from agential.cog.lats.output import LATSReActOutput, LATSSimulationOutput
 from agential.cog.lats.strategies.base import LATSBaseStrategy
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
@@ -820,7 +820,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             "simulation_results": (
                 simulation_results_output if simulation_results else []
             ),
-            "prompt_metrics": deepcopy(self._prompt_metrics)
+            "prompt_metrics": deepcopy(self._prompt_metrics),
         }
         self._prompt_metrics = {
             "thought": [],
@@ -848,6 +848,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             "simulate_value": [],
             "reflection": [],
         }
+
 
 class LATSHotQAStrategy(LATSQAStrategy):
     """A strategy class for the HotpotQA benchmark using the LATS agent."""

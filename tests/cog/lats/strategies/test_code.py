@@ -2,7 +2,7 @@
 
 from agential.cog.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSSimulationOutput, LATSReActOutput
+from agential.cog.lats.output import LATSReActOutput, LATSSimulationOutput
 from agential.cog.lats.prompts import (
     HUMANEVAL_FEWSHOT_EXAMPLES_LATS_REFLECT,
     HUMANEVAL_FEWSHOT_EXAMPLES_LATS_VALUE,
@@ -251,7 +251,14 @@ def test_generate_thought() -> None:
     additional_keys = {"key": "value"}
 
     updated_trajectory, thought = strategy.generate_thought(
-        question, examples, trajectory, reflections, depth, prompt, additional_keys, is_simulate=False
+        question,
+        examples,
+        trajectory,
+        reflections,
+        depth,
+        prompt,
+        additional_keys,
+        is_simulate=False,
     )
 
     assert thought == "I should search for information about the topic."
@@ -277,7 +284,14 @@ def test_generate_action() -> None:
     additional_keys = {"key": "value"}
 
     trajectory, action_type, query = strategy.generate_action(
-        question, examples, trajectory, reflections, depth, prompt, additional_keys, is_simulate=False
+        question,
+        examples,
+        trajectory,
+        reflections,
+        depth,
+        prompt,
+        additional_keys,
+        is_simulate=False,
     )
 
     assert (
@@ -418,7 +432,7 @@ def test_generate() -> None:
         reflect_prompt=LATS_REFLECT_INSTRUCTION_HUMANEVAL,
         additional_keys={},
         reflect_additional_keys={},
-        is_simulate=False
+        is_simulate=False,
     )
     assert len(children_nodes) == 4
     for gt_state, node in zip(gt_states, children_nodes):
@@ -468,7 +482,7 @@ def test_generate() -> None:
         reflect_prompt=LATS_REFLECT_INSTRUCTION_HUMANEVAL,
         additional_keys={},
         reflect_additional_keys={},
-        is_simulate=False
+        is_simulate=False,
     )
 
     assert len(children_nodes) == 5
@@ -499,7 +513,7 @@ def test_generate() -> None:
         reflect_prompt=LATS_REFLECT_INSTRUCTION_HUMANEVAL,
         additional_keys={},
         reflect_additional_keys={},
-        is_simulate=False
+        is_simulate=False,
     )
     assert len(children_nodes) == 1
     assert (
@@ -923,7 +937,88 @@ def test_create_output_dict() -> None:
     llm = MockLLM("gpt-3.5-turbo", responses=["1"])
     strategy = LATSCodeStrategy(llm=llm, max_unique=2)
 
-    gt_out = {'iteration': 1, 'current_node': {'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, 'children_nodes': [{'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}], 'values': [{}], 'simulation_reward': 1.0, 'simulation_terminal_node': {'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, 'simulation_results': [LATSSimulationOutput(current_node={'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, children_nodes=[], values=[{}])], 'prompt_metrics': {'thought': [], 'action': [], 'value': [], 'simulate_thought': [], 'simulate_action': [], 'simulate_value': [], 'reflection': []}}
+    gt_out = {
+        "iteration": 1,
+        "current_node": {
+            "state": LATSReActOutput(
+                thought="",
+                action_type="",
+                query="",
+                observation="",
+                answer="",
+                external_tool_info={},
+            ),
+            "visits": 0,
+            "value": 0,
+            "depth": 0,
+            "is_terminal": False,
+            "reward": 0,
+        },
+        "children_nodes": [
+            {
+                "state": LATSReActOutput(
+                    thought="",
+                    action_type="",
+                    query="",
+                    observation="",
+                    answer="",
+                    external_tool_info={},
+                ),
+                "visits": 0,
+                "value": 0,
+                "depth": 0,
+                "is_terminal": False,
+                "reward": 0,
+            }
+        ],
+        "values": [{}],
+        "simulation_reward": 1.0,
+        "simulation_terminal_node": {
+            "state": LATSReActOutput(
+                thought="",
+                action_type="",
+                query="",
+                observation="",
+                answer="",
+                external_tool_info={},
+            ),
+            "visits": 0,
+            "value": 0,
+            "depth": 0,
+            "is_terminal": False,
+            "reward": 0,
+        },
+        "simulation_results": [
+            LATSSimulationOutput(
+                current_node={
+                    "state": LATSReActOutput(
+                        thought="",
+                        action_type="",
+                        query="",
+                        observation="",
+                        answer="",
+                        external_tool_info={},
+                    ),
+                    "visits": 0,
+                    "value": 0,
+                    "depth": 0,
+                    "is_terminal": False,
+                    "reward": 0,
+                },
+                children_nodes=[],
+                values=[{}],
+            )
+        ],
+        "prompt_metrics": {
+            "thought": [],
+            "action": [],
+            "value": [],
+            "simulate_thought": [],
+            "simulate_action": [],
+            "simulate_value": [],
+            "reflection": [],
+        },
+    }
     simulation_results = [
         {"current_node": Node(), "children_nodes": [], "values": [{}]}
     ]
@@ -939,7 +1034,54 @@ def test_create_output_dict() -> None:
     assert out == gt_out
 
     # Test half empty.
-    gt_out = {'iteration': 1, 'current_node': {'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}, 'children_nodes': [{'state': LATSReActOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}], 'values': [], 'simulation_reward': 0, 'simulation_terminal_node': {}, 'simulation_results': [], 'prompt_metrics': {'thought': [], 'action': [], 'value': [], 'simulate_thought': [], 'simulate_action': [], 'simulate_value': [], 'reflection': []}}
+    gt_out = {
+        "iteration": 1,
+        "current_node": {
+            "state": LATSReActOutput(
+                thought="",
+                action_type="",
+                query="",
+                observation="",
+                answer="",
+                external_tool_info={},
+            ),
+            "visits": 0,
+            "value": 0,
+            "depth": 0,
+            "is_terminal": False,
+            "reward": 0,
+        },
+        "children_nodes": [
+            {
+                "state": LATSReActOutput(
+                    thought="",
+                    action_type="",
+                    query="",
+                    observation="",
+                    answer="",
+                    external_tool_info={},
+                ),
+                "visits": 0,
+                "value": 0,
+                "depth": 0,
+                "is_terminal": False,
+                "reward": 0,
+            }
+        ],
+        "values": [],
+        "simulation_reward": 0,
+        "simulation_terminal_node": {},
+        "simulation_results": [],
+        "prompt_metrics": {
+            "thought": [],
+            "action": [],
+            "value": [],
+            "simulate_thought": [],
+            "simulate_action": [],
+            "simulate_value": [],
+            "reflection": [],
+        },
+    }
     out = strategy.create_output_dict(
         iteration=1,
         current_node=Node(),
