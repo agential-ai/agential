@@ -11,7 +11,7 @@ from tiktoken.core import Encoding
 from agential.cog.react.functional import _is_halted, _prompt_agent
 from agential.cog.react.strategies.base import ReActBaseStrategy
 from agential.llm.llm import BaseLLM
-from agential.utils.general import safe_execute
+from agential.utils.general import safe_execute, get_token_cost_time
 from agential.utils.parse import remove_newline
 
 
@@ -66,6 +66,7 @@ class ReActMathStrategy(ReActBaseStrategy):
         self._scratchpad = ""
         self._answer = ""
         self._finished = False
+        self._prompt_metrics = {"thought": None, "action": None}
 
     def generate(
         self,
@@ -99,6 +100,7 @@ class ReActMathStrategy(ReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics["thought"] = get_token_cost_time(out)
         thought = out.choices[0].message.content
 
         thought = remove_newline(thought).split("Action")[0].strip()
@@ -137,6 +139,7 @@ class ReActMathStrategy(ReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics["action"] = get_token_cost_time(out)
         action = out.choices[0].message.content
 
         action = action.split("Observation")[0].strip()
@@ -202,7 +205,7 @@ class ReActMathStrategy(ReActBaseStrategy):
             external_tool_info (Dict[str, Any]): The external tool outputs.
 
         Returns:
-            Dict[str, Any]: A dictionary containing the thought, action type, query, observation, answer, and external tool output.
+            Dict[str, Any]: A dictionary containing the thought, action type, query, observation, answer, external tool output, and prompt metrics.
         """
         return {
             "thought": thought,
@@ -211,6 +214,7 @@ class ReActMathStrategy(ReActBaseStrategy):
             "observation": obs,
             "answer": self._answer,
             "external_tool_info": external_tool_info,
+            "prompt_metrics": self._prompt_metrics,
         }
 
     def halting_condition(

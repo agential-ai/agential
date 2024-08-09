@@ -192,6 +192,7 @@ def test_create_output_dict() -> None:
         "observation": obs,
         "answer": "answer = 9",
         "external_tool_info": external_tool_info,
+        "prompt_metrics": {"thought": None, "action": None},
     }
 
     result = strategy.create_output_dict(
