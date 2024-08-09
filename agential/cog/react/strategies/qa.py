@@ -65,6 +65,11 @@ class ReActQAStrategy(ReActBaseStrategy):
         self._scratchpad = ""
         self._answer = ""
         self._finished = False
+        self._token_usage = {
+            "thought": [],
+            "action": []
+        }
+
 
     def generate(
         self,
@@ -98,6 +103,17 @@ class ReActQAStrategy(ReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        cost_per_token(
+                model=self.llm.model,
+                prompt_tokens=out.usage.prompt_tokens,
+                completion_tokens=out.usage.completion_tokens,
+            )
+        self._token_usage["thought"].append({
+            "prompt_tokens": out.usage.prompt_tokens,
+            "completion_tokens": out.usage.completion_tokens,
+            "total_tokens": out.usage.total_tokens,
+            "prompt_cost": 
+        })
         thought = out.choices[0].message.content
 
         thought = remove_newline(thought).split("Action")[0].strip()

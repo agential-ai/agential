@@ -18,14 +18,26 @@ class Choices:
     message: Message
 
 
+class Usage:
+    """Represents usage information."""
+    prompt_tokens: int
+    completion_tokens: int
+    total_tokens: int
+
+
 class ModelResponse:
     """Represents a model response with choices."""
 
     choices: List[Choices]
+    usage: Usage
 
 
 class BaseLLM(ABC):
     """Base class for LLM."""
+
+    def __init__(self, model: str) -> None:
+        """Initialize."""
+        self.model = model
 
     @abstractmethod
     def __call__(self, *args: Any, **kwargs: Any) -> ModelResponse:
@@ -50,7 +62,7 @@ class LLM(BaseLLM):
 
     def __init__(self, model: str) -> None:
         """Initialize."""
-        self.model = model
+        super().__init__(model=model)
 
     def __call__(self, prompt: str, **kwargs: Any) -> ModelResponse:
         """Generate a response using the language model.
@@ -78,7 +90,7 @@ class MockLLM(BaseLLM):
 
     def __init__(self, model: str, responses: List[str]):
         """Initialize."""
-        self.model = model
+        super().__init__(model=model)
         self.responses = responses
         self.current_index = 0
 

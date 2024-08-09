@@ -6,7 +6,7 @@ import random
 import sys
 
 from typing import Any, Dict, List, Optional, Tuple
-
+from litellm import cost_per_token
 import func_timeout
 
 
@@ -72,3 +72,29 @@ def safe_execute(
         report = "TimeoutError: execution timeout"
 
     return an, report
+
+
+def get_token_cost(prompt_tokens: int, completion_tokens: int, model: str) -> Dict[str, float]:
+    """Calculates the cost of a prompt and completion in dollars.
+    
+    Args:
+        prompt_tokens (int): The number of tokens in the prompt.
+        completion_tokens (int): The number of tokens in the completion.
+        model (str): The name of the model.
+
+    Returns:
+        Dict[str, float]: A dictionary containing the cost breakdown:
+            - "prompt_tokens_cost": The cost of the prompt tokens in dollars.
+            - "completion_tokens_cost": The cost of the completion tokens in dollars.
+            - "total_tokens_cost": The total cost of the prompt and completion tokens in dollars.
+    """
+    prompt_tokens_cost_usd_dollar, completion_tokens_cost_usd_dollar = cost_per_token(
+        model=model,
+        prompt_tokens=prompt_tokens,
+        completion_tokens=completion_tokens,
+    )
+    return {
+        "prompt_tokens_cost": prompt_tokens_cost_usd_dollar,
+        "completion_tokens_cost": completion_tokens_cost_usd_dollar,
+        "total_tokens_cost": prompt_tokens_cost_usd_dollar + completion_tokens_cost_usd_dollar
+    }
