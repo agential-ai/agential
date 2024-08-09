@@ -1,7 +1,7 @@
 """Unit tests for general util functions."""
 
-from agential.utils.general import safe_execute, shuffle_chunk_list, get_token_cost
-
+from agential.utils.general import safe_execute, shuffle_chunk_list, get_token_and_cost
+from agential.llm.llm import Usage, ModelResponse
 
 def test_shuffle_chunk_list() -> None:
     """Test shuffle_chunk_list."""
@@ -33,28 +33,49 @@ def test_safe_execute() -> None:
     assert report == "Done"
 
 
-def test_get_token_cost() -> None:
-    """Test get_token_cost function."""
+def test_get_token_and_cost() -> None:
+    """Test get_token_and_cost function."""
+    # Create a mock ModelResponse object.
+
     # Test with sample token counts and model.
     prompt_tokens = 100
     completion_tokens = 50
     model = "gpt-3.5-turbo"
 
-    cost_breakdown = get_token_cost(prompt_tokens, completion_tokens, model)
+    usage = Usage()
+    usage.prompt_tokens = prompt_tokens
+    usage.completion_tokens = completion_tokens
+    usage.total_tokens = prompt_tokens + completion_tokens
 
-    assert isinstance(cost_breakdown, dict)
-    assert "prompt_tokens_cost" in cost_breakdown
-    assert "completion_tokens_cost" in cost_breakdown
-    assert "total_tokens_cost" in cost_breakdown
+    response = ModelResponse()
+    response.choices = []
+    response.usage = usage
+    response.model = model
 
-    assert isinstance(cost_breakdown["prompt_tokens_cost"], float)
-    assert isinstance(cost_breakdown["completion_tokens_cost"], float)
-    assert isinstance(cost_breakdown["total_tokens_cost"], float)
+    token_and_cost = get_token_and_cost(response)
 
-    assert cost_breakdown["prompt_tokens_cost"] > 0
-    assert cost_breakdown["completion_tokens_cost"] > 0
-    assert cost_breakdown["total_tokens_cost"] == (
-        cost_breakdown["prompt_tokens_cost"] + cost_breakdown["completion_tokens_cost"]
+    assert isinstance(token_and_cost, dict)
+    assert "prompt_tokens" in token_and_cost
+    assert "completion_tokens" in token_and_cost
+    assert "total_tokens" in token_and_cost
+    assert "prompt_tokens_cost" in token_and_cost
+    assert "completion_tokens_cost" in token_and_cost
+    assert "total_tokens_cost" in token_and_cost
+
+    assert isinstance(token_and_cost["prompt_tokens"], int)
+    assert isinstance(token_and_cost["completion_tokens"], int)
+    assert isinstance(token_and_cost["total_tokens"], int)
+    assert isinstance(token_and_cost["prompt_tokens_cost"], float)
+    assert isinstance(token_and_cost["completion_tokens_cost"], float)
+    assert isinstance(token_and_cost["total_tokens_cost"], float)
+
+    assert token_and_cost["prompt_tokens"] == prompt_tokens
+    assert token_and_cost["completion_tokens"] == completion_tokens
+    assert token_and_cost["total_tokens"] == prompt_tokens + completion_tokens
+    assert token_and_cost["prompt_tokens_cost"] > 0
+    assert token_and_cost["completion_tokens_cost"] > 0
+    assert token_and_cost["total_tokens_cost"] == (
+        token_and_cost["prompt_tokens_cost"] + token_and_cost["completion_tokens_cost"]
     )
 
     # Test with different token counts and model.
@@ -62,20 +83,39 @@ def test_get_token_cost() -> None:
     completion_tokens = 100
     model = "gpt-4"
 
-    cost_breakdown = get_token_cost(prompt_tokens, completion_tokens, model)
+    usage = Usage()
+    usage.prompt_tokens = prompt_tokens
+    usage.completion_tokens = completion_tokens
+    usage.total_tokens = prompt_tokens + completion_tokens
 
-    assert isinstance(cost_breakdown, dict)
-    assert "prompt_tokens_cost" in cost_breakdown
-    assert "completion_tokens_cost" in cost_breakdown
-    assert "total_tokens_cost" in cost_breakdown
+    response = ModelResponse()
+    response.choices = []
+    response.usage = usage
+    response.model = model
+    
+    token_and_cost = get_token_and_cost(response)
 
-    assert isinstance(cost_breakdown["prompt_tokens_cost"], float)
-    assert isinstance(cost_breakdown["completion_tokens_cost"], float)
-    assert isinstance(cost_breakdown["total_tokens_cost"], float)
+    assert isinstance(token_and_cost, dict)
+    assert "prompt_tokens" in token_and_cost
+    assert "completion_tokens" in token_and_cost
+    assert "total_tokens" in token_and_cost
+    assert "prompt_tokens_cost" in token_and_cost
+    assert "completion_tokens_cost" in token_and_cost
+    assert "total_tokens_cost" in token_and_cost
 
-    assert cost_breakdown["prompt_tokens_cost"] > 0
-    assert cost_breakdown["completion_tokens_cost"] > 0
-    assert cost_breakdown["total_tokens_cost"] == (
-        cost_breakdown["prompt_tokens_cost"] + cost_breakdown["completion_tokens_cost"]
+    assert isinstance(token_and_cost["prompt_tokens"], int)
+    assert isinstance(token_and_cost["completion_tokens"], int)
+    assert isinstance(token_and_cost["total_tokens"], int)
+    assert isinstance(token_and_cost["prompt_tokens_cost"], float)
+    assert isinstance(token_and_cost["completion_tokens_cost"], float)
+    assert isinstance(token_and_cost["total_tokens_cost"], float)
+
+    assert token_and_cost["prompt_tokens"] == prompt_tokens
+    assert token_and_cost["completion_tokens"] == completion_tokens
+    assert token_and_cost["total_tokens"] == prompt_tokens + completion_tokens
+    assert token_and_cost["prompt_tokens_cost"] > 0
+    assert token_and_cost["completion_tokens_cost"] > 0
+    assert token_and_cost["total_tokens_cost"] == (
+        token_and_cost["prompt_tokens_cost"] + token_and_cost["completion_tokens_cost"]
     )
 

@@ -14,7 +14,7 @@ from agential.cog.react.strategies.base import ReActBaseStrategy
 from agential.llm.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
-
+from agential.utils.general import get_token_and_cost
 
 def parse_qa_action(string: str) -> Tuple[str, str]:
     """Parses an action string into an action type and its argument.
@@ -103,17 +103,8 @@ class ReActQAStrategy(ReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        cost_per_token(
-                model=self.llm.model,
-                prompt_tokens=out.usage.prompt_tokens,
-                completion_tokens=out.usage.completion_tokens,
-            )
-        self._token_usage["thought"].append({
-            "prompt_tokens": out.usage.prompt_tokens,
-            "completion_tokens": out.usage.completion_tokens,
-            "total_tokens": out.usage.total_tokens,
-            "prompt_cost": 
-        })
+
+        self._token_usage["thought"].append(get_token_and_cost(out))
         thought = out.choices[0].message.content
 
         thought = remove_newline(thought).split("Action")[0].strip()

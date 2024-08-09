@@ -30,6 +30,7 @@ class ModelResponse:
 
     choices: List[Choices]
     usage: Usage
+    model: str
 
 
 class BaseLLM(ABC):
