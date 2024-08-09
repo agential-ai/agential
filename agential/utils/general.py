@@ -65,7 +65,7 @@ def safe_execute(
                 an = [safe_globals.get("answer", None)]
             else:
                 an = [safe_globals.get(k, None) for k in keys]
-            return an, "Done"
+            return an, default_exec_status
         except BaseException as e:
             return [None], repr(e)
 
