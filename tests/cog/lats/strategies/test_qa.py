@@ -142,6 +142,15 @@ def test_init() -> None:
     assert strategy.failed_trajectories == []
     assert strategy.reflection_map == []
     assert strategy.value_cache == {}
+    assert strategy._prompt_metrics == {
+        "thought": [],
+        "action": [],
+        "value": [],
+        "simulate_thought": [],
+        "simulate_action": [],
+        "simulate_value": [],
+        "reflection": [],
+    }
 
 
 def test_initialize() -> None:
@@ -163,6 +172,9 @@ def test_initialize() -> None:
 
 def test_generate_thought() -> None:
     """Test the generate_thought method."""
+
+    gt_prompt_metrics = {'thought': [{'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}], 'action': [], 'value': [], 'simulate_thought': [], 'simulate_action': [], 'simulate_value': [], 'reflection': []} 
+
     llm = MockLLM(
         "gpt-3.5-turbo",
         responses=[
@@ -188,6 +200,7 @@ def test_generate_thought() -> None:
         updated_trajectory
         == "Previous thought\nThought 2: I should search for information about the topic."
     )
+    assert strategy._prompt_metrics == gt_prompt_metrics
 
 
 def test_generate_action() -> None:
