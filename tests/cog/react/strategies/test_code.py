@@ -58,6 +58,7 @@ def test_init() -> None:
     assert strategy._answer == ""
     assert strategy._scratchpad == ""
     assert strategy._finished == False
+    assert strategy._prompt_metrics == {'thought': None, 'action': None}
 
 
 def test_generate() -> None:
@@ -80,6 +81,7 @@ def test_generate() -> None:
         additional_keys={"tests": tests},
     )
     assert out == gt_out
+    assert strategy._prompt_metrics == {'thought': {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, 'action': None}
 
 
 def test_generate_action() -> None:
@@ -103,6 +105,7 @@ def test_generate_action() -> None:
     )
     assert action_type == "Implement"
     assert query == gt_query
+    assert strategy._prompt_metrics == {'thought': None, 'action': {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}}
 
 
 def test_generate_observation() -> None:
@@ -232,6 +235,7 @@ def test_reset() -> None:
     assert strategy._answer == ""
     assert strategy._scratchpad == ""
     assert not strategy._finished
+    assert strategy._prompt_metrics == {'thought': None, 'action': None}
 
 
 def test_instantiate_strategies() -> None:
