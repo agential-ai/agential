@@ -2,9 +2,9 @@
 
 import re
 
+from copy import deepcopy
 from typing import Any, Dict, List, Optional, Tuple
 
-from copy import deepcopy
 from agential.cog.lats.functional import (
     _build_failed_trajectory_format,
     _build_reflection_format,
@@ -14,11 +14,11 @@ from agential.cog.lats.functional import (
     get_unique_trajectories,
 )
 from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSSimulationOutput, LATSReActOutput
+from agential.cog.lats.output import LATSReActOutput, LATSSimulationOutput
 from agential.cog.lats.strategies.base import LATSBaseStrategy
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
-from agential.utils.general import safe_execute, get_token_cost_time
+from agential.utils.general import get_token_cost_time, safe_execute
 from agential.utils.parse import remove_newline
 
 
@@ -848,7 +848,7 @@ class LATSCodeStrategy(LATSBaseStrategy):
             "simulation_results": (
                 simulation_results_output if simulation_results else []
             ),
-            "prompt_metrics": deepcopy(self._prompt_metrics)
+            "prompt_metrics": deepcopy(self._prompt_metrics),
         }
         self._prompt_metrics = {
             "thought": [],
@@ -860,7 +860,7 @@ class LATSCodeStrategy(LATSBaseStrategy):
             "reflection": [],
         }
         return out
-    
+
     def reset(self) -> None:
         """Reset the strategy to its initial state."""
         self.failed_trajectories = []
@@ -876,6 +876,7 @@ class LATSCodeStrategy(LATSBaseStrategy):
             "simulate_value": [],
             "reflection": [],
         }
+
 
 class LATSHEvalStrategy(LATSCodeStrategy):
     """A strategy class for the HumanEval benchmark using the LATS agent."""
