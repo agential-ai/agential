@@ -27,6 +27,11 @@ def test_init() -> None:
     assert strategy._prev_code_answer == ""
     assert strategy.patience_counter == 0
     assert not strategy._halt
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": None,
+        "updated_answer": None,
+    }
 
 
 def test_generate() -> None:
@@ -42,6 +47,19 @@ def test_generate() -> None:
         additional_keys={},
     )
     assert answer == "Badr Hari"
+    assert strategy._prompt_metrics == {
+        "answer": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "critique": None,
+        "updated_answer": None,
+    }
 
 
 def test_generate_critique() -> None:
@@ -64,6 +82,19 @@ def test_generate_critique() -> None:
     assert not strategy._halt
     assert strategy._prev_code_answer == answer
     assert strategy.patience_counter == 0
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "updated_answer": None,
+    }
 
     # Test early stopping.
     gt_critique = "1"
@@ -83,6 +114,19 @@ def test_generate_critique() -> None:
     assert strategy.patience_counter == 1
     assert strategy._halt is True
     assert strategy._prev_code_answer == "Mike Tyson"
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "updated_answer": None,
+    }
 
 
 def test_create_output_dict() -> None:
@@ -91,7 +135,11 @@ def test_create_output_dict() -> None:
     answer = "result = 42"
     critique = "Critique: Your solution is incorrect."
     output_dict = strategy.create_output_dict(answer, critique)
-    assert output_dict == {"answer": answer, "critique": critique}
+    assert output_dict == {
+        "answer": answer,
+        "critique": critique,
+        "prompt_metrics": {"answer": None, "critique": None, "updated_answer": None},
+    }
 
 
 def test_update_answer_based_on_critique() -> None:
@@ -112,6 +160,19 @@ def test_update_answer_based_on_critique() -> None:
         additional_keys={},
     )
     assert new_answer == "1"
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": None,
+        "updated_answer": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+    }
 
 
 def test_halting_condition() -> None:
@@ -139,6 +200,11 @@ def test_reset() -> None:
     assert strategy._prev_code_answer == ""
     assert strategy.patience_counter == 0
     assert not strategy._halt
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": None,
+        "updated_answer": None,
+    }
 
 
 def test_instantiate_strategies() -> None:

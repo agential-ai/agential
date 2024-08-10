@@ -10,6 +10,7 @@ from agential.cog.self_refine.functional import (
 from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
+from agential.utils.general import get_token_cost_time
 
 
 class SelfRefineMathStrategy(SelfRefineBaseStrategy):
@@ -28,6 +29,11 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
         self._prev_code_answer = ""
         self.patience_counter = 0
         self._halt = False
+        self._prompt_metrics: Dict[str, Any] = {
+            "answer": None,
+            "critique": None,
+            "updated_answer": None,
+        }
 
     def generate(
         self,
@@ -56,7 +62,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-
+        self._prompt_metrics["answer"] = get_token_cost_time(out)
         answer = out.choices[0].message.content
         answer = answer.strip().split("```python")[-1].split("```")[0].strip()
 
@@ -93,7 +99,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-
+        self._prompt_metrics["critique"] = get_token_cost_time(out)
         critique = out.choices[0].message.content
         critique = critique.strip()
 
@@ -116,7 +122,11 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
         Returns:
             Dict[str, str]: The output dictionary.
         """
-        return {"answer": answer, "critique": critique}
+        return {
+            "answer": answer,
+            "critique": critique,
+            "prompt_metrics": self._prompt_metrics,
+        }
 
     def update_answer_based_on_critique(
         self,
@@ -149,7 +159,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-
+        self._prompt_metrics["updated_answer"] = get_token_cost_time(out)
         new_answer = out.choices[0].message.content
         new_answer = new_answer.strip().split("```python")[-1].split("```")[0].strip()
 
@@ -176,6 +186,11 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
         self._prev_code_answer = ""
         self.patience_counter = 0
         self._halt = False
+        self._prompt_metrics = {
+            "answer": None,
+            "critique": None,
+            "updated_answer": None,
+        }
 
 
 class SelfRefineGSM8KStrategy(SelfRefineMathStrategy):
