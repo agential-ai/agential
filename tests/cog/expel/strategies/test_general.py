@@ -35,7 +35,7 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
     assert not strategy.experience_memory.success_traj_docs
     assert not strategy.experience_memory.vectorstore
     assert not strategy.insight_memory.insights
-    assert strategy._prompt_metrics == {'compare': [], 'success': []}
+    assert strategy._prompt_metrics == {"compare": [], "success": []}
 
     # Test with all parameters specified except experience memory and reflexion_react_agent.
     strategy = ExpeLStrategy(
@@ -57,7 +57,7 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
     assert not strategy.experience_memory.success_traj_docs
     assert not strategy.experience_memory.vectorstore
     assert strategy.insight_memory.insights == [{"insight": "blah blah", "score": 10}]
-    assert strategy._prompt_metrics == {'compare': [], 'success': []}
+    assert strategy._prompt_metrics == {"compare": [], "success": []}
 
     # Test with custom reflexion_react_agent (verify it overrides reflexion_react_kwargs)
     strategy = ExpeLStrategy(
@@ -68,7 +68,7 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
     )
     assert isinstance(strategy.reflexion_react_agent, ReflexionReActAgent)
     assert strategy.reflexion_react_agent.benchmark == "hotpotqa"
-    assert strategy._prompt_metrics == {'compare': [], 'success': []}
+    assert strategy._prompt_metrics == {"compare": [], "success": []}
 
     # Test with custom experience memory (verify correct initialization).
     experiences = joblib.load(expel_experiences_10_fake_path)
@@ -81,7 +81,7 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
     )
     assert strategy.experience_memory.experiences == experiences
     assert strategy.insight_memory.insights == []
-    assert strategy._prompt_metrics == {'compare': [], 'success': []}
+    assert strategy._prompt_metrics == {"compare": [], "success": []}
 
 
 def test_generate() -> None:
