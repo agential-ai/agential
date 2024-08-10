@@ -71,6 +71,7 @@ def test_reflexion_cot_init() -> None:
     assert strategy._scratchpad == ""
     assert strategy._finished == False
     assert strategy._answer == ""
+    assert strategy._prompt_metrics == {"thought": None, "action":  None , "reflection": None}
 
 
 def test_reflexion_cot_generate() -> None:
@@ -95,6 +96,7 @@ def test_reflexion_cot_generate() -> None:
     assert strategy._scratchpad == gt_scratchpad
     assert strategy._finished == False
     assert strategy._answer == ""
+    assert strategy._prompt_metrics == {'thought': {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, 'action': None, 'reflection': None}
 
 
 def test_reflexion_cot_generate_action() -> None:
@@ -119,6 +121,7 @@ def test_reflexion_cot_generate_action() -> None:
         strategy._scratchpad
         == "\nAction: Finish[Verwaltung von Internet Video und Audio]"
     )
+    assert strategy._prompt_metrics == {'thought': None, 'action': {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, 'reflection': None}
 
 
 def test_reflexion_cot_generate_observation() -> None:
@@ -270,15 +273,30 @@ def test_reflexion_cot_reflect() -> None:
     llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReflexionCoTQAStrategy(llm=llm, max_trials=3)
 
-    gt_out = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: VIVA Media AG changed it's name in 2004. What does their new acronym stand for?\n\n(END PREVIOUS TRIAL)\n"
-    _, out = strategy.reflect(
+    gt_reflection_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: VIVA Media AG changed it's name in 2004. What does their new acronym stand for?\n\n(END PREVIOUS TRIAL)\n"
+    _, reflection_str = strategy.reflect(
         reflect_strategy="last_attempt",
         question=question,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
         prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
         additional_keys={},
     )
-    assert out == gt_out
+    assert reflection_str == gt_reflection_str
+    assert strategy._prompt_metrics == {"thought": None, "action":  None , "reflection": None}
+
+    llm = MockLLM("gpt-3.5-turbo", responses=["1"])
+    strategy = ReflexionCoTQAStrategy(llm=llm, max_trials=3)
+
+    gt_reflection_str = 'You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1'
+    _, reflection_str = strategy.reflect(
+        reflect_strategy="reflexion",
+        question=question,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
+        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
+    )
+    assert reflection_str == gt_reflection_str
+    assert strategy._prompt_metrics == {'thought': None, 'action': None, 'reflection': {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}}
 
 
 def test_reflexion_cot_reflect_condition() -> None:
