@@ -28,7 +28,7 @@ from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
-
+from agential.utils.general import get_token_cost_time
 
 def parse_qa_action(string: str) -> Tuple[str, str]:
     """Parses an action string into an action type and its argument.
@@ -78,6 +78,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         self._scratchpad = ""
         self._finished = False
         self._answer = ""
+        self._prompt_metrics = {"thought": None , "action":  None ,"reflect": None}
 
     def generate(
         self,
@@ -111,6 +112,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics['thought'] = get_token_cost_time(out)
         thought = out.choices[0].message.content
 
         thought = remove_newline(thought).split("Action")[0].strip()
@@ -150,6 +152,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics['action'] = get_token_cost_time(out)
         action = out.choices[0].message.content
 
         action = remove_newline(action).strip()
@@ -212,6 +215,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             "answer": self._answer,
             "is_correct": is_correct,
             "reflections": reflections,
+            "prompt_metrics": self._prompt_metrics,
         }
 
     def halting_condition(
@@ -250,6 +254,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             self._scratchpad = ""
             self._finished = False
             self._answer = ""
+            self._prompt_metrics = {"thought": None, "action": None, "reflect": None}
 
     def reflect(
         self,
@@ -279,6 +284,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics["reflect"] = get_token_cost_time()
         return reflections, reflections_str
 
     def reflect_condition(
