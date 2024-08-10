@@ -71,7 +71,11 @@ def test_reflexion_cot_init() -> None:
     assert strategy._scratchpad == ""
     assert strategy._finished == False
     assert strategy._answer == ""
-    assert strategy._prompt_metrics == {"thought": None, "action":  None , "reflection": None}
+    assert strategy._prompt_metrics == {
+        "thought": None,
+        "action": None,
+        "reflection": None,
+    }
 
 
 def test_reflexion_cot_generate() -> None:
@@ -96,7 +100,19 @@ def test_reflexion_cot_generate() -> None:
     assert strategy._scratchpad == gt_scratchpad
     assert strategy._finished == False
     assert strategy._answer == ""
-    assert strategy._prompt_metrics == {'thought': {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, 'action': None, 'reflection': None}
+    assert strategy._prompt_metrics == {
+        "thought": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "action": None,
+        "reflection": None,
+    }
 
 
 def test_reflexion_cot_generate_action() -> None:
@@ -121,7 +137,19 @@ def test_reflexion_cot_generate_action() -> None:
         strategy._scratchpad
         == "\nAction: Finish[Verwaltung von Internet Video und Audio]"
     )
-    assert strategy._prompt_metrics == {'thought': None, 'action': {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, 'reflection': None}
+    assert strategy._prompt_metrics == {
+        "thought": None,
+        "action": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "reflection": None,
+    }
 
 
 def test_reflexion_cot_generate_observation() -> None:
@@ -291,12 +319,16 @@ def test_reflexion_cot_reflect() -> None:
         additional_keys={},
     )
     assert reflection_str == gt_reflection_str
-    assert strategy._prompt_metrics == {"thought": None, "action":  None , "reflection": None}
+    assert strategy._prompt_metrics == {
+        "thought": None,
+        "action": None,
+        "reflection": None,
+    }
 
     llm = MockLLM("gpt-3.5-turbo", responses=["1"])
     strategy = ReflexionCoTQAStrategy(llm=llm, max_trials=3)
 
-    gt_reflection_str = 'You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1'
+    gt_reflection_str = "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
     _, reflection_str = strategy.reflect(
         reflect_strategy="reflexion",
         question=question,
@@ -305,7 +337,19 @@ def test_reflexion_cot_reflect() -> None:
         additional_keys={},
     )
     assert reflection_str == gt_reflection_str
-    assert strategy._prompt_metrics == {'thought': None, 'action': None, 'reflection': {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}}
+    assert strategy._prompt_metrics == {
+        "thought": None,
+        "action": None,
+        "reflection": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+    }
 
 
 def test_reflexion_cot_reflect_condition() -> None:
@@ -371,8 +415,19 @@ def test_reflexion_react_generate() -> None:
     assert strategy._scratchpad == gt_scratchpad
     print(strategy._prompt_metrics)
     print(strategy._prompt_metrics_react)
-    assert strategy._prompt_metrics == {'reflection': None}
-    assert strategy._prompt_metrics_react == {'thought': {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, 'action': None}
+    assert strategy._prompt_metrics == {"reflection": None}
+    assert strategy._prompt_metrics_react == {
+        "thought": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "action": None,
+    }
 
 
 def test_reflexion_react_generate_action() -> None:
@@ -396,8 +451,20 @@ def test_reflexion_react_generate_action() -> None:
     assert action_type == "Search"
     assert query == "VIVA Media AG"
     assert strategy._scratchpad == gt_scratchpad
-    assert strategy._prompt_metrics_react == {'thought': None, 'action': {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}}
-    assert strategy._prompt_metrics == {'reflection': None}
+    assert strategy._prompt_metrics_react == {
+        "thought": None,
+        "action": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+    }
+    assert strategy._prompt_metrics == {"reflection": None}
+
 
 def test_reflexion_react_generate_observation() -> None:
     """Tests ReflexionReActQAStrategy generate_observation."""
@@ -464,7 +531,7 @@ def test_reflexion_react_create_output_dict() -> None:
     expected_output = {
         "react_output": react_out,
         "reflections": reflections,
-        'prompt_metrics': {'reflection': None}
+        "prompt_metrics": {"reflection": None},
     }
     assert output == expected_output
 
@@ -492,7 +559,7 @@ def test_reflexion_react_create_output_dict() -> None:
     expected_output = {
         "react_output": react_out,
         "reflections": reflections,
-        "prompt_metrics":  {"reflection": None}
+        "prompt_metrics": {"reflection": None},
     }
     assert output == expected_output
 
@@ -503,7 +570,7 @@ def test_reflexion_react_create_output_dict() -> None:
     expected_output = {
         "react_output": react_out,
         "reflections": reflections,
-        "prompt_metrics":  {"reflection": None}
+        "prompt_metrics": {"reflection": None},
     }
     assert output == expected_output
 
@@ -519,7 +586,7 @@ def test_reflexion_react_react_create_output_dict() -> None:
         query="What is the capital of France?",
         obs="Observation: Answer is CORRECT",
         external_tool_info={"search_result": "", "lookup_result": ""},
-        is_correct=True
+        is_correct=True,
     )
     expected_output = {
         "thought": "Initial thought",
@@ -529,7 +596,7 @@ def test_reflexion_react_react_create_output_dict() -> None:
         "answer": "",
         "external_tool_info": {"search_result": "", "lookup_result": ""},
         "is_correct": True,
-        "prompt_metrics": {"thought": None, "action":None },
+        "prompt_metrics": {"thought": None, "action": None},
     }
     assert output == expected_output
 
@@ -550,7 +617,7 @@ def test_reflexion_react_react_create_output_dict() -> None:
         "answer": "",
         "external_tool_info": {"search_result": "", "lookup_result": ""},
         "is_correct": True,
-        "prompt_metrics": {"thought": None, "action":None },
+        "prompt_metrics": {"thought": None, "action": None},
     }
     assert output == expected_output
 
@@ -571,7 +638,7 @@ def test_reflexion_react_react_create_output_dict() -> None:
         "answer": "",
         "external_tool_info": {"search_result": "", "lookup_result": ""},
         "is_correct": False,
-        "prompt_metrics": {"thought": None, "action":None },
+        "prompt_metrics": {"thought": None, "action": None},
     }
     assert output == expected_output
 
@@ -651,8 +718,18 @@ def test_reflexion_react_reflect() -> None:
     print(strategy._prompt_metrics)
     print(strategy._prompt_metrics_react)
     assert reflections == gt_reflections
-    assert strategy._prompt_metrics == {'reflection': {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}}
-    assert strategy._prompt_metrics_react == {'thought': None, 'action': None}
+    assert strategy._prompt_metrics == {
+        "reflection": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        }
+    }
+    assert strategy._prompt_metrics_react == {"thought": None, "action": None}
 
 
 def test_reflexion_react_reflect_condition() -> None:

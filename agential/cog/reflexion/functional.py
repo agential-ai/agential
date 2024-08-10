@@ -629,18 +629,14 @@ def react_reflect_reflexion(
         Tuple[List[str], ModelResponse]: An updated tuple of reflections and model response.
     """
     new_reflection_out = _prompt_react_reflection(
-            llm=llm,
-            question=question,
-            examples=examples,
-            scratchpad=scratchpad,
-            prompt=prompt,
-            additional_keys=additional_keys,
-        )
-    new_reflection = remove_newline(
-        new_reflection_out
-        .choices[0]
-        .message.content
+        llm=llm,
+        question=question,
+        examples=examples,
+        scratchpad=scratchpad,
+        prompt=prompt,
+        additional_keys=additional_keys,
     )
+    new_reflection = remove_newline(new_reflection_out.choices[0].message.content)
     reflections += [new_reflection]
     return reflections, new_reflection_out
 
@@ -676,14 +672,8 @@ def react_reflect_last_attempt_and_reflexion(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    reflections = [
-        remove_newline(
-            new_reflection_out
-            .choices[0]
-            .message.content
-        )
-    ]
-    return reflections , new_reflection_out
+    reflections = [remove_newline(new_reflection_out.choices[0].message.content)]
+    return reflections, new_reflection_out
 
 
 def react_reflect(
