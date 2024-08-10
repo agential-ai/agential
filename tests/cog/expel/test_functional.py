@@ -157,7 +157,6 @@ def test__prompt_compare_critique() -> None:
     success_trial = "Successful trial"
     failed_trial = "Failed trial"
     is_full = True
-    additional_keys = {"key1": "value1", "key2": "value2"}
 
     result = _prompt_compare_critique(
         llm=llm,
@@ -166,7 +165,6 @@ def test__prompt_compare_critique() -> None:
         success_trial=success_trial,
         failed_trial=failed_trial,
         is_full=is_full,
-        additional_keys=additional_keys,
     )
     assert isinstance(result, ModelResponse)
     assert result.choices[0].message.content == "1"
@@ -182,14 +180,12 @@ def test__prompt_all_success_critique() -> None:
     ]
     success_trajs_str = "Successful trajectories"
     is_full = True
-    additional_keys = {"key1": "value1", "key2": "value2"}
 
     result = _prompt_all_success_critique(
         llm=llm,
         insights=insights,
         success_trajs_str=success_trajs_str,
         is_full=is_full,
-        additional_keys=additional_keys,
     )
     assert isinstance(result, ModelResponse)
     assert result.choices[0].message.content == "1"

@@ -289,7 +289,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
                     success_out = _prompt_all_success_critique(
                         llm=self.llm, 
                         insights=insights, 
-                        success_trials=success_trials, 
+                        success_trajs_str=success_trials, 
                         is_full=self.insight_memory.max_num_insights < len(insights)
                     )
                     self._prompt_metrics['success'].append(get_token_cost_time(success_out))
