@@ -318,7 +318,7 @@ def test_react_reflect_last_attempt() -> None:
 
 def test_cot_reflect_reflexion() -> None:
     """Test cot_reflect_reflexion function."""
-    out = cot_reflect_reflexion(
+    out, model_response = cot_reflect_reflexion(
         llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         reflections=[""],
         examples="",
@@ -328,11 +328,11 @@ def test_cot_reflect_reflexion() -> None:
     )
     assert isinstance(out, list)
     assert out == ["", "1"]
-
+    assert model_response
 
 def test_cot_reflect_last_attempt_and_reflexion() -> None:
     """Test cot_reflect_last_attempt_and_reflexion function."""
-    out = cot_reflect_last_attempt_and_reflexion(
+    out, model_response = cot_reflect_last_attempt_and_reflexion(
         llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         examples="",
         question="",
@@ -341,13 +341,13 @@ def test_cot_reflect_last_attempt_and_reflexion() -> None:
     )
     assert isinstance(out, list)
     assert out == ["1"]
-
+    assert model_response
 
 def test_cot_reflect() -> None:
     """Test cot_reflect function."""
     # Invalid strategy.
     with pytest.raises(NotImplementedError):
-        out = cot_reflect(
+        out, _ = cot_reflect(
             reflect_strategy="invalid input",
             llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
             reflections=[""],
@@ -358,7 +358,7 @@ def test_cot_reflect() -> None:
         )
 
     # Last attempt.
-    out = cot_reflect(
+    out, model_response = cot_reflect(
         reflect_strategy="last_attempt",
         llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         reflections=[""],
@@ -368,9 +368,10 @@ def test_cot_reflect() -> None:
         prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert out == [""]
+    assert not model_response
 
     # Reflexion.
-    out = cot_reflect(
+    out, model_response = cot_reflect(
         reflect_strategy="reflexion",
         llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         reflections=[""],
@@ -381,9 +382,10 @@ def test_cot_reflect() -> None:
     )
     assert isinstance(out, list)
     assert out == ["", "1"]
+    assert model_response
 
     # Last attempt and Reflexion.
-    out = cot_reflect(
+    out, model_response = cot_reflect(
         reflect_strategy="last_attempt_and_reflexion",
         llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         reflections=[""],
@@ -394,6 +396,7 @@ def test_cot_reflect() -> None:
     )
     assert isinstance(out, list)
     assert out == ["1"]
+    assert model_response
 
 
 def test__build_react_agent_prompt() -> None:
@@ -693,13 +696,14 @@ def test__prompt_react_reflection() -> None:
 def test_react_reflect_last_attempt() -> None:
     """Test react_reflect_last_attempt function."""
     scratchpad = ""
-    out = react_reflect_last_attempt(scratchpad)
+    out, model_response = react_reflect_last_attempt(scratchpad)
     assert out == [""]
+    assert not model_response
 
 
 def test_react_reflect_reflexion() -> None:
     """Test react_reflect_reflexion function."""
-    out = react_reflect_reflexion(
+    out, model_response = react_reflect_reflexion(
         llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         reflections=[""],
         question="",
@@ -709,11 +713,12 @@ def test_react_reflect_reflexion() -> None:
     )
     assert isinstance(out, list)
     assert out == ["", "1"]
+    assert model_response
 
 
 def test_react_reflect_last_attempt_and_reflexion() -> None:
     """Test react_reflect_last_attempt_and_reflexion function."""
-    out = react_reflect_last_attempt_and_reflexion(
+    out, model_response = react_reflect_last_attempt_and_reflexion(
         llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         question="",
         examples="",
@@ -722,13 +727,13 @@ def test_react_reflect_last_attempt_and_reflexion() -> None:
     )
     assert isinstance(out, list)
     assert out == ["1"]
-
+    assert model_response
 
 def test_react_reflect() -> None:
     """Test react_reflect function."""
     # Invalid strategy.
     with pytest.raises(NotImplementedError):
-        out = react_reflect(
+        out, _ = react_reflect(
             reflect_strategy="invalid input",
             llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
             reflections=[""],
@@ -739,7 +744,7 @@ def test_react_reflect() -> None:
         )
 
     # Last attempt.
-    out = react_reflect(
+    out, model_response = react_reflect(
         reflect_strategy="last_attempt",
         llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         reflections=[""],
@@ -749,9 +754,10 @@ def test_react_reflect() -> None:
         prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert out == [""]
+    assert not model_response
 
     # Reflexion.
-    out = react_reflect(
+    out, model_response = react_reflect(
         reflect_strategy="reflexion",
         llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         reflections=[""],
@@ -762,9 +768,10 @@ def test_react_reflect() -> None:
     )
     assert isinstance(out, list)
     assert out == ["", "1"]
+    assert model_response
 
     # Last attempt and Reflexion.
-    out = react_reflect(
+    out, model_response = react_reflect(
         reflect_strategy="last_attempt_and_reflexion",
         llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         reflections=[""],
@@ -775,3 +782,4 @@ def test_react_reflect() -> None:
     )
     assert isinstance(out, list)
     assert out == ["1"]
+    assert model_response
