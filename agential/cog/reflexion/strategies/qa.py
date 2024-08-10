@@ -27,8 +27,9 @@ from agential.cog.reflexion.strategies.base import (
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
-from agential.utils.parse import remove_newline
 from agential.utils.general import get_token_cost_time
+from agential.utils.parse import remove_newline
+
 
 def parse_qa_action(string: str) -> Tuple[str, str]:
     """Parses an action string into an action type and its argument.
@@ -78,7 +79,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         self._scratchpad = ""
         self._finished = False
         self._answer = ""
-        self._prompt_metrics = {"thought": None, "action":  None , "reflection": None}
+        self._prompt_metrics = {"thought": None, "action": None, "reflection": None}
 
     def generate(
         self,
@@ -112,7 +113,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics['thought'] = get_token_cost_time(out)
+        self._prompt_metrics["thought"] = get_token_cost_time(out)
         thought = out.choices[0].message.content
 
         thought = remove_newline(thought).split("Action")[0].strip()
@@ -152,7 +153,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics['action'] = get_token_cost_time(out)
+        self._prompt_metrics["action"] = get_token_cost_time(out)
         action = out.choices[0].message.content
 
         action = remove_newline(action).strip()
@@ -284,7 +285,9 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics["reflection"] = get_token_cost_time(reflections_out) if reflections_out else None
+        self._prompt_metrics["reflection"] = (
+            get_token_cost_time(reflections_out) if reflections_out else None
+        )
         return reflections, reflections_str
 
     def reflect_condition(

@@ -32,6 +32,7 @@ class ReflexionCoTOutput(BaseModel):
         ..., description="Prompt metrics for the agent."
     )
 
+
 class ReflexionReActStepOutput(BaseModel):
     """ReflexionReAct Step Pydantic output class.
 
