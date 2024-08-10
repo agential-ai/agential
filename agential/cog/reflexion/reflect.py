@@ -12,7 +12,7 @@ from agential.cog.reflexion.functional import (
 from agential.cog.reflexion.prompts import (
     REFLECTION_AFTER_LAST_TRIAL_HEADER,
 )
-from agential.llm.llm import BaseLLM
+from agential.llm.llm import BaseLLM, ModelResponse
 
 
 class ReflexionCoTReflector(BaseReflector):
@@ -50,7 +50,7 @@ class ReflexionCoTReflector(BaseReflector):
         scratchpad: str,
         prompt: str,
         additional_keys: Dict[str, str] = {},
-    ) -> Tuple[List[str], str]:
+    ) -> Tuple[List[str], str, ModelResponse]:
         """Wrapper around ReflexionCoT's `cot_reflect` method in functional.
 
         This method calls the appropriate reflection function based on the provided strategy, passing in the necessary
@@ -66,13 +66,13 @@ class ReflexionCoTReflector(BaseReflector):
             additional_keys (Dict[str, str]): Additional keys to be passed to the prompt template.
 
         Returns:
-            Tuple[List[str], str]: A tuple of the updated list of reflections based on the selected strategy and the formatted
+            Tuple[List[str], str, ModelResponse]: A tuple of the updated list of reflections based on the selected strategy and the formatted
                 reflections.
 
         Raises:
             NotImplementedError: If an unknown reflection strategy is specified.
         """
-        reflections = cot_reflect(
+        reflections, reflections_out = cot_reflect(
             reflect_strategy=reflect_strategy,
             llm=self.llm,
             reflections=self.reflections,
@@ -81,7 +81,8 @@ class ReflexionCoTReflector(BaseReflector):
             scratchpad=scratchpad,
             prompt=prompt,
             additional_keys=additional_keys,
-        )[-self.max_reflections :]
+        )
+        reflections = reflections[-self.max_reflections :]
 
         self.reflections = reflections
 
@@ -97,7 +98,7 @@ class ReflexionCoTReflector(BaseReflector):
 
         self.reflections_str = reflections_str
 
-        return reflections, reflections_str
+        return reflections, reflections_str, reflections_out
 
     def reset(self) -> None:
         """Resets the reflections and reflections_str."""

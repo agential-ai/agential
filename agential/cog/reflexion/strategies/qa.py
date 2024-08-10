@@ -276,7 +276,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         Returns:
             Tuple[List[str], str]: The reflections and the reflection string.
         """
-        reflections, reflections_str = self.reflector.reflect(
+        reflections, reflections_str, reflections_out = self.reflector.reflect(
             reflect_strategy=reflect_strategy,
             question=question,
             examples=examples,
@@ -284,7 +284,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics["reflect"] = get_token_cost_time()
+        self._prompt_metrics["reflect"] = get_token_cost_time(reflections_out) if reflections_out else None
         return reflections, reflections_str
 
     def reflect_condition(

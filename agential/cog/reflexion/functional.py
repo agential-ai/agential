@@ -1,6 +1,6 @@
 """Functional module for Reflexion."""
 
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 import tiktoken
 
@@ -236,7 +236,7 @@ def _prompt_cot_reflection(
     return out
 
 
-def cot_reflect_last_attempt(scratchpad: str) -> List[str]:
+def cot_reflect_last_attempt(scratchpad: str) -> Tuple[List[str], None]:
     """Performs a reflection based on the last attempt (scratchpad).
 
     Used with ReflexionCoT.
@@ -246,9 +246,9 @@ def cot_reflect_last_attempt(scratchpad: str) -> List[str]:
         scratchpad (str): The scratchpad content from the last attempt.
 
     Returns:
-        List[str]: A list with the scratchpad content.
+        Tuple[List[str], None]: A list with the scratchpad content.
     """
-    return [scratchpad]
+    return [scratchpad], None
 
 
 def cot_reflect_reflexion(
@@ -259,7 +259,7 @@ def cot_reflect_reflexion(
     scratchpad: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> List[str]:
+) -> Tuple[List[str], ModelResponse]:
     """Perform reflexion-based reflecting.
 
     Used with ReflexionCoT. This function uses a language model to generate a new reflection based on the provided context, question,
@@ -275,7 +275,7 @@ def cot_reflect_reflexion(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}
 
     Returns:
-        ModelResponse : An updated list of reflections.
+        Tuple[List[str], ModelResponse]: An updated list of reflections and the ModelResponse.
     """
     new_reflection = _prompt_cot_reflection(
         llm=llm,
@@ -285,11 +285,9 @@ def cot_reflect_reflexion(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    new_reflection = new_reflection.choices[0].message.content
 
-    new_reflection = remove_newline(new_reflection)
-    reflections += [new_reflection]
-    return reflections
+    reflections += [remove_newline(new_reflection.choices[0].message.content)]
+    return reflections, new_reflection
 
 
 def cot_reflect_last_attempt_and_reflexion(
@@ -299,7 +297,7 @@ def cot_reflect_last_attempt_and_reflexion(
     scratchpad: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> List[str]:
+) -> Tuple[List[str], ModelResponse]:
     """Performs reflection with the reflection of the last attempt and reflexion.
 
     Used with ReflexionCoT.
@@ -314,23 +312,23 @@ def cot_reflect_last_attempt_and_reflexion(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}
 
     Returns:
-        List[str]: A list with the new reflections.
+        Tuple[List[str], ModelResponse]: An updated list of reflections and the ModelResponse.
     """
+    new_reflection = _prompt_cot_reflection(
+        llm=llm,
+        examples=examples,
+        question=question,
+        scratchpad=scratchpad,
+        prompt=prompt,
+        additional_keys=additional_keys,
+    )
+    
     reflections = [
         remove_newline(
-            _prompt_cot_reflection(
-                llm=llm,
-                examples=examples,
-                question=question,
-                scratchpad=scratchpad,
-                prompt=prompt,
-                additional_keys=additional_keys,
-            )
-            .choices[0]
-            .message.content
+            new_reflection.choices[0].message.content
         )
     ]
-    return reflections
+    return reflections, new_reflection
 
 
 def cot_reflect(
@@ -342,7 +340,7 @@ def cot_reflect(
     scratchpad: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> List[str]:
+) -> Tuple[List[str], ModelResponse]:
     """Performs reflection based on a specified strategy using provided context, question, and scratchpad.
 
     Used with ReflexionCoT. This function orchestrates different types of reflections based on the strategy provided. It either reflects on the
@@ -360,7 +358,7 @@ def cot_reflect(
         additional_keys (Dict[str, str], optional): Additional keys to be passed to the prompt template. Defaults to {}
 
     Returns:
-        List[str]: A list of reflections.
+        Tuple[List[str], ModelResponse]: A list of reflections.
 
     Raises:
         NotImplementedError: If an unknown reflection strategy is specified.
@@ -372,9 +370,9 @@ def cot_reflect(
           It first formats the last attempt using 'question' and 'scratchpad', then adds a new reflexion using all the parameters.
     """
     if reflect_strategy == "last_attempt":
-        reflections = cot_reflect_last_attempt(scratchpad)
+        reflections, reflections_out = cot_reflect_last_attempt(scratchpad)
     elif reflect_strategy == "reflexion":
-        reflections = cot_reflect_reflexion(
+        reflections, reflections_out = cot_reflect_reflexion(
             llm=llm,
             reflections=reflections,
             examples=examples,
@@ -384,7 +382,7 @@ def cot_reflect(
             additional_keys=additional_keys,
         )
     elif reflect_strategy == "last_attempt_and_reflexion":
-        reflections = cot_reflect_last_attempt_and_reflexion(
+        reflections, reflections_out = cot_reflect_last_attempt_and_reflexion(
             llm=llm,
             examples=examples,
             question=question,
@@ -395,7 +393,7 @@ def cot_reflect(
     else:
         raise NotImplementedError(f"Unknown reflection strategy: {reflect_strategy}.")
 
-    return reflections
+    return reflections, reflections_out
 
 
 def _build_react_agent_prompt(
