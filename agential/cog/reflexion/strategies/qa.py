@@ -347,7 +347,8 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         self._finished = False
         self._answer = ""
         self._scratchpad = ""
-        self._prompt_metrics = {"thought": None, "action": None, "reflection": None}
+        self._prompt_metrics = {"reflection": None}
+        self._prompt_metrics_react = {"thought": None, "action": None}
 
     def generate(
         self,
@@ -384,7 +385,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics["thought"] = get_token_cost_time(out)
+        self._prompt_metrics_react["thought"] = get_token_cost_time(out)
         thought = out.choices[0].message.content
 
         thought = remove_newline(thought).split("Action")[0].strip()
@@ -426,7 +427,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics["action"] = get_token_cost_time(out)
+        self._prompt_metrics_react["action"] = get_token_cost_time(out)
         action = out.choices[0].message.content
 
         action = remove_newline(action).split("Observation")[0]
@@ -534,7 +535,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
             "answer": self._answer,
             "external_tool_info": external_tool_info,
             "is_correct": is_correct,
-            "prompt_metrics": self._prompt_metrics,
+            "prompt_metrics": self._prompt_metrics_react,
         }
 
     def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
@@ -606,6 +607,8 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         self._scratchpad = ""
         self._finished = False
         self._answer = ""
+        self._prompt_metrics_react = {"thought": [], "action": []}
+        self._prompt_metrics = {"reflection": []}
 
     def reflect(
         self,
