@@ -75,6 +75,7 @@ def test_generate_critique() -> None:
 
     assert result == gt_result
     assert external_tool_info == {"execution_status": "", "code_answer": ""}
+    assert  strategy._prompt_metrics == {"answer": None , "critique" : {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, "updated_answer": None}
 
     # Test with tool.
     gt_result = "1. The revenue from selling eggs should be a positive number, -9867630 < 0, which is not reasonable.\n\n2. Let's check the code:\n\n- `total_eggs = 16` - This defines the total number of eggs laid by Janet's ducks per day.\n- `eaten_eggs = 3` - This represents the number of eggs Janet eats for breakfast.\n- `baked_eggs = 4933828` - This represents the number of eggs Janet uses to bake muffins for her friends daily.\n- `sold_eggs = total_eggs - eaten_eggs - baked_eggs` - This calculates the number of eggs Janet has left to sell at the farmers' market.\n- `dollars_per_egg = 2` - This represents the selling price of each fresh duck egg.\n- `answer = sold_eggs * dollars_per_egg` - This calculates the total revenue from selling eggs at the farmers' market.\n\nThe issue with the code is that the calculation for `sold_eggs` is incorrect. Janet should only sell the eggs that are left after she eats some for breakfast and uses some for baking. \n\n"
@@ -101,6 +102,7 @@ def test_generate_critique() -> None:
     assert result == gt_result
     assert external_tool_info["execution_status"] == "Done"
     assert external_tool_info["code_answer"] == -9867630
+    assert  strategy._prompt_metrics == {"answer": None , "critique" : {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, "updated_answer": None}
 
     # Test increment patience counter and early stopping.
     gt_result = "The output of -9867630 is incorrect because the amount of money Janet makes should be a positive number, as she is selling eggs at the farmers' market. \n\nLet's analyze the code:\n- `total_eggs = 16`: This represents the total number of eggs the ducks lay per day, which is correct.\n- `eaten_eggs = 3`: This represents the number of eggs Janet eats for breakfast, which is also correct.\n- `baked_eggs = 4933828`: This number seems unusually high for baking muffins daily. It might be a mistake in the code.\n- `sold_eggs = total_eggs - eaten_eggs - baked_eggs`: This calculates the number of eggs sold, but the calculation may be incorrect due to the high number of baked eggs.\n- `dollars_per_egg = 2`: This represents the selling price per fresh duck egg, which is correct.\n- `answer = sold_eggs * dollars_per_egg`: This calculates the total amount of money made from selling eggs, but the previous calculations might be incorrect.\n\nTo correct the code and ensure an accurate calculation of the money Janet makes every day at the farmers' market, we need to revisit the logic of how many eggs she bakes for muffins and how many she sells. \n\n"
@@ -139,6 +141,8 @@ def test_generate_critique() -> None:
     assert strategy._prev_code_answer == -9867630
     assert strategy.patience_counter == 2
     assert strategy._halt is True
+    assert  strategy._prompt_metrics == {"answer": None , "critique" : {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, "updated_answer": None}
+
 
 
 def test_create_output_dict() -> None:
@@ -161,6 +165,7 @@ def test_create_output_dict() -> None:
     assert (
         result["external_tool_info"]["code_answer"] == external_tool_info["code_answer"]
     )
+    assert result["prompt_metrics"] == {"answer": None , "critique" : None, "updated_answer": None}
 
 
 def test_update_answer_based_on_critique() -> None:
@@ -189,6 +194,7 @@ def test_update_answer_based_on_critique() -> None:
     )
 
     assert new_answer == gt_new_answer
+    assert strategy._prompt_metrics == {"answer": None , "critique" : None, "updated_answer": {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}}
 
     # Test with tool.
     gt_new_answer = "total_eggs_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = total_eggs_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\nprice_per_egg = 2\n\ntotal_earnings_per_day = eggs_sold * price_per_egg\nanswer = total_earnings_per_day"
@@ -207,6 +213,8 @@ def test_update_answer_based_on_critique() -> None:
     )
 
     assert new_answer == gt_new_answer
+    assert strategy._prompt_metrics == {"answer": None , "critique" : None, "updated_answer": {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}}
+
 
 
 def test_halting_condition() -> None:
@@ -241,6 +249,7 @@ def test_reset() -> None:
     assert strategy._prev_code_answer == ""
     assert strategy.patience_counter == 0
     assert strategy._halt is False
+    assert strategy._prompt_metrics == {"answer": None , "critique" : None, "updated_answer": None}
 
 
 def test_instantiate_strategies() -> None:

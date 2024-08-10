@@ -36,7 +36,7 @@ def test_init() -> None:
     assert strategy._query_history == []
     assert strategy._evidence_history == set()
     assert strategy._halt == False
-
+    assert strategy._prompt_metrics == {"answer": None, "critique": None, "updated_answer": None}
 
 def test_generate() -> None:
     """Tests CriticQAStrategy generate."""
@@ -52,6 +52,7 @@ def test_generate() -> None:
     )
 
     assert result == "Generated answer"
+    assert strategy._prompt_metrics == {"answer": {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, "critique": None, "updated_answer": None}
 
 
 def test_generate_critique() -> None:
@@ -88,6 +89,8 @@ def test_generate_critique() -> None:
     assert strategy._query_history == []
     assert strategy._evidence_history == set()
     assert not strategy._halt
+    assert strategy._prompt_metrics == {"answer": None, "critique": {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, "updated_answer": None}
+
 
     # Test with tool.
     gt_result = '\nThe question asks for a person known for controversies and crimes, and the answer "Badr Hari" is a person\'s name. So it\'s plausible.\n\n2. Truthfulness:\n\nLet\'s search the question in google:\n\n> Search Query: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring\n> Evidence: [agential-ai/agential: The encyclopedia of LLM-based agents - GitHub] \'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts"\xa0...\n\n'
@@ -143,6 +146,8 @@ def test_generate_critique() -> None:
     assert strategy._query_history == gt_query_history
     assert strategy._evidence_history == gt_evidence_history
     assert not strategy._halt
+    assert strategy._prompt_metrics == {"answer": None, "critique": {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, "updated_answer": None}
+
 
     # Test most possible answer.
     gt_result = "Badr Hari."
@@ -172,6 +177,8 @@ def test_generate_critique() -> None:
     assert strategy._query_history == []
     assert strategy._evidence_history == set()
     assert strategy._halt
+    assert strategy._prompt_metrics == {"answer": None, "critique": {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, "updated_answer": None}
+
 
 
 def test_create_output_dict() -> None:
@@ -189,6 +196,7 @@ def test_create_output_dict() -> None:
     assert result["critique"] == "The answer is correct."
     assert result["external_tool_info"]["search_query"] == "capital of France"
     assert result["external_tool_info"]["search_result"] == "Paris"
+    assert result["prompt_metrics"] == {"answer": None, "critique": None, "updated_answer": None}
 
     strategy._halt = True
     result = strategy.create_output_dict(answer, critique, external_tool_info)
@@ -200,6 +208,7 @@ def test_create_output_dict() -> None:
     assert result["critique"] == "The answer is correct."
     assert result["external_tool_info"]["search_query"] == "capital of France"
     assert result["external_tool_info"]["search_result"] == "Paris"
+    assert result["prompt_metrics"] == {"answer": None, "critique": None, "updated_answer": None}
 
 
 def test_update_answer_based_on_critique() -> None:
@@ -221,6 +230,7 @@ def test_update_answer_based_on_critique() -> None:
     )
 
     assert result == answer
+    assert strategy._prompt_metrics == {"answer": None, "critique": None, "updated_answer": None}
 
 
 def test_halting_condition() -> None:
@@ -247,6 +257,7 @@ def test_reset() -> None:
     assert strategy._query_history == []
     assert strategy._evidence_history == set()
     assert strategy._halt is False
+    assert strategy._prompt_metrics == {"answer": None, "critique": None, "updated_answer": None}
 
 
 def test_handle_search_query() -> None:
