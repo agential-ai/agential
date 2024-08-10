@@ -52,12 +52,11 @@ class ExpeLStrategy(ExpeLBaseStrategy):
             insight_memory,
             success_batch_size,
         )
-        
+
         self._prompt_metrics: Dict[str, Any] = {"compare": [], "success": []}
 
         if experience_memory:
             self.extract_insights(self.experience_memory.experiences)
-
 
     def generate(
         self,
