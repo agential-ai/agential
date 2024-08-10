@@ -7,7 +7,7 @@ from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 from agential.cog.critic.functional import _prompt_agent, _prompt_critique
 from agential.cog.critic.strategies.base import CriticBaseStrategy
 from agential.llm.llm import BaseLLM
-
+from agential.utils.general import get_token_cost_time
 
 class CriticQAStrategy(CriticBaseStrategy):
     """A strategy class for QA benchmarks using the CRITIC agent.
@@ -35,6 +35,7 @@ class CriticQAStrategy(CriticBaseStrategy):
         self._query_history: List[str] = []
         self._evidence_history: Set[str] = set()
         self._halt = False
+        self._prompt_metrics: Dict[str, Any] = {"answer": None , "critique": None, "updated_answer": None}  
 
     def generate(
         self,
@@ -63,6 +64,7 @@ class CriticQAStrategy(CriticBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics["answer"] = get_token_cost_time(out)
 
         return out.choices[0].message.content
 
@@ -166,6 +168,8 @@ class CriticQAStrategy(CriticBaseStrategy):
             new_critique = new_critique.split("most possible answer: ")[-1].strip()
             self._halt = True
 
+        self._prompt_metrics["critique"] = get_token_cost_time(out)
+
         return new_critique, external_tool_info
 
     def create_output_dict(
@@ -189,6 +193,7 @@ class CriticQAStrategy(CriticBaseStrategy):
             "answer": answer if not self._halt else critique,
             "critique": critique,
             "external_tool_info": external_tool_info,
+            "prompt_metrics": self._prompt_metrics,
         }
         return output_dict
 
@@ -247,6 +252,7 @@ class CriticQAStrategy(CriticBaseStrategy):
         self._query_history = []
         self._evidence_history = set()
         self._halt = False
+        self._prompt_metrics = {"answer": None , "critique": None, "updated_answer": None}  
 
     def handle_search_query(
         self,
