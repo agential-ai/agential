@@ -25,7 +25,7 @@ from agential.cog.reflexion.strategies.base import (
 )
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
-from agential.utils.general import safe_execute
+from agential.utils.general import safe_execute, get_token_cost_time
 from agential.utils.parse import remove_newline
 
 
@@ -110,6 +110,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
         self._scratchpad = ""
         self._finished = False
         self._answer = ""
+        self._prompt_metrics = {"thought": None, "action": None, "reflection": None}
 
     def generate(
         self,
@@ -143,6 +144,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics["thought"] = get_token_cost_time(out)
         thought = out.choices[0].message.content
 
         thought = remove_newline(thought).split("Action")[0].strip()
@@ -182,6 +184,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics["action"] = get_token_cost_time(out)
         action = out.choices[0].message.content
 
         action = action.split("Observation")[0].strip()
@@ -248,6 +251,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
             "answer": self._answer,
             "is_correct": is_correct,
             "reflections": reflections,
+            "prompt_metrics": self._prompt_metrics,
         }
 
     def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
@@ -282,6 +286,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
             self._scratchpad = ""
             self._finished = False
             self._answer = ""
+            self._prompt_metrics = {"thought": None, "action": None, "reflection": None}
 
     def reflect(
         self,
@@ -303,13 +308,16 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
         Returns:
             Tuple[List[str], str]: The reflections and the reflection string.
         """
-        reflections, reflections_str = self.reflector.reflect(
+        reflections, reflections_str, reflections_out = self.reflector.reflect(
             reflect_strategy=reflect_strategy,
             question=question,
             examples=examples,
             scratchpad=self._scratchpad,
             prompt=prompt,
             additional_keys=additional_keys,
+        )
+        self._prompt_metrics["reflection"] = (
+            get_token_cost_time(reflections_out) if reflections_out else None
         )
         return reflections, reflections_str
 
@@ -369,6 +377,8 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
         self._finished = False
         self._answer = ""
         self._scratchpad = ""
+        self._prompt_metrics = {"reflection": None}
+        self._prompt_metrics_react = {"thought": None, "action": None}
 
     def generate(
         self,
@@ -405,6 +415,7 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics_react["thought"] = get_token_cost_time(out)
         thought = out.choices[0].message.content
 
         thought = remove_newline(thought).split("Action")[0].strip()
@@ -446,6 +457,7 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics_react["action"] = get_token_cost_time(out)
         action = out.choices[0].message.content
 
         action = action.split("Observation")[0].strip()
@@ -522,6 +534,7 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
         return {
             "react_output": react_out,
             "reflections": reflections,
+            "prompt_metrics": self._prompt_metrics,
         }
 
     def react_create_output_dict(
@@ -554,6 +567,7 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
             "answer": self._answer,
             "external_tool_info": external_tool_info,
             "is_correct": is_correct,
+            "prompt_metrics": self._prompt_metrics_react,
         }
 
     def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
@@ -626,6 +640,8 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
         self._scratchpad = ""
         self._finished = False
         self._answer = ""
+        self._prompt_metrics_react = {"thought": [], "action": []}
+        self._prompt_metrics = {"reflection": []}
 
     def reflect(
         self,
@@ -647,7 +663,7 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
         Returns:
             Tuple[List[str], str]: The reflections and reflection string.
         """
-        reflections, reflections_str = self.reflector.reflect(
+        reflections, reflections_str, reflections_out = self.reflector.reflect(
             reflect_strategy=reflect_strategy,
             question=question,
             examples=examples,
@@ -656,6 +672,9 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
             ),
             prompt=prompt,
             additional_keys=additional_keys,
+        )
+        self._prompt_metrics["reflection"] = (
+            get_token_cost_time(reflections_out) if reflections_out else None
         )
 
         return reflections, reflections_str
