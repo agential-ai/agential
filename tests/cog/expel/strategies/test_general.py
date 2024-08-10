@@ -505,6 +505,21 @@ def test_extract_insights(expel_experiences_10_fake_path: str) -> None:
 
     strategy.extract_insights(experiences)
     assert strategy.insight_memory.insights == gt_insights
+    print(strategy._prompt_metrics)
+    assert strategy._prompt_metrics == {
+        "compare": [],
+        "success": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            }
+        ],
+    }
 
 
 def test_update_insights() -> None:
@@ -617,6 +632,7 @@ def test_reset() -> None:
     assert strategy.reflexion_react_agent.strategy._scratchpad == ""
     assert strategy.experience_memory.experiences == []
     assert strategy.insight_memory.insights == []
+    assert strategy._prompt_metrics == {"compare": [], "success": []}
 
     # Test only_reflexion=True.
     llm = MockLLM("gpt-3.5-turbo", responses=[])
@@ -630,3 +646,4 @@ def test_reset() -> None:
     assert strategy.reflexion_react_agent.strategy._scratchpad == ""
     assert strategy.experience_memory.experiences == "dog"
     assert strategy.insight_memory.insights == ["turtle"]
+    assert strategy._prompt_metrics == {"compare": [], "success": []}
