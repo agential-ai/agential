@@ -29,6 +29,7 @@ def test_init() -> None:
     assert strategy._prev_code_answer == ""
     assert strategy.patience_counter == 0
     assert strategy._halt is False
+    assert  strategy._prompt_metrics == {"answer": None, "critique": None ,"updated_answer": None}
 
 
 def test_generate() -> None:
@@ -45,6 +46,7 @@ def test_generate() -> None:
     )
 
     assert result == "42"
+    assert  strategy._prompt_metrics == {"answer": {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, "critique": None ,"updated_answer": None}
 
 
 def test_generate_critique() -> None:

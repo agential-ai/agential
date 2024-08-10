@@ -7,7 +7,7 @@ from agential.cog.critic.strategies.base import CriticBaseStrategy
 from agential.llm.llm import BaseLLM
 from agential.utils.general import safe_execute
 from agential.utils.validation import validate_overlapping_keys
-
+from agential.utils.general import get_token_cost_time
 
 class CriticCodeStrategy(CriticBaseStrategy):
     """A strategy class for Code benchmarks using the CRITIC agent.
@@ -20,6 +20,7 @@ class CriticCodeStrategy(CriticBaseStrategy):
         """Initialization."""
         super().__init__(llm)
         self._halt = False
+        self._prompt_metrics: Dict[str, Any] = {"answer": None, "critique": None ,"updated_answer": None}
 
     def generate(
         self,
@@ -48,6 +49,7 @@ class CriticCodeStrategy(CriticBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics["answer"] = get_token_cost_time(out)
         answer = out.choices[0].message.content
         answer = answer.split("```python")[-1].split("```")[0].strip("\n")
 
@@ -124,6 +126,7 @@ class CriticCodeStrategy(CriticBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics["critique"] = get_token_cost_time(out)
         new_critique = out.choices[0].message.content
         new_critique = new_critique.split("Here's")[0]
 
@@ -146,6 +149,7 @@ class CriticCodeStrategy(CriticBaseStrategy):
             "answer": answer,
             "critique": critique,
             "external_tool_info": external_tool_info,
+            "prompt_metrics": self._prompt_metrics,
         }
         return output_dict
 
@@ -188,6 +192,7 @@ class CriticCodeStrategy(CriticBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics["updated_answer"] = get_token_cost_time(out)
         new_answer = out.choices[0].message.content
         new_answer = new_answer.split("```python")[-1].split("```")[0].strip()
 
@@ -215,6 +220,7 @@ class CriticCodeStrategy(CriticBaseStrategy):
             None
         """
         self._halt = False
+        self._prompt_metrics = {"answer": None, "critique": None, "updated_answer": None}
 
 
 class CritMBPPCodeStrategy(CriticCodeStrategy):
@@ -296,6 +302,7 @@ class CritHEvalCodeStrategy(CriticCodeStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics["critique"] = get_token_cost_time(out)   
         new_critique = out.choices[0].message.content
 
         new_critique = (
@@ -346,6 +353,7 @@ class CritHEvalCodeStrategy(CriticCodeStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics["updated_answer"] = get_token_cost_time(out)
         new_answer = out.choices[0].message.content
         new_answer = new_answer.split("```python")[-1].split("```")[0].strip("\n")
 
