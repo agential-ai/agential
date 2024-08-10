@@ -163,7 +163,7 @@ class ReflexionReActReflector(BaseReflector):
         Raises:
             NotImplementedError: If an unknown reflection strategy is specified.
         """
-        reflections = react_reflect(
+        reflections, reflections_out = react_reflect(
             reflect_strategy=reflect_strategy,
             llm=self.llm,
             reflections=self.reflections,
@@ -172,7 +172,8 @@ class ReflexionReActReflector(BaseReflector):
             scratchpad=scratchpad,
             prompt=prompt,
             additional_keys=additional_keys,
-        )[-self.max_reflections :]
+        )
+        reflections = reflections[-self.max_reflections :]
 
         self.reflections = reflections
 
@@ -188,7 +189,7 @@ class ReflexionReActReflector(BaseReflector):
 
         self.reflections_str = reflections_str
 
-        return reflections, reflections_str
+        return reflections, reflections_str, reflections_out
 
     def reset(self) -> None:
         """Clears the reflections and reflections_str."""

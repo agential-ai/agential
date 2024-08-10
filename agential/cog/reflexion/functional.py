@@ -587,7 +587,7 @@ def _prompt_react_reflection(
     return out
 
 
-def react_reflect_last_attempt(scratchpad: str) -> List[str]:
+def react_reflect_last_attempt(scratchpad: str) -> Tuple[List[str], None]:
     """Performs a reflection based on the last attempt (scratchpad).
 
     Used with ReflexionReAct.
@@ -597,9 +597,9 @@ def react_reflect_last_attempt(scratchpad: str) -> List[str]:
         scratchpad (str): The scratchpad content from the last attempt.
 
     Returns:
-        List[str]: A list with the scratchpad content.
+        Tuple[List[str], None]: A Tuple with the scratchpad content and None.
     """
-    return [scratchpad]
+    return [scratchpad], None
 
 
 def react_reflect_reflexion(
@@ -610,7 +610,7 @@ def react_reflect_reflexion(
     scratchpad: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> List[str]:
+) -> Tuple[List[str], ModelResponse]:
     """Perform reflexion-based reflecting.
 
     Used with ReflexionReAct. This function uses a language model to generate a new reflection based on the provided context, question,
@@ -626,10 +626,9 @@ def react_reflect_reflexion(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        List[str]: An updated list of reflections.
+        Tuple[List[str], ModelResponse]: An updated tuple of reflections and model response.
     """
-    new_reflection = remove_newline(
-        _prompt_react_reflection(
+    new_reflection_out = _prompt_react_reflection(
             llm=llm,
             question=question,
             examples=examples,
@@ -637,11 +636,13 @@ def react_reflect_reflexion(
             prompt=prompt,
             additional_keys=additional_keys,
         )
+    new_reflection = remove_newline(
+        new_reflection_out
         .choices[0]
         .message.content
     )
     reflections += [new_reflection]
-    return reflections
+    return reflections, new_reflection_out
 
 
 def react_reflect_last_attempt_and_reflexion(
@@ -651,7 +652,7 @@ def react_reflect_last_attempt_and_reflexion(
     scratchpad: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> List[str]:
+) -> Tuple[List[str], ModelResponse]:
     """Performs reflection with the reflection of the last attempt and reflexion.
 
     Used with ReflexionReAct.
@@ -665,23 +666,24 @@ def react_reflect_last_attempt_and_reflexion(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        List[str]: A list with the new reflections.
+        Tuple[List[str], ModelResponse]: A list with the new reflections and model response.
     """
+    new_reflection_out = _prompt_react_reflection(
+        llm=llm,
+        question=question,
+        examples=examples,
+        scratchpad=scratchpad,
+        prompt=prompt,
+        additional_keys=additional_keys,
+    )
     reflections = [
         remove_newline(
-            _prompt_react_reflection(
-                llm=llm,
-                question=question,
-                examples=examples,
-                scratchpad=scratchpad,
-                prompt=prompt,
-                additional_keys=additional_keys,
-            )
+            new_reflection_out
             .choices[0]
             .message.content
         )
     ]
-    return reflections
+    return reflections , new_reflection_out
 
 
 def react_reflect(
@@ -693,7 +695,7 @@ def react_reflect(
     scratchpad: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> List[str]:
+) -> Tuple[List[str], ModelResponse]:
     """Performs reflection based on a specified strategy using the provided question and scratchpad.
 
     Used with ReflexionReAct. This function orchestrates different types of reflections based on the strategy provided. It either reflects on the
@@ -711,7 +713,7 @@ def react_reflect(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        List[str]: A tuple containing the updated list of reflections.
+        Tuple[List[str], ModelResponse]: An updated tuple of reflections and model response.
 
     Raises:
         NotImplementedError: If an unknown reflection strategy is specified.
@@ -723,9 +725,9 @@ def react_reflect(
           It first formats the last attempt using 'question' and 'scratchpad', then adds a new reflexion using all the parameters.
     """
     if reflect_strategy == "last_attempt":
-        reflections = react_reflect_last_attempt(scratchpad)
+        reflections, reflections_out = react_reflect_last_attempt(scratchpad)
     elif reflect_strategy == "reflexion":
-        reflections = react_reflect_reflexion(
+        reflections, reflections_out = react_reflect_reflexion(
             llm=llm,
             reflections=reflections,
             question=question,
@@ -735,7 +737,7 @@ def react_reflect(
             additional_keys=additional_keys,
         )
     elif reflect_strategy == "last_attempt_and_reflexion":
-        reflections = react_reflect_last_attempt_and_reflexion(
+        reflections, reflections_out = react_reflect_last_attempt_and_reflexion(
             llm=llm,
             question=question,
             examples=examples,
@@ -746,4 +748,4 @@ def react_reflect(
     else:
         raise NotImplementedError(f"Unknown reflection strategy: {reflect_strategy}.")
 
-    return reflections
+    return reflections, reflections_out
