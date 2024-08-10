@@ -4,14 +4,14 @@ from copy import deepcopy
 from typing import Any, Dict, List, Optional, Tuple
 
 from agential.cog.expel.functional import (
+    _prompt_all_success_critique,
+    _prompt_compare_critique,
     categorize_experiences,
     gather_experience,
     get_folds,
-    _prompt_all_success_critique,
-    retrieve_insight_index,
-    _prompt_compare_critique,
     parse_insights,
     remove_err_operations,
+    retrieve_insight_index,
 )
 from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
@@ -20,7 +20,7 @@ from agential.cog.expel.memory import (
 from agential.cog.expel.strategies.base import ExpeLBaseStrategy
 from agential.cog.reflexion.agent import ReflexionReActAgent
 from agential.llm.llm import BaseLLM
-from agential.utils.general import shuffle_chunk_list, get_token_cost_time
+from agential.utils.general import get_token_cost_time, shuffle_chunk_list
 
 
 class ExpeLStrategy(ExpeLBaseStrategy):
@@ -253,7 +253,9 @@ class ExpeLStrategy(ExpeLBaseStrategy):
                         failed_trial=failed_trial,
                         is_full=self.insight_memory.max_num_insights < len(insights),
                     )
-                    self._prompt_metrics['compare'].append(get_token_cost_time(compare_out))
+                    self._prompt_metrics["compare"].append(
+                        get_token_cost_time(compare_out)
+                    )
                     insights_str = compare_out.choices[0].message.content
                     insights_str = insights_str.strip("\n").strip()
 
@@ -287,12 +289,14 @@ class ExpeLStrategy(ExpeLBaseStrategy):
 
                     # Prompt.
                     success_out = _prompt_all_success_critique(
-                        llm=self.llm, 
-                        insights=insights, 
-                        success_trajs_str=success_trials, 
-                        is_full=self.insight_memory.max_num_insights < len(insights)
+                        llm=self.llm,
+                        insights=insights,
+                        success_trajs_str=success_trials,
+                        is_full=self.insight_memory.max_num_insights < len(insights),
                     )
-                    self._prompt_metrics['success'].append(get_token_cost_time(success_out))
+                    self._prompt_metrics["success"].append(
+                        get_token_cost_time(success_out)
+                    )
                     insights_str = success_out.choices[0].message.content
                     insights_str = insights_str.strip("\n").strip()
 
@@ -386,7 +390,4 @@ class ExpeLStrategy(ExpeLBaseStrategy):
             self.reflexion_react_agent.reset()
             self.experience_memory.clear()
             self.insight_memory.clear()
-        self._prompt_metrics = {
-            "compare": [],
-            "success": []
-        }
+        self._prompt_metrics = {"compare": [], "success": []}

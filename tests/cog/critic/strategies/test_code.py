@@ -30,7 +30,11 @@ def test_init() -> None:
     strategy = CriticCodeStrategy(llm=llm)
     assert strategy.llm == llm
     assert not strategy._halt
-    assert strategy._prompt_metrics == {"answer": None, "critique": None, "updated_answer": None}
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": None,
+        "updated_answer": None,
+    }
 
 
 def test_generate() -> None:
@@ -59,7 +63,20 @@ def test_generate() -> None:
     assert result == gt_result
     assert strategy._halt is False
     print(strategy._prompt_metrics)
-    assert strategy._prompt_metrics == {'answer': {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, 'critique': None, 'updated_answer': None}
+    assert strategy._prompt_metrics == {
+        "answer": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "critique": None,
+        "updated_answer": None,
+    }
+
 
 def test_generate_critique() -> None:
     """Tests CriticCodeStrategy generate_critique."""
@@ -90,7 +107,19 @@ assert first_repeated_char("123123") == "1\""""
 
     assert critique == gt_critique
     assert external_tool_info == {"execution_status": ""}
-    assert strategy._prompt_metrics == {'answer': None, 'critique': {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, 'updated_answer': None}
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "updated_answer": None,
+    }
 
     # Test no tests error.
     with pytest.raises(ValueError):
@@ -129,7 +158,19 @@ assert first_repeated_char("123123") == "1\""""
     assert critique == gt_critique
     assert external_tool_info == {"execution_status": "Done"}
     assert strategy._halt
-    assert strategy._prompt_metrics == {'answer': None, 'critique': {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, 'updated_answer': None}
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "updated_answer": None,
+    }
 
 
 def test_create_output_dict() -> None:
@@ -139,7 +180,12 @@ def test_create_output_dict() -> None:
     result = strategy.create_output_dict(
         answer="", critique="", external_tool_info={"a": "b"}
     )
-    assert result == {"answer": "", "critique": "", "external_tool_info": {"a": "b"}, "prompt_metrics": {"answer": None, "critique": None, "updated_answer": None}}
+    assert result == {
+        "answer": "",
+        "critique": "",
+        "external_tool_info": {"a": "b"},
+        "prompt_metrics": {"answer": None, "critique": None, "updated_answer": None},
+    }
 
 
 def test_update_answer_based_on_critique() -> None:
@@ -169,7 +215,20 @@ assert first_repeated_char("123123") == "1\""""
 
     assert new_answer == gt_new_answer
     assert not strategy._halt
-    assert strategy._prompt_metrics == {'answer': None, 'critique': None, 'updated_answer': {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}}
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": None,
+        "updated_answer": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+    }
+
 
 def test_halting_condition() -> None:
     """Tests CriticCodeStrategy halting_condition."""
@@ -194,7 +253,11 @@ def test_reset() -> None:
 
     # Assert that all states are reset
     assert strategy._halt is False
-    assert strategy._prompt_metrics == {"answer": None, "critique": None, "updated_answer": None}
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": None,
+        "updated_answer": None,
+    }
 
 
 def test_instantiate_strategies() -> None:
@@ -243,7 +306,19 @@ def test_heval_generate_critique() -> None:
     assert critique == gt_critique
     assert external_tool_info == {}
     assert not strategy._halt
-    assert strategy._prompt_metrics == {'answer': None, 'critique': {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, 'updated_answer': None}
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "updated_answer": None,
+    }
 
     # Test no tests error.
     with pytest.raises(ValueError):
@@ -281,8 +356,19 @@ def test_heval_generate_critique() -> None:
     assert critique == gt_critique
     assert external_tool_info == {"execution_status": "Done"}
     assert strategy._halt
-    assert strategy._prompt_metrics == {'answer': None, 'critique': {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}, 'updated_answer': None}
-
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "updated_answer": None,
+    }
 
 
 def test_heval_update_answer_based_on_critique() -> None:
@@ -317,4 +403,16 @@ def test_heval_update_answer_based_on_critique() -> None:
     )
     assert new_answer == gt_new_answer
     assert not strategy._halt
-    assert strategy._prompt_metrics == {'answer': None, 'critique': None, 'updated_answer': {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30, 'prompt_tokens_cost': 1.5e-05, 'completion_tokens_cost': 3.9999999999999996e-05, 'total_tokens_cost': 5.4999999999999995e-05, 'time_sec': 0.5}}
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": None,
+        "updated_answer": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+    }

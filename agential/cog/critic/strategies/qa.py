@@ -9,6 +9,7 @@ from agential.cog.critic.strategies.base import CriticBaseStrategy
 from agential.llm.llm import BaseLLM
 from agential.utils.general import get_token_cost_time
 
+
 class CriticQAStrategy(CriticBaseStrategy):
     """A strategy class for QA benchmarks using the CRITIC agent.
 
@@ -35,7 +36,11 @@ class CriticQAStrategy(CriticBaseStrategy):
         self._query_history: List[str] = []
         self._evidence_history: Set[str] = set()
         self._halt = False
-        self._prompt_metrics: Dict[str, Any] = {"answer": None , "critique": None, "updated_answer": None}  
+        self._prompt_metrics: Dict[str, Any] = {
+            "answer": None,
+            "critique": None,
+            "updated_answer": None,
+        }
 
     def generate(
         self,
@@ -252,7 +257,11 @@ class CriticQAStrategy(CriticBaseStrategy):
         self._query_history = []
         self._evidence_history = set()
         self._halt = False
-        self._prompt_metrics = {"answer": None , "critique": None, "updated_answer": None}  
+        self._prompt_metrics = {
+            "answer": None,
+            "critique": None,
+            "updated_answer": None,
+        }
 
     def handle_search_query(
         self,

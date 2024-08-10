@@ -5,9 +5,9 @@ from typing import Any, Dict, List, Tuple
 from agential.cog.critic.functional import _prompt_agent, _prompt_critique
 from agential.cog.critic.strategies.base import CriticBaseStrategy
 from agential.llm.llm import BaseLLM
-from agential.utils.general import safe_execute
+from agential.utils.general import get_token_cost_time, safe_execute
 from agential.utils.validation import validate_overlapping_keys
-from agential.utils.general import get_token_cost_time
+
 
 class CriticMathStrategy(CriticBaseStrategy):
     """A strategy class for Math benchmarks using the CRITIC agent.
@@ -26,7 +26,11 @@ class CriticMathStrategy(CriticBaseStrategy):
         self._prev_code_answer = ""
         self.patience_counter = 0
         self._halt = False
-        self._prompt_metrics: Dict[str, Any] = {"answer": None, "critique": None ,"updated_answer": None}
+        self._prompt_metrics: Dict[str, Any] = {
+            "answer": None,
+            "critique": None,
+            "updated_answer": None,
+        }
 
     def generate(
         self,
@@ -152,7 +156,7 @@ class CriticMathStrategy(CriticBaseStrategy):
         )
         new_critique = out.choices[0].message.content
         new_critique = new_critique.split("Here's")[0]
-        
+
         self._prompt_metrics["critique"] = get_token_cost_time(out)
         return new_critique, external_tool_info
 
@@ -247,7 +251,11 @@ class CriticMathStrategy(CriticBaseStrategy):
         self._prev_code_answer = ""
         self.patience_counter = 0
         self._halt = False
-        self._prompt_metrics = {"answer": None, "critique": None, "updated_answer": None}
+        self._prompt_metrics = {
+            "answer": None,
+            "critique": None,
+            "updated_answer": None,
+        }
 
 
 class CritGSM8KStrategy(CriticMathStrategy):

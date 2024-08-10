@@ -5,9 +5,9 @@ from typing import Any, Dict, Tuple
 from agential.cog.critic.functional import _prompt_agent, _prompt_critique
 from agential.cog.critic.strategies.base import CriticBaseStrategy
 from agential.llm.llm import BaseLLM
-from agential.utils.general import safe_execute
+from agential.utils.general import get_token_cost_time, safe_execute
 from agential.utils.validation import validate_overlapping_keys
-from agential.utils.general import get_token_cost_time
+
 
 class CriticCodeStrategy(CriticBaseStrategy):
     """A strategy class for Code benchmarks using the CRITIC agent.
@@ -20,7 +20,11 @@ class CriticCodeStrategy(CriticBaseStrategy):
         """Initialization."""
         super().__init__(llm)
         self._halt = False
-        self._prompt_metrics: Dict[str, Any] = {"answer": None, "critique": None ,"updated_answer": None}
+        self._prompt_metrics: Dict[str, Any] = {
+            "answer": None,
+            "critique": None,
+            "updated_answer": None,
+        }
 
     def generate(
         self,
@@ -220,7 +224,11 @@ class CriticCodeStrategy(CriticBaseStrategy):
             None
         """
         self._halt = False
-        self._prompt_metrics = {"answer": None, "critique": None, "updated_answer": None}
+        self._prompt_metrics = {
+            "answer": None,
+            "critique": None,
+            "updated_answer": None,
+        }
 
 
 class CritMBPPCodeStrategy(CriticCodeStrategy):
@@ -302,7 +310,7 @@ class CritHEvalCodeStrategy(CriticCodeStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics["critique"] = get_token_cost_time(out)   
+        self._prompt_metrics["critique"] = get_token_cost_time(out)
         new_critique = out.choices[0].message.content
 
         new_critique = (

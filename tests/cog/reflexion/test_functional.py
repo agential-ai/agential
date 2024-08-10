@@ -330,6 +330,7 @@ def test_cot_reflect_reflexion() -> None:
     assert out == ["", "1"]
     assert model_response
 
+
 def test_cot_reflect_last_attempt_and_reflexion() -> None:
     """Test cot_reflect_last_attempt_and_reflexion function."""
     out, model_response = cot_reflect_last_attempt_and_reflexion(
@@ -342,6 +343,7 @@ def test_cot_reflect_last_attempt_and_reflexion() -> None:
     assert isinstance(out, list)
     assert out == ["1"]
     assert model_response
+
 
 def test_cot_reflect() -> None:
     """Test cot_reflect function."""
@@ -728,6 +730,7 @@ def test_react_reflect_last_attempt_and_reflexion() -> None:
     assert isinstance(out, list)
     assert out == ["1"]
     assert model_response
+
 
 def test_react_reflect() -> None:
     """Test react_reflect function."""

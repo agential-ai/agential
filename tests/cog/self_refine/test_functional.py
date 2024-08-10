@@ -93,7 +93,12 @@ def test_create_output_dict() -> None:
     answer = "result = 42"
     critique = "Critique: Your solution is incorrect."
     output_dict = strategy.create_output_dict(answer, critique)
-    assert output_dict == {'answer': 'result = 42', 'critique': 'Critique: Your solution is incorrect.', 'prompt_metrics': {'answer': None, 'critique': None, 'updated_answer': None}}
+    assert output_dict == {
+        "answer": "result = 42",
+        "critique": "Critique: Your solution is incorrect.",
+        "prompt_metrics": {"answer": None, "critique": None, "updated_answer": None},
+    }
+
 
 def test_update_answer_based_on_critique() -> None:
     """Tests SelfRefineMathStrategy update_answer_based_on_critique."""

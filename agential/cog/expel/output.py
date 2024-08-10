@@ -24,6 +24,4 @@ class ExpeLOutput(BaseModel):
     experience: Dict[str, Any] = Field(..., description="The current experience.")
     experience_memory: Dict[str, Any] = Field(..., description="The experience memory.")
     insight_memory: Dict[str, Any] = Field(..., description="The insight memory.")
-    prompt_metrics: Dict[str, Any] = Field(
-        ..., description="The prompt metrics."
-    )
+    prompt_metrics: Dict[str, Any] = Field(..., description="The prompt metrics.")
