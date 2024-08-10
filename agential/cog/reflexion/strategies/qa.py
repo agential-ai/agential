@@ -78,7 +78,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         self._scratchpad = ""
         self._finished = False
         self._answer = ""
-        self._prompt_metrics = {"thought": None , "action":  None ,"reflect": None}
+        self._prompt_metrics = {"thought": None, "action":  None , "reflection": None}
 
     def generate(
         self,
@@ -254,7 +254,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             self._scratchpad = ""
             self._finished = False
             self._answer = ""
-            self._prompt_metrics = {"thought": None, "action": None, "reflect": None}
+            self._prompt_metrics = {"thought": None, "action": None, "reflection": None}
 
     def reflect(
         self,
@@ -284,7 +284,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics["reflect"] = get_token_cost_time(reflections_out) if reflections_out else None
+        self._prompt_metrics["reflection"] = get_token_cost_time(reflections_out) if reflections_out else None
         return reflections, reflections_str
 
     def reflect_condition(
