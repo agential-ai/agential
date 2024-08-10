@@ -767,6 +767,7 @@ class ReflexionCoTHEvalStrategy(ReflexionCoTCodeStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics["action"] = get_token_cost_time(out)
         action = out.choices[0].message.content
 
         action = action.split("Observation")[0].strip()
