@@ -7,9 +7,11 @@ from agential.cog.expel.functional import (
     categorize_experiences,
     gather_experience,
     get_folds,
-    get_operations_compare,
-    get_operations_success,
+    _prompt_all_success_critique,
     retrieve_insight_index,
+    _prompt_compare_critique,
+    parse_insights,
+    remove_err_operations,
 )
 from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
@@ -18,7 +20,7 @@ from agential.cog.expel.memory import (
 from agential.cog.expel.strategies.base import ExpeLBaseStrategy
 from agential.cog.reflexion.agent import ReflexionReActAgent
 from agential.llm.llm import BaseLLM
-from agential.utils.general import shuffle_chunk_list
+from agential.utils.general import shuffle_chunk_list, get_token_cost_time
 
 
 class ExpeLStrategy(ExpeLBaseStrategy):
@@ -53,6 +55,8 @@ class ExpeLStrategy(ExpeLBaseStrategy):
 
         if experience_memory:
             self.extract_insights(self.experience_memory.experiences)
+
+        self._prompt_metrics: Dict[str, Any] = {"compare": [], "success": []}
 
     def generate(
         self,
@@ -241,7 +245,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
                     )
                     insights = self.insight_memory.load_memories()["insights"]
 
-                    operations = get_operations_compare(
+                    compare_out = _prompt_compare_critique(
                         llm=self.llm,
                         insights=insights,
                         question=question,
@@ -249,6 +253,16 @@ class ExpeLStrategy(ExpeLBaseStrategy):
                         failed_trial=failed_trial,
                         is_full=self.insight_memory.max_num_insights < len(insights),
                     )
+                    self._prompt_metrics['compare'].append(get_token_cost_time(compare_out))
+                    insights_str = compare_out.choices[0].message.content
+                    insights_str = insights_str.strip("\n").strip()
+
+                    # Parse.
+                    operations = parse_insights(insights_str)
+
+                    # Remove no-ops.
+                    operations = remove_err_operations(insights, operations)
+
                     self.update_insights(operations=operations)
 
             # Success.
@@ -271,12 +285,23 @@ class ExpeLStrategy(ExpeLBaseStrategy):
 
                     success_trials = "\n\n".join(concat_success_trajs)
 
-                    operations = get_operations_success(
-                        llm=self.llm,
-                        success_trials=success_trials,
-                        insights=insights,
-                        is_full=self.insight_memory.max_num_insights < len(insights),
+                    # Prompt.
+                    success_out = _prompt_all_success_critique(
+                        llm=self.llm, 
+                        insights=insights, 
+                        success_trials=success_trials, 
+                        is_full=self.insight_memory.max_num_insights < len(insights)
                     )
+                    self._prompt_metrics['success'].append(get_token_cost_time(success_out))
+                    insights_str = success_out.choices[0].message.content
+                    insights_str = insights_str.strip("\n").strip()
+
+                    # Parse.
+                    operations = parse_insights(insights_str)
+
+                    # Remove no-ops.
+                    operations = remove_err_operations(insights, operations)
+
                     self.update_insights(operations=operations)
 
     def update_insights(self, operations: List[Tuple[str, str]]) -> None:
@@ -345,6 +370,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
             },
             "experience_memory": deepcopy(self.experience_memory.show_memories()),
             "insight_memory": deepcopy(self.insight_memory.show_memories()),
+            "prompt_metrics": self._prompt_metrics,
         }
         return output_dict
 
@@ -360,3 +386,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
             self.reflexion_react_agent.reset()
             self.experience_memory.clear()
             self.insight_memory.clear()
+        self._prompt_metrics = {
+            "compare": [],
+            "success": []
+        }
