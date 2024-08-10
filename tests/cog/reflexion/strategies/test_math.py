@@ -598,8 +598,8 @@ def test_reflexion_react_reset() -> None:
 
     assert strategy._scratchpad == ""
     assert not strategy._finished
-    assert strategy._prompt_metrics_react == {"thought": [], "action": []}
-    assert strategy._prompt_metrics == {"reflection": []}
+    assert strategy._prompt_metrics_react == {"thought": None, "action": None}
+    assert strategy._prompt_metrics == {"reflection": None}
 
 
 def test_reflexion_react_reflect() -> None:

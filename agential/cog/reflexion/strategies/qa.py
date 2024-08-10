@@ -607,8 +607,8 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         self._scratchpad = ""
         self._finished = False
         self._answer = ""
-        self._prompt_metrics_react = {"thought": [], "action": []}
-        self._prompt_metrics = {"reflection": []}
+        self._prompt_metrics_react = {"thought": None, "action": None}
+        self._prompt_metrics = {"reflection": None}
 
     def reflect(
         self,
