@@ -183,6 +183,7 @@ def test_reflexion_cot_create_output_dict() -> None:
         "answer": "correct_answer",
         "is_correct": True,
         "reflections": [],
+        "prompt_metrics": {"thought": None, "action": None, "reflection": None},
     }
     assert output == expected_output
 
@@ -195,6 +196,7 @@ def test_reflexion_cot_create_output_dict() -> None:
         is_correct=False,
         reflections=[],
     )
+    print(output)
     expected_output = {
         "thought": "This is a thought.",
         "action_type": "Finish",
@@ -202,6 +204,7 @@ def test_reflexion_cot_create_output_dict() -> None:
         "answer": "incorrect_answer",
         "is_correct": False,
         "reflections": [],
+        "prompt_metrics": {"thought": None, "action": None, "reflection": None},
     }
     assert output == expected_output
 
@@ -221,6 +224,7 @@ def test_reflexion_cot_create_output_dict() -> None:
         "answer": "some_answer",
         "is_correct": False,
         "reflections": [],
+        "prompt_metrics": {"thought": None, "action": None, "reflection": None},
     }
     assert output == expected_output
 
@@ -254,6 +258,11 @@ def test_reflexion_cot_reset() -> None:
     assert strategy._scratchpad == ""
     assert strategy._finished == False
     assert strategy._answer == ""
+    assert strategy._prompt_metrics == {
+        "thought": None,
+        "action": None,
+        "reflection": None,
+    }
 
     strategy._scratchpad = "Initial scratchpad content"
     strategy._finished = True

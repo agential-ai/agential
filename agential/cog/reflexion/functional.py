@@ -322,12 +322,8 @@ def cot_reflect_last_attempt_and_reflexion(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    
-    reflections = [
-        remove_newline(
-            new_reflection.choices[0].message.content
-        )
-    ]
+
+    reflections = [remove_newline(new_reflection.choices[0].message.content)]
     return reflections, new_reflection
 
 
