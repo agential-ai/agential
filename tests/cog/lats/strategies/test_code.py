@@ -790,13 +790,6 @@ def test_generate() -> None:
         reflect_additional_keys={},
         is_simulate=False,
     )
-    for gt_state, node in zip(gt_states, children_nodes):
-        print(node.state)
-        print(node.depth)
-        print(node.reward)
-        print(node.value)
-        print(node.is_terminal)
-        print(node.visits)
     assert len(children_nodes) == 5
     for gt_state, node in zip(gt_states, children_nodes):
         assert node.state == gt_state

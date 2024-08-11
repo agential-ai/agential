@@ -108,7 +108,9 @@ class ReflexionCoTReflector(BaseReflector):
                 reflections, REFLECTION_AFTER_LAST_TRIAL_HEADER
             )
         else:
-            raise NotImplementedError(f"Unknown reflection strategy: {reflect_strategy}.")
+            raise NotImplementedError(
+                f"Unknown reflection strategy: {reflect_strategy}."
+            )
 
         self.reflections = reflections
         self.reflections_str = reflections_str

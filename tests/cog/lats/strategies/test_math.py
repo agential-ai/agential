@@ -1621,7 +1621,6 @@ def test_create_output_dict() -> None:
         simulation_terminal_node=None,
         simulation_results=None,
     )
-    print(out)
     assert out == gt_out
 
     assert strategy._prompt_metrics == gt_prompt_metrics

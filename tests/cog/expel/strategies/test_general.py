@@ -505,7 +505,6 @@ def test_extract_insights(expel_experiences_10_fake_path: str) -> None:
 
     strategy.extract_insights(experiences)
     assert strategy.insight_memory.insights == gt_insights
-    print(strategy._prompt_metrics)
     assert strategy._prompt_metrics == {
         "compare": [],
         "success": [
