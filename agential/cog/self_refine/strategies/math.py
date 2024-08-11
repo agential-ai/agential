@@ -112,7 +112,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
 
         return critique
 
-    def create_output_dict(self, answer: str, critique: str) -> Dict[str, str]:
+    def create_output_dict(self, answer: str, critique: str) -> Dict[str, Any]:
         """Creates an output dictionary containing the answer and critique.
 
         Args:
@@ -120,7 +120,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
             critique (str): The generated critique.
 
         Returns:
-            Dict[str, str]: The output dictionary.
+            Dict[str, Any]: The output dictionary.
         """
         return {
             "answer": answer,

@@ -45,7 +45,7 @@ class SelfRefineBaseStrategy(BaseStrategy):
         pass
 
     @abstractmethod
-    def create_output_dict(self, answer: str, critique: str) -> Dict[str, str]:
+    def create_output_dict(self, answer: str, critique: str) -> Dict[str, Any]:
         """Creates a dictionary containing the answer and critique.
 
         Args:
@@ -53,7 +53,7 @@ class SelfRefineBaseStrategy(BaseStrategy):
             critique (str): The generated critique.
 
         Returns:
-            Dict[str, str]: A dictionary containing the answer and critique.
+            Dict[str, Any]: A dictionary containing the answer and critique.
         """
         pass
 
