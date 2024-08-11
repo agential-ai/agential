@@ -83,7 +83,7 @@ class Node(BaseNode):
             return self.value
         if self.parent.visits == 0:
             return self.value
-        
+
         return self.value / (self.visits) + np.sqrt(
             2 * np.log(self.parent.visits) / self.visits
         )
