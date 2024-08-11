@@ -62,7 +62,6 @@ def test_generate() -> None:
     )
     assert result == gt_result
     assert strategy._halt is False
-    print(strategy._prompt_metrics)
     assert strategy._prompt_metrics == {
         "answer": {
             "prompt_tokens": 10,
