@@ -2,8 +2,6 @@
 
 from typing import Any, Dict
 
-from langchain_core.language_models.chat_models import BaseChatModel
-
 from agential.cog.self_refine.functional import (
     _prompt_agent,
     _prompt_critique,
@@ -11,24 +9,31 @@ from agential.cog.self_refine.functional import (
 )
 from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
 from agential.eval.em import EM
+from agential.llm.llm import BaseLLM
+from agential.utils.general import get_token_cost_time
 
 
 class SelfRefineMathStrategy(SelfRefineBaseStrategy):
     """A strategy class for Math benchmarks using the Self-Refine agent.
 
     Attributes:
-        llm (BaseChatModel): The language model used for generating answers and critiques.
+        llm (BaseLLM): The language model used for generating answers and critiques.
         patience (int): The number of interactions to tolerate the same incorrect answer
             before halting further attempts. Defaults to 1.
     """
 
-    def __init__(self, llm: BaseChatModel, patience: int = 1) -> None:
+    def __init__(self, llm: BaseLLM, patience: int = 1) -> None:
         """Initialization."""
         super().__init__(llm, patience)
 
         self._prev_code_answer = ""
         self.patience_counter = 0
         self._halt = False
+        self._prompt_metrics: Dict[str, Any] = {
+            "answer": None,
+            "critique": None,
+            "updated_answer": None,
+        }
 
     def generate(
         self,
@@ -50,14 +55,16 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
         Returns:
             str: The generated answer.
         """
-        answer = _prompt_agent(
+        out = _prompt_agent(
             llm=self.llm,
             question=question,
             examples=examples,
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        answer = answer.split("```python")[-1].split("```")[0].strip()
+        self._prompt_metrics["answer"] = get_token_cost_time(out)
+        answer = out.choices[0].message.content
+        answer = answer.strip().split("```python")[-1].split("```")[0].strip()
 
         return answer
 
@@ -84,7 +91,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
             str: The generated critique. If the same incorrect answer is repeated for the number of
                  interactions specified by patience, the halting condition is triggered.
         """
-        critique = _prompt_critique(
+        out = _prompt_critique(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -92,6 +99,9 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics["critique"] = get_token_cost_time(out)
+        critique = out.choices[0].message.content
+        critique = critique.strip()
 
         if EM(answer.strip(), self._prev_code_answer, normalize=False):
             self.patience_counter += 1
@@ -102,7 +112,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
 
         return critique
 
-    def create_output_dict(self, answer: str, critique: str) -> Dict[str, str]:
+    def create_output_dict(self, answer: str, critique: str) -> Dict[str, Any]:
         """Creates an output dictionary containing the answer and critique.
 
         Args:
@@ -110,9 +120,13 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
             critique (str): The generated critique.
 
         Returns:
-            Dict[str, str]: The output dictionary.
+            Dict[str, Any]: The output dictionary.
         """
-        return {"answer": answer, "critique": critique}
+        return {
+            "answer": answer,
+            "critique": critique,
+            "prompt_metrics": self._prompt_metrics,
+        }
 
     def update_answer_based_on_critique(
         self,
@@ -136,7 +150,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
         Returns:
             str: The updated answer.
         """
-        new_answer = _prompt_refine(
+        out = _prompt_refine(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -145,7 +159,9 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        new_answer = new_answer.split("```python")[-1].split("```")[0].strip()
+        self._prompt_metrics["updated_answer"] = get_token_cost_time(out)
+        new_answer = out.choices[0].message.content
+        new_answer = new_answer.strip().split("```python")[-1].split("```")[0].strip()
 
         return new_answer
 
@@ -170,6 +186,11 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
         self._prev_code_answer = ""
         self.patience_counter = 0
         self._halt = False
+        self._prompt_metrics = {
+            "answer": None,
+            "critique": None,
+            "updated_answer": None,
+        }
 
 
 class SelfRefineGSM8KStrategy(SelfRefineMathStrategy):

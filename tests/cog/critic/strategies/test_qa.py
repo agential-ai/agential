@@ -4,9 +4,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
-from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.critic.prompts import (
     CRITIC_CRITIQUE_INSTRUCTION_HOTPOTQA,
@@ -23,25 +21,31 @@ from agential.cog.critic.strategies.qa import (
 from agential.cog.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
 )
+from agential.llm.llm import BaseLLM, MockLLM
 
 
 def test_init() -> None:
     """Test CriticQAStrategy initialization."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     mock_search = MagicMock(spec=GoogleSerperAPIWrapper)
     strategy = CriticQAStrategy(llm=llm, search=mock_search)
-    assert isinstance(strategy.llm, BaseChatModel)
+    assert isinstance(strategy.llm, BaseLLM)
     assert isinstance(strategy.search, GoogleSerperAPIWrapper)
     assert strategy.evidence_length == 400
     assert strategy.num_results == 8
     assert strategy._query_history == []
     assert strategy._evidence_history == set()
     assert strategy._halt == False
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": None,
+        "updated_answer": None,
+    }
 
 
 def test_generate() -> None:
     """Tests CriticQAStrategy generate."""
-    llm = FakeListChatModel(responses=["Generated answer"])
+    llm = MockLLM("gpt-3.5-turbo", responses=["Generated answer"])
     strategy = CriticQAStrategy(llm=llm)
     question = "What is the capital of France?"
 
@@ -53,6 +57,19 @@ def test_generate() -> None:
     )
 
     assert result == "Generated answer"
+    assert strategy._prompt_metrics == {
+        "answer": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "critique": None,
+        "updated_answer": None,
+    }
 
 
 def test_generate_critique() -> None:
@@ -64,7 +81,7 @@ def test_generate_critique() -> None:
         'The question asks for a detailed description of the individual, not just their name. The answer provided only mentions the name "Badr Hari" without any explanation or context. So, it\'s not plausible.\n\n2. Truthfulness:\n\nLet\'s search the question in google:\n\n> Search Query: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring site: wikipedia.org\n> Evidence: [Badr Hari - Wikipedia] Badr Hari is a Moroccan-Dutch super heavyweight kickboxer from the Netherlands, fighting out of Mike\'s Gym in Oostzaan.\n\nThe evidence confirms that Badr Hari fits the description provided in the question.\n\nThe proposed answer is correct in identifying Badr Hari as the individual described, but it lacks the detailed explanation required by the question.\n\nQuestion: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring?\nHere\'s the most possible answer: The person in question is Badr Hari, a Moroccan-Dutch super heavyweight kickboxer who has faced controversies for his unsportsmanlike behavior in the sport and involvement in violent crimes outside of the ring.',
         "[Badri Hari - Wikipedia] Badr Hari, is a Moroccan-Dutch kickboxer from Amsterdam, Netherlands, fighting out of Mike's Gym in Oostzaan.\n\nThe evidence suggests that the person in question is indeed Badr Hari, as mentioned in the proposed answer.\n\nAbove all, the proposed answer correctly identifies Badr Hari as the individual in question, but lacks the detailed description required by the question.\n\nQuestion: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his \"unsportsmanlike conducts\" in the sport and crimes of violence outside of the ring?\nHere's the most possible answer: The person in question is Badr Hari, a Moroccan-Dutch kickboxer from Amsterdam, Netherlands, fighting out of Mike's Gym in Oostzaan.",
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = CriticQAStrategy(llm=llm)
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
     answer = "The person in question is Badr Hari."
@@ -89,6 +106,19 @@ def test_generate_critique() -> None:
     assert strategy._query_history == []
     assert strategy._evidence_history == set()
     assert not strategy._halt
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "updated_answer": None,
+    }
 
     # Test with tool.
     gt_result = '\nThe question asks for a person known for controversies and crimes, and the answer "Badr Hari" is a person\'s name. So it\'s plausible.\n\n2. Truthfulness:\n\nLet\'s search the question in google:\n\n> Search Query: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring\n> Evidence: [agential-ai/agential: The encyclopedia of LLM-based agents - GitHub] \'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts"\xa0...\n\n'
@@ -108,7 +138,7 @@ def test_generate_critique() -> None:
     responses = [
         'The question asks for a person known for controversies and crimes, and the answer "Badr Hari" is a person\'s name. So it\'s plausible.\n\n2. Truthfulness:\n\nLet\'s search the question in google:\n\n> Search Query: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring\n> Evidence: [Badr Hari - Wikipedia] Badr Hari is a Moroccan-Dutch kickboxer from Amsterdam, fighting out of Mike\'s Gym in Oostzaan.\n\nThe evidence supports the answer that Badr Hari is known for controversies and crimes.\n\nTherefore, the proposed answer is plausible and truthful.\n\nQuestion: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring\nHere\'s the most possible answer: The person in question is Badr Hari.'
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     search_mock = MagicMock()
     search_mock.results.return_value = [
         {
@@ -144,6 +174,19 @@ def test_generate_critique() -> None:
     assert strategy._query_history == gt_query_history
     assert strategy._evidence_history == gt_evidence_history
     assert not strategy._halt
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "updated_answer": None,
+    }
 
     # Test most possible answer.
     gt_result = "Badr Hari."
@@ -153,7 +196,7 @@ def test_generate_critique() -> None:
         'Thank you for the great question and proposed answer! The answer "Badr Hari" is both plausible and truthful based on the evidence found. Good job!',
         "the most possible answer: Badr Hari.",
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = CriticQAStrategy(llm=llm)
 
     result, external_tool_info = strategy.generate_critique(
@@ -173,11 +216,24 @@ def test_generate_critique() -> None:
     assert strategy._query_history == []
     assert strategy._evidence_history == set()
     assert strategy._halt
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "updated_answer": None,
+    }
 
 
 def test_create_output_dict() -> None:
     """Tests CriticQAStrategy create_output_dict."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = CriticQAStrategy(llm=llm)
 
     answer = "The capital of France is Paris."
@@ -190,6 +246,11 @@ def test_create_output_dict() -> None:
     assert result["critique"] == "The answer is correct."
     assert result["external_tool_info"]["search_query"] == "capital of France"
     assert result["external_tool_info"]["search_result"] == "Paris"
+    assert result["prompt_metrics"] == {
+        "answer": None,
+        "critique": None,
+        "updated_answer": None,
+    }
 
     strategy._halt = True
     result = strategy.create_output_dict(answer, critique, external_tool_info)
@@ -201,11 +262,16 @@ def test_create_output_dict() -> None:
     assert result["critique"] == "The answer is correct."
     assert result["external_tool_info"]["search_query"] == "capital of France"
     assert result["external_tool_info"]["search_result"] == "Paris"
+    assert result["prompt_metrics"] == {
+        "answer": None,
+        "critique": None,
+        "updated_answer": None,
+    }
 
 
 def test_update_answer_based_on_critique() -> None:
     """Tests CriticQAStrategy update_answer_based_on_critique."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = CriticQAStrategy(llm=llm)
     question = "What is the capital of France?"
     answer = "The capital of France is Berlin."
@@ -222,11 +288,16 @@ def test_update_answer_based_on_critique() -> None:
     )
 
     assert result == answer
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": None,
+        "updated_answer": None,
+    }
 
 
 def test_halting_condition() -> None:
     """Tests CriticQAStrategy halting_condition."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = CriticQAStrategy(llm=llm)
 
     strategy._halt = True
@@ -237,7 +308,7 @@ def test_halting_condition() -> None:
 
 def test_reset() -> None:
     """Tests CriticQAStrategy reset."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = CriticQAStrategy(llm=llm)
     strategy._query_history = ["query1"]
     strategy._evidence_history = {"evidence1"}
@@ -248,11 +319,16 @@ def test_reset() -> None:
     assert strategy._query_history == []
     assert strategy._evidence_history == set()
     assert strategy._halt is False
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": None,
+        "updated_answer": None,
+    }
 
 
 def test_handle_search_query() -> None:
     """Test CriticQAStrategy handle_search_query."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     mock_search = MagicMock(spec=GoogleSerperAPIWrapper)
 
     mock_search.results = MagicMock(
@@ -359,7 +435,7 @@ def test_handle_search_query() -> None:
 
 def test_instantiate_strategies() -> None:
     """Test instantiate all QA strategies."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     hotqa_strategy = CritHotQAStrategy(llm=llm)
     triviaqa_strategy = CritTriviaQAStrategy(llm=llm)
     ambignq_strategy = CritAmbigNQStrategy(llm=llm)

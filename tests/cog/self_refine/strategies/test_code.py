@@ -1,7 +1,5 @@
 """Unit tests for Self-Refine code strategies."""
 
-from langchain_community.chat_models.fake import FakeListChatModel
-
 from agential.cog.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_POT
 from agential.cog.self_refine.prompts import (
     HUMANEVAL_CRITIQUE_FEWSHOT_EXAMPLES,
@@ -13,25 +11,32 @@ from agential.cog.self_refine.strategies.code import (
     SelfRefineHEvalStrategy,
     SelfRefineMBPPStrategy,
 )
+from agential.llm.llm import MockLLM
 
 
 def test_init() -> None:
     """Test SelfRefinecodeStrategy initialization."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = SelfRefineCodeStrategy(llm=llm, patience=3)
     assert strategy.llm == llm
     assert strategy.patience == 3
     assert strategy._prev_code_answer == ""
     assert strategy.patience_counter == 0
     assert not strategy._halt
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": None,
+        "updated_answer": None,
+    }
 
 
 def test_generate() -> None:
     """Tests SelfRefineCodeStrategy generate."""
-    llm = FakeListChatModel(
+    llm = MockLLM(
+        "gpt-3.5-turbo",
         responses=[
             'from typing import List\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    """ Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    """\n    for i in range(len(numbers) - 1):\n        if abs(numbers[i] - numbers[i + 1]) < threshold:\n            return True\n    return False\n'
-        ]
+        ],
     )
 
     strategy = SelfRefineCodeStrategy(llm=llm)
@@ -48,6 +53,19 @@ def test_generate() -> None:
         answer
         == 'from typing import List\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    """ Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    """\n    for i in range(len(numbers) - 1):\n        if abs(numbers[i] - numbers[i + 1]) < threshold:\n            return True\n    return False'
     )
+    assert strategy._prompt_metrics == {
+        "answer": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "critique": None,
+        "updated_answer": None,
+    }
 
 
 def test_generate_critique() -> None:
@@ -56,7 +74,7 @@ def test_generate_critique() -> None:
     responses = [
         "The function incorrectly returns True for a list without duplicates due to a logical error in the comparison operation. For example, with `names_list = ['Alice', 'Bob', 'Charlie', 'Dave']`, the function still returns True. The line `return len(names_list) != len(set(names_list)) - 1` checks for duplicates by comparing the list's length with the set's length (which removes duplicates), subtracting one to allow exactly one duplicate. However, this logic is flawed. The subtraction causes a false positive for duplicates when there is any unique item, as it misinterprets the size difference. The function thus fails due to a critical error in this comparison, leading to incorrect duplicate identification."
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = SelfRefineCodeStrategy(llm=llm)
     question = 'from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    """ Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)\n    False\n    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)\n    True\n    """\n'
     answer = 'from typing import List\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    """ Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    """\n    for i in range(len(numbers) - 1):\n        if abs(numbers[i] - numbers[i + 1]) < threshold:\n            return True\n    return False'
@@ -74,13 +92,26 @@ def test_generate_critique() -> None:
     assert not strategy._halt
     assert strategy._prev_code_answer == answer
     assert strategy.patience_counter == 0
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "updated_answer": None,
+    }
 
     # Test early stopping.
     gt_critique = "The function incorrectly returns True for a list without duplicates due to a logical error in the comparison operation. For example, with `names_list = ['Alice', 'Bob', 'Charlie', 'Dave']`, the function still returns True. The line `return len(names_list) != len(set(names_list)) - 1` checks for duplicates by comparing the list's length with the set's length (which removes duplicates), subtracting one to allow exactly one duplicate. However, this logic is flawed. The subtraction causes a false positive for duplicates when there is any unique item, as it misinterprets the size difference. The function thus fails due to a critical error in this comparison, leading to incorrect duplicate identification."
     responses = [
         "The function incorrectly returns True for a list without duplicates due to a logical error in the comparison operation. For example, with `names_list = ['Alice', 'Bob', 'Charlie', 'Dave']`, the function still returns True. The line `return len(names_list) != len(set(names_list)) - 1` checks for duplicates by comparing the list's length with the set's length (which removes duplicates), subtracting one to allow exactly one duplicate. However, this logic is flawed. The subtraction causes a false positive for duplicates when there is any unique item, as it misinterprets the size difference. The function thus fails due to a critical error in this comparison, leading to incorrect duplicate identification."
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
 
     question = 'from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    """ Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)\n    False\n    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)\n    True\n    """\n'
     answer = 'from typing import List\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    """ Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    """\n    for i in range(len(numbers) - 1):\n        if abs(numbers[i] - numbers[i + 1]) < threshold:\n            return True\n    return False'
@@ -102,15 +133,32 @@ def test_generate_critique() -> None:
         strategy._prev_code_answer
         == 'from typing import List\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    """ Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    """\n    for i in range(len(numbers) - 1):\n        if abs(numbers[i] - numbers[i + 1]) < threshold:\n            return True\n    return False'
     )
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "updated_answer": None,
+    }
 
 
 def test_create_output_dict() -> None:
     """Tests SelfRefineCodeStrategy create_output_dict."""
-    strategy = SelfRefineCodeStrategy(llm=FakeListChatModel(responses=[]))
+    strategy = SelfRefineCodeStrategy(llm=MockLLM("gpt-3.5-turbo", responses=[]))
     answer = 'from typing import List\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    """ Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    """\n    for i in range(len(numbers) - 1):\n        if abs(numbers[i] - numbers[i + 1]) < threshold:\n            return True\n    return False'
     critique = "Critique: Your solution is incorrect."
     output_dict = strategy.create_output_dict(answer, critique)
-    assert output_dict == {"answer": answer, "critique": critique}
+    assert output_dict == {
+        "answer": answer,
+        "critique": critique,
+        "prompt_metrics": {"answer": None, "critique": None, "updated_answer": None},
+    }
 
 
 def test_update_answer_based_on_critique() -> None:
@@ -119,17 +167,30 @@ def test_update_answer_based_on_critique() -> None:
     responses = [
         '```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    """ Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)\n    False\n    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)\n    True\n    """\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```'
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = SelfRefineCodeStrategy(llm=llm, patience=2)
     new_answer = strategy.update_answer_based_on_critique(
         question="", examples="", answer="", critique="", prompt="", additional_keys={}
     )
     assert new_answer == gt_answer
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": None,
+        "updated_answer": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+    }
 
 
 def test_halting_condition() -> None:
     """Tests SelfRefineCodeStrategy halting_condition."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = SelfRefineCodeStrategy(llm=llm, patience=2)
 
     # Initially, halting condition should be False.
@@ -142,7 +203,7 @@ def test_halting_condition() -> None:
 
 def test_reset() -> None:
     """Tests SelfRefineCodeStrategy reset."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = SelfRefineCodeStrategy(llm=llm, patience=2)
 
     strategy._prev_code_answer = "result = 42"
@@ -152,10 +213,15 @@ def test_reset() -> None:
     assert strategy._prev_code_answer == ""
     assert strategy.patience_counter == 0
     assert not strategy._halt
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": None,
+        "updated_answer": None,
+    }
 
 
 def test_instantiate_strategies() -> None:
     """Test instantiate all Code strategies."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     assert isinstance(SelfRefineHEvalStrategy(llm=llm), SelfRefineHEvalStrategy)
     assert isinstance(SelfRefineMBPPStrategy(llm=llm), SelfRefineMBPPStrategy)

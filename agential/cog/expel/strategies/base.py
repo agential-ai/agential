@@ -3,22 +3,20 @@
 from abc import abstractmethod
 from typing import Any, Dict, List, Optional, Tuple
 
-from langchain_core.language_models.chat_models import BaseChatModel
-
-from agential.base.strategies import BaseStrategy
+from agential.cog.base.strategies import BaseStrategy
 from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
-from agential.cog.expel.output import ExpeLOutput
 from agential.cog.reflexion.agent import ReflexionReActAgent
+from agential.llm.llm import BaseLLM
 
 
 class ExpeLBaseStrategy(BaseStrategy):
     """An abstract base class for defining strategies for the ExpeL Agent.
 
     Attributes:
-        llm (BaseChatModel): The language model used for generating answers and critiques.
+        llm (BaseLLM): The language model used for generating answers and critiques.
         reflexion_react_agent (ReflexionReActAgent): The ReflexionReAct agent.
         experience_memory (ExpeLExperienceMemory): Memory module for storing experiences.
         insight_memory (ExpeLInsightMemory): Memory module for storing insights derived from experiences.
@@ -27,7 +25,7 @@ class ExpeLBaseStrategy(BaseStrategy):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         reflexion_react_agent: ReflexionReActAgent,
         experience_memory: ExpeLExperienceMemory,
         insight_memory: ExpeLInsightMemory,
@@ -81,7 +79,7 @@ class ExpeLBaseStrategy(BaseStrategy):
         reflect_additional_keys: List[Dict[str, str]],
         patience: int,
         **kwargs: Any,
-    ) -> List[ExpeLOutput]:
+    ) -> List[Dict[str, Any]]:
         """Gathers experience by executing a series of steps.
 
         Args:
@@ -98,16 +96,16 @@ class ExpeLBaseStrategy(BaseStrategy):
             **kwargs (Any): Additional keyword arguments to pass to the underlying methods.
 
         Returns:
-            List[ExpeLOutput]: A list of experiences gathered.
+            List[Dict[str, Any]]: A list of experiences gathered.
         """
         pass
 
     @abstractmethod
-    def extract_insights(self, experiences: List[ExpeLOutput]) -> None:
+    def extract_insights(self, experiences: List[Dict[str, Any]]) -> None:
         """Extracts insights from the provided experiences.
 
         Args:
-            experiences (List[ExpeLOutput]): A list of experiences to extract insights from.
+            experiences (List[Dict[str, Any]]): A list of experiences to extract insights from.
         """
         pass
 
@@ -117,5 +115,24 @@ class ExpeLBaseStrategy(BaseStrategy):
 
         Args:
             operations (List[Tuple[str, str]]): A list of tuples, where each tuple contains a key and a value to update in the insight memory.
+        """
+        pass
+
+    @abstractmethod
+    def create_output_dict(
+        self,
+        examples: str,
+        additional_keys: Dict[str, str],
+        experience: List[Dict[str, Any]],
+    ) -> Dict[str, Any]:
+        """Creates and returns an output dictionary containing the current state of the agent.
+
+        Args:
+            examples (str): The examples to be included in the output.
+            additional_keys (Dict[str, str]): Additional key-value pairs to be included in the output.
+            experience (List[Dict[str, Any]]): The current experience to be included in the output.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing the current state of the agent, including examples, additional keys, and experience.
         """
         pass

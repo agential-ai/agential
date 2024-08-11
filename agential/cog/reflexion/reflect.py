@@ -2,18 +2,21 @@
 
 from typing import Dict, List, Optional, Tuple
 
-from langchain_core.language_models.chat_models import BaseChatModel
-
-from agential.base.modules.reflect import BaseReflector
+from agential.cog.base.modules.reflect import BaseReflector
 from agential.cog.reflexion.functional import (
     _format_last_attempt,
     _format_reflections,
-    cot_reflect,
-    react_reflect,
+    cot_reflect_last_attempt,
+    cot_reflect_last_attempt_and_reflexion,
+    cot_reflect_reflexion,
+    react_reflect_last_attempt,
+    react_reflect_last_attempt_and_reflexion,
+    react_reflect_reflexion,
 )
 from agential.cog.reflexion.prompts import (
     REFLECTION_AFTER_LAST_TRIAL_HEADER,
 )
+from agential.llm.llm import BaseLLM, ModelResponse
 
 
 class ReflexionCoTReflector(BaseReflector):
@@ -23,7 +26,7 @@ class ReflexionCoTReflector(BaseReflector):
     strategies. It leverages a language model to generate reflections and maintains a list of these reflections.
 
     Attributes:
-        llm (BaseChatModel): A language model used for generating reflections.
+        llm (BaseLLM): A language model used for generating reflections.
         reflections (Optional[List[str]]): A list to store the generated reflections.
         reflections_str (Optional[str]): The reflections formatted into a string.
         max_reflections: (int): An int specifying the max number of reflections to use in a subsequent run. Defaults to 3.
@@ -31,7 +34,7 @@ class ReflexionCoTReflector(BaseReflector):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         reflections: Optional[List[str]] = None,
         reflections_str: Optional[str] = None,
         max_reflections: int = 3,
@@ -51,7 +54,7 @@ class ReflexionCoTReflector(BaseReflector):
         scratchpad: str,
         prompt: str,
         additional_keys: Dict[str, str] = {},
-    ) -> Tuple[List[str], str]:
+    ) -> Tuple[List[str], str, Optional[ModelResponse]]:
         """Wrapper around ReflexionCoT's `cot_reflect` method in functional.
 
         This method calls the appropriate reflection function based on the provided strategy, passing in the necessary
@@ -67,38 +70,51 @@ class ReflexionCoTReflector(BaseReflector):
             additional_keys (Dict[str, str]): Additional keys to be passed to the prompt template.
 
         Returns:
-            Tuple[List[str], str]: A tuple of the updated list of reflections based on the selected strategy and the formatted
+            Tuple[List[str], str, Optional[ModelResponse]]: A tuple of the updated list of reflections based on the selected strategy and the formatted
                 reflections.
 
         Raises:
             NotImplementedError: If an unknown reflection strategy is specified.
         """
-        reflections = cot_reflect(
-            reflect_strategy=reflect_strategy,
-            llm=self.llm,
-            reflections=self.reflections,
-            examples=examples,
-            question=question,
-            scratchpad=scratchpad,
-            prompt=prompt,
-            additional_keys=additional_keys,
-        )[-self.max_reflections :]
-
-        self.reflections = reflections
-
         if reflect_strategy == "last_attempt":
+            reflections, reflections_out = cot_reflect_last_attempt(scratchpad)
             reflections_str = _format_last_attempt(question, scratchpad)
         elif reflect_strategy == "reflexion":
+            reflections, reflections_out = cot_reflect_reflexion(
+                llm=self.llm,
+                reflections=self.reflections,
+                examples=examples,
+                question=question,
+                scratchpad=scratchpad,
+                prompt=prompt,
+                additional_keys=additional_keys,
+            )
+            reflections = reflections[-self.max_reflections :]
             reflections_str = _format_reflections(reflections)
+
         elif reflect_strategy == "last_attempt_and_reflexion":
+            reflections, reflections_out = cot_reflect_last_attempt_and_reflexion(
+                llm=self.llm,
+                examples=examples,
+                question=question,
+                scratchpad=scratchpad,
+                prompt=prompt,
+                additional_keys=additional_keys,
+            )
+            reflections = reflections[-self.max_reflections :]
             reflections_str = _format_last_attempt(question, scratchpad)
             reflections_str += "\n" + _format_reflections(
                 reflections, REFLECTION_AFTER_LAST_TRIAL_HEADER
             )
+        else:
+            raise NotImplementedError(
+                f"Unknown reflection strategy: {reflect_strategy}."
+            )
 
+        self.reflections = reflections
         self.reflections_str = reflections_str
 
-        return reflections, reflections_str
+        return reflections, reflections_str, reflections_out
 
     def reset(self) -> None:
         """Resets the reflections and reflections_str."""
@@ -113,7 +129,7 @@ class ReflexionReActReflector(BaseReflector):
     strategies. It leverages a language model to generate reflections and maintains a list of these reflections.
 
     Attributes:
-        llm (BaseChatModel): A language model used for generating reflections.
+        llm (BaseLLM): A language model used for generating reflections.
         reflections (Optional[List[str]]): A list to store the generated reflections.
         reflections_str (Optional[str]): The reflections formatted into a string.
         max_reflections: (int): An int specifying the max number of reflections to use in a subsequent run. Defaults to 3.
@@ -121,7 +137,7 @@ class ReflexionReActReflector(BaseReflector):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         reflections: Optional[List[str]] = None,
         reflections_str: Optional[str] = None,
         max_reflections: int = 3,
@@ -141,7 +157,7 @@ class ReflexionReActReflector(BaseReflector):
         scratchpad: str,
         prompt: str,
         additional_keys: Dict[str, str] = {},
-    ) -> Tuple[List[str], str]:
+    ) -> Tuple[List[str], str, Optional[ModelResponse]]:
         """Wrapper around ReflexionReAct's `react_reflect` method in functional.
 
         This method calls the appropriate reflection function based on the provided strategy, passing in the necessary
@@ -157,38 +173,50 @@ class ReflexionReActReflector(BaseReflector):
             additional_keys (Dict[str, str]): Additional keys. Defaults to {}.
 
         Returns:
-            Tuple[List[str], str]: A tuple of the updated list of reflections based on the selected strategy and the formatted
+            Tuple[List[str], str, Optional[ModelResponse]]: A tuple of the updated list of reflections based on the selected strategy and the formatted
                 reflections.
 
         Raises:
             NotImplementedError: If an unknown reflection strategy is specified.
         """
-        reflections = react_reflect(
-            reflect_strategy=reflect_strategy,
-            llm=self.llm,
-            reflections=self.reflections,
-            question=question,
-            examples=examples,
-            scratchpad=scratchpad,
-            prompt=prompt,
-            additional_keys=additional_keys,
-        )[-self.max_reflections :]
-
-        self.reflections = reflections
-
         if reflect_strategy == "last_attempt":
+            reflections, reflections_out = react_reflect_last_attempt(scratchpad)
             reflections_str = _format_last_attempt(question, scratchpad)
         elif reflect_strategy == "reflexion":
+            reflections, reflections_out = react_reflect_reflexion(
+                llm=self.llm,
+                reflections=self.reflections,
+                question=question,
+                examples=examples,
+                scratchpad=scratchpad,
+                prompt=prompt,
+                additional_keys=additional_keys,
+            )
+            reflections = reflections[-self.max_reflections :]
             reflections_str = _format_reflections(reflections)
         elif reflect_strategy == "last_attempt_and_reflexion":
+            reflections, reflections_out = react_reflect_last_attempt_and_reflexion(
+                llm=self.llm,
+                question=question,
+                examples=examples,
+                scratchpad=scratchpad,
+                prompt=prompt,
+                additional_keys=additional_keys,
+            )
+            reflections = reflections[-self.max_reflections :]
             reflections_str = _format_last_attempt(question, scratchpad)
             reflections_str += "\n" + _format_reflections(
                 reflections, REFLECTION_AFTER_LAST_TRIAL_HEADER
             )
+        else:
+            raise NotImplementedError(
+                f"Unknown reflection strategy: {reflect_strategy}."
+            )
 
+        self.reflections = reflections
         self.reflections_str = reflections_str
 
-        return reflections, reflections_str
+        return reflections, reflections_str, reflections_out
 
     def reset(self) -> None:
         """Clears the reflections and reflections_str."""

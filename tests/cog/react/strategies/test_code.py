@@ -1,7 +1,5 @@
 """Unit tests for ReAct Code strategies."""
 
-from langchain_community.chat_models.fake import FakeListChatModel
-from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
 
 from agential.cog.fewshots.mbpp import MBPP_FEWSHOT_EXAMPLES_REACT
@@ -12,6 +10,7 @@ from agential.cog.react.strategies.code import (
     ReActMBPPStrategy,
     parse_code_action,
 )
+from agential.llm.llm import BaseLLM, MockLLM
 
 
 def test_parse_code_action() -> None:
@@ -50,15 +49,16 @@ def test_parse_code_action() -> None:
 
 def test_init() -> None:
     """Test ReActCodeStrategy initialization."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReActCodeStrategy(llm=llm)
-    assert isinstance(strategy.llm, BaseChatModel)
+    assert isinstance(strategy.llm, BaseLLM)
     assert strategy.max_steps == 6
     assert strategy.max_tokens == 5000
     assert isinstance(strategy.enc, Encoding)
     assert strategy._answer == ""
     assert strategy._scratchpad == ""
     assert strategy._finished == False
+    assert strategy._prompt_metrics == {"thought": None, "action": None}
 
 
 def test_generate() -> None:
@@ -72,7 +72,7 @@ def test_generate() -> None:
     responses = [
         'I need to find a way to identify the first repeated character in a given string.\nAction: Implement[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]\nObservation: The function `first_repeated_char` is implemented to iterate through the string and return the first repeated character encountered.\nThought: I need to test the function to ensure it works correctly with different test cases.\nAction: Test[\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n]\nObservation: All tests passed successfully.\nThought: The function correctly identifies the first repeated character in the given string.\nFinish:[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]'
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReActCodeStrategy(llm=llm)
     out = strategy.generate(
         question=question,
@@ -81,6 +81,18 @@ def test_generate() -> None:
         additional_keys={"tests": tests},
     )
     assert out == gt_out
+    assert strategy._prompt_metrics == {
+        "thought": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "action": None,
+    }
 
 
 def test_generate_action() -> None:
@@ -94,7 +106,7 @@ def test_generate_action() -> None:
     responses = [
         "Implement[\n```python\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```\n]"
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReActCodeStrategy(llm=llm)
     action_type, query = strategy.generate_action(
         question=question,
@@ -104,6 +116,18 @@ def test_generate_action() -> None:
     )
     assert action_type == "Implement"
     assert query == gt_query
+    assert strategy._prompt_metrics == {
+        "thought": None,
+        "action": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+    }
 
 
 def test_generate_observation() -> None:
@@ -113,7 +137,7 @@ def test_generate_observation() -> None:
     gt_scratchpad = "\nObservation 0: \n```python\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```\nExecution Status: Done"
     action_type = "Implement"
     query = "def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None"
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReActCodeStrategy(llm=llm)
     obs, external_tool_info = strategy.generate_observation(
         idx=0, action_type=action_type, query=query
@@ -129,7 +153,7 @@ def test_generate_observation() -> None:
     gt_scratchpad = "\nObservation 0: \n```python\nprint('Hello World')\n\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```\nExecution Status: Done"
     action_type = "Test"
     query = "def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None"
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReActCodeStrategy(llm=llm)
     strategy._answer = "print('Hello World')"
     obs, external_tool_info = strategy.generate_observation(
@@ -146,7 +170,7 @@ def test_generate_observation() -> None:
     gt_scratchpad = "\nObservation 0: \n```python\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```"
     action_type = "Finish"
     query = "def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None"
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReActCodeStrategy(llm=llm)
     obs, external_tool_info = strategy.generate_observation(
         idx=0, action_type=action_type, query=query
@@ -161,7 +185,7 @@ def test_generate_observation() -> None:
     gt_scratchpad = "\nObservation 0: Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer]."
     action_type = "Unknown"
     query = "def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None"
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReActCodeStrategy(llm=llm)
     obs, external_tool_info = strategy.generate_observation(
         idx=0, action_type=action_type, query=query
@@ -178,7 +202,7 @@ def test_generate_observation() -> None:
 
 def test_create_output_dict() -> None:
     """Tests ReActCodeStrategy create_output_dict."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReActCodeStrategy(llm=llm)
     thought = "Sample thought"
     action_type = "implement"
@@ -194,6 +218,7 @@ def test_create_output_dict() -> None:
         "observation": obs,
         "answer": strategy._answer,
         "external_tool_info": external_tool_info,
+        "prompt_metrics": {"thought": None, "action": None},
     }
 
     output = strategy.create_output_dict(
@@ -204,7 +229,7 @@ def test_create_output_dict() -> None:
 
 def test_halting_condition() -> None:
     """Tests ReActCodeStrategy halting_condition."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReActCodeStrategy(llm=llm)
     strategy._finished = True
     idx = 5
@@ -221,7 +246,7 @@ def test_halting_condition() -> None:
 
 def test_reset() -> None:
     """Tests ReActCodeStrategy reset."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReActCodeStrategy(llm=llm)
     strategy._answer = "def add(a, b): return a + b"
     strategy._scratchpad = "Some scratchpad content"
@@ -232,11 +257,12 @@ def test_reset() -> None:
     assert strategy._answer == ""
     assert strategy._scratchpad == ""
     assert not strategy._finished
+    assert strategy._prompt_metrics == {"thought": None, "action": None}
 
 
 def test_instantiate_strategies() -> None:
     """Test instantiate all Code strategies."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     humaneval_strategy = ReActHEvalStrategy(llm=llm)
     mbpp_strategy = ReActMBPPStrategy(llm=llm)
 

@@ -1,8 +1,5 @@
 """Unit tests for Reflexion Math strategies."""
 
-from langchain_community.chat_models.fake import FakeListChatModel
-from langchain_core.language_models.chat_models import BaseChatModel
-
 from agential.cog.fewshots.gsm8k import (
     GSM8K_FEWSHOT_EXAMPLES_COT,
     GSM8K_FEWSHOT_EXAMPLES_REACT,
@@ -31,6 +28,7 @@ from agential.cog.reflexion.strategies.math import (
     parse_math_action_cot,
     parse_math_action_react,
 )
+from agential.llm.llm import BaseLLM, MockLLM
 
 
 def test_parse_math_action_cot() -> None:
@@ -66,15 +64,20 @@ def test_parse_math_action_react() -> None:
 
 def test_reflexion_cot_init() -> None:
     """Tests ReflexionCoTMathStrategy init."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReflexionCoTMathStrategy(llm=llm)
-    assert isinstance(strategy.llm, BaseChatModel)
+    assert isinstance(strategy.llm, BaseLLM)
     assert isinstance(strategy.reflector, ReflexionCoTReflector)
     assert strategy.max_reflections == 3
     assert strategy.max_trials == 3
     assert strategy._scratchpad == ""
     assert strategy._finished == False
     assert strategy._answer == ""
+    assert strategy._prompt_metrics == {
+        "thought": None,
+        "action": None,
+        "reflection": None,
+    }
 
 
 def test_reflexion_cot_generate() -> None:
@@ -86,7 +89,7 @@ def test_reflexion_cot_generate() -> None:
     responses = [
         "Let's calculate the total number of eggs she sells after breakfast and baking muffins. Then, we can find out how much she makes daily at the farmers' market.\nAction: Finish[\n```python\neggs_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\ntotal_eggs_sold = eggs_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\ndaily_income = total_eggs_sold * price_per_egg\nanswer = daily_income\n```\n]"
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReflexionCoTMathStrategy(llm=llm)
     out = strategy.generate(
         question=question,
@@ -99,6 +102,19 @@ def test_reflexion_cot_generate() -> None:
     assert strategy._scratchpad == gt_scratchpad
     assert strategy._finished == False
     assert strategy._answer == ""
+    assert strategy._prompt_metrics == {
+        "thought": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "action": None,
+        "reflection": None,
+    }
 
 
 def test_reflexion_cot_generate_action() -> None:
@@ -108,7 +124,7 @@ def test_reflexion_cot_generate_action() -> None:
     responses = [
         "Finish[\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_per_day = eggs_sold * price_per_egg\nanswer = money_made_per_day\n```\n]"
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReflexionCoTMathStrategy(llm=llm)
     action_type, query = strategy.generate_action(
         question=question,
@@ -128,12 +144,25 @@ def test_reflexion_cot_generate_action() -> None:
         strategy._scratchpad
         == "\nAction: Finish[\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_per_day = eggs_sold * price_per_egg\nanswer = money_made_per_day\n```\n]"
     )
+    assert strategy._prompt_metrics == {
+        "thought": None,
+        "action": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "reflection": None,
+    }
 
 
 def test_reflexion_cot_generate_observation() -> None:
     """Tests ReflexionCoTMathStrategy generate_observation."""
     # Case 1: action_type is "Finish" and answer is correct.
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReflexionCoTMathStrategy(llm=llm)
     is_correct, obs = strategy.generate_observation(
         action_type="Finish",
@@ -169,7 +198,7 @@ def test_reflexion_cot_generate_observation() -> None:
 
 def test_reflexion_cot_create_output_dict() -> None:
     """Tests ReflexionCoTMathStrategy create_output_dict."""
-    strategy = ReflexionCoTMathStrategy(llm=FakeListChatModel(responses=[]))
+    strategy = ReflexionCoTMathStrategy(llm=MockLLM("gpt-3.5-turbo", responses=[]))
 
     # Setting a dummy answer for testing.
     strategy._answer = "correct_answer"
@@ -189,6 +218,7 @@ def test_reflexion_cot_create_output_dict() -> None:
         "answer": "correct_answer",
         "is_correct": True,
         "reflections": [],
+        "prompt_metrics": {"thought": None, "action": None, "reflection": None},
     }
     assert output == expected_output
 
@@ -208,13 +238,14 @@ def test_reflexion_cot_create_output_dict() -> None:
         "answer": "incorrect_answer",
         "is_correct": False,
         "reflections": [],
+        "prompt_metrics": {"thought": None, "action": None, "reflection": None},
     }
     assert output == expected_output
 
 
 def test_reflexion_cot_halting_condition() -> None:
     """Tests ReflexionCoTMathStrategy halting_condition."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReflexionCoTMathStrategy(llm=llm, max_trials=3)
 
     strategy._answer = "incorrect_answer"
@@ -229,7 +260,7 @@ def test_reflexion_cot_halting_condition() -> None:
 
 def test_reflexion_cot_reset() -> None:
     """Tests ReflexionCoTMathStrategy reset."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReflexionCoTMathStrategy(llm=llm, max_trials=3)
 
     strategy._scratchpad = "Initial scratchpad content"
@@ -241,6 +272,11 @@ def test_reflexion_cot_reset() -> None:
     assert strategy._scratchpad == ""
     assert strategy._finished == False
     assert strategy._answer == ""
+    assert strategy._prompt_metrics == {
+        "thought": None,
+        "action": None,
+        "reflection": None,
+    }
 
     strategy._scratchpad = "Initial scratchpad content"
     strategy._finished = True
@@ -251,13 +287,18 @@ def test_reflexion_cot_reset() -> None:
     assert strategy._scratchpad == ""
     assert strategy._finished == True
     assert strategy._answer == "Some answer"
+    assert strategy._prompt_metrics == {
+        "thought": None,
+        "action": None,
+        "reflection": None,
+    }
 
 
 def test_reflexion_cot_reflect() -> None:
     """Tests ReflexionCoTMathStrategy reflect."""
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
 
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReflexionCoTMathStrategy(llm=llm, max_trials=3)
 
     gt_out = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?\n\n(END PREVIOUS TRIAL)\n"
@@ -269,11 +310,16 @@ def test_reflexion_cot_reflect() -> None:
         additional_keys={},
     )
     assert out == gt_out
+    assert strategy._prompt_metrics == {
+        "thought": None,
+        "action": None,
+        "reflection": None,
+    }
 
 
 def test_reflexion_cot_reflect_condition() -> None:
     """Tests ReflexionCoTMathStrategy reflect_condition."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReflexionCoTMathStrategy(llm)
 
     assert not strategy.reflect_condition(0, "strategy1", "key1")
@@ -284,7 +330,7 @@ def test_reflexion_cot_reflect_condition() -> None:
 
 def test_reflexion_cot_instantiate_strategies() -> None:
     """Tests ReflexionCoTMathStrategy instantiate strategies."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     gsm8k_strategy = ReflexionCoTGSM8KStrategy(llm=llm)
     svamp_strategy = ReflexionCoTSVAMPStrategy(llm=llm)
     tabmwp_strategy = ReflexionCoTTabMWPStrategy(llm=llm)
@@ -296,15 +342,17 @@ def test_reflexion_cot_instantiate_strategies() -> None:
 
 def test_reflexion_react_init() -> None:
     """Tests ReflexionReActMathStrategy init."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReflexionReActMathStrategy(llm=llm)
-    assert isinstance(strategy.llm, BaseChatModel)
+    assert isinstance(strategy.llm, BaseLLM)
     assert isinstance(strategy.reflector, ReflexionReActReflector)
     assert strategy.max_reflections == 3
     assert strategy.max_trials == 3
     assert strategy._scratchpad == ""
     assert strategy._finished == False
     assert strategy._answer == ""
+    assert strategy._prompt_metrics == {"reflection": None}
+    assert strategy._prompt_metrics_react == {"thought": None, "action": None}
 
 
 def test_reflexion_react_generate() -> None:
@@ -316,7 +364,7 @@ def test_reflexion_react_generate() -> None:
     responses = [
         "I need to calculate how much money Janet makes at the farmers' market daily based on the number of fresh duck eggs she sells.\n\nAction: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_baked_into_muffins\nprice_per_egg = 2\ntotal_money_daily = eggs_sold * price_per_egg\nanswer = total_money_daily\n```\n]\n\nObservation: \n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_baked_into_muffins\nprice_per_egg = 2\ntotal_money_daily = eggs_sold * price_per_egg\nanswer = total_money_daily\n```\nExecution Status: Done\nOutput: answer = -9867653\n\nThought: The answer is negative, which doesn't make sense. I must have made a mistake in the calculation.\n\nAction: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_baked_into_muffins\nprice_per_egg = 2\ntotal_money_daily = eggs_sold * price_per_egg\ntotal_money_daily = abs(total_money_daily)  # Taking the absolute value\nanswer = total_money_daily\n```\n]\n\nObservation: \n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_baked_into_muffins\nprice_per_egg = 2\ntotal_money_daily = eggs_sold * price_per_egg\ntotal_money_daily = abs(total_money_daily)  # Taking the absolute value\nanswer = total_money_daily\n```\nExecution Status: Done\nOutput: answer = 9867646\n\nThought: Janet makes $9867646 every day at the farmers' market.\nAction: Finish[\n```python\nanswer = 9867646\n```\n]\n\nObservation: \n```python\nanswer = 9867646\n```"
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReflexionReActMathStrategy(llm=llm)
     out = strategy.generate(
         question=question,
@@ -328,6 +376,19 @@ def test_reflexion_react_generate() -> None:
     )
     assert out == gt_out
     assert strategy._scratchpad == gt_scratchpad
+    assert strategy._prompt_metrics == {"reflection": None}
+    assert strategy._prompt_metrics_react == {
+        "thought": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "action": None,
+    }
 
 
 def test_reflexion_react_generate_action() -> None:
@@ -338,7 +399,7 @@ def test_reflexion_react_generate_action() -> None:
     responses = [
         "Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income\n```\n]"
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReflexionReActMathStrategy(llm=llm)
     action_type, query = strategy.generate_action(
         question=question,
@@ -354,11 +415,24 @@ def test_reflexion_react_generate_action() -> None:
         == "eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income"
     )
     assert strategy._scratchpad == gt_scratchpad
+    assert strategy._prompt_metrics == {"reflection": None}
+    assert strategy._prompt_metrics_react == {
+        "thought": None,
+        "action": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+    }
 
 
 def test_reflexion_react_generate_observation() -> None:
     """Tests ReflexionReActMathStrategy generate_observation."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReflexionReActMathStrategy(llm=llm)
 
     # Test Calculate.
@@ -422,7 +496,7 @@ def test_reflexion_react_generate_observation() -> None:
 
 def test_reflexion_react_create_output_dict() -> None:
     """Tests ReflexionReActMathStrategy create_output_dict."""
-    strategy = ReflexionReActMathStrategy(llm=FakeListChatModel(responses=[]))
+    strategy = ReflexionReActMathStrategy(llm=MockLLM("gpt-3.5-turbo", responses=[]))
     react_out = [
         {
             "thought": "First thought",
@@ -437,13 +511,14 @@ def test_reflexion_react_create_output_dict() -> None:
     expected_output = {
         "react_output": react_out,
         "reflections": reflections,
+        "prompt_metrics": {"reflection": None},
     }
     assert output == expected_output
 
 
 def test_reflexion_react_react_create_output_dict() -> None:
     """Tests ReflexionReActMathStrategy react_create_output_dict."""
-    strategy = ReflexionReActMathStrategy(llm=FakeListChatModel(responses=[]))
+    strategy = ReflexionReActMathStrategy(llm=MockLLM("gpt-3.5-turbo", responses=[]))
 
     # Test case 1: Valid output creation
     output = strategy.react_create_output_dict(
@@ -462,13 +537,14 @@ def test_reflexion_react_react_create_output_dict() -> None:
         "answer": "",
         "external_tool_info": {"search_result": "", "lookup_result": ""},
         "is_correct": True,
+        "prompt_metrics": {"thought": None, "action": None},
     }
     assert output == expected_output
 
 
 def test_reflexion_react_halting_condition() -> None:
     """Tests ReflexionReActMathStrategy halting_condition."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
 
     # Test case 1: Halting condition met because answer is incorrect and index is less than max_trials.
     strategy = ReflexionReActMathStrategy(llm=llm, max_trials=5)
@@ -498,7 +574,7 @@ def test_reflexion_react_halting_condition() -> None:
 
 def test_reflexion_react_react_halting_condition() -> None:
     """Tests ReflexionReActMathStrategy react_halting_condition."""
-    strategy = ReflexionReActMathStrategy(llm=FakeListChatModel(responses=[]))
+    strategy = ReflexionReActMathStrategy(llm=MockLLM("gpt-3.5-turbo", responses=[]))
 
     idx = 0
     question = "What is the capital of France?"
@@ -513,7 +589,7 @@ def test_reflexion_react_react_halting_condition() -> None:
 
 def test_reflexion_react_reset() -> None:
     """Tests ReflexionReActMathStrategy reset."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReflexionReActMathStrategy(llm=llm)
     strategy._scratchpad = "Some previous state"
     strategy._finished = True
@@ -522,6 +598,8 @@ def test_reflexion_react_reset() -> None:
 
     assert strategy._scratchpad == ""
     assert not strategy._finished
+    assert strategy._prompt_metrics_react == {"thought": None, "action": None}
+    assert strategy._prompt_metrics == {"reflection": None}
 
 
 def test_reflexion_react_reflect() -> None:
@@ -529,7 +607,7 @@ def test_reflexion_react_reflect() -> None:
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
 
     gt_reflections = "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
-    llm = FakeListChatModel(responses=["1"])
+    llm = MockLLM("gpt-3.5-turbo", responses=["1"])
     strategy = ReflexionReActMathStrategy(llm=llm)
     _, reflections = strategy.reflect(
         reflect_strategy="reflexion",
@@ -539,13 +617,25 @@ def test_reflexion_react_reflect() -> None:
         additional_keys={},
     )
     assert reflections == gt_reflections
+    assert strategy._prompt_metrics_react == {"thought": None, "action": None}
+    assert strategy._prompt_metrics == {
+        "reflection": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        }
+    }
 
 
 def test_reflexion_react_reflect_condition() -> None:
     """Tests ReflexionReActMathStrategy reflect_condition."""
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
 
-    llm = FakeListChatModel(responses=["1"])
+    llm = MockLLM("gpt-3.5-turbo", responses=["1"])
     strategy = ReflexionReActMathStrategy(llm=llm)
     out = strategy.reflect_condition(
         step_idx=1,
@@ -561,7 +651,7 @@ def test_reflexion_react_reflect_condition() -> None:
 
 def test_reflexion_react_instantiate_strategies() -> None:
     """Tests ReflexionReActMathStrategy instantiate strategies."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     gsm8k_strategy = ReflexionReActGSM8KStrategy(llm=llm)
     svamp_strategy = ReflexionReActSVAMPStrategy(llm=llm)
     tabmwp_strategy = ReflexionReActTabMWPStrategy(llm=llm)

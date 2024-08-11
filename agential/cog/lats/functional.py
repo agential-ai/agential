@@ -2,14 +2,11 @@
 
 from typing import Dict, List
 
-from langchain_core.language_models.chat_models import BaseChatModel
-from langchain_core.messages.human import HumanMessage
-from langchain_core.prompts.prompt import PromptTemplate
-
 from agential.cog.lats.prompts import (
     LATS_FAILED_TRAJECTORY_FORMAT,
     LATS_REFLECTION_FORMAT,
 )
+from agential.llm.llm import BaseLLM, ModelResponse
 
 
 def _build_reflection_format(trajectory: str, reflection: str) -> str:
@@ -70,24 +67,24 @@ def _build_reflection_prompt(
     Returns:
         str: The fully formatted reflection prompt ready for use with the language model.
     """
-    prompt = PromptTemplate.from_template(prompt).format(
+    prompt = prompt.format(
         question=question, examples=examples, trajectory=trajectory, **additional_keys
     )
     return prompt
 
 
 def _prompt_reflection(
-    llm: BaseChatModel,
+    llm: BaseLLM,
     question: str,
     examples: str,
     trajectory: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> str:
+) -> ModelResponse:
     """Generates a reflection using the language model based on the given inputs.
 
     Args:
-        llm (BaseChatModel): The language model to use for generating the reflection.
+        llm (BaseLLM): The language model to use for generating the reflection.
         question (str): The main question or task.
         examples (str): Relevant examples to provide context.
         trajectory (str): The agent's current trajectory or thought process.
@@ -95,7 +92,7 @@ def _prompt_reflection(
         additional_keys (Dict[str, str], optional): Additional formatting keys. Defaults to {}.
 
     Returns:
-        str: The generated reflection content.
+        ModelResponse: The generated reflection content.
     """
     prompt = _build_reflection_prompt(
         question=question,
@@ -104,14 +101,8 @@ def _prompt_reflection(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    out = llm(
-        [
-            HumanMessage(
-                content=prompt,
-            )
-        ]
-    ).content
-    assert isinstance(out, str)
+    out = llm(prompt)
+
     return out
 
 
@@ -136,7 +127,7 @@ def _build_value_prompt(
     Returns:
         str: The fully formatted value prompt.
     """
-    prompt = PromptTemplate.from_template(prompt).format(
+    prompt = prompt.format(
         question=question,
         examples=examples,
         trajectory=trajectory,
@@ -147,18 +138,18 @@ def _build_value_prompt(
 
 
 def _prompt_value(
-    llm: BaseChatModel,
+    llm: BaseLLM,
     question: str,
     examples: str,
     trajectory: str,
     failed_trajectories: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> str:
+) -> ModelResponse:
     """Generates a value assessment using the language model based on the given inputs.
 
     Args:
-        llm (BaseChatModel): The language model to use for generating the value assessment.
+        llm (BaseLLM): The language model to use for generating the value assessment.
         question (str): The main question or task.
         examples (str): Relevant examples to provide context.
         trajectory (str): The agent's current trajectory.
@@ -167,7 +158,7 @@ def _prompt_value(
         additional_keys (Dict[str, str], optional): Additional formatting keys. Defaults to {}.
 
     Returns:
-        str: The generated value assessment content.
+        ModelResponse: The generated value assessment content.
     """
     prompt = _build_value_prompt(
         question=question,
@@ -177,14 +168,8 @@ def _prompt_value(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    out = llm(
-        [
-            HumanMessage(
-                content=prompt,
-            )
-        ]
-    ).content
-    assert isinstance(out, str)
+    out = llm(prompt)
+
     return out
 
 
@@ -209,7 +194,7 @@ def _build_agent_prompt(
     Returns:
         str: The fully formatted agent prompt.
     """
-    prompt = PromptTemplate.from_template(prompt).format(
+    prompt = prompt.format(
         question=question,
         examples=examples,
         trajectory=trajectory,
@@ -220,18 +205,18 @@ def _build_agent_prompt(
 
 
 def _prompt_agent(
-    llm: BaseChatModel,
+    llm: BaseLLM,
     question: str,
     examples: str,
     trajectory: str,
     reflections: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> str:
+) -> ModelResponse:
     """Generates an agent response using the language model based on the given inputs.
 
     Args:
-        llm (BaseChatModel): The language model to use for generating the agent response.
+        llm (BaseLLM): The language model to use for generating the agent response.
         question (str): The main question or task.
         examples (str): Relevant examples to provide context.
         trajectory (str): The agent's current trajectory.
@@ -240,7 +225,7 @@ def _prompt_agent(
         additional_keys (Dict[str, str], optional): Additional formatting keys. Defaults to {}.
 
     Returns:
-        str: The generated agent response content.
+        ModelResponse: The generated agent response content.
     """
     prompt = _build_agent_prompt(
         question=question,
@@ -250,14 +235,8 @@ def _prompt_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    out = llm(
-        [
-            HumanMessage(
-                content=prompt,
-            )
-        ]
-    ).content
-    assert isinstance(out, str)
+    out = llm(prompt)
+
     return out
 
 

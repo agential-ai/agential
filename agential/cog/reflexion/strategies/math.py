@@ -6,7 +6,6 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import tiktoken
 
-from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken.core import Encoding
 
 from agential.cog.reflexion.functional import (
@@ -25,7 +24,8 @@ from agential.cog.reflexion.strategies.base import (
     ReflexionReActBaseStrategy,
 )
 from agential.eval.em import EM
-from agential.utils.general import safe_execute
+from agential.llm.llm import BaseLLM
+from agential.utils.general import get_token_cost_time, safe_execute
 from agential.utils.parse import remove_newline
 
 
@@ -89,7 +89,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
     """A strategy class for Math benchmarks using the ReflexionCoT agent.
 
     Attributes:
-        llm (BaseChatModel): The language model used for generating answers and critiques.
+        llm (BaseLLM): The language model used for generating answers and critiques.
         reflector (Optional[ReflexionCoTReflector]): The reflector used for generating reflections. Defaults to None.
         max_reflections (int): The maximum number of reflections allowed. Defaults to 3.
         max_trials (int): The maximum number of trials allowed. Defaults to 3.
@@ -97,7 +97,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         reflector: Optional[ReflexionCoTReflector] = None,
         max_reflections: int = 3,
         max_trials: int = 3,
@@ -110,6 +110,11 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
         self._scratchpad = ""
         self._finished = False
         self._answer = ""
+        self._prompt_metrics: Dict[str, Any] = {
+            "thought": None,
+            "action": None,
+            "reflection": None,
+        }
 
     def generate(
         self,
@@ -134,7 +139,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
             str: The generated thought.
         """
         self._scratchpad += "\nThought:"
-        thought = _prompt_cot_agent(
+        out = _prompt_cot_agent(
             llm=self.llm,
             examples=examples,
             reflections=reflections,
@@ -143,6 +148,9 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics["thought"] = get_token_cost_time(out)
+        thought = out.choices[0].message.content
+
         thought = remove_newline(thought).split("Action")[0].strip()
         self._scratchpad += " " + thought
 
@@ -171,7 +179,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
             Tuple[str, str]: The generated action type and query.
         """
         self._scratchpad += "\nAction:"
-        action = _prompt_cot_agent(
+        out = _prompt_cot_agent(
             llm=self.llm,
             examples=examples,
             reflections=reflections,
@@ -180,6 +188,9 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics["action"] = get_token_cost_time(out)
+        action = out.choices[0].message.content
+
         action = action.split("Observation")[0].strip()
 
         action_type, query = parse_math_action_cot(action)
@@ -243,6 +254,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
             "answer": self._answer,
             "is_correct": is_correct,
             "reflections": reflections,
+            "prompt_metrics": self._prompt_metrics,
         }
 
     def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
@@ -277,6 +289,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
             self._scratchpad = ""
             self._finished = False
             self._answer = ""
+            self._prompt_metrics = {"thought": None, "action": None, "reflection": None}
 
     def reflect(
         self,
@@ -298,13 +311,16 @@ class ReflexionCoTMathStrategy(ReflexionCoTBaseStrategy):
         Returns:
             Tuple[List[str], str]: The reflections and the reflection string.
         """
-        reflections, reflections_str = self.reflector.reflect(
+        reflections, reflections_str, reflections_out = self.reflector.reflect(
             reflect_strategy=reflect_strategy,
             question=question,
             examples=examples,
             scratchpad=self._scratchpad,
             prompt=prompt,
             additional_keys=additional_keys,
+        )
+        self._prompt_metrics["reflection"] = (
+            get_token_cost_time(reflections_out) if reflections_out else None
         )
         return reflections, reflections_str
 
@@ -333,7 +349,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
     """A strategy class for Math benchmarks using the ReflexionReAct agent.
 
     Attributes:
-        llm (BaseChatModel): The language model used for generating answers and critiques.
+        llm (BaseLLM): The language model used for generating answers and critiques.
         reflector (Optional[ReflexionReActReflector]): The reflector used for generating reflections. Defaults to None.
         max_reflections (int): The maximum number of reflections allowed. Defaults to 3.
         max_trials (int): The maximum number of trials allowed. Defaults to 3.
@@ -344,7 +360,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         reflector: Optional[ReflexionReActReflector] = None,
         max_reflections: int = 3,
         max_trials: int = 3,
@@ -364,6 +380,8 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         self._finished = False
         self._answer = ""
         self._scratchpad = ""
+        self._prompt_metrics: Dict[str, Any] = {"reflection": None}
+        self._prompt_metrics_react: Dict[str, Any] = {"thought": None, "action": None}
 
     def generate(
         self,
@@ -390,7 +408,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         max_steps = kwargs.get("max_steps", self.max_steps)  # type: ignore
 
         self._scratchpad += "\nThought:"
-        thought = _prompt_react_agent(
+        out = _prompt_react_agent(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -400,6 +418,9 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics_react["thought"] = get_token_cost_time(out)
+        thought = out.choices[0].message.content
+
         thought = remove_newline(thought).split("Action")[0].strip()
         self._scratchpad += " " + thought
 
@@ -429,7 +450,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         """
         max_steps = kwargs.get("max_steps", self.max_steps)
         self._scratchpad += "\nAction:"
-        action = _prompt_react_agent(
+        out = _prompt_react_agent(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -439,6 +460,9 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics_react["action"] = get_token_cost_time(out)
+        action = out.choices[0].message.content
+
         action = action.split("Observation")[0].strip()
 
         action_type, query = parse_math_action_react(action)
@@ -505,6 +529,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         return {
             "react_output": react_out,
             "reflections": reflections,
+            "prompt_metrics": self._prompt_metrics,
         }
 
     def react_create_output_dict(
@@ -537,6 +562,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
             "answer": self._answer,
             "external_tool_info": external_tool_info,
             "is_correct": is_correct,
+            "prompt_metrics": self._prompt_metrics_react,
         }
 
     def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
@@ -609,6 +635,8 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         self._scratchpad = ""
         self._finished = False
         self._answer = ""
+        self._prompt_metrics_react = {"thought": None, "action": None}
+        self._prompt_metrics = {"reflection": None}
 
     def reflect(
         self,
@@ -630,7 +658,7 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
         Returns:
             Tuple[List[str], str]: The reflections and reflection string.
         """
-        reflections, reflections_str = self.reflector.reflect(
+        reflections, reflections_str, reflections_out = self.reflector.reflect(
             reflect_strategy=reflect_strategy,
             question=question,
             examples=examples,
@@ -640,7 +668,9 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-
+        self._prompt_metrics["reflection"] = (
+            get_token_cost_time(reflections_out) if reflections_out else None
+        )
         return reflections, reflections_str
 
     def reflect_condition(

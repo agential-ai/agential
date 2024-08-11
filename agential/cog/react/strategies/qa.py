@@ -7,12 +7,13 @@ from typing import Any, Dict, Tuple
 import tiktoken
 
 from langchain_community.docstore.wikipedia import Wikipedia
-from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken.core import Encoding
 
 from agential.cog.react.functional import _is_halted, _prompt_agent
 from agential.cog.react.strategies.base import ReActBaseStrategy
+from agential.llm.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
+from agential.utils.general import get_token_cost_time
 from agential.utils.parse import remove_newline
 
 
@@ -43,7 +44,7 @@ class ReActQAStrategy(ReActBaseStrategy):
     """A strategy class for QA benchmarks using the ReAct agent.
 
     Attributes:
-        llm (BaseChatModel): The language model used for generating answers and critiques.
+        llm (BaseLLM): The language model used for generating answers and critiques.
         max_steps (int): The maximum number of steps the agent can take.
         max_tokens (int): The maximum number of tokens allowed for a response.
         enc (Encoding): The encoding used for the language model.
@@ -52,7 +53,7 @@ class ReActQAStrategy(ReActBaseStrategy):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         max_steps: int = 6,
         max_tokens: int = 5000,
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
@@ -65,6 +66,7 @@ class ReActQAStrategy(ReActBaseStrategy):
         self._scratchpad = ""
         self._answer = ""
         self._finished = False
+        self._prompt_metrics: Dict[str, Any] = {"thought": None, "action": None}
 
     def generate(
         self,
@@ -89,7 +91,7 @@ class ReActQAStrategy(ReActBaseStrategy):
         max_steps = kwargs.get("max_steps", self.max_steps)  # type: ignore
 
         self._scratchpad += "\nThought:"
-        thought = _prompt_agent(
+        out = _prompt_agent(
             llm=self.llm,
             question=question,
             scratchpad=self._scratchpad,
@@ -98,6 +100,9 @@ class ReActQAStrategy(ReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics["thought"] = get_token_cost_time(out)
+        thought = out.choices[0].message.content
+
         thought = remove_newline(thought).split("Action")[0].strip()
         self._scratchpad += " " + thought
 
@@ -125,7 +130,7 @@ class ReActQAStrategy(ReActBaseStrategy):
         """
         max_steps = kwargs.get("max_steps", self.max_steps)
         self._scratchpad += "\nAction:"
-        action = _prompt_agent(
+        out = _prompt_agent(
             llm=self.llm,
             question=question,
             scratchpad=self._scratchpad,
@@ -134,6 +139,9 @@ class ReActQAStrategy(ReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics["action"] = get_token_cost_time(out)
+        action = out.choices[0].message.content
+
         action = remove_newline(action).split("Observation")[0]
         self._scratchpad += " " + action
         action_type, query = parse_qa_action(action)
@@ -199,7 +207,7 @@ class ReActQAStrategy(ReActBaseStrategy):
             external_tool_info (Dict[str, Any]): The external tool outputs.
 
         Returns:
-            Dict[str, Any]: A dictionary containing the thought, action type, query, observation, answer, and external tool output.
+            Dict[str, Any]: A dictionary containing the thought, action type, query, observation, answer, external tool output, and prompt metrics.
         """
         return {
             "thought": thought,
@@ -208,6 +216,7 @@ class ReActQAStrategy(ReActBaseStrategy):
             "observation": obs,
             "answer": self._answer,
             "external_tool_info": external_tool_info,
+            "prompt_metrics": self._prompt_metrics,
         }
 
     def halting_condition(
@@ -260,6 +269,8 @@ class ReActQAStrategy(ReActBaseStrategy):
         """
         self._scratchpad = ""
         self._finished = False
+        self._answer = ""
+        self._prompt_metrics = {"thought": None, "action": None}
 
 
 class ReActHotQAStrategy(ReActQAStrategy):

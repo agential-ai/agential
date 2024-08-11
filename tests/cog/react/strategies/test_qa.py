@@ -1,7 +1,5 @@
 """Unit tests for ReAct QA strategies."""
 
-from langchain_community.chat_models.fake import FakeListChatModel
-from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
 
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
@@ -16,6 +14,7 @@ from agential.cog.react.strategies.qa import (
     ReActTriviaQAStrategy,
     parse_qa_action,
 )
+from agential.llm.llm import BaseLLM, MockLLM
 from agential.utils.docstore import DocstoreExplorer
 
 
@@ -40,15 +39,17 @@ def test_parse_qa_action() -> None:
 
 def test_init() -> None:
     """Test ReActQAStrategy initialization."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReActQAStrategy(llm=llm)
-    assert isinstance(strategy.llm, BaseChatModel)
+    assert isinstance(strategy.llm, BaseLLM)
     assert strategy.max_steps == 6
     assert strategy.max_tokens == 5000
     assert isinstance(strategy.docstore, DocstoreExplorer)
     assert isinstance(strategy.enc, Encoding)
     assert strategy._scratchpad == ""
     assert strategy._finished == False
+
+    assert strategy._prompt_metrics == {"thought": None, "action": None}
 
 
 def test_generate() -> None:
@@ -60,7 +61,7 @@ def test_generate() -> None:
     responses = [
         "I need to search for the best kickboxer in the world who has been involved in controversies and crimes.\nAction 1: Search[best kickboxer in the world controversies crimes]\nObservation 1: Could not find exact match. Similar: ['List of kickboxers', 'Kickboxing', 'List of controversies involving Kickboxing']\nThought 2: I should try searching for the best kickboxer in the world and then look for any controversies or crimes related to him.\nAction 2: Search[best kickboxer in the world]\nObservation 2: Could not find exact match. Similar: ['List of best kickboxers in the world', 'List of kickboxing organizations', 'Kickboxing', 'Best Fighters in the World']\nThought 3: I can try searching for top kickboxers and then look for controversies and crimes.\nAction 3: Search[top kickboxers]\nObservation 3: Could not find exact match. Similar: ['Top 10 kickboxers', 'Top 5 kickboxers', 'Top 15 kickboxers']\nThought 4: I need to refine my search terms to find the information I need.\nAction 4: Search[most famous kickboxer controversies crimes]\nObservation 4: Could not find exact match. Similar: ['Famous kickboxers', 'Kickboxing controversies', 'Famous kickboxers in the world']\nThought 5: I should try searching for famous kickboxers involved in controversies and crimes.\nAction 5: Search[famous kickboxers controversies crimes]\nObservation 5: Could not find exact match. Similar: ['Famous kickboxers', 'Kickboxing controversies', 'Famous kickboxers in the world']\nThought 6: I am unable to find the specific information I need within the given steps. \nAction 6: Finish[unable to find answer]"
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReActQAStrategy(llm=llm)
     result = strategy.generate(
         question=question,
@@ -72,6 +73,19 @@ def test_generate() -> None:
     assert not strategy._finished
     assert strategy._scratchpad == gt_scratchpad
 
+    assert strategy._prompt_metrics == {
+        "thought": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "action": None,
+    }
+
 
 def test_generate_action() -> None:
     """Tests ReActQAStrategy generate_action."""
@@ -81,7 +95,7 @@ def test_generate_action() -> None:
     gt_query = "best kick boxer in the world controversies crimes"
     init_scratchpad = "\nThought: I need to search for the best kickboxer in the world who has been involved in controversies and crimes."
     responses = ["Search[best kick boxer in the world controversies crimes]"]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReActQAStrategy(llm=llm)
     strategy._scratchpad = init_scratchpad
     strategy._finished = False
@@ -94,6 +108,19 @@ def test_generate_action() -> None:
     assert action_type == gt_action_type
     assert query == gt_query
 
+    assert strategy._prompt_metrics == {
+        "thought": None,
+        "action": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+    }
+
 
 def test_generate_observation() -> None:
     """Tests ReActQAStrategy generate_observation."""
@@ -101,7 +128,7 @@ def test_generate_observation() -> None:
     query = "best kick boxer in the world controversies crimes"
     init_scratchpad = "\nThought: I need to search for the best kickboxer in the world who has been involved in controversies and crimes.\nAction: Search[best kick boxer in the world controversies crimes]"
     responses = []
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
 
     strategy = ReActQAStrategy(llm=llm)
     strategy._scratchpad = init_scratchpad
@@ -127,7 +154,7 @@ def test_generate_observation() -> None:
     query = "The best kickboxer is Buakaw Banchamek."
     init_scratchpad = "\nThought: I need to provide the final answer.\nAction: Finish[The best kickboxer is Buakaw Banchamek.]"
     responses = []
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReActQAStrategy(llm=llm)
     strategy._scratchpad = init_scratchpad
     strategy._finished = False
@@ -147,7 +174,7 @@ def test_generate_observation() -> None:
     query = "best kick boxer in the world controversies crimes"
     init_scratchpad = "\nThought: I need to search for the best kickboxer in the world who has been involved in controversies and crimes.\nAction: Search[best kick boxer in the world controversies crimes]"
     responses = ["Buakaw Banchamek has faced several controversies and legal issues."]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReActQAStrategy(llm=llm)
     strategy._scratchpad = init_scratchpad
     strategy._finished = False
@@ -173,7 +200,7 @@ def test_generate_observation() -> None:
     query = "best kick boxer in the world controversies crimes"
     init_scratchpad = "\nThought: I need to search for the best kickboxer in the world who has been involved in controversies and crimes.\nAction: Search[best kick boxer in the world controversies crimes]"
     responses = []
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReActQAStrategy(llm=llm)
     strategy._scratchpad = init_scratchpad
     strategy._finished = False
@@ -196,7 +223,7 @@ def test_generate_observation() -> None:
     query = "controversies"
     init_scratchpad = "\nThought: I need to lookup controversies related to the best kickboxer in the world.\nAction: Lookup[controversies]"
     responses = ["Buakaw Banchamek has faced several controversies and legal issues."]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReActQAStrategy(llm=llm)
     strategy._scratchpad = init_scratchpad
     strategy._finished = False
@@ -219,7 +246,7 @@ def test_generate_observation() -> None:
     query = "controversies"
     init_scratchpad = "\nThought: I need to lookup controversies related to the best kickboxer in the world.\nAction: Lookup[controversies]"
     responses = []
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReActQAStrategy(llm=llm)
     strategy._scratchpad = init_scratchpad
     strategy._finished = False
@@ -245,7 +272,7 @@ def test_generate_observation() -> None:
     query = "invalid action"
     init_scratchpad = "\nThought: I need to perform an invalid action.\nAction: Invalid[invalid action]"
     responses = []
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReActQAStrategy(llm=llm)
     strategy._scratchpad = init_scratchpad
     strategy._finished = False
@@ -265,7 +292,7 @@ def test_generate_observation() -> None:
 
 def test_create_output_dict() -> None:
     """Tests ReActQAStrategy create_output_dict."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReActQAStrategy(llm=llm)
     thought = "This is a thought."
     action_type = "search"
@@ -280,6 +307,7 @@ def test_create_output_dict() -> None:
         "observation": obs,
         "answer": "",
         "external_tool_info": {"search_result": "", "lookup_result": ""},
+        "prompt_metrics": {"thought": None, "action": None},
     }
 
     assert (
@@ -292,7 +320,7 @@ def test_create_output_dict() -> None:
 
 def test_halting_condition() -> None:
     """Tests ReActQAStrategy halting_condition."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReActQAStrategy(llm=llm)
     idx = 0
     question = "What is the capital of France?"
@@ -304,7 +332,7 @@ def test_halting_condition() -> None:
 
 def test_reset() -> None:
     """Tests ReActQAStrategy reset."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReActQAStrategy(llm=llm)
     strategy._scratchpad = "Some previous state"
     strategy._finished = True
@@ -314,10 +342,12 @@ def test_reset() -> None:
     assert strategy._scratchpad == ""
     assert not strategy._finished
 
+    assert strategy._prompt_metrics == {"thought": None, "action": None}
+
 
 def test_instantiate_strategies() -> None:
     """Test instantiate all QA strategies."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     hotqa_strategy = ReActHotQAStrategy(llm=llm)
     triviaqa_strategy = ReActTriviaQAStrategy(llm=llm)
     ambignq_strategy = ReActAmbigNQStrategy(llm=llm)

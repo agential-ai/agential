@@ -3,7 +3,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict
 
-from agential.base.strategies import BaseStrategy
+from agential.cog.base.strategies import BaseStrategy
 
 
 class BaseFactory(ABC):

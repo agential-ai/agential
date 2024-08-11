@@ -2,9 +2,6 @@
 
 import pytest
 
-from langchain_community.chat_models.fake import FakeListChatModel
-from langchain_core.language_models.chat_models import BaseChatModel
-
 from agential.cog.critic.prompts import (
     CRITIC_CRITIQUE_INSTRUCTION_HUMANEVAL,
     CRITIC_CRITIQUE_INSTRUCTION_MBPP,
@@ -24,15 +21,20 @@ from agential.cog.critic.strategies.code import (
 from agential.cog.fewshots.humaneval import (
     HUMANEVAL_FEWSHOT_EXAMPLES_POT,
 )
-from agential.cog.fewshots.mbpp import MBPP_FEWSHOT_EXAMPLES_POT
+from agential.llm.llm import MockLLM
 
 
 def test_init() -> None:
     """Test CriticCodeStrategy initialization."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = CriticCodeStrategy(llm=llm)
     assert strategy.llm == llm
     assert not strategy._halt
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": None,
+        "updated_answer": None,
+    }
 
 
 def test_generate() -> None:
@@ -50,7 +52,7 @@ def test_generate() -> None:
     responses = [
         "```python\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```"
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = CriticCodeStrategy(llm=llm)
     result = strategy.generate(
         question=question,
@@ -60,6 +62,19 @@ def test_generate() -> None:
     )
     assert result == gt_result
     assert strategy._halt is False
+    assert strategy._prompt_metrics == {
+        "answer": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "critique": None,
+        "updated_answer": None,
+    }
 
 
 def test_generate_critique() -> None:
@@ -74,7 +89,7 @@ assert first_repeated_char("123123") == "1\""""
     responses = [
         "There is no problem with the code provided. The function `first_repeated_char` correctly iterates over the characters in the string and keeps track of seen characters using a set. If a character is already in the set, it returns that character as the first repeated character. Otherwise, it adds the character to the set and continues. The function passes the given test cases without any issues."
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = CriticCodeStrategy(llm=llm)
     answer = 'def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\n# Testing the function with the given test cases\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"'
     critique, external_tool_info = strategy.generate_critique(
@@ -91,6 +106,19 @@ assert first_repeated_char("123123") == "1\""""
 
     assert critique == gt_critique
     assert external_tool_info == {"execution_status": ""}
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "updated_answer": None,
+    }
 
     # Test no tests error.
     with pytest.raises(ValueError):
@@ -111,7 +139,7 @@ assert first_repeated_char("123123") == "1\""""
     responses = [
         "There doesn't seem to be any issue with the provided code for finding the first repeated character in a given string. The function correctly uses a set to keep track of seen characters and returns the first repeated character encountered.\n\nThe function passes the provided test cases and seems to be implemented correctly."
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = CriticCodeStrategy(llm=llm)
     answer = 'def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\n# Testing the function with the given test cases\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"'
     critique, external_tool_info = strategy.generate_critique(
@@ -129,16 +157,34 @@ assert first_repeated_char("123123") == "1\""""
     assert critique == gt_critique
     assert external_tool_info == {"execution_status": "Done"}
     assert strategy._halt
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "updated_answer": None,
+    }
 
 
 def test_create_output_dict() -> None:
     """Tests CriticCodeStrategy create_output_dict."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = CriticCodeStrategy(llm=llm)
     result = strategy.create_output_dict(
         answer="", critique="", external_tool_info={"a": "b"}
     )
-    assert result == {"answer": "", "critique": "", "external_tool_info": {"a": "b"}}
+    assert result == {
+        "answer": "",
+        "critique": "",
+        "external_tool_info": {"a": "b"},
+        "prompt_metrics": {"answer": None, "critique": None, "updated_answer": None},
+    }
 
 
 def test_update_answer_based_on_critique() -> None:
@@ -154,7 +200,7 @@ assert first_repeated_char("123123") == "1\""""
     responses = [
         "The provided code for finding the first repeated character in a given string is correct and passes the test cases. No issues were identified with the implementation."
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = CriticCodeStrategy(llm=llm)
     new_answer = strategy.update_answer_based_on_critique(
         question=question,
@@ -168,6 +214,19 @@ assert first_repeated_char("123123") == "1\""""
 
     assert new_answer == gt_new_answer
     assert not strategy._halt
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": None,
+        "updated_answer": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+    }
 
 
 def test_halting_condition() -> None:
@@ -193,11 +252,16 @@ def test_reset() -> None:
 
     # Assert that all states are reset
     assert strategy._halt is False
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": None,
+        "updated_answer": None,
+    }
 
 
 def test_instantiate_strategies() -> None:
     """Test instantiate all Code strategies."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     heval_strategy = CritHEvalCodeStrategy(llm=llm)
     mbpp_strategy = CritMBPPCodeStrategy(llm=llm)
 
@@ -223,7 +287,7 @@ def test_heval_generate_critique() -> None:
     responses = [
         'The implementation of the `has_close_elements` function correctly checks if there are any two numbers in the list that are closer to each other than the given threshold. However, there is a minor issue with the threshold comparison logic.\n\nIn the comparison `abs(numbers[i] - numbers[j]) < threshold`, the condition is checking if the absolute difference between two numbers is less than the threshold. This condition is correct for identifying close elements. However, the problem arises when the difference between two numbers is exactly equal to the threshold, as the function is expected to return False in that case.\n\nFor example, if the list is `[1.0, 2.0, 3.0]` and the threshold is `1.0`, the function should return False because none of the numbers have a difference exactly equal to the threshold. However, the current implementation would return True because the condition allows for numbers with a difference less than the threshold.\n\nTo fix this issue and align the function with the expected behavior, the threshold comparison should be modified to `abs(numbers[i] - numbers[j]) <= threshold` to include the case where the difference is exactly equal to the threshold.\n\nHere\'s the corrected implementation of the `has_close_elements` function:\n\n```python\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    """ Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)\n    False\n    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)\n    True\n    """\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) <= threshold:\n                return True\n    return False\n```\n\nWith this modification, the function will now correctly handle cases where the difference between two numbers is exactly equal to the threshold.'
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = CritHEvalCodeStrategy(llm=llm)
 
     critique, external_tool_info = strategy.generate_critique(
@@ -241,6 +305,19 @@ def test_heval_generate_critique() -> None:
     assert critique == gt_critique
     assert external_tool_info == {}
     assert not strategy._halt
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "updated_answer": None,
+    }
 
     # Test no tests error.
     with pytest.raises(ValueError):
@@ -261,7 +338,7 @@ def test_heval_generate_critique() -> None:
     responses = [
         "There is no problem with the provided code. The `has_close_elements` function correctly checks if there are any two numbers in the list that are closer to each other than the given threshold. The function uses a nested loop to compare all pairs of numbers in the list and returns `True` if it finds any pair that meets the condition. The test cases provided in the `check` function also cover a variety of scenarios to verify the correctness of the implementation."
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = CritHEvalCodeStrategy(llm=llm)
 
     critique, external_tool_info = strategy.generate_critique(
@@ -278,6 +355,19 @@ def test_heval_generate_critique() -> None:
     assert critique == gt_critique
     assert external_tool_info == {"execution_status": "Done"}
     assert strategy._halt
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "updated_answer": None,
+    }
 
 
 def test_heval_update_answer_based_on_critique() -> None:
@@ -299,7 +389,7 @@ def test_heval_update_answer_based_on_critique() -> None:
         "```python\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```"
     ]
     critique = "There is no problem with the provided code. The `has_close_elements` function correctly checks if there are any two numbers in the list that are closer to each other than the given threshold. The function uses a nested loop to compare all pairs of numbers in the list and returns `True` if it finds any pair that meets the condition. The test cases provided in the `check` function also cover a variety of scenarios to verify the correctness of the implementation."
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = CritHEvalCodeStrategy(llm=llm)
     new_answer = strategy.update_answer_based_on_critique(
         question=question,
@@ -312,3 +402,16 @@ def test_heval_update_answer_based_on_critique() -> None:
     )
     assert new_answer == gt_new_answer
     assert not strategy._halt
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": None,
+        "updated_answer": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+    }

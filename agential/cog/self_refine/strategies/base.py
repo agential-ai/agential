@@ -1,23 +1,22 @@
 """Base Self-Refine Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Dict
+from typing import Any, Dict
 
-from langchain_core.language_models.chat_models import BaseChatModel
-
-from agential.base.strategies import BaseStrategy
+from agential.cog.base.strategies import BaseStrategy
+from agential.llm.llm import BaseLLM
 
 
 class SelfRefineBaseStrategy(BaseStrategy):
     """An abstract base class for defining strategies for the Self-Refine Agent.
 
     Attributes:
-        llm (BaseChatModel): The language model used for generating answers and critiques.
+        llm (BaseLLM): The language model used for generating answers and critiques.
         patience (int): The number of interactions to tolerate the same incorrect answer
             before halting further attempts.
     """
 
-    def __init__(self, llm: BaseChatModel, patience: int) -> None:
+    def __init__(self, llm: BaseLLM, patience: int) -> None:
         """Initialization."""
         super().__init__(llm)
         self.patience = patience
@@ -46,7 +45,7 @@ class SelfRefineBaseStrategy(BaseStrategy):
         pass
 
     @abstractmethod
-    def create_output_dict(self, answer: str, critique: str) -> Dict[str, str]:
+    def create_output_dict(self, answer: str, critique: str) -> Dict[str, Any]:
         """Creates a dictionary containing the answer and critique.
 
         Args:
@@ -54,7 +53,7 @@ class SelfRefineBaseStrategy(BaseStrategy):
             critique (str): The generated critique.
 
         Returns:
-            Dict[str, str]: A dictionary containing the answer and critique.
+            Dict[str, Any]: A dictionary containing the answer and critique.
         """
         pass
 

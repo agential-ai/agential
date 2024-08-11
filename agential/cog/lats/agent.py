@@ -6,12 +6,11 @@ Paper Repository: https://github.com/lapisrocks/LanguageAgentTreeSearch
 
 from typing import Any, Dict, List, Tuple
 
-from langchain_core.language_models.chat_models import BaseChatModel
-
-from agential.base.agent import BaseAgent
+from agential.cog.base.agent import BaseAgent
 from agential.cog.lats.factory import LATS_BENCHMARK_FEWSHOTS, LATSFactory
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import LATSOutput, LATSSimulationOutput
+from agential.llm.llm import BaseLLM
 
 
 class LATSAgent(BaseAgent):
@@ -25,7 +24,7 @@ class LATSAgent(BaseAgent):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         benchmark: str,
         **strategy_kwargs: Any,
     ) -> None:
@@ -120,15 +119,15 @@ class LATSAgent(BaseAgent):
                 if self.strategy.halting_condition(child_node):
                     output.append(
                         LATSOutput(
-                            iteration=i,
-                            current_node=node.to_dict(),
-                            children_nodes=[
-                                child_node.to_dict() for child_node in children_nodes
-                            ],
-                            values=[],
-                            simulation_reward=0,
-                            simulation_terminal_node={},
-                            simulation_results=[],
+                            **self.strategy.create_output_dict(
+                                iteration=i,
+                                current_node=node,
+                                children_nodes=children_nodes,
+                                values=None,
+                                simulation_reward=None,
+                                simulation_terminal_node=None,
+                                simulation_results=None,
+                            )
                         )
                     )
                     return child_node, output
@@ -160,27 +159,17 @@ class LATSAgent(BaseAgent):
                 )
             )
 
-            simulation_results_output = [
-                LATSSimulationOutput(
-                    current_node=result["current_node"].to_dict(),
-                    children_nodes=[
-                        child_node.to_dict() for child_node in result["children_nodes"]
-                    ],
-                    values=result["values"],
-                )
-                for result in simulation_results
-            ]
             output.append(
                 LATSOutput(
-                    iteration=i,
-                    current_node=node.to_dict(),
-                    children_nodes=[
-                        child_node.to_dict() for child_node in children_nodes
-                    ],
-                    values=values,
-                    simulation_reward=simulation_reward,
-                    simulation_terminal_node=simulation_terminal_node.to_dict(),
-                    simulation_results=simulation_results_output,
+                    **self.strategy.create_output_dict(
+                        iteration=i,
+                        current_node=node,
+                        children_nodes=children_nodes,
+                        values=values,
+                        simulation_reward=simulation_reward,
+                        simulation_terminal_node=simulation_terminal_node,
+                        simulation_results=simulation_results,
+                    )
                 )
             )
 

@@ -3,19 +3,17 @@
 from abc import abstractmethod
 from typing import Any, Dict, Tuple
 
-import tiktoken
-
-from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
 
-from agential.base.strategies import BaseStrategy
+from agential.cog.base.strategies import BaseStrategy
+from agential.llm.llm import BaseLLM
 
 
 class ReActBaseStrategy(BaseStrategy):
     """An abstract base class for defining strategies for the ReAct Agent.
 
     Attributes:
-        llm (BaseChatModel): The language model used for generating answers and critiques.
+        llm (BaseLLM): The language model used for generating answers and critiques.
         max_steps (int): The maximum number of steps the agent can take.
         max_tokens (int): The maximum number of tokens allowed for a response.
         enc (Encoding): The encoding used for the language model.
@@ -23,7 +21,7 @@ class ReActBaseStrategy(BaseStrategy):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         max_steps: int,
         max_tokens: int,
         enc: Encoding,

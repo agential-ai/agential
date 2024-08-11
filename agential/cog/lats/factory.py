@@ -2,7 +2,7 @@
 
 from typing import Any, Dict
 
-from agential.base.factory import BaseFactory
+from agential.cog.base.factory import BaseFactory
 from agential.cog.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
 from agential.cog.lats.prompts import (
     AMBIGNQ_FEWSHOT_EXAMPLES_LATS_REFLECT,

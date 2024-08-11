@@ -1,7 +1,5 @@
 """Unit tests for Self-Refine math strategies."""
 
-from langchain_community.chat_models.fake import FakeListChatModel
-
 from agential.cog.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_POT
 from agential.cog.self_refine.prompts import (
     GSM8K_CRITIQUE_FEWSHOT_EXAMPLES,
@@ -16,22 +14,28 @@ from agential.cog.self_refine.strategies.math import (
     SelfRefineSVAMPStrategy,
     SelfRefineTabMWPStrategy,
 )
+from agential.llm.llm import MockLLM
 
 
 def test_init() -> None:
     """Test SelfRefineMathStrategy initialization."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = SelfRefineMathStrategy(llm=llm, patience=3)
     assert strategy.llm == llm
     assert strategy.patience == 3
     assert strategy._prev_code_answer == ""
     assert strategy.patience_counter == 0
     assert not strategy._halt
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": None,
+        "updated_answer": None,
+    }
 
 
 def test_generate() -> None:
     """Tests SelfRefineMathStrategy generate."""
-    llm = FakeListChatModel(responses=["```python\nresult = 42\n```"])
+    llm = MockLLM("gpt-3.5-turbo", responses=["```python\nresult = 42\n```"])
     strategy = SelfRefineMathStrategy(llm=llm)
     question = "A robe takes 2 bolts of blue fiber and half that much white fiber.  How many bolts in total does it take?"
 
@@ -42,6 +46,19 @@ def test_generate() -> None:
         additional_keys={},
     )
     assert answer == "result = 42"
+    assert strategy._prompt_metrics == {
+        "answer": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "critique": None,
+        "updated_answer": None,
+    }
 
 
 def test_generate_critique() -> None:
@@ -50,7 +67,7 @@ def test_generate_critique() -> None:
     responses = [
         "The error in the code is that the result is hardcoded as 42 without actually calculating the total number of bolts needed for the robe. The code should calculate the total number of bolts required based on the information given in the question. Let's correct this:\n\n```python\nblue_bolts = 2\nwhite_bolts = blue_bolts / 2\ntotal_bolts = blue_bolts + white_bolts\nresult = total_bolts\n``` \n\nThis code snippet will correctly calculate the total number of bolts needed for the robe."
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = SelfRefineMathStrategy(llm=llm)
     question = "A robe takes 2 bolts of blue fiber and half that much white fiber.  How many bolts in total does it take?"
     answer = "result = 42"
@@ -66,6 +83,19 @@ def test_generate_critique() -> None:
     assert not strategy._halt
     assert strategy._prev_code_answer == answer
     assert strategy.patience_counter == 0
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "updated_answer": None,
+    }
 
     # Test early stopping.
     gt_critique = "The error in the code is that the result is hardcoded as 42 without actually calculating the total number of bolts needed for the robe. The code should calculate the total number of bolts required based on the information given in the question. Let's correct this:\n\n```python\nblue_bolts = 2\nwhite_bolts = blue_bolts / 2\ntotal_bolts = blue_bolts + white_bolts\nresult = total_bolts\n``` \n\nThis code snippet will correctly calculate the total number of bolts needed for the robe."
@@ -73,7 +103,7 @@ def test_generate_critique() -> None:
     responses = [
         "The error in the code is that the result is hardcoded as 42 without actually calculating the total number of bolts needed for the robe. The code should calculate the total number of bolts required based on the information given in the question. Let's correct this:\n\n```python\nblue_bolts = 2\nwhite_bolts = blue_bolts / 2\ntotal_bolts = blue_bolts + white_bolts\nresult = total_bolts\n``` \n\nThis code snippet will correctly calculate the total number of bolts needed for the robe."
     ]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = SelfRefineMathStrategy(llm=llm, patience=1)
     strategy._prev_code_answer = "result = 42"
     critique = strategy.generate_critique(
@@ -87,21 +117,38 @@ def test_generate_critique() -> None:
     assert strategy.patience_counter == 1
     assert strategy._halt is True
     assert strategy._prev_code_answer == "result = 42"
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+        "updated_answer": None,
+    }
 
 
 def test_create_output_dict() -> None:
     """Tests SelfRefineMathStrategy create_output_dict."""
-    strategy = SelfRefineMathStrategy(llm=FakeListChatModel(responses=[]))
+    strategy = SelfRefineMathStrategy(llm=MockLLM("gpt-3.5-turbo", responses=[]))
     answer = "result = 42"
     critique = "Critique: Your solution is incorrect."
     output_dict = strategy.create_output_dict(answer, critique)
-    assert output_dict == {"answer": answer, "critique": critique}
+    assert output_dict == {
+        "answer": answer,
+        "critique": critique,
+        "prompt_metrics": {"answer": None, "critique": None, "updated_answer": None},
+    }
 
 
 def test_update_answer_based_on_critique() -> None:
     """Tests SelfRefineMathStrategy update_answer_based_on_critique."""
     responses = ["```python\nresult = 43\n```"]
-    llm = FakeListChatModel(responses=responses)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = SelfRefineMathStrategy(llm=llm)
     question = "Sample question"
     answer = "result = 42"
@@ -116,11 +163,24 @@ def test_update_answer_based_on_critique() -> None:
         additional_keys={},
     )
     assert new_answer == "result = 43"
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": None,
+        "updated_answer": {
+            "prompt_tokens": 10,
+            "completion_tokens": 20,
+            "total_tokens": 30,
+            "prompt_tokens_cost": 1.5e-05,
+            "completion_tokens_cost": 3.9999999999999996e-05,
+            "total_tokens_cost": 5.4999999999999995e-05,
+            "time_sec": 0.5,
+        },
+    }
 
 
 def test_halting_condition() -> None:
     """Tests SelfRefineMathStrategy halting_condition."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = SelfRefineMathStrategy(llm=llm, patience=2)
 
     # Initially, halting condition should be False.
@@ -133,7 +193,7 @@ def test_halting_condition() -> None:
 
 def test_reset() -> None:
     """Tests SelfRefineMathStrategy reset."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = SelfRefineMathStrategy(llm=llm, patience=2)
 
     strategy._prev_code_answer = "result = 42"
@@ -143,11 +203,16 @@ def test_reset() -> None:
     assert strategy._prev_code_answer == ""
     assert strategy.patience_counter == 0
     assert not strategy._halt
+    assert strategy._prompt_metrics == {
+        "answer": None,
+        "critique": None,
+        "updated_answer": None,
+    }
 
 
 def test_instantiate_strategies() -> None:
     """Test instantiate all Math strategies."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     assert isinstance(SelfRefineGSM8KStrategy(llm=llm), SelfRefineGSM8KStrategy)
     assert isinstance(SelfRefineSVAMPStrategy(llm=llm), SelfRefineSVAMPStrategy)
     assert isinstance(SelfRefineTabMWPStrategy(llm=llm), SelfRefineTabMWPStrategy)

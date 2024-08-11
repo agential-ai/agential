@@ -2,9 +2,6 @@
 
 import pytest
 
-from langchain_community.chat_models.fake import FakeListChatModel
-from langchain_core.language_models.chat_models import BaseChatModel
-
 from agential.cog.reflexion.functional import (
     _format_reflections,
 )
@@ -15,14 +12,15 @@ from agential.cog.reflexion.reflect import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )
+from agential.llm.llm import BaseLLM, MockLLM
 
 
 def test_reflexion_cot_init() -> None:
     """Unit test for ReflexionCoT Reflector initialization."""
     reflector = ReflexionCoTReflector(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
     )
-    assert isinstance(reflector.llm, BaseChatModel)
+    assert isinstance(reflector.llm, BaseLLM)
     assert not reflector.reflections
     assert not reflector.reflections_str
     assert reflector.max_reflections == 3
@@ -31,7 +29,7 @@ def test_reflexion_cot_init() -> None:
 def test_reflexion_cot_reflector() -> None:
     """Unit tests for ReflexionCoT Reflector."""
     reflector = ReflexionCoTReflector(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
     )
 
     # Test with invalid input.
@@ -53,7 +51,7 @@ def test_reflexion_cot_reflector() -> None:
         prompt="",
     )
     assert isinstance(out, tuple)
-    assert len(out) == 2
+    assert len(out) == 3
     assert isinstance(out[0], list)
     assert isinstance(out[1], str)
     assert out[0] == [""]
@@ -64,7 +62,7 @@ def test_reflexion_cot_reflector() -> None:
 
     # Test with Reflexion.
     reflector = ReflexionCoTReflector(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
     )
     out = reflector.reflect(
         reflect_strategy="reflexion",
@@ -75,7 +73,7 @@ def test_reflexion_cot_reflector() -> None:
     )
 
     assert isinstance(out, tuple)
-    assert len(out) == 2
+    assert len(out) == 3
     assert isinstance(out[0], list)
     assert isinstance(out[1], str)
     assert out[0] == ["1"]
@@ -86,7 +84,7 @@ def test_reflexion_cot_reflector() -> None:
 
     # Test with last attempt and Reflexion.
     reflector = ReflexionCoTReflector(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
     )
     out = reflector.reflect(
         reflect_strategy="last_attempt_and_reflexion",
@@ -96,7 +94,7 @@ def test_reflexion_cot_reflector() -> None:
         prompt="",
     )
     assert isinstance(out, tuple)
-    assert len(out) == 2
+    assert len(out) == 3
     assert isinstance(out[0], list)
     assert isinstance(out[1], str)
     assert out[0] == ["1"]
@@ -111,7 +109,7 @@ def test_reflexion_cot_reflector() -> None:
     ] * 3
     reflections_str = _format_reflections(reflections)
     reflector = ReflexionCoTReflector(
-        llm=FakeListChatModel(responses=["1"]), max_reflections=2
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]), max_reflections=2
     )
     reflector.reflections = reflections
     reflector.reflections_str = reflections_str
@@ -136,9 +134,9 @@ def test_reflexion_cot_reflect_strat() -> None:
     gt_out_reflections = ["Initial scratchpad content"]
     gt_out_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nInitial scratchpad content\n(END PREVIOUS TRIAL)\n"
     reflector = ReflexionCoTReflector(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
     )
-    reflections, reflections_str = reflector.reflect(
+    reflections, reflections_str, reflections_out = reflector.reflect(
         reflect_strategy="last_attempt",
         question=question,
         examples=examples,
@@ -149,7 +147,7 @@ def test_reflexion_cot_reflect_strat() -> None:
     assert reflections_str == gt_out_reflections_str
     gt_out_reflections_str = "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- Initial scratchpad content\n- 1"
     gt_out_reflections = ["Initial scratchpad content", "1"]
-    reflections, reflections_str = reflector.reflect(
+    reflections, reflections_str, reflections_out = reflector.reflect(
         reflect_strategy="reflexion",
         question=question,
         examples=examples,
@@ -163,9 +161,9 @@ def test_reflexion_cot_reflect_strat() -> None:
     gt_out_reflections = ["1"]
     gt_out_reflections_str = "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
     reflector = ReflexionCoTReflector(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
     )
-    reflections, reflections_str = reflector.reflect(
+    reflections, reflections_str, reflections_out = reflector.reflect(
         reflect_strategy="reflexion",
         question=question,
         examples=examples,
@@ -176,7 +174,7 @@ def test_reflexion_cot_reflect_strat() -> None:
     assert reflections_str == gt_out_reflections_str
     gt_out_reflections = ["Initial scratchpad content"]
     gt_out_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nInitial scratchpad content\n(END PREVIOUS TRIAL)\n"
-    reflections, reflections_str = reflector.reflect(
+    reflections, reflections_str, reflections_out = reflector.reflect(
         reflect_strategy="last_attempt",
         question=question,
         examples=examples,
@@ -190,9 +188,9 @@ def test_reflexion_cot_reflect_strat() -> None:
     gt_out_reflections = ["Initial scratchpad content"]
     gt_out_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nInitial scratchpad content\n(END PREVIOUS TRIAL)\n"
     reflector = ReflexionCoTReflector(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
     )
-    reflections, reflections_str = reflector.reflect(
+    reflections, reflections_str, reflections_out = reflector.reflect(
         reflect_strategy="last_attempt",
         question=question,
         examples=examples,
@@ -203,13 +201,14 @@ def test_reflexion_cot_reflect_strat() -> None:
     assert reflections_str == gt_out_reflections_str
     gt_out_reflections = ["1"]
     gt_out_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nInitial scratchpad content\n(END PREVIOUS TRIAL)\n\nThe following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
-    reflections, reflections_str = reflector.reflect(
+    reflections, reflections_str, reflections_out = reflector.reflect(
         reflect_strategy="last_attempt_and_reflexion",
         question=question,
         examples=examples,
         scratchpad=scratchpad,
         prompt="",
     )
+    assert reflections_out
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
 
@@ -217,26 +216,28 @@ def test_reflexion_cot_reflect_strat() -> None:
     gt_out_reflections = ["1"]
     gt_out_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nInitial scratchpad content\n(END PREVIOUS TRIAL)\n\nThe following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
     reflector = ReflexionCoTReflector(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
     )
-    reflections, reflections_str = reflector.reflect(
+    reflections, reflections_str, reflections_out = reflector.reflect(
         reflect_strategy="last_attempt_and_reflexion",
         question=question,
         examples=examples,
         scratchpad=scratchpad,
         prompt="",
     )
+    assert reflections_out
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
     gt_out_reflections = ["Initial scratchpad content"]
     gt_out_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nInitial scratchpad content\n(END PREVIOUS TRIAL)\n"
-    reflections, reflections_str = reflector.reflect(
+    reflections, reflections_str, reflections_out = reflector.reflect(
         reflect_strategy="last_attempt",
         question=question,
         examples=examples,
         scratchpad=scratchpad,
         prompt="",
     )
+    assert not reflections_out
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
 
@@ -244,26 +245,28 @@ def test_reflexion_cot_reflect_strat() -> None:
     gt_out_reflections = ["1"]
     gt_out_reflections_str = "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
     reflector = ReflexionCoTReflector(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
     )
-    reflections, reflections_str = reflector.reflect(
+    reflections, reflections_str, reflections_out = reflector.reflect(
         reflect_strategy="reflexion",
         question=question,
         examples=examples,
         scratchpad=scratchpad,
         prompt="",
     )
+    assert reflections_out
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
     gt_out_reflections = ["1"]
     gt_out_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nInitial scratchpad content\n(END PREVIOUS TRIAL)\n\nThe following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
-    reflections, reflections_str = reflector.reflect(
+    reflections, reflections_str, reflections_out = reflector.reflect(
         reflect_strategy="last_attempt_and_reflexion",
         question=question,
         examples=examples,
         scratchpad=scratchpad,
         prompt="",
     )
+    assert reflections_out
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
 
@@ -271,26 +274,28 @@ def test_reflexion_cot_reflect_strat() -> None:
     gt_out_reflections = ["1"]
     gt_out_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nInitial scratchpad content\n(END PREVIOUS TRIAL)\n\nThe following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
     reflector = ReflexionCoTReflector(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
     )
-    reflections, reflections_str = reflector.reflect(
+    reflections, reflections_str, reflections_out = reflector.reflect(
         reflect_strategy="last_attempt_and_reflexion",
         question=question,
         examples=examples,
         scratchpad=scratchpad,
         prompt="",
     )
+    assert reflections_out
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
     gt_out_reflections = ["1", "1"]
     gt_out_reflections_str = "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1\n- 1"
-    reflections, reflections_str = reflector.reflect(
+    reflections, reflections_str, reflections_out = reflector.reflect(
         reflect_strategy="reflexion",
         question=question,
         examples=examples,
         scratchpad=scratchpad,
         prompt="",
     )
+    assert reflections_out
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
 
@@ -298,7 +303,7 @@ def test_reflexion_cot_reflect_strat() -> None:
 def test_reflexion_cot_reset() -> None:
     """Unit tests for ReflexionCoT Reflector reset method."""
     reflector = ReflexionCoTReflector(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
     )
     reflector.reflections = ["c", "a", "t"]
     reflector.reflections_str = "cat"
@@ -310,7 +315,7 @@ def test_reflexion_cot_reset() -> None:
 def test_reflexion_react_reflector() -> None:
     """Unit tests for ReflexionReAct Reflector."""
     reflector = ReflexionReActReflector(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
     )
 
     # Test with invalid input.
@@ -332,7 +337,7 @@ def test_reflexion_react_reflector() -> None:
         prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, tuple)
-    assert len(out) == 2
+    assert len(out) == 3
     assert isinstance(out[0], list)
     assert isinstance(out[1], str)
     assert out[0] == [""]
@@ -343,7 +348,7 @@ def test_reflexion_react_reflector() -> None:
 
     # Test with Reflexion.
     reflector = ReflexionReActReflector(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
     )
     out = reflector.reflect(
         reflect_strategy="reflexion",
@@ -354,7 +359,7 @@ def test_reflexion_react_reflector() -> None:
     )
 
     assert isinstance(out, tuple)
-    assert len(out) == 2
+    assert len(out) == 3
     assert isinstance(out[0], list)
     assert isinstance(out[1], str)
     assert out[0] == ["1"]
@@ -365,7 +370,7 @@ def test_reflexion_react_reflector() -> None:
 
     # Test with last attempt and Reflexion.
     reflector = ReflexionReActReflector(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
     )
     out = reflector.reflect(
         reflect_strategy="last_attempt_and_reflexion",
@@ -375,7 +380,7 @@ def test_reflexion_react_reflector() -> None:
         prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, tuple)
-    assert len(out) == 2
+    assert len(out) == 3
     assert isinstance(out[0], list)
     assert isinstance(out[1], str)
     assert out[0] == ["1"]
@@ -390,7 +395,7 @@ def test_reflexion_react_reflector() -> None:
     ] * 3
     reflections_str = _format_reflections(reflections)
     reflector = ReflexionReActReflector(
-        llm=FakeListChatModel(responses=["1"]), max_reflections=2
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]), max_reflections=2
     )
     reflector.reflections = reflections
     reflector.reflections_str = reflections_str
@@ -415,26 +420,28 @@ def test_reflexion_react_reflect_strat() -> None:
     gt_out_reflections = ["Initial scratchpad content"]
     gt_out_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nInitial scratchpad content\n(END PREVIOUS TRIAL)\n"
     reflector = ReflexionReActReflector(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
     )
-    reflections, reflections_str = reflector.reflect(
+    reflections, reflections_str, reflections_out = reflector.reflect(
         reflect_strategy="last_attempt",
         examples=examples,
         question=question,
         scratchpad=scratchpad,
         prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
+    assert not reflections_out
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
     gt_out_reflections_str = "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- Initial scratchpad content\n- 1"
     gt_out_reflections = ["Initial scratchpad content", "1"]
-    reflections, reflections_str = reflector.reflect(
+    reflections, reflections_str, reflections_out = reflector.reflect(
         reflect_strategy="reflexion",
         examples=examples,
         question=question,
         scratchpad=scratchpad,
         prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
+    assert reflections_out
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
 
@@ -442,20 +449,22 @@ def test_reflexion_react_reflect_strat() -> None:
     gt_out_reflections = ["1"]
     gt_out_reflections_str = "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
     reflector = ReflexionReActReflector(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
     )
-    reflections, reflections_str = reflector.reflect(
+    reflections, reflections_str, reflections_out = reflector.reflect(
         reflect_strategy="reflexion",
         examples=examples,
         question=question,
         scratchpad=scratchpad,
         prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
+    assert reflections_out
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
+
     gt_out_reflections = ["Initial scratchpad content"]
     gt_out_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nInitial scratchpad content\n(END PREVIOUS TRIAL)\n"
-    reflections, reflections_str = reflector.reflect(
+    reflections, reflections_str, reflections_out = reflector.reflect(
         reflect_strategy="last_attempt",
         examples=examples,
         question=question,
@@ -469,20 +478,21 @@ def test_reflexion_react_reflect_strat() -> None:
     gt_out_reflections = ["Initial scratchpad content"]
     gt_out_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nInitial scratchpad content\n(END PREVIOUS TRIAL)\n"
     reflector = ReflexionReActReflector(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
     )
-    reflections, reflections_str = reflector.reflect(
+    reflections, reflections_str, reflections_out = reflector.reflect(
         reflect_strategy="last_attempt",
         examples=examples,
         question=question,
         scratchpad=scratchpad,
         prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
+    assert not reflections_out
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
     gt_out_reflections = ["1"]
     gt_out_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nInitial scratchpad content\n(END PREVIOUS TRIAL)\n\nThe following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
-    reflections, reflections_str = reflector.reflect(
+    reflections, reflections_str, reflections_out = reflector.reflect(
         reflect_strategy="last_attempt_and_reflexion",
         examples=examples,
         question=question,
@@ -496,20 +506,21 @@ def test_reflexion_react_reflect_strat() -> None:
     gt_out_reflections = ["1"]
     gt_out_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nInitial scratchpad content\n(END PREVIOUS TRIAL)\n\nThe following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
     reflector = ReflexionReActReflector(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
     )
-    reflections, reflections_str = reflector.reflect(
+    reflections, reflections_str, reflections_out = reflector.reflect(
         reflect_strategy="last_attempt_and_reflexion",
         examples=examples,
         question=question,
         scratchpad=scratchpad,
         prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
+    assert reflections_out
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
     gt_out_reflections = ["Initial scratchpad content"]
     gt_out_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nInitial scratchpad content\n(END PREVIOUS TRIAL)\n"
-    reflections, reflections_str = reflector.reflect(
+    reflections, reflections_str, reflections_out = reflector.reflect(
         reflect_strategy="last_attempt",
         examples=examples,
         question=question,
@@ -523,20 +534,21 @@ def test_reflexion_react_reflect_strat() -> None:
     gt_out_reflections = ["1"]
     gt_out_reflections_str = "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
     reflector = ReflexionReActReflector(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
     )
-    reflections, reflections_str = reflector.reflect(
+    reflections, reflections_str, reflections_out = reflector.reflect(
         reflect_strategy="reflexion",
         examples=examples,
         question=question,
         scratchpad=scratchpad,
         prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
+    assert reflections_out
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
     gt_out_reflections = ["1"]
     gt_out_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nInitial scratchpad content\n(END PREVIOUS TRIAL)\n\nThe following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
-    reflections, reflections_str = reflector.reflect(
+    reflections, reflections_str, reflections_out = reflector.reflect(
         reflect_strategy="last_attempt_and_reflexion",
         examples=examples,
         question=question,
@@ -550,26 +562,28 @@ def test_reflexion_react_reflect_strat() -> None:
     gt_out_reflections = ["1"]
     gt_out_reflections_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: What is the capital of France?\nInitial scratchpad content\n(END PREVIOUS TRIAL)\n\nThe following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
     reflector = ReflexionReActReflector(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
     )
-    reflections, reflections_str = reflector.reflect(
+    reflections, reflections_str, reflections_out = reflector.reflect(
         reflect_strategy="last_attempt_and_reflexion",
         examples=examples,
         question=question,
         scratchpad=scratchpad,
         prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
+    assert reflections_out
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
     gt_out_reflections = ["1", "1"]
     gt_out_reflections_str = "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1\n- 1"
-    reflections, reflections_str = reflector.reflect(
+    reflections, reflections_str, reflections_out = reflector.reflect(
         reflect_strategy="reflexion",
         examples=examples,
         question=question,
         scratchpad=scratchpad,
         prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
+    assert reflections_out
     assert reflections == gt_out_reflections
     assert reflections_str == gt_out_reflections_str
 
@@ -577,7 +591,7 @@ def test_reflexion_react_reflect_strat() -> None:
 def test_reflexion_react_reset() -> None:
     """Unit tests for ReflexionReAct Reflector reset method."""
     reflector = ReflexionReActReflector(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
     )
     reflector.reflections = ["c", "a", "t"]
     reflector.reflections_str = "cat"

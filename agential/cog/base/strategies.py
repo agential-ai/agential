@@ -1,15 +1,15 @@
 """Generic base strategy class."""
 
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Dict
 
-from langchain_core.language_models.chat_models import BaseChatModel
+from agential.llm.llm import BaseLLM
 
 
 class BaseStrategy(ABC):
     """An abstract base class for defining strategies for generating responses with LLM-based agents."""
 
-    def __init__(self, llm: BaseChatModel) -> None:
+    def __init__(self, llm: BaseLLM) -> None:
         """Initialization."""
         self.llm = llm
 
@@ -25,4 +25,9 @@ class BaseStrategy(ABC):
     @abstractmethod
     def reset(self, *args: Any, **kwargs: Any) -> None:
         """Resets the strategy's internal state, if any."""
+        pass
+
+    @abstractmethod
+    def create_output_dict(self, *args: Any, **kwargs: Any) -> Dict[str, Any]:
+        """Creates a dictionary containing the generated response."""
         pass

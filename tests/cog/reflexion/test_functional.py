@@ -3,7 +3,7 @@
 import pytest
 import tiktoken
 
-from langchain_community.chat_models.fake import FakeListChatModel
+from litellm.types.utils import ModelResponse
 
 from agential.cog.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
@@ -22,11 +22,9 @@ from agential.cog.reflexion.functional import (
     _prompt_react_agent,
     _prompt_react_reflection,
     _truncate_scratchpad,
-    cot_reflect,
     cot_reflect_last_attempt,
     cot_reflect_last_attempt_and_reflexion,
     cot_reflect_reflexion,
-    react_reflect,
     react_reflect_last_attempt,
     react_reflect_last_attempt_and_reflexion,
     react_reflect_reflexion,
@@ -39,6 +37,7 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
+from agential.llm.llm import MockLLM
 
 
 def test__truncate_scratchpad() -> None:
@@ -124,15 +123,15 @@ def test__prompt_cot_agent() -> None:
     q = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
 
     out = _prompt_cot_agent(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT,
         reflections="",
         question="",
         scratchpad="",
         prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
     )
-    assert isinstance(out, str)
-    assert out == "1"
+    assert isinstance(out, ModelResponse)
+    assert out.choices[0].message.content == "1"
 
     # Test simple case (no reflection).
     gt_out = 'Thought: Let\'s think step by step. The new acronym for VIVA Media AG after changing its name in 2004 is "Vivendi Visual and Interactive." \nAction: Finish[Vivendi Visual and Interactive]'
@@ -143,14 +142,14 @@ def test__prompt_cot_agent() -> None:
         )
     ]
     out = _prompt_cot_agent(
-        llm=FakeListChatModel(responses=responses),
+        llm=MockLLM("gpt-3.5-turbo", responses=responses),
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT,
         reflections="",
         question=q,
         scratchpad="\nThought:",
         prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
     )
-    assert out == gt_out
+    assert out.choices[0].message.content == gt_out
 
     # Test simple case (reflection).
     reflections = (
@@ -176,14 +175,14 @@ def test__prompt_cot_agent() -> None:
     ]
     gt_out = 'I made a mistake in my previous attempts. Let\'s think more carefully this time. The acronym "AG" stands for "Aktiengesellschaft" in German, which translates to "stock corporation" in English. So the new acronym for VIVA Media AG after the name change is "Constantin Film Aktiengesellschaft."\nFinish[Constantin Film Aktiengesellschaft]'
     out = _prompt_cot_agent(
-        llm=FakeListChatModel(responses=responses),
+        llm=MockLLM("gpt-3.5-turbo", responses=responses),
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT,
         reflections=reflections,
         question=q,
         scratchpad=scratchpad,
         prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
     )
-    assert out == gt_out
+    assert out.choices[0].message.content == gt_out
 
 
 def test__build_cot_reflection_prompt() -> None:
@@ -223,25 +222,25 @@ def test__prompt_cot_reflection() -> None:
 
     # Test with context.
     out = _prompt_cot_reflection(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         examples="",
         question="",
         scratchpad="",
         prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
-    assert isinstance(out, str)
-    assert out == "1"
+    assert isinstance(out, ModelResponse)
+    assert out.choices[0].message.content == "1"
 
     # Test with no context.
     out = _prompt_cot_reflection(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         examples="",
         question="",
         scratchpad="",
         prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
-    assert isinstance(out, str)
-    assert out == "1"
+    assert isinstance(out, ModelResponse)
+    assert out.choices[0].message.content == "1"
 
     # Test simple case with context.
     scratchpad = (
@@ -268,13 +267,13 @@ def test__prompt_cot_reflection() -> None:
         "ensure a more precise match with the expected answer key."
     )
     out = _prompt_cot_reflection(
-        llm=FakeListChatModel(responses=responses),
+        llm=MockLLM("gpt-3.5-turbo", responses=responses),
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
         question=q,
         scratchpad=scratchpad,
         prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
-    assert out == gt_out
+    assert out.choices[0].message.content == gt_out
 
     # Test simple case with no context.
     scratchpad = (
@@ -299,13 +298,13 @@ def test__prompt_cot_reflection() -> None:
         "before providing an answer."
     )
     out = _prompt_cot_reflection(
-        llm=FakeListChatModel(responses=responses),
+        llm=MockLLM("gpt-3.5-turbo", responses=responses),
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
         question=q,
         scratchpad=scratchpad,
         prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
-    assert out == gt_out
+    assert out.choices[0].message.content == gt_out
 
 
 def test_react_reflect_last_attempt() -> None:
@@ -317,8 +316,8 @@ def test_react_reflect_last_attempt() -> None:
 
 def test_cot_reflect_reflexion() -> None:
     """Test cot_reflect_reflexion function."""
-    out = cot_reflect_reflexion(
-        llm=FakeListChatModel(responses=["1"]),
+    out, model_response = cot_reflect_reflexion(
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         reflections=[""],
         examples="",
         question="",
@@ -327,12 +326,13 @@ def test_cot_reflect_reflexion() -> None:
     )
     assert isinstance(out, list)
     assert out == ["", "1"]
+    assert model_response
 
 
 def test_cot_reflect_last_attempt_and_reflexion() -> None:
     """Test cot_reflect_last_attempt_and_reflexion function."""
-    out = cot_reflect_last_attempt_and_reflexion(
-        llm=FakeListChatModel(responses=["1"]),
+    out, model_response = cot_reflect_last_attempt_and_reflexion(
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         examples="",
         question="",
         scratchpad="",
@@ -340,59 +340,7 @@ def test_cot_reflect_last_attempt_and_reflexion() -> None:
     )
     assert isinstance(out, list)
     assert out == ["1"]
-
-
-def test_cot_reflect() -> None:
-    """Test cot_reflect function."""
-    # Invalid strategy.
-    with pytest.raises(NotImplementedError):
-        out = cot_reflect(
-            reflect_strategy="invalid input",
-            llm=FakeListChatModel(responses=["1"]),
-            reflections=[""],
-            examples="",
-            question="",
-            scratchpad="",
-            prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
-        )
-
-    # Last attempt.
-    out = cot_reflect(
-        reflect_strategy="last_attempt",
-        llm=FakeListChatModel(responses=["1"]),
-        reflections=[""],
-        examples="",
-        question="",
-        scratchpad="",
-        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
-    )
-    assert out == [""]
-
-    # Reflexion.
-    out = cot_reflect(
-        reflect_strategy="reflexion",
-        llm=FakeListChatModel(responses=["1"]),
-        reflections=[""],
-        examples="",
-        question="",
-        scratchpad="",
-        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
-    )
-    assert isinstance(out, list)
-    assert out == ["", "1"]
-
-    # Last attempt and Reflexion.
-    out = cot_reflect(
-        reflect_strategy="last_attempt_and_reflexion",
-        llm=FakeListChatModel(responses=["1"]),
-        reflections=[""],
-        examples="",
-        question="",
-        scratchpad="",
-        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
-    )
-    assert isinstance(out, list)
-    assert out == ["1"]
+    assert model_response
 
 
 def test__build_react_agent_prompt() -> None:
@@ -415,7 +363,7 @@ def test__prompt_react_agent() -> None:
 
     # Test empty.
     out = _prompt_react_agent(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         question="",
         examples="",
         reflections="",
@@ -423,8 +371,8 @@ def test__prompt_react_agent() -> None:
         max_steps=1,
         prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     )
-    assert isinstance(out, str)
-    assert out == "1"
+    assert isinstance(out, ModelResponse)
+    assert out.choices[0].message.content == "1"
 
     # Test simple case no reflections.
     responses = [
@@ -434,7 +382,7 @@ def test__prompt_react_agent() -> None:
     ]
     gt_out = "I need to search for VIVA Media AG and find out what their new acronym stands for.\n\nAction: Search[VIVA Media AG]"
     out = _prompt_react_agent(
-        llm=FakeListChatModel(responses=responses),
+        llm=MockLLM("gpt-3.5-turbo", responses=responses),
         question=q,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         reflections="",
@@ -442,7 +390,7 @@ def test__prompt_react_agent() -> None:
         max_steps=1,
         prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     )
-    assert out == gt_out
+    assert out.choices[0].message.content == gt_out
 
     # Test simple case with reflections.
     responses = [
@@ -511,7 +459,7 @@ def test__prompt_react_agent() -> None:
     )
     gt_out = "Given the lack of information on VIVA Media AG and their name change in 2004, I should try to search for VIVA Media AG acquisitions or mergers to see if their new acronym was related to that. \nAction: Search[VIVA Media AG acquisitions]\nObservation: Could not find [VIVA Media AG acquisitions]. Similar: ['List of mergers and acquisitions by Alphabet', 'List of mergers and acquisitions by Apple', 'List of mergers and acquisitions by Microsoft', 'List of mergers and acquisitions by Facebook', 'List of mergers and acquisitions by Amazon', 'List of mergers and acquisitions by IBM', 'List of mergers and acquisitions by Cisco Systems', 'List of mergers and acquisitions by Oracle', 'List of mergers and acquisitions by SAP', 'List of mergers and acquisitions by Yahoo!']\nThought: Since I couldn't find information on acquisitions, I should try searching for VIVA Media AG partnerships or collaborations to see if their new acronym was related to that.\nAction: Search[VIVA Media AG partnerships]\nObservation: Could not find [VIVA Media AG partnerships]. Similar: ['List of airline codes', 'List of country codes on British diplomatic vehicle registration plates', 'List of international vehicle registration codes', 'Vehicle registration plates of the United States for the diplomatic corps', 'Vehicle registration plates of the European Union', 'List of diplomatic missions of Japan', 'List of diplomatic missions of Australia', 'Diplomatic missions of the European Union', 'Vehicle registration plates of the United Kingdom', 'Vehicle registration plates of the United States']\nThought: I am still unable to find relevant information, I should try a broader search term like VIVA Media AG history to see if I can find any details about their name change and new acronym.\nAction: Search[VIVA Media AG history]"
     out = _prompt_react_agent(
-        llm=FakeListChatModel(responses=responses),
+        llm=MockLLM("gpt-3.5-turbo", responses=responses),
         question=q,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
         reflections=reflections,
@@ -519,7 +467,7 @@ def test__prompt_react_agent() -> None:
         max_steps=6,
         prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     )
-    assert out == gt_out
+    assert out.choices[0].message.content == gt_out
 
 
 def test__is_halted() -> None:
@@ -643,14 +591,14 @@ def test__prompt_react_reflection() -> None:
 
     # Test empty.
     out = _prompt_react_reflection(
-        llm=FakeListChatModel(responses=["1"]),
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         question="",
         examples="",
         scratchpad="",
         prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
-    assert isinstance(out, str)
-    assert out == "1"
+    assert isinstance(out, ModelResponse)
+    assert out.choices[0].message.content == "1"
 
     # Test simple case.
     scratchpad = (
@@ -680,26 +628,27 @@ def test__prompt_react_reflection() -> None:
         "provide the necessary information to answer the question accurately."
     )
     out = _prompt_react_reflection(
-        llm=FakeListChatModel(responses=responses),
+        llm=MockLLM("gpt-3.5-turbo", responses=responses),
         question=q,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         scratchpad=scratchpad,
         prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
-    assert out == gt_out
+    assert out.choices[0].message.content == gt_out
 
 
 def test_react_reflect_last_attempt() -> None:
     """Test react_reflect_last_attempt function."""
     scratchpad = ""
-    out = react_reflect_last_attempt(scratchpad)
+    out, model_response = react_reflect_last_attempt(scratchpad)
     assert out == [""]
+    assert not model_response
 
 
 def test_react_reflect_reflexion() -> None:
     """Test react_reflect_reflexion function."""
-    out = react_reflect_reflexion(
-        llm=FakeListChatModel(responses=["1"]),
+    out, model_response = react_reflect_reflexion(
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         reflections=[""],
         question="",
         examples="",
@@ -708,12 +657,13 @@ def test_react_reflect_reflexion() -> None:
     )
     assert isinstance(out, list)
     assert out == ["", "1"]
+    assert model_response
 
 
 def test_react_reflect_last_attempt_and_reflexion() -> None:
     """Test react_reflect_last_attempt_and_reflexion function."""
-    out = react_reflect_last_attempt_and_reflexion(
-        llm=FakeListChatModel(responses=["1"]),
+    out, model_response = react_reflect_last_attempt_and_reflexion(
+        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
         question="",
         examples="",
         scratchpad="",
@@ -721,56 +671,4 @@ def test_react_reflect_last_attempt_and_reflexion() -> None:
     )
     assert isinstance(out, list)
     assert out == ["1"]
-
-
-def test_react_reflect() -> None:
-    """Test react_reflect function."""
-    # Invalid strategy.
-    with pytest.raises(NotImplementedError):
-        out = react_reflect(
-            reflect_strategy="invalid input",
-            llm=FakeListChatModel(responses=["1"]),
-            reflections=[""],
-            question="",
-            examples="",
-            scratchpad="",
-            prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-        )
-
-    # Last attempt.
-    out = react_reflect(
-        reflect_strategy="last_attempt",
-        llm=FakeListChatModel(responses=["1"]),
-        reflections=[""],
-        question="",
-        examples="",
-        scratchpad="",
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-    )
-    assert out == [""]
-
-    # Reflexion.
-    out = react_reflect(
-        reflect_strategy="reflexion",
-        llm=FakeListChatModel(responses=["1"]),
-        reflections=[""],
-        question="",
-        examples="",
-        scratchpad="",
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-    )
-    assert isinstance(out, list)
-    assert out == ["", "1"]
-
-    # Last attempt and Reflexion.
-    out = react_reflect(
-        reflect_strategy="last_attempt_and_reflexion",
-        llm=FakeListChatModel(responses=["1"]),
-        reflections=[""],
-        question="",
-        examples="",
-        scratchpad="",
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-    )
-    assert isinstance(out, list)
-    assert out == ["1"]
+    assert model_response

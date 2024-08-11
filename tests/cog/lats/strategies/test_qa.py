@@ -1,10 +1,10 @@
 """Unit tests for LATS QA strategies."""
 
-from langchain_community.chat_models.fake import FakeListChatModel
 from langchain_community.docstore.wikipedia import Wikipedia
 
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.node import Node
+from agential.cog.lats.output import LATSReActOutput, LATSSimulationOutput
 from agential.cog.lats.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE,
@@ -16,19 +16,20 @@ from agential.cog.lats.strategies.qa import (
     LATSAmbigNQStrategy,
     LATSFEVERStrategy,
     LATSHotQAStrategy,
+    LATSQAStrategy,
     LATSTriviaQAStrategy,
     get_node_trajectory_qa,
     parse_qa_action,
     parse_qa_value,
 )
-from agential.cog.react.output import ReActOutput
+from agential.llm.llm import MockLLM
 from agential.utils.docstore import DocstoreExplorer
 
 
 def test_get_node_trajectory_qa() -> None:
     """Tests the get_node_trajectory_qa() function."""
     root = Node(
-        state=ReActOutput(
+        state=LATSReActOutput(
             **{
                 "thought": "Root thought",
                 "action_type": "",
@@ -40,7 +41,7 @@ def test_get_node_trajectory_qa() -> None:
         )
     )
     child1 = Node(
-        state=ReActOutput(
+        state=LATSReActOutput(
             **{
                 "thought": "Child1 thought",
                 "action_type": "Lookup",
@@ -53,7 +54,7 @@ def test_get_node_trajectory_qa() -> None:
         parent=root,
     )
     child2 = Node(
-        state=ReActOutput(
+        state=LATSReActOutput(
             **{
                 "thought": "Child2 thought",
                 "action_type": "Finish",
@@ -118,9 +119,9 @@ def test_parse_qa_value():
 
 def test_init() -> None:
     """Test initialization."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     docstore = DocstoreExplorer(Wikipedia())
-    strategy = LATSHotQAStrategy(
+    strategy = LATSQAStrategy(
         llm=llm,
         docstore=docstore,
         n_samples=5,
@@ -141,12 +142,21 @@ def test_init() -> None:
     assert strategy.failed_trajectories == []
     assert strategy.reflection_map == []
     assert strategy.value_cache == {}
+    assert strategy._prompt_metrics == {
+        "thought": [],
+        "action": [],
+        "value": [],
+        "simulate_thought": [],
+        "simulate_action": [],
+        "simulate_value": [],
+        "reflection": [],
+    }
 
 
 def test_initialize() -> None:
     """Test the initialize method."""
-    llm = FakeListChatModel(responses=[])
-    strategy = LATSHotQAStrategy(llm=llm)
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = LATSQAStrategy(llm=llm)
 
     node = strategy.initialize()
 
@@ -162,12 +172,33 @@ def test_initialize() -> None:
 
 def test_generate_thought() -> None:
     """Test the generate_thought method."""
-    llm = FakeListChatModel(
+    gt_prompt_metrics = {
+        "thought": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            }
+        ],
+        "action": [],
+        "value": [],
+        "simulate_thought": [],
+        "simulate_action": [],
+        "simulate_value": [],
+        "reflection": [],
+    }
+
+    llm = MockLLM(
+        "gpt-3.5-turbo",
         responses=[
             "I should search for information about the topic. Action: Search[topic]"
-        ]
+        ],
     )
-    strategy = LATSHotQAStrategy(llm=llm)
+    strategy = LATSQAStrategy(llm=llm)
 
     question = "What is the capital of France?"
     examples = "Example 1\nExample 2"
@@ -178,7 +209,14 @@ def test_generate_thought() -> None:
     additional_keys = {"key": "value"}
 
     updated_trajectory, thought = strategy.generate_thought(
-        question, examples, trajectory, reflections, depth, prompt, additional_keys
+        question,
+        examples,
+        trajectory,
+        reflections,
+        depth,
+        prompt,
+        additional_keys,
+        is_simulate=False,
     )
 
     assert thought == "I should search for information about the topic."
@@ -186,12 +224,33 @@ def test_generate_thought() -> None:
         updated_trajectory
         == "Previous thought\nThought 2: I should search for information about the topic."
     )
+    assert strategy._prompt_metrics == gt_prompt_metrics
 
 
 def test_generate_action() -> None:
     """Test the generate_action method."""
-    llm = FakeListChatModel(responses=["Search[capital of France]"])
-    strategy = LATSHotQAStrategy(llm=llm)
+    gt_prompt_metrics = {
+        "thought": [],
+        "action": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            }
+        ],
+        "value": [],
+        "simulate_thought": [],
+        "simulate_action": [],
+        "simulate_value": [],
+        "reflection": [],
+    }
+
+    llm = MockLLM("gpt-3.5-turbo", responses=["Search[capital of France]"])
+    strategy = LATSQAStrategy(llm=llm)
 
     question = "What is the capital of France?"
     examples = "Example 1\nExample 2"
@@ -204,7 +263,14 @@ def test_generate_action() -> None:
     additional_keys = {"key": "value"}
 
     trajectory, action_type, query = strategy.generate_action(
-        question, examples, trajectory, reflections, depth, prompt, additional_keys
+        question,
+        examples,
+        trajectory,
+        reflections,
+        depth,
+        prompt,
+        additional_keys,
+        is_simulate=False,
     )
     assert (
         trajectory
@@ -213,14 +279,16 @@ def test_generate_action() -> None:
     assert action_type == "Search"
     assert query == "capital of France"
 
+    assert strategy._prompt_metrics == gt_prompt_metrics
+
 
 def test_generate_observation() -> None:
     """Test the generate_observation method."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     docstore = DocstoreExplorer(None)
     docstore.search = lambda x: "Paris is the capital of France."
     docstore.lookup = lambda x: "Paris is a city in France."
-    strategy = LATSHotQAStrategy(llm=llm, docstore=docstore)
+    strategy = LATSQAStrategy(llm=llm, docstore=docstore)
 
     key = "Paris"
     trajectory = "Previous trajectory"
@@ -280,7 +348,7 @@ def test_generate_observation() -> None:
 def test_generate() -> None:
     """Test the generate method."""
     gt_states = [
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
             action_type="Search",
             query="best kick boxer controversies crimes",
@@ -291,7 +359,7 @@ def test_generate() -> None:
                 "lookup_result": "",
             },
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the best kickboxer who has been involved in controversies and crimes of violence",
             action_type="Search",
             query="best kick boxer controversies crimes",
@@ -302,7 +370,7 @@ def test_generate() -> None:
                 "lookup_result": "",
             },
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies",
             action_type="Search",
             query="best kick boxer controversies",
@@ -313,7 +381,7 @@ def test_generate() -> None:
                 "lookup_result": "",
             },
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring",
             action_type="Search",
             query="best kick boxer controversies violence",
@@ -324,7 +392,7 @@ def test_generate() -> None:
                 "lookup_result": "",
             },
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies",
             action_type="Search",
             query="best kickboxer controversies",
@@ -336,6 +404,107 @@ def test_generate() -> None:
             },
         ),
     ]
+    gt_prompt_metrics = {
+        "thought": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+        ],
+        "action": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+        ],
+        "value": [],
+        "simulate_thought": [],
+        "simulate_action": [],
+        "simulate_value": [],
+        "reflection": [],
+    }
 
     responses = [
         "I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
@@ -349,8 +518,8 @@ def test_generate() -> None:
         "I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies",
         "Search[best kickboxer controversies]\nObservation 0: The search results show multiple kickboxers who have been involved in controversies",
     ]
-    llm = FakeListChatModel(responses=responses)
-    strategy = LATSHotQAStrategy(llm=llm)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
+    strategy = LATSQAStrategy(llm=llm)
     strategy.docstore.search = (
         lambda x: "Badr Hari is the best kick boxer in the world."
     )
@@ -370,6 +539,7 @@ def test_generate() -> None:
         reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
         additional_keys={},
         reflect_additional_keys={},
+        is_simulate=False,
     )
     assert len(children_nodes) == 5
     for gt_state, node in zip(gt_states, children_nodes):
@@ -379,10 +549,11 @@ def test_generate() -> None:
         assert node.value == 0
         assert node.is_terminal is False
         assert node.visits == 0
+    assert strategy._prompt_metrics == gt_prompt_metrics
 
     # Test generate with reflections.
     gt_states = [
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and crimes of violence outside the ring",
             action_type="Search",
             query="best kickboxer controversies violence",
@@ -393,7 +564,7 @@ def test_generate() -> None:
                 "lookup_result": "",
             },
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the best kick boxer in the world and then look into his controversies related to unsportsmanlike conduct and crimes of violence",
             action_type="Search",
             query="best kick boxer in the world",
@@ -404,7 +575,7 @@ def test_generate() -> None:
                 "lookup_result": "",
             },
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and violence outside of the ring",
             action_type="Search",
             query="best kick boxer in the world controversies",
@@ -415,7 +586,7 @@ def test_generate() -> None:
                 "lookup_result": "",
             },
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the best kickboxer in the world who has been involved in controversies regarding unsportsmanlike conduct and crimes of violence outside the ring",
             action_type="Search",
             query="best kickboxer controversies",
@@ -426,7 +597,7 @@ def test_generate() -> None:
                 "lookup_result": "",
             },
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the best kick boxer in the world and his controversies regarding unsportsmanlike conducts and crimes of violence",
             action_type="Search",
             query="best kick boxer in the world controversies",
@@ -438,6 +609,126 @@ def test_generate() -> None:
             },
         ),
     ]
+    gt_prompt_metrics = {
+        "thought": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+        ],
+        "action": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+        ],
+        "value": [],
+        "simulate_thought": [],
+        "simulate_action": [],
+        "simulate_value": [],
+        "reflection": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+        ],
+    }
     responses = [
         "My reasoning for this question failed because I did not narrow down the search to focus on kick boxers and instead ended up with unrelated information",
         "My reasoning failed because I did not focus on gathering specific information related to the individual's kickboxing career and controversies, leading to an incorrect answer",
@@ -452,8 +743,8 @@ def test_generate() -> None:
         "I need to search for the best kick boxer in the world and his controversies regarding unsportsmanlike conducts and crimes of violence",
         "Search[best kick boxer in the world controversies]\nObservation 1: Could not find [best kick boxer in the world controversies]",
     ]
-    llm = FakeListChatModel(responses=responses)
-    strategy = LATSHotQAStrategy(llm=llm)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
+    strategy = LATSQAStrategy(llm=llm)
     strategy.docstore.search = (
         lambda x: "Badr Hari, known as the 'Golden Boy', is a Dutch-Moroccan kickboxer who has been involved in several controversies and legal issues."
     )
@@ -477,6 +768,7 @@ def test_generate() -> None:
         reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
         additional_keys={},
         reflect_additional_keys={},
+        is_simulate=False,
     )
     assert len(children_nodes) == 5
     for gt_state, node in zip(gt_states, children_nodes):
@@ -486,14 +778,45 @@ def test_generate() -> None:
         assert node.value == 0
         assert node.is_terminal is False
         assert node.visits == 0
+    assert strategy._prompt_metrics == gt_prompt_metrics
 
     # Test case with a terminal child node (reward 0)
+    gt_prompt_metrics = {
+        "thought": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            }
+        ],
+        "action": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            }
+        ],
+        "value": [],
+        "simulate_thought": [],
+        "simulate_action": [],
+        "simulate_value": [],
+        "reflection": [],
+    }
+
     responses = [
         "I think the answer is Mike Tyson.",
         "Finish[Mike Tyson]",
     ]
-    llm = FakeListChatModel(responses=responses)
-    strategy = LATSHotQAStrategy(llm=llm, n_samples=1)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
+    strategy = LATSQAStrategy(llm=llm, n_samples=1)
 
     root = strategy.initialize()
     children_nodes = strategy.generate(
@@ -506,6 +829,7 @@ def test_generate() -> None:
         reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
         additional_keys={},
         reflect_additional_keys={},
+        is_simulate=False,
     )
     assert len(children_nodes) == 1
     assert children_nodes[0].state.thought == "I think the answer is Mike Tyson."
@@ -514,11 +838,13 @@ def test_generate() -> None:
     assert children_nodes[0].is_terminal
     assert children_nodes[0].reward == 0
 
+    assert strategy._prompt_metrics == gt_prompt_metrics
+
 
 def test_select_node() -> None:
     """Test the select_node method."""
-    llm = FakeListChatModel(responses=[])
-    strategy = LATSHotQAStrategy(llm=llm)
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = LATSQAStrategy(llm=llm)
 
     # Create a tree structure.
     root = Node(state={})
@@ -560,7 +886,7 @@ def test_select_node() -> None:
 def test_expand_node() -> None:
     """Test the expand_node method."""
     gt_states = [
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
             action_type="Search",
             query="best kick boxer controversies crimes",
@@ -571,7 +897,7 @@ def test_expand_node() -> None:
                 "lookup_result": "",
             },
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the best kickboxer who has been involved in controversies and crimes of violence",
             action_type="Search",
             query="best kick boxer controversies crimes",
@@ -582,7 +908,7 @@ def test_expand_node() -> None:
                 "lookup_result": "",
             },
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies",
             action_type="Search",
             query="best kick boxer controversies",
@@ -593,7 +919,7 @@ def test_expand_node() -> None:
                 "lookup_result": "",
             },
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring",
             action_type="Search",
             query="best kick boxer controversies violence",
@@ -604,7 +930,7 @@ def test_expand_node() -> None:
                 "lookup_result": "",
             },
         ),
-        ReActOutput(
+        LATSReActOutput(
             thought="I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies",
             action_type="Search",
             query="best kickboxer controversies",
@@ -629,8 +955,8 @@ def test_expand_node() -> None:
         "I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies",
         "Search[best kickboxer controversies]\nObservation 0: The search results show multiple kickboxers who have been involved in controversies",
     ]
-    llm = FakeListChatModel(responses=responses)
-    strategy = LATSHotQAStrategy(llm=llm)
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
+    strategy = LATSQAStrategy(llm=llm)
     strategy.docstore.search = (
         lambda x: "Badr Hari is the best kick boxer in the world."
     )
@@ -664,14 +990,35 @@ def test_expand_node() -> None:
 
 def test_evaluate_node() -> None:
     """Test the evaluate_node method."""
-    llm = FakeListChatModel(
-        responses=["Explanation: Good trajectory. Correctness score: 8"]
+    gt_prompt_metrics = {
+        "thought": [],
+        "action": [],
+        "value": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            }
+        ],
+        "simulate_thought": [],
+        "simulate_action": [],
+        "simulate_value": [],
+        "reflection": [],
+    }
+
+    llm = MockLLM(
+        "gpt-3.5-turbo",
+        responses=["Explanation: Good trajectory. Correctness score: 8"],
     )
-    strategy = LATSHotQAStrategy(llm=llm)
+    strategy = LATSQAStrategy(llm=llm)
 
     root = strategy.initialize()
     child1 = Node(
-        state=ReActOutput(
+        state=LATSReActOutput(
             thought="Child 1",
             action_type="",
             query="",
@@ -682,7 +1029,7 @@ def test_evaluate_node() -> None:
         parent=root,
     )
     child2 = Node(
-        state=ReActOutput(
+        state=LATSReActOutput(
             thought="Child 2",
             action_type="",
             query="",
@@ -709,6 +1056,8 @@ def test_evaluate_node() -> None:
 
     values = strategy.evaluate_node(root, question, examples, prompt, {})
 
+    assert strategy._prompt_metrics == gt_prompt_metrics
+
     assert len(values) == 1  # Only one non-terminal child.
     assert "explanation" in values[0]
     assert "value" in values[0]
@@ -719,6 +1068,34 @@ def test_evaluate_node() -> None:
     assert child2.value == 0  # Terminal node, value not updated.
 
     # Test caching.
+    gt_prompt_metrics = {
+        "thought": [],
+        "action": [],
+        "value": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+        ],
+        "simulate_thought": [],
+        "simulate_action": [],
+        "simulate_value": [],
+        "reflection": [],
+    }
     strategy.cache_values = True
     cached_values = strategy.evaluate_node(root, question, examples, prompt, {})
     assert cached_values == values
@@ -730,9 +1107,177 @@ def test_evaluate_node() -> None:
     )
     assert empty_reflection_values == values
 
+    assert strategy._prompt_metrics == gt_prompt_metrics
+
 
 def test_simulate_node() -> None:
     """Test the simulate_node method."""
+    gt_prompt_metrics = {
+        "thought": [],
+        "action": [],
+        "value": [],
+        "simulate_thought": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+        ],
+        "simulate_action": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+        ],
+        "simulate_value": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+        ],
+        "reflection": [],
+    }
+
     responses = [
         "I need to search for the capital of France",
         "Search[capital of France]",
@@ -753,8 +1298,8 @@ def test_simulate_node() -> None:
         "This trajectory is incorrect as the focus should have been on verifying the information related to the capital of France, rather than repeatedly trying the same search query that does not provide the desired information",
     ]
 
-    qa_strategy = LATSHotQAStrategy(
-        llm=FakeListChatModel(responses=responses), depth_limit=3, n_samples=2
+    qa_strategy = LATSQAStrategy(
+        llm=MockLLM("gpt-3.5-turbo", responses=responses), depth_limit=3, n_samples=2
     )
     root_node = qa_strategy.initialize()
 
@@ -795,11 +1340,13 @@ def test_simulate_node() -> None:
 
     assert -1 <= reward <= 1
 
+    assert qa_strategy._prompt_metrics == gt_prompt_metrics
+
 
 def test_backpropagate_node() -> None:
     """Test the backpropagate_node method."""
-    llm = FakeListChatModel(responses=[])
-    strategy = LATSHotQAStrategy(llm=llm)
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = LATSQAStrategy(llm=llm)
 
     # Create a simple tree structure.
     root = Node(state={})
@@ -841,8 +1388,8 @@ def test_backpropagate_node() -> None:
 
 def test_halting_condition() -> None:
     """Test the halting_condition method."""
-    llm = FakeListChatModel(responses=[])
-    strategy = LATSHotQAStrategy(llm=llm)
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = LATSQAStrategy(llm=llm)
 
     # Test with a terminal node and reward of 1.
     terminal_node = Node(state={})
@@ -863,8 +1410,8 @@ def test_halting_condition() -> None:
 
 def test_reflect_condition() -> None:
     """Test the reflect_condition method."""
-    llm = FakeListChatModel(responses=[])
-    strategy = LATSHotQAStrategy(llm=llm, max_unique=3, max_reflections=5)
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = LATSQAStrategy(llm=llm, max_unique=3, max_reflections=5)
 
     # Test when there are fewer unique trajectories than reflections
     strategy.failed_trajectories = [
@@ -895,8 +1442,37 @@ def test_reflect_condition() -> None:
 
 def test_reflect() -> None:
     """Test the reflect method."""
-    llm = FakeListChatModel(responses=["Reflection 1", "Reflection 2"])
-    strategy = LATSHotQAStrategy(llm=llm, max_unique=2)
+    gt_prompt_metrics = {
+        "thought": [],
+        "action": [],
+        "value": [],
+        "simulate_thought": [],
+        "simulate_action": [],
+        "simulate_value": [],
+        "reflection": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+        ],
+    }
+
+    llm = MockLLM("gpt-3.5-turbo", responses=["Reflection 1", "Reflection 2"])
+    strategy = LATSQAStrategy(llm=llm, max_unique=2)
 
     strategy.failed_trajectories = [
         {"trajectory": "Failed trajectory 1", "final_answer": "Incorrect answer 1"},
@@ -922,11 +1498,188 @@ def test_reflect() -> None:
 
     assert strategy.reflection_map == reflections
 
+    assert strategy._prompt_metrics == gt_prompt_metrics
+
+
+def test_create_output_dict() -> None:
+    """Test create_output_dict method."""
+    gt_prompt_metrics = {
+        "thought": [],
+        "action": [],
+        "value": [],
+        "simulate_thought": [],
+        "simulate_action": [],
+        "simulate_value": [],
+        "reflection": [],
+    }
+
+    llm = MockLLM("gpt-3.5-turbo", responses=["1"])
+    strategy = LATSQAStrategy(llm=llm, max_unique=2)
+
+    gt_out = {
+        "iteration": 1,
+        "current_node": {
+            "state": LATSReActOutput(
+                thought="",
+                action_type="",
+                query="",
+                observation="",
+                answer="",
+                external_tool_info={},
+            ),
+            "visits": 0,
+            "value": 0,
+            "depth": 0,
+            "is_terminal": False,
+            "reward": 0,
+        },
+        "children_nodes": [
+            {
+                "state": LATSReActOutput(
+                    thought="",
+                    action_type="",
+                    query="",
+                    observation="",
+                    answer="",
+                    external_tool_info={},
+                ),
+                "visits": 0,
+                "value": 0,
+                "depth": 0,
+                "is_terminal": False,
+                "reward": 0,
+            }
+        ],
+        "values": [{}],
+        "simulation_reward": 1.0,
+        "simulation_terminal_node": {
+            "state": LATSReActOutput(
+                thought="",
+                action_type="",
+                query="",
+                observation="",
+                answer="",
+                external_tool_info={},
+            ),
+            "visits": 0,
+            "value": 0,
+            "depth": 0,
+            "is_terminal": False,
+            "reward": 0,
+        },
+        "simulation_results": [
+            LATSSimulationOutput(
+                current_node={
+                    "state": LATSReActOutput(
+                        thought="",
+                        action_type="",
+                        query="",
+                        observation="",
+                        answer="",
+                        external_tool_info={},
+                    ),
+                    "visits": 0,
+                    "value": 0,
+                    "depth": 0,
+                    "is_terminal": False,
+                    "reward": 0,
+                },
+                children_nodes=[],
+                values=[{}],
+            )
+        ],
+        "prompt_metrics": {
+            "thought": [],
+            "action": [],
+            "value": [],
+            "simulate_thought": [],
+            "simulate_action": [],
+            "simulate_value": [],
+            "reflection": [],
+        },
+    }
+    simulation_results = [
+        {"current_node": Node(), "children_nodes": [], "values": [{}]}
+    ]
+    out = strategy.create_output_dict(
+        iteration=1,
+        current_node=Node(),
+        children_nodes=[Node()],
+        values=[{}],
+        simulation_reward=1.0,
+        simulation_terminal_node=Node(),
+        simulation_results=simulation_results,
+    )
+    assert out == gt_out
+    assert strategy._prompt_metrics == gt_prompt_metrics
+
+    # Test half empty.
+    gt_out = {
+        "iteration": 1,
+        "current_node": {
+            "state": LATSReActOutput(
+                thought="",
+                action_type="",
+                query="",
+                observation="",
+                answer="",
+                external_tool_info={},
+            ),
+            "visits": 0,
+            "value": 0,
+            "depth": 0,
+            "is_terminal": False,
+            "reward": 0,
+        },
+        "children_nodes": [
+            {
+                "state": LATSReActOutput(
+                    thought="",
+                    action_type="",
+                    query="",
+                    observation="",
+                    answer="",
+                    external_tool_info={},
+                ),
+                "visits": 0,
+                "value": 0,
+                "depth": 0,
+                "is_terminal": False,
+                "reward": 0,
+            }
+        ],
+        "values": [],
+        "simulation_reward": 0,
+        "simulation_terminal_node": {},
+        "simulation_results": [],
+        "prompt_metrics": {
+            "thought": [],
+            "action": [],
+            "value": [],
+            "simulate_thought": [],
+            "simulate_action": [],
+            "simulate_value": [],
+            "reflection": [],
+        },
+    }
+    out = strategy.create_output_dict(
+        iteration=1,
+        current_node=Node(),
+        children_nodes=[Node()],
+        values=None,
+        simulation_reward=None,
+        simulation_terminal_node=None,
+        simulation_results=None,
+    )
+    assert out == gt_out
+
+    assert strategy._prompt_metrics == gt_prompt_metrics
+
 
 def test_reset() -> None:
     """Test the reset method."""
-    llm = FakeListChatModel(responses=[])
-    strategy = LATSHotQAStrategy(llm=llm)
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = LATSQAStrategy(llm=llm)
 
     strategy.root = "some_root"
     strategy.reflection_map = ["reflection1", "reflection2"]
@@ -941,11 +1694,20 @@ def test_reset() -> None:
     assert strategy.failed_trajectories == []
     assert strategy.reflection_map == []
     assert strategy.value_cache == {}
+    assert strategy._prompt_metrics == {
+        "thought": [],
+        "action": [],
+        "value": [],
+        "simulate_thought": [],
+        "simulate_action": [],
+        "simulate_value": [],
+        "reflection": [],
+    }
 
 
 def test_instantiate_strategies() -> None:
     """Test the instantiation of various LATS QA strategies."""
-    llm = FakeListChatModel(responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
     hotqa_strategy = LATSHotQAStrategy(llm=llm)
     triviaqa_strategy = LATSTriviaQAStrategy(llm=llm)
     ambignq_strategy = LATSAmbigNQStrategy(llm=llm)

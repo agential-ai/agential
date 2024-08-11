@@ -3,17 +3,18 @@
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
-from langchain_core.language_models.chat_models import BaseChatModel
 
 from agential.cog.critic.functional import _prompt_agent, _prompt_critique
 from agential.cog.critic.strategies.base import CriticBaseStrategy
+from agential.llm.llm import BaseLLM
+from agential.utils.general import get_token_cost_time
 
 
 class CriticQAStrategy(CriticBaseStrategy):
     """A strategy class for QA benchmarks using the CRITIC agent.
 
     Attributes:
-        llm (BaseChatModel): The language model used for generating answers and critiques.
+        llm (BaseLLM): The language model used for generating answers and critiques.
         search (Optional[GoogleSerperAPIWrapper]): An optional search API wrapper for obtaining evidence. Required if use_tool is True.
         evidence_length (int): The maximum length of the evidence snippet to be included in the context. Defaults to 400.
         num_results (int): The number of search results to retrieve. Defaults to 8.
@@ -21,7 +22,7 @@ class CriticQAStrategy(CriticBaseStrategy):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         search: Optional[GoogleSerperAPIWrapper] = None,
         evidence_length: int = 400,
         num_results: int = 8,
@@ -35,6 +36,11 @@ class CriticQAStrategy(CriticBaseStrategy):
         self._query_history: List[str] = []
         self._evidence_history: Set[str] = set()
         self._halt = False
+        self._prompt_metrics: Dict[str, Any] = {
+            "answer": None,
+            "critique": None,
+            "updated_answer": None,
+        }
 
     def generate(
         self,
@@ -56,13 +62,16 @@ class CriticQAStrategy(CriticBaseStrategy):
         Returns:
             str: The generated answer.
         """
-        return _prompt_agent(
+        out = _prompt_agent(
             llm=self.llm,
             question=question,
             examples=examples,
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics["answer"] = get_token_cost_time(out)
+
+        return out.choices[0].message.content
 
     def generate_critique(
         self,
@@ -108,7 +117,7 @@ class CriticQAStrategy(CriticBaseStrategy):
         """
         external_tool_info = {"search_query": "", "search_result": ""}
 
-        new_critique = _prompt_critique(
+        out = _prompt_critique(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -116,7 +125,9 @@ class CriticQAStrategy(CriticBaseStrategy):
             critique=critique,
             prompt=prompt,
             additional_keys=additional_keys,
-        ).split("> Evidence: ")[0]
+        )
+        new_critique = out.choices[0].message.content
+        new_critique = new_critique.split("> Evidence: ")[0]
 
         if "> Search Query: " in new_critique:
             _, search_query = new_critique.split("> Search Query:")[:2]
@@ -127,7 +138,7 @@ class CriticQAStrategy(CriticBaseStrategy):
             )
             new_critique = f"{critique}\n{new_critique}{context}"
             if not use_tool:
-                search_result = _prompt_critique(
+                search_result_out = _prompt_critique(
                     llm=self.llm,
                     question=question,
                     examples=examples,
@@ -135,18 +146,19 @@ class CriticQAStrategy(CriticBaseStrategy):
                     critique=new_critique,
                     prompt=prompt,
                     additional_keys=additional_keys,
-                ).split("> Evidence: ")[
-                    0
-                ]  # type: ignore
+                )
+                search_result_no_tool = search_result_out.choices[0].message.content
+                search_result_no_tool = search_result_no_tool.split("> Evidence: ")[0]
+
                 new_critique = (
-                    f"{critique}\n{new_critique}{search_result.strip()}"  # type: ignore
+                    f"{critique}\n{new_critique}{search_result_no_tool.strip()}"
                 )
             external_tool_info["search_query"] = search_query
-            external_tool_info["search_result"] = search_result  # type: ignore
+            external_tool_info["search_result"] = search_result if use_tool else search_result_no_tool  # type: ignore
         else:
             if "most possible answer: " not in new_critique:
                 new_critique = f"{critique}\n{new_critique}\nLet's give the most possible answer.\n\nQuestion: {question}\nHere's "
-                new_critique = _prompt_critique(
+                out = _prompt_critique(
                     llm=self.llm,
                     question=question,
                     examples=examples,
@@ -154,10 +166,14 @@ class CriticQAStrategy(CriticBaseStrategy):
                     critique=new_critique,
                     prompt=prompt,
                     additional_keys=additional_keys,
-                ).split("> Evidence: ")[0]
+                )
+                new_critique = out.choices[0].message.content
+                new_critique = new_critique.split("> Evidence: ")[0]
 
             new_critique = new_critique.split("most possible answer: ")[-1].strip()
             self._halt = True
+
+        self._prompt_metrics["critique"] = get_token_cost_time(out)
 
         return new_critique, external_tool_info
 
@@ -182,6 +198,7 @@ class CriticQAStrategy(CriticBaseStrategy):
             "answer": answer if not self._halt else critique,
             "critique": critique,
             "external_tool_info": external_tool_info,
+            "prompt_metrics": self._prompt_metrics,
         }
         return output_dict
 
@@ -240,6 +257,11 @@ class CriticQAStrategy(CriticBaseStrategy):
         self._query_history = []
         self._evidence_history = set()
         self._halt = False
+        self._prompt_metrics = {
+            "answer": None,
+            "critique": None,
+            "updated_answer": None,
+        }
 
     def handle_search_query(
         self,

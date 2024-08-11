@@ -2,21 +2,20 @@
 
 import joblib
 
-from langchain_community.chat_models.fake import FakeListChatModel
+from litellm.types.utils import ModelResponse
 
 from agential.cog.expel.functional import (
     _build_all_success_prompt,
     _build_compare_prompt,
+    _prompt_all_success_critique,
+    _prompt_compare_critique,
     categorize_experiences,
     gather_experience,
     get_folds,
-    get_operations_compare,
-    get_operations_success,
     parse_insights,
     remove_err_operations,
     retrieve_insight_index,
 )
-from agential.cog.expel.output import ExpeLOutput
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.reflexion.agent import ReflexionReActAgent
 from agential.cog.reflexion.prompts import (
@@ -24,12 +23,13 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
+from agential.llm.llm import MockLLM
 
 
 def test_gather_experience() -> None:
     """Test gather_experience."""
     agent = ReflexionReActAgent(
-        llm=FakeListChatModel(responses=[]), benchmark="hotpotqa"
+        llm=MockLLM("gpt-3.5-turbo", responses=[]), benchmark="hotpotqa"
     )
     questions = [""]
     keys = [""]
@@ -44,12 +44,12 @@ def test_gather_experience() -> None:
         reflect_strategy="reflexion",
     )
     gt_experiences = [
-        ExpeLOutput(
-            question="",
-            key="",
-            trajectory=[],
-            reflections=[],
-        )
+        {
+            "question": "",
+            "key": "",
+            "trajectory": [],
+            "reflections": [],
+        }
     ]
     assert experiences == gt_experiences
 
@@ -145,6 +145,52 @@ def test__build_all_success_prompt() -> None:
     assert prompt == gt_prompt
 
 
+def test__prompt_compare_critique() -> None:
+    """Test _prompt_compare_critique."""
+    llm = MockLLM("gpt-3.5-turbo", responses=["1"])
+
+    insights = [
+        {"insight": "Insight 1", "score": 0.8},
+        {"insight": "Insight 2", "score": 0.6},
+    ]
+    question = "Sample question"
+    success_trial = "Successful trial"
+    failed_trial = "Failed trial"
+    is_full = True
+
+    result = _prompt_compare_critique(
+        llm=llm,
+        insights=insights,
+        question=question,
+        success_trial=success_trial,
+        failed_trial=failed_trial,
+        is_full=is_full,
+    )
+    assert isinstance(result, ModelResponse)
+    assert result.choices[0].message.content == "1"
+
+
+def test__prompt_all_success_critique() -> None:
+    """Test _prompt_all_success_critique."""
+    llm = MockLLM("gpt-3.5-turbo", responses=["1"])
+
+    insights = [
+        {"insight": "Insight 1", "score": 0.8},
+        {"insight": "Insight 2", "score": 0.6},
+    ]
+    success_trajs_str = "Successful trajectories"
+    is_full = True
+
+    result = _prompt_all_success_critique(
+        llm=llm,
+        insights=insights,
+        success_trajs_str=success_trajs_str,
+        is_full=is_full,
+    )
+    assert isinstance(result, ModelResponse)
+    assert result.choices[0].message.content == "1"
+
+
 def test_parse_insights() -> None:
     """Test parse_insights."""
     gt_rules = [
@@ -207,59 +253,3 @@ def test_remove_err_operations() -> None:
 
     out = remove_err_operations(rules, operations)
     assert out == expected_operations
-
-
-def test_get_operations_compare() -> None:
-    """Test get_operations_compare."""
-    gt_operations = [
-        (
-            "ADD",
-            "When unable to find specific information, consider looking for related topics or broader context that may lead to the desired answer.",
-        )
-    ]
-    insights = []
-    question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
-    success_trial = "Thought: I need to search for the creator of \"Wallace and Gromit\" and find out what other animation comedy they created that involves animated zoo animals and people talking about their homes. \nAction: Action 1: Search[creator of Wallace and Gromit]\nObservation 1: Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>].\nThought: I should search for the creator of \"Wallace and Gromit\" by searching for Nick Park. \nAction: Search[Nick Park]\nObservation 2: Could not find [Nick Park]. Similar: ['Nick Park', 'Wallace and Gromit', 'Nick Hornby', 'Aardman Animations', 'Chicken Run', 'A Grand Day Out', 'Harry Gregson-Williams', 'Plasticine', 'Nickelodeon', 'Wallace & Gromit: The Curse of the Were-Rabbit']\nThought: I need to search for Nick Park using the search term \"Nick Park\" instead of just Nick Park. \nAction: Search[Nick Park]\nObservation 3: Could not find [Nick Park]. Similar: ['Nick Park', 'Wallace and Gromit', 'Nick Hornby', 'Aardman Animations', 'Chicken Run', 'A Grand Day Out', 'Harry Gregson-Williams', 'Plasticine', 'Nickelodeon', 'Wallace & Gromit: The Curse of the Were-Rabbit']\nThought: I should try searching for the creator of \"Wallace and Gromit\" on a different platform like a search engine. \nAction: Search[creator of Wallace and Gromit]\nObservation 4: Wallace and Gromit is a British stop-motion animated comedy franchise created by Nick Park and produced by Aardman Animations. The main film series consists of four short films and one feature-length film, and has spawned numerous spin-offs and TV adaptations. The series centres on Wallace, a good-natured, eccentric, cheese-loving inventor, and Gromit, his loyal and intelligent anthropomorphic beagle. The first short film, A Grand Day Out, was finished and made public in 1989. Wallace was voiced by actor Peter Sallis until 2010 when he was succeeded by Ben Whitehead. Gromit is largely silent and has no dialogue, communicating through facial expressions and body language.Because of their widespread popularity, the characters have been described as positive international cultural icons of both modern British culture and British people in general. BBC News called them \"some of the best-known and best-loved stars to come out of the UK\". Icons has said they have done \"more to improve the image of the English world-wide than any officially appointed ambassadors\". Although not overtly set in any particular town, Park has hinted that it was inspired by 1950s Wigan in Northern England. Wallace's accent comes from the Holme Valley of West Yorkshire. Wallace is fond of Wensleydale cheese (from Wensleydale, North Yorkshire).Their films have received universal acclaim, with the first three short films, A Grand Day Out (1989), The Wrong Trousers (1993) and A Close Shave (1995) earning 100% on Rotten Tomatoes; the feature film Wallace & Gromit: The Curse of the Were-Rabbit (2005) has also received acclaim. The feature film is the second-highest-grossing stop-motion animated film, only outgrossed by Chicken Run (2000), another creation of Park's. A fourth short film, A Matter of Loaf and Death, was released in 2008. The franchise has received numerous accolades, including five British Academy Film Awards, three Academy Awards and a Peabody Award.The Wallace and Gromit characters spearhead the fundraising for two children's charities: Wallace & Gromit's Children's Foundation, which supports children's hospices and hospitals in the United Kingdom, and Wallace and Gromit's Grand Appeal, the charity for Bristol Children's Hospital in Bristol. In December 2010, Wallace and Gromit featured on a festive themed series of UK postage stamps issued by the Royal Mail.\nThought: The creator of \"Wallace and Gromit\" is Nick Park. Now, I need to find out what other animation comedy involving animated zoo animals and people talking about their homes was created by him.\nAction: Search[animation comedy animated zoo animals talking about homes Nick Park]\nObservation 5: Nicholas Wulstan Park  (born 6 December 1958) is an  English filmmaker and animator who created Wallace and Gromit, Creature Comforts, Chicken Run, Shaun the Sheep, and Early Man. Park has been nominated for an Academy Award a total of six times and won four with Creature Comforts (1989), The Wrong Trousers (1993), A Close Shave (1995) and Wallace & Gromit: The Curse of the Were-Rabbit (2005).He has also received five BAFTA Awards, including the BAFTA for Best Short Animation for A Matter of Loaf and Death, which was also the most watched television programme in the United Kingdom in 2008. His 2000 film Chicken Run is the highest-grossing stop motion animated film.In 1985, Park joined Aardman Animations based in Bristol, and for his work in animation he was among the British cultural icons selected by artist Peter Blake to appear in a 2012 version of Blake's most famous artwork—the Beatles' Sgt. Pepper's Lonely Hearts Club Band album cover—to celebrate the British cultural figures of his life.Park was appointed a Commander of the Order of the British Empire (CBE) in the 1997 Birthday Honours for services to the animated film industry.\nThought: Nick Park created the animation comedy \"Creature Comforts\" that matched animated zoo animals with a soundtrack of people talking about their homes. \nAction: Finish[Creature Comforts]\nObservation 6: Answer is CORRECT"
-    failed_trial = "Thought: I need to search for VIVA Media AG and find out what their new acronym stands for after changing their name in 2004. \nAction: Search[VIVA Media AG]\nObservation 1: Could not find [VIVA Media AG]. Similar: ['MTV Music (Polish TV channel)', 'VIVA Plus', 'Paramount International Networks', 'VIVA (German TV channel)', 'Viacom (1952–2005)', 'Vauxhall Viva', 'Sartorius AG', 'GfK Entertainment charts', 'Lindt', 'Puma (brand)']\nThought: I couldn't find VIVA Media AG, so I should try searching for VIVA (German TV channel) instead, as it might be related.\nAction: Search[VIVA (German TV channel)]\nObservation 2: VIVA (abbreviation for: Videoverwertungsanstalt translating to \"Video Exploitation Facility\") was a German free-to-air music television channel, first broadcast on December 1, 1993. The channel was intended to compete against MTV Europe and was the first German-language music TV channel, while MTV was only broadcast in English until the introduction of MTV Germany in 1997. It was also supposed to focus more on German music and pop culture while MTV only broadcast anglophone music by artists mostly from North America, the United Kingdom, Ireland and Australia.After years of competition for audience share, MTV Networks Europe eventually acquired VIVA on  January 14, 2005, after it had outrun its own efforts for better ratings. MTV operated VIVA channels in Austria, Germany, Hungary, Ireland, Poland, Switzerland and the United Kingdom.In June 2018, Viacom announced that it would shut down all Viva operations worldwide at the end of 2018.The channel ceased to broadcast at 14:00 on 31 December 2018, being replaced by Comedy Central.\nThought: The information provided does not mention any name change or acronym for VIVA Media AG. I should try searching for the specific name change or acronym directly. \nAction: Search[VIVA Media AG name change acronym]\nObservation 3: Could not find [VIVA Media AG name change acronym]. Similar: ['Holden Torana', 'Andrés Manuel López Obrador']\nThought: I need to refine my search and try looking for the specific name change of VIVA Media AG in 2004 to find out what their new acronym stands for. \nAction: Search[VIVA Media AG name change 2004]\nObservation 4: Could not find [VIVA Media AG name change 2004]. Similar: ['Vauxhall Viva', 'GfK Entertainment charts', 'Puma (brand)', 'Opel Astra', 'Mediaspree', 'About You Now', 'Daihatsu Mira', 'Bosch (company)', 'Schneider Electric', 'Sildenafil']\nThought: I need to try a different approach. Let me search for the history of VIVA Media AG to see if I can find any information about their name change in 2004 and the new acronym.\nAction: Search[history of VIVA Media AG]\nObservation 5: Could not find [history of VIVA Media AG]. Similar: ['MTV Music (Polish TV channel)', 'VIVA Plus', 'Vauxhall Viva', 'Sartorius AG', 'VIVA (German TV channel)', 'GfK Entertainment charts', 'Lindt', 'Spellbound Entertainment', 'Ag-gag', 'Puma (brand)']\nThought: I have exhausted my search options and could not find the information I was looking for. Perhaps I can try a different search engine or look for official company announcements to find out the new acronym for VIVA Media AG after their name change in 2004.\nAction: Finish[unable to find information]\nObservation 6: Answer is INCORRECT"
-    is_full = False
-    responses = [
-        "ADD 11: When unable to find specific information, consider looking for related topics or broader context that may lead to the desired answer.\nREMOVE 3: Search for specific terms in the API environment should include relevant keywords to ensure accurate results.\nEDIT 5: Refine search queries by including additional relevant keywords or context to increase the chances of finding the desired information.\nAGREE 7: Use alternative search engines or sources of information if initial search attempts are unsuccessful."
-    ]
-    operations = get_operations_compare(
-        FakeListChatModel(responses=responses),
-        insights,
-        question,
-        success_trial,
-        failed_trial,
-        is_full,
-    )
-    assert operations == gt_operations
-
-
-def test_get_operations_success() -> None:
-    """Test get_operations success."""
-    gt_operations = [
-        (
-            "ADD",
-            "When searching for specific information, try using the full name or specific search terms related to the topic to increase the chances of finding the desired answer.",
-        )
-    ]
-    insights = [
-        {
-            "insight": "When unable to find specific information, consider looking for related topics or broader context that may lead to the desired answer.",
-            "score": 2,
-        },
-        {
-            "insight": "Consider using different search terms or variations when searching for specific information to increase the chances of finding the desired answer.",
-            "score": 2,
-        },
-    ]
-    success_trials = "The creator of \"Wallace and Gromit\" also created what animation comedy that matched animated zoo animals with a soundtrack of people talking about their homes? \nThought: I need to search for the creator of \"Wallace and Gromit\" and find out what other animation comedy they created that involves animated zoo animals and people talking about their homes. \nAction: Action 1: Search[creator of Wallace and Gromit]\nObservation 1: Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>].\nThought: I should search for the creator of \"Wallace and Gromit\" by searching for Nick Park. \nAction: Search[Nick Park]\nObservation 2: Could not find [Nick Park]. Similar: ['Nick Park', 'Wallace and Gromit', 'Nick Hornby', 'Aardman Animations', 'Chicken Run', 'A Grand Day Out', 'Harry Gregson-Williams', 'Plasticine', 'Nickelodeon', 'Wallace & Gromit: The Curse of the Were-Rabbit']\nThought: I need to search for Nick Park using the search term \"Nick Park\" instead of just Nick Park. \nAction: Search[Nick Park]\nObservation 3: Could not find [Nick Park]. Similar: ['Nick Park', 'Wallace and Gromit', 'Nick Hornby', 'Aardman Animations', 'Chicken Run', 'A Grand Day Out', 'Harry Gregson-Williams', 'Plasticine', 'Nickelodeon', 'Wallace & Gromit: The Curse of the Were-Rabbit']\nThought: I should try searching for the creator of \"Wallace and Gromit\" on a different platform like a search engine. \nAction: Search[creator of Wallace and Gromit]\nObservation 4: Wallace and Gromit is a British stop-motion animated comedy franchise created by Nick Park and produced by Aardman Animations. The main film series consists of four short films and one feature-length film, and has spawned numerous spin-offs and TV adaptations. The series centres on Wallace, a good-natured, eccentric, cheese-loving inventor, and Gromit, his loyal and intelligent anthropomorphic beagle. The first short film, A Grand Day Out, was finished and made public in 1989. Wallace was voiced by actor Peter Sallis until 2010 when he was succeeded by Ben Whitehead. Gromit is largely silent and has no dialogue, communicating through facial expressions and body language.Because of their widespread popularity, the characters have been described as positive international cultural icons of both modern British culture and British people in general. BBC News called them \"some of the best-known and best-loved stars to come out of the UK\". Icons has said they have done \"more to improve the image of the English world-wide than any officially appointed ambassadors\". Although not overtly set in any particular town, Park has hinted that it was inspired by 1950s Wigan in Northern England. Wallace's accent comes from the Holme Valley of West Yorkshire. Wallace is fond of Wensleydale cheese (from Wensleydale, North Yorkshire).Their films have received universal acclaim, with the first three short films, A Grand Day Out (1989), The Wrong Trousers (1993) and A Close Shave (1995) earning 100% on Rotten Tomatoes; the feature film Wallace & Gromit: The Curse of the Were-Rabbit (2005) has also received acclaim. The feature film is the second-highest-grossing stop-motion animated film, only outgrossed by Chicken Run (2000), another creation of Park's. A fourth short film, A Matter of Loaf and Death, was released in 2008. The franchise has received numerous accolades, including five British Academy Film Awards, three Academy Awards and a Peabody Award.The Wallace and Gromit characters spearhead the fundraising for two children's charities: Wallace & Gromit's Children's Foundation, which supports children's hospices and hospitals in the United Kingdom, and Wallace and Gromit's Grand Appeal, the charity for Bristol Children's Hospital in Bristol. In December 2010, Wallace and Gromit featured on a festive themed series of UK postage stamps issued by the Royal Mail.\nThought: The creator of \"Wallace and Gromit\" is Nick Park. Now, I need to find out what other animation comedy involving animated zoo animals and people talking about their homes was created by him.\nAction: Search[animation comedy animated zoo animals talking about homes Nick Park]\nObservation 5: Nicholas Wulstan Park  (born 6 December 1958) is an  English filmmaker and animator who created Wallace and Gromit, Creature Comforts, Chicken Run, Shaun the Sheep, and Early Man. Park has been nominated for an Academy Award a total of six times and won four with Creature Comforts (1989), The Wrong Trousers (1993), A Close Shave (1995) and Wallace & Gromit: The Curse of the Were-Rabbit (2005).He has also received five BAFTA Awards, including the BAFTA for Best Short Animation for A Matter of Loaf and Death, which was also the most watched television programme in the United Kingdom in 2008. His 2000 film Chicken Run is the highest-grossing stop motion animated film.In 1985, Park joined Aardman Animations based in Bristol, and for his work in animation he was among the British cultural icons selected by artist Peter Blake to appear in a 2012 version of Blake's most famous artwork—the Beatles' Sgt. Pepper's Lonely Hearts Club Band album cover—to celebrate the British cultural figures of his life.Park was appointed a Commander of the Order of the British Empire (CBE) in the 1997 Birthday Honours for services to the animated film industry.\nThought: Nick Park created the animation comedy \"Creature Comforts\" that matched animated zoo animals with a soundtrack of people talking about their homes. \nAction: Finish[Creature Comforts]\nObservation 6: Answer is CORRECT"
-    is_full = False
-    responses = [
-        "ADD 4: When searching for specific information, try using the full name or specific search terms related to the topic to increase the chances of finding the desired answer."
-    ]
-    operations = get_operations_success(
-        FakeListChatModel(responses=responses), success_trials, insights, is_full
-    )
-    assert operations == gt_operations

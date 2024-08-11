@@ -7,7 +7,6 @@ from typing import Any, Dict, List, Optional, Tuple
 import tiktoken
 
 from langchain_community.docstore.wikipedia import Wikipedia
-from langchain_core.language_models.chat_models import BaseChatModel
 from tiktoken import Encoding
 
 from agential.cog.reflexion.functional import (
@@ -26,7 +25,9 @@ from agential.cog.reflexion.strategies.base import (
     ReflexionReActBaseStrategy,
 )
 from agential.eval.em import EM
+from agential.llm.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
+from agential.utils.general import get_token_cost_time
 from agential.utils.parse import remove_newline
 
 
@@ -57,7 +58,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
     """A strategy class for QA benchmarks using the ReflexionCoT agent.
 
     Attributes:
-        llm (BaseChatModel): The language model used for generating answers and critiques.
+        llm (BaseLLM): The language model used for generating answers and critiques.
         reflector (Optional[ReflexionCoTReflector]): The reflector used for generating reflections. Defaults to None.
         max_reflections (int): The maximum number of reflections allowed. Defaults to 3.
         max_trials (int): The maximum number of trials allowed. Defaults to 3.
@@ -65,7 +66,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         reflector: Optional[ReflexionCoTReflector] = None,
         max_reflections: int = 3,
         max_trials: int = 3,
@@ -78,6 +79,11 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         self._scratchpad = ""
         self._finished = False
         self._answer = ""
+        self._prompt_metrics: Dict[str, Any] = {
+            "thought": None,
+            "action": None,
+            "reflection": None,
+        }
 
     def generate(
         self,
@@ -102,7 +108,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             str: The generated thought.
         """
         self._scratchpad += "\nThought:"
-        thought = _prompt_cot_agent(
+        out = _prompt_cot_agent(
             llm=self.llm,
             examples=examples,
             reflections=reflections,
@@ -111,6 +117,9 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics["thought"] = get_token_cost_time(out)
+        thought = out.choices[0].message.content
+
         thought = remove_newline(thought).split("Action")[0].strip()
         self._scratchpad += " " + thought
 
@@ -139,7 +148,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             Tuple[str, str]: The generated action type and query.
         """
         self._scratchpad += "\nAction:"
-        action = _prompt_cot_agent(
+        out = _prompt_cot_agent(
             llm=self.llm,
             examples=examples,
             reflections=reflections,
@@ -148,6 +157,9 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics["action"] = get_token_cost_time(out)
+        action = out.choices[0].message.content
+
         action = remove_newline(action).strip()
         self._scratchpad += " " + action
         action_type, query = parse_qa_action(action)
@@ -208,6 +220,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             "answer": self._answer,
             "is_correct": is_correct,
             "reflections": reflections,
+            "prompt_metrics": self._prompt_metrics,
         }
 
     def halting_condition(
@@ -246,6 +259,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
             self._scratchpad = ""
             self._finished = False
             self._answer = ""
+            self._prompt_metrics = {"thought": None, "action": None, "reflection": None}
 
     def reflect(
         self,
@@ -267,13 +281,16 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         Returns:
             Tuple[List[str], str]: The reflections and the reflection string.
         """
-        reflections, reflections_str = self.reflector.reflect(
+        reflections, reflections_str, reflections_out = self.reflector.reflect(
             reflect_strategy=reflect_strategy,
             question=question,
             examples=examples,
             scratchpad=self._scratchpad,
             prompt=prompt,
             additional_keys=additional_keys,
+        )
+        self._prompt_metrics["reflection"] = (
+            get_token_cost_time(reflections_out) if reflections_out else None
         )
         return reflections, reflections_str
 
@@ -300,7 +317,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
     """A strategy class for QA benchmarks using the ReflexionReAct agent.
 
     Attributes:
-        llm (BaseChatModel): The language model used for generating answers and critiques.
+        llm (BaseLLM): The language model used for generating answers and critiques.
         reflector (Optional[ReflexionReActReflector]): The reflector used for generating reflections. Defaults to None.
         max_reflections (int): The maximum number of reflections allowed. Defaults to 3.
         max_trials (int): The maximum number of trials allowed. Defaults to 3.
@@ -312,7 +329,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         reflector: Optional[ReflexionReActReflector] = None,
         max_reflections: int = 3,
         max_trials: int = 3,
@@ -334,6 +351,8 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         self._finished = False
         self._answer = ""
         self._scratchpad = ""
+        self._prompt_metrics: Dict[str, Any] = {"reflection": None}
+        self._prompt_metrics_react: Dict[str, Any] = {"thought": None, "action": None}
 
     def generate(
         self,
@@ -360,7 +379,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         max_steps = kwargs.get("max_steps", self.max_steps)  # type: ignore
 
         self._scratchpad += "\nThought:"
-        thought = _prompt_react_agent(
+        out = _prompt_react_agent(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -370,6 +389,9 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics_react["thought"] = get_token_cost_time(out)
+        thought = out.choices[0].message.content
+
         thought = remove_newline(thought).split("Action")[0].strip()
         self._scratchpad += " " + thought
 
@@ -399,7 +421,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         """
         max_steps = kwargs.get("max_steps", self.max_steps)
         self._scratchpad += "\nAction:"
-        action = _prompt_react_agent(
+        out = _prompt_react_agent(
             llm=self.llm,
             question=question,
             examples=examples,
@@ -409,6 +431,9 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
+        self._prompt_metrics_react["action"] = get_token_cost_time(out)
+        action = out.choices[0].message.content
+
         action = remove_newline(action).split("Observation")[0]
         self._scratchpad += " " + action
         action_type, query = parse_qa_action(action)
@@ -481,6 +506,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         return {
             "react_output": react_out,
             "reflections": reflections,
+            "prompt_metrics": self._prompt_metrics,
         }
 
     def react_create_output_dict(
@@ -513,6 +539,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
             "answer": self._answer,
             "external_tool_info": external_tool_info,
             "is_correct": is_correct,
+            "prompt_metrics": self._prompt_metrics_react,
         }
 
     def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
@@ -584,6 +611,8 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         self._scratchpad = ""
         self._finished = False
         self._answer = ""
+        self._prompt_metrics_react = {"thought": None, "action": None}
+        self._prompt_metrics = {"reflection": None}
 
     def reflect(
         self,
@@ -605,7 +634,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         Returns:
             Tuple[List[str], str]: The reflections and reflection string.
         """
-        reflections, reflections_str = self.reflector.reflect(
+        reflections, reflections_str, reflections_out = self.reflector.reflect(
             reflect_strategy=reflect_strategy,
             question=question,
             examples=examples,
@@ -614,6 +643,9 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
             ),
             prompt=prompt,
             additional_keys=additional_keys,
+        )
+        self._prompt_metrics["reflection"] = (
+            get_token_cost_time(reflections_out) if reflections_out else None
         )
 
         return reflections, reflections_str

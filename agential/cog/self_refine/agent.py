@@ -6,14 +6,13 @@ Paper Repository: https://github.com/madaan/self-refine
 
 from typing import Any, Dict, List
 
-from langchain_core.language_models.chat_models import BaseChatModel
-
-from agential.base.agent import BaseAgent
+from agential.cog.base.agent import BaseAgent
 from agential.cog.self_refine.factory import (
     SELF_REFINE_BENCHMARK_FEWSHOTS,
     SelfRefineFactory,
 )
 from agential.cog.self_refine.output import SelfRefineOutput
+from agential.llm.llm import BaseLLM
 
 
 class SelfRefineAgent(BaseAgent):
@@ -24,7 +23,7 @@ class SelfRefineAgent(BaseAgent):
     of times or until the critique indicates that no further improvements are needed.
 
     Attributes:
-        llm (BaseChatModel): An instance of a language model used for generating initial answers
+        llm (BaseLLM): An instance of a language model used for generating initial answers
             and critiques.
         benchmark (str): The benchmark name.
         **strategy_kwargs (Any): Additional strategy-specific arguments.
@@ -32,7 +31,7 @@ class SelfRefineAgent(BaseAgent):
 
     def __init__(
         self,
-        llm: BaseChatModel,
+        llm: BaseLLM,
         benchmark: str,
         **strategy_kwargs: Any,
     ) -> None:
