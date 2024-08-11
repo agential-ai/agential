@@ -26,7 +26,6 @@ from agential.cog.reflexion.functional import (
     cot_reflect_last_attempt,
     cot_reflect_last_attempt_and_reflexion,
     cot_reflect_reflexion,
-    react_reflect,
     react_reflect_last_attempt,
     react_reflect_last_attempt_and_reflexion,
     react_reflect_reflexion,
@@ -722,62 +721,6 @@ def test_react_reflect_last_attempt_and_reflexion() -> None:
     """Test react_reflect_last_attempt_and_reflexion function."""
     out, model_response = react_reflect_last_attempt_and_reflexion(
         llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
-        question="",
-        examples="",
-        scratchpad="",
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-    )
-    assert isinstance(out, list)
-    assert out == ["1"]
-    assert model_response
-
-
-def test_react_reflect() -> None:
-    """Test react_reflect function."""
-    # Invalid strategy.
-    with pytest.raises(NotImplementedError):
-        out, _ = react_reflect(
-            reflect_strategy="invalid input",
-            llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
-            reflections=[""],
-            question="",
-            examples="",
-            scratchpad="",
-            prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-        )
-
-    # Last attempt.
-    out, model_response = react_reflect(
-        reflect_strategy="last_attempt",
-        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
-        reflections=[""],
-        question="",
-        examples="",
-        scratchpad="",
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-    )
-    assert out == [""]
-    assert not model_response
-
-    # Reflexion.
-    out, model_response = react_reflect(
-        reflect_strategy="reflexion",
-        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
-        reflections=[""],
-        question="",
-        examples="",
-        scratchpad="",
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
-    )
-    assert isinstance(out, list)
-    assert out == ["", "1"]
-    assert model_response
-
-    # Last attempt and Reflexion.
-    out, model_response = react_reflect(
-        reflect_strategy="last_attempt_and_reflexion",
-        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
-        reflections=[""],
         question="",
         examples="",
         scratchpad="",
