@@ -22,7 +22,6 @@ from agential.cog.reflexion.functional import (
     _prompt_react_agent,
     _prompt_react_reflection,
     _truncate_scratchpad,
-    cot_reflect,
     cot_reflect_last_attempt,
     cot_reflect_last_attempt_and_reflexion,
     cot_reflect_reflexion,
@@ -334,62 +333,6 @@ def test_cot_reflect_last_attempt_and_reflexion() -> None:
     """Test cot_reflect_last_attempt_and_reflexion function."""
     out, model_response = cot_reflect_last_attempt_and_reflexion(
         llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
-        examples="",
-        question="",
-        scratchpad="",
-        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
-    )
-    assert isinstance(out, list)
-    assert out == ["1"]
-    assert model_response
-
-
-def test_cot_reflect() -> None:
-    """Test cot_reflect function."""
-    # Invalid strategy.
-    with pytest.raises(NotImplementedError):
-        out, _ = cot_reflect(
-            reflect_strategy="invalid input",
-            llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
-            reflections=[""],
-            examples="",
-            question="",
-            scratchpad="",
-            prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
-        )
-
-    # Last attempt.
-    out, model_response = cot_reflect(
-        reflect_strategy="last_attempt",
-        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
-        reflections=[""],
-        examples="",
-        question="",
-        scratchpad="",
-        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
-    )
-    assert out == [""]
-    assert not model_response
-
-    # Reflexion.
-    out, model_response = cot_reflect(
-        reflect_strategy="reflexion",
-        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
-        reflections=[""],
-        examples="",
-        question="",
-        scratchpad="",
-        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
-    )
-    assert isinstance(out, list)
-    assert out == ["", "1"]
-    assert model_response
-
-    # Last attempt and Reflexion.
-    out, model_response = cot_reflect(
-        reflect_strategy="last_attempt_and_reflexion",
-        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
-        reflections=[""],
         examples="",
         question="",
         scratchpad="",

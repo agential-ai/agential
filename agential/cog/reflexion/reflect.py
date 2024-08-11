@@ -6,10 +6,10 @@ from agential.cog.base.modules.reflect import BaseReflector
 from agential.cog.reflexion.functional import (
     _format_last_attempt,
     _format_reflections,
-    cot_reflect,
-    react_reflect_last_attempt,
-    react_reflect_last_attempt_and_reflexion,
-    react_reflect_reflexion,
+    cot_reflect_last_attempt,
+    cot_reflect_reflexion,
+    cot_reflect_last_attempt_and_reflexion,
+    react_reflect,
 )
 from agential.cog.reflexion.prompts import (
     REFLECTION_AFTER_LAST_TRIAL_HEADER,
@@ -74,30 +74,41 @@ class ReflexionCoTReflector(BaseReflector):
         Raises:
             NotImplementedError: If an unknown reflection strategy is specified.
         """
-        reflections, reflections_out = cot_reflect(
-            reflect_strategy=reflect_strategy,
-            llm=self.llm,
-            reflections=self.reflections,
-            examples=examples,
-            question=question,
-            scratchpad=scratchpad,
-            prompt=prompt,
-            additional_keys=additional_keys,
-        )
-        reflections = reflections[-self.max_reflections :]
-
-        self.reflections = reflections
 
         if reflect_strategy == "last_attempt":
+            reflections, reflections_out = cot_reflect_last_attempt(scratchpad)
             reflections_str = _format_last_attempt(question, scratchpad)
         elif reflect_strategy == "reflexion":
+            reflections, reflections_out = cot_reflect_reflexion(
+                llm=self.llm,
+                reflections=self.reflections,
+                examples=examples,
+                question=question,
+                scratchpad=scratchpad,
+                prompt=prompt,
+                additional_keys=additional_keys,
+            )
+            reflections = reflections[-self.max_reflections :]
             reflections_str = _format_reflections(reflections)
+
         elif reflect_strategy == "last_attempt_and_reflexion":
+            reflections, reflections_out = cot_reflect_last_attempt_and_reflexion(
+                llm=self.llm,
+                examples=examples,
+                question=question,
+                scratchpad=scratchpad,
+                prompt=prompt,
+                additional_keys=additional_keys,
+            )
+            reflections = reflections[-self.max_reflections :]
             reflections_str = _format_last_attempt(question, scratchpad)
             reflections_str += "\n" + _format_reflections(
                 reflections, REFLECTION_AFTER_LAST_TRIAL_HEADER
             )
+        else:
+            raise NotImplementedError(f"Unknown reflection strategy: {reflect_strategy}.")
 
+        self.reflections = reflections
         self.reflections_str = reflections_str
 
         return reflections, reflections_str, reflections_out
