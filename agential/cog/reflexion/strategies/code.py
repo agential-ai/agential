@@ -110,7 +110,11 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
         self._scratchpad = ""
         self._finished = False
         self._answer = ""
-        self._prompt_metrics = {"thought": None, "action": None, "reflection": None}
+        self._prompt_metrics: Dict[str, Any] = {
+            "thought": None,
+            "action": None,
+            "reflection": None,
+        }
 
     def generate(
         self,
@@ -377,8 +381,8 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
         self._finished = False
         self._answer = ""
         self._scratchpad = ""
-        self._prompt_metrics = {"reflection": None}
-        self._prompt_metrics_react = {"thought": None, "action": None}
+        self._prompt_metrics: Dict[str, Any] = {"reflection": None}
+        self._prompt_metrics_react: Dict[str, Any] = {"thought": None, "action": None}
 
     def generate(
         self,

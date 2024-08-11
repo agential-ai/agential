@@ -29,7 +29,7 @@ class SelfRefineCodeStrategy(SelfRefineBaseStrategy):
         self._prev_code_answer = ""
         self.patience_counter = 0
         self._halt = False
-        self._prompt_metrics = {
+        self._prompt_metrics: Dict[str, Any] = {
             "answer": None,
             "critique": None,
             "updated_answer": None,

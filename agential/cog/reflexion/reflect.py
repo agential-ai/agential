@@ -54,7 +54,7 @@ class ReflexionCoTReflector(BaseReflector):
         scratchpad: str,
         prompt: str,
         additional_keys: Dict[str, str] = {},
-    ) -> Tuple[List[str], str, ModelResponse]:
+    ) -> Tuple[List[str], str, Optional[ModelResponse]]:
         """Wrapper around ReflexionCoT's `cot_reflect` method in functional.
 
         This method calls the appropriate reflection function based on the provided strategy, passing in the necessary
@@ -70,7 +70,7 @@ class ReflexionCoTReflector(BaseReflector):
             additional_keys (Dict[str, str]): Additional keys to be passed to the prompt template.
 
         Returns:
-            Tuple[List[str], str, ModelResponse]: A tuple of the updated list of reflections based on the selected strategy and the formatted
+            Tuple[List[str], str, Optional[ModelResponse]]: A tuple of the updated list of reflections based on the selected strategy and the formatted
                 reflections.
 
         Raises:
@@ -157,7 +157,7 @@ class ReflexionReActReflector(BaseReflector):
         scratchpad: str,
         prompt: str,
         additional_keys: Dict[str, str] = {},
-    ) -> Tuple[List[str], str]:
+    ) -> Tuple[List[str], str, Optional[ModelResponse]]:
         """Wrapper around ReflexionReAct's `react_reflect` method in functional.
 
         This method calls the appropriate reflection function based on the provided strategy, passing in the necessary
@@ -173,7 +173,7 @@ class ReflexionReActReflector(BaseReflector):
             additional_keys (Dict[str, str]): Additional keys. Defaults to {}.
 
         Returns:
-            Tuple[List[str], str]: A tuple of the updated list of reflections based on the selected strategy and the formatted
+            Tuple[List[str], str, Optional[ModelResponse]]: A tuple of the updated list of reflections based on the selected strategy and the formatted
                 reflections.
 
         Raises:
