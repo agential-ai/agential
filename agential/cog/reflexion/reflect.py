@@ -9,7 +9,9 @@ from agential.cog.reflexion.functional import (
     cot_reflect_last_attempt,
     cot_reflect_reflexion,
     cot_reflect_last_attempt_and_reflexion,
-    react_reflect,
+    react_reflect_last_attempt,
+    react_reflect_last_attempt_and_reflexion,
+    react_reflect_reflexion,
 )
 from agential.cog.reflexion.prompts import (
     REFLECTION_AFTER_LAST_TRIAL_HEADER,
