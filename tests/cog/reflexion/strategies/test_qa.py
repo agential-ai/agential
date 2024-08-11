@@ -699,6 +699,7 @@ def test_reflexion_react_reset() -> None:
     assert strategy._prompt_metrics == {"reflection": None}
     assert strategy._prompt_metrics_react == {"thought": None, "action": None}
 
+
 def test_reflexion_react_reflect() -> None:
     """Tests ReflexionReActQAStrategy reflect."""
     question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
