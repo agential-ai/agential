@@ -382,6 +382,108 @@ def test_generate() -> None:
             external_tool_info={"execution_status": "Done", "code_answer": None},
         ),
     ]
+    gt_prompt_metrics = {
+        "thought": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+        ],
+        "action": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+        ],
+        "value": [],
+        "simulate_thought": [],
+        "simulate_action": [],
+        "simulate_value": [],
+        "reflection": [],
+    }
+
     responses = [
         "I need to calculate how much money Janet makes daily at the farmers' market.\nAction 1: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_for_breakfast - eggs_used_for_muffins\nmoney_made_per_day = eggs_remaining * 2\nanswer = money_made_per_day\n```\n]\nObservation 1:\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_for_breakfast - eggs_used_for_muffins\nmoney_made_per_day = eggs_remaining * 2\nanswer = money_made_per_day\n```\nExecution Status: Done\nOutput: answer = -9867650\nThought 2: The calculation resulted in a negative value, which doesn't make sense for money made. I need to review the calculation.\nAction 2: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_for_breakfast - eggs_used_for_muffins\nmoney_made_per_day = eggs_remaining * 2\nmoney_made_per_day = abs(money_made_per_day)  # Take the absolute value\nanswer = money_made_per_day\n```\n]\nObservation 2:\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_for_breakfast - eggs_used_for_muffins\nmoney_made_per_day = eggs_remaining * 2\nmoney_made_per_day = abs(money_made_per_day)  # Take the absolute value\nanswer = money_made_per_day\n```\nExecution Status: Done\nOutput: answer = 9867650\nThought 3: Janet makes $9867650 every day at the farmers' market.\nAction 3: Finish[\n```python\nanswer = 9867650\n```\n]\nObservation 3:\n```python\nanswer = 9867650\n```",
         "Calculate[\n```python\neggs_laid_per_day = 16\neggs_consumed = 3\neggs_used_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_consumed - eggs_used_muffins\nprice_per_egg = 2\nearnings_per_day = eggs_sold * price_per_egg\nanswer = earnings_per_day\n```\n]",
@@ -422,6 +524,7 @@ def test_generate() -> None:
         assert node.value == 0
         assert node.is_terminal is False
         assert node.visits == 0
+    assert strategy._prompt_metrics == gt_prompt_metrics
 
     # Test generate with reflections.
     gt_states = [

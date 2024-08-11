@@ -404,6 +404,107 @@ def test_generate() -> None:
             },
         ),
     ]
+    gt_prompt_metrics = {
+        "thought": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+        ],
+        "action": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            },
+        ],
+        "value": [],
+        "simulate_thought": [],
+        "simulate_action": [],
+        "simulate_value": [],
+        "reflection": [],
+    }
 
     responses = [
         "I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
@@ -448,6 +549,7 @@ def test_generate() -> None:
         assert node.value == 0
         assert node.is_terminal is False
         assert node.visits == 0
+    assert strategy._prompt_metrics == gt_prompt_metrics
 
     # Test generate with reflections.
     gt_states = [
