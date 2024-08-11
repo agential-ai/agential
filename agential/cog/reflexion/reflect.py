@@ -7,8 +7,8 @@ from agential.cog.reflexion.functional import (
     _format_last_attempt,
     _format_reflections,
     cot_reflect_last_attempt,
-    cot_reflect_reflexion,
     cot_reflect_last_attempt_and_reflexion,
+    cot_reflect_reflexion,
     react_reflect_last_attempt,
     react_reflect_last_attempt_and_reflexion,
     react_reflect_reflexion,
@@ -76,7 +76,6 @@ class ReflexionCoTReflector(BaseReflector):
         Raises:
             NotImplementedError: If an unknown reflection strategy is specified.
         """
-
         if reflect_strategy == "last_attempt":
             reflections, reflections_out = cot_reflect_last_attempt(scratchpad)
             reflections_str = _format_last_attempt(question, scratchpad)
