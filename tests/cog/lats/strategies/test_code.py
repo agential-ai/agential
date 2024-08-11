@@ -597,7 +597,40 @@ def test_generate() -> None:
     assert strategy._prompt_metrics == gt_prompt_metrics
 
     # Test generate with reflections.
-    gt_states = []
+    gt_states = [
+        LATSReActOutput(
+            thought="Implement the `has_close_elements` function with nested loops to compare all pairs of numbers.```pythonfrom typing import Listdef has_close_elements(numbers: List[float], threshold: float) -> bool:    for i in range(len(numbers)):        for j in range(i + 1, len(numbers)):            if abs(numbers[i] - numbers[j]) < threshold:                return True    return False```Thought 2: I need to test the implemented function with test cases to ensure it works correctly.",
+            action_type="Implement",
+            query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
+            observation="\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: ",
+            answer="",
+            external_tool_info={"execution_status": "Done"},
+        ),
+        LATSReActOutput(
+            thought="Implement the `has_close_elements` function with the nested loop logic.```pythonfrom typing import Listdef has_close_elements(numbers: List[float], threshold: float) -> bool:    for i in range(len(numbers)):        for j in range(i+1, len(numbers)):            if abs(numbers[i] - numbers[j]) < threshold:                return True    return False```Thought 2: I need to test the implemented `has_close_elements` function with some test cases to ensure it works as expected.",
+            action_type="Implement",
+            query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
+            observation="\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: ",
+            answer="",
+            external_tool_info={"execution_status": "Done"},
+        ),
+        LATSReActOutput(
+            thought="Implement the `has_close_elements` function with nested loops to compare each pair of numbers in the list against the threshold.```pythonfrom typing import Listdef has_close_elements(numbers: List[float], threshold: float) -> bool:    for i in range(len(numbers)):        for j in range(i+1, len(numbers)):            if abs(numbers[i] - numbers[j]) < threshold:                return True    return False```Thought 2: I should test the implemented `has_close_elements` function with some test cases to ensure it works correctly.",
+            action_type="Implement",
+            query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
+            observation="\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: ",
+            answer="",
+            external_tool_info={"execution_status": "Done"},
+        ),
+        LATSReActOutput(
+            thought='Implement the `has_close_elements` function.```pythonfrom typing import Listdef has_close_elements(numbers: List[float], threshold: float) -> bool:    """ Check if in given list of numbers, are any two numbers closer to each other than    given threshold.    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)    False    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)    True    """        for i in range(len(numbers)):        for j in range(i+1, len(numbers)):            if abs(numbers[i] - numbers[j]) < threshold:                return True    return False```Thought 2: I now need to test the `has_close_elements` function with different test cases to ensure it works correctly.',
+            action_type="Implement",
+            query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
+            observation="\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: ",
+            answer="",
+            external_tool_info={"execution_status": "Done"},
+        ),
+    ]
     gt_prompt_metrics = {
         "thought": [
             {
@@ -757,7 +790,13 @@ def test_generate() -> None:
         reflect_additional_keys={},
         is_simulate=False,
     )
-
+    for gt_state, node in zip(gt_states, children_nodes):
+        print(node.state)
+        print(node.depth)
+        print(node.reward)
+        print(node.value)
+        print(node.is_terminal)
+        print(node.visits)
     assert len(children_nodes) == 5
     for gt_state, node in zip(gt_states, children_nodes):
         assert node.state == gt_state
