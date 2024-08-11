@@ -73,6 +73,11 @@ def test_reflexion_cot_init() -> None:
     assert strategy._scratchpad == ""
     assert strategy._finished == False
     assert strategy._answer == ""
+    assert strategy._prompt_metrics == {
+        "thought": None,
+        "action": None,
+        "reflection": None,
+    }
 
 
 def test_reflexion_cot_generate() -> None:
@@ -369,8 +374,6 @@ def test_reflexion_react_generate() -> None:
         additional_keys={},
         max_steps=5,
     )
-    print(strategy._prompt_metrics)
-    print(strategy._prompt_metrics_react)
     assert out == gt_out
     assert strategy._scratchpad == gt_scratchpad
     assert strategy._prompt_metrics == {"reflection": None}
@@ -412,8 +415,6 @@ def test_reflexion_react_generate_action() -> None:
         == "eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income"
     )
     assert strategy._scratchpad == gt_scratchpad
-    print(strategy._prompt_metrics)
-    print(strategy._prompt_metrics_react)
     assert strategy._prompt_metrics == {"reflection": None}
     assert strategy._prompt_metrics_react == {
         "thought": None,
@@ -528,7 +529,6 @@ def test_reflexion_react_react_create_output_dict() -> None:
         external_tool_info={"search_result": "", "lookup_result": ""},
         is_correct=True,
     )
-    print(output)
     expected_output = {
         "thought": "Initial thought",
         "action_type": "Query",

@@ -224,7 +224,6 @@ def test_reflexion_cot_create_output_dict() -> None:
         is_correct=False,
         reflections=[],
     )
-    print(output)
     expected_output = {
         "thought": "This is a thought.",
         "action_type": "Finish",
@@ -413,8 +412,6 @@ def test_reflexion_react_generate() -> None:
     )
     assert out == gt_out
     assert strategy._scratchpad == gt_scratchpad
-    print(strategy._prompt_metrics)
-    print(strategy._prompt_metrics_react)
     assert strategy._prompt_metrics == {"reflection": None}
     assert strategy._prompt_metrics_react == {
         "thought": {
@@ -699,7 +696,8 @@ def test_reflexion_react_reset() -> None:
 
     assert strategy._scratchpad == ""
     assert not strategy._finished
-
+    assert strategy._prompt_metrics == {"reflection": None}
+    assert strategy._prompt_metrics_react == {"thought": None, "action": None}
 
 def test_reflexion_react_reflect() -> None:
     """Tests ReflexionReActQAStrategy reflect."""
@@ -715,8 +713,6 @@ def test_reflexion_react_reflect() -> None:
         prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
         additional_keys={},
     )
-    print(strategy._prompt_metrics)
-    print(strategy._prompt_metrics_react)
     assert reflections == gt_reflections
     assert strategy._prompt_metrics == {
         "reflection": {
