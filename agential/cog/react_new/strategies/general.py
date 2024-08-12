@@ -11,36 +11,9 @@ from tiktoken.core import Encoding
 from agential.cog.react_new.functional import _is_halted, _prompt_agent, accumulate_metrics
 from agential.cog.react_new.strategies.base import ReActBaseStrategy
 from agential.cog.react_new.output import ReActStepOutput, ReActOutput
-from agential.llm.llm import BaseLLM
+from agential.llm.llm import BaseLLM, ModelResponse
 from agential.utils.general import get_token_cost_time
 from agential.utils.parse import remove_newline
-from langchain_community.docstore.wikipedia import Wikipedia
-
-from agential.utils.docstore import DocstoreExplorer
-
-
-
-def parse_qa_action(string: str) -> Tuple[str, str]:
-    """Parses an action string into an action type and its argument.
-
-    This method is used in ReAct.
-
-    Args:
-        string (str): The action string to be parsed.
-
-    Returns:
-        Tuple[str, str]: A tuple containing the action type and argument.
-    """
-    pattern = r"^(\w+)\[(.+)\]$"
-    match = re.match(pattern, string)
-
-    if match:
-        action_type = match.group(1)
-        argument = match.group(2)
-    else:
-        action_type = ""
-        argument = ""
-    return action_type, argument
 
 class ReActGeneralStrategy(ReActBaseStrategy):
     """A general strategy class using the ReAct agent.
@@ -61,7 +34,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
     ) -> None:
         """Initialization."""
         super().__init__(llm, max_steps, max_tokens, enc)
-        self.docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia())
+
 
     def generate(
         self,
@@ -128,10 +101,8 @@ class ReActGeneralStrategy(ReActBaseStrategy):
                     observation=obs,
                     answer=answer,
                     external_tool_info=external_tool_info,
-                    prompt_metrics={
-                        "thought": get_token_cost_time(thought_model_response),
-                        "action": get_token_cost_time(action_model_response),
-                    },
+                    thought_metrics=get_token_cost_time(thought_model_response),
+                    action_metrics=get_token_cost_time(action_model_response),
                 )
             )
 
@@ -161,7 +132,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ):
+    ) -> Tuple[str, ModelResponse]:
         out = _prompt_agent(
             llm=self.llm,
             question=question,
@@ -184,53 +155,15 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ):
-        out = _prompt_agent(
-            llm=self.llm,
-            question=question,
-            scratchpad=scratchpad,
-            examples=examples,
-            max_steps=self.max_steps,
-            prompt=prompt,
-            additional_keys=additional_keys,
-        )
-        action = out.choices[0].message.content
-
-        action = remove_newline(action).split("Observation")[0]
-        action_type, query = parse_qa_action(action)
-
-        return action_type, query, out
+    ) -> Tuple[str, str, ModelResponse]:
+        
+        raise NotImplementedError
     
     def generate_observation(
         self, action_type: str, query: str
-    ):
-        answer = ""
-        finished = False
-        external_tool_info = {"search_result": "", "lookup_result": ""}
-
-        if action_type.lower() == "finish":
-            answer = query
-            finished = True
-            obs = query
-        elif action_type.lower() == "search":
-            try:
-                search_result = self.docstore.search(query)
-                external_tool_info["search_result"] = search_result
-                obs = remove_newline(search_result)
-            except Exception:
-                obs = "Could not find that page, please try again."
-        elif action_type.lower() == "lookup":
-            try:
-                lookup_result = self.docstore.lookup(query)
-                external_tool_info["lookup_result"] = lookup_result
-                obs = remove_newline(lookup_result)
-
-            except ValueError:
-                obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
-        else:
-            obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
-
-        return answer, obs, finished, external_tool_info
+    ) -> Tuple[str, str, bool, Dict[str, Any]]:
+        
+        raise NotImplementedError
     
     def halting_condition(
         self,
