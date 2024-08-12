@@ -5,7 +5,7 @@ import math
 import random
 import sys
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import func_timeout
 
@@ -78,21 +78,21 @@ def safe_execute(
     return an, report
 
 
-def get_token_cost_time(response: ModelResponse) -> Dict[str, float]:
+def get_token_cost_time(response: ModelResponse) -> Dict[str, Union[int, float]]:
     """Calculates the token usage and cost of a prompt and completion in dollars.
 
     Args:
         response (ModelResponse): The response object containing the usage information.
 
     Returns:
-        Dict[str, float]: A dictionary containing the token usage and cost breakdown:
+        Dict[str, Union[int, float]]: A dictionary containing the token usage and cost breakdown:
             - "prompt_tokens": The number of tokens in the prompt.
             - "completion_tokens": The number of tokens in the completion.
             - "total_tokens": The total number of tokens in the prompt and completion.
-            - "prompt_tokens_cost": The cost of the prompt tokens in dollars.
-            - "completion_tokens_cost": The cost of the completion tokens in dollars.
-            - "total_tokens_cost": The total cost of the prompt and completion tokens in dollars.
-            - "time_sec": The time taken to generate the response in seconds.
+            - "prompt_cost": The cost of the prompt tokens in dollars.
+            - "completion_cost": The cost of the completion tokens in dollars.
+            - "total_cost": The total cost of the prompt and completion tokens in dollars.
+            - "time": The time taken to generate the response in seconds.
     """
     prompt_tokens_cost_usd_dollar, completion_tokens_cost_usd_dollar = cost_per_token(
         model=response.model,
@@ -103,9 +103,9 @@ def get_token_cost_time(response: ModelResponse) -> Dict[str, float]:
         "prompt_tokens": response.usage.prompt_tokens,
         "completion_tokens": response.usage.completion_tokens,
         "total_tokens": response.usage.total_tokens,
-        "prompt_tokens_cost": prompt_tokens_cost_usd_dollar,
-        "completion_tokens_cost": completion_tokens_cost_usd_dollar,
-        "total_tokens_cost": prompt_tokens_cost_usd_dollar
+        "prompt_cost": prompt_tokens_cost_usd_dollar,
+        "completion_cost": completion_tokens_cost_usd_dollar,
+        "total_cost": prompt_tokens_cost_usd_dollar
         + completion_tokens_cost_usd_dollar,
-        "time_sec": response.time_taken,
+        "time": response.time_taken,
     }

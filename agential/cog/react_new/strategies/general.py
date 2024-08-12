@@ -8,7 +8,7 @@ from tiktoken.core import Encoding
 
 from agential.cog.react_new.functional import _is_halted, _prompt_agent
 from agential.cog.react_new.strategies.base import ReActBaseStrategy
-from agential.cog.react_new.output import ReActStepOutput
+from agential.cog.react_new.output import ReActStepOutput, ReActOutput
 from agential.llm.llm import BaseLLM
 from agential.utils.general import get_token_cost_time
 from agential.utils.parse import remove_newline
@@ -47,12 +47,12 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         additional_keys: Dict[str, str],
         reset: bool,
         **kwargs: Any,
-    ) -> List[ReActOutput]:
+    ) -> ReActOutput:
         if reset:
             self.reset()
 
         idx = 1
-        out = []
+        steps = []
         while not self.halting_condition(
             idx=idx,
             question=question,
@@ -84,8 +84,8 @@ class ReActGeneralStrategy(ReActBaseStrategy):
                 idx=idx, action_type=action_type, query=query
             )
 
-            out.append(
-                ReActOutput(
+            steps.append(
+                ReActStepOutput(
                     **self.create_output_dict(
                         thought=thought,
                         action_type=action_type,
@@ -97,6 +97,16 @@ class ReActGeneralStrategy(ReActBaseStrategy):
             )
 
             idx += 1
+
+        out = ReActOutput(
+            answer=self._answer,
+            total_input_tokens=,
+            total_output_tokens=,
+            total_tokens=,
+            total_cost=,
+            total_time=,
+            additional_info=steps
+        )
 
         return out
     

@@ -3,6 +3,7 @@
 from typing import Any, Dict, List
 
 from pydantic import BaseModel, Field
+from agential.cog.base.output import BaseOutput
 
 
 class ReActStepOutput(BaseModel):
@@ -33,12 +34,12 @@ class ReActStepOutput(BaseModel):
     )
 
 
-class ReActOutput(BaseModel):
+class ReActOutput(BaseOutput):
     """ReAct structured output class.
 
     Attributes:
-        steps (List[ReActStepOutput]): The list of ReAct step outputs.
+        additional_info (List[ReActStepOutput]): The list of ReAct step outputs.
     """
-    steps: List[ReActStepOutput] = Field(
-        ..., description="The list of ReAct step outputs."
+    additional_info: List[ReActStepOutput] = Field(
+        ..., description="The list of ReActStepOutput."
     )
