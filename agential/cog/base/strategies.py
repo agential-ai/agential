@@ -26,8 +26,3 @@ class BaseStrategy(ABC):
     def reset(self, *args: Any, **kwargs: Any) -> None:
         """Resets the strategy's internal state, if any."""
         pass
-
-    @abstractmethod
-    def create_output_dict(self, *args: Any, **kwargs: Any) -> Dict[str, Any]:
-        """Creates a dictionary containing the generated response."""
-        pass
