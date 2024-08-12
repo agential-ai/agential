@@ -2,6 +2,7 @@
 
 from typing import Any, Dict, Tuple, List
 import re
+import time
 
 import tiktoken
 
@@ -13,6 +14,43 @@ from agential.cog.react_new.output import ReActStepOutput, ReActOutput
 from agential.llm.llm import BaseLLM
 from agential.utils.general import get_token_cost_time
 from agential.utils.parse import remove_newline
+from langchain_community.docstore.wikipedia import Wikipedia
+
+from agential.utils.docstore import DocstoreExplorer
+
+
+def accumulate_metrics(steps: List[ReActStepOutput]) -> Dict[str, Any]:
+    """Accumulate total metrics from a list of ReActStepOutput."""
+    total_prompt_tokens = 0
+    total_completion_tokens = 0
+    total_tokens = 0
+    total_prompt_cost = 0.0
+    total_completion_cost = 0.0
+    total_cost = 0.0
+    total_prompt_time = 0.0
+
+    for step in steps:
+        for metrics in step.prompt_metrics.values():
+            total_prompt_tokens += metrics.prompt_tokens
+            total_completion_tokens += metrics.completion_tokens
+            total_tokens += metrics.total_tokens
+            total_prompt_cost += metrics.prompt_cost
+            total_completion_cost += metrics.completion_cost
+            total_cost += metrics.total_cost
+            total_prompt_time += metrics.prompt_time
+
+    return {
+        "total_prompt_tokens": total_prompt_tokens,
+        "total_completion_tokens": total_completion_tokens,
+        "total_tokens": total_tokens,
+        "total_prompt_cost": total_prompt_cost,
+        "total_completion_cost": total_completion_cost,
+        "total_cost": total_cost,
+        "total_prompt_time": total_prompt_time,
+    }
+
+
+
 
 def parse_qa_action(string: str) -> Tuple[str, str]:
     """Parses an action string into an action type and its argument.
@@ -55,6 +93,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
     ) -> None:
         """Initialization."""
         super().__init__(llm, max_steps, max_tokens, enc)
+        self.docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia())
 
     def generate(
         self,
@@ -64,6 +103,8 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         additional_keys: Dict[str, str],
         reset: bool,
     ) -> ReActOutput:
+        start = time.time()
+
         if reset:
             self.reset()
 
@@ -83,7 +124,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         ):
             # Think.
             scratchpad += f"\nThought {idx}: "
-            thought = self.generate_thought(
+            thought, thought_model_response = self.generate_thought(
                 scratchpad=scratchpad,
                 question=question,
                 examples=examples,
@@ -95,7 +136,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
             # Act.
             scratchpad += f"\nAction {idx}: "
 
-            action_type, query = self.generate_action(
+            action_type, query, action_model_response = self.generate_action(
                 scratchpad=scratchpad,
                 question=question,
                 examples=examples,
@@ -107,7 +148,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
             # Observe.
             scratchpad += f"\nObservation {idx}: "
             answer, obs, finished, external_tool_info = self.generate_observation(
-                scratchpad=scratchpad, idx=idx, action_type=action_type, query=query
+                action_type=action_type, query=query
             )
             scratchpad += obs
 
@@ -119,13 +160,31 @@ class ReActGeneralStrategy(ReActBaseStrategy):
                     observation=obs,
                     answer=answer,
                     external_tool_info=external_tool_info,
-                    prompt_metrics={},
+                    prompt_metrics={
+                        "thought": get_token_cost_time(thought_model_response),
+                        "action": get_token_cost_time(action_model_response),
+                    },
                 )
             )
 
             idx += 1
 
-        return steps
+        total_time = time.time() - start
+        total_metrics = accumulate_metrics(steps)
+        out = ReActOutput(
+            answer=answer,
+            total_prompt_tokens=total_metrics["total_prompt_tokens"],
+            total_completion_tokens=total_metrics["total_completion_tokens"],
+            total_tokens=total_metrics["total_tokens"],
+            total_prompt_cost=total_metrics["total_prompt_cost"],
+            total_completion_cost=total_metrics["total_completion_cost"],
+            total_cost=total_metrics["total_cost"],
+            total_prompt_time=total_metrics["total_prompt_time"],
+            total_time=total_time,
+            additional_info=steps
+        )
+
+        return out
     
     def generate_thought(
         self,
@@ -148,7 +207,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
 
         thought = remove_newline(thought).split("Action")[0].strip()
 
-        return thought
+        return thought, out
 
     def generate_action(
         self,
@@ -172,10 +231,10 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         action = remove_newline(action).split("Observation")[0]
         action_type, query = parse_qa_action(action)
 
-        return action_type, query
+        return action_type, query, out
     
     def generate_observation(
-        self, idx: int, action_type: str, query: str
+        self, action_type: str, query: str
     ):
         answer = ""
         finished = False

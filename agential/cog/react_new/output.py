@@ -4,6 +4,7 @@ from typing import Any, Dict, List
 
 from pydantic import BaseModel, Field
 from agential.cog.base.output import BaseOutput
+from agential.utils.general import PromptMetrics
 
 
 class ReActStepOutput(BaseModel):
@@ -29,7 +30,7 @@ class ReActStepOutput(BaseModel):
     external_tool_info: Dict[str, Any] = Field(
         ..., description="The external tool outputs."
     )
-    prompt_metrics: Dict[str, Any] = Field(
+    prompt_metrics: Dict[str, PromptMetrics] = Field(
         ..., description="The prompt metrics including token usage, cost, and latency."
     )
 

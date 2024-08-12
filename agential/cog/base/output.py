@@ -14,7 +14,8 @@ class BaseOutput(BaseModel):
         total_cost (float): The total cost of the output.
         total_prompt_cost (float): The total cost of the prompt tokens.
         total_completion_cost (float): The total cost of the completion tokens.
-        total_time (float): The total time taken to generate the output in seconds.
+        total_prompt_time (float): The total time taken for the LLM API to generate the outputs in seconds.
+        total_time (float): The total time for the agent to finish generating in seconds.
         additional_info (Any): A general attribute for additional information.
     """
 
@@ -25,5 +26,6 @@ class BaseOutput(BaseModel):
     total_prompt_cost: float = Field(..., description="Total cost of the prompt tokens.")
     total_completion_cost: float = Field(..., description="Total cost of the completion tokens.")
     total_cost: float = Field(..., description="Total cost of the output.")
-    total_time: float = Field(..., description="Total time taken to generate the output in seconds.")
+    total_prompt_time: float = Field(..., description="Total time taken for the LLM API to generate the outputs in seconds.")
+    total_time : float = Field(..., description="Total time for the agent to finish generating in seconds.")
     additional_info: Any = Field(..., description="Additional information related to the output.")
