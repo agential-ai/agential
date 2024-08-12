@@ -8,7 +8,7 @@ import tiktoken
 
 from tiktoken.core import Encoding
 
-from agential.cog.react_new.functional import _is_halted, _prompt_agent
+from agential.cog.react_new.functional import _is_halted, _prompt_agent, accumulate_metrics
 from agential.cog.react_new.strategies.base import ReActBaseStrategy
 from agential.cog.react_new.output import ReActStepOutput, ReActOutput
 from agential.llm.llm import BaseLLM
@@ -17,37 +17,6 @@ from agential.utils.parse import remove_newline
 from langchain_community.docstore.wikipedia import Wikipedia
 
 from agential.utils.docstore import DocstoreExplorer
-
-
-def accumulate_metrics(steps: List[ReActStepOutput]) -> Dict[str, Any]:
-    """Accumulate total metrics from a list of ReActStepOutput."""
-    total_prompt_tokens = 0
-    total_completion_tokens = 0
-    total_tokens = 0
-    total_prompt_cost = 0.0
-    total_completion_cost = 0.0
-    total_cost = 0.0
-    total_prompt_time = 0.0
-
-    for step in steps:        
-        total_prompt_tokens += step.thought_metrics.prompt_tokens + step.action_metrics.prompt_tokens
-        total_completion_tokens += step.thought_metrics.completion_tokens + step.action_metrics.completion_tokens
-        total_tokens += step.thought_metrics.total_tokens + step.action_metrics.total_tokens
-        total_prompt_cost += step.thought_metrics.prompt_cost + step.action_metrics.prompt_cost
-        total_completion_cost += step.thought_metrics.completion_cost + step.action_metrics.completion_cost
-        total_cost += step.thought_metrics.total_cost + step.action_metrics.total_cost
-        total_prompt_time += step.thought_metrics.prompt_time + step.action_metrics.prompt_time
-
-    return {
-        "total_prompt_tokens": total_prompt_tokens,
-        "total_completion_tokens": total_completion_tokens,
-        "total_tokens": total_tokens,
-        "total_prompt_cost": total_prompt_cost,
-        "total_completion_cost": total_completion_cost,
-        "total_cost": total_cost,
-        "total_prompt_time": total_prompt_time,
-    }
-
 
 
 
