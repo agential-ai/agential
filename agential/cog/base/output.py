@@ -27,5 +27,5 @@ class BaseOutput(BaseModel):
     total_completion_cost: float = Field(..., description="Total cost of the completion tokens.")
     total_cost: float = Field(..., description="Total cost of the output.")
     total_prompt_time: float = Field(..., description="Total time taken for the LLM API to generate the outputs in seconds.")
-    total_time : float = Field(..., description="Total time for the agent to finish generating in seconds.")
+    total_time: float = Field(..., description="Total time for the agent to finish generating in seconds.")
     additional_info: Any = Field(..., description="Additional information related to the output.")
