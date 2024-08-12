@@ -6,7 +6,9 @@ from typing import Any, Dict, Tuple
 from tiktoken import Encoding
 
 from agential.cog.base.strategies import BaseStrategy
-from agential.llm.llm import BaseLLM
+from agential.llm.llm import BaseLLM, ModelResponse
+from agential.cog.react_new.output import ReActOutput
+
 
 
 class ReActBaseStrategy(BaseStrategy):
@@ -32,69 +34,101 @@ class ReActBaseStrategy(BaseStrategy):
         self.max_tokens = max_tokens
         self.enc = enc
 
+
     @abstractmethod
-    def generate_thought(
+    def generate(
         self,
         question: str,
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> str:
+        **kwargs: Any,
+    ) -> ReActOutput:
+        """Generates a thought based on the question, examples, and prompt.
+        
+        Args:
+            question (str): The question to be answered.
+            examples (str): Examples to guide the generation process.
+            prompt (str): The prompt used for generating the thought.
+            additional_keys (Dict[str, str]): Additional keys for the generation process.
+            **kwargs (Any): Additional arguments.
+         
+        Returns:
+            ReactOutput: The output of the generation process.
+        """
+
+        pass
+
+
+
+    @abstractmethod
+    def generate_thought(
+        self,
+        scratchpad: str,
+        question: str,
+        examples: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> Tuple[str, ModelResponse]:
         """Generates a thought based on the question, examples, and prompt.
 
         Args:
+            scratchpad (str): The scratchpad used for generating the thought.
             question (str): The question to be answered.
             examples (str): Examples to guide the generation process.
             prompt (str): The prompt used for generating the thought.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
 
         Returns:
-            str: The generated thought.
+            Tuple[str, ModelResponse]: The generated thought.
         """
         pass
 
     @abstractmethod
     def generate_action(
         self,
+        scratchpad: str,
         question: str,
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str]:
+    ) -> Tuple[str, str, ModelResponse]:
         """Generates an action based on the question, examples, and prompt.
 
         Args:
+            scratchpad (str): The scratchpad containing the previous steps.
             question (str): The question to be answered.
             examples (str): Examples to guide the generation process.
             prompt (str): The prompt used for generating the action.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
 
         Returns:
-            Tuple[str, str]: The generated action type and query.
+            Tuple[str, str, ModelResponse]: The generated action type and query.
         """
         pass
 
     @abstractmethod
     def generate_observation(
-        self, idx: int, action_type: str, query: str
-    ) -> Tuple[str, Dict[str, Any]]:
+        self, action_type: str, query: str
+    ) -> Tuple[str, str, bool, Dict[str, Any]]:
         """Generates an observation based on the action type and query.
 
         Args:
-            idx (int): The index of the observation.
             action_type (str): The type of action to be performed.
             query (str): The query for the action.
 
         Returns:
-            Tuple[str, Dict[str, Any]]: The generated observation and external tool outputs.
+            Tuple[str, str, bool, Dict[str, Any]]: The generated observation, the observation type, whether the observation is correct, and the observation metrics.
         """
         pass
 
     @abstractmethod
     def halting_condition(
         self,
+        finished: bool,
         idx: int,
         question: str,
+        scratchpad: str,
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
@@ -102,8 +136,10 @@ class ReActBaseStrategy(BaseStrategy):
         """Determines whether the halting condition has been met.
 
         Args:
+            finished (bool): Whether the agent has finished its task.
             idx (int): The current step index.
             question (str): The question being answered.
+            scratchpad (str): The scratchpad containing the agent's thoughts and actions.
             examples (str): Examples to guide the generation process.
             prompt (str): The prompt used for generating the thought and action.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
@@ -111,4 +147,10 @@ class ReActBaseStrategy(BaseStrategy):
         Returns:
             bool: True if the halting condition is met, False otherwise.
         """
+        pass
+
+    @abstractmethod
+    def reset(self) -> None:
+        """Resets the agent's state."""
+        
         pass

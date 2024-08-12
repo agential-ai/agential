@@ -188,5 +188,5 @@ class ReActGeneralStrategy(ReActBaseStrategy):
             additional_keys=additional_keys,
         )
 
-    def reset(self, **kwargs: Any) -> None:
+    def reset(self) -> None:
         pass
