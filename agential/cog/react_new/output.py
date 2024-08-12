@@ -1,12 +1,12 @@
 """ReAct structured output module."""
 
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from pydantic import BaseModel, Field
 
 
-class ReActOutput(BaseModel):
-    """ReAct Pydantic output class.
+class ReActStepOutput(BaseModel):
+    """ReAct step Pydantic output class.
 
     Attributes:
         thought (str): The thought process of the agent.
@@ -30,4 +30,15 @@ class ReActOutput(BaseModel):
     )
     prompt_metrics: Dict[str, Any] = Field(
         ..., description="The prompt metrics including token usage, cost, and latency."
+    )
+
+
+class ReActOutput(BaseModel):
+    """ReAct structured output class.
+
+    Attributes:
+        steps (List[ReActStepOutput]): The list of ReAct step outputs.
+    """
+    steps: List[ReActStepOutput] = Field(
+        ..., description="The list of ReAct step outputs."
     )

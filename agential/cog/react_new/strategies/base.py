@@ -33,6 +33,27 @@ class ReActBaseStrategy(BaseStrategy):
         self.enc = enc
 
     @abstractmethod
+    def generate_thought(
+        self,
+        question: str,
+        examples: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> str:
+        """Generates a thought based on the question, examples, and prompt.
+
+        Args:
+            question (str): The question to be answered.
+            examples (str): Examples to guide the generation process.
+            prompt (str): The prompt used for generating the thought.
+            additional_keys (Dict[str, str]): Additional keys for the generation process.
+
+        Returns:
+            str: The generated thought.
+        """
+        pass
+
+    @abstractmethod
     def generate_action(
         self,
         question: str,
@@ -66,29 +87,6 @@ class ReActBaseStrategy(BaseStrategy):
 
         Returns:
             Tuple[str, Dict[str, Any]]: The generated observation and external tool outputs.
-        """
-        pass
-
-    @abstractmethod
-    def create_output_dict(
-        self,
-        thought: str,
-        action_type: str,
-        query: str,
-        obs: str,
-        external_tool_info: Dict[str, Any],
-    ) -> Dict[str, Any]:
-        """Creates a dictionary of the output components.
-
-        Args:
-            thought (str): The generated thought.
-            action_type (str): The type of action performed.
-            query (str): The query for the action.
-            obs (str): The generated observation.
-            external_tool_info (Dict[str, Any]): The external tool outputs.
-
-        Returns:
-            Dict[str, Any]: A dictionary containing the thought, action type, query, observation, answer, and external tool output.
         """
         pass
 
