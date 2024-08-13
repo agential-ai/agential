@@ -8,13 +8,13 @@ from langchain_community.docstore.wikipedia import Wikipedia
 from tiktoken.core import Encoding
 
 from agential.cog.react_new.functional import _prompt_agent, parse_qa_action
-from agential.cog.react_new.strategies.base import ReActBaseStrategy
+from agential.cog.react_new.strategies.general import ReActGeneralStrategy
 from agential.llm.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
 
 
-class ReActQAStrategy(ReActBaseStrategy):
+class ReActQAStrategy(ReActGeneralStrategy):
     """A strategy class for QA benchmarks using the ReAct agent.
 
     Attributes:
