@@ -54,7 +54,7 @@ class ReActMathStrategy(ReActGeneralStrategy):
         action = out.choices[0].message.content
         action = action.split("Observation")[0].strip()
         action_type, query = parse_math_action(action)
-        scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
+        scratchpad += f"{action_type}[\n```python\n{query}\n```\n]"
 
         return scratchpad, action_type, query, out
 
