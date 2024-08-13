@@ -194,8 +194,7 @@ class ReActAgent(BaseAgent):
         additional_keys: Dict[str, str] = {},
         fewshot_type: str = "",
         reset: bool = True,
-        **kwargs: Any,
-    ) -> List[ReActOutput]:
+    ) -> ReActOutput:
         """Processes a given question through ReAct.
 
         Iteratively applies the think-act-observe cycle to generate an answer for the question.
@@ -208,10 +207,9 @@ class ReActAgent(BaseAgent):
             additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
             fewshot_type (str): The type of few-shot examples to use. Defaults to "".
             reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
-            **kwargs (Any): Additional parameters for flexibility.
 
         Returns:
-            List[ReActOutput]: The list of accumulated output from the ReAct process,
+            ReActOutput: The list of accumulated output from the ReAct process,
                 each ReActOutput consists of a thought, action type/query, observation, answer, and external tool info.
         """
         if not prompt or not examples:
@@ -224,4 +222,12 @@ class ReActAgent(BaseAgent):
             examples = fewshots["examples"]
             prompt = prompts["prompt"]
 
+        out = self.strategy.generate(
+            question=question,
+            examples=examples,
+            prompt=prompt,
+            additional_keys=additional_keys,
+            reset=reset
+        )
 
+        return out
