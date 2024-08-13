@@ -30,6 +30,8 @@ def test__build_agent_prompt() -> None:
     )
 
     assert isinstance(prompt, str)
+    # Print the result
+    print("First prompt output:", prompt)
 
     gt_out = "  examples 1"
     out = _build_agent_prompt(
@@ -39,6 +41,7 @@ def test__build_agent_prompt() -> None:
         max_steps=1,
         prompt="{question} {scratchpad} {examples} {max_steps}",
     )
+    print("Second prompt output:", out)
     assert out == gt_out
 
 
