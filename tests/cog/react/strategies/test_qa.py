@@ -12,29 +12,9 @@ from agential.cog.react.strategies.qa import (
     ReActHotQAStrategy,
     ReActQAStrategy,
     ReActTriviaQAStrategy,
-    parse_qa_action,
 )
 from agential.llm.llm import BaseLLM, MockLLM
 from agential.utils.docstore import DocstoreExplorer
-
-
-def test_parse_qa_action() -> None:
-    """Test parse_qa_action function."""
-    # Test with a valid action string.
-    valid_string = "ActionType[Argument]"
-    assert parse_qa_action(valid_string) == ("ActionType", "Argument")
-
-    # Test with an invalid action string (missing brackets).
-    invalid_string = "ActionType Argument"
-    assert parse_qa_action(invalid_string) == ("", "")
-
-    # Test with an invalid action string (no action type).
-    invalid_string = "[Argument]"
-    assert parse_qa_action(invalid_string) == ("", "")
-
-    # Test with an invalid action string (no argument).
-    invalid_string = "ActionType[]"
-    assert parse_qa_action(invalid_string) == ("", "")
 
 
 def test_init() -> None:

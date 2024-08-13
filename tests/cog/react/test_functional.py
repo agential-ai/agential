@@ -9,6 +9,9 @@ from agential.cog.react.functional import (
     _build_agent_prompt,
     _is_halted,
     _prompt_agent,
+    parse_qa_action,
+    parse_math_action,
+    parse_code_action
 )
 from agential.cog.react.prompts import REACT_INSTRUCTION_HOTPOTQA
 from agential.llm.llm import MockLLM
@@ -157,3 +160,102 @@ def test__is_halted() -> None:
         gpt3_5_turbo_enc,
         prompt="{question} {scratchpad} {examples} {max_steps}",
     )
+
+
+def test_parse_qa_action() -> None:
+    """Test parse_qa_action function."""
+    # Test with a valid action string.
+    valid_string = "ActionType[Argument]"
+    assert parse_qa_action(valid_string) == ("ActionType", "Argument")
+
+    # Test with an invalid action string (missing brackets).
+    invalid_string = "ActionType Argument"
+    assert parse_qa_action(invalid_string) == ("", "")
+
+    # Test with an invalid action string (no action type).
+    invalid_string = "[Argument]"
+    assert parse_qa_action(invalid_string) == ("", "")
+
+    # Test with an invalid action string (no argument).
+    invalid_string = "ActionType[]"
+    assert parse_qa_action(invalid_string) == ("", "")
+
+
+def test_parse_math_action() -> None:
+    """Test parse_math_action."""
+    test_cases = [
+        {
+            "input": "Calculate[```python\ndef add(a, b): return a + b\n```]",
+            "expected": ("Calculate", "def add(a, b): return a + b"),
+        },
+        {
+            "input": "Finish[```python\nassert add(2, 3) == 5\n```]",
+            "expected": ("Finish", "assert add(2, 3) == 5"),
+        },
+        {
+            "input": "Finish[```python\nThe function is complete.\n```]",
+            "expected": ("Finish", "The function is complete."),
+        },
+        {
+            "input": "calculate[```python\ndef subtract(a, b): return a - b\n```]",
+            "expected": ("Calculate", "def subtract(a, b): return a - b"),
+        },
+        {
+            "input": "Invalid[```python\nThis should not match\n```]",
+            "expected": ("", ""),
+        },
+        {
+            "input": "Calculate[```python\nassert subtract(5, 3) == 2\n```]",
+            "expected": ("Calculate", "assert subtract(5, 3) == 2"),
+        },
+        {
+            "input": "Something else entirely",
+            "expected": ("", ""),
+        },
+        {
+            "input": "Finish[```python\n \n```]",
+            "expected": ("Finish", ""),
+        },
+        {
+            "input": "Calculate[```python\nfor i in range(10):\n    print(i)\n```]",
+            "expected": ("Calculate", "for i in range(10):\n    print(i)"),
+        },
+    ]
+
+    for case in test_cases:
+        result = parse_math_action(case["input"])
+        assert result == case["expected"]
+
+
+def test_parse_code_action() -> None:
+    """Test parse_code_action."""
+    test_cases = [
+        {
+            "input": "Implement[```python\ndef add(a, b): return a + b\n```]",
+            "expected": ("Implement", "def add(a, b): return a + b"),
+        },
+        {
+            "input": "Test[```python\nassert add(2, 3) == 5\n```]",
+            "expected": ("Test", "assert add(2, 3) == 5"),
+        },
+        {
+            "input": "Finish[```python\nThe function is complete.\n```]",
+            "expected": ("Finish", "The function is complete."),
+        },
+        {
+            "input": "implement[```python\ndef subtract(a, b): return a - b\n```]",
+            "expected": ("Implement", "def subtract(a, b): return a - b"),
+        },
+        {
+            "input": "Invalid[```python\nThis should not match\n```]",
+            "expected": ("", ""),
+        },
+        {
+            "input": "Test[```python\nassert subtract(5, 3) == 2\n```]",
+            "expected": ("Test", "assert subtract(5, 3) == 2"),
+        },
+    ]
+
+    for case in test_cases:
+        result = parse_code_action(case["input"])
+        assert result == case["expected"]
