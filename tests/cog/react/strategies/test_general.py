@@ -1,13 +1,15 @@
 """Unit tests for the ReAct general strategy."""
 
 import pytest
-from agential.cog.react.strategies.general import ReActGeneralStrategy
-from agential.llm.llm import MockLLM, BaseLLM
+
 from tiktoken.core import Encoding
+
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.react.prompts import (
     REACT_INSTRUCTION_HOTPOTQA,
 )
+from agential.cog.react.strategies.general import ReActGeneralStrategy
+from agential.llm.llm import BaseLLM, MockLLM
 
 
 def test_init() -> None:

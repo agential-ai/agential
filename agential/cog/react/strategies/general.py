@@ -44,8 +44,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         additional_keys: Dict[str, str],
         reset: bool,
     ) -> ReActOutput:
-        """
-        Generate a ReAct output by iteratively thinking, acting, and observing.
+        """Generate a ReAct output by iteratively thinking, acting, and observing.
         
         Args:
             question (str): The question being answered.
@@ -146,8 +145,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str, str, ModelResponse]:
-        """
-        Generate a thought based on the given inputs.
+        """Generate a thought based on the given inputs.
         
         Args:
             idx (int): The current index of the thought.
@@ -186,8 +184,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str, str, str, ModelResponse]:
-        """
-        Generate an action based on the given inputs.
+        """Generate an action based on the given inputs.
 
         Args:
             idx (int): The current index of the action.
@@ -219,8 +216,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> bool:
-        """
-        Determines whether the current iteration of the task should be halted based on various conditions.
+        """Determines whether the current iteration of the task should be halted based on various conditions.
         
         Args:
             finished (bool): Whether the task has been completed.
@@ -248,4 +244,5 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         )
 
     def reset(self) -> None:
+        """Resets the internal state."""
         pass

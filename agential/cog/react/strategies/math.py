@@ -41,8 +41,7 @@ class ReActMathStrategy(ReActGeneralStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str, str, str, ModelResponse]:
-        """
-        Generates an action based on the provided inputs, including the question, examples, prompt, and additional keys.
+        """Generates an action based on the provided inputs, including the question, examples, prompt, and additional keys.
         
         Args:
             idx (int): The index of the current action.
@@ -77,8 +76,7 @@ class ReActMathStrategy(ReActGeneralStrategy):
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str
     ) -> Tuple[str, str, str, bool, Dict[str, Any]]:
-        """
-        Generates an observation based on the provided action type and query.
+        """Generates an observation based on the provided action type and query.
         
         Args:
             idx (int): The index of the current observation.
