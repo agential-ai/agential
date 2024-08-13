@@ -46,6 +46,21 @@ class ReActQAStrategy(ReActGeneralStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str, str, str, ModelResponse]:
+        """
+        Generates an action based on the provided input parameters.
+        
+        Args:
+            idx (int): The index of the current action.
+            scratchpad (str): The current state of the scratchpad.
+            question (str): The question to be answered.
+            examples (str): Examples of previous actions and observations.
+            prompt (str): The prompt for the language model.
+            additional_keys (Dict[str, str]): Additional key-value pairs to be passed to the language model.
+        
+        Returns:
+            Tuple[str, str, str, ModelResponse]: The updated scratchpad, the action type, the query, and the language model response.
+        """
+                
         scratchpad += f"\nAction {idx}: "
 
         out = _prompt_agent(
@@ -67,6 +82,19 @@ class ReActQAStrategy(ReActGeneralStrategy):
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str
     ) -> Tuple[str, str, str, bool, Dict[str, Any]]:
+        """
+        Generates an observation based on the provided action type and query.
+        
+        Args:
+            idx (int): The index of the current observation.
+            scratchpad (str): The current state of the scratchpad.
+            action_type (str): The type of action performed (e.g. "search", "lookup", "finish").
+            query (str): The query for the action.
+        
+        Returns:
+            Tuple[str, str, str, bool, Dict[str, Any]]: The updated scratchpad, the answer, the observation, a flag indicating if the task is finished, and a dictionary containing external tool information.
+        """
+                
         answer = ""
         finished = False
         external_tool_info = {"search_result": "", "lookup_result": ""}
