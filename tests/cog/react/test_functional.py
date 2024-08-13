@@ -11,11 +11,13 @@ from agential.cog.react.functional import (
     _prompt_agent,
     parse_qa_action,
     parse_math_action,
-    parse_code_action
+    parse_code_action,
+    accumulate_metrics,
 )
 from agential.cog.react.prompts import REACT_INSTRUCTION_HOTPOTQA
 from agential.llm.llm import MockLLM
-
+from agential.utils.general import PromptMetrics
+from agential.cog.react.output import ReActStepOutput
 
 def test__build_agent_prompt() -> None:
     """Test _build_agent_prompt function."""
@@ -259,3 +261,74 @@ def test_parse_code_action() -> None:
     for case in test_cases:
         result = parse_code_action(case["input"])
         assert result == case["expected"]
+
+
+def test_accumulate_metrics() -> None:
+    """Tests accumulate_metrics."""
+    steps = [
+        ReActStepOutput(
+            thought="Thought 1",
+            action_type="Action 1",
+            query="Query 1",
+            observation="Observation 1",
+            answer="Answer 1",
+            external_tool_info={"tool": "info1"},
+            thought_metrics=PromptMetrics(
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=0.01,
+                completion_cost=0.02,
+                total_cost=0.03,
+                prompt_time=0.5
+            ),
+            action_metrics=PromptMetrics(
+                prompt_tokens=5,
+                completion_tokens=10,
+                total_tokens=15,
+                prompt_cost=0.005,
+                completion_cost=0.01,
+                total_cost=0.015,
+                prompt_time=0.25
+            )
+        ),
+        ReActStepOutput(
+            thought="Thought 2",
+            action_type="Action 2",
+            query="Query 2",
+            observation="Observation 2",
+            answer="Answer 2",
+            external_tool_info={"tool": "info2"},
+            thought_metrics=PromptMetrics(
+                prompt_tokens=15,
+                completion_tokens=25,
+                total_tokens=40,
+                prompt_cost=0.015,
+                completion_cost=0.025,
+                total_cost=0.04,
+                prompt_time=0.75
+            ),
+            action_metrics=PromptMetrics(
+                prompt_tokens=10,
+                completion_tokens=15,
+                total_tokens=25,
+                prompt_cost=0.01,
+                completion_cost=0.015,
+                total_cost=0.025,
+                prompt_time=0.5
+            )
+        )
+    ]
+
+    expected_metrics = {
+        "total_prompt_tokens": 40,
+        "total_completion_tokens": 70,
+        "total_tokens": 110,
+        "total_prompt_cost": 0.04,
+        "total_completion_cost": 0.07,
+        "total_cost": 0.11,
+        "total_prompt_time": 2.0,
+    }
+
+    result = accumulate_metrics(steps)
+    assert result == expected_metrics
