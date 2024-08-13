@@ -5,7 +5,7 @@ import math
 import random
 import sys
 
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple
 
 import func_timeout
 
