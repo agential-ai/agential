@@ -41,6 +41,21 @@ class ReActMathStrategy(ReActGeneralStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str, str, str, ModelResponse]:
+        """
+        Generates an action based on the provided inputs, including the question, examples, prompt, and additional keys.
+        
+        Args:
+            idx (int): The index of the current action.
+            scratchpad (str): The current state of the scratchpad.
+            question (str): The question to be answered.
+            examples (str): Examples to be used in the prompt.
+            prompt (str): The prompt to be used for generating the action.
+            additional_keys (Dict[str, str]): Additional keys to be used in the prompt.
+        
+        Returns:
+            Tuple[str, str, str, ModelResponse]: The updated scratchpad, the action type, the query, and the model response.
+        """
+                
         scratchpad += f"\nAction {idx}: "
 
         out = _prompt_agent(
@@ -62,6 +77,19 @@ class ReActMathStrategy(ReActGeneralStrategy):
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str
     ) -> Tuple[str, str, str, bool, Dict[str, Any]]:
+        """
+        Generates an observation based on the provided action type and query.
+        
+        Args:
+            idx (int): The index of the current observation.
+            scratchpad (str): The current state of the scratchpad.
+            action_type (str): The type of action performed (e.g. "Calculate" or "Finish").
+            query (str): The query to be executed.
+        
+        Returns:
+            Tuple[str, str, str, bool, Dict[str, Any]]: The updated scratchpad, the answer, the observation, a flag indicating if the task is finished, and a dictionary with information about the code execution.
+        """
+                
         answer = ""
         finished = False
         external_tool_info = {"execution_status": "", "code_answer": ""}
