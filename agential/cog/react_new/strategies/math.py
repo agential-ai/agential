@@ -63,83 +63,23 @@ class ReActMathStrategy(ReActBaseStrategy):
         """Initialization."""
         super().__init__(llm, max_steps, max_tokens, enc)
 
-        self._scratchpad = ""
-        self._answer = ""
-        self._finished = False
-        self._prompt_metrics: Dict[str, Any] = {"thought": None, "action": None}
-
-    def generate(
-        self,
-        question: str,
-        examples: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
-        **kwargs: Any,
-    ) -> str:
-        """Generates a thought based on the question, examples, and prompt.
-
-        Args:
-            question (str): The question to be answered.
-            examples (str): Examples to guide the generation process.
-            prompt (str): The prompt used for generating the thought.
-            additional_keys (Dict[str, str]): Additional keys for the generation process.
-            **kwargs (Any): Additional arguments.
-
-        Returns:
-            str: The generated thought.
-        """
-        max_steps = kwargs.get("max_steps", self.max_steps)  # type: ignore
-
-        self._scratchpad += "\nThought:"
-        out = _prompt_agent(
-            llm=self.llm,
-            question=question,
-            scratchpad=self._scratchpad,
-            examples=examples,
-            max_steps=max_steps,  # type: ignore
-            prompt=prompt,
-            additional_keys=additional_keys,
-        )
-        self._prompt_metrics["thought"] = get_token_cost_time(out)
-        thought = out.choices[0].message.content
-
-        thought = remove_newline(thought).split("Action")[0].strip()
-        self._scratchpad += " " + thought
-
-        return thought
-
     def generate_action(
         self,
+        scratchpad: str,
         question: str,
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Any,
-    ) -> Tuple[str, str]:
-        """Generates an action based on the question, examples, and prompt.
-
-        Args:
-            question (str): The question to be answered.
-            examples (str): Examples to guide the generation process.
-            prompt (str): The prompt used for generating the action.
-            additional_keys (Dict[str, str]): Additional keys for the generation process.
-            **kwargs (Any): Additional arguments.
-
-        Returns:
-            Tuple[str, str]: The generated action type and code.
-        """
-        max_steps = kwargs.get("max_steps", self.max_steps)
-        self._scratchpad += "\nAction:"
+    ) -> Tuple[str, str, bool, Dict[str, Any]]:
         out = _prompt_agent(
             llm=self.llm,
             question=question,
-            scratchpad=self._scratchpad,
+            scratchpad=scratchpad,
             examples=examples,
-            max_steps=max_steps,  # type: ignore
+            max_steps=self.max_steps,
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics["action"] = get_token_cost_time(out)
         action = out.choices[0].message.content
 
         action = action.split("Observation")[0].strip()
@@ -186,90 +126,7 @@ class ReActMathStrategy(ReActBaseStrategy):
         self._scratchpad += obs
 
         return obs, external_tool_info
-
-    def create_output_dict(
-        self,
-        thought: str,
-        action_type: str,
-        query: str,
-        obs: str,
-        external_tool_info: Dict[str, Any],
-    ) -> Dict[str, Any]:
-        """Creates a dictionary of the output components.
-
-        Args:
-            thought (str): The generated thought.
-            action_type (str): The type of action performed.
-            query (str): The query for the action.
-            obs (str): The generated observation.
-            external_tool_info (Dict[str, Any]): The external tool outputs.
-
-        Returns:
-            Dict[str, Any]: A dictionary containing the thought, action type, query, observation, answer, external tool output, and prompt metrics.
-        """
-        return {
-            "thought": thought,
-            "action_type": action_type,
-            "query": query,
-            "observation": obs,
-            "answer": self._answer,
-            "external_tool_info": external_tool_info,
-            "prompt_metrics": self._prompt_metrics,
-        }
-
-    def halting_condition(
-        self,
-        idx: int,
-        question: str,
-        examples: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
-        **kwargs: Any,
-    ) -> bool:
-        """Determines whether the halting condition has been met.
-
-        Args:
-            idx (int): The current step index.
-            question (str): The question being answered.
-            examples (str): Examples to guide the generation process.
-            prompt (str): The prompt used for generating the thought and action.
-            additional_keys (Dict[str, str]): Additional keys for the generation process.
-            **kwargs (Any): Additional arguments.
-
-        Returns:
-            bool: True if the halting condition is met, False otherwise.
-        """
-        max_steps = kwargs.get("max_steps", self.max_steps)
-
-        return _is_halted(
-            finished=self._finished,
-            idx=idx,
-            question=question,
-            scratchpad=self._scratchpad,
-            examples=examples,
-            max_steps=max_steps,  # type: ignore
-            max_tokens=self.max_tokens,
-            enc=self.enc,
-            prompt=prompt,
-            additional_keys=additional_keys,
-        )
-
-    def reset(self, **kwargs: Any) -> None:
-        """Resets the internal state of the strategy.
-
-        Resets the current answer, scratchpad, and the finished flag.
-
-        Args:
-            **kwargs (Any): Additional arguments.
-
-        Returns:
-            None
-        """
-        self._answer = ""
-        self._scratchpad = ""
-        self._finished = False
-        self._prompt_metrics = {"thought": None, "action": None}
-
+    
 
 class ReActGSM8KStrategy(ReActMathStrategy):
     """A strategy class for the GSM8K benchmark using the ReAct agent."""

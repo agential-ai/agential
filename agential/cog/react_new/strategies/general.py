@@ -62,34 +62,29 @@ class ReActGeneralStrategy(ReActBaseStrategy):
             additional_keys=additional_keys,
         ):
             # Think.
-            scratchpad += f"\nThought {idx}: "
-            thought, thought_model_response = self.generate_thought(
+            scratchpad, thought, thought_model_response = self.generate_thought(
+                idx=idx,
                 scratchpad=scratchpad,
                 question=question,
                 examples=examples,
                 prompt=prompt,
                 additional_keys=additional_keys,
             )
-            scratchpad += thought
 
             # Act.
-            scratchpad += f"\nAction {idx}: "
-
-            action_type, query, action_model_response = self.generate_action(
+            scratchpad, action_type, query, action_model_response = self.generate_action(
+                idx=idx,
                 scratchpad=scratchpad,
                 question=question,
                 examples=examples,
                 prompt=prompt,
                 additional_keys=additional_keys,
             )
-            scratchpad += f"{action_type}[{query}]"
 
             # Observe.
-            scratchpad += f"\nObservation {idx}: "
-            answer, obs, finished, external_tool_info = self.generate_observation(
-                action_type=action_type, query=query
+            scratchpad, answer, obs, finished, external_tool_info = self.generate_observation(
+                idx=idx, scratchpad=scratchpad, action_type=action_type, query=query
             )
-            scratchpad += obs
 
             steps.append(
                 ReActStepOutput(
@@ -125,12 +120,15 @@ class ReActGeneralStrategy(ReActBaseStrategy):
     
     def generate_thought(
         self,
+        idx: int,
         scratchpad: str,
         question: str,
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, ModelResponse]:
+    ) -> Tuple[str, str, ModelResponse]:
+        scratchpad += f"\nThought {idx}: "
+
         out = _prompt_agent(
             llm=self.llm,
             question=question,
@@ -141,25 +139,26 @@ class ReActGeneralStrategy(ReActBaseStrategy):
             additional_keys=additional_keys,
         )
         thought = out.choices[0].message.content
-
         thought = remove_newline(thought).split("Action")[0].strip()
+        scratchpad += thought
 
-        return thought, out
+        return scratchpad, thought, out
 
     def generate_action(
         self,
+        idx: int,
         scratchpad: str,
         question: str,
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, ModelResponse]:
+    ) -> Tuple[str, str, str, ModelResponse]:
         
         raise NotImplementedError
     
     def generate_observation(
-        self, action_type: str, query: str
-    ) -> Tuple[str, str, bool, Dict[str, Any]]:
+        self, idx: int, scratchpad: str, action_type: str, query: str
+    ) -> Tuple[str, str, str, bool, Dict[str, Any]]:
         
         raise NotImplementedError
     

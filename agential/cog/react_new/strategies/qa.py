@@ -9,7 +9,7 @@ from tiktoken.core import Encoding
 
 from agential.cog.react_new.functional import _prompt_agent, parse_qa_action
 from agential.cog.react_new.strategies.general import ReActGeneralStrategy
-from agential.llm.llm import BaseLLM
+from agential.llm.llm import BaseLLM, ModelResponse
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.parse import remove_newline
 
@@ -39,12 +39,15 @@ class ReActQAStrategy(ReActGeneralStrategy):
 
     def generate_action(
         self,
+        idx: int,
         scratchpad: str,
         question: str,
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, bool, Dict[str, Any]]:
+    ) -> Tuple[str, str, str, ModelResponse]:
+        scratchpad += f"\nAction {idx}: "
+
         out = _prompt_agent(
             llm=self.llm,
             question=question,
@@ -55,19 +58,20 @@ class ReActQAStrategy(ReActGeneralStrategy):
             additional_keys=additional_keys,
         )
         action = out.choices[0].message.content
-
         action = remove_newline(action).split("Observation")[0]
         action_type, query = parse_qa_action(action)
+        scratchpad += f"{action_type}[{query}]"
 
-        return action_type, query, out
+        return scratchpad, action_type, query, out
 
     def generate_observation(
-        self, action_type: str, query: str
-    ) -> Tuple[str, str, bool, Dict[str, Any]]:
+        self, idx: int, scratchpad: str, action_type: str, query: str
+    ) -> Tuple[str, str, str, bool, Dict[str, Any]]:
         answer = ""
         finished = False
         external_tool_info = {"search_result": "", "lookup_result": ""}
 
+        scratchpad += f"\nObservation {idx}: "
         if action_type.lower() == "finish":
             answer = query
             finished = True
@@ -89,8 +93,9 @@ class ReActQAStrategy(ReActGeneralStrategy):
                 obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
         else:
             obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
+        scratchpad += obs
 
-        return answer, obs, finished, external_tool_info
+        return scratchpad, answer, obs, finished, external_tool_info
 
 
 class ReActHotQAStrategy(ReActQAStrategy):

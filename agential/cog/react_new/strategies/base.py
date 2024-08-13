@@ -42,6 +42,7 @@ class ReActBaseStrategy(BaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
+        reset: bool,
     ) -> ReActOutput:
         """Generates a thought based on the question, examples, and prompt.
         
@@ -50,7 +51,7 @@ class ReActBaseStrategy(BaseStrategy):
             examples (str): Examples to guide the generation process.
             prompt (str): The prompt used for generating the thought.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
-            **kwargs (Any): Additional arguments.
+            reset (bool): Whether to reset the strategy.
          
         Returns:
             ReactOutput: The output of the generation process.
@@ -58,20 +59,20 @@ class ReActBaseStrategy(BaseStrategy):
 
         pass
 
-
-
     @abstractmethod
     def generate_thought(
         self,
+        idx: int,
         scratchpad: str,
         question: str,
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, ModelResponse]:
+    ) -> Tuple[str, str, ModelResponse]:
         """Generates a thought based on the question, examples, and prompt.
 
         Args:
+            idx (int): The index of the thought.
             scratchpad (str): The scratchpad used for generating the thought.
             question (str): The question to be answered.
             examples (str): Examples to guide the generation process.
@@ -79,22 +80,24 @@ class ReActBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the generation process.
 
         Returns:
-            Tuple[str, ModelResponse]: The generated thought.
+            Tuple[str, str, ModelResponse]: The scratchpad, generated thought, and model response.
         """
         pass
 
     @abstractmethod
     def generate_action(
         self,
+        idx: int,
         scratchpad: str,
         question: str,
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, ModelResponse]:
+    ) -> Tuple[str, str, str, ModelResponse]:
         """Generates an action based on the question, examples, and prompt.
 
         Args:
+            idx (int): The index of the action.
             scratchpad (str): The scratchpad containing the previous steps.
             question (str): The question to be answered.
             examples (str): Examples to guide the generation process.
@@ -102,22 +105,24 @@ class ReActBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the generation process.
 
         Returns:
-            Tuple[str, str, ModelResponse]: The generated action type and query.
+            Tuple[str, str, str, ModelResponse]: The scratchpad, generated action type and query, and model response.
         """
         pass
 
     @abstractmethod
     def generate_observation(
-        self, action_type: str, query: str
-    ) -> Tuple[str, str, bool, Dict[str, Any]]:
+        self, idx: int, scratchpad: str, action_type: str, query: str
+    ) -> Tuple[str, str, str, bool, Dict[str, Any]]:
         """Generates an observation based on the action type and query.
 
         Args:
+            idx (int): The index of the observation.
+            scratchpad (str): The scratchpad containing the previous steps.
             action_type (str): The type of action to be performed.
             query (str): The query for the action.
 
         Returns:
-            Tuple[str, str, bool, Dict[str, Any]]: The generated observation, the observation type, whether the observation is correct, and the observation metrics.
+            Tuple[str, str, str, bool, Dict[str, Any]]: The scratchpad, the answer, observation, whether the query is correct, and the observation metrics.
         """
         pass
 

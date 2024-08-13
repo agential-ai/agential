@@ -1,7 +1,7 @@
 """Generic base strategy class."""
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Any
 
 from agential.llm.llm import BaseLLM
 
