@@ -1,7 +1,6 @@
 """General strategy for the ReAct Agent."""
 
-from typing import Any, Dict, Tuple, List
-import re
+from typing import Any, Dict, Tuple
 import time
 
 import tiktoken
@@ -34,7 +33,6 @@ class ReActGeneralStrategy(ReActBaseStrategy):
     ) -> None:
         """Initialization."""
         super().__init__(llm, max_steps, max_tokens, enc)
-
 
     def generate(
         self,

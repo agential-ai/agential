@@ -1,6 +1,7 @@
 """Functional module for ReAct."""
 
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Tuple
+import re
 
 from tiktoken import Encoding
 
@@ -131,6 +132,28 @@ def _is_halted(
     )
     return finished or over_max_steps or over_token_limit
 
+
+def parse_qa_action(string: str) -> Tuple[str, str]:
+    """Parses an action string into an action type and its argument.
+
+    This method is used in ReAct.
+
+    Args:
+        string (str): The action string to be parsed.
+
+    Returns:
+        Tuple[str, str]: A tuple containing the action type and argument.
+    """
+    pattern = r"^(\w+)\[(.+)\]$"
+    match = re.match(pattern, string)
+
+    if match:
+        action_type = match.group(1)
+        argument = match.group(2)
+    else:
+        action_type = ""
+        argument = ""
+    return action_type, argument
 
 def accumulate_metrics(steps: List[ReActStepOutput]) -> Dict[str, Any]:
     """Accumulate total metrics from a list of ReActStepOutput."""

@@ -42,7 +42,6 @@ class ReActBaseStrategy(BaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Any,
     ) -> ReActOutput:
         """Generates a thought based on the question, examples, and prompt.
         
