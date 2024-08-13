@@ -1,3 +1,4 @@
+"""A module containing strategies for the ReAct agent to handle math-related tasks."""
 """ReAct Agent strategies for Code."""
 
 from typing import Any, Dict, Tuple
@@ -40,6 +41,21 @@ class ReActMathStrategy(ReActGeneralStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str, str, str, ModelResponse]:
+        """
+        Generates an action based on the provided inputs, including the current scratchpad, question, examples, prompt, and additional keys.
+        
+        Args:
+            idx (int): The index of the current action.
+            scratchpad (str): The current scratchpad containing the history of actions and observations.
+            question (str): The question or problem statement.
+            examples (str): Examples of previous actions and observations.
+            prompt (str): The prompt for the language model.
+            additional_keys (Dict[str, str]): Additional keys to pass to the language model.
+        
+        Returns:
+            Tuple[str, str, str, ModelResponse]: The updated scratchpad, the action type, the query, and the language model response.
+        """
+                
         scratchpad += f"\nAction {idx}: "
 
         out = _prompt_agent(
@@ -61,6 +77,19 @@ class ReActMathStrategy(ReActGeneralStrategy):
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str
     ) -> Tuple[str, str, str, bool, Dict[str, Any]]:
+        """
+        Generates an observation based on the provided action type and query.
+        
+        Args:
+            idx (int): The index of the current observation.
+            scratchpad (str): The current scratchpad containing the history of actions and observations.
+            action_type (str): The type of action performed, either "Calculate" or "Finish".
+            query (str): The code or answer to be evaluated.
+        
+        Returns:
+            Tuple[str, str, str, bool, Dict[str, Any]]: The updated scratchpad, the answer, the observation, a flag indicating if the task is finished, and a dictionary with information about the code execution.
+        """
+                
         answer = ""
         finished = False
         external_tool_info = {"execution_status": "", "code_answer": ""}
