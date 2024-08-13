@@ -12,9 +12,6 @@ from agential.cog.react.strategies.code import (
 from agential.llm.llm import BaseLLM, MockLLM
 
 
-
-
-
 def test_init() -> None:
     """Test ReActCodeStrategy initialization."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])

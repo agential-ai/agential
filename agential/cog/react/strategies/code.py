@@ -123,6 +123,7 @@ class ReActCodeStrategy(ReActGeneralStrategy):
         """Resets internal state."""
         self._answer = ""
 
+
 class ReActMBPPStrategy(ReActCodeStrategy):
     """A strategy class for the MBPP benchmark using the ReAct agent."""
 

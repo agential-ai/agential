@@ -3,6 +3,7 @@
 from typing import Any, Dict, List
 
 from pydantic import BaseModel, Field
+
 from agential.cog.base.output import BaseOutput
 from agential.utils.general import PromptMetrics
 
@@ -45,6 +46,7 @@ class ReActOutput(BaseOutput):
     Attributes:
         additional_info (List[ReActStepOutput]): The list of ReAct step outputs.
     """
+
     additional_info: List[ReActStepOutput] = Field(
         ..., description="The list of ReActStepOutput."
     )

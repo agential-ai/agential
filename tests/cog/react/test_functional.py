@@ -9,15 +9,16 @@ from agential.cog.react.functional import (
     _build_agent_prompt,
     _is_halted,
     _prompt_agent,
-    parse_qa_action,
-    parse_math_action,
-    parse_code_action,
     accumulate_metrics,
+    parse_code_action,
+    parse_math_action,
+    parse_qa_action,
 )
+from agential.cog.react.output import ReActStepOutput
 from agential.cog.react.prompts import REACT_INSTRUCTION_HOTPOTQA
 from agential.llm.llm import MockLLM
 from agential.utils.general import PromptMetrics
-from agential.cog.react.output import ReActStepOutput
+
 
 def test__build_agent_prompt() -> None:
     """Test _build_agent_prompt function."""
@@ -280,7 +281,7 @@ def test_accumulate_metrics() -> None:
                 prompt_cost=0.01,
                 completion_cost=0.02,
                 total_cost=0.03,
-                prompt_time=0.5
+                prompt_time=0.5,
             ),
             action_metrics=PromptMetrics(
                 prompt_tokens=5,
@@ -289,8 +290,8 @@ def test_accumulate_metrics() -> None:
                 prompt_cost=0.005,
                 completion_cost=0.01,
                 total_cost=0.015,
-                prompt_time=0.25
-            )
+                prompt_time=0.25,
+            ),
         ),
         ReActStepOutput(
             thought="Thought 2",
@@ -306,7 +307,7 @@ def test_accumulate_metrics() -> None:
                 prompt_cost=0.015,
                 completion_cost=0.025,
                 total_cost=0.04,
-                prompt_time=0.75
+                prompt_time=0.75,
             ),
             action_metrics=PromptMetrics(
                 prompt_tokens=10,
@@ -315,9 +316,9 @@ def test_accumulate_metrics() -> None:
                 prompt_cost=0.01,
                 completion_cost=0.015,
                 total_cost=0.025,
-                prompt_time=0.5
-            )
-        )
+                prompt_time=0.5,
+            ),
+        ),
     ]
 
     expected_metrics = {

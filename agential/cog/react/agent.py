@@ -7,9 +7,8 @@ Paper Repository: https://github.com/ysymyth/ReAct
 from typing import Any, Dict, List
 
 from agential.cog.base.agent import BaseAgent
-from agential.cog.react.output import ReActOutput
-from agential.llm.llm import BaseLLM
 from agential.cog.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
+from agential.cog.react.output import ReActOutput
 from agential.cog.react.prompts import (
     REACT_INSTRUCTION_AMBIGNQ,
     REACT_INSTRUCTION_FEVER,
@@ -34,6 +33,7 @@ from agential.cog.react.strategies.qa import (
     ReActHotQAStrategy,
     ReActTriviaQAStrategy,
 )
+from agential.llm.llm import BaseLLM
 
 REACT_BENCHMARK_FEWSHOTS = {
     Benchmarks.HOTPOTQA: [FewShotType.REACT],
@@ -185,7 +185,6 @@ class ReActAgent(BaseAgent):
         strategy = REACT_STRATEGIES[benchmark]
         return strategy(**kwargs)
 
-
     def generate(
         self,
         question: str,
@@ -227,7 +226,7 @@ class ReActAgent(BaseAgent):
             examples=examples,
             prompt=prompt,
             additional_keys=additional_keys,
-            reset=reset
+            reset=reset,
         )
 
         return out

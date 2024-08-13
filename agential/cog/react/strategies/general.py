@@ -1,18 +1,20 @@
 """General strategy for the ReAct Agent."""
 
-from typing import Any, Dict, Tuple
 import time
+
+from typing import Any, Dict, Tuple
 
 import tiktoken
 
 from tiktoken.core import Encoding
 
 from agential.cog.react.functional import _is_halted, _prompt_agent, accumulate_metrics
+from agential.cog.react.output import ReActOutput, ReActStepOutput
 from agential.cog.react.strategies.base import ReActBaseStrategy
-from agential.cog.react.output import ReActStepOutput, ReActOutput
 from agential.llm.llm import BaseLLM, ModelResponse
 from agential.utils.general import get_token_cost_time
 from agential.utils.parse import remove_newline
+
 
 class ReActGeneralStrategy(ReActBaseStrategy):
     """A general strategy class using the ReAct agent.
@@ -72,18 +74,22 @@ class ReActGeneralStrategy(ReActBaseStrategy):
             )
 
             # Act.
-            scratchpad, action_type, query, action_model_response = self.generate_action(
-                idx=idx,
-                scratchpad=scratchpad,
-                question=question,
-                examples=examples,
-                prompt=prompt,
-                additional_keys=additional_keys,
+            scratchpad, action_type, query, action_model_response = (
+                self.generate_action(
+                    idx=idx,
+                    scratchpad=scratchpad,
+                    question=question,
+                    examples=examples,
+                    prompt=prompt,
+                    additional_keys=additional_keys,
+                )
             )
 
             # Observe.
-            scratchpad, answer, obs, finished, external_tool_info = self.generate_observation(
-                idx=idx, scratchpad=scratchpad, action_type=action_type, query=query
+            scratchpad, answer, obs, finished, external_tool_info = (
+                self.generate_observation(
+                    idx=idx, scratchpad=scratchpad, action_type=action_type, query=query
+                )
             )
 
             steps.append(
@@ -113,11 +119,11 @@ class ReActGeneralStrategy(ReActBaseStrategy):
             total_cost=total_metrics["total_cost"],
             total_prompt_time=total_metrics["total_prompt_time"],
             total_time=total_time,
-            additional_info=steps
+            additional_info=steps,
         )
 
         return out
-    
+
     def generate_thought(
         self,
         idx: int,
@@ -153,15 +159,15 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
     ) -> Tuple[str, str, str, ModelResponse]:
-        
+
         raise NotImplementedError
-    
+
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str
     ) -> Tuple[str, str, str, bool, Dict[str, Any]]:
-        
+
         raise NotImplementedError
-    
+
     def halting_condition(
         self,
         finished: bool,

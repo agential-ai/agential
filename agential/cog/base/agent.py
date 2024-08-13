@@ -2,6 +2,7 @@
 
 from abc import ABC, abstractmethod
 from typing import Any, Dict
+
 from agential.cog.base.strategies import BaseStrategy
 
 
@@ -55,4 +56,3 @@ class BaseAgent(ABC):
     def generate(self, *args: Any, **kwargs: Any) -> Any:
         """Generate a response."""
         raise NotImplementedError("Generate method not implemented.")
-

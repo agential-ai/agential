@@ -2,6 +2,7 @@
 
 import pytest
 
+from agential.cog.constants import Benchmarks
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
 from agential.cog.react.agent import (
@@ -12,8 +13,6 @@ from agential.cog.react.prompts import (
     REACT_INSTRUCTION_HUMANEVAL,
 )
 from agential.cog.react.strategies.base import ReActBaseStrategy
-from agential.llm.llm import BaseLLM, MockLLM
-from agential.cog.constants import Benchmarks
 from agential.cog.react.strategies.code import (
     ReActHEvalStrategy,
     ReActMBPPStrategy,
@@ -29,6 +28,8 @@ from agential.cog.react.strategies.qa import (
     ReActHotQAStrategy,
     ReActTriviaQAStrategy,
 )
+from agential.llm.llm import BaseLLM, MockLLM
+
 
 def test_init() -> None:
     """Test initialization."""
@@ -38,6 +39,7 @@ def test_init() -> None:
     assert isinstance(agent.llm, BaseLLM)
     assert agent.benchmark == "hotpotqa"
     assert isinstance(agent.strategy, ReActBaseStrategy)
+
 
 def test_react_factory_get_strategy() -> None:
     """Tests ReActAgent get_strategy method."""
@@ -125,6 +127,7 @@ def test_react_factory_get_prompts() -> None:
         ValueError, match="Benchmark 'unknown' prompt not found for ReAct."
     ):
         ReActAgent.get_prompts("unknown")
+
 
 def test_generate() -> None:
     """Test generate."""

@@ -1,12 +1,14 @@
 """Functional module for ReAct."""
 
-from typing import Dict, List, Any, Tuple
 import re
+
+from typing import Any, Dict, List, Tuple
 
 from tiktoken import Encoding
 
-from agential.llm.llm import BaseLLM, ModelResponse
 from agential.cog.react.output import ReActStepOutput
+from agential.llm.llm import BaseLLM, ModelResponse
+
 
 def _build_agent_prompt(
     question: str,
@@ -244,14 +246,27 @@ def accumulate_metrics(steps: List[ReActStepOutput]) -> Dict[str, Any]:
     total_cost = 0.0
     total_prompt_time = 0.0
 
-    for step in steps:        
-        total_prompt_tokens += step.thought_metrics.prompt_tokens + step.action_metrics.prompt_tokens
-        total_completion_tokens += step.thought_metrics.completion_tokens + step.action_metrics.completion_tokens
-        total_tokens += step.thought_metrics.total_tokens + step.action_metrics.total_tokens
-        total_prompt_cost += step.thought_metrics.prompt_cost + step.action_metrics.prompt_cost
-        total_completion_cost += step.thought_metrics.completion_cost + step.action_metrics.completion_cost
+    for step in steps:
+        total_prompt_tokens += (
+            step.thought_metrics.prompt_tokens + step.action_metrics.prompt_tokens
+        )
+        total_completion_tokens += (
+            step.thought_metrics.completion_tokens
+            + step.action_metrics.completion_tokens
+        )
+        total_tokens += (
+            step.thought_metrics.total_tokens + step.action_metrics.total_tokens
+        )
+        total_prompt_cost += (
+            step.thought_metrics.prompt_cost + step.action_metrics.prompt_cost
+        )
+        total_completion_cost += (
+            step.thought_metrics.completion_cost + step.action_metrics.completion_cost
+        )
         total_cost += step.thought_metrics.total_cost + step.action_metrics.total_cost
-        total_prompt_time += step.thought_metrics.prompt_time + step.action_metrics.prompt_time
+        total_prompt_time += (
+            step.thought_metrics.prompt_time + step.action_metrics.prompt_time
+        )
 
     return {
         "total_prompt_tokens": total_prompt_tokens,

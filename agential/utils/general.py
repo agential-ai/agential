@@ -10,19 +10,32 @@ from typing import Any, Dict, List, Optional, Tuple
 import func_timeout
 
 from litellm import cost_per_token
+from pydantic import BaseModel, Field
 
 from agential.llm.llm import ModelResponse
 
-from pydantic import BaseModel, Field
 
 class PromptMetrics(BaseModel):
     prompt_tokens: int = Field(..., description="The number of tokens in the prompt.")
-    completion_tokens: int = Field(..., description="The number of tokens in the completion.")
-    total_tokens: int = Field(..., description="The total number of tokens in the prompt and completion.")
-    prompt_cost: float = Field(..., description="The cost of the prompt tokens in dollars.")
-    completion_cost: float = Field(..., description="The cost of the completion tokens in dollars.")
-    total_cost: float = Field(..., description="The total cost of the prompt and completion tokens in dollars.")
-    prompt_time: float = Field(..., description="The time taken to generate the response in seconds.")
+    completion_tokens: int = Field(
+        ..., description="The number of tokens in the completion."
+    )
+    total_tokens: int = Field(
+        ..., description="The total number of tokens in the prompt and completion."
+    )
+    prompt_cost: float = Field(
+        ..., description="The cost of the prompt tokens in dollars."
+    )
+    completion_cost: float = Field(
+        ..., description="The cost of the completion tokens in dollars."
+    )
+    total_cost: float = Field(
+        ...,
+        description="The total cost of the prompt and completion tokens in dollars.",
+    )
+    prompt_time: float = Field(
+        ..., description="The time taken to generate the response in seconds."
+    )
 
 
 def shuffle_chunk_list(lst: List[Any], k: int, seed: int = 42) -> List[List[Any]]:

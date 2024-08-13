@@ -6,9 +6,8 @@ from typing import Any, Dict, Tuple
 from tiktoken import Encoding
 
 from agential.cog.base.strategies import BaseStrategy
-from agential.llm.llm import BaseLLM, ModelResponse
 from agential.cog.react.output import ReActOutput
-
+from agential.llm.llm import BaseLLM, ModelResponse
 
 
 class ReActBaseStrategy(BaseStrategy):
@@ -34,7 +33,6 @@ class ReActBaseStrategy(BaseStrategy):
         self.max_tokens = max_tokens
         self.enc = enc
 
-
     @abstractmethod
     def generate(
         self,
@@ -45,18 +43,17 @@ class ReActBaseStrategy(BaseStrategy):
         reset: bool,
     ) -> ReActOutput:
         """Generates a thought based on the question, examples, and prompt.
-        
+
         Args:
             question (str): The question to be answered.
             examples (str): Examples to guide the generation process.
             prompt (str): The prompt used for generating the thought.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
             reset (bool): Whether to reset the strategy.
-         
+
         Returns:
             ReactOutput: The output of the generation process.
         """
-
         pass
 
     @abstractmethod
@@ -156,5 +153,4 @@ class ReActBaseStrategy(BaseStrategy):
     @abstractmethod
     def reset(self) -> None:
         """Resets the agent's state."""
-        
         pass

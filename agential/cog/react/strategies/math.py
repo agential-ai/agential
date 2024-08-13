@@ -3,6 +3,7 @@
 from typing import Any, Dict, Tuple
 
 import tiktoken
+
 from tiktoken.core import Encoding
 
 from agential.cog.react.functional import _prompt_agent, parse_math_action
@@ -87,7 +88,7 @@ class ReActMathStrategy(ReActGeneralStrategy):
         scratchpad += obs
 
         return scratchpad, answer, obs, finished, external_tool_info
-    
+
 
 class ReActGSM8KStrategy(ReActMathStrategy):
     """A strategy class for the GSM8K benchmark using the ReAct agent."""
