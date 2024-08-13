@@ -1,49 +1,17 @@
 """ReAct Agent strategies for Code."""
 
-import re
-
 from typing import Any, Dict, Tuple
 
 import tiktoken
-
 from tiktoken.core import Encoding
 
-from agential.cog.react.functional import _is_halted, _prompt_agent
-from agential.cog.react.strategies.base import ReActBaseStrategy
-from agential.llm.llm import BaseLLM
-from agential.utils.general import get_token_cost_time, safe_execute
-from agential.utils.parse import remove_newline
+from agential.cog.react_new.functional import _prompt_agent, parse_math_action
+from agential.cog.react_new.strategies.general import ReActGeneralStrategy
+from agential.llm.llm import BaseLLM, ModelResponse
+from agential.utils.general import safe_execute
 
 
-def parse_math_action(action: str) -> Tuple[str, str]:
-    """Parses an action string to extract the action type and code content.
-
-    Identifies action types (`Finish`, `Calculate`) and extracts the
-    corresponding code content enclosed within Markdown-style code blocks.
-    The action type is case-insensitive and the code content is trimmed of
-    leading and trailing whitespace.
-
-    Args:
-        action (str): The action string containing the action type and code content.
-
-    Returns:
-        Tuple[str, str]: A tuple containing the extracted action type (capitalized)
-        and the extracted code content.
-    """
-    action_split = action.split("```python", maxsplit=1)
-    match = re.search(r"\b(Finish|Calculate)\b", action_split[0], re.IGNORECASE)
-
-    action_type = match.group(0).lower().capitalize() if match else ""
-    try:
-        query = action_split[1].split("```")[0].strip() if action_type else ""
-    except:
-        action_type = ""
-        query = ""
-
-    return action_type, query
-
-
-class ReActMathStrategy(ReActBaseStrategy):
+class ReActMathStrategy(ReActGeneralStrategy):
     """A strategy class for Math benchmarks using the ReAct agent.
 
     Attributes:
@@ -65,12 +33,15 @@ class ReActMathStrategy(ReActBaseStrategy):
 
     def generate_action(
         self,
+        idx: int,
         scratchpad: str,
         question: str,
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, bool, Dict[str, Any]]:
+    ) -> Tuple[str, str, str, ModelResponse]:
+        scratchpad += f"\nAction {idx}: "
+
         out = _prompt_agent(
             llm=self.llm,
             question=question,
@@ -81,51 +52,41 @@ class ReActMathStrategy(ReActBaseStrategy):
             additional_keys=additional_keys,
         )
         action = out.choices[0].message.content
-
         action = action.split("Observation")[0].strip()
-
         action_type, query = parse_math_action(action)
-        self._scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
+        scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
 
-        return action_type, query
+        return scratchpad, action_type, query, out
 
     def generate_observation(
-        self, idx: int, action_type: str, query: str
-    ) -> Tuple[str, Dict[str, Any]]:
-        """Generates an observation based on the action type and query.
-
-        Args:
-            idx (int): The index of the observation.
-            action_type (str): The type of action to be performed.
-            query (str): The query for the action.
-
-        Returns:
-            Tuple[str, Dict[str, Any]]: The generated observation and external tool outputs.
-        """
+        self, idx: int, scratchpad: str, action_type: str, query: str
+    ) -> Tuple[str, str, str, bool, Dict[str, Any]]:
+        answer = ""
+        finished = False
         external_tool_info = {"execution_status": "", "code_answer": ""}
         code_answer, execution_status = safe_execute(query)
 
-        self._scratchpad += f"\nObservation {idx}: "
+        scratchpad += f"\nObservation {idx}: "
         if action_type.lower() == "finish":
             external_tool_info["code_answer"] = code_answer[0]
             external_tool_info["execution_status"] = execution_status
 
-            self._answer = query
-            self._finished = True
-            obs = f"\n```python\n{self._answer}\n```"
+            answer = query
+            finished = True
+            obs = f"\n```python\n{answer}\n```"
         elif action_type.lower() == "calculate":
             external_tool_info["code_answer"] = code_answer[0]
             external_tool_info["execution_status"] = execution_status
 
-            self._answer = query
-            obs = f"\n```python\n{self._answer}\n```\nExecution Status: {execution_status}\nOutput: answer = {code_answer[0]}"
+            answer = query
+            obs = f"\n```python\n{answer}\n```\nExecution Status: {execution_status}\nOutput: answer = {code_answer[0]}"
         else:
             obs = (
                 "Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
             )
-        self._scratchpad += obs
+        scratchpad += obs
 
-        return obs, external_tool_info
+        return scratchpad, answer, obs, finished, external_tool_info
     
 
 class ReActGSM8KStrategy(ReActMathStrategy):
