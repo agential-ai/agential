@@ -9,7 +9,7 @@ from tiktoken.core import Encoding
 from agential.cog.react_new.functional import _prompt_agent, parse_code_action
 from agential.cog.react_new.strategies.general import ReActGeneralStrategy
 from agential.llm.llm import BaseLLM, ModelResponse
-from agential.utils.general import get_token_cost_time, safe_execute
+from agential.utils.general import safe_execute
 
 
 class ReActCodeStrategy(ReActGeneralStrategy):
