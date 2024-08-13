@@ -1,11 +1,12 @@
 """Functional module for ReAct."""
 
-from typing import Dict
+from typing import Dict, List, Any, Tuple
+import re
 
 from tiktoken import Encoding
 
 from agential.llm.llm import BaseLLM, ModelResponse
-
+from agential.cog.react.output import ReActStepOutput
 
 def _build_agent_prompt(
     question: str,
@@ -75,8 +76,13 @@ def _prompt_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
+    print("<PROMPT AGENT==========================================================>")
+    print(prompt)
+    print("<PROMPT AGENT==========================================================>")
     out = llm(prompt)
-
+    print("<OUT AGENT==========================================================>")
+    print(repr(out.choices[0].message.content))
+    print("<OUT AGENT==========================================================>")
     return out
 
 
@@ -130,3 +136,112 @@ def _is_halted(
         > max_tokens
     )
     return finished or over_max_steps or over_token_limit
+
+
+def parse_qa_action(string: str) -> Tuple[str, str]:
+    """Parses an action string into an action type and its argument.
+
+    This method is used in ReAct.
+
+    Args:
+        string (str): The action string to be parsed.
+
+    Returns:
+        Tuple[str, str]: A tuple containing the action type and argument.
+    """
+    pattern = r"^(\w+)\[(.+)\]$"
+    match = re.match(pattern, string)
+
+    if match:
+        action_type = match.group(1)
+        argument = match.group(2)
+    else:
+        action_type = ""
+        argument = ""
+    return action_type, argument
+
+
+def parse_math_action(action: str) -> Tuple[str, str]:
+    """Parses an action string to extract the action type and code content.
+
+    Identifies action types (`Finish`, `Calculate`) and extracts the
+    corresponding code content enclosed within Markdown-style code blocks.
+    The action type is case-insensitive and the code content is trimmed of
+    leading and trailing whitespace.
+
+    Args:
+        action (str): The action string containing the action type and code content.
+
+    Returns:
+        Tuple[str, str]: A tuple containing the extracted action type (capitalized)
+        and the extracted code content.
+    """
+    action_split = action.split("```python", maxsplit=1)
+    match = re.search(r"\b(Finish|Calculate)\b", action_split[0], re.IGNORECASE)
+
+    action_type = match.group(0).lower().capitalize() if match else ""
+    try:
+        query = action_split[1].split("```")[0].strip() if action_type else ""
+    except:
+        action_type = ""
+        query = ""
+
+    return action_type, query
+
+
+def parse_code_action(action: str) -> Tuple[str, str]:
+    """Parses an action string to extract the action type and code content.
+
+    Identifies action types (`Finish`, `Implement`, or `Test`) and extracts the
+    corresponding code content enclosed within Markdown-style code blocks.
+    The action type is case-insensitive and the code content is trimmed of
+    leading and trailing whitespace.
+
+    Args:
+        action (str): The action string containing the action type and code content.
+
+    Returns:
+        Tuple[str, str]: A tuple containing the extracted action type (capitalized)
+        and the extracted code content.
+    """
+    action_split = action.split("```python", maxsplit=1)
+    match = re.search(r"\b(Finish|Test|Implement)\b", action_split[0], re.IGNORECASE)
+
+    action_type = match.group(0).lower().capitalize() if match else ""
+    try:
+        query = action_split[1].split("```")[0].strip() if action_type else ""
+    except:
+        action_type = ""
+        query = ""
+
+    return action_type, query
+
+
+def accumulate_metrics(steps: List[ReActStepOutput]) -> Dict[str, Any]:
+    """Accumulate total metrics from a list of ReActStepOutput."""
+    total_prompt_tokens = 0
+    total_completion_tokens = 0
+    total_tokens = 0
+    total_prompt_cost = 0.0
+    total_completion_cost = 0.0
+    total_cost = 0.0
+    total_prompt_time = 0.0
+
+    for step in steps:        
+        total_prompt_tokens += step.thought_metrics.prompt_tokens + step.action_metrics.prompt_tokens
+        total_completion_tokens += step.thought_metrics.completion_tokens + step.action_metrics.completion_tokens
+        total_tokens += step.thought_metrics.total_tokens + step.action_metrics.total_tokens
+        total_prompt_cost += step.thought_metrics.prompt_cost + step.action_metrics.prompt_cost
+        total_completion_cost += step.thought_metrics.completion_cost + step.action_metrics.completion_cost
+        total_cost += step.thought_metrics.total_cost + step.action_metrics.total_cost
+        total_prompt_time += step.thought_metrics.prompt_time + step.action_metrics.prompt_time
+
+    return {
+        "total_prompt_tokens": total_prompt_tokens,
+        "total_completion_tokens": total_completion_tokens,
+        "total_tokens": total_tokens,
+        "total_prompt_cost": total_prompt_cost,
+        "total_completion_cost": total_completion_cost,
+        "total_cost": total_cost,
+        "total_prompt_time": total_prompt_time,
+    }

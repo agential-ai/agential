@@ -7,9 +7,9 @@ import tiktoken
 
 from tiktoken.core import Encoding
 
-from agential.cog.react_new.functional import _is_halted, _prompt_agent, accumulate_metrics
-from agential.cog.react_new.strategies.base import ReActBaseStrategy
-from agential.cog.react_new.output import ReActStepOutput, ReActOutput
+from agential.cog.react.functional import _is_halted, _prompt_agent, accumulate_metrics
+from agential.cog.react.strategies.base import ReActBaseStrategy
+from agential.cog.react.output import ReActStepOutput, ReActOutput
 from agential.llm.llm import BaseLLM, ModelResponse
 from agential.utils.general import get_token_cost_time
 from agential.utils.parse import remove_newline
