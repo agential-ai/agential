@@ -36,7 +36,7 @@ from agential.utils.general import PromptMetrics
 def test_init() -> None:
     """Test initialization."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    agent = ReActAgent(llm=llm, benchmark="hotpotqa")
+    agent = ReActAgent(llm=llm, benchmark="hotpotqa", testing=True)
     assert isinstance(agent, ReActAgent)
     assert isinstance(agent.llm, BaseLLM)
     assert agent.benchmark == "hotpotqa"
@@ -332,7 +332,7 @@ def test_generate() -> None:
         "Search[kickboxing controversies crimes famous]",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    agent = ReActAgent(llm=llm, benchmark="hotpotqa")
+    agent = ReActAgent(llm=llm, benchmark="hotpotqa", testing=True)
     agent.strategy.docstore.search = (
         lambda x: "Buakaw Banchamek has faced several controversies and legal issues."
     )
@@ -343,7 +343,6 @@ def test_generate() -> None:
         prompt=REACT_INSTRUCTION_HOTPOTQA,
         additional_keys={},
         reset=True,
-        testing=True,
     )
     assert out == gt_out
 
@@ -457,12 +456,11 @@ def test_generate() -> None:
         "Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    agent = ReActAgent(llm=llm, benchmark="humaneval")
+    agent = ReActAgent(llm=llm, benchmark="humaneval", testing=True)
     out = agent.generate(
         question=question,
         examples=HUMANEVAL_FEWSHOT_EXAMPLES_REACT,
         prompt=REACT_INSTRUCTION_HUMANEVAL,
-        testing=True,
     )
     assert out == gt_out
 
@@ -567,10 +565,9 @@ def test_generate() -> None:
         "Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    agent = ReActAgent(llm=llm, benchmark="humaneval")
+    agent = ReActAgent(llm=llm, benchmark="humaneval", testing=True)
     out = agent.generate(
         question=question,
-        testing=True,
     )
 
     assert out == gt_out
@@ -676,11 +673,10 @@ def test_generate() -> None:
         "Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    agent = ReActAgent(llm=llm, benchmark="humaneval")
+    agent = ReActAgent(llm=llm, benchmark="humaneval", testing=True)
     out = agent.generate(
         question=question,
         fewshot_type="react",
-        testing=True,
     )
     assert out == gt_out
 
@@ -777,7 +773,7 @@ def test_generate() -> None:
         ],
     )
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    agent = ReActAgent(llm=llm, benchmark="humaneval")
+    agent = ReActAgent(llm=llm, benchmark="humaneval", testing=True)
     with pytest.raises(
         ValueError,
         match="Benchmark 'humaneval' few-shot type not supported for ReAct.",
@@ -785,7 +781,6 @@ def test_generate() -> None:
         out = agent.generate(
             question=question,
             fewshot_type="pot",
-            testing=True,
         )
 
     assert out == gt_out

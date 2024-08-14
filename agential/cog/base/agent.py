@@ -53,11 +53,10 @@ class BaseAgent(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def generate(self, testing: bool = False, *args: Any, **kwargs: Any) -> Any:
+    def generate(self, *args: Any, **kwargs: Any) -> Any:
         """Generate a response.
 
         Args:
-            testing (bool): Whether to run in testing mode.
             *args (Any): Additional arguments.
             **kwargs (Any): Additional keyword arguments.
 

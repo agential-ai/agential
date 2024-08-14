@@ -23,6 +23,7 @@ class ReActQAStrategy(ReActGeneralStrategy):
         max_tokens (int): The maximum number of tokens allowed for a response.
         enc (Encoding): The encoding used for the language model.
         docstore (DocstoreExplorer): The document store used for searching and looking up information.
+        testing (bool): Whether the strategy is in testing mode. Defaults to False.
     """
 
     def __init__(
@@ -32,9 +33,10 @@ class ReActQAStrategy(ReActGeneralStrategy):
         max_tokens: int = 5000,
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
         docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
+        testing: bool = False,
     ) -> None:
         """Initialization."""
-        super().__init__(llm, max_steps, max_tokens, enc)
+        super().__init__(llm, max_steps, max_tokens, enc, testing)
         self.docstore = docstore
 
     def generate_action(

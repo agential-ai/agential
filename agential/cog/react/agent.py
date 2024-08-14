@@ -107,6 +107,7 @@ class ReActAgent(BaseAgent):
         llm (BaseLLM): An instance of a language model used for generating initial answers
             and critiques.
         benchmark (str): The benchmark.
+        testing (bool, optional): Whether to run in testing mode. Defaults to False.
         **strategy_kwargs (Any): Additional strategy-specific arguments.
     """
 
@@ -114,15 +115,17 @@ class ReActAgent(BaseAgent):
         self,
         llm: BaseLLM,
         benchmark: str,
+        testing: bool = False,
         **strategy_kwargs: Any,
     ) -> None:
         """Initialization."""
         super().__init__()
         self.llm = llm
         self.benchmark = benchmark
+        self.testing = testing
 
         self.strategy = ReActAgent.get_strategy(
-            benchmark=self.benchmark, llm=self.llm, **strategy_kwargs
+            benchmark=self.benchmark, llm=self.llm, testing=self.testing, **strategy_kwargs
         )
 
     @staticmethod
@@ -193,7 +196,6 @@ class ReActAgent(BaseAgent):
         additional_keys: Dict[str, str] = {},
         fewshot_type: str = "",
         reset: bool = True,
-        testing: bool = False,
     ) -> ReActOutput:
         """Processes a given question through ReAct.
 
@@ -207,7 +209,6 @@ class ReActAgent(BaseAgent):
             additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
             fewshot_type (str): The type of few-shot examples to use. Defaults to "".
             reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
-            testing (bool, optional): Whether to run in testing mode. Defaults to False.
 
         Returns:
             ReActOutput: The list of accumulated output from the ReAct process,
@@ -229,7 +230,6 @@ class ReActAgent(BaseAgent):
             prompt=prompt,
             additional_keys=additional_keys,
             reset=reset,
-            testing=testing,
         )
 
         return out

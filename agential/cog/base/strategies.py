@@ -7,23 +7,27 @@ from agential.llm.llm import BaseLLM
 
 
 class BaseStrategy(ABC):
-    """An abstract base class for defining strategies for generating responses with LLM-based agents."""
+    """An abstract base class for defining strategies for generating responses with LLM-based agents.
+    
+    Parameters:
+        llm (BaseLLM): An instance of a language model used for generating responses.
+        testing (bool): Whether the generation is for testing purposes. Defaults to False.
+    """
 
-    def __init__(self, llm: BaseLLM) -> None:
+    def __init__(self, llm: BaseLLM, testing: bool = False,) -> None:
         """Initialization."""
         self.llm = llm
+        self.testing = testing
 
     @abstractmethod
     def generate(
         self,
-        testing: bool = False,
         *args: Any,
         **kwargs: Any,
     ) -> Any:
         """Generates a response.
 
         Args:
-            testing (bool): Whether the strategy is being used for testing.
             *args: Variable length argument list.
             **kwargs: Arbitrary keyword arguments.
 

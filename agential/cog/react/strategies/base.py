@@ -18,6 +18,7 @@ class ReActBaseStrategy(BaseStrategy):
         max_steps (int): The maximum number of steps the agent can take.
         max_tokens (int): The maximum number of tokens allowed for a response.
         enc (Encoding): The encoding used for the language model.
+        testing (bool): Whether the generation is for testing purposes. Defaults to False.
     """
 
     def __init__(
@@ -26,9 +27,10 @@ class ReActBaseStrategy(BaseStrategy):
         max_steps: int,
         max_tokens: int,
         enc: Encoding,
+        testing: bool = False,
     ) -> None:
         """Initialization."""
-        super().__init__(llm)
+        super().__init__(llm, testing)
         self.max_steps = max_steps
         self.max_tokens = max_tokens
         self.enc = enc
@@ -41,7 +43,6 @@ class ReActBaseStrategy(BaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
         reset: bool,
-        testing: bool = False,
     ) -> ReActOutput:
         """Generates a thought based on the question, examples, and prompt.
 
@@ -51,7 +52,6 @@ class ReActBaseStrategy(BaseStrategy):
             prompt (str): The prompt used for generating the thought.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
             reset (bool): Whether to reset the strategy.
-            testing (bool): Whether the generation is for testing purposes. Defaults to False.
 
         Returns:
             ReactOutput: The output of the generation process.

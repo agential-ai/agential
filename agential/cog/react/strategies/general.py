@@ -24,6 +24,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         max_steps (int): The maximum number of steps the agent can take.
         max_tokens (int): The maximum number of tokens allowed for a response.
         enc (Encoding): The encoding used for the language model.
+        testing (bool): Whether the agent is in testing mode. Defaults to False.
     """
 
     def __init__(
@@ -32,9 +33,10 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         max_steps: int = 6,
         max_tokens: int = 5000,
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
+        testing: bool = False,
     ) -> None:
         """Initialization."""
-        super().__init__(llm, max_steps, max_tokens, enc)
+        super().__init__(llm, max_steps, max_tokens, enc, testing)
 
     def generate(
         self,
@@ -43,7 +45,6 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
         reset: bool,
-        testing: bool = False,
     ) -> ReActOutput:
         """Generate a ReAct output by iteratively thinking, acting, and observing.
 
@@ -53,7 +54,6 @@ class ReActGeneralStrategy(ReActBaseStrategy):
             prompt (str): The prompt used to generate the thought.
             additional_keys (Dict[str, str]): Additional key-value pairs to pass to the language model.
             reset (bool): Whether to reset the agent's state before generating.
-            testing (bool): Whether the agent is in testing mode. Defaults to False.
 
         Returns:
             ReActOutput: The generated output, including the final answer, metrics, and step-by-step details.
@@ -132,7 +132,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
             total_completion_cost=total_metrics["total_completion_cost"],
             total_cost=total_metrics["total_cost"],
             total_prompt_time=total_metrics["total_prompt_time"],
-            total_time=total_time if not testing else 0.5,
+            total_time=total_time if not self.testing else 0.5,
             additional_info=steps,
         )
 
