@@ -4,7 +4,7 @@ Original Paper: https://arxiv.org/abs/2210.03629
 Paper Repository: https://github.com/ysymyth/ReAct
 """
 
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from agential.cog.base.agent import BaseAgent
 from agential.cog.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
