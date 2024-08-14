@@ -25,7 +25,7 @@ class LATSBaseStrategy(BaseStrategy):
         pass
 
     @abstractmethod
-    def generate(
+    def generate_children_nodes(
         self,
         node: Node,
         question: str,
