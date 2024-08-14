@@ -164,7 +164,6 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
-        is_simulate: bool,
     ) -> List[Node]:
         """Generate child nodes for the given node.
 
@@ -178,7 +177,6 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             reflect_prompt (str): The prompt template for reflection.
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
-            is_simulate (bool): Whether this method is called to simulate expansion or not.
 
         Returns:
             List[Node]: A list of generated child nodes.
@@ -235,7 +233,6 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
-        is_simulate: bool,
     ) -> Tuple[str, str, str]:
         """Generate an action for the current step in the reasoning process.
 
@@ -247,7 +244,6 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             depth (int): The current depth in the search tree.
             prompt (str): The prompt template for action generation.
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
-            is_simulate (bool): Whether this method is called to simulate expansion or not.
 
         Returns:
             Tuple[str, str, str]: A tuple containing the updated trajectory, action type, and query.
@@ -352,7 +348,6 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             reflect_prompt=reflect_prompt,
             additional_keys=additional_keys,
             reflect_additional_keys=reflect_additional_keys,
-            is_simulate=False,
         )
         node.add_children(children_nodes)  # type: ignore
 

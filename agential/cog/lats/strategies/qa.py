@@ -1,8 +1,5 @@
 """LATS Agent strategies for QA."""
 
-import re
-
-from copy import deepcopy
 from typing import Any, Dict, List, Optional, Tuple
 
 from langchain_community.docstore.wikipedia import Wikipedia
@@ -11,10 +8,8 @@ from agential.cog.lats.functional import (
     _build_failed_trajectory_format,
     _build_reflection_format,
     _prompt_agent,
-    _prompt_reflection,
     _prompt_value,
     get_node_trajectory_qa,
-    get_unique_trajectories,
     parse_qa_action,
     parse_qa_value,
 )
@@ -22,7 +17,7 @@ from agential.cog.lats.node import Node
 from agential.cog.lats.output import LATSReActStepOutput, LATSSimulationOutput
 from agential.cog.lats.strategies.base import LATSBaseStrategy
 from agential.eval.em import EM
-from agential.llm.llm import BaseLLM
+from agential.llm.llm import BaseLLM, ModelResponse
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.general import get_token_cost_time
 from agential.utils.parse import remove_newline
@@ -83,7 +78,6 @@ class LATSQAStrategy(LATSBaseStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
-        is_simulate: bool,
     ) -> List[Node]:
         """Generate child nodes for the given node.
 
@@ -97,7 +91,6 @@ class LATSQAStrategy(LATSBaseStrategy):
             reflect_prompt (str): The prompt template for reflection.
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
-            is_simulate (bool): Whether this method is called to simulate expansion or not.
 
         Returns:
             List[Node]: A list of generated child nodes.
@@ -132,7 +125,6 @@ class LATSQAStrategy(LATSBaseStrategy):
                 depth=node.depth,
                 prompt=prompt,
                 additional_keys=additional_keys,
-                is_simulate=is_simulate,
             )
             trajectory_i, action_type, query, action_model_response = (
                 self.generate_action(
@@ -143,7 +135,6 @@ class LATSQAStrategy(LATSBaseStrategy):
                     depth=node.depth,
                     prompt=prompt,
                     additional_keys=additional_keys,
-                    is_simulate=is_simulate,
                 )
             )
 
@@ -198,8 +189,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
-        is_simulate: bool,
-    ) -> Tuple[str, str, str]:
+    ) -> Tuple[str, str, str, ModelResponse]:
         """Generate an action for the current step in the reasoning process.
 
         Args:
@@ -210,10 +200,9 @@ class LATSQAStrategy(LATSBaseStrategy):
             depth (int): The current depth in the search tree.
             prompt (str): The prompt template for action generation.
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
-            is_simulate (bool): Whether this method is called to simulate expansion or not.
 
         Returns:
-            Tuple[str, str, str]: A tuple containing the updated trajectory, action type, and query.
+            Tuple[str, str, str, ModelResponse]: A tuple containing the updated trajectory, action type, query, and model response.
         """
         trajectory += f"\nAction {depth + 1}:"
         out = _prompt_agent(
@@ -225,7 +214,6 @@ class LATSQAStrategy(LATSBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        metric_key = "simulate_action" if is_simulate else "action"
         action = out.choices[0].message.content
 
         action = remove_newline(action).split("Observation")[0]
@@ -419,7 +407,6 @@ class LATSQAStrategy(LATSBaseStrategy):
                 reflect_prompt=reflect_prompt,
                 additional_keys=additional_keys,
                 reflect_additional_keys=reflect_additional_keys,
-                is_simulate=True,
             )
 
             result["children_nodes"] = children_nodes

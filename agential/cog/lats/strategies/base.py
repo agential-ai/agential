@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Tuple
 
 from agential.cog.base.strategies import BaseStrategy
 from agential.cog.lats.node import Node
-from agential.llm.llm import BaseLLM
+from agential.llm.llm import BaseLLM, ModelResponse
 
 
 class LATSBaseStrategy(BaseStrategy):
@@ -50,7 +50,6 @@ class LATSBaseStrategy(BaseStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
-        is_simulate: bool,
     ) -> List[Node]:
         """Generate child nodes for the given node.
 
@@ -64,7 +63,6 @@ class LATSBaseStrategy(BaseStrategy):
             reflect_prompt (str): The prompt template for reflection.
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
-            is_simulate (bool): Whether this method is called to simulate expansion or not.
 
         Returns:
             List[Node]: A list of generated child nodes.
@@ -81,8 +79,7 @@ class LATSBaseStrategy(BaseStrategy):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
-        is_simulate: bool,
-    ) -> Tuple[str, str]:
+    ) -> Tuple[str, str, ModelResponse]:
         """Generate a thought for the current step in the reasoning process.
 
         Args:
@@ -93,10 +90,9 @@ class LATSBaseStrategy(BaseStrategy):
             depth (int): The current depth in the search tree.
             prompt (str): The prompt template for thought generation.
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
-            is_simulate (bool): Whether this method is called to simulate expansion or not.
 
         Returns:
-            Tuple[str, str]: A tuple containing the updated trajectory and the generated thought.
+            Tuple[str, str, ModelResponse]: A tuple containing the updated trajectory, the generated thought, and the model response.
         """
         raise NotImplementedError
 
@@ -110,8 +106,7 @@ class LATSBaseStrategy(BaseStrategy):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
-        is_simulate: bool,
-    ) -> Tuple[str, str, str]:
+    ) -> Tuple[str, str, str, ModelResponse]:
         """Generate an action for the current step in the reasoning process.
 
         Args:
@@ -122,10 +117,9 @@ class LATSBaseStrategy(BaseStrategy):
             depth (int): The current depth in the search tree.
             prompt (str): The prompt template for action generation.
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
-            is_simulate (bool): Whether this method is called to simulate expansion or not.
 
         Returns:
-            Tuple[str, str, str]: A tuple containing the updated trajectory, action type, and query.
+            Tuple[str, str, str, ModelResponse]: A tuple containing the updated trajectory, action type, query, and the model response.
         """
         raise NotImplementedError
 
