@@ -193,6 +193,7 @@ class ReActAgent(BaseAgent):
         additional_keys: Dict[str, str] = {},
         fewshot_type: str = "",
         reset: bool = True,
+        testing: bool = False
     ) -> ReActOutput:
         """Processes a given question through ReAct.
 
@@ -206,7 +207,8 @@ class ReActAgent(BaseAgent):
             additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
             fewshot_type (str): The type of few-shot examples to use. Defaults to "".
             reset (bool, optional): Whether to reset the internal state before processing. Defaults to True.
-
+            testing (bool, optional): Whether to run in testing mode. Defaults to False.
+            
         Returns:
             ReActOutput: The list of accumulated output from the ReAct process,
                 each ReActOutput consists of a thought, action type/query, observation, answer, and external tool info.
@@ -227,6 +229,7 @@ class ReActAgent(BaseAgent):
             prompt=prompt,
             additional_keys=additional_keys,
             reset=reset,
+            testing=testing,
         )
 
         return out

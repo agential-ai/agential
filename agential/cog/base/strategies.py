@@ -16,13 +16,28 @@ class BaseStrategy(ABC):
     @abstractmethod
     def generate(
         self,
+        testing: bool = False,
         *args: Any,
         **kwargs: Any,
     ) -> Any:
-        """Generates a response."""
+        """Generates a response.
+        
+        Args:
+            testing (bool): Whether the strategy is being used for testing.
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            Any: The generated response.
+        """
         pass
 
     @abstractmethod
     def reset(self, *args: Any, **kwargs: Any) -> None:
-        """Resets the strategy's internal state, if any."""
+        """Resets the strategy's internal state, if any.
+        
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+        """
         pass

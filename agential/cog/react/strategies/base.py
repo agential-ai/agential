@@ -41,6 +41,7 @@ class ReActBaseStrategy(BaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
         reset: bool,
+        testing: bool = False,
     ) -> ReActOutput:
         """Generates a thought based on the question, examples, and prompt.
 
@@ -50,12 +51,13 @@ class ReActBaseStrategy(BaseStrategy):
             prompt (str): The prompt used for generating the thought.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
             reset (bool): Whether to reset the strategy.
-
+            testing (bool): Whether the generation is for testing purposes. Defaults to False.
+            
         Returns:
             ReactOutput: The output of the generation process.
         """
-        pass
-
+        raise NotImplementedError("generate method not implemented.") 
+    
     @abstractmethod
     def generate_thought(
         self,
@@ -79,7 +81,7 @@ class ReActBaseStrategy(BaseStrategy):
         Returns:
             Tuple[str, str, ModelResponse]: The scratchpad, generated thought, and model response.
         """
-        pass
+        raise NotImplementedError("generate method not implemented.") 
 
     @abstractmethod
     def generate_action(

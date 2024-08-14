@@ -8,6 +8,7 @@ from agential.cog.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
 from agential.cog.react.agent import (
     ReActAgent,
 )
+from agential.cog.react.output import ReActOutput, ReActStepOutput
 from agential.cog.react.prompts import (
     REACT_INSTRUCTION_HOTPOTQA,
     REACT_INSTRUCTION_HUMANEVAL,
@@ -29,8 +30,8 @@ from agential.cog.react.strategies.qa import (
     ReActTriviaQAStrategy,
 )
 from agential.llm.llm import BaseLLM, MockLLM
-from agential.cog.react.output import ReActOutput, ReActStepOutput
 from agential.utils.general import PromptMetrics
+
 
 def test_init() -> None:
     """Test initialization."""
@@ -134,6 +135,193 @@ def test_generate() -> None:
     """Test generate."""
     # Test QA.
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
+    gt_out = ReActOutput(
+        answer="",
+        total_prompt_tokens=120,
+        total_completion_tokens=240,
+        total_tokens=360,
+        total_prompt_cost=0.00018,
+        total_completion_cost=0.00047999999999999996,
+        total_cost=0.0006599999999999999,
+        total_prompt_time=6.0,
+        total_time=0.08289146423339844,
+        additional_info=[
+            ReActStepOutput(
+                thought="I need to search for the best kickboxer in the world who has been involved in controversies and crimes.",
+                action_type="Search",
+                query="best kickboxer in the world controversies crimes",
+                observation="Buakaw Banchamek has faced several controversies and legal issues.",
+                answer="",
+                external_tool_info={
+                    "search_result": "Buakaw Banchamek has faced several controversies and legal issues.",
+                    "lookup_result": "",
+                },
+                thought_metrics=PromptMetrics(
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+                action_metrics=PromptMetrics(
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+            ),
+            ReActStepOutput(
+                thought="This passage does not mention the name of the kickboxer. I need to search for another source or keyword that could lead me to the answer.",
+                action_type="Search",
+                query="former best kickboxer controversies crimes",
+                observation="Buakaw Banchamek has faced several controversies and legal issues.",
+                answer="",
+                external_tool_info={
+                    "search_result": "Buakaw Banchamek has faced several controversies and legal issues.",
+                    "lookup_result": "",
+                },
+                thought_metrics=PromptMetrics(
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+                action_metrics=PromptMetrics(
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+            ),
+            ReActStepOutput(
+                thought="This passage still does not mention the name of the kickboxer. I need to search for a different keyword or source that could lead me to the answer.",
+                action_type="Search",
+                query="kickboxing controversies crimes famous",
+                observation="Buakaw Banchamek has faced several controversies and legal issues.",
+                answer="",
+                external_tool_info={
+                    "search_result": "Buakaw Banchamek has faced several controversies and legal issues.",
+                    "lookup_result": "",
+                },
+                thought_metrics=PromptMetrics(
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+                action_metrics=PromptMetrics(
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+            ),
+            ReActStepOutput(
+                thought="I need to search for the best kickboxer in the world who has been involved in controversies and crimes.",
+                action_type="Search",
+                query="best kickboxer in the world controversies crimes",
+                observation="Buakaw Banchamek has faced several controversies and legal issues.",
+                answer="",
+                external_tool_info={
+                    "search_result": "Buakaw Banchamek has faced several controversies and legal issues.",
+                    "lookup_result": "",
+                },
+                thought_metrics=PromptMetrics(
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+                action_metrics=PromptMetrics(
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+            ),
+            ReActStepOutput(
+                thought="This passage does not mention the name of the kickboxer. I need to search for another source or keyword that could lead me to the answer.",
+                action_type="Search",
+                query="former best kickboxer controversies crimes",
+                observation="Buakaw Banchamek has faced several controversies and legal issues.",
+                answer="",
+                external_tool_info={
+                    "search_result": "Buakaw Banchamek has faced several controversies and legal issues.",
+                    "lookup_result": "",
+                },
+                thought_metrics=PromptMetrics(
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+                action_metrics=PromptMetrics(
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+            ),
+            ReActStepOutput(
+                thought="This passage still does not mention the name of the kickboxer. I need to search for a different keyword or source that could lead me to the answer.",
+                action_type="Search",
+                query="kickboxing controversies crimes famous",
+                observation="Buakaw Banchamek has faced several controversies and legal issues.",
+                answer="",
+                external_tool_info={
+                    "search_result": "Buakaw Banchamek has faced several controversies and legal issues.",
+                    "lookup_result": "",
+                },
+                thought_metrics=PromptMetrics(
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+                action_metrics=PromptMetrics(
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+            ),
+        ],
+    )
 
     responses = [
         "I need to search for the best kickboxer in the world who has been involved in controversies and crimes.\nAction: Search[best kickboxer in the world]\nObservation: Could not find exact match. Similar: ['List of male kickboxers', 'List of female kickboxers', 'Kickboxing in Japan', 'Kickboxing in the United Kingdom', 'Kickboxing in the United States', 'Kickboxing in Thailand', 'Kickboxing in the Netherlands'].\nThought: I couldn't find the exact information, so I will try to find a famous kickboxer known for controversies.\nAction: Search[kickboxer controversies]\nObservation: Could not find exact match. Similar: ['List of male kickboxers', 'List of female kickboxers', 'Kickboxing in Japan', 'Kickboxing in the United Kingdom', 'Kickboxing in the United States', 'Kickboxing in Thailand', 'Kickboxing in the Netherlands'].\nThought: I need to search for famous kickboxers involved in controversies.\nAction: Search[famous kickboxers controversies]\nObservation: Could not find exact match. Similar: ['List of male kickboxers', 'List of female kickboxers', 'Kickboxing in Japan', 'Kickboxing in the United Kingdom', 'Kickboxing in the United States', 'Kickboxing in Thailand', 'Kickboxing in the Netherlands'].\nThought: I need to try a different approach to find the answer.\nAction: Search[kickboxer controversies crimes]\nObservation: Could not find exact match. Similar: ['List of male kickboxers', 'List of female kickboxers', 'Kickboxing in Japan', 'Kickboxing in the United Kingdom', 'Kickboxing in the United States', 'Kickboxing in Thailand', 'Kickboxing in the Netherlands'].\nThought: I need to refine my search terms to find the specific kickboxer mentioned in the question.\nAction: Search[kickboxer crimes violence unsportsmanlike conduct]\nObservation: Could not find exact match. Similar: ['List of male kickboxers', 'List of female kickboxers', 'Kickboxing in Japan', 'Kickboxing in the United Kingdom', 'Kickboxing in the United States', 'Kickboxing in Thailand', 'Kickboxing in the Netherlands'].\nThought: I'm unable to find the specific kickboxer mentioned in the question. \nAction: Finish[unable to find specific kickboxer]",
@@ -156,8 +344,8 @@ def test_generate() -> None:
         additional_keys={},
         reset=True,
     )
+    print(repr(out))
     assert out == gt_out
-
 
     # Test Code.
     inst = {

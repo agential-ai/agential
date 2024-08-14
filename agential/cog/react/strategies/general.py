@@ -43,6 +43,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
         reset: bool,
+        testing: bool = False
     ) -> ReActOutput:
         """Generate a ReAct output by iteratively thinking, acting, and observing.
 
@@ -52,6 +53,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
             prompt (str): The prompt used to generate the thought.
             additional_keys (Dict[str, str]): Additional key-value pairs to pass to the language model.
             reset (bool): Whether to reset the agent's state before generating.
+            testing (bool): Whether the agent is in testing mode. Defaults to False.
 
         Returns:
             ReActOutput: The generated output, including the final answer, metrics, and step-by-step details.
@@ -130,7 +132,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
             total_completion_cost=total_metrics["total_completion_cost"],
             total_cost=total_metrics["total_cost"],
             total_prompt_time=total_metrics["total_prompt_time"],
-            total_time=total_time,
+            total_time=total_time if not testing else 0.5,
             additional_info=steps,
         )
 
@@ -218,7 +220,6 @@ class ReActGeneralStrategy(ReActBaseStrategy):
                 - A boolean indicating if the task is finished.
                 - A dictionary with additional information.
         """
-
         raise NotImplementedError
 
     def halting_condition(

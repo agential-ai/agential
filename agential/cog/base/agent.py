@@ -23,7 +23,7 @@ class BaseAgent(ABC):
         Returns:
             Dict[str, str]: A dictionary of few-shot examples.
         """
-        pass
+        raise NotImplementedError("get_fewshots method not implemented.")
 
     @abstractmethod
     def get_prompts(self, benchmark: str, **kwargs: Any) -> Dict[str, str]:
@@ -36,7 +36,7 @@ class BaseAgent(ABC):
         Returns:
             Dict[str, str]: A dictionary of prompt instructions.
         """
-        pass
+        raise NotImplementedError("get_prompts method not implemented.")
 
     @abstractmethod
     def get_strategy(self, benchmark: str, **kwargs: Any) -> BaseStrategy:
@@ -50,9 +50,18 @@ class BaseAgent(ABC):
         Returns:
             BaseStrategy: An instance of the appropriate strategy.
         """
-        pass
+        raise NotImplementedError("get_strategy method not implemented.")
 
     @abstractmethod
-    def generate(self, *args: Any, **kwargs: Any) -> Any:
-        """Generate a response."""
+    def generate(self, testing: bool = False, *args: Any, **kwargs: Any) -> Any:
+        """Generate a response.
+        
+        Args:
+            testing (bool): Whether to run in testing mode.
+            *args (Any): Additional arguments.
+            **kwargs (Any): Additional keyword arguments.
+
+        Returns:
+                Any: The generated response.
+        """
         raise NotImplementedError("Generate method not implemented.")
