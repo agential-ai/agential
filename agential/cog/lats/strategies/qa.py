@@ -13,8 +13,8 @@ from agential.cog.lats.functional import (
     _prompt_agent,
     _prompt_reflection,
     _prompt_value,
-    get_unique_trajectories,
     get_node_trajectory_qa,
+    get_unique_trajectories,
     parse_qa_action,
     parse_qa_value,
 )
@@ -43,7 +43,6 @@ class LATSQAStrategy(LATSBaseStrategy):
     The strategy uses these parameters to fine-tune its behavior and performance
     in question-answering tasks.
     """
-
 
     def generate_children_nodes(
         self,
@@ -158,7 +157,6 @@ class LATSQAStrategy(LATSBaseStrategy):
 
         return children_nodes
 
-
     def generate_action(
         self,
         question: str,
@@ -256,7 +254,6 @@ class LATSQAStrategy(LATSBaseStrategy):
         trajectory += obs
 
         return trajectory, reward, obs, done, external_tool_info
-    
 
     def evaluate_node(
         self,

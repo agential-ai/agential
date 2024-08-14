@@ -24,6 +24,7 @@ from agential.utils.docstore import DocstoreExplorer
 from agential.utils.general import get_token_cost_time
 from agential.utils.parse import remove_newline
 
+
 class LATSGeneralStrategy(LATSBaseStrategy):
     """A general strategy class for LATS agent."""
 
@@ -58,7 +59,6 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             "reflection": [],
         }
 
-
     def initialize(self) -> Node:
         """Create and return the root node.
 
@@ -67,7 +67,6 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         """
         self.root = Node()  # type: ignore
         return self.root
-
 
     def generate_children_nodes(
         self,
@@ -100,7 +99,6 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             List[Node]: A list of generated child nodes.
         """
         raise NotImplementedError
-    
 
     def generate_thought(
         self,
@@ -146,7 +144,6 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         trajectory += " " + thought
 
         return trajectory, thought
-    
 
     def generate_action(
         self,
@@ -175,7 +172,6 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             Tuple[str, str, str]: A tuple containing the updated trajectory, action type, and query.
         """
         raise NotImplementedError
-    
 
     def generate_observation(
         self,
@@ -199,7 +195,6 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             reward, observation, done flag, and external tool information.
         """
         raise NotImplementedError
-    
 
     def select_node(self, node: Node) -> Node:
         """Select the most promising node for expansion.
@@ -234,7 +229,6 @@ class LATSGeneralStrategy(LATSBaseStrategy):
                 node = max(non_terminal_children, key=lambda child: child.uct())
 
         return node
-
 
     def expand_node(
         self,
@@ -282,7 +276,6 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         node.add_children(children_nodes)  # type: ignore
 
         return children_nodes
-    
 
     def evaluate_node(
         self,
@@ -306,7 +299,6 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         """
         raise NotImplementedError
 
-     
     def simulate_node(
         self,
         node: Node,
@@ -345,7 +337,6 @@ class LATSGeneralStrategy(LATSBaseStrategy):
                 - A list of dictionaries, representing the states of nodes explored during simulation
         """
         raise NotImplementedError
-    
 
     def backpropagate_node(self, node: Node, value: float) -> None:
         """Backpropagate the estimated value through the tree, updating node statistics.

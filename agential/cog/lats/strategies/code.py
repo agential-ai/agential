@@ -11,11 +11,11 @@ from agential.cog.lats.functional import (
     _prompt_agent,
     _prompt_reflection,
     _prompt_value,
-    get_unique_trajectories,
-    parse_latest_implement,
     get_node_trajectory_code,
+    get_unique_trajectories,
     parse_code_action,
     parse_code_value,
+    parse_latest_implement,
 )
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import LATSReActOutput, LATSSimulationOutput
@@ -154,7 +154,6 @@ class LATSCodeStrategy(LATSBaseStrategy):
 
         return children_nodes
 
-
     def generate_action(
         self,
         question: str,
@@ -258,7 +257,6 @@ class LATSCodeStrategy(LATSBaseStrategy):
         trajectory += obs
 
         return trajectory, reward, obs, done, external_tool_info
-    
 
     def evaluate_node(
         self,
@@ -454,7 +452,7 @@ class LATSCodeStrategy(LATSBaseStrategy):
             results.append(result)
 
         return sum(rewards) / len(rewards), node, results
-    
+
 
 class LATSHEvalStrategy(LATSCodeStrategy):
     """A strategy class for the HumanEval benchmark using the LATS agent."""

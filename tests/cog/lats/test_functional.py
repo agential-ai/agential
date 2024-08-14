@@ -373,8 +373,6 @@ def test_parse_math_value():
     )
 
 
-
-
 def test_parse_latest_implement() -> None:
     """Test parse_latest_implement function."""
     # Test case with single implementation.
@@ -545,4 +543,3 @@ def test_parse_code_value() -> None:
         "Tricky: score.",
         7,
     )
-

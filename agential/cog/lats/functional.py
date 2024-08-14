@@ -1,6 +1,7 @@
 """Functional module for Language Agent Tree Search (LATS)."""
 
 import re
+
 from typing import Dict, List, Tuple
 
 from agential.cog.lats.node import Node
@@ -266,6 +267,7 @@ def get_unique_trajectories(
 
     return unique_trajectories
 
+
 def get_node_trajectory_qa(node: Node) -> str:
     """Generates a string representation of the trajectory from the given node to the root.
 
@@ -333,7 +335,7 @@ def parse_qa_value(string: str) -> Tuple[str, float]:
         return explanation.strip(), score
     except Exception:
         return "Explanation not found", 0.0
-    
+
 
 def get_node_trajectory_math(node: Node) -> str:
     """Generates a string representation of the trajectory from the given node to the root.
@@ -507,4 +509,3 @@ def parse_code_value(string: str) -> Tuple[str, float]:
         return explanation.strip(), score
     except Exception:
         return "Explanation not found", 0.0
-

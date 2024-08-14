@@ -11,8 +11,8 @@ from agential.cog.lats.functional import (
     _prompt_agent,
     _prompt_reflection,
     _prompt_value,
-    get_unique_trajectories,
     get_node_trajectory_math,
+    get_unique_trajectories,
     parse_math_action,
     parse_math_value,
 )
@@ -39,7 +39,6 @@ class LATSMathStrategy(LATSBaseStrategy):
     The strategy uses these parameters to fine-tune its behavior and performance
     in question-answering tasks.
     """
-
 
     def generate_children_nodes(
         self,
@@ -153,7 +152,6 @@ class LATSMathStrategy(LATSBaseStrategy):
                 children_nodes.append(new_node)
 
         return children_nodes
-    
 
     def generate_action(
         self,
@@ -249,7 +247,6 @@ class LATSMathStrategy(LATSBaseStrategy):
         trajectory += obs
 
         return trajectory, reward, obs, done, external_tool_info
-
 
     def evaluate_node(
         self,
@@ -446,7 +443,6 @@ class LATSMathStrategy(LATSBaseStrategy):
             results.append(result)
 
         return sum(rewards) / len(rewards), node, results
-    
 
 
 class LATSGSM8KStrategy(LATSMathStrategy):

@@ -9,7 +9,7 @@ from agential.llm.llm import BaseLLM
 
 class BaseAgent(ABC):
     """Base agent class providing a general interface for agent operations.
-    
+
     Parameters:
         llm (BaseLLM): An instance of a language model used for generating initial answers
             and critiques.

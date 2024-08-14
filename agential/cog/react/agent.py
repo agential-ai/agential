@@ -122,7 +122,10 @@ class ReActAgent(BaseAgent):
         super().__init__(llm, benchmark, testing)
 
         self.strategy = ReActAgent.get_strategy(
-            benchmark=self.benchmark, llm=self.llm, testing=self.testing, **strategy_kwargs
+            benchmark=self.benchmark,
+            llm=self.llm,
+            testing=self.testing,
+            **strategy_kwargs,
         )
 
     @staticmethod
