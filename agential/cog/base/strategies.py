@@ -30,8 +30,8 @@ class BaseStrategy(ABC):
         Returns:
             Any: The generated response.
         """
-        pass
-
+        raise NotImplementedError
+    
     @abstractmethod
     def reset(self, *args: Any, **kwargs: Any) -> None:
         """Resets the strategy's internal state, if any.
@@ -40,4 +40,4 @@ class BaseStrategy(ABC):
             *args: Variable length argument list.
             **kwargs: Arbitrary keyword arguments.
         """
-        pass
+        raise NotImplementedError

@@ -56,7 +56,7 @@ class ReActBaseStrategy(BaseStrategy):
         Returns:
             ReactOutput: The output of the generation process.
         """
-        raise NotImplementedError("generate method not implemented.") 
+        raise NotImplementedError
     
     @abstractmethod
     def generate_thought(
@@ -81,7 +81,7 @@ class ReActBaseStrategy(BaseStrategy):
         Returns:
             Tuple[str, str, ModelResponse]: The scratchpad, generated thought, and model response.
         """
-        raise NotImplementedError("generate method not implemented.") 
+        raise NotImplementedError
 
     @abstractmethod
     def generate_action(
@@ -106,7 +106,7 @@ class ReActBaseStrategy(BaseStrategy):
         Returns:
             Tuple[str, str, str, ModelResponse]: The scratchpad, generated action type and query, and model response.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def generate_observation(
@@ -123,7 +123,7 @@ class ReActBaseStrategy(BaseStrategy):
         Returns:
             Tuple[str, str, str, bool, Dict[str, Any]]: The scratchpad, the answer, observation, whether the query is correct, and the observation metrics.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def halting_condition(
@@ -150,9 +150,9 @@ class ReActBaseStrategy(BaseStrategy):
         Returns:
             bool: True if the halting condition is met, False otherwise.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def reset(self) -> None:
         """Resets the agent's state."""
-        pass
+        raise NotImplementedError
