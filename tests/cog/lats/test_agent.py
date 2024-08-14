@@ -3,7 +3,11 @@
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.agent import LATSAgent
 from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSOutput, LATSReActStepOutput, LATSSimulationOutput
+from agential.cog.lats.output import (
+    LATSOutput,
+    LATSReActStepOutput,
+    LATSSimulationOutput,
+)
 from agential.cog.lats.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE,

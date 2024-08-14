@@ -63,10 +63,10 @@ class LATSQAStrategy(LATSBaseStrategy):
             depth_limit=depth_limit,
             max_unique=max_unique,
             cache_values=cache_values,
-            testing=testing
+            testing=testing,
         )
         self.docstore = docstore
-        
+
         self.failed_trajectories: List[Dict[str, str]] = []
         self.reflection_map: List[Dict[str, str]] = []
         self.value_cache: Dict[str, str] = {}
@@ -134,15 +134,17 @@ class LATSQAStrategy(LATSBaseStrategy):
                 additional_keys=additional_keys,
                 is_simulate=is_simulate,
             )
-            trajectory_i, action_type, query, action_model_response = self.generate_action(
-                question=question,
-                examples=examples,
-                trajectory=trajectory_i,
-                reflections=reflections_str,
-                depth=node.depth,
-                prompt=prompt,
-                additional_keys=additional_keys,
-                is_simulate=is_simulate,
+            trajectory_i, action_type, query, action_model_response = (
+                self.generate_action(
+                    question=question,
+                    examples=examples,
+                    trajectory=trajectory_i,
+                    reflections=reflections_str,
+                    depth=node.depth,
+                    prompt=prompt,
+                    additional_keys=additional_keys,
+                    is_simulate=is_simulate,
+                )
             )
 
             unique_key = f"{thought}::{action_type}::{query}"

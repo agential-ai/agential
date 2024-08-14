@@ -12,7 +12,7 @@ class LATSBaseStrategy(BaseStrategy):
     """An abstract base class for defining strategies for the LATS Agent."""
 
     def __init__(
-        self, 
+        self,
         llm: BaseLLM,
         n_samples: int,
         max_reflections: int,
@@ -23,7 +23,7 @@ class LATSBaseStrategy(BaseStrategy):
     ) -> None:
         """Initialization."""
         super().__init__(llm=llm, testing=testing)
-        self.n_samples =  n_samples
+        self.n_samples = n_samples
         self.max_reflections = max_reflections
         self.depth_limit = depth_limit
         self.max_unique = max_unique

@@ -12,7 +12,32 @@ def test_node_init() -> None:
     """Test node init."""
     node = Node()
 
-    assert node.state == LATSReActStepOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}, thought_metrics=PromptMetrics(prompt_tokens=0, completion_tokens=0, total_tokens=0, prompt_cost=0.0, completion_cost=0.0, total_cost=0.0, prompt_time=0.0), action_metrics=PromptMetrics(prompt_tokens=0, completion_tokens=0, total_tokens=0, prompt_cost=0.0, completion_cost=0.0, total_cost=0.0, prompt_time=0.0))
+    assert node.state == LATSReActStepOutput(
+        thought="",
+        action_type="",
+        query="",
+        observation="",
+        answer="",
+        external_tool_info={},
+        thought_metrics=PromptMetrics(
+            prompt_tokens=0,
+            completion_tokens=0,
+            total_tokens=0,
+            prompt_cost=0.0,
+            completion_cost=0.0,
+            total_cost=0.0,
+            prompt_time=0.0,
+        ),
+        action_metrics=PromptMetrics(
+            prompt_tokens=0,
+            completion_tokens=0,
+            total_tokens=0,
+            prompt_cost=0.0,
+            completion_cost=0.0,
+            total_cost=0.0,
+            prompt_time=0.0,
+        ),
+    )
     assert node.parent is None
     assert node.children == []
     assert node.visits == 0
@@ -54,7 +79,39 @@ def test_node_add_children() -> None:
 
 def test_node_to_dict() -> None:
     """Test node to_dict."""
-    gt_state = {'state': LATSReActStepOutput(thought='Test thought', action_type='Test action', query='Test query', observation='', answer='', external_tool_info={}, thought_metrics=PromptMetrics(prompt_tokens=0, completion_tokens=0, total_tokens=0, prompt_cost=0.0, completion_cost=0.0, total_cost=0.0, prompt_time=0.0), action_metrics=PromptMetrics(prompt_tokens=0, completion_tokens=0, total_tokens=0, prompt_cost=0.0, completion_cost=0.0, total_cost=0.0, prompt_time=0.0)), 'visits': 5, 'value': 10, 'depth': 2, 'is_terminal': True, 'reward': 1}
+    gt_state = {
+        "state": LATSReActStepOutput(
+            thought="Test thought",
+            action_type="Test action",
+            query="Test query",
+            observation="",
+            answer="",
+            external_tool_info={},
+            thought_metrics=PromptMetrics(
+                prompt_tokens=0,
+                completion_tokens=0,
+                total_tokens=0,
+                prompt_cost=0.0,
+                completion_cost=0.0,
+                total_cost=0.0,
+                prompt_time=0.0,
+            ),
+            action_metrics=PromptMetrics(
+                prompt_tokens=0,
+                completion_tokens=0,
+                total_tokens=0,
+                prompt_cost=0.0,
+                completion_cost=0.0,
+                total_cost=0.0,
+                prompt_time=0.0,
+            ),
+        ),
+        "visits": 5,
+        "value": 10,
+        "depth": 2,
+        "is_terminal": True,
+        "reward": 1,
+    }
     node = Node(
         state=LATSReActStepOutput(
             **{
@@ -65,10 +122,22 @@ def test_node_to_dict() -> None:
                 "answer": "",
                 "external_tool_info": {},
                 "thought_metrics": PromptMetrics(
-                    prompt_tokens=0, completion_tokens=0, total_tokens=0, prompt_cost=0.0, completion_cost=0.0, total_cost=0.0, prompt_time=0.0
+                    prompt_tokens=0,
+                    completion_tokens=0,
+                    total_tokens=0,
+                    prompt_cost=0.0,
+                    completion_cost=0.0,
+                    total_cost=0.0,
+                    prompt_time=0.0,
                 ),
                 "action_metrics": PromptMetrics(
-                    prompt_tokens=0, completion_tokens=0, total_tokens=0, prompt_cost=0.0, completion_cost=0.0, total_cost=0.0, prompt_time=0.0
+                    prompt_tokens=0,
+                    completion_tokens=0,
+                    total_tokens=0,
+                    prompt_cost=0.0,
+                    completion_cost=0.0,
+                    total_cost=0.0,
+                    prompt_time=0.0,
                 ),
             }
         ),

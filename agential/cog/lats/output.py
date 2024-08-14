@@ -3,8 +3,8 @@
 from typing import Any, Dict, List
 
 from pydantic import BaseModel, Field
-from agential.cog.base.output import BaseOutput
 
+from agential.cog.base.output import BaseOutput
 from agential.utils.general import PromptMetrics
 
 

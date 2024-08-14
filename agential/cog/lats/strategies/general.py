@@ -32,7 +32,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             depth_limit=depth_limit,
             max_unique=max_unique,
             cache_values=cache_values,
-            testing=testing
+            testing=testing,
         )
 
         self.failed_trajectories: List[Dict[str, str]] = []
@@ -54,7 +54,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         reflect_additional_keys: Dict[str, str],
         value_additional_keys: Dict[str, str],
         max_iterations: int,
-        reset: bool, 
+        reset: bool,
     ) -> Any:
         if reset:
             self.reset()
@@ -63,9 +63,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
 
         root = self.initialize()
         for i in range(max_iterations):
-            node = self.select_node(
-                root
-            )  # Selected node is always non-terminal.
+            node = self.select_node(root)  # Selected node is always non-terminal.
 
             children_nodes = self.expand_node(
                 node=node,
