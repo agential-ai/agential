@@ -50,7 +50,7 @@ class LATSSimulationOutput(BaseModel):
     )
 
 
-class LATSOutput(BaseModel):
+class LATSStepOutput(BaseModel):
     """LATS Pydantic output class.
 
     Attributes:

@@ -1,27 +1,15 @@
 """LATS general strategy."""
 
-import re
-
-from copy import deepcopy
 from typing import Any, Dict, List, Optional, Tuple
 
-from langchain_community.docstore.wikipedia import Wikipedia
-
 from agential.cog.lats.functional import (
-    _build_failed_trajectory_format,
-    _build_reflection_format,
     _prompt_agent,
     _prompt_reflection,
-    _prompt_value,
     get_unique_trajectories,
 )
 from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSReActOutput, LATSSimulationOutput
 from agential.cog.lats.strategies.base import LATSBaseStrategy
-from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
-from agential.utils.docstore import DocstoreExplorer
-from agential.utils.general import get_token_cost_time
 from agential.utils.parse import remove_newline
 
 
@@ -38,26 +26,118 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         cache_values: bool = True,
     ) -> None:
         """Initialize."""
-        super().__init__(llm)
-        self.n_samples = n_samples
-        self.max_reflections = max_reflections
-        self.depth_limit = depth_limit
-        self.max_unique = max_unique
-        self.cache_values = cache_values
+        super().__init__(llm, n_samples=n_samples, max_reflections=max_reflections, depth_limit=depth_limit, max_unique=max_unique, cache_values=cache_values)
 
         self.failed_trajectories: List[Dict[str, str]] = []
         self.reflection_map: List[Dict[str, str]] = []
         self.value_cache: Dict[str, str] = {}
         self.root: Optional[Node] = None
-        self._prompt_metrics: Dict[str, Any] = {
-            "thought": [],
-            "action": [],
-            "value": [],
-            "simulate_thought": [],
-            "simulate_action": [],
-            "simulate_value": [],
-            "reflection": [],
-        }
+
+    def generate(
+        self,
+        question: str,
+        key: str,
+        examples: str,
+        reflect_examples: str,
+        value_examples: str,
+        prompt: str,
+        reflect_prompt: str,
+        value_prompt: str,
+        additional_keys: Dict[str, str],
+        reflect_additional_keys: Dict[str, str],
+        value_additional_keys: Dict[str, str],
+        max_iterations: int,
+        reset: bool, 
+    ) -> Any:
+        if reset:
+            self.reset()
+
+        output = []
+
+        root = self.initialize()
+        for i in range(max_iterations):
+            node = self.select_node(
+                root
+            )  # Selected node is always non-terminal.
+
+            children_nodes = self.expand_node(
+                node=node,
+                question=question,
+                key=key,
+                examples=examples,
+                reflect_examples=reflect_examples,
+                prompt=prompt,
+                reflect_prompt=reflect_prompt,
+                additional_keys=additional_keys,
+                reflect_additional_keys=reflect_additional_keys,
+            )
+
+            for child_node in children_nodes:
+                if self.halting_condition(child_node):
+                    output.append(
+                        LATSOutput(
+                            **self.create_output_dict(
+                                iteration=i,
+                                current_node=node,
+                                children_nodes=children_nodes,
+                                values=None,
+                                simulation_reward=None,
+                                simulation_terminal_node=None,
+                                simulation_results=None,
+                            )
+                        )
+                    )
+                    return child_node, output
+
+            values = self.evaluate_node(
+                node=node,
+                question=question,
+                examples=value_examples,
+                prompt=value_prompt,
+                additional_keys=value_additional_keys,
+            )
+
+            simulation_reward, simulation_terminal_node, simulation_results = (
+                self.simulate_node(
+                    node=max(
+                        node.children, key=lambda child: child.value, default=node
+                    ),
+                    question=question,
+                    key=key,
+                    examples=examples,
+                    reflect_examples=reflect_examples,
+                    value_examples=value_examples,
+                    prompt=prompt,
+                    reflect_prompt=reflect_prompt,
+                    value_prompt=value_prompt,
+                    additional_keys=additional_keys,
+                    reflect_additional_keys=reflect_additional_keys,
+                    value_additional_keys=value_additional_keys,
+                )
+            )
+
+            output.append(
+                LATSOutput(
+                    **self.create_output_dict(
+                        iteration=i,
+                        current_node=node,
+                        children_nodes=children_nodes,
+                        values=values,
+                        simulation_reward=simulation_reward,
+                        simulation_terminal_node=simulation_terminal_node,
+                        simulation_results=simulation_results,
+                    )
+                )
+            )
+
+            if self.halting_condition(simulation_terminal_node):
+                return simulation_terminal_node, output
+
+            self.backpropagate_node(
+                node=simulation_terminal_node, value=simulation_reward
+            )
+
+        return simulation_terminal_node, output
 
     def initialize(self) -> Node:
         """Create and return the root node.
@@ -109,7 +189,6 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
-        is_simulate: bool,
     ) -> Tuple[str, str]:
         """Generate a thought for the current step in the reasoning process.
 
@@ -121,7 +200,6 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             depth (int): The current depth in the search tree.
             prompt (str): The prompt template for thought generation.
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
-            is_simulate (bool): Whether this method is called to simulate expansion or not.
 
         Returns:
             Tuple[str, str]: A tuple containing the updated trajectory and the generated thought.
@@ -136,14 +214,12 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        metric_key = "simulate_thought" if is_simulate else "thought"
-        self._prompt_metrics[metric_key].append(get_token_cost_time(out))
         thought = out.choices[0].message.content
 
         thought = remove_newline(thought).split("Action")[0].strip()
         trajectory += " " + thought
 
-        return trajectory, thought
+        return trajectory, thought, out
 
     def generate_action(
         self,
@@ -413,9 +489,6 @@ class LATSGeneralStrategy(LATSBaseStrategy):
                 prompt=prompt,
                 additional_keys=additional_keys,
             )
-            self._prompt_metrics["reflection"].append(
-                get_token_cost_time(reflection_out)
-            )
             reflection = reflection_out.choices[0].message.content
 
             reflections.append({"trajectory": trajectory, "reflection": reflection})
@@ -424,80 +497,9 @@ class LATSGeneralStrategy(LATSBaseStrategy):
 
         return reflections
 
-    def create_output_dict(
-        self,
-        iteration: int,
-        current_node: Node,
-        children_nodes: List[Node],
-        values: Optional[List[Dict[str, Any]]],
-        simulation_reward: Optional[float],
-        simulation_terminal_node: Optional[Node],
-        simulation_results: Optional[List[Dict[str, Any]]],
-    ) -> Dict[str, Any]:
-        """Create a dictionary containing the output of a LATS iteration.
-
-        Args:
-            iteration (int): The current iteration number.
-            current_node (Node): The current node being processed.
-            children_nodes (List[Node]): List of child nodes of the current node.
-            values (Optional[List[Dict[str, Any]]]): List of values associated with the children nodes.
-            simulation_reward (Optional[float]): The reward obtained from the simulation.
-            simulation_terminal_node (Optional[Node]): The terminal node reached in the simulation.
-            simulation_results (Optional[List[Dict[str, Any]]]): Results from multiple simulations.
-
-        Returns:
-            Dict[str, Any]: A dictionary containing the processed output of the LATS iteration,
-            including the current state, children nodes, values, simulation results, and other
-            relevant information.
-        """
-        if simulation_results:
-            simulation_results_output = [
-                LATSSimulationOutput(
-                    current_node=result["current_node"].to_dict(),
-                    children_nodes=[
-                        child_node.to_dict() for child_node in result["children_nodes"]
-                    ],
-                    values=result["values"],
-                )
-                for result in simulation_results
-            ]
-        out = {
-            "iteration": iteration,
-            "current_node": current_node.to_dict(),
-            "children_nodes": [child_node.to_dict() for child_node in children_nodes],
-            "values": values if values else [],
-            "simulation_reward": simulation_reward if simulation_reward else 0,
-            "simulation_terminal_node": (
-                simulation_terminal_node.to_dict() if simulation_terminal_node else {}
-            ),
-            "simulation_results": (
-                simulation_results_output if simulation_results else []
-            ),
-            "prompt_metrics": deepcopy(self._prompt_metrics),
-        }
-        self._prompt_metrics = {
-            "thought": [],
-            "action": [],
-            "value": [],
-            "simulate_thought": [],
-            "simulate_action": [],
-            "simulate_value": [],
-            "reflection": [],
-        }
-        return out
-
     def reset(self) -> None:
         """Reset the strategy to its initial state."""
         self.failed_trajectories = []
         self.reflection_map = []
         self.value_cache = {}
         self.root = None
-        self._prompt_metrics = {
-            "thought": [],
-            "action": [],
-            "value": [],
-            "simulate_thought": [],
-            "simulate_action": [],
-            "simulate_value": [],
-            "reflection": [],
-        }

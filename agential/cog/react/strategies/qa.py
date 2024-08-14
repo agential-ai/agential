@@ -36,7 +36,7 @@ class ReActQAStrategy(ReActGeneralStrategy):
         testing: bool = False,
     ) -> None:
         """Initialization."""
-        super().__init__(llm, max_steps, max_tokens, enc, testing)
+        super().__init__(llm=llm, max_steps=max_steps, max_tokens=max_tokens, enc=enc, testing=testing)
         self.docstore = docstore
 
     def generate_action(

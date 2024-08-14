@@ -30,7 +30,7 @@ class ReActBaseStrategy(BaseStrategy):
         testing: bool = False,
     ) -> None:
         """Initialization."""
-        super().__init__(llm, testing)
+        super().__init__(llm=llm, testing=testing)
         self.max_steps = max_steps
         self.max_tokens = max_tokens
         self.enc = enc

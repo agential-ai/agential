@@ -11,7 +11,10 @@ from agential.llm.llm import BaseLLM
 class LATSBaseStrategy(BaseStrategy):
     """An abstract base class for defining strategies for the LATS Agent."""
 
-    def __init__(self, llm: BaseLLM) -> None:
+    def __init__(
+        self, 
+        llm: BaseLLM
+    ) -> None:
         """Initialization."""
         super().__init__(llm)
 
@@ -22,7 +25,7 @@ class LATSBaseStrategy(BaseStrategy):
         Returns:
             Node: The root node of the search tree.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def generate_children_nodes(
@@ -55,7 +58,7 @@ class LATSBaseStrategy(BaseStrategy):
         Returns:
             List[Node]: A list of generated child nodes.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def generate_thought(
@@ -84,7 +87,7 @@ class LATSBaseStrategy(BaseStrategy):
         Returns:
             Tuple[str, str]: A tuple containing the updated trajectory and the generated thought.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def generate_action(
@@ -113,7 +116,7 @@ class LATSBaseStrategy(BaseStrategy):
         Returns:
             Tuple[str, str, str]: A tuple containing the updated trajectory, action type, and query.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def generate_observation(
@@ -137,7 +140,7 @@ class LATSBaseStrategy(BaseStrategy):
             Tuple[str, int, str, bool, Dict[str, str]]: A tuple containing the updated trajectory,
             reward, observation, done flag, and external tool information.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def select_node(self, node: Node) -> Node:
@@ -149,7 +152,7 @@ class LATSBaseStrategy(BaseStrategy):
         Returns:
             Node: The selected node for expansion.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def expand_node(
@@ -180,7 +183,7 @@ class LATSBaseStrategy(BaseStrategy):
         Returns:
             List[Node]: A list of newly generated child nodes.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def evaluate_node(
@@ -203,7 +206,7 @@ class LATSBaseStrategy(BaseStrategy):
         Returns:
             List[Dict[str, Any]]: A list of dictionaries containing evaluation results for each child node.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def simulate_node(
@@ -243,7 +246,7 @@ class LATSBaseStrategy(BaseStrategy):
                 - The final node reached in the simulation (Node)
                 - A list of dictionaries, representing the states of nodes explored during simulation
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def backpropagate_node(self, node: Node, value: float) -> None:
@@ -256,7 +259,7 @@ class LATSBaseStrategy(BaseStrategy):
         Returns:
             None
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def halting_condition(self, node: Node) -> bool:
@@ -268,7 +271,7 @@ class LATSBaseStrategy(BaseStrategy):
         Returns:
             bool: True if the search should halt, False otherwise.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def reflect_condition(self) -> bool:
@@ -277,7 +280,7 @@ class LATSBaseStrategy(BaseStrategy):
         Returns:
             bool: True if reflection should be performed, False otherwise.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def reflect(
@@ -294,34 +297,7 @@ class LATSBaseStrategy(BaseStrategy):
         Returns:
             List[Dict[str, str]]: A list of dictionaries containing reflection results.
         """
-        pass
-
-    @abstractmethod
-    def create_output_dict(
-        self,
-        iteration: int,
-        current_node: Node,
-        children_nodes: List[Node],
-        values: Optional[List[Dict[str, Any]]],
-        simulation_reward: Optional[float],
-        simulation_terminal_node: Optional[Node],
-        simulation_results: Optional[List[Dict[str, Any]]],
-    ) -> Dict[str, Any]:
-        """Create a dictionary containing the output of a LATS iteration.
-
-        Args:
-            iteration (int): The current iteration number.
-            current_node (Node): The current node being processed.
-            children_nodes (List[Node]): List of child nodes of the current node.
-            values (Optional[List[Dict[str, Any]]]): List of values associated with the children nodes.
-            simulation_reward (Optional[float]): The reward obtained from the simulation.
-            simulation_terminal_node (Optional[Node]): The terminal node reached in the simulation.
-            simulation_results (Optional[List[Dict[str, Any]]]): Results from multiple simulations.
-
-        Returns:
-            Dict[str, Any]: A dictionary containing the processed output of the LATS iteration.
-        """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def reset(self) -> None:
@@ -330,4 +306,4 @@ class LATSBaseStrategy(BaseStrategy):
         Returns:
             None
         """
-        pass
+        raise NotImplementedError
