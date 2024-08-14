@@ -9,7 +9,7 @@ from agential.cog.lats.functional import (
 )
 from agential.cog.lats.node import Node
 from agential.cog.lats.strategies.base import LATSBaseStrategy
-from agential.llm.llm import BaseLLM
+from agential.llm.llm import BaseLLM, ModelResponse
 from agential.utils.parse import remove_newline
 
 
@@ -196,7 +196,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str]:
+    ) -> Tuple[str, str, ModelResponse]:
         """Generate a thought for the current step in the reasoning process.
 
         Args:
@@ -209,7 +209,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[str, str]: A tuple containing the updated trajectory and the generated thought.
+            Tuple[str, str, ModelResponse]: A tuple containing the updated trajectory, the generated thought, and the model response.
         """
         trajectory += f"\nThought {depth + 1}:"
         out = _prompt_agent(

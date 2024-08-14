@@ -2,7 +2,7 @@
 
 from agential.cog.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSReActOutput, LATSSimulationOutput
+from agential.cog.lats.output import LATSReActStepOutput, LATSSimulationOutput
 from agential.cog.lats.prompts import (
     HUMANEVAL_FEWSHOT_EXAMPLES_LATS_REFLECT,
     HUMANEVAL_FEWSHOT_EXAMPLES_LATS_VALUE,
@@ -241,7 +241,7 @@ def test_generate_observation() -> None:
 def test_generate() -> None:
     """Test the generate method."""
     gt_states = [
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="We need to iterate through the list of numbers and check if any two numbers are closer to each other than the given threshold.",
             action_type="Implement",
             query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
@@ -249,7 +249,7 @@ def test_generate() -> None:
             answer="",
             external_tool_info={"execution_status": "Done"},
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="I need to iterate through the list of numbers and compare each pair to see if they are closer to each other than the threshold.",
             action_type="Implement",
             query="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
@@ -257,7 +257,7 @@ def test_generate() -> None:
             answer="",
             external_tool_info={"execution_status": "Done"},
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="We need to iterate through the list of numbers and check if any two numbers are closer to each other than the given threshold.",
             action_type="Implement",
             query="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
@@ -265,7 +265,7 @@ def test_generate() -> None:
             answer="",
             external_tool_info={"execution_status": "Done"},
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="To solve this problem, I need to iterate through the list of numbers and compare each pair of numbers to see if they are closer to each other than the threshold.",
             action_type="Implement",
             query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
@@ -426,7 +426,7 @@ def test_generate() -> None:
 
     # Test generate with reflections.
     gt_states = [
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="Implement the `has_close_elements` function with nested loops to compare all pairs of numbers.```pythonfrom typing import Listdef has_close_elements(numbers: List[float], threshold: float) -> bool:    for i in range(len(numbers)):        for j in range(i + 1, len(numbers)):            if abs(numbers[i] - numbers[j]) < threshold:                return True    return False```Thought 2: I need to test the implemented function with test cases to ensure it works correctly.",
             action_type="Implement",
             query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
@@ -434,7 +434,7 @@ def test_generate() -> None:
             answer="",
             external_tool_info={"execution_status": "Done"},
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="Implement the `has_close_elements` function with the nested loop logic.```pythonfrom typing import Listdef has_close_elements(numbers: List[float], threshold: float) -> bool:    for i in range(len(numbers)):        for j in range(i+1, len(numbers)):            if abs(numbers[i] - numbers[j]) < threshold:                return True    return False```Thought 2: I need to test the implemented `has_close_elements` function with some test cases to ensure it works as expected.",
             action_type="Implement",
             query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
@@ -442,7 +442,7 @@ def test_generate() -> None:
             answer="",
             external_tool_info={"execution_status": "Done"},
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="Implement the `has_close_elements` function with nested loops to compare each pair of numbers in the list against the threshold.```pythonfrom typing import Listdef has_close_elements(numbers: List[float], threshold: float) -> bool:    for i in range(len(numbers)):        for j in range(i+1, len(numbers)):            if abs(numbers[i] - numbers[j]) < threshold:                return True    return False```Thought 2: I should test the implemented `has_close_elements` function with some test cases to ensure it works correctly.",
             action_type="Implement",
             query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
@@ -450,7 +450,7 @@ def test_generate() -> None:
             answer="",
             external_tool_info={"execution_status": "Done"},
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought='Implement the `has_close_elements` function.```pythonfrom typing import Listdef has_close_elements(numbers: List[float], threshold: float) -> bool:    """ Check if in given list of numbers, are any two numbers closer to each other than    given threshold.    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)    False    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)    True    """        for i in range(len(numbers)):        for j in range(i+1, len(numbers)):            if abs(numbers[i] - numbers[j]) < threshold:                return True    return False```Thought 2: I now need to test the `has_close_elements` function with different test cases to ensure it works correctly.',
             action_type="Implement",
             query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
@@ -738,7 +738,7 @@ def test_select_node() -> None:
 def test_expand_node() -> None:
     """Test the expand_node method."""
     gt_states = [
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="To solve this problem, I need to iterate through the list of numbers and check if any two numbers are closer to each other than the given threshold.",
             action_type="Implement",
             query="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
@@ -746,7 +746,7 @@ def test_expand_node() -> None:
             answer="",
             external_tool_info={"execution_status": "Done"},
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="I need to iterate through the list of numbers and check if any two numbers are closer to each other than the given threshold.",
             action_type="Implement",
             query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
@@ -754,7 +754,7 @@ def test_expand_node() -> None:
             answer="",
             external_tool_info={"execution_status": "Done"},
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="I need to iterate through the list of numbers and compare each pair of numbers to see if they are closer than the threshold.",
             action_type="",
             query="",
@@ -762,7 +762,7 @@ def test_expand_node() -> None:
             answer="",
             external_tool_info={"execution_status": ""},
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="To solve this problem, I need to iterate through the list of numbers and compare each pair of numbers to see if they are closer to each other than the given threshold.",
             action_type="Implement",
             query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
@@ -770,7 +770,7 @@ def test_expand_node() -> None:
             answer="",
             external_tool_info={"execution_status": "Done"},
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="To solve this problem, we need to iterate through the list of numbers and compare each pair of numbers to check if they are closer to each other than the threshold.",
             action_type="Implement",
             query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
@@ -859,7 +859,7 @@ def test_evaluate_node() -> None:
 
     root = strategy.initialize()
     child1 = Node(
-        state=LATSReActOutput(
+        state=LATSReActStepOutput(
             thought="Child 1",
             action_type="",
             query="",
@@ -870,7 +870,7 @@ def test_evaluate_node() -> None:
         parent=root,
     )
     child2 = Node(
-        state=LATSReActOutput(
+        state=LATSReActStepOutput(
             thought="Child 2",
             action_type="",
             query="",
@@ -1352,7 +1352,7 @@ def test_create_output_dict() -> None:
     gt_out = {
         "iteration": 1,
         "current_node": {
-            "state": LATSReActOutput(
+            "state": LATSReActStepOutput(
                 thought="",
                 action_type="",
                 query="",
@@ -1368,7 +1368,7 @@ def test_create_output_dict() -> None:
         },
         "children_nodes": [
             {
-                "state": LATSReActOutput(
+                "state": LATSReActStepOutput(
                     thought="",
                     action_type="",
                     query="",
@@ -1386,7 +1386,7 @@ def test_create_output_dict() -> None:
         "values": [{}],
         "simulation_reward": 1.0,
         "simulation_terminal_node": {
-            "state": LATSReActOutput(
+            "state": LATSReActStepOutput(
                 thought="",
                 action_type="",
                 query="",
@@ -1403,7 +1403,7 @@ def test_create_output_dict() -> None:
         "simulation_results": [
             LATSSimulationOutput(
                 current_node={
-                    "state": LATSReActOutput(
+                    "state": LATSReActStepOutput(
                         thought="",
                         action_type="",
                         query="",
@@ -1450,7 +1450,7 @@ def test_create_output_dict() -> None:
     gt_out = {
         "iteration": 1,
         "current_node": {
-            "state": LATSReActOutput(
+            "state": LATSReActStepOutput(
                 thought="",
                 action_type="",
                 query="",
@@ -1466,7 +1466,7 @@ def test_create_output_dict() -> None:
         },
         "children_nodes": [
             {
-                "state": LATSReActOutput(
+                "state": LATSReActStepOutput(
                     thought="",
                     action_type="",
                     query="",

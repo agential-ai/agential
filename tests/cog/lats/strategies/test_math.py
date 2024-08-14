@@ -2,7 +2,7 @@
 
 from agential.cog.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSReActOutput, LATSSimulationOutput
+from agential.cog.lats.output import LATSReActStepOutput, LATSSimulationOutput
 from agential.cog.lats.prompts import (
     GSM8K_FEWSHOT_EXAMPLES_LATS_REFLECT,
     GSM8K_FEWSHOT_EXAMPLES_LATS_VALUE,
@@ -229,7 +229,7 @@ def test_generate_observation() -> None:
 def test_generate() -> None:
     """Test the generate method."""
     gt_states = [
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="I need to calculate how much money Janet makes daily at the farmers' market.",
             action_type="Calculate",
             query="eggs_laid_per_day = 16\neggs_consumed = 3\neggs_used_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_consumed - eggs_used_muffins\nprice_per_egg = 2\nearnings_per_day = eggs_sold * price_per_egg\nanswer = earnings_per_day",
@@ -237,7 +237,7 @@ def test_generate() -> None:
             answer="",
             external_tool_info={"execution_status": "Done", "code_answer": -9867630},
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="I need to calculate how much money Janet makes daily at the farmers' market by selling the remaining eggs after breakfast and baking muffins for her friends.",
             action_type="Calculate",
             query="eggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nanswer = eggs_sold * price_per_egg",
@@ -245,7 +245,7 @@ def test_generate() -> None:
             answer="",
             external_tool_info={"execution_status": "Done", "code_answer": -9867630},
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="First, I need to calculate the total number of eggs Janet has available to sell at the farmers' market after accounting for her breakfast consumption and muffin baking.",
             action_type="Calculate",
             query="eggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_available_to_sell = eggs_laid_per_day - eggs_consumed_for_breakfast - eggs_baked_into_muffins",
@@ -253,7 +253,7 @@ def test_generate() -> None:
             answer="",
             external_tool_info={"execution_status": "Done", "code_answer": None},
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="First, I need to calculate how many eggs Janet has left after eating three for breakfast every day.",
             action_type="Calculate",
             query="eggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_remaining = eggs_laid_per_day - eggs_eaten_for_breakfast",
@@ -261,7 +261,7 @@ def test_generate() -> None:
             answer="",
             external_tool_info={"execution_status": "Done", "code_answer": None},
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="First, I need to calculate how many eggs Janet has left after eating three eggs for breakfast and baking muffins.",
             action_type="Calculate",
             query="eggs_per_day = 16\neggs_eaten_breakfast = 3\neggs_baked_in_muffins = 4933828\neggs_remaining = eggs_per_day - eggs_eaten_breakfast - eggs_baked_in_muffins",
@@ -416,7 +416,7 @@ def test_generate() -> None:
 
     # Test generate with reflections.
     gt_states = [
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="To calculate how much money Janet makes at the farmers' market daily, I need to first find out how many eggs she has available for sale after consuming some and using some for baking.",
             action_type="Calculate",
             query="eggs_laid_per_day = 16\neggs_consumed_daily = 3\neggs_used_for_baking = 4933828\neggs_available_for_sale = eggs_laid_per_day - eggs_consumed_daily - eggs_used_for_baking",
@@ -424,7 +424,7 @@ def test_generate() -> None:
             answer="",
             external_tool_info={"execution_status": "Done", "code_answer": None},
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="I need to calculate how many eggs Janet has available for sale at the farmers' market after consuming some for breakfast and baking muffins.",
             action_type="Calculate",
             query="eggs_laid_per_day = 16\neggs_consumed_daily = 3 + 4933828\neggs_available_for_sale = eggs_laid_per_day - eggs_consumed_daily",
@@ -432,7 +432,7 @@ def test_generate() -> None:
             answer="",
             external_tool_info={"execution_status": "Done", "code_answer": None},
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="First, I need to calculate how many eggs Janet has available for sale at the farmers' market each day.",
             action_type="Calculate",
             query="eggs_laid_per_day = 16\neggs_consumed_daily = 3\neggs_remaining = eggs_laid_per_day - eggs_consumed_daily",
@@ -440,7 +440,7 @@ def test_generate() -> None:
             answer="",
             external_tool_info={"execution_status": "Done", "code_answer": None},
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="I need to calculate the total earnings Janet makes by selling the remaining eggs at the farmers' market.",
             action_type="Calculate",
             query="eggs_laid_per_day = 16\neggs_consumed_daily = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_consumed_daily - eggs_used_for_muffins\nprice_per_egg = 2\ndaily_earnings = eggs_sold * price_per_egg\nanswer = daily_earnings",
@@ -448,7 +448,7 @@ def test_generate() -> None:
             answer="",
             external_tool_info={"execution_status": "Done", "code_answer": -9867630},
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="First, I need to find out how many eggs Janet has available for sale at the farmers' market.",
             action_type="Calculate",
             query="eggs_laid_per_day = 16\neggs_consumed_daily = 3\neggs_baked_for_friends = 4933828\neggs_available_for_sale = eggs_laid_per_day - eggs_consumed_daily - eggs_baked_for_friends",
@@ -741,7 +741,7 @@ def test_select_node() -> None:
 def test_expand_node() -> None:
     """Test the expand_node method."""
     gt_states = [
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="I need to calculate how much money Janet makes daily at the farmers' market.",
             action_type="Calculate",
             query="eggs_laid_per_day = 16\neggs_consumed = 3\neggs_used_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_consumed - eggs_used_muffins\nprice_per_egg = 2\nearnings_per_day = eggs_sold * price_per_egg\nanswer = earnings_per_day",
@@ -749,7 +749,7 @@ def test_expand_node() -> None:
             answer="",
             external_tool_info={"execution_status": "Done", "code_answer": -9867630},
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="I need to calculate how much money Janet makes daily at the farmers' market by selling the remaining eggs after breakfast and baking muffins for her friends.",
             action_type="Calculate",
             query="eggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nanswer = eggs_sold * price_per_egg",
@@ -757,7 +757,7 @@ def test_expand_node() -> None:
             answer="",
             external_tool_info={"execution_status": "Done", "code_answer": -9867630},
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="First, I need to calculate the total number of eggs Janet has available to sell at the farmers' market after accounting for her breakfast consumption and muffin baking.",
             action_type="Calculate",
             query="eggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_available_to_sell = eggs_laid_per_day - eggs_consumed_for_breakfast - eggs_baked_into_muffins",
@@ -765,7 +765,7 @@ def test_expand_node() -> None:
             answer="",
             external_tool_info={"execution_status": "Done", "code_answer": None},
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="First, I need to calculate how many eggs Janet has left after eating three for breakfast every day.",
             action_type="Calculate",
             query="eggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_remaining = eggs_laid_per_day - eggs_eaten_for_breakfast",
@@ -773,7 +773,7 @@ def test_expand_node() -> None:
             answer="",
             external_tool_info={"execution_status": "Done", "code_answer": None},
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="First, I need to calculate how many eggs Janet has left after eating three eggs for breakfast and baking muffins.",
             action_type="Calculate",
             query="eggs_per_day = 16\neggs_eaten_breakfast = 3\neggs_baked_in_muffins = 4933828\neggs_remaining = eggs_per_day - eggs_eaten_breakfast - eggs_baked_in_muffins",
@@ -855,7 +855,7 @@ def test_evaluate_node() -> None:
 
     root = strategy.initialize()
     child1 = Node(
-        state=LATSReActOutput(
+        state=LATSReActStepOutput(
             thought="Child 1",
             action_type="",
             query="",
@@ -866,7 +866,7 @@ def test_evaluate_node() -> None:
         parent=root,
     )
     child2 = Node(
-        state=LATSReActOutput(
+        state=LATSReActStepOutput(
             thought="Child 2",
             action_type="",
             query="",
@@ -1357,7 +1357,7 @@ def test_create_output_dict() -> None:
     gt_out = {
         "iteration": 1,
         "current_node": {
-            "state": LATSReActOutput(
+            "state": LATSReActStepOutput(
                 thought="",
                 action_type="",
                 query="",
@@ -1373,7 +1373,7 @@ def test_create_output_dict() -> None:
         },
         "children_nodes": [
             {
-                "state": LATSReActOutput(
+                "state": LATSReActStepOutput(
                     thought="",
                     action_type="",
                     query="",
@@ -1391,7 +1391,7 @@ def test_create_output_dict() -> None:
         "values": [{}],
         "simulation_reward": 1.0,
         "simulation_terminal_node": {
-            "state": LATSReActOutput(
+            "state": LATSReActStepOutput(
                 thought="",
                 action_type="",
                 query="",
@@ -1408,7 +1408,7 @@ def test_create_output_dict() -> None:
         "simulation_results": [
             LATSSimulationOutput(
                 current_node={
-                    "state": LATSReActOutput(
+                    "state": LATSReActStepOutput(
                         thought="",
                         action_type="",
                         query="",
@@ -1455,7 +1455,7 @@ def test_create_output_dict() -> None:
     gt_out = {
         "iteration": 1,
         "current_node": {
-            "state": LATSReActOutput(
+            "state": LATSReActStepOutput(
                 thought="",
                 action_type="",
                 query="",
@@ -1471,7 +1471,7 @@ def test_create_output_dict() -> None:
         },
         "children_nodes": [
             {
-                "state": LATSReActOutput(
+                "state": LATSReActStepOutput(
                     thought="",
                     action_type="",
                     query="",

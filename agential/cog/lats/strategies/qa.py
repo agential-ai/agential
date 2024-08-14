@@ -19,7 +19,7 @@ from agential.cog.lats.functional import (
     parse_qa_value,
 )
 from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSReActOutput, LATSSimulationOutput
+from agential.cog.lats.output import LATSReActStepOutput, LATSSimulationOutput
 from agential.cog.lats.strategies.base import LATSBaseStrategy
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
@@ -124,7 +124,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         unique_states = set()
         children_nodes = []
         for _ in range(self.n_samples):
-            trajectory_i, thought = self.generate_thought(
+            trajectory_i, thought, thought_model_response = self.generate_thought(
                 question=question,
                 examples=examples,
                 trajectory=trajectory,
@@ -134,7 +134,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                 additional_keys=additional_keys,
                 is_simulate=is_simulate,
             )
-            trajectory_i, action_type, query = self.generate_action(
+            trajectory_i, action_type, query, action_model_response = self.generate_action(
                 question=question,
                 examples=examples,
                 trajectory=trajectory_i,
@@ -158,13 +158,15 @@ class LATSQAStrategy(LATSBaseStrategy):
                 )
 
                 new_node = Node(
-                    state=LATSReActOutput(
+                    state=LATSReActStepOutput(
                         thought=thought,
                         action_type=action_type,
                         query=query,
                         observation=obs,
                         answer="" if not done else query.lower().strip(),
                         external_tool_info=external_tool_info,
+                        thought_metrics=get_token_cost_time(thought_model_response),
+                        action_metrics=get_token_cost_time(action_model_response),
                     ),
                     parent=node,
                     depth=node.depth + 1,

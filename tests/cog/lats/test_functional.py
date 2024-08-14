@@ -25,7 +25,7 @@ from agential.cog.lats.functional import (
     parse_qa_value,
 )
 from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSReActOutput
+from agential.cog.lats.output import LATSReActStepOutput
 from agential.cog.lats.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE,
@@ -173,7 +173,7 @@ def test_get_unique_trajectories() -> None:
 def test_get_node_trajectory_qa() -> None:
     """Tests the get_node_trajectory_qa() function."""
     root = Node(
-        state=LATSReActOutput(
+        state=LATSReActStepOutput(
             **{
                 "thought": "Root thought",
                 "action_type": "",
@@ -185,7 +185,7 @@ def test_get_node_trajectory_qa() -> None:
         )
     )
     child1 = Node(
-        state=LATSReActOutput(
+        state=LATSReActStepOutput(
             **{
                 "thought": "Child1 thought",
                 "action_type": "Lookup",
@@ -198,7 +198,7 @@ def test_get_node_trajectory_qa() -> None:
         parent=root,
     )
     child2 = Node(
-        state=LATSReActOutput(
+        state=LATSReActStepOutput(
             **{
                 "thought": "Child2 thought",
                 "action_type": "Finish",
@@ -264,7 +264,7 @@ def test_parse_qa_value():
 def test_get_node_trajectory_math() -> None:
     """Tests the get_node_trajectory_math() function."""
     root = Node(
-        state=LATSReActOutput(
+        state=LATSReActStepOutput(
             **{
                 "thought": "Root thought",
                 "action_type": "",
@@ -276,7 +276,7 @@ def test_get_node_trajectory_math() -> None:
         )
     )
     child1 = Node(
-        state=LATSReActOutput(
+        state=LATSReActStepOutput(
             **{
                 "thought": "Child1 thought",
                 "action_type": "Lookup",
@@ -289,7 +289,7 @@ def test_get_node_trajectory_math() -> None:
         parent=root,
     )
     child2 = Node(
-        state=LATSReActOutput(
+        state=LATSReActStepOutput(
             **{
                 "thought": "Child2 thought",
                 "action_type": "Finish",
@@ -432,7 +432,7 @@ def test_parse_latest_implement() -> None:
 def test_get_node_trajectory_code() -> None:
     """Tests the get_node_trajectory_code() function."""
     root = Node(
-        state=LATSReActOutput(
+        state=LATSReActStepOutput(
             **{
                 "thought": "Root thought",
                 "action_type": "",
@@ -444,7 +444,7 @@ def test_get_node_trajectory_code() -> None:
         )
     )
     child1 = Node(
-        state=LATSReActOutput(
+        state=LATSReActStepOutput(
             **{
                 "thought": "Child1 thought",
                 "action_type": "Lookup",
@@ -457,7 +457,7 @@ def test_get_node_trajectory_code() -> None:
         parent=root,
     )
     child2 = Node(
-        state=LATSReActOutput(
+        state=LATSReActStepOutput(
             **{
                 "thought": "Child2 thought",
                 "action_type": "Finish",

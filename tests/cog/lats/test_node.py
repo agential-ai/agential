@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSReActOutput
+from agential.cog.lats.output import LATSReActStepOutput
 
 
 def test_node_init() -> None:
@@ -58,7 +58,7 @@ def test_node_add_children() -> None:
 def test_node_to_dict() -> None:
     """Test node to_dict."""
     node = Node(
-        state=LATSReActOutput(
+        state=LATSReActStepOutput(
             **{
                 "thought": "Test thought",
                 "action_type": "Test action",

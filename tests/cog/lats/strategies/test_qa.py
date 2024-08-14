@@ -4,7 +4,7 @@ from langchain_community.docstore.wikipedia import Wikipedia
 
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSReActOutput, LATSSimulationOutput
+from agential.cog.lats.output import LATSReActStepOutput, LATSSimulationOutput
 from agential.cog.lats.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE,
@@ -257,7 +257,7 @@ def test_generate_observation() -> None:
 def test_generate() -> None:
     """Test the generate method."""
     gt_states = [
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
             action_type="Search",
             query="best kick boxer controversies crimes",
@@ -268,7 +268,7 @@ def test_generate() -> None:
                 "lookup_result": "",
             },
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="I need to search for the best kickboxer who has been involved in controversies and crimes of violence",
             action_type="Search",
             query="best kick boxer controversies crimes",
@@ -279,7 +279,7 @@ def test_generate() -> None:
                 "lookup_result": "",
             },
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies",
             action_type="Search",
             query="best kick boxer controversies",
@@ -290,7 +290,7 @@ def test_generate() -> None:
                 "lookup_result": "",
             },
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring",
             action_type="Search",
             query="best kick boxer controversies violence",
@@ -301,7 +301,7 @@ def test_generate() -> None:
                 "lookup_result": "",
             },
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies",
             action_type="Search",
             query="best kickboxer controversies",
@@ -462,7 +462,7 @@ def test_generate() -> None:
 
     # Test generate with reflections.
     gt_states = [
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and crimes of violence outside the ring",
             action_type="Search",
             query="best kickboxer controversies violence",
@@ -473,7 +473,7 @@ def test_generate() -> None:
                 "lookup_result": "",
             },
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="I need to search for the best kick boxer in the world and then look into his controversies related to unsportsmanlike conduct and crimes of violence",
             action_type="Search",
             query="best kick boxer in the world",
@@ -484,7 +484,7 @@ def test_generate() -> None:
                 "lookup_result": "",
             },
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and violence outside of the ring",
             action_type="Search",
             query="best kick boxer in the world controversies",
@@ -495,7 +495,7 @@ def test_generate() -> None:
                 "lookup_result": "",
             },
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="I need to search for the best kickboxer in the world who has been involved in controversies regarding unsportsmanlike conduct and crimes of violence outside the ring",
             action_type="Search",
             query="best kickboxer controversies",
@@ -506,7 +506,7 @@ def test_generate() -> None:
                 "lookup_result": "",
             },
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="I need to search for the best kick boxer in the world and his controversies regarding unsportsmanlike conducts and crimes of violence",
             action_type="Search",
             query="best kick boxer in the world controversies",
@@ -795,7 +795,7 @@ def test_select_node() -> None:
 def test_expand_node() -> None:
     """Test the expand_node method."""
     gt_states = [
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
             action_type="Search",
             query="best kick boxer controversies crimes",
@@ -806,7 +806,7 @@ def test_expand_node() -> None:
                 "lookup_result": "",
             },
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="I need to search for the best kickboxer who has been involved in controversies and crimes of violence",
             action_type="Search",
             query="best kick boxer controversies crimes",
@@ -817,7 +817,7 @@ def test_expand_node() -> None:
                 "lookup_result": "",
             },
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies",
             action_type="Search",
             query="best kick boxer controversies",
@@ -828,7 +828,7 @@ def test_expand_node() -> None:
                 "lookup_result": "",
             },
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring",
             action_type="Search",
             query="best kick boxer controversies violence",
@@ -839,7 +839,7 @@ def test_expand_node() -> None:
                 "lookup_result": "",
             },
         ),
-        LATSReActOutput(
+        LATSReActStepOutput(
             thought="I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies",
             action_type="Search",
             query="best kickboxer controversies",
@@ -927,7 +927,7 @@ def test_evaluate_node() -> None:
 
     root = strategy.initialize()
     child1 = Node(
-        state=LATSReActOutput(
+        state=LATSReActStepOutput(
             thought="Child 1",
             action_type="",
             query="",
@@ -938,7 +938,7 @@ def test_evaluate_node() -> None:
         parent=root,
     )
     child2 = Node(
-        state=LATSReActOutput(
+        state=LATSReActStepOutput(
             thought="Child 2",
             action_type="",
             query="",
@@ -1428,7 +1428,7 @@ def test_create_output_dict() -> None:
     gt_out = {
         "iteration": 1,
         "current_node": {
-            "state": LATSReActOutput(
+            "state": LATSReActStepOutput(
                 thought="",
                 action_type="",
                 query="",
@@ -1444,7 +1444,7 @@ def test_create_output_dict() -> None:
         },
         "children_nodes": [
             {
-                "state": LATSReActOutput(
+                "state": LATSReActStepOutput(
                     thought="",
                     action_type="",
                     query="",
@@ -1462,7 +1462,7 @@ def test_create_output_dict() -> None:
         "values": [{}],
         "simulation_reward": 1.0,
         "simulation_terminal_node": {
-            "state": LATSReActOutput(
+            "state": LATSReActStepOutput(
                 thought="",
                 action_type="",
                 query="",
@@ -1479,7 +1479,7 @@ def test_create_output_dict() -> None:
         "simulation_results": [
             LATSSimulationOutput(
                 current_node={
-                    "state": LATSReActOutput(
+                    "state": LATSReActStepOutput(
                         thought="",
                         action_type="",
                         query="",
@@ -1526,7 +1526,7 @@ def test_create_output_dict() -> None:
     gt_out = {
         "iteration": 1,
         "current_node": {
-            "state": LATSReActOutput(
+            "state": LATSReActStepOutput(
                 thought="",
                 action_type="",
                 query="",
@@ -1542,7 +1542,7 @@ def test_create_output_dict() -> None:
         },
         "children_nodes": [
             {
-                "state": LATSReActOutput(
+                "state": LATSReActStepOutput(
                     thought="",
                     action_type="",
                     query="",

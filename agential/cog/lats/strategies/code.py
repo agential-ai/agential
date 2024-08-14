@@ -18,7 +18,7 @@ from agential.cog.lats.functional import (
     parse_latest_implement,
 )
 from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSReActOutput, LATSSimulationOutput
+from agential.cog.lats.output import LATSReActStepOutput, LATSSimulationOutput
 from agential.cog.lats.strategies.base import LATSBaseStrategy
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
@@ -127,7 +127,7 @@ class LATSCodeStrategy(LATSBaseStrategy):
                 )
 
                 new_node = Node(
-                    state=LATSReActOutput(
+                    state=LATSReActStepOutput(
                         thought=thought,
                         action_type=action_type,
                         query=query,
