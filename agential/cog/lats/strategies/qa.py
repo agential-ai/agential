@@ -281,7 +281,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> List[Dict[str, Any]]:
+    ) -> Tuple[List[Dict[str, Any]], List[Optional[ModelResponse]]]:
         """Evaluate the given node and its children.
 
         Args:
@@ -292,7 +292,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            List[Dict[str, Any]]: A list of dictionaries containing evaluation results for each child node.
+            Tuple[List[Dict[str, Any]], List[Optional[ModelResponse]]]: A list of dictionaries containing evaluation results for each child node and their model responses.
         """
         children_trajectories = [
             {"child_trajectory": get_node_trajectory_qa(child), "idx": idx}
@@ -300,7 +300,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             if not child.is_terminal
         ]
 
-        values = []
+        values, values_out = [], []
         child_trajectory_cache = {}
         for child_trajectory in children_trajectories:
             trajectory: str = child_trajectory["child_trajectory"]  # type: ignore
@@ -324,6 +324,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                 unique_key = f"{trajectory}::{failed_trajectories}"
                 if self.cache_values and unique_key in self.value_cache:
                     value_str = self.value_cache[unique_key]
+                    values_out.append(None)
                 else:
                     value_str_out = _prompt_value(
                         llm=self.llm,
@@ -334,7 +335,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                         prompt=prompt,
                         additional_keys=additional_keys,
                     )
-
+                    values_out.append(value_str_out)
                     value_str = value_str_out.choices[0].message.content
 
                     if self.cache_values:
@@ -347,7 +348,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                 child_trajectory_cache[trajectory] = value
             values.append({"node_idx": idx, "explanation": explanation, "value": value})
 
-        return values
+        return values, values_out
 
     def simulate_node(
         self,

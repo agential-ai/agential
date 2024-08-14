@@ -80,21 +80,19 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             for child_node in children_nodes:
                 if self.halting_condition(child_node):
                     output.append(
-                        LATSOutput(
-                            **self.create_output_dict(
-                                iteration=i,
-                                current_node=node,
-                                children_nodes=children_nodes,
-                                values=None,
-                                simulation_reward=None,
-                                simulation_terminal_node=None,
-                                simulation_results=None,
-                            )
+                        self.format_output(
+                            iteration=i,
+                            current_node=node,
+                            children_nodes=children_nodes,
+                            values=None,
+                            simulation_reward=None,
+                            simulation_terminal_node=None,
+                            simulation_results=None,
                         )
                     )
                     return child_node, output
 
-            values = self.evaluate_node(
+            values, values_out = self.evaluate_node(
                 node=node,
                 question=question,
                 examples=value_examples,
@@ -122,16 +120,14 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             )
 
             output.append(
-                LATSOutput(
-                    **self.create_output_dict(
-                        iteration=i,
-                        current_node=node,
-                        children_nodes=children_nodes,
-                        values=values,
-                        simulation_reward=simulation_reward,
-                        simulation_terminal_node=simulation_terminal_node,
-                        simulation_results=simulation_results,
-                    )
+                self.format_output(
+                    iteration=i,
+                    current_node=node,
+                    children_nodes=children_nodes,
+                    values=values,
+                    simulation_reward=simulation_reward,
+                    simulation_terminal_node=simulation_terminal_node,
+                    simulation_results=simulation_results,
                 )
             )
 
@@ -496,6 +492,18 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         self.reflection_map = reflections
 
         return reflections
+
+    def format_output(
+        self,
+        iteration: int,
+        current_node: Node,
+        children_nodes: List[Node],
+        values: Optional[List[Dict[str, Any]]],
+        simulation_reward: Optional[float],
+        simulation_terminal_node: Optional[Node],
+        simulation_results: Optional[List[Dict[str, Any]]],
+    ) -> Dict[str, Any]:
+        
 
     def reset(self) -> None:
         """Reset the strategy to its initial state."""

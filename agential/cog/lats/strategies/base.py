@@ -1,7 +1,7 @@
 """Base LATS Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, Optional
 
 from agential.cog.base.strategies import BaseStrategy
 from agential.cog.lats.node import Node
@@ -198,7 +198,7 @@ class LATSBaseStrategy(BaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> List[Dict[str, Any]]:
+    ) -> Tuple[List[Dict[str, Any]], List[Optional[ModelResponse]]]:
         """Evaluate the given node and its children.
 
         Args:
@@ -209,7 +209,7 @@ class LATSBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            List[Dict[str, Any]]: A list of dictionaries containing evaluation results for each child node.
+            Tuple[List[Dict[str, Any]], List[Optional[ModelResponse]]]: A list of dictionaries containing evaluation results for each child node.
         """
         raise NotImplementedError
 
@@ -302,6 +302,19 @@ class LATSBaseStrategy(BaseStrategy):
         Returns:
             List[Dict[str, str]]: A list of dictionaries containing reflection results.
         """
+        raise NotImplementedError
+
+    @abstractmethod
+    def format_output(
+        self,
+        iteration: int,
+        current_node: Node,
+        children_nodes: List[Node],
+        values: Optional[List[Dict[str, Any]]],
+        simulation_reward: Optional[float],
+        simulation_terminal_node: Optional[Node],
+        simulation_results: Optional[List[Dict[str, Any]]],
+    ) -> Dict[str, Any]:
         raise NotImplementedError
 
     @abstractmethod
