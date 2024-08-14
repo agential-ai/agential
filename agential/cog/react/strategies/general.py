@@ -43,7 +43,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         prompt: str,
         additional_keys: Dict[str, str],
         reset: bool,
-        testing: bool = False
+        testing: bool = False,
     ) -> ReActOutput:
         """Generate a ReAct output by iteratively thinking, acting, and observing.
 

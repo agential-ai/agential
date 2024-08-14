@@ -21,7 +21,7 @@ class BaseStrategy(ABC):
         **kwargs: Any,
     ) -> Any:
         """Generates a response.
-        
+
         Args:
             testing (bool): Whether the strategy is being used for testing.
             *args: Variable length argument list.
@@ -31,11 +31,11 @@ class BaseStrategy(ABC):
             Any: The generated response.
         """
         raise NotImplementedError
-    
+
     @abstractmethod
     def reset(self, *args: Any, **kwargs: Any) -> None:
         """Resets the strategy's internal state, if any.
-        
+
         Args:
             *args: Variable length argument list.
             **kwargs: Arbitrary keyword arguments.

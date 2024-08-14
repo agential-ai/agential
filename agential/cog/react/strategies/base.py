@@ -52,12 +52,12 @@ class ReActBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the generation process.
             reset (bool): Whether to reset the strategy.
             testing (bool): Whether the generation is for testing purposes. Defaults to False.
-            
+
         Returns:
             ReactOutput: The output of the generation process.
         """
         raise NotImplementedError
-    
+
     @abstractmethod
     def generate_thought(
         self,

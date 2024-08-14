@@ -55,7 +55,7 @@ class BaseAgent(ABC):
     @abstractmethod
     def generate(self, testing: bool = False, *args: Any, **kwargs: Any) -> Any:
         """Generate a response.
-        
+
         Args:
             testing (bool): Whether to run in testing mode.
             *args (Any): Additional arguments.
