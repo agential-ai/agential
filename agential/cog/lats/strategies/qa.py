@@ -220,7 +220,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         trajectory += " " + action
         action_type, query = parse_qa_action(action)
 
-        return trajectory, action_type, query
+        return trajectory, action_type, query, out
 
     def generate_observation(
         self,
@@ -397,7 +397,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             }
 
             values: List[Dict[str, Any]] = []
-            children_nodes = self.generate(
+            children_nodes = self.generate_children_nodes(
                 node=node,
                 question=question,
                 key=key,

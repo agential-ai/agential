@@ -233,7 +233,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, str]:
+    ) -> Tuple[str, str, str, ModelResponse]:
         """Generate an action for the current step in the reasoning process.
 
         Args:
@@ -246,7 +246,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[str, str, str]: A tuple containing the updated trajectory, action type, and query.
+            Tuple[str, str, str, ModelResponse]: A tuple containing the updated trajectory, action type, query, and the model response.
         """
         raise NotImplementedError
 
@@ -338,7 +338,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         if node.depth >= self.depth_limit:
             node.is_terminal = True
             return []
-        children_nodes = self.generate(
+        children_nodes = self.generate_children_nodes(
             node=node,
             question=question,
             key=key,
