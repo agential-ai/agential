@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional
 import numpy as np
 
 from agential.cog.lats.output import LATSReActStepOutput
+from agential.utils.general import PromptMetrics
 
 
 class BaseNode(ABC):
@@ -61,8 +62,24 @@ class Node(BaseNode):
                 observation="",
                 answer="",
                 external_tool_info={},
-                thought_metrics=,
-                action_metrics={},
+                thought_metrics=PromptMetrics(
+                    prompt_tokens=0,
+                    completion_tokens=0,
+                    total_tokens=0,
+                    prompt_cost=0.0,
+                    completion_cost=0.0,
+                    total_cost=0.0,
+                    prompt_time=0.0,
+                ),
+                action_metrics=PromptMetrics(
+                    prompt_tokens=0,
+                    completion_tokens=0,
+                    total_tokens=0,
+                    prompt_cost=0.0,
+                    completion_cost=0.0,
+                    total_cost=0.0,
+                    prompt_time=0.0,
+                ),
             )
             if not state
             else state
