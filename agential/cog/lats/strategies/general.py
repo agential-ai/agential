@@ -11,6 +11,7 @@ from agential.cog.lats.node import Node
 from agential.cog.lats.strategies.base import LATSBaseStrategy
 from agential.llm.llm import BaseLLM, ModelResponse
 from agential.utils.parse import remove_newline
+from agential.cog.lats.output import LATSSimulationOutput
 
 
 class LATSGeneralStrategy(LATSBaseStrategy):
@@ -85,6 +86,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
                             current_node=node,
                             children_nodes=children_nodes,
                             values=None,
+                            values_out=None,
                             simulation_reward=None,
                             simulation_terminal_node=None,
                             simulation_results=None,
@@ -503,7 +505,17 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         simulation_terminal_node: Optional[Node],
         simulation_results: Optional[List[Dict[str, Any]]],
     ) -> Dict[str, Any]:
-        
+        if simulation_results:
+            simulation_results_output = [
+                LATSSimulationOutput(
+                    current_node=result["current_node"].to_dict(),
+                    children_nodes=[
+                        child_node.to_dict() for child_node in result["children_nodes"]
+                    ],
+                    values=result["values"],
+                )
+                for result in simulation_results
+            ]
 
     def reset(self) -> None:
         """Reset the strategy to its initial state."""

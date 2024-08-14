@@ -5,7 +5,6 @@ import pytest
 
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import LATSReActStepOutput
-from agential.utils.general import PromptMetrics
 
 
 def test_node_init() -> None:
@@ -19,24 +18,6 @@ def test_node_init() -> None:
         observation="",
         answer="",
         external_tool_info={},
-        thought_metrics=PromptMetrics(
-            prompt_tokens=0,
-            completion_tokens=0,
-            total_tokens=0,
-            prompt_cost=0.0,
-            completion_cost=0.0,
-            total_cost=0.0,
-            prompt_time=0.0,
-        ),
-        action_metrics=PromptMetrics(
-            prompt_tokens=0,
-            completion_tokens=0,
-            total_tokens=0,
-            prompt_cost=0.0,
-            completion_cost=0.0,
-            total_cost=0.0,
-            prompt_time=0.0,
-        ),
     )
     assert node.parent is None
     assert node.children == []
@@ -87,24 +68,6 @@ def test_node_to_dict() -> None:
             observation="",
             answer="",
             external_tool_info={},
-            thought_metrics=PromptMetrics(
-                prompt_tokens=0,
-                completion_tokens=0,
-                total_tokens=0,
-                prompt_cost=0.0,
-                completion_cost=0.0,
-                total_cost=0.0,
-                prompt_time=0.0,
-            ),
-            action_metrics=PromptMetrics(
-                prompt_tokens=0,
-                completion_tokens=0,
-                total_tokens=0,
-                prompt_cost=0.0,
-                completion_cost=0.0,
-                total_cost=0.0,
-                prompt_time=0.0,
-            ),
         ),
         "visits": 5,
         "value": 10,
@@ -121,24 +84,6 @@ def test_node_to_dict() -> None:
                 "observation": "",
                 "answer": "",
                 "external_tool_info": {},
-                "thought_metrics": PromptMetrics(
-                    prompt_tokens=0,
-                    completion_tokens=0,
-                    total_tokens=0,
-                    prompt_cost=0.0,
-                    completion_cost=0.0,
-                    total_cost=0.0,
-                    prompt_time=0.0,
-                ),
-                "action_metrics": PromptMetrics(
-                    prompt_tokens=0,
-                    completion_tokens=0,
-                    total_tokens=0,
-                    prompt_cost=0.0,
-                    completion_cost=0.0,
-                    total_cost=0.0,
-                    prompt_time=0.0,
-                ),
             }
         ),
         visits=5,

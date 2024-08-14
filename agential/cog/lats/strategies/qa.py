@@ -115,7 +115,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         trajectory = get_node_trajectory_qa(node)
 
         unique_states = set()
-        children_nodes = []
+        children_nodes, thought_model_responses, action_model_responses = [], [], []
         for _ in range(self.n_samples):
             trajectory_i, thought, thought_model_response = self.generate_thought(
                 question=question,
@@ -158,8 +158,6 @@ class LATSQAStrategy(LATSBaseStrategy):
                         observation=obs,
                         answer="" if not done else query.lower().strip(),
                         external_tool_info=external_tool_info,
-                        thought_metrics=get_token_cost_time(thought_model_response),
-                        action_metrics=get_token_cost_time(action_model_response),
                     ),
                     parent=node,
                     depth=node.depth + 1,
