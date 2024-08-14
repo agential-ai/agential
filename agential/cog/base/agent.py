@@ -4,10 +4,30 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict
 
 from agential.cog.base.strategies import BaseStrategy
+from agential.llm.llm import BaseLLM
 
 
 class BaseAgent(ABC):
-    """Base agent class providing a general interface for agent operations."""
+    """Base agent class providing a general interface for agent operations.
+    
+    Parameters:
+        llm (BaseLLM): An instance of a language model used for generating initial answers
+            and critiques.
+        benchmark (str): The benchmark.
+        testing (bool, optional): Whether to run in testing mode. Defaults to False.
+    """
+
+    def __init__(
+        self,
+        llm: BaseLLM,
+        benchmark: str,
+        testing: bool = False,
+    ) -> None:
+        """Initialization."""
+        super().__init__()
+        self.llm = llm
+        self.benchmark = benchmark
+        self.testing = testing
 
     @abstractmethod
     def get_fewshots(
