@@ -29,7 +29,8 @@ from agential.cog.react.strategies.qa import (
     ReActTriviaQAStrategy,
 )
 from agential.llm.llm import BaseLLM, MockLLM
-
+from agential.cog.react.output import ReActOutput, ReActStepOutput
+from agential.utils.general import PromptMetrics
 
 def test_init() -> None:
     """Test initialization."""
@@ -154,10 +155,9 @@ def test_generate() -> None:
         prompt=REACT_INSTRUCTION_HOTPOTQA,
         additional_keys={},
         reset=True,
-        max_steps=3,
     )
-    assert isinstance(out, list)
-    assert len(out) == 3
+    assert out == gt_out
+
 
     # Test Code.
     inst = {
@@ -183,7 +183,6 @@ def test_generate() -> None:
         question=question,
         examples=HUMANEVAL_FEWSHOT_EXAMPLES_REACT,
         prompt=REACT_INSTRUCTION_HUMANEVAL,
-        max_steps=3,
     )
     assert isinstance(out, list)
     assert len(out) == 3
@@ -201,7 +200,6 @@ def test_generate() -> None:
     agent = ReActAgent(llm=llm, benchmark="humaneval")
     out = agent.generate(
         question=question,
-        max_steps=3,
     )
     assert isinstance(out, list)
     assert len(out) == 3
@@ -220,7 +218,6 @@ def test_generate() -> None:
     out = agent.generate(
         question=question,
         fewshot_type="react",
-        max_steps=3,
     )
     assert isinstance(out, list)
     assert len(out) == 3
@@ -235,7 +232,6 @@ def test_generate() -> None:
         out = agent.generate(
             question=question,
             fewshot_type="pot",
-            max_steps=3,
         )
     assert isinstance(out, list)
     assert len(out) == 3
