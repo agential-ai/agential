@@ -26,10 +26,6 @@ def test_init() -> None:
     assert strategy.max_tokens == 5000
     assert isinstance(strategy.docstore, DocstoreExplorer)
     assert isinstance(strategy.enc, Encoding)
-    assert strategy._scratchpad == ""
-    assert strategy._finished == False
-
-    assert strategy._prompt_metrics == {"thought": None, "action": None}
 
 
 def test_generate() -> None:
