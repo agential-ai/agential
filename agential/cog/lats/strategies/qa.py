@@ -14,6 +14,9 @@ from agential.cog.lats.functional import (
     _prompt_reflection,
     _prompt_value,
     get_unique_trajectories,
+    get_node_trajectory_qa,
+    parse_qa_action,
+    parse_qa_value,
 )
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import LATSReActOutput, LATSSimulationOutput
@@ -23,75 +26,6 @@ from agential.llm.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.general import get_token_cost_time
 from agential.utils.parse import remove_newline
-
-
-def get_node_trajectory_qa(node: Node) -> str:
-    """Generates a string representation of the trajectory from the given node to the root.
-
-    Args:
-        node (Node): The current node in the tree.
-
-    Returns:
-        str: A string representation of the trajectory, including thoughts, actions, and observations.
-    """
-    trajectory = []
-
-    while node:
-        step = []
-        if node.depth > 0:
-            if node.state.thought:
-                step.append(f"Thought {node.depth}: {node.state.thought}")
-            if node.state.action_type and node.state.query:
-                step.append(
-                    f"Action {node.depth}: {node.state.action_type}[{node.state.query}]"
-                )
-            if node.state.observation:
-                step.append(f"Observation {node.depth}: {node.state.observation}")
-        step_str = "\n".join(step)
-        trajectory.append(step_str)
-        node = node.parent  # type: ignore
-
-    return "\n".join(reversed(trajectory))
-
-
-def parse_qa_action(string: str) -> Tuple[str, str]:
-    """Parses an action string into an action type and its argument.
-
-    Args:
-        string (str): The action string to be parsed.
-
-    Returns:
-        Tuple[str, str]: A tuple containing the action type and argument.
-    """
-    pattern = r"^(\w+)\[(.+)\]$"
-    match = re.match(pattern, string)
-
-    if match:
-        action_type = match.group(1)
-        argument = match.group(2)
-    else:
-        action_type = ""
-        argument = ""
-    return action_type, argument
-
-
-def parse_qa_value(string: str) -> Tuple[str, float]:
-    """Extracts the explanation and correctness score from a given string.
-
-    Args:
-        string (str): The input string containing an explanation and correctness score.
-
-    Returns:
-        Tuple[str, float]: A tuple containing the explanation (str) and the correctness score (float).
-        If parsing fails, returns ("Explanation not found", 0.0).
-    """
-    try:
-        explanation_part = string.split("Explanation:")[1].strip()
-        explanation, score_part = explanation_part.split("Correctness score:")
-        score = float(int(score_part.strip()))
-        return explanation.strip(), score
-    except Exception:
-        return "Explanation not found", 0.0
 
 
 class LATSQAStrategy(LATSBaseStrategy):
