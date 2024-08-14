@@ -11,8 +11,8 @@ from agential.cog.lats.node import Node
 from agential.cog.lats.strategies.base import LATSBaseStrategy
 from agential.llm.llm import BaseLLM, ModelResponse
 from agential.utils.parse import remove_newline
-from agential.cog.lats.output import LATSSimulationOutput
-
+from agential.cog.lats.output import LATSSimulationOutput, LATSStepOutput
+from agential.utils.general import get_token_cost_time
 
 class LATSGeneralStrategy(LATSBaseStrategy):
     def __init__(
@@ -66,7 +66,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         for i in range(max_iterations):
             node = self.select_node(root)  # Selected node is always non-terminal.
 
-            children_nodes = self.expand_node(
+            children_nodes, thought_model_responses, action_model_responses = self.expand_node(
                 node=node,
                 question=question,
                 key=key,
@@ -85,7 +85,10 @@ class LATSGeneralStrategy(LATSBaseStrategy):
                             iteration=i,
                             current_node=node,
                             children_nodes=children_nodes,
+                            thought_model_responses=thought_model_responses,
+                            action_model_responses=action_model_responses,
                             values=None,
+                            values_responses=None,
                             values_out=None,
                             simulation_reward=None,
                             simulation_terminal_node=None,
@@ -94,7 +97,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
                     )
                     return child_node, output
 
-            values, values_out = self.evaluate_node(
+            values, values_responses = self.evaluate_node(
                 node=node,
                 question=question,
                 examples=value_examples,
@@ -126,7 +129,10 @@ class LATSGeneralStrategy(LATSBaseStrategy):
                     iteration=i,
                     current_node=node,
                     children_nodes=children_nodes,
+                    thought_model_responses=thought_model_responses,
+                    action_model_responses=action_model_responses,
                     values=values,
+                    values_responses=values_responses,
                     simulation_reward=simulation_reward,
                     simulation_terminal_node=simulation_terminal_node,
                     simulation_results=simulation_results,
@@ -162,7 +168,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
-    ) -> List[Node]:
+    ) -> Tuple[List[Node], List[ModelResponse], List[ModelResponse]]:
         """Generate child nodes for the given node.
 
         Args:
@@ -177,7 +183,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
 
         Returns:
-            List[Node]: A list of generated child nodes.
+            Tuple[List[Node], List[ModelResponse], List[ModelResponse]]: A list of generated child nodes, and the corresponding model responses.
         """
         raise NotImplementedError
 
@@ -316,7 +322,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
-    ) -> List[Node]:
+    ) -> Tuple[List[Node], List[ModelResponse], List[ModelResponse]]:
         """Expand the given node by generating its child nodes.
 
         Args:
@@ -331,12 +337,12 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
 
         Returns:
-            List[Node]: A list of newly generated child nodes.
+            Tuple[List[Node], List[ModelResponse], List[ModelResponse]]: A list of generated child nodes, and the corresponding model responses.
         """
         if node.depth >= self.depth_limit:
             node.is_terminal = True
             return []
-        children_nodes = self.generate_children_nodes(
+        children_nodes, thought_model_responses, action_model_responses = self.generate_children_nodes(
             node=node,
             question=question,
             key=key,
@@ -349,7 +355,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         )
         node.add_children(children_nodes)  # type: ignore
 
-        return children_nodes
+        return children_nodes, thought_model_responses, action_model_responses
 
     def evaluate_node(
         self,
@@ -358,7 +364,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> List[Dict[str, Any]]:
+    ) -> Tuple[List[Dict[str, Any]], List[Optional[ModelResponse]]]:
         """Evaluate the given node and its children.
 
         Args:
@@ -369,7 +375,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            List[Dict[str, Any]]: A list of dictionaries containing evaluation results for each child node.
+            Tuple[List[Dict[str, Any]], List[Optional[ModelResponse]]]: A list of dictionaries containing evaluation results for each child node and their model responses.
         """
         raise NotImplementedError
 
@@ -500,7 +506,10 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         iteration: int,
         current_node: Node,
         children_nodes: List[Node],
+        thought_model_responses: List[ModelResponse],
+        action_model_responses: List[ModelResponse],
         values: Optional[List[Dict[str, Any]]],
+        values_responses: Optional[List[Optional[ModelResponse]]],
         simulation_reward: Optional[float],
         simulation_terminal_node: Optional[Node],
         simulation_results: Optional[List[Dict[str, Any]]],
@@ -516,6 +525,27 @@ class LATSGeneralStrategy(LATSBaseStrategy):
                 )
                 for result in simulation_results
             ]
+
+        if values_responses:
+            values_metrics = [get_token_cost_time(response) if response is not None else None for response in values_responses]
+        else:
+            values_metrics = []
+
+        out = LATSStepOutput(
+            iteration=iteration,
+            current_node=current_node.to_dict(),
+            children_nodes=[child_node.to_dict() for child_node in children_nodes],
+            thoughts_metrics=[get_token_cost_time(response) for response in thought_model_responses],
+            actions_metrics=[get_token_cost_time(response) for response in action_model_responses],
+            values=values,
+            values_metrics=values_metrics,
+            simulation_reward=simulation_reward,
+            simulation_terminal_node=simulation_terminal_node.to_dict()
+            if simulation_terminal_node
+            else None,
+            simulation_results=simulation_results_output,
+            reflection_map=self.reflection_map,
+        )
 
     def reset(self) -> None:
         """Reset the strategy to its initial state."""

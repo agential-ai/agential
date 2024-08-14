@@ -50,7 +50,7 @@ class LATSBaseStrategy(BaseStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
-    ) -> List[Node]:
+    ) -> Tuple[List[Node], List[ModelResponse], List[ModelResponse]]:
         """Generate child nodes for the given node.
 
         Args:
@@ -65,7 +65,7 @@ class LATSBaseStrategy(BaseStrategy):
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
 
         Returns:
-            List[Node]: A list of generated child nodes.
+            Tuple[List[Node], List[ModelResponse], List[ModelResponse]]: A list of generated child nodes, and the corresponding model responses.
         """
         raise NotImplementedError
 
@@ -171,7 +171,7 @@ class LATSBaseStrategy(BaseStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
-    ) -> List[Node]:
+    ) -> Tuple[List[Node], List[ModelResponse], List[ModelResponse]]:
         """Expand the given node by generating its child nodes.
 
         Args:
@@ -186,7 +186,7 @@ class LATSBaseStrategy(BaseStrategy):
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
 
         Returns:
-            List[Node]: A list of newly generated child nodes.
+            Tuple[List[Node], List[ModelResponse], List[ModelResponse]]: A list of generated child nodes, and the corresponding model responses.
         """
         raise NotImplementedError
 
@@ -310,7 +310,10 @@ class LATSBaseStrategy(BaseStrategy):
         iteration: int,
         current_node: Node,
         children_nodes: List[Node],
+        thought_model_responses: List[ModelResponse],
+        action_model_responses: List[ModelResponse],
         values: Optional[List[Dict[str, Any]]],
+        values_responses: Optional[List[ModelResponse]],
         simulation_reward: Optional[float],
         simulation_terminal_node: Optional[Node],
         simulation_results: Optional[List[Dict[str, Any]]],

@@ -1,6 +1,6 @@
 """LATS structured output module."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -59,7 +59,10 @@ class LATSStepOutput(BaseModel):
         iteration (int): The iteration number.
         current_node (Dict[str, Any]): The current node.
         children_nodes (List[Dict[str, Any]]): The children nodes of the current node.
+        thoughts_metrics (List[PromptMetrics]): The metrics of the thoughts.
+        actions_metrics (List[PromptMetrics]): The metrics of the actions.
         values (List[Dict[str, Any]]): The values of the children nodes.
+        values_metrics (List[Optional[PromptMetrics]]): The metrics of the values.
         simulation_reward (float): The reward of the simulation from the current node's most valuable child node.
         simulation_terminal_node (Dict[str, Any]): The terminal node of the simulation.
         simulation_results (List[LATSSimulationOutput]): The results of the simulation.
@@ -72,9 +75,21 @@ class LATSStepOutput(BaseModel):
         ...,
         description="The children nodes of the current node.",
     )
+    thoughts_metrics: List[PromptMetrics] = Field(
+        ...,
+        description="The metrics of the thoughts.",
+    )
+    actions_metrics: List[PromptMetrics] = Field(
+        ...,
+        description="The metrics of the actions.",
+    )
     values: List[Dict[str, Any]] = Field(
         ...,
         description="The values of the children nodes.",
+    )
+    values_metrics: List[Optional[PromptMetrics]] = Field(
+        ...,
+        description="The metrics of the values.",
     )
     simulation_reward: float = Field(
         ...,

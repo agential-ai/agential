@@ -78,7 +78,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
-    ) -> List[Node]:
+    ) -> Tuple[List[Node], List[ModelResponse], List[ModelResponse]]:
         """Generate child nodes for the given node.
 
         Args:
@@ -93,7 +93,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
 
         Returns:
-            List[Node]: A list of generated child nodes.
+            Tuple[List[Node], List[ModelResponse], List[ModelResponse]]: A list of generated child nodes, and the corresponding model responses.
         """
         reflections_str = ""
         if self.reflect_condition():
@@ -173,10 +173,23 @@ class LATSQAStrategy(LATSBaseStrategy):
                             "final_answer": query.lower().strip(),
                         }
                     )
+            else:
+                new_node = Node(
+                    state=LATSReActStepOutput(
+                        thought=thought,
+                        action_type=action_type,
+                        query=query,
+                        observation="",
+                        answer="",
+                        external_tool_info={},
+                    ),
+                )
 
-                children_nodes.append(new_node)
+            thought_model_responses.append(thought_model_response)
+            action_model_responses.append(action_model_response)
+            children_nodes.append(new_node)
 
-        return children_nodes
+        return children_nodes, thought_model_responses, action_model_responses
 
     def generate_action(
         self,
@@ -298,7 +311,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             if not child.is_terminal
         ]
 
-        values, values_out = [], []
+        values, values_responses = [], []
         child_trajectory_cache = {}
         for child_trajectory in children_trajectories:
             trajectory: str = child_trajectory["child_trajectory"]  # type: ignore
@@ -322,7 +335,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                 unique_key = f"{trajectory}::{failed_trajectories}"
                 if self.cache_values and unique_key in self.value_cache:
                     value_str = self.value_cache[unique_key]
-                    values_out.append(None)
+                    values_responses.append(None)
                 else:
                     value_str_out = _prompt_value(
                         llm=self.llm,
@@ -333,7 +346,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                         prompt=prompt,
                         additional_keys=additional_keys,
                     )
-                    values_out.append(value_str_out)
+                    values_responses.append(value_str_out)
                     value_str = value_str_out.choices[0].message.content
 
                     if self.cache_values:
@@ -346,7 +359,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                 child_trajectory_cache[trajectory] = value
             values.append({"node_idx": idx, "explanation": explanation, "value": value})
 
-        return values, values_out
+        return values, values_responses
 
     def simulate_node(
         self,
@@ -388,15 +401,17 @@ class LATSQAStrategy(LATSBaseStrategy):
         depth = node.depth
         rewards: List[int] = [0]
         results: List[Dict[str, Any]] = []
+        simulation_current_nodes: List[Node] = []
+        simulation_children_nodes: List[List[Node]] = []
+        simulation_thought_model_responses: List[List[ModelResponse]] = []
+        simulation_action_model_responses: List[List[ModelResponse]] = []
+        simulation_values: List[List[Dict[str, Any]]] = []
+        simulation_values_model_responses: List[List[ModelResponse]] = []
         while not node.is_terminal and depth < self.depth_limit:
-            result = {
-                "current_node": node,
-                "children_nodes": [],
-                "values": [],
-            }
+            simulation_current_nodes.append(node)
 
             values: List[Dict[str, Any]] = []
-            children_nodes = self.generate_children_nodes(
+            children_nodes, thought_model_responses, action_model_responses = self.generate_children_nodes(
                 node=node,
                 question=question,
                 key=key,
@@ -407,8 +422,12 @@ class LATSQAStrategy(LATSBaseStrategy):
                 additional_keys=additional_keys,
                 reflect_additional_keys=reflect_additional_keys,
             )
+            simulation_children_nodes.append(children_nodes)
+            simulation_thought_model_responses.append(thought_model_responses)
+            simulation_action_model_responses.append(action_model_responses)
 
-            result["children_nodes"] = children_nodes
+            # Weed out the discarded children nodes.
+            children_nodes = [child_node for child_node in children_nodes if child_node.parent]
 
             for node in children_nodes:
                 if node.is_terminal:
