@@ -45,14 +45,14 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         reset: bool,
     ) -> ReActOutput:
         """Generate a ReAct output by iteratively thinking, acting, and observing.
-        
+
         Args:
             question (str): The question being answered.
             examples (str): Examples provided for the task.
             prompt (str): The prompt used to generate the thought.
             additional_keys (Dict[str, str]): Additional key-value pairs to pass to the language model.
             reset (bool): Whether to reset the agent's state before generating.
-        
+
         Returns:
             ReActOutput: The generated output, including the final answer, metrics, and step-by-step details.
         """
@@ -146,7 +146,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         additional_keys: Dict[str, str],
     ) -> Tuple[str, str, ModelResponse]:
         """Generate a thought based on the given inputs.
-        
+
         Args:
             idx (int): The current index of the thought.
             scratchpad (str): The current state of the scratchpad.
@@ -154,7 +154,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
             examples (str): Examples provided for the task.
             prompt (str): The prompt used to generate the thought.
             additional_keys (Dict[str, str]): Additional key-value pairs to pass to the language model.
-        
+
         Returns:
             Tuple[str, str, ModelResponse]: The updated scratchpad, the generated thought, and the model response.
         """
@@ -197,7 +197,6 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         Returns:
             Tuple[str, str, str, ModelResponse]: The updated scratchpad, the generated action, the action type, and the model response.
         """
-
         raise NotImplementedError
 
     def generate_observation(
@@ -217,7 +216,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         additional_keys: Dict[str, str],
     ) -> bool:
         """Determines whether the current iteration of the task should be halted based on various conditions.
-        
+
         Args:
             finished (bool): Whether the task has been completed.
             idx (int): The current index of the iteration.
@@ -226,7 +225,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
             examples (str): Examples provided for the task.
             prompt (str): The prompt used to generate the action.
             additional_keys (Dict[str, str]): Additional key-value pairs to pass to the language model.
-        
+
         Returns:
             bool: True if the task should be halted, False otherwise.
         """

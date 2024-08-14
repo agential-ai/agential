@@ -75,3 +75,28 @@ def test_generate_observation() -> None:
             action_type="Search",
             query="What is the capital of France?",
         )
+
+
+def test_halting_condition() -> None:
+    """Tests ReActGeneralStrategy halting_condition."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = ReActGeneralStrategy(llm=llm)
+    finished = False
+    idx = 0
+    question = "What is the capital of France?"
+    scratchpad = ""
+    examples = ""
+    prompt = "Answer the question."
+
+    assert not strategy.halting_condition(
+        finished, idx, question, scratchpad, examples, prompt, {}
+    )
+
+
+def test_reset() -> None:
+    """Tests ReActGeneralStrategy reset."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = ReActGeneralStrategy(llm=llm)
+
+    strategy.reset()
+    assert isinstance(strategy, ReActGeneralStrategy)
