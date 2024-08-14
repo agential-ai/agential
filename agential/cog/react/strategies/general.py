@@ -202,6 +202,22 @@ class ReActGeneralStrategy(ReActBaseStrategy):
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str
     ) -> Tuple[str, str, str, bool, Dict[str, Any]]:
+        """Generate an observation based on the given inputs.
+
+        Args:
+            idx (int): The current index of the observation.
+            scratchpad (str): The current state of the scratchpad.
+            action_type (str): The type of action performed.
+            query (str): The query or action to observe.
+
+        Returns:
+            Tuple[str, str, str, bool, Dict[str, Any]]: A tuple containing:
+                - The updated scratchpad.
+                - The generated observation.
+                - The observation type.
+                - A boolean indicating if the task is finished.
+                - A dictionary with additional information.
+        """
 
         raise NotImplementedError
 

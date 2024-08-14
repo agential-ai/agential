@@ -89,7 +89,6 @@ class ReActCodeStrategy(ReActGeneralStrategy):
         Returns:
             Tuple[str, str, str, bool, Dict[str, Any]]: The scratchpad, the answer, observation, whether the query is correct, and the observation metrics.
         """
-        answer = ""
         finished = False
         external_tool_info = {"execution_status": ""}
 
@@ -98,15 +97,14 @@ class ReActCodeStrategy(ReActGeneralStrategy):
             _, execution_status = safe_execute(query)
             external_tool_info["execution_status"] = execution_status
 
-            answer = query
+            self._answer = query
             finished = True
-            obs = f"\n```python\n{answer}\n```"
+            obs = f"\n```python\n{self._answer}\n```"
         elif action_type.lower() == "implement":
             _, execution_status = safe_execute(query)
             external_tool_info["execution_status"] = execution_status
             self._answer = query
-            answer = query
-            obs = f"\n```python\n{answer}\n```\nExecution Status: {execution_status}"
+            obs = f"\n```python\n{self._answer}\n```\nExecution Status: {execution_status}"
         elif action_type.lower() == "test":
             obs = f"{self._answer}\n\n{query}"
             _, execution_status = safe_execute(obs)
@@ -117,7 +115,7 @@ class ReActCodeStrategy(ReActGeneralStrategy):
             obs = "Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer]."
         scratchpad += obs
 
-        return scratchpad, answer, obs, finished, external_tool_info
+        return scratchpad, self._answer, obs, finished, external_tool_info
 
     def reset(self) -> None:
         """Resets internal state."""
