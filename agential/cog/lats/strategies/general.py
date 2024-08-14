@@ -14,8 +14,6 @@ from agential.utils.parse import remove_newline
 
 
 class LATSGeneralStrategy(LATSBaseStrategy):
-    """A general strategy class for LATS agent."""
-
     def __init__(
         self,
         llm: BaseLLM,
@@ -24,9 +22,18 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         depth_limit: int = 7,
         max_unique: int = 5,
         cache_values: bool = True,
+        testing: bool = False,
     ) -> None:
         """Initialize."""
-        super().__init__(llm, n_samples=n_samples, max_reflections=max_reflections, depth_limit=depth_limit, max_unique=max_unique, cache_values=cache_values)
+        super().__init__(
+            llm=llm,
+            n_samples=n_samples,
+            max_reflections=max_reflections,
+            depth_limit=depth_limit,
+            max_unique=max_unique,
+            cache_values=cache_values,
+            testing=testing
+        )
 
         self.failed_trajectories: List[Dict[str, str]] = []
         self.reflection_map: List[Dict[str, str]] = []

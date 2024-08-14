@@ -44,6 +44,34 @@ class LATSQAStrategy(LATSBaseStrategy):
     in question-answering tasks.
     """
 
+    def __init__(
+        self,
+        llm: BaseLLM,
+        docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
+        n_samples: int = 5,
+        max_reflections: int = 4,
+        depth_limit: int = 7,
+        max_unique: int = 5,
+        cache_values: bool = True,
+        testing: bool = False,
+    ) -> None:
+        """Initialize."""
+        super().__init__(
+            llm=llm,
+            n_samples=n_samples,
+            max_reflections=max_reflections,
+            depth_limit=depth_limit,
+            max_unique=max_unique,
+            cache_values=cache_values,
+            testing=testing
+        )
+        self.docstore = docstore
+        
+        self.failed_trajectories: List[Dict[str, str]] = []
+        self.reflection_map: List[Dict[str, str]] = []
+        self.value_cache: Dict[str, str] = {}
+        self.root: Optional[Node] = None
+
     def generate_children_nodes(
         self,
         node: Node,
@@ -194,7 +222,6 @@ class LATSQAStrategy(LATSBaseStrategy):
             additional_keys=additional_keys,
         )
         metric_key = "simulate_action" if is_simulate else "action"
-        self._prompt_metrics[metric_key].append(get_token_cost_time(out))
         action = out.choices[0].message.content
 
         action = remove_newline(action).split("Observation")[0]
@@ -315,9 +342,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                         prompt=prompt,
                         additional_keys=additional_keys,
                     )
-                    self._prompt_metrics["value"].append(
-                        get_token_cost_time(value_str_out)
-                    )
+
                     value_str = value_str_out.choices[0].message.content
 
                     if self.cache_values:
@@ -423,9 +448,6 @@ class LATSQAStrategy(LATSBaseStrategy):
                         failed_trajectories=failed_trajectories,
                         prompt=value_prompt,
                         additional_keys=value_additional_keys,
-                    )
-                    self._prompt_metrics["simulate_value"].append(
-                        get_token_cost_time(value_str_out)
                     )
 
                     value_str = value_str_out.choices[0].message.content

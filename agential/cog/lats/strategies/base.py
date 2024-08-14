@@ -1,7 +1,7 @@
 """Base LATS Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Tuple
 
 from agential.cog.base.strategies import BaseStrategy
 from agential.cog.lats.node import Node
@@ -13,10 +13,21 @@ class LATSBaseStrategy(BaseStrategy):
 
     def __init__(
         self, 
-        llm: BaseLLM
+        llm: BaseLLM,
+        n_samples: int,
+        max_reflections: int,
+        depth_limit: int,
+        max_unique: int,
+        cache_values: bool,
+        testing: bool = False,
     ) -> None:
         """Initialization."""
-        super().__init__(llm)
+        super().__init__(llm=llm, testing=testing)
+        self.n_samples =  n_samples
+        self.max_reflections = max_reflections
+        self.depth_limit = depth_limit
+        self.max_unique = max_unique
+        self.cache_values = cache_values
 
     @abstractmethod
     def initialize(self) -> Node:
