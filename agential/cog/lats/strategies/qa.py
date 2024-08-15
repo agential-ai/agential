@@ -318,6 +318,7 @@ class LATSQAStrategy(LATSBaseStrategy):
             idx: int = child_trajectory["idx"]  # type: ignore
             if trajectory in child_trajectory_cache:
                 value = 0
+                values_responses.append(None)
             else:
                 failed_trajectories = ""
                 if len(self.reflection_map) > 0:
@@ -375,7 +376,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
         value_additional_keys: Dict[str, str],
-    ) -> Tuple[float, Node, List[Dict[str, Any]]]:
+    ) -> Tuple[float, Node, List[Node], List[List[Node]], List[List[ModelResponse]], List[List[ModelResponse]], List[List[Dict[str, Any]]], List[List[Optional[ModelResponse]]]]:
         """Simulate the node to estimate its value and collect information about the simulation process.
 
         Args:
@@ -393,20 +394,25 @@ class LATSQAStrategy(LATSBaseStrategy):
             value_additional_keys (Dict[str, str]): Additional keys for value estimation prompt formatting.
 
         Returns:
-            Tuple[float, Node, List[Dict[str, Any]]]: A tuple containing:
-                - The estimated value of the node (float)
-                - The final node reached in the simulation (Node)
-                - A list of dictionaries, representing the states of nodes explored during simulation
+            Tuple[float, Node, List[Node], List[List[Node]], List[List[ModelResponse]], List[List[ModelResponse]], List[List[Dict[str, Any]]], List[List[Optional[ModelResponse]]]]:
+                - The estimated value of the node.
+                - The simulated node.
+                - A list of the current nodes.
+                - A list of the newly-created children nodes.
+                - A list of thought model responses.
+                - A list of action model responses.
+                - A list of value estimates for newly-created children nodes.
+                - A list of value model responses.
         """
         depth = node.depth
         rewards: List[int] = [0]
-        results: List[Dict[str, Any]] = []
+        
         simulation_current_nodes: List[Node] = []
         simulation_children_nodes: List[List[Node]] = []
         simulation_thought_model_responses: List[List[ModelResponse]] = []
         simulation_action_model_responses: List[List[ModelResponse]] = []
         simulation_values: List[List[Dict[str, Any]]] = []
-        simulation_values_model_responses: List[List[ModelResponse]] = []
+        simulation_values_model_responses: List[List[Optional[ModelResponse]]] = []
         while not node.is_terminal and depth < self.depth_limit:
             simulation_current_nodes.append(node)
 
@@ -426,15 +432,21 @@ class LATSQAStrategy(LATSBaseStrategy):
             simulation_thought_model_responses.append(thought_model_responses)
             simulation_action_model_responses.append(action_model_responses)
 
-            # Weed out the discarded children nodes.
-            children_nodes = [child_node for child_node in children_nodes if child_node.parent]
-
             for node in children_nodes:
-                if node.is_terminal:
-                    return node.reward, node, results
-
-            for idx, child in enumerate(children_nodes):
-                if not child.is_terminal:
+                if node.is_terminal and node.parent:
+                    return (
+                        node.reward,
+                        node,
+                        simulation_current_nodes,
+                        simulation_children_nodes,
+                        simulation_thought_model_responses,
+                        simulation_action_model_responses,
+                        simulation_values,
+                        simulation_values_model_responses
+                    )
+            children_values_model_responses = []
+            for child in children_nodes:
+                if not child.is_terminal and node.parent:
                     child_trajectory = get_node_trajectory_qa(child)
                     failed_trajectories = ""
                     if len(self.reflection_map) > 0:
@@ -463,8 +475,12 @@ class LATSQAStrategy(LATSBaseStrategy):
 
                     explanation, value = parse_qa_value(value_str)  # type: ignore
                     values.append(
-                        {"node_idx": idx, "explanation": explanation, "value": value}
+                        {"explanation": explanation, "value": value}
                     )
+                    children_values_model_responses.append(value_str_out)
+                else:
+                    values.append({"explanation": "", "value": -1e10})
+                    children_values_model_responses.append(None)
 
             max_value = max(values, key=lambda x: x["value"])  # type: ignore
             max_value_index = values.index(max_value)
@@ -475,12 +491,19 @@ class LATSQAStrategy(LATSBaseStrategy):
             if depth == self.depth_limit:
                 rewards = [-1]
 
-            result["best_child_node"] = node
-            result["values"] = values
+            simulation_values.append(values)
+            simulation_values_model_responses.append(children_values_model_responses)
 
-            results.append(result)
-
-        return sum(rewards) / len(rewards), node, results
+        return (
+            sum(rewards) / len(rewards), 
+            node, 
+            simulation_current_nodes, 
+            simulation_children_nodes, 
+            simulation_thought_model_responses, 
+            simulation_action_model_responses, 
+            simulation_values, 
+            simulation_values_model_responses
+        )
 
 
 class LATSHotQAStrategy(LATSQAStrategy):

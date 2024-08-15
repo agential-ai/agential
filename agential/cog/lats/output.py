@@ -34,23 +34,39 @@ class LATSReActStepOutput(BaseModel):
 
 class LATSSimulationOutput(BaseModel):
     """LATS simulation Pydantic output class.
-
-    Attributes:
-        current_node (Dict[str, Any]): The current node.
-        children_nodes (List[Dict[str, Any]]): The children nodes of the current node.
-        values (List[Dict[str, Any]]): The values of the children nodes.
     """
-
-    current_node: Dict[str, Any] = Field(..., description="The current node.")
-    children_nodes: List[Dict[str, Any]] = Field(
+    simulation_reward: float = Field(
         ...,
-        description="The children nodes of the current node.",
+        description="The reward of the simulation from the current node's most valuable child node.",
     )
-    values: List[Dict[str, Any]] = Field(
+    simulation_terminal_node: Dict[str, Any] = Field(
         ...,
-        description="The values of the children nodes.",
+        description="The terminal node of the simulation.",
     )
-
+    simulation_current_nodes: List[Dict[str, Any]] = Field(
+        ...,
+        description="The current nodes of the simulation.",
+    )
+    simulation_children_nodes: List[List[Dict[str, Any]]] = Field(
+        ...,
+        description="The children nodes of the simulation.",
+    )
+    simulation_thought_metrics: List[List[PromptMetrics]] = Field(
+        ...,
+        description="The metrics of the thoughts of the simulation.",
+    )
+    simulation_action_metrics: List[List[PromptMetrics]] = Field(
+        ...,
+        description="The metrics of the actions of the simulation.",
+    )
+    simulation_values: List[List[Dict[str, Any]]] = Field(
+        ...,
+        description="The values of the children nodes of the simulation.",
+    )
+    simulation_values_metrics: List[List[Optional[PromptMetrics]]] = Field(
+        ...,
+        description="The metrics of the values of the children nodes of the simulation.",
+    )
 
 class LATSStepOutput(BaseModel):
     """LATS Pydantic output class.
@@ -91,19 +107,12 @@ class LATSStepOutput(BaseModel):
         ...,
         description="The metrics of the values.",
     )
-    simulation_reward: float = Field(
-        ...,
-        description="The reward of the simulation from the current node's most valuable child node.",
-    )
-    simulation_terminal_node: Dict[str, Any] = Field(
-        ...,
-        description="The terminal node of the simulation.",
-    )
-    simulation_results: List[LATSSimulationOutput] = Field(
+    simulation_results: LATSSimulationOutput = Field(
         ...,
         description="The results of the simulation.",
     )
-    prompt_metrics: Dict[str, Any] = Field(
-        ...,
-        description="The metrics of the prompt.",
-    )
+
+
+class LATSOutput(BaseOutput):
+    """LATS Pydantic output class.
+    """

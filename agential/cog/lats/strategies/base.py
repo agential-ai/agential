@@ -228,7 +228,7 @@ class LATSBaseStrategy(BaseStrategy):
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
         value_additional_keys: Dict[str, str],
-    ) -> Tuple[float, Node, List[Dict[str, Any]]]:
+    ) -> Tuple[float, Node, List[Node], List[List[Node]], List[List[ModelResponse]], List[List[ModelResponse]], List[List[Dict[str, Any]]], List[List[Optional[ModelResponse]]]]:
         """Simulate the node to estimate its value and collect information about the simulation process.
 
         Args:
@@ -246,10 +246,15 @@ class LATSBaseStrategy(BaseStrategy):
             value_additional_keys (Dict[str, str]): Additional keys for value estimation prompt formatting.
 
         Returns:
-            Tuple[float, Node, List[Dict[str, Any]]]: A tuple containing:
-                - The estimated value of the node (float)
-                - The final node reached in the simulation (Node)
-                - A list of dictionaries, representing the states of nodes explored during simulation
+            Tuple[float, Node, List[Node], List[List[Node]], List[List[ModelResponse]], List[List[ModelResponse]], List[List[Dict[str, Any]]], List[List[Optional[ModelResponse]]]]:
+                - The estimated value of the node.
+                - The simulated node.
+                - A list of the current nodes.
+                - A list of the newly-created children nodes.
+                - A list of thought model responses.
+                - A list of action model responses.
+                - A list of value estimates for newly-created children nodes.
+                - A list of value model responses.
         """
         raise NotImplementedError
 
