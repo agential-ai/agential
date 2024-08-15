@@ -39,7 +39,7 @@ class LATSSimulationOutput(BaseModel):
         ...,
         description="The reward of the simulation from the current node's most valuable child node.",
     )
-    simulation_terminal_node: Dict[str, Any] = Field(
+    simulation_terminal_node: Optional[Dict[str, Any]] = Field(
         ...,
         description="The terminal node of the simulation.",
     )

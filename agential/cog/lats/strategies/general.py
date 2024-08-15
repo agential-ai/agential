@@ -588,7 +588,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             simulation_values_metrics = []
 
         simulation_results = LATSSimulationOutput(
-            simulation_reward=simulation_reward if simulation_reward else 0,
+            simulation_reward=simulation_reward if simulation_reward else 0.0,
             simulation_terminal_node=simulation_terminal_node.to_dict()
             if simulation_terminal_node
             else None,
