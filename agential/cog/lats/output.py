@@ -116,3 +116,7 @@ class LATSStepOutput(BaseModel):
 class LATSOutput(BaseOutput):
     """LATS Pydantic output class.
     """
+    additional_info: List[LATSStepOutput] = Field(
+        ...,
+        description="The additional information of the LATS step output.",
+    )
