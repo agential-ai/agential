@@ -388,7 +388,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             additional_keys=additional_keys,
             reflect_additional_keys=reflect_additional_keys,
         )
-        node.add_children([[node for node in children_nodes if node.parent]])  # type: ignore
+        node.add_children([node for node in children_nodes if node.parent])  # type: ignore
 
         return children_nodes, thought_model_responses, action_model_responses
 

@@ -14,16 +14,15 @@ from agential.cog.lats.functional import (
     parse_qa_value,
 )
 from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSReActStepOutput, LATSSimulationOutput
-from agential.cog.lats.strategies.base import LATSBaseStrategy
+from agential.cog.lats.output import LATSReActStepOutput
+from agential.cog.lats.strategies.general import LATSGeneralStrategy
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM, ModelResponse
 from agential.utils.docstore import DocstoreExplorer
-from agential.utils.general import get_token_cost_time
 from agential.utils.parse import remove_newline
 
 
-class LATSQAStrategy(LATSBaseStrategy):
+class LATSQAStrategy(LATSGeneralStrategy):
     """A strategy class for QA benchmarks using the LATS agent.
 
     Attributes:
