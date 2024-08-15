@@ -2,7 +2,7 @@
 
 import re
 
-from typing import Dict, List, Tuple, Any
+from typing import Dict, List, Tuple, Any, Union
 
 from agential.cog.lats.node import Node
 from agential.cog.lats.prompts import (
@@ -512,6 +512,68 @@ def parse_code_value(string: str) -> Tuple[str, float]:
         return "Explanation not found", 0.0
 
 
+def _accumulate_metric(step: LATSStepOutput, metric_type: str) -> Union[int, float]:
+    """Accumulate total metrics from a list of LATSStepOutput objects.
+    """
+    out = (
+        sum(
+            [
+                getattr(thought_metrics, metric_type)
+                for thought_metrics in step.thoughts_metrics
+            ]
+        )
+        + sum(
+            [
+                getattr(action_metrics, metric_type)
+                for action_metrics in step.actions_metrics
+            ]
+        )
+        + sum(
+            [
+                getattr(value_metrics, metric_type)
+                for value_metrics in step.values_metrics
+                if value_metrics
+            ]
+        )
+        + sum(
+            [
+                sum(
+                    [
+                        getattr(thought_metrics, metric_type)
+                        for thought_metrics in thoughts_metrics
+                    ]
+                )
+                for thoughts_metrics in step.simulation_results.simulation_thoughts_metrics
+            ]
+        )
+        + sum(
+            [
+                sum(
+                    [
+                        getattr(action_metrics, metric_type)
+                        for action_metrics in actions_metrics
+                    ]
+                )
+                for actions_metrics in step.simulation_results.simulation_actions_metrics
+            ]
+        )
+        + sum(
+            [
+                sum(
+                    [
+                        getattr(value_metrics, metric_type)
+                        for value_metrics in values_metrics
+                        if value_metrics
+                    ]
+                )
+                for values_metrics in step.simulation_results.simulation_values_metrics
+            ]
+        )
+    )
+
+    return out
+
+
 def accumulate_metrics(steps: List[LATSStepOutput]) -> Dict[str, Any]:
     """Accumulate total metrics from a list of LATSStepOutput objects.
 
@@ -540,36 +602,13 @@ def accumulate_metrics(steps: List[LATSStepOutput]) -> Dict[str, Any]:
     total_prompt_time = 0.0
 
     for step in steps:
-        total_prompt_tokens += sum(
-            [thought_metrics.prompt_tokens for thought_metrics in step.thoughts_metrics]
-        ) + sum(
-            [action_metrics.prompt_tokens for action_metrics in step.actions_metrics]
-        ) + sum(
-            [value_metrics.prompt_tokens for value_metrics in step.values_metrics if value_metrics]
-        ) + sum(
-            [[thought_metrics.prompt_tokens for thought_metrics in thoughts_metrics] for thoughts_metrics in step.simulation_results.simulation_thoughts_metrics]
-        ) + sum(
-            [[action_metrics.prompt_tokens for action_metrics in actions_metrics] for actions_metrics in step.simulation_results.simulation_actions_metrics]
-        ) + sum(
-            [[value_metrics.prompt_tokens for value_metrics in values_metrics if value_metrics] for values_metrics in step.simulation_results.simulation_values_metrics]
-        )
-        total_completion_tokens += (
-            step.thought_metrics.completion_tokens
-            + step.action_metrics.completion_tokens
-        )
-        total_tokens += (
-            step.thought_metrics.total_tokens + step.action_metrics.total_tokens
-        )
-        total_prompt_cost += (
-            step.thought_metrics.prompt_cost + step.action_metrics.prompt_cost
-        )
-        total_completion_cost += (
-            step.thought_metrics.completion_cost + step.action_metrics.completion_cost
-        )
-        total_cost += step.thought_metrics.total_cost + step.action_metrics.total_cost
-        total_prompt_time += (
-            step.thought_metrics.prompt_time + step.action_metrics.prompt_time
-        )
+        total_prompt_tokens += _accumulate_metric(step, "prompt_tokens")
+        total_completion_tokens += _accumulate_metric(step, "completion_tokens")
+        total_tokens += _accumulate_metric(step, "total_tokens")
+        total_prompt_cost += _accumulate_metric(step, "prompt_cost")
+        total_completion_cost += _accumulate_metric(step, "completion_cost")
+        total_cost += _accumulate_metric(step, "total_cost")
+        total_prompt_time += _accumulate_metric(step, "prompt_time")
 
     return {
         "total_prompt_tokens": total_prompt_tokens,

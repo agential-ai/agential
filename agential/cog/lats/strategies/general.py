@@ -1,11 +1,13 @@
 """LATS general strategy."""
 
+import time
 from typing import Any, Dict, List, Optional, Tuple
 
 from agential.cog.lats.functional import (
     _prompt_agent,
     _prompt_reflection,
     get_unique_trajectories,
+    accumulate_metrics
 )
 from agential.cog.lats.node import Node
 from agential.cog.lats.strategies.base import LATSBaseStrategy
@@ -57,6 +59,8 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         max_iterations: int,
         reset: bool,
     ) -> Any:
+        start = time.time()
+
         if reset:
             self.reset()
 
@@ -162,20 +166,22 @@ class LATSGeneralStrategy(LATSBaseStrategy):
                 node=simulation_terminal_node, value=simulation_reward
             )
 
+        total_time = time.time() - start
+        total_metrics = accumulate_metrics(output)
         out = LATSOutput(
-            answer=,
-            total_prompt_tokens=,
-            total_completion_tokens=,
-            total_tokens=,
-            total_prompt_cost=,
-            total_completion_cost=,
-            total_cost=,
-            total_prompt_time=,
-            total_time=,
+            answer=simulation_terminal_node,
+            total_prompt_tokens=total_metrics['total_prompt_tokens'],
+            total_completion_tokens=total_metrics['total_completion_tokens'],
+            total_tokens=total_metrics['total_tokens'],
+            total_prompt_cost=total_metrics['total_prompt_cost'],
+            total_completion_cost=total_metrics['total_completion_cost'],
+            total_cost=total_metrics['total_cost'],
+            total_prompt_time=total_metrics['total_prompt_time'],
+            total_time=total_time if not self.testing else 0.5,
             additional_info=output,
         )
 
-        return simulation_terminal_node, output
+        return out
 
     def initialize(self) -> Node:
         """Create and return the root node.
