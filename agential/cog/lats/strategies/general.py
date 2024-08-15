@@ -11,7 +11,7 @@ from agential.cog.lats.node import Node
 from agential.cog.lats.strategies.base import LATSBaseStrategy
 from agential.llm.llm import BaseLLM, ModelResponse
 from agential.utils.parse import remove_newline
-from agential.cog.lats.output import LATSSimulationOutput, LATSStepOutput
+from agential.cog.lats.output import LATSSimulationOutput, LATSStepOutput, LATSOutput
 from agential.utils.general import get_token_cost_time
 
 class LATSGeneralStrategy(LATSBaseStrategy):
@@ -161,6 +161,19 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             self.backpropagate_node(
                 node=simulation_terminal_node, value=simulation_reward
             )
+
+        out = LATSOutput(
+            answer=,
+            total_prompt_tokens=,
+            total_completion_tokens=,
+            total_tokens=,
+            total_prompt_cost=,
+            total_completion_cost=,
+            total_cost=,
+            total_prompt_time=,
+            total_time=,
+            additional_info=output,
+        )
 
         return simulation_terminal_node, output
 
@@ -561,7 +574,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             simulation_children_nodes = []
 
         if simulation_thought_model_responses:
-            simulation_thought_metrics = [
+            simulation_thoughts_metrics = [
                 [
                     get_token_cost_time(model_response)
                     for model_response in model_responses
@@ -569,10 +582,10 @@ class LATSGeneralStrategy(LATSBaseStrategy):
                 for model_responses in simulation_thought_model_responses
             ]
         else:
-            simulation_thought_metrics = []
+            simulation_thoughts_metrics = []
 
         if simulation_action_model_responses:
-            simulation_action_metrics = [
+            simulation_actions_metrics = [
                 [
                     get_token_cost_time(model_response)
                     for model_response in model_responses
@@ -580,7 +593,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
                 for model_responses in simulation_action_model_responses
             ]
         else:
-            simulation_action_metrics = []
+            simulation_actions_metrics = []
 
         if simulation_values_model_responses:
             simulation_values_metrics = [[get_token_cost_time(response) if response is not None else None for response in simulation_values_model_response] for simulation_values_model_response in simulation_values_model_responses]
@@ -594,8 +607,8 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             else None,
             simulation_current_nodes=simulation_current_nodes,
             simulation_children_nodes=simulation_children_nodes,
-            simulation_thought_metrics=simulation_thought_metrics,
-            simulation_action_metrics=simulation_action_metrics,
+            simulation_thoughts_metrics=simulation_thoughts_metrics,
+            simulation_actions_metrics=simulation_actions_metrics,
             simulation_values=simulation_values if simulation_values else [],
             simulation_values_metrics=simulation_values_metrics,
         )

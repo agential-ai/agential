@@ -376,7 +376,16 @@ class LATSQAStrategy(LATSBaseStrategy):
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
         value_additional_keys: Dict[str, str],
-    ) -> Tuple[float, Node, List[Node], List[List[Node]], List[List[ModelResponse]], List[List[ModelResponse]], List[List[Dict[str, Any]]], List[List[Optional[ModelResponse]]]]:
+    ) -> Tuple[
+        float,
+        Node,
+        List[Node],
+        List[List[Node]],
+        List[List[ModelResponse]],
+        List[List[ModelResponse]],
+        List[List[Dict[str, Any]]],
+        List[List[Optional[ModelResponse]]],
+    ]:
         """Simulate the node to estimate its value and collect information about the simulation process.
 
         Args:
@@ -406,7 +415,7 @@ class LATSQAStrategy(LATSBaseStrategy):
         """
         depth = node.depth
         rewards: List[int] = [0]
-        
+
         simulation_current_nodes: List[Node] = []
         simulation_children_nodes: List[List[Node]] = []
         simulation_thought_model_responses: List[List[ModelResponse]] = []
@@ -417,16 +426,18 @@ class LATSQAStrategy(LATSBaseStrategy):
             simulation_current_nodes.append(node)
 
             values: List[Dict[str, Any]] = []
-            children_nodes, thought_model_responses, action_model_responses = self.generate_children_nodes(
-                node=node,
-                question=question,
-                key=key,
-                examples=examples,
-                reflect_examples=reflect_examples,
-                prompt=prompt,
-                reflect_prompt=reflect_prompt,
-                additional_keys=additional_keys,
-                reflect_additional_keys=reflect_additional_keys,
+            children_nodes, thought_model_responses, action_model_responses = (
+                self.generate_children_nodes(
+                    node=node,
+                    question=question,
+                    key=key,
+                    examples=examples,
+                    reflect_examples=reflect_examples,
+                    prompt=prompt,
+                    reflect_prompt=reflect_prompt,
+                    additional_keys=additional_keys,
+                    reflect_additional_keys=reflect_additional_keys,
+                )
             )
             simulation_children_nodes.append(children_nodes)
             simulation_thought_model_responses.append(thought_model_responses)
@@ -442,7 +453,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                         simulation_thought_model_responses,
                         simulation_action_model_responses,
                         simulation_values,
-                        simulation_values_model_responses
+                        simulation_values_model_responses,
                     )
             children_values_model_responses = []
             for child in children_nodes:
@@ -474,9 +485,7 @@ class LATSQAStrategy(LATSBaseStrategy):
                     value_str = value_str_out.choices[0].message.content
 
                     explanation, value = parse_qa_value(value_str)  # type: ignore
-                    values.append(
-                        {"explanation": explanation, "value": value}
-                    )
+                    values.append({"explanation": explanation, "value": value})
                     children_values_model_responses.append(value_str_out)
                 else:
                     values.append({"explanation": "", "value": -1e10})
@@ -495,14 +504,14 @@ class LATSQAStrategy(LATSBaseStrategy):
             simulation_values_model_responses.append(children_values_model_responses)
 
         return (
-            sum(rewards) / len(rewards), 
-            node, 
-            simulation_current_nodes, 
-            simulation_children_nodes, 
-            simulation_thought_model_responses, 
-            simulation_action_model_responses, 
-            simulation_values, 
-            simulation_values_model_responses
+            sum(rewards) / len(rewards),
+            node,
+            simulation_current_nodes,
+            simulation_children_nodes,
+            simulation_thought_model_responses,
+            simulation_action_model_responses,
+            simulation_values,
+            simulation_values_model_responses,
         )
 
 

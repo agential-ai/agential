@@ -2,7 +2,7 @@
 
 import re
 
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Any
 
 from agential.cog.lats.node import Node
 from agential.cog.lats.prompts import (
@@ -10,6 +10,7 @@ from agential.cog.lats.prompts import (
     LATS_REFLECTION_FORMAT,
 )
 from agential.llm.llm import BaseLLM, ModelResponse
+from agential.cog.lats.output import LATSStepOutput
 
 
 def _build_reflection_format(trajectory: str, reflection: str) -> str:
@@ -509,3 +510,73 @@ def parse_code_value(string: str) -> Tuple[str, float]:
         return explanation.strip(), score
     except Exception:
         return "Explanation not found", 0.0
+
+
+def accumulate_metrics(steps: List[LATSStepOutput]) -> Dict[str, Any]:
+    """Accumulate total metrics from a list of LATSStepOutput objects.
+
+    This function calculates and aggregates various metrics across all steps in the input list.
+    It sums up token counts, costs, and time measurements for both thought and action components.
+
+    Args:
+        steps (List[LATSStepOutput]): A list of LATSStepOutput objects representing individual steps.
+
+    Returns:
+        Dict[str, Any]: A dictionary containing the following accumulated metrics:
+            - total_prompt_tokens (int): Total number of prompt tokens used.
+            - total_completion_tokens (int): Total number of completion tokens generated.
+            - total_tokens (int): Total number of tokens (prompt + completion).
+            - total_prompt_cost (float): Total cost associated with prompts.
+            - total_completion_cost (float): Total cost associated with completions.
+            - total_cost (float): Total overall cost (prompt + completion).
+            - total_prompt_time (float): Total time spent on prompts.
+    """
+    total_prompt_tokens = 0
+    total_completion_tokens = 0
+    total_tokens = 0
+    total_prompt_cost = 0.0
+    total_completion_cost = 0.0
+    total_cost = 0.0
+    total_prompt_time = 0.0
+
+    for step in steps:
+        total_prompt_tokens += sum(
+            [thought_metrics.prompt_tokens for thought_metrics in step.thoughts_metrics]
+        ) + sum(
+            [action_metrics.prompt_tokens for action_metrics in step.actions_metrics]
+        ) + sum(
+            [value_metrics.prompt_tokens for value_metrics in step.values_metrics if value_metrics]
+        ) + sum(
+            [[thought_metrics.prompt_tokens for thought_metrics in thoughts_metrics] for thoughts_metrics in step.simulation_results.simulation_thoughts_metrics]
+        ) + sum(
+            [[action_metrics.prompt_tokens for action_metrics in actions_metrics] for actions_metrics in step.simulation_results.simulation_actions_metrics]
+        ) + sum(
+            [[value_metrics.prompt_tokens for value_metrics in values_metrics if value_metrics] for values_metrics in step.simulation_results.simulation_values_metrics]
+        )
+        total_completion_tokens += (
+            step.thought_metrics.completion_tokens
+            + step.action_metrics.completion_tokens
+        )
+        total_tokens += (
+            step.thought_metrics.total_tokens + step.action_metrics.total_tokens
+        )
+        total_prompt_cost += (
+            step.thought_metrics.prompt_cost + step.action_metrics.prompt_cost
+        )
+        total_completion_cost += (
+            step.thought_metrics.completion_cost + step.action_metrics.completion_cost
+        )
+        total_cost += step.thought_metrics.total_cost + step.action_metrics.total_cost
+        total_prompt_time += (
+            step.thought_metrics.prompt_time + step.action_metrics.prompt_time
+        )
+
+    return {
+        "total_prompt_tokens": total_prompt_tokens,
+        "total_completion_tokens": total_completion_tokens,
+        "total_tokens": total_tokens,
+        "total_prompt_cost": total_prompt_cost,
+        "total_completion_cost": total_completion_cost,
+        "total_cost": total_cost,
+        "total_prompt_time": total_prompt_time,
+    }

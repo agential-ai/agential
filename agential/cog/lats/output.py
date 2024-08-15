@@ -33,8 +33,8 @@ class LATSReActStepOutput(BaseModel):
 
 
 class LATSSimulationOutput(BaseModel):
-    """LATS simulation Pydantic output class.
-    """
+    """LATS simulation Pydantic output class."""
+
     simulation_reward: float = Field(
         ...,
         description="The reward of the simulation from the current node's most valuable child node.",
@@ -51,11 +51,11 @@ class LATSSimulationOutput(BaseModel):
         ...,
         description="The children nodes of the simulation.",
     )
-    simulation_thought_metrics: List[List[PromptMetrics]] = Field(
+    simulation_thoughts_metrics: List[List[PromptMetrics]] = Field(
         ...,
         description="The metrics of the thoughts of the simulation.",
     )
-    simulation_action_metrics: List[List[PromptMetrics]] = Field(
+    simulation_actions_metrics: List[List[PromptMetrics]] = Field(
         ...,
         description="The metrics of the actions of the simulation.",
     )
@@ -67,6 +67,7 @@ class LATSSimulationOutput(BaseModel):
         ...,
         description="The metrics of the values of the children nodes of the simulation.",
     )
+
 
 class LATSStepOutput(BaseModel):
     """LATS Pydantic output class.
@@ -114,8 +115,8 @@ class LATSStepOutput(BaseModel):
 
 
 class LATSOutput(BaseOutput):
-    """LATS Pydantic output class.
-    """
+    """LATS Pydantic output class."""
+
     additional_info: List[LATSStepOutput] = Field(
         ...,
         description="The additional information of the LATS step output.",
