@@ -54,104 +54,18 @@ def test_init() -> None:
         "reflection": [],
     }
 
-
-def test_generate_action() -> None:
-    """Test the generate_action method."""
-    gt_prompt_metrics = {
-        "thought": [],
-        "action": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            }
-        ],
-        "value": [],
-        "simulate_thought": [],
-        "simulate_action": [],
-        "simulate_value": [],
-        "reflection": [],
-    }
-
-    llm = MockLLM(
-        "gpt-3.5-turbo", responses=["Calculate[```python\nresult = 2 + 2\n```]"]
-    )
-    strategy = LATSMathStrategy(llm=llm)
-
-    question = "What is 2 + 2?"
-    examples = "Example 1\nExample 2"
-    trajectory = "Thought 1: I need to calculate 2 + 2."
-    reflections = "Reflection 1\nReflection 2"
-    depth = 0
-    prompt = "Generate an action"
-    additional_keys = {"key": "value"}
-
-    trajectory, action_type, query = strategy.generate_action(
-        question,
-        examples,
-        trajectory,
-        reflections,
-        depth,
-        prompt,
-        additional_keys,
-        is_simulate=False,
-    )
-
-    assert (
-        trajectory
-        == "Thought 1: I need to calculate 2 + 2.\nAction 1: Calculate[\n```python\nresult = 2 + 2\n```\n]"
-    )
-    assert action_type == "Calculate"
-    assert query == "result = 2 + 2"
-
-    assert strategy._prompt_metrics == gt_prompt_metrics
-
-
-def test_generate_observation() -> None:
-    """Test the generate_observation method."""
+def test_generate() -> None:
+    """Test the generate method."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
-    strategy = LATSMathStrategy(llm=llm)
-
-    key = "4"
-    trajectory = "Previous trajectory"
-
-    # Test Finish action.
-    finish_result = strategy.generate_observation(key, "Finish", "4", trajectory, 1)
-    assert finish_result == (
-        "Previous trajectory\nObservation 2: Answer is INCORRECT",
-        0,
-        "Answer is INCORRECT",
-        True,
-        {"execution_status": "Done", "code_answer": None},
+    strategy = LATSMathStrategy(
+        llm=llm,
+        n_samples=5,
+        max_reflections=4,
+        depth_limit=7,
+        max_unique=5,
+        cache_values=True,
     )
 
-    # Test Calculate action.
-    calculate_result = strategy.generate_observation(
-        key, "Calculate", "result = 2 + 2", trajectory, 2
-    )
-    assert calculate_result == (
-        "Previous trajectory\nObservation 3: \n```python\nresult = 2 + 2\n```\nExecution Status: Done\nOutput: answer = None",
-        0,
-        "\n```python\nresult = 2 + 2\n```\nExecution Status: Done\nOutput: answer = None",
-        False,
-        {"execution_status": "Done", "code_answer": None},
-    )
-
-    # Test invalid action.
-    invalid_result = strategy.generate_observation(
-        key, "Invalid", "query", trajectory, 3
-    )
-    assert invalid_result == (
-        "Previous trajectory\nObservation 4: Invalid Action. Valid Actions are Calculate[code] and Finish[answer].",
-        0,
-        "Invalid Action. Valid Actions are Calculate[code] and Finish[answer].",
-        False,
-        {"execution_status": "", "code_answer": ""},
-    )
 
 
 def test_generate_children_nodes() -> None:
@@ -624,6 +538,105 @@ def test_generate_children_nodes() -> None:
     assert strategy._prompt_metrics == gt_prompt_metrics
 
 
+def test_generate_action() -> None:
+    """Test the generate_action method."""
+    gt_prompt_metrics = {
+        "thought": [],
+        "action": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            }
+        ],
+        "value": [],
+        "simulate_thought": [],
+        "simulate_action": [],
+        "simulate_value": [],
+        "reflection": [],
+    }
+
+    llm = MockLLM(
+        "gpt-3.5-turbo", responses=["Calculate[```python\nresult = 2 + 2\n```]"]
+    )
+    strategy = LATSMathStrategy(llm=llm)
+
+    question = "What is 2 + 2?"
+    examples = "Example 1\nExample 2"
+    trajectory = "Thought 1: I need to calculate 2 + 2."
+    reflections = "Reflection 1\nReflection 2"
+    depth = 0
+    prompt = "Generate an action"
+    additional_keys = {"key": "value"}
+
+    trajectory, action_type, query = strategy.generate_action(
+        question,
+        examples,
+        trajectory,
+        reflections,
+        depth,
+        prompt,
+        additional_keys,
+        is_simulate=False,
+    )
+
+    assert (
+        trajectory
+        == "Thought 1: I need to calculate 2 + 2.\nAction 1: Calculate[\n```python\nresult = 2 + 2\n```\n]"
+    )
+    assert action_type == "Calculate"
+    assert query == "result = 2 + 2"
+
+    assert strategy._prompt_metrics == gt_prompt_metrics
+
+
+def test_generate_observation() -> None:
+    """Test the generate_observation method."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = LATSMathStrategy(llm=llm)
+
+    key = "4"
+    trajectory = "Previous trajectory"
+
+    # Test Finish action.
+    finish_result = strategy.generate_observation(key, "Finish", "4", trajectory, 1)
+    assert finish_result == (
+        "Previous trajectory\nObservation 2: Answer is INCORRECT",
+        0,
+        "Answer is INCORRECT",
+        True,
+        {"execution_status": "Done", "code_answer": None},
+    )
+
+    # Test Calculate action.
+    calculate_result = strategy.generate_observation(
+        key, "Calculate", "result = 2 + 2", trajectory, 2
+    )
+    assert calculate_result == (
+        "Previous trajectory\nObservation 3: \n```python\nresult = 2 + 2\n```\nExecution Status: Done\nOutput: answer = None",
+        0,
+        "\n```python\nresult = 2 + 2\n```\nExecution Status: Done\nOutput: answer = None",
+        False,
+        {"execution_status": "Done", "code_answer": None},
+    )
+
+    # Test invalid action.
+    invalid_result = strategy.generate_observation(
+        key, "Invalid", "query", trajectory, 3
+    )
+    assert invalid_result == (
+        "Previous trajectory\nObservation 4: Invalid Action. Valid Actions are Calculate[code] and Finish[answer].",
+        0,
+        "Invalid Action. Valid Actions are Calculate[code] and Finish[answer].",
+        False,
+        {"execution_status": "", "code_answer": ""},
+    )
+
+
 def test_evaluate_node() -> None:
     """Test the evaluate_node method."""
     gt_prompt_metrics = {
@@ -978,3 +991,18 @@ def test_simulate_node() -> None:
     assert -1 <= reward <= 1
 
     assert qa_strategy._prompt_metrics == gt_prompt_metrics
+
+def test_expand_node() -> None:
+    """Test the expand_node method."""
+
+
+def test_instantiate_strategies() -> None:
+    """Test the instantiation of various LATS Math strategies."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    gsm8k_strategy = LATSGSM8KStrategy(llm=llm)
+    svamp_strategy = LATSSVAMPStrategy(llm=llm)
+    tabmwp_strategy = LATSTabMWPStrategy(llm=llm)
+
+    assert isinstance(gsm8k_strategy, LATSGSM8KStrategy)
+    assert isinstance(svamp_strategy, LATSSVAMPStrategy)
+    assert isinstance(tabmwp_strategy, LATSTabMWPStrategy)

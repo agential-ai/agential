@@ -53,6 +53,24 @@ def test_generate_children_nodes() -> None:
     llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = LATSGeneralStrategy(llm=llm)
 
+    question = "What is the capital of France?"
+    examples = "Example content"
+    prompt = "Generate an action to answer the question."
+    additional_keys = {}
+
+    with pytest.raises(NotImplementedError):
+        strategy.generate_children_nodes(
+            node=Node(),
+            question=question,
+            key="",
+            examples=examples,
+            reflect_examples=examples,
+            prompt=prompt,
+            reflect_prompt=prompt,
+            additional_keys=additional_keys,
+            reflect_additional_keys=additional_keys
+        )
+
 def test_generate_thought() -> None:
     """Test the generate_thought method."""
 
