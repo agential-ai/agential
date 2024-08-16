@@ -62,199 +62,7 @@ def test_init() -> None:
     }
 
 
-def test_initialize() -> None:
-    """Test the initialize method."""
-    llm = MockLLM("gpt-3.5-turbo", responses=[])
-    strategy = LATSQAStrategy(llm=llm)
-
-    node = strategy.initialize()
-
-    assert strategy.root == node
-    assert strategy.root is not None
-    assert isinstance(strategy.root, Node)
-    assert strategy.root.state.thought == ""
-    assert strategy.root.state.action_type == ""
-    assert strategy.root.state.query == ""
-    assert strategy.root.state.observation == ""
-    assert strategy.root.state.external_tool_info == {}
-
-
-def test_generate_thought() -> None:
-    """Test the generate_thought method."""
-    gt_prompt_metrics = {
-        "thought": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            }
-        ],
-        "action": [],
-        "value": [],
-        "simulate_thought": [],
-        "simulate_action": [],
-        "simulate_value": [],
-        "reflection": [],
-    }
-
-    llm = MockLLM(
-        "gpt-3.5-turbo",
-        responses=[
-            "I should search for information about the topic. Action: Search[topic]"
-        ],
-    )
-    strategy = LATSQAStrategy(llm=llm)
-
-    question = "What is the capital of France?"
-    examples = "Example 1\nExample 2"
-    trajectory = "Previous thought"
-    reflections = "Reflection 1\nReflection 2"
-    depth = 1
-    prompt = "Generate a thought"
-    additional_keys = {"key": "value"}
-
-    updated_trajectory, thought = strategy.generate_thought(
-        question,
-        examples,
-        trajectory,
-        reflections,
-        depth,
-        prompt,
-        additional_keys,
-        is_simulate=False,
-    )
-
-    assert thought == "I should search for information about the topic."
-    assert (
-        updated_trajectory
-        == "Previous thought\nThought 2: I should search for information about the topic."
-    )
-    assert strategy._prompt_metrics == gt_prompt_metrics
-
-
-def test_generate_action() -> None:
-    """Test the generate_action method."""
-    gt_prompt_metrics = {
-        "thought": [],
-        "action": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            }
-        ],
-        "value": [],
-        "simulate_thought": [],
-        "simulate_action": [],
-        "simulate_value": [],
-        "reflection": [],
-    }
-
-    llm = MockLLM("gpt-3.5-turbo", responses=["Search[capital of France]"])
-    strategy = LATSQAStrategy(llm=llm)
-
-    question = "What is the capital of France?"
-    examples = "Example 1\nExample 2"
-    trajectory = (
-        "Thought 2: I should search for information about the capital of France."
-    )
-    reflections = "Reflection 1\nReflection 2"
-    depth = 1
-    prompt = "Generate an action"
-    additional_keys = {"key": "value"}
-
-    trajectory, action_type, query = strategy.generate_action(
-        question,
-        examples,
-        trajectory,
-        reflections,
-        depth,
-        prompt,
-        additional_keys,
-        is_simulate=False,
-    )
-    assert (
-        trajectory
-        == "Thought 2: I should search for information about the capital of France.\nAction 2: Search[capital of France]"
-    )
-    assert action_type == "Search"
-    assert query == "capital of France"
-
-    assert strategy._prompt_metrics == gt_prompt_metrics
-
-
-def test_generate_observation() -> None:
-    """Test the generate_observation method."""
-    llm = MockLLM("gpt-3.5-turbo", responses=[])
-    docstore = DocstoreExplorer(None)
-    docstore.search = lambda x: "Paris is the capital of France."
-    docstore.lookup = lambda x: "Paris is a city in France."
-    strategy = LATSQAStrategy(llm=llm, docstore=docstore)
-
-    key = "Paris"
-    trajectory = "Previous trajectory"
-
-    # Test Finish action.
-    finish_result = strategy.generate_observation(key, "Finish", "Paris", trajectory, 1)
-    assert finish_result[0] == "Previous trajectory\nObservation 2: Answer is CORRECT"
-    assert finish_result[1] == 1
-    assert finish_result[2] == "Answer is CORRECT"
-    assert finish_result[3] is True
-    assert finish_result[4] == {"search_result": "", "lookup_result": ""}
-
-    # Test Search action.
-    search_result = strategy.generate_observation(
-        key, "Search", "capital of France", trajectory, 2
-    )
-    assert (
-        search_result[0]
-        == "Previous trajectory\nObservation 3: Paris is the capital of France."
-    )
-    assert search_result[1] == 0
-    assert search_result[2] == "Paris is the capital of France."
-    assert search_result[3] is False
-    assert search_result[4] == {
-        "search_result": "Paris is the capital of France.",
-        "lookup_result": "",
-    }
-
-    # Test Lookup action.
-    lookup_result = strategy.generate_observation(key, "Lookup", "Paris", trajectory, 3)
-    assert lookup_result[0].endswith("Observation 4: Paris is a city in France.")
-    assert lookup_result[1] == 0
-    assert lookup_result[2] == "Paris is a city in France."
-    assert lookup_result[3] is False
-    assert lookup_result[4] == {
-        "search_result": "",
-        "lookup_result": "Paris is a city in France.",
-    }
-
-    # Test invalid action.
-    invalid_result = strategy.generate_observation(
-        key, "Invalid", "query", trajectory, 4
-    )
-    assert (
-        invalid_result[0]
-        == "Previous trajectory\nObservation 5: Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
-    )
-    assert invalid_result[1] == 0
-    assert (
-        invalid_result[2]
-        == "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
-    )
-    assert invalid_result[3] is False
-    assert invalid_result[4] == {"search_result": "", "lookup_result": ""}
-
-
-def test_generate() -> None:
+def test_generate_children_nodes() -> None:
     """Test the generate method."""
     gt_states = [
         LATSReActStepOutput(
@@ -438,7 +246,7 @@ def test_generate() -> None:
 
     root = strategy.initialize()
 
-    children_nodes = strategy.generate(
+    children_nodes = strategy.generate_children_nodes(
         node=root,
         question=question,
         key=key,
@@ -667,7 +475,7 @@ def test_generate() -> None:
     ]
 
     root = strategy.initialize()
-    children_nodes = strategy.generate(
+    children_nodes = strategy.generate_children_nodes(
         node=root,
         question=question,
         key=key,
@@ -728,7 +536,7 @@ def test_generate() -> None:
     strategy = LATSQAStrategy(llm=llm, n_samples=1)
 
     root = strategy.initialize()
-    children_nodes = strategy.generate(
+    children_nodes = strategy.generate_children_nodes(
         node=root,
         question=question,
         key=key,
@@ -750,151 +558,123 @@ def test_generate() -> None:
     assert strategy._prompt_metrics == gt_prompt_metrics
 
 
-def test_select_node() -> None:
-    """Test the select_node method."""
-    llm = MockLLM("gpt-3.5-turbo", responses=[])
+
+def test_generate_action() -> None:
+    """Test the generate_action method."""
+    gt_prompt_metrics = {
+        "thought": [],
+        "action": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            }
+        ],
+        "value": [],
+        "simulate_thought": [],
+        "simulate_action": [],
+        "simulate_value": [],
+        "reflection": [],
+    }
+
+    llm = MockLLM("gpt-3.5-turbo", responses=["Search[capital of France]"])
     strategy = LATSQAStrategy(llm=llm)
 
-    # Create a tree structure.
-    root = Node(state={})
-    child1 = Node(state={}, parent=root)
-    child2 = Node(state={}, parent=root)
-    grandchild1 = Node(state={}, parent=child1)
-    grandchild2 = Node(state={}, parent=child1)
+    question = "What is the capital of France?"
+    examples = "Example 1\nExample 2"
+    trajectory = (
+        "Thought 2: I should search for information about the capital of France."
+    )
+    reflections = "Reflection 1\nReflection 2"
+    depth = 1
+    prompt = "Generate an action"
+    additional_keys = {"key": "value"}
 
-    root.children = [child1, child2]
-    child1.children = [grandchild1, grandchild2]
-
-    # Test selection of non-terminal node with highest UCT.
-    child1.visits = 10
-    child1.value = 0.6
-    child2.visits = 5
-    child2.value = 0.4
-    selected_node = strategy.select_node(root)
+    trajectory, action_type, query = strategy.generate_action(
+        question,
+        examples,
+        trajectory,
+        reflections,
+        depth,
+        prompt,
+        additional_keys,
+        is_simulate=False,
+    )
     assert (
-        selected_node == grandchild1
-    )  # child2 should have higher UCT due to fewer visits
-
-    # Test pruning of fully expanded terminal node.
-    grandchild2.is_terminal = True
-    grandchild2.reward = 0
-    selected_node = strategy.select_node(root)
-    assert selected_node == grandchild1
-
-    # Test selection when all children are terminal.
-    root = Node(state={})
-    child1 = Node(state={}, parent=root)
-    child2 = Node(state={}, parent=root)
-    root.add_children([child1, child2])
-    child1.is_terminal = True
-    child2.is_terminal = True
-    selected_node = strategy.select_node(root)
-    assert selected_node == root
-
-
-def test_expand_node() -> None:
-    """Test the expand_node method."""
-    gt_states = [
-        LATSReActStepOutput(
-            thought="I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
-            action_type="Search",
-            query="best kick boxer controversies crimes",
-            observation="Badr Hari is the best kick boxer in the world.",
-            answer="",
-            external_tool_info={
-                "search_result": "Badr Hari is the best kick boxer in the world.",
-                "lookup_result": "",
-            },
-        ),
-        LATSReActStepOutput(
-            thought="I need to search for the best kickboxer who has been involved in controversies and crimes of violence",
-            action_type="Search",
-            query="best kick boxer controversies crimes",
-            observation="Badr Hari is the best kick boxer in the world.",
-            answer="",
-            external_tool_info={
-                "search_result": "Badr Hari is the best kick boxer in the world.",
-                "lookup_result": "",
-            },
-        ),
-        LATSReActStepOutput(
-            thought="I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies",
-            action_type="Search",
-            query="best kick boxer controversies",
-            observation="Badr Hari is the best kick boxer in the world.",
-            answer="",
-            external_tool_info={
-                "search_result": "Badr Hari is the best kick boxer in the world.",
-                "lookup_result": "",
-            },
-        ),
-        LATSReActStepOutput(
-            thought="I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring",
-            action_type="Search",
-            query="best kick boxer controversies violence",
-            observation="Badr Hari is the best kick boxer in the world.",
-            answer="",
-            external_tool_info={
-                "search_result": "Badr Hari is the best kick boxer in the world.",
-                "lookup_result": "",
-            },
-        ),
-        LATSReActStepOutput(
-            thought="I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies",
-            action_type="Search",
-            query="best kickboxer controversies",
-            observation="Badr Hari is the best kick boxer in the world.",
-            answer="",
-            external_tool_info={
-                "search_result": "Badr Hari is the best kick boxer in the world.",
-                "lookup_result": "",
-            },
-        ),
-    ]
-
-    responses = [
-        "I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
-        "Search[best kick boxer controversies crimes]",
-        "I need to search for the best kickboxer who has been involved in controversies and crimes of violence",
-        "Search[best kick boxer controversies crimes]\nObservation 0: No exact matches found",
-        "I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies",
-        "Search[best kick boxer controversies]\nObservation 0: Could not find [best kick boxer controversies]",
-        "I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring",
-        "Search[best kick boxer controversies violence]\nObservation 0: Could not find [best kick boxer controversies violence]",
-        "I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies",
-        "Search[best kickboxer controversies]\nObservation 0: The search results show multiple kickboxers who have been involved in controversies",
-    ]
-    llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    strategy = LATSQAStrategy(llm=llm)
-    strategy.docstore.search = (
-        lambda x: "Badr Hari is the best kick boxer in the world."
+        trajectory
+        == "Thought 2: I should search for information about the capital of France.\nAction 2: Search[capital of France]"
     )
+    assert action_type == "Search"
+    assert query == "capital of France"
 
-    question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
-    key = "Badr Hari"
+    assert strategy._prompt_metrics == gt_prompt_metrics
 
-    root = strategy.initialize()
 
-    children_nodes = strategy.expand_node(
-        node=root,
-        question=question,
-        key=key,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
-        prompt=LATS_INSTRUCTION_HOTPOTQA,
-        reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
-        additional_keys={},
-        reflect_additional_keys={},
+def test_generate_observation() -> None:
+    """Test the generate_observation method."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    docstore = DocstoreExplorer(None)
+    docstore.search = lambda x: "Paris is the capital of France."
+    docstore.lookup = lambda x: "Paris is a city in France."
+    strategy = LATSQAStrategy(llm=llm, docstore=docstore)
+
+    key = "Paris"
+    trajectory = "Previous trajectory"
+
+    # Test Finish action.
+    finish_result = strategy.generate_observation(key, "Finish", "Paris", trajectory, 1)
+    assert finish_result[0] == "Previous trajectory\nObservation 2: Answer is CORRECT"
+    assert finish_result[1] == 1
+    assert finish_result[2] == "Answer is CORRECT"
+    assert finish_result[3] is True
+    assert finish_result[4] == {"search_result": "", "lookup_result": ""}
+
+    # Test Search action.
+    search_result = strategy.generate_observation(
+        key, "Search", "capital of France", trajectory, 2
     )
-    assert len(children_nodes) == 5
-    for gt_state, node in zip(gt_states, children_nodes):
-        assert node.state == gt_state
-        assert node.depth == 1
-        assert node.reward == 0
-        assert node.value == 0
-        assert node.is_terminal is False
-        assert node.visits == 0
-    assert strategy.root.children == children_nodes
+    assert (
+        search_result[0]
+        == "Previous trajectory\nObservation 3: Paris is the capital of France."
+    )
+    assert search_result[1] == 0
+    assert search_result[2] == "Paris is the capital of France."
+    assert search_result[3] is False
+    assert search_result[4] == {
+        "search_result": "Paris is the capital of France.",
+        "lookup_result": "",
+    }
+
+    # Test Lookup action.
+    lookup_result = strategy.generate_observation(key, "Lookup", "Paris", trajectory, 3)
+    assert lookup_result[0].endswith("Observation 4: Paris is a city in France.")
+    assert lookup_result[1] == 0
+    assert lookup_result[2] == "Paris is a city in France."
+    assert lookup_result[3] is False
+    assert lookup_result[4] == {
+        "search_result": "",
+        "lookup_result": "Paris is a city in France.",
+    }
+
+    # Test invalid action.
+    invalid_result = strategy.generate_observation(
+        key, "Invalid", "query", trajectory, 4
+    )
+    assert (
+        invalid_result[0]
+        == "Previous trajectory\nObservation 5: Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
+    )
+    assert invalid_result[1] == 0
+    assert (
+        invalid_result[2]
+        == "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
+    )
+    assert invalid_result[3] is False
+    assert invalid_result[4] == {"search_result": "", "lookup_result": ""}
 
 
 def test_evaluate_node() -> None:
@@ -1252,366 +1032,106 @@ def test_simulate_node() -> None:
     assert qa_strategy._prompt_metrics == gt_prompt_metrics
 
 
-def test_backpropagate_node() -> None:
-    """Test the backpropagate_node method."""
-    llm = MockLLM("gpt-3.5-turbo", responses=[])
-    strategy = LATSQAStrategy(llm=llm)
-
-    # Create a simple tree structure.
-    root = Node(state={})
-    child = Node(state={}, parent=root)
-    grandchild = Node(state={}, parent=child)
-    grandchild.is_terminal = True
-
-    # Test backpropagation for a successful terminal node.
-    grandchild.reward = 1
-    strategy.backpropagate_node(grandchild, 1.0)
-
-    assert root.visits == 1
-    assert child.visits == 1
-    assert grandchild.visits == 1
-    assert root.value == 1.0
-    assert child.value == 1.0
-    assert grandchild.value == 1.0
-
-    # Test backpropagation for a failed terminal node.
-    grandchild.reward = 0
-    strategy.backpropagate_node(grandchild, 1.0)
-
-    assert root.visits == 2
-    assert child.visits == 2
-    assert grandchild.visits == 2
-    assert root.value == 1.0
-    assert child.value == 1.0
-    assert grandchild.value == 0.0
-
-    # Test backpropagation for a non-terminal node.
-    child.is_terminal = False
-    strategy.backpropagate_node(child, 0.5)
-
-    assert root.visits == 3
-    assert child.visits == 3
-    assert root.value == 5 / 6
-    assert child.value == 5 / 6
-
-
-def test_halting_condition() -> None:
-    """Test the halting_condition method."""
-    llm = MockLLM("gpt-3.5-turbo", responses=[])
-    strategy = LATSQAStrategy(llm=llm)
-
-    # Test with a terminal node and reward of 1.
-    terminal_node = Node(state={})
-    terminal_node.is_terminal = True
-    terminal_node.reward = 1
-    assert strategy.halting_condition(terminal_node) is True
-
-    # Test with a non-terminal node.
-    non_terminal_node = Node(state={})
-    assert strategy.halting_condition(non_terminal_node) is False
-
-    # Test with a terminal node but reward is not 1.
-    incorrect_terminal_node = Node(state={})
-    incorrect_terminal_node.is_terminal = True
-    incorrect_terminal_node.reward = 0
-    assert strategy.halting_condition(incorrect_terminal_node) is False
-
-
-def test_reflect_condition() -> None:
-    """Test the reflect_condition method."""
-    llm = MockLLM("gpt-3.5-turbo", responses=[])
-    strategy = LATSQAStrategy(llm=llm, max_unique=3, max_reflections=5)
-
-    # Test when there are fewer unique trajectories than reflections
-    strategy.failed_trajectories = [
-        {"trajectory": f"t{i}", "final_answer": "answer"} for i in range(2)
-    ]
-    strategy.reflection_map = {}
-    assert strategy.reflect_condition() is True
-
-    # Test when there are more unique trajectories than reflections but less than max_reflections
-    strategy.failed_trajectories = [
-        {"trajectory": f"t{i}", "final_answer": f"answer{i}"} for i in range(4)
-    ]
-    strategy.reflection_map = {"r1": "reflection1"}
-    assert strategy.reflect_condition() is True
-
-    # Test when there are max_reflections unique trajectories
-    strategy.failed_trajectories = [
-        {"trajectory": f"t{i}", "final_answer": "answer"} for i in range(5)
-    ]
-    strategy.reflection_map = {
-        "r1": "reflection1",
-        "r2": "reflection2",
-        "r3": "reflection3",
-        "r4": "reflection4",
-    }
-    assert strategy.reflect_condition() is False
-
-
-def test_reflect() -> None:
-    """Test the reflect method."""
-    gt_prompt_metrics = {
-        "thought": [],
-        "action": [],
-        "value": [],
-        "simulate_thought": [],
-        "simulate_action": [],
-        "simulate_value": [],
-        "reflection": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
+def test_expand_node() -> None:
+    """Test the expand_node method."""
+    gt_states = [
+        LATSReActStepOutput(
+            thought="I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
+            action_type="Search",
+            query="best kick boxer controversies crimes",
+            observation="Badr Hari is the best kick boxer in the world.",
+            answer="",
+            external_tool_info={
+                "search_result": "Badr Hari is the best kick boxer in the world.",
+                "lookup_result": "",
             },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
+        ),
+        LATSReActStepOutput(
+            thought="I need to search for the best kickboxer who has been involved in controversies and crimes of violence",
+            action_type="Search",
+            query="best kick boxer controversies crimes",
+            observation="Badr Hari is the best kick boxer in the world.",
+            answer="",
+            external_tool_info={
+                "search_result": "Badr Hari is the best kick boxer in the world.",
+                "lookup_result": "",
             },
-        ],
-    }
-
-    llm = MockLLM("gpt-3.5-turbo", responses=["Reflection 1", "Reflection 2"])
-    strategy = LATSQAStrategy(llm=llm, max_unique=2)
-
-    strategy.failed_trajectories = [
-        {"trajectory": "Failed trajectory 1", "final_answer": "Incorrect answer 1"},
-        {"trajectory": "Failed trajectory 2", "final_answer": "Incorrect answer 2"},
-        {
-            "trajectory": "Failed trajectory 1",
-            "final_answer": "Incorrect answer 1",
-        },  # Duplicate, should be ignored
+        ),
+        LATSReActStepOutput(
+            thought="I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies",
+            action_type="Search",
+            query="best kick boxer controversies",
+            observation="Badr Hari is the best kick boxer in the world.",
+            answer="",
+            external_tool_info={
+                "search_result": "Badr Hari is the best kick boxer in the world.",
+                "lookup_result": "",
+            },
+        ),
+        LATSReActStepOutput(
+            thought="I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring",
+            action_type="Search",
+            query="best kick boxer controversies violence",
+            observation="Badr Hari is the best kick boxer in the world.",
+            answer="",
+            external_tool_info={
+                "search_result": "Badr Hari is the best kick boxer in the world.",
+                "lookup_result": "",
+            },
+        ),
+        LATSReActStepOutput(
+            thought="I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies",
+            action_type="Search",
+            query="best kickboxer controversies",
+            observation="Badr Hari is the best kick boxer in the world.",
+            answer="",
+            external_tool_info={
+                "search_result": "Badr Hari is the best kick boxer in the world.",
+                "lookup_result": "",
+            },
+        ),
     ]
 
-    question = "What is the capital of France?"
-    examples = "Example 1\nExample 2"
-    prompt = "Reflect on the failed trajectory"
-    additional_keys = {"key": "value"}
-
-    reflections = strategy.reflect(question, examples, prompt, additional_keys)
-
-    assert len(reflections) == 2
-    assert reflections[0]["trajectory"] == "Failed trajectory 1"
-    assert reflections[0]["reflection"] == "Reflection 1"
-    assert reflections[1]["trajectory"] == "Failed trajectory 2"
-    assert reflections[1]["reflection"] == "Reflection 2"
-
-    assert strategy.reflection_map == reflections
-
-    assert strategy._prompt_metrics == gt_prompt_metrics
-
-
-def test_create_output_dict() -> None:
-    """Test create_output_dict method."""
-    gt_prompt_metrics = {
-        "thought": [],
-        "action": [],
-        "value": [],
-        "simulate_thought": [],
-        "simulate_action": [],
-        "simulate_value": [],
-        "reflection": [],
-    }
-
-    llm = MockLLM("gpt-3.5-turbo", responses=["1"])
-    strategy = LATSQAStrategy(llm=llm, max_unique=2)
-
-    gt_out = {
-        "iteration": 1,
-        "current_node": {
-            "state": LATSReActStepOutput(
-                thought="",
-                action_type="",
-                query="",
-                observation="",
-                answer="",
-                external_tool_info={},
-            ),
-            "visits": 0,
-            "value": 0,
-            "depth": 0,
-            "is_terminal": False,
-            "reward": 0,
-        },
-        "children_nodes": [
-            {
-                "state": LATSReActStepOutput(
-                    thought="",
-                    action_type="",
-                    query="",
-                    observation="",
-                    answer="",
-                    external_tool_info={},
-                ),
-                "visits": 0,
-                "value": 0,
-                "depth": 0,
-                "is_terminal": False,
-                "reward": 0,
-            }
-        ],
-        "values": [{}],
-        "simulation_reward": 1.0,
-        "simulation_terminal_node": {
-            "state": LATSReActStepOutput(
-                thought="",
-                action_type="",
-                query="",
-                observation="",
-                answer="",
-                external_tool_info={},
-            ),
-            "visits": 0,
-            "value": 0,
-            "depth": 0,
-            "is_terminal": False,
-            "reward": 0,
-        },
-        "simulation_results": [
-            LATSSimulationOutput(
-                current_node={
-                    "state": LATSReActStepOutput(
-                        thought="",
-                        action_type="",
-                        query="",
-                        observation="",
-                        answer="",
-                        external_tool_info={},
-                    ),
-                    "visits": 0,
-                    "value": 0,
-                    "depth": 0,
-                    "is_terminal": False,
-                    "reward": 0,
-                },
-                children_nodes=[],
-                values=[{}],
-            )
-        ],
-        "prompt_metrics": {
-            "thought": [],
-            "action": [],
-            "value": [],
-            "simulate_thought": [],
-            "simulate_action": [],
-            "simulate_value": [],
-            "reflection": [],
-        },
-    }
-    simulation_results = [
-        {"current_node": Node(), "children_nodes": [], "values": [{}]}
+    responses = [
+        "I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
+        "Search[best kick boxer controversies crimes]",
+        "I need to search for the best kickboxer who has been involved in controversies and crimes of violence",
+        "Search[best kick boxer controversies crimes]\nObservation 0: No exact matches found",
+        "I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies",
+        "Search[best kick boxer controversies]\nObservation 0: Could not find [best kick boxer controversies]",
+        "I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring",
+        "Search[best kick boxer controversies violence]\nObservation 0: Could not find [best kick boxer controversies violence]",
+        "I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies",
+        "Search[best kickboxer controversies]\nObservation 0: The search results show multiple kickboxers who have been involved in controversies",
     ]
-    out = strategy.create_output_dict(
-        iteration=1,
-        current_node=Node(),
-        children_nodes=[Node()],
-        values=[{}],
-        simulation_reward=1.0,
-        simulation_terminal_node=Node(),
-        simulation_results=simulation_results,
-    )
-    assert out == gt_out
-    assert strategy._prompt_metrics == gt_prompt_metrics
-
-    # Test half empty.
-    gt_out = {
-        "iteration": 1,
-        "current_node": {
-            "state": LATSReActStepOutput(
-                thought="",
-                action_type="",
-                query="",
-                observation="",
-                answer="",
-                external_tool_info={},
-            ),
-            "visits": 0,
-            "value": 0,
-            "depth": 0,
-            "is_terminal": False,
-            "reward": 0,
-        },
-        "children_nodes": [
-            {
-                "state": LATSReActStepOutput(
-                    thought="",
-                    action_type="",
-                    query="",
-                    observation="",
-                    answer="",
-                    external_tool_info={},
-                ),
-                "visits": 0,
-                "value": 0,
-                "depth": 0,
-                "is_terminal": False,
-                "reward": 0,
-            }
-        ],
-        "values": [],
-        "simulation_reward": 0,
-        "simulation_terminal_node": {},
-        "simulation_results": [],
-        "prompt_metrics": {
-            "thought": [],
-            "action": [],
-            "value": [],
-            "simulate_thought": [],
-            "simulate_action": [],
-            "simulate_value": [],
-            "reflection": [],
-        },
-    }
-    out = strategy.create_output_dict(
-        iteration=1,
-        current_node=Node(),
-        children_nodes=[Node()],
-        values=None,
-        simulation_reward=None,
-        simulation_terminal_node=None,
-        simulation_results=None,
-    )
-    assert out == gt_out
-
-    assert strategy._prompt_metrics == gt_prompt_metrics
-
-
-def test_reset() -> None:
-    """Test the reset method."""
-    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = LATSQAStrategy(llm=llm)
 
-    strategy.root = "some_root"
-    strategy.reflection_map = ["reflection1", "reflection2"]
-    strategy.value_cache = {"value1": "value2"}
-    strategy.failed_trajectories = ["trajectory1", "trajectory2"]
+    question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
+    key = "Badr Hari"
 
-    # Call reset.
-    strategy.reset()
+    root = strategy.initialize()
 
-    # Check if the state has been reset.
-    assert strategy.root is None
-    assert strategy.failed_trajectories == []
-    assert strategy.reflection_map == []
-    assert strategy.value_cache == {}
-    assert strategy._prompt_metrics == {
-        "thought": [],
-        "action": [],
-        "value": [],
-        "simulate_thought": [],
-        "simulate_action": [],
-        "simulate_value": [],
-        "reflection": [],
-    }
+    children_nodes = strategy.expand_node(
+        node=root,
+        question=question,
+        key=key,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
+        prompt=LATS_INSTRUCTION_HOTPOTQA,
+        reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
+        reflect_additional_keys={},
+    )
+    assert len(children_nodes) == 5
+    for gt_state, node in zip(gt_states, children_nodes):
+        assert node.state == gt_state
+        assert node.depth == 1
+        assert node.reward == 0
+        assert node.value == 0
+        assert node.is_terminal is False
+        assert node.visits == 0
+    assert strategy.root.children == children_nodes
 
 
 def test_instantiate_strategies() -> None:
