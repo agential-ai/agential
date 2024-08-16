@@ -268,7 +268,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         Returns:
             Tuple[str, str, ModelResponse]: A tuple containing the updated trajectory, the generated thought, and the model response.
         """
-        trajectory += f"\nThought {depth + 1}:"
+        trajectory += f"\nThought {depth + 1}: "
         out = _prompt_agent(
             llm=self.llm,
             question=question,
@@ -281,7 +281,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         thought = out.choices[0].message.content
 
         thought = remove_newline(thought).split("Action")[0].strip()
-        trajectory += " " + thought
+        trajectory += thought
 
         return trajectory, thought, out
 

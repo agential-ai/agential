@@ -214,7 +214,7 @@ class LATSQAStrategy(LATSGeneralStrategy):
         Returns:
             Tuple[str, str, str, ModelResponse]: A tuple containing the updated trajectory, action type, query, and model response.
         """
-        trajectory += f"\nAction {depth + 1}:"
+        trajectory += f"\nAction {depth + 1}: "
         out = _prompt_agent(
             llm=self.llm,
             question=question,
@@ -227,8 +227,8 @@ class LATSQAStrategy(LATSGeneralStrategy):
         action = out.choices[0].message.content
 
         action = remove_newline(action).split("Observation")[0]
-        trajectory += " " + action
         action_type, query = parse_qa_action(action)
+        trajectory += f"{action_type}[{query}]"
 
         return trajectory, action_type, query, out
 

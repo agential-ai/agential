@@ -190,6 +190,96 @@ class LATSMathStrategy(LATSBaseStrategy):
 
         return children_nodes, thought_model_responses, action_model_responses
 
+    def generate_action(
+        self,
+        question: str,
+        examples: str,
+        trajectory: str,
+        reflections: str,
+        depth: int,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> Tuple[str, str, str, ModelResponse]:
+        """Generate an action for the current step in the reasoning process.
+
+        Args:
+            question (str): The main question or task to be addressed.
+            examples (str): Relevant examples to provide context for action generation.
+            trajectory (str): The current trajectory or history of thoughts and actions.
+            reflections (str): Previous reflections to guide the action generation.
+            depth (int): The current depth in the search tree.
+            prompt (str): The prompt template for action generation.
+            additional_keys (Dict[str, str]): Additional keys for prompt formatting.
+
+        Returns:
+            Tuple[str, str, str, ModelResponse]: A tuple containing the updated trajectory, action type, query, and model response.
+        """
+        trajectory += f"\nAction {depth + 1}: "
+        out = _prompt_agent(
+            llm=self.llm,
+            question=question,
+            examples=examples,
+            trajectory=trajectory,
+            reflections=reflections,
+            prompt=prompt,
+            additional_keys=additional_keys,
+        )
+        action = out.choices[0].message.content
+
+        action = action.split("Observation")[0].strip()
+        action_type, query = parse_math_action(action)
+        trajectory += f" {action_type}[\n```python\n{query}\n```\n]"
+
+        return trajectory, action_type, query, out
+
+    def generate_observation(
+        self,
+        key: str,
+        action_type: str,
+        query: str,
+        trajectory: str,
+        depth: int,
+    ) -> Tuple[str, int, str, bool, Dict[str, Any]]:
+        """Generate an observation based on the current action.
+
+        Args:
+            key (str): The answer key for evaluation.
+            action_type (str): The type of action taken.
+            query (str): The query associated with the action.
+            trajectory (str): The current trajectory or history of thoughts and actions.
+            depth (int): The current depth in the search tree.
+
+        Returns:
+            Tuple[str, int, str, bool, Dict[str, str]]: A tuple containing the updated trajectory,
+            reward, observation, done flag, and external tool information.
+        """
+        external_tool_info = {"execution_status": "", "code_answer": ""}
+        code_answer, execution_status = safe_execute(query)
+
+        reward, done = 0, False
+        trajectory += f"\nObservation {depth + 1}: "
+        if action_type.lower() == "finish":
+            external_tool_info["code_answer"] = code_answer[0]
+            external_tool_info["execution_status"] = execution_status
+
+            if EM(code_answer[0], key, normalize=False):
+                obs = "Answer is CORRECT"
+                reward = int(EM(code_answer[0], key, normalize=False))
+            else:
+                obs = "Answer is INCORRECT"
+            done = True
+        elif action_type.lower() == "calculate":
+            external_tool_info["code_answer"] = code_answer[0]
+            external_tool_info["execution_status"] = execution_status
+
+            obs = f"\n```python\n{query}\n```\nExecution Status: {execution_status}\nOutput: answer = {code_answer[0]}"
+        else:
+            obs = (
+                "Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
+            )
+        trajectory += obs
+
+        return trajectory, reward, obs, done, external_tool_info
 
 class LATSGSM8KStrategy(LATSMathStrategy):
     """A strategy class for the GSM8K benchmark using the LATS agent."""
