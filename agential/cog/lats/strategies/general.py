@@ -398,7 +398,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         """
         if node.depth >= self.depth_limit:
             node.is_terminal = True
-            return []
+            return [], [], []
         children_nodes, thought_model_responses, action_model_responses = (
             self.generate_children_nodes(
                 node=node,

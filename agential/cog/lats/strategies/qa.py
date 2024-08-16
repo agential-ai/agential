@@ -304,60 +304,60 @@ class LATSQAStrategy(LATSGeneralStrategy):
         Returns:
             Tuple[List[Dict[str, Any]], List[Optional[ModelResponse]]]: A list of dictionaries containing evaluation results for each child node and their model responses.
         """
-        children_trajectories = [
-            {"child_trajectory": get_node_trajectory_qa(child), "idx": idx}
-            for idx, child in enumerate(node.children)
-            if not child.is_terminal and child.parent
-        ]
-
         values, values_responses = [], []
         child_trajectory_cache = {}
-        for child_trajectory in children_trajectories:
-            trajectory: str = child_trajectory["child_trajectory"]  # type: ignore
-            idx: int = child_trajectory["idx"]  # type: ignore
-            if trajectory in child_trajectory_cache:
-                value = 0
-                values_responses.append(None)
-            else:
-                failed_trajectories = ""
-                if len(self.reflection_map) > 0:
-                    for trajectory_reflection in self.reflection_map:
-                        failed_trajectories += (
-                            _build_failed_trajectory_format(
-                                question=question,
-                                trajectory=trajectory_reflection["trajectory"],
-                                reflection=trajectory_reflection["reflection"],
-                            )
-                            + "\n\n"
-                        )
-                    failed_trajectories = failed_trajectories.rstrip("\n\n")
-
-                unique_key = f"{trajectory}::{failed_trajectories}"
-                if self.cache_values and unique_key in self.value_cache:
-                    value_str = self.value_cache[unique_key]
-                    values_responses.append(None)
+        for idx, child in enumerate(node.children):
+            if not child.is_terminal:
+                trajectory = get_node_trajectory_qa(child)
+                if trajectory in child_trajectory_cache:
+                    value = 0
+                    explanation = ""
+                    value_response = None
                 else:
-                    value_str_out = _prompt_value(
-                        llm=self.llm,
-                        question=question,
-                        examples=examples,
-                        trajectory=trajectory,
-                        failed_trajectories=failed_trajectories,
-                        prompt=prompt,
-                        additional_keys=additional_keys,
-                    )
-                    values_responses.append(value_str_out)
-                    value_str = value_str_out.choices[0].message.content
+                    failed_trajectories = ""
+                    if len(self.reflection_map) > 0:
+                        for trajectory_reflection in self.reflection_map:
+                            failed_trajectories += (
+                                _build_failed_trajectory_format(
+                                    question=question,
+                                    trajectory=trajectory_reflection["trajectory"],
+                                    reflection=trajectory_reflection["reflection"],
+                                )
+                                + "\n\n"
+                            )
+                        failed_trajectories = failed_trajectories.rstrip("\n\n")
 
-                    if self.cache_values:
-                        self.value_cache[unique_key] = value_str
+                    unique_key = f"{trajectory}::{failed_trajectories}"
+                    if self.cache_values and unique_key in self.value_cache:
+                        value_str = self.value_cache[unique_key]
+                        value_response = None
+                    else:
+                        value_str_out = _prompt_value(
+                            llm=self.llm,
+                            question=question,
+                            examples=examples,
+                            trajectory=trajectory,
+                            failed_trajectories=failed_trajectories,
+                            prompt=prompt,
+                            additional_keys=additional_keys,
+                        )
+                        value_response = value_str_out
+                        value_str = value_str_out.choices[0].message.content
 
-                explanation, value = parse_qa_value(value_str)  # type: ignore
-                value = value / 10.0  # type: ignore
-                node.children[idx].value = value
+                        if self.cache_values:
+                            self.value_cache[unique_key] = value_str
 
-                child_trajectory_cache[trajectory] = value
-            values.append({"node_idx": idx, "explanation": explanation, "value": value})
+                    explanation, value = parse_qa_value(value_str)  # type: ignore
+                    value = value / 10.0  # type: ignore
+                    node.children[idx].value = value
+
+                    child_trajectory_cache[trajectory] = value
+
+                values_responses.append(value_response)
+                values.append({"explanation": explanation, "value": value})
+            else:
+                values_responses.append(None)
+                values.append({"explanation": "", "value": -1e10})
 
         return values, values_responses
 
