@@ -62,7 +62,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         reset: bool,
     ) -> LATSOutput:
         """Generate child nodes for the given node.
-        
+
         Args:
             question (str): The question to answer.
             key (str): The key for the current node.

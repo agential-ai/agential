@@ -33,7 +33,7 @@ class LATSMathStrategy(LATSBaseStrategy):
     The strategy uses these parameters to fine-tune its behavior and performance
     in question-answering tasks.
     """
-        
+
     def __init__(
         self,
         llm: BaseLLM,
@@ -503,6 +503,7 @@ class LATSMathStrategy(LATSBaseStrategy):
             simulation_values,
             simulation_values_model_responses,
         )
+
 
 class LATSGSM8KStrategy(LATSMathStrategy):
     """A strategy class for the GSM8K benchmark using the LATS agent."""

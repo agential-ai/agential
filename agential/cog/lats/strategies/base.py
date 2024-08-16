@@ -29,7 +29,7 @@ class LATSBaseStrategy(BaseStrategy):
         self.depth_limit = depth_limit
         self.max_unique = max_unique
         self.cache_values = cache_values
-     
+
     @abstractmethod
     def generate(
         self,
@@ -48,7 +48,7 @@ class LATSBaseStrategy(BaseStrategy):
         reset: bool,
     ) -> LATSOutput:
         """Generate child nodes for the given node.
-        
+
         Args:
             question (str): The question to answer.
             key (str): The key for the current node.
@@ -377,7 +377,7 @@ class LATSBaseStrategy(BaseStrategy):
         ],
     ) -> LATSStepOutput:
         """Formats the output of a single step.
-        
+
         Args:
             iteration (int): The current iteration number.
             current_node (Node): The current node.
@@ -394,7 +394,7 @@ class LATSBaseStrategy(BaseStrategy):
             simulation_action_model_responses (Optional[List[List[ModelResponse]]]): The list of action model responses in the simulation.
             simulation_values (Optional[List[List[Dict[str, Any]]]): The list of values in the simulation.
             simulation_values_model_responses (Optional[List[List[Optional[ModelResponse]]]): The list of value model responses in the simulation.
-            
+
         Returns:
             LATSStepOutput: An object containing the formatted output.
         """
