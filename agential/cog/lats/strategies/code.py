@@ -226,7 +226,7 @@ class LATSCodeStrategy(LATSBaseStrategy):
         trajectory += f" {action_type}[\n```python\n{query}\n```\n]"
 
         return trajectory, action_type, query, out
-    
+
     def generate_observation(
         self,
         key: str,
@@ -513,6 +513,7 @@ class LATSCodeStrategy(LATSBaseStrategy):
             simulation_values,
             simulation_values_model_responses,
         )
+
 
 class LATSHEvalStrategy(LATSCodeStrategy):
     """A strategy class for the HumanEval benchmark using the LATS agent."""
