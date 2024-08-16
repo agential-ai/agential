@@ -54,116 +54,16 @@ def test_init() -> None:
         "reflection": [],
     }
 
-
-def test_generate_action() -> None:
-    """Test the generate_action method."""
-    gt_prompt_metrics = {
-        "thought": [],
-        "action": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            }
-        ],
-        "value": [],
-        "simulate_thought": [],
-        "simulate_action": [],
-        "simulate_value": [],
-        "reflection": [],
-    }
-
-    llm = MockLLM(
-        "gpt-3.5-turbo", responses=["Implement[```python\nresult = 2 + 2\n```]"]
-    )
-    strategy = LATSCodeStrategy(llm=llm)
-
-    question = "What is 2 + 2?"
-    examples = "Example 1\nExample 2"
-    trajectory = "Thought 1: I need to calculate 2 + 2."
-    reflections = "Reflection 1\nReflection 2"
-    depth = 0
-    prompt = "Generate an action"
-    additional_keys = {"key": "value"}
-
-    trajectory, action_type, query = strategy.generate_action(
-        question,
-        examples,
-        trajectory,
-        reflections,
-        depth,
-        prompt,
-        additional_keys,
-        is_simulate=False,
-    )
-
-    assert (
-        trajectory
-        == "Thought 1: I need to calculate 2 + 2.\nAction 1: Implement[\n```python\nresult = 2 + 2\n```\n]"
-    )
-    assert action_type == "Implement"
-    assert query == "result = 2 + 2"
-    assert strategy._prompt_metrics == gt_prompt_metrics
-
-
-def test_generate_observation() -> None:
-    """Test the generate_observation method."""
-    strategy = LATSCodeStrategy(llm=MockLLM("gpt-3.5-turbo", responses=[]))
-
-    # Test Finish action.
-    finish_result = strategy.generate_observation(
-        "assert x == 10", "Finish", "x = 10", "Previous trajectory", 1
-    )
-    assert finish_result == (
-        "Previous trajectory\nObservation 2: Answer is CORRECT",
-        1,
-        "Answer is CORRECT",
-        True,
-        {"execution_status": "Done"},
-    )
-
-    # Test Implement action.
-    implement_result = strategy.generate_observation(
-        "", "Implement", "def add(a, b): return a + b", "Previous trajectory", 2
-    )
-    assert implement_result == (
-        "Previous trajectory\nObservation 3: \n```python\ndef add(a, b): return a + b\n```\nExecution Status: ",
-        0,
-        "\n```python\ndef add(a, b): return a + b\n```\nExecution Status: ",
-        False,
-        {"execution_status": "Done"},
-    )
-
-    # Test Test action.
-    test_result = strategy.generate_observation(
-        "",
-        "Test",
-        "assert add(2, 3) == 5",
-        "Previous trajectory\nImplement[```python\ndef add(a, b): return a + b\n```]",
-        3,
-    )
-    assert test_result == (
-        "Previous trajectory\nImplement[```python\ndef add(a, b): return a + b\n```]\nObservation 4: \n```python\ndef add(a, b): return a + b\n\nassert add(2, 3) == 5\n```\nExecution Status: Done",
-        0,
-        "\n```python\ndef add(a, b): return a + b\n\nassert add(2, 3) == 5\n```\nExecution Status: Done",
-        False,
-        {"execution_status": "Done"},
-    )
-
-    # Test invalid action.
-    invalid_result = strategy.generate_observation(
-        "", "Invalid", "query", "Previous trajectory", 4
-    )
-    assert invalid_result == (
-        "Previous trajectory\nObservation 5: Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer].",
-        0,
-        "Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer].",
-        False,
-        {"execution_status": ""},
+def test_generate() -> None:
+    """Test the generate method."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = LATSCodeStrategy(
+        llm=llm,
+        n_samples=5,
+        max_reflections=4,
+        depth_limit=7,
+        max_unique=5,
+        cache_values=True,
     )
 
 
@@ -621,6 +521,120 @@ def test_generate_children_nodes() -> None:
     assert children_nodes[0].reward == 0
     assert strategy._prompt_metrics == gt_prompt_metrics
 
+def test_generate_action() -> None:
+    """Test the generate_action method."""
+    gt_prompt_metrics = {
+        "thought": [],
+        "action": [
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": 20,
+                "total_tokens": 30,
+                "prompt_tokens_cost": 1.5e-05,
+                "completion_tokens_cost": 3.9999999999999996e-05,
+                "total_tokens_cost": 5.4999999999999995e-05,
+                "time_sec": 0.5,
+            }
+        ],
+        "value": [],
+        "simulate_thought": [],
+        "simulate_action": [],
+        "simulate_value": [],
+        "reflection": [],
+    }
+
+    llm = MockLLM(
+        "gpt-3.5-turbo", responses=["Implement[```python\nresult = 2 + 2\n```]"]
+    )
+    strategy = LATSCodeStrategy(llm=llm)
+
+    question = "What is 2 + 2?"
+    examples = "Example 1\nExample 2"
+    trajectory = "Thought 1: I need to calculate 2 + 2."
+    reflections = "Reflection 1\nReflection 2"
+    depth = 0
+    prompt = "Generate an action"
+    additional_keys = {"key": "value"}
+
+    trajectory, action_type, query = strategy.generate_action(
+        question,
+        examples,
+        trajectory,
+        reflections,
+        depth,
+        prompt,
+        additional_keys,
+        is_simulate=False,
+    )
+
+    assert (
+        trajectory
+        == "Thought 1: I need to calculate 2 + 2.\nAction 1: Implement[\n```python\nresult = 2 + 2\n```\n]"
+    )
+    assert action_type == "Implement"
+    assert query == "result = 2 + 2"
+    assert strategy._prompt_metrics == gt_prompt_metrics
+
+
+def test_generate_observation() -> None:
+    """Test the generate_observation method."""
+    strategy = LATSCodeStrategy(llm=MockLLM("gpt-3.5-turbo", responses=[]))
+
+    # Test Finish action.
+    finish_result = strategy.generate_observation(
+        "assert x == 10", "Finish", "x = 10", "Previous trajectory", 1
+    )
+    assert finish_result == (
+        "Previous trajectory\nObservation 2: Answer is CORRECT",
+        1,
+        "Answer is CORRECT",
+        True,
+        {"execution_status": "Done"},
+    )
+
+    # Test Implement action.
+    implement_result = strategy.generate_observation(
+        "", "Implement", "def add(a, b): return a + b", "Previous trajectory", 2
+    )
+    assert implement_result == (
+        "Previous trajectory\nObservation 3: \n```python\ndef add(a, b): return a + b\n```\nExecution Status: ",
+        0,
+        "\n```python\ndef add(a, b): return a + b\n```\nExecution Status: ",
+        False,
+        {"execution_status": "Done"},
+    )
+
+    # Test Test action.
+    test_result = strategy.generate_observation(
+        "",
+        "Test",
+        "assert add(2, 3) == 5",
+        "Previous trajectory\nImplement[```python\ndef add(a, b): return a + b\n```]",
+        3,
+    )
+    assert test_result == (
+        "Previous trajectory\nImplement[```python\ndef add(a, b): return a + b\n```]\nObservation 4: \n```python\ndef add(a, b): return a + b\n\nassert add(2, 3) == 5\n```\nExecution Status: Done",
+        0,
+        "\n```python\ndef add(a, b): return a + b\n\nassert add(2, 3) == 5\n```\nExecution Status: Done",
+        False,
+        {"execution_status": "Done"},
+    )
+
+    # Test invalid action.
+    invalid_result = strategy.generate_observation(
+        "", "Invalid", "query", "Previous trajectory", 4
+    )
+    assert invalid_result == (
+        "Previous trajectory\nObservation 5: Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer].",
+        0,
+        "Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer].",
+        False,
+        {"execution_status": ""},
+    )
+
+
+
+
 
 def test_evaluate_node() -> None:
     """Test the evaluate_node method."""
@@ -969,3 +983,15 @@ def test_simulate_node() -> None:
     assert -1 <= reward <= 1
 
     assert strategy._prompt_metrics == gt_prompt_metrics
+
+def test_expand_node() -> None:
+    """Test the expand_node method."""
+
+def test_instantiate_strategies() -> None:
+    """Test the instantiation of various LATS Code strategies."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    humaneval_strategy = LATSHEvalStrategy(llm=llm)
+    mbpp_strategy = LATSMBPPStrategy(llm=llm)
+
+    assert isinstance(humaneval_strategy, LATSHEvalStrategy)
+    assert isinstance(mbpp_strategy, LATSMBPPStrategy)
