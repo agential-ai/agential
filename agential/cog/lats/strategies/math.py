@@ -31,7 +31,7 @@ class LATSMathStrategy(LATSBaseStrategy):
         cache_values (bool): Whether to cache values, default is True.
 
     The strategy uses these parameters to fine-tune its behavior and performance
-    in question-answering tasks.
+    in math reasoning tasks.
     """
 
     def __init__(
