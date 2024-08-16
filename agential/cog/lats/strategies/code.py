@@ -1,29 +1,23 @@
 """LATS Agent strategies for Code."""
 
-import re
-
-from copy import deepcopy
 from typing import Any, Dict, List, Optional, Tuple
 
 from agential.cog.lats.functional import (
     _build_failed_trajectory_format,
     _build_reflection_format,
     _prompt_agent,
-    _prompt_reflection,
     _prompt_value,
     get_node_trajectory_code,
-    get_unique_trajectories,
     parse_code_action,
     parse_code_value,
     parse_latest_implement,
 )
 from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSReActStepOutput, LATSSimulationOutput
+from agential.cog.lats.output import LATSReActStepOutput
 from agential.cog.lats.strategies.base import LATSBaseStrategy
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM, ModelResponse
-from agential.utils.general import get_token_cost_time, safe_execute
-from agential.utils.parse import remove_newline
+from agential.utils.general import safe_execute
 
 
 class LATSCodeStrategy(LATSBaseStrategy):
