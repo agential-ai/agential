@@ -54,6 +54,7 @@ def test_init() -> None:
         "reflection": [],
     }
 
+
 def test_generate() -> None:
     """Test the generate method."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
@@ -521,6 +522,7 @@ def test_generate_children_nodes() -> None:
     assert children_nodes[0].reward == 0
     assert strategy._prompt_metrics == gt_prompt_metrics
 
+
 def test_generate_action() -> None:
     """Test the generate_action method."""
     gt_prompt_metrics = {
@@ -631,9 +633,6 @@ def test_generate_observation() -> None:
         False,
         {"execution_status": ""},
     )
-
-
-
 
 
 def test_evaluate_node() -> None:
@@ -984,8 +983,10 @@ def test_simulate_node() -> None:
 
     assert strategy._prompt_metrics == gt_prompt_metrics
 
+
 def test_expand_node() -> None:
     """Test the expand_node method."""
+
 
 def test_instantiate_strategies() -> None:
     """Test the instantiation of various LATS Code strategies."""

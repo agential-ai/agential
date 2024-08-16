@@ -1,13 +1,18 @@
 """Unit tests for LATS general strategies."""
 
 import pytest
-from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
-from agential.cog.lats.output import LATSReActStepOutput, LATSSimulationOutput
-from agential.cog.lats.prompts import HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT, LATS_INSTRUCTION_HOTPOTQA, LATS_REFLECT_INSTRUCTION_HOTPOTQA
 
+from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
+from agential.cog.lats.node import Node
+from agential.cog.lats.output import LATSReActStepOutput, LATSSimulationOutput
+from agential.cog.lats.prompts import (
+    HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
+    LATS_INSTRUCTION_HOTPOTQA,
+    LATS_REFLECT_INSTRUCTION_HOTPOTQA,
+)
 from agential.cog.lats.strategies.general import LATSGeneralStrategy
 from agential.llm.llm import MockLLM
-from agential.cog.lats.node import Node
+
 
 def test_init() -> None:
     """Test initialization."""
@@ -34,19 +39,20 @@ def test_init() -> None:
 
 
 def test_initialize() -> None:
-	"""Test the initialize method."""
-	llm = MockLLM("gpt-3.5-turbo", responses=[])
-    
-	strategy = LATSGeneralStrategy(llm=llm)
-	node = strategy.initialize()
-	assert strategy.root == node
-	assert strategy.root is not None
-	assert isinstance(strategy.root, Node)
-	assert strategy.root.state.thought == ""
-	assert strategy.root.state.action_type == ""
-	assert strategy.root.state.query == ""
-	assert strategy.root.state.observation == ""
-	assert strategy.root.state.external_tool_info == {}
+    """Test the initialize method."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+
+    strategy = LATSGeneralStrategy(llm=llm)
+    node = strategy.initialize()
+    assert strategy.root == node
+    assert strategy.root is not None
+    assert isinstance(strategy.root, Node)
+    assert strategy.root.state.thought == ""
+    assert strategy.root.state.action_type == ""
+    assert strategy.root.state.query == ""
+    assert strategy.root.state.observation == ""
+    assert strategy.root.state.external_tool_info == {}
+
 
 def test_generate_children_nodes() -> None:
     """Test the generate_children_nodes method."""
@@ -68,12 +74,12 @@ def test_generate_children_nodes() -> None:
             prompt=prompt,
             reflect_prompt=prompt,
             additional_keys=additional_keys,
-            reflect_additional_keys=additional_keys
+            reflect_additional_keys=additional_keys,
         )
+
 
 def test_generate_thought() -> None:
     """Test the generate_thought method."""
-
     llm = MockLLM(
         "gpt-3.5-turbo",
         responses=[
@@ -105,7 +111,10 @@ def test_generate_thought() -> None:
         updated_trajectory
         == "Previous thought\nThought 2: I should search for information about the topic."
     )
-    assert out.choices[0].message.content == "I should search for information about the topic. Action: Search[topic]"
+    assert (
+        out.choices[0].message.content
+        == "I should search for information about the topic. Action: Search[topic]"
+    )
 
 
 def test_generate_action() -> None:
@@ -128,8 +137,9 @@ def test_generate_action() -> None:
             reflections="",
             depth=1,
             prompt=prompt,
-            additional_keys=additional_keys
+            additional_keys=additional_keys,
         )
+
 
 def test_generate_observation() -> None:
     """Test the generate_observation method."""
@@ -142,8 +152,9 @@ def test_generate_observation() -> None:
             action_type="Search",
             query="test query",
             trajectory="test trajectory",
-            depth=0
+            depth=0,
         )
+
 
 def test_select_node() -> None:
     """Test the select_node method."""
@@ -186,20 +197,21 @@ def test_select_node() -> None:
     selected_node = strategy.select_node(root)
     assert selected_node == root
 
+
 def test_evaluate_node() -> None:
-	"""Test the evaluate_node method."""
-	llm = MockLLM("gpt-3.5-turbo", responses=[])
-	strategy = LATSGeneralStrategy(llm=llm)
-	node = Node()
-	
-	with pytest.raises(NotImplementedError):
-		strategy.evaluate_node(
-			node=node,
-			question="test question",
-			examples="test examples",
-			prompt="test prompt",
-			additional_keys={}
-		)
+    """Test the evaluate_node method."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = LATSGeneralStrategy(llm=llm)
+    node = Node()
+
+    with pytest.raises(NotImplementedError):
+        strategy.evaluate_node(
+            node=node,
+            question="test question",
+            examples="test examples",
+            prompt="test prompt",
+            additional_keys={},
+        )
 
 
 def test_simulate_node() -> None:
@@ -221,8 +233,9 @@ def test_simulate_node() -> None:
             value_prompt="test value prompt",
             additional_keys={},
             reflect_additional_keys={},
-            value_additional_keys={}
+            value_additional_keys={},
         )
+
 
 def test_backpropagate_node() -> None:
     """Test the backpropagate_node method."""
@@ -323,7 +336,6 @@ def test_reflect_condition() -> None:
 
 def test_reflect() -> None:
     """Test the reflect method."""
-
     llm = MockLLM("gpt-3.5-turbo", responses=["Reflection 1", "Reflection 2"])
     strategy = LATSGeneralStrategy(llm=llm, max_unique=2)
 
@@ -357,6 +369,7 @@ def test_format_output() -> None:
     llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = LATSGeneralStrategy(llm=llm)
 
+
 def test_reset() -> None:
     """Test the reset method."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
@@ -375,4 +388,3 @@ def test_reset() -> None:
     assert strategy.failed_trajectories == []
     assert strategy.reflection_map == []
     assert strategy.value_cache == {}
-

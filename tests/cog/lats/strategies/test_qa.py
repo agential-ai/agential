@@ -61,6 +61,7 @@ def test_init() -> None:
         "reflection": [],
     }
 
+
 def test_generate() -> None:
     """Test the generate method."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
@@ -568,7 +569,6 @@ def test_generate_children_nodes() -> None:
     assert children_nodes[0].reward == 0
 
     assert strategy._prompt_metrics == gt_prompt_metrics
-
 
 
 def test_generate_action() -> None:
