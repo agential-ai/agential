@@ -61,6 +61,18 @@ def test_init() -> None:
         "reflection": [],
     }
 
+def test_generate() -> None:
+    """Test the generate method."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = LATSQAStrategy(
+        llm=llm,
+        n_samples=5,
+        max_reflections=4,
+        depth_limit=7,
+        max_unique=5,
+        cache_values=True,
+    )
+
 
 def test_generate_children_nodes() -> None:
     """Test the generate method."""

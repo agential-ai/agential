@@ -33,10 +33,6 @@ def test_init() -> None:
     assert strategy.value_cache == {}
 
 
-def test_generate() -> None:
-    """Test the generate method."""
-
-
 def test_initialize() -> None:
 	"""Test the initialize method."""
 	llm = MockLLM("gpt-3.5-turbo", responses=[])
@@ -52,7 +48,10 @@ def test_initialize() -> None:
 	assert strategy.root.state.observation == ""
 	assert strategy.root.state.external_tool_info == {}
 
-
+def test_generate_children_nodes() -> None:
+    """Test the generate_children_nodes method."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = LATSGeneralStrategy(llm=llm)
 
 def test_generate_thought() -> None:
     """Test the generate_thought method."""
@@ -334,6 +333,11 @@ def test_reflect() -> None:
 
     assert strategy.reflection_map == reflections
 
+
+def test_format_output() -> None:
+    """Test the format_output method."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = LATSGeneralStrategy(llm=llm)
 
 def test_reset() -> None:
     """Test the reset method."""
