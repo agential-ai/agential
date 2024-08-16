@@ -358,6 +358,157 @@ class LATSMathStrategy(LATSBaseStrategy):
 
         return values, values_responses
 
+    def simulate_node(
+        self,
+        node: Node,
+        question: str,
+        key: str,
+        examples: str,
+        reflect_examples: str,
+        value_examples: str,
+        prompt: str,
+        reflect_prompt: str,
+        value_prompt: str,
+        additional_keys: Dict[str, str],
+        reflect_additional_keys: Dict[str, str],
+        value_additional_keys: Dict[str, str],
+    ) -> Tuple[
+        float,
+        Node,
+        List[Node],
+        List[List[Node]],
+        List[List[ModelResponse]],
+        List[List[ModelResponse]],
+        List[List[Dict[str, Any]]],
+        List[List[Optional[ModelResponse]]],
+    ]:
+        """Simulate the node to estimate its value and collect information about the simulation process.
+
+        Args:
+            node (Node): The node to simulate.
+            question (str): The main question or task.
+            key (str): The answer key for evaluation.
+            examples (str): Examples for context in simulation.
+            reflect_examples (str): Examples for reflection during simulation.
+            value_examples (str): Examples for value estimation.
+            prompt (str): The prompt template for simulation.
+            reflect_prompt (str): The prompt template for reflection during simulation.
+            value_prompt (str): The prompt template for value estimation.
+            additional_keys (Dict[str, str]): Additional keys for prompt formatting.
+            reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
+            value_additional_keys (Dict[str, str]): Additional keys for value estimation prompt formatting.
+
+        Returns:
+            Tuple[float, Node, List[Node], List[List[Node]], List[List[ModelResponse]], List[List[ModelResponse]], List[List[Dict[str, Any]]], List[List[Optional[ModelResponse]]]]:
+                - The estimated value of the node.
+                - The simulated node.
+                - A list of the current nodes.
+                - A list of the newly-created children nodes.
+                - A list of thought model responses.
+                - A list of action model responses.
+                - A list of value estimates for newly-created children nodes.
+                - A list of value model responses.
+        """
+        depth = node.depth
+        rewards: List[int] = [0]
+
+        simulation_current_nodes: List[Node] = []
+        simulation_children_nodes: List[List[Node]] = []
+        simulation_thought_model_responses: List[List[ModelResponse]] = []
+        simulation_action_model_responses: List[List[ModelResponse]] = []
+        simulation_values: List[List[Dict[str, Any]]] = []
+        simulation_values_model_responses: List[List[Optional[ModelResponse]]] = []
+        while not node.is_terminal and depth < self.depth_limit:
+            simulation_current_nodes.append(node)
+
+            values: List[Dict[str, Any]] = []
+            children_nodes, thought_model_responses, action_model_responses = (
+                self.generate_children_nodes(
+                    node=node,
+                    question=question,
+                    key=key,
+                    examples=examples,
+                    reflect_examples=reflect_examples,
+                    prompt=prompt,
+                    reflect_prompt=reflect_prompt,
+                    additional_keys=additional_keys,
+                    reflect_additional_keys=reflect_additional_keys,
+                )
+            )
+            simulation_children_nodes.append(children_nodes)
+            simulation_thought_model_responses.append(thought_model_responses)
+            simulation_action_model_responses.append(action_model_responses)
+
+            for node in children_nodes:
+                if node.is_terminal and node.parent:
+                    return (
+                        node.reward,
+                        node,
+                        simulation_current_nodes,
+                        simulation_children_nodes,
+                        simulation_thought_model_responses,
+                        simulation_action_model_responses,
+                        simulation_values,
+                        simulation_values_model_responses,
+                    )
+            children_values_model_responses = []
+            for child in children_nodes:
+                if not child.is_terminal and node.parent:
+                    child_trajectory = get_node_trajectory_math(child)
+                    failed_trajectories = ""
+                    if len(self.reflection_map) > 0:
+                        for trajectory_reflection in self.reflection_map:
+                            failed_trajectories += (
+                                _build_failed_trajectory_format(
+                                    question=question,
+                                    trajectory=trajectory_reflection["trajectory"],
+                                    reflection=trajectory_reflection["reflection"],
+                                )
+                                + "\n\n"
+                            )
+                        failed_trajectories = failed_trajectories.rstrip("\n\n")
+
+                    value_str_out = _prompt_value(
+                        llm=self.llm,
+                        question=question,
+                        examples=value_examples,
+                        trajectory=child_trajectory,
+                        failed_trajectories=failed_trajectories,
+                        prompt=value_prompt,
+                        additional_keys=value_additional_keys,
+                    )
+
+                    value_str = value_str_out.choices[0].message.content
+
+                    explanation, value = parse_math_value(value_str)  # type: ignore
+                    children_values_model_responses.append(value_str_out)
+                    values.append({"explanation": explanation, "value": value})
+                else:
+                    children_values_model_responses.append(None)
+                    values.append({"explanation": "", "value": -1e10})
+
+            max_value = max(values, key=lambda x: x["value"])  # type: ignore
+            max_value_index = values.index(max_value)
+            rewards.append(max_value)  # type: ignore
+            node = children_nodes[max_value_index]
+            depth += 1
+
+            if depth == self.depth_limit:
+                rewards = [-1]
+
+            simulation_values.append(values)
+            simulation_values_model_responses.append(children_values_model_responses)
+
+        return (
+            sum(rewards) / len(rewards),
+            node,
+            simulation_current_nodes,
+            simulation_children_nodes,
+            simulation_thought_model_responses,
+            simulation_action_model_responses,
+            simulation_values,
+            simulation_values_model_responses,
+        )
 
 class LATSGSM8KStrategy(LATSMathStrategy):
     """A strategy class for the GSM8K benchmark using the LATS agent."""
