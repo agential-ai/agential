@@ -307,7 +307,7 @@ class LATSQAStrategy(LATSGeneralStrategy):
         children_trajectories = [
             {"child_trajectory": get_node_trajectory_qa(child), "idx": idx}
             for idx, child in enumerate(node.children)
-            if not child.is_terminal
+            if not child.is_terminal and child.parent
         ]
 
         values, values_responses = [], []
