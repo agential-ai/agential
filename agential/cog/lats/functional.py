@@ -2,15 +2,15 @@
 
 import re
 
-from typing import Dict, List, Tuple, Any, Union
+from typing import Any, Dict, List, Tuple, Union
 
 from agential.cog.lats.node import Node
+from agential.cog.lats.output import LATSStepOutput
 from agential.cog.lats.prompts import (
     LATS_FAILED_TRAJECTORY_FORMAT,
     LATS_REFLECTION_FORMAT,
 )
 from agential.llm.llm import BaseLLM, ModelResponse
-from agential.cog.lats.output import LATSStepOutput
 
 
 def _build_reflection_format(trajectory: str, reflection: str) -> str:
@@ -513,8 +513,7 @@ def parse_code_value(string: str) -> Tuple[str, float]:
 
 
 def _accumulate_metric(step: LATSStepOutput, metric_type: str) -> Union[int, float]:
-    """Accumulate total metrics from a list of LATSStepOutput objects.
-    """
+    """Accumulate total metrics from a list of LATSStepOutput objects."""
     out = (
         sum(
             [

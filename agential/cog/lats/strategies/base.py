@@ -1,7 +1,7 @@
 """Base LATS Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Any, Dict, List, Tuple, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from agential.cog.base.strategies import BaseStrategy
 from agential.cog.lats.node import Node

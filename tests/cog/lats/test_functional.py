@@ -4,6 +4,7 @@ from litellm.types.utils import ModelResponse
 
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.functional import (
+    _accumulate_metric,
     _build_agent_prompt,
     _build_failed_trajectory_format,
     _build_reflection_format,
@@ -12,6 +13,7 @@ from agential.cog.lats.functional import (
     _prompt_agent,
     _prompt_reflection,
     _prompt_value,
+    accumulate_metrics,
     get_node_trajectory_code,
     get_node_trajectory_math,
     get_node_trajectory_qa,
@@ -25,7 +27,11 @@ from agential.cog.lats.functional import (
     parse_qa_value,
 )
 from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSReActStepOutput
+from agential.cog.lats.output import (
+    LATSReActStepOutput,
+    LATSSimulationOutput,
+    LATSStepOutput,
+)
 from agential.cog.lats.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE,
@@ -34,6 +40,7 @@ from agential.cog.lats.prompts import (
     LATS_VALUE_INSTRUCTION_HOTPOTQA,
 )
 from agential.llm.llm import MockLLM
+from agential.utils.general import PromptMetrics
 
 
 def test__build_reflection_format() -> None:
@@ -543,3 +550,284 @@ def test_parse_code_value() -> None:
         "Tricky: score.",
         7,
     )
+
+
+def test__accumulate_metric() -> None:
+    """Test the _accumulate_metric function."""
+    # Test with empty input.
+
+    step = LATSStepOutput(
+        iteration=0,
+        current_node={},
+        children_nodes=[],
+        thoughts_metrics=[
+            PromptMetrics(
+                prompt_tokens=5,
+                completion_tokens=5,
+                total_tokens=5,
+                prompt_cost=5,
+                completion_cost=5,
+                total_cost=5,
+                prompt_time=5,
+            ),
+            PromptMetrics(
+                prompt_tokens=5,
+                completion_tokens=5,
+                total_tokens=5,
+                prompt_cost=5,
+                completion_cost=5,
+                total_cost=5,
+                prompt_time=5,
+            ),
+        ],
+        actions_metrics=[
+            PromptMetrics(
+                prompt_tokens=5,
+                completion_tokens=5,
+                total_tokens=5,
+                prompt_cost=5,
+                completion_cost=5,
+                total_cost=5,
+                prompt_time=5,
+            ),
+            PromptMetrics(
+                prompt_tokens=5,
+                completion_tokens=5,
+                total_tokens=5,
+                prompt_cost=5,
+                completion_cost=5,
+                total_cost=5,
+                prompt_time=5,
+            ),
+        ],
+        values=[],
+        values_metrics=[
+            None,
+            PromptMetrics(
+                prompt_tokens=5,
+                completion_tokens=5,
+                total_tokens=5,
+                prompt_cost=5,
+                completion_cost=5,
+                total_cost=5,
+                prompt_time=5,
+            ),
+        ],
+        simulation_results=LATSSimulationOutput(
+            simulation_reward=0.5,
+            simulation_terminal_node=None,
+            simulation_current_nodes=[],
+            simulation_children_nodes=[],
+            simulation_thoughts_metrics=[
+                [
+                    PromptMetrics(
+                        prompt_tokens=5,
+                        completion_tokens=5,
+                        total_tokens=5,
+                        prompt_cost=5,
+                        completion_cost=5,
+                        total_cost=5,
+                        prompt_time=5,
+                    ),
+                    PromptMetrics(
+                        prompt_tokens=5,
+                        completion_tokens=5,
+                        total_tokens=5,
+                        prompt_cost=5,
+                        completion_cost=5,
+                        total_cost=5,
+                        prompt_time=5,
+                    ),
+                ]
+            ],
+            simulation_actions_metrics=[
+                [
+                    PromptMetrics(
+                        prompt_tokens=5,
+                        completion_tokens=5,
+                        total_tokens=5,
+                        prompt_cost=5,
+                        completion_cost=5,
+                        total_cost=5,
+                        prompt_time=5,
+                    ),
+                    PromptMetrics(
+                        prompt_tokens=5,
+                        completion_tokens=5,
+                        total_tokens=5,
+                        prompt_cost=5,
+                        completion_cost=5,
+                        total_cost=5,
+                        prompt_time=5,
+                    ),
+                ]
+            ],
+            simulation_values=[],
+            simulation_values_metrics=[
+                [
+                    None,
+                    PromptMetrics(
+                        prompt_tokens=5,
+                        completion_tokens=5,
+                        total_tokens=5,
+                        prompt_cost=5,
+                        completion_cost=5,
+                        total_cost=5,
+                        prompt_time=5,
+                    ),
+                ]
+            ],
+        ),
+    )
+
+    metric_types = [
+        "prompt_tokens",
+        "completion_tokens",
+        "total_tokens",
+        "prompt_cost",
+        "completion_cost",
+        "total_cost",
+        "prompt_time",
+    ]
+
+    for metric_type in metric_types:
+        assert _accumulate_metric(step, metric_type) == 50
+
+
+def test_accumulate_metrics() -> None:
+    """Test the accumulate_metrics function."""
+    # Test with empty input.
+
+    step = LATSStepOutput(
+        iteration=0,
+        current_node={},
+        children_nodes=[],
+        thoughts_metrics=[
+            PromptMetrics(
+                prompt_tokens=5,
+                completion_tokens=5,
+                total_tokens=5,
+                prompt_cost=5,
+                completion_cost=5,
+                total_cost=5,
+                prompt_time=5,
+            ),
+            PromptMetrics(
+                prompt_tokens=5,
+                completion_tokens=5,
+                total_tokens=5,
+                prompt_cost=5,
+                completion_cost=5,
+                total_cost=5,
+                prompt_time=5,
+            ),
+        ],
+        actions_metrics=[
+            PromptMetrics(
+                prompt_tokens=5,
+                completion_tokens=5,
+                total_tokens=5,
+                prompt_cost=5,
+                completion_cost=5,
+                total_cost=5,
+                prompt_time=5,
+            ),
+            PromptMetrics(
+                prompt_tokens=5,
+                completion_tokens=5,
+                total_tokens=5,
+                prompt_cost=5,
+                completion_cost=5,
+                total_cost=5,
+                prompt_time=5,
+            ),
+        ],
+        values=[],
+        values_metrics=[
+            None,
+            PromptMetrics(
+                prompt_tokens=5,
+                completion_tokens=5,
+                total_tokens=5,
+                prompt_cost=5,
+                completion_cost=5,
+                total_cost=5,
+                prompt_time=5,
+            ),
+        ],
+        simulation_results=LATSSimulationOutput(
+            simulation_reward=0.5,
+            simulation_terminal_node=None,
+            simulation_current_nodes=[],
+            simulation_children_nodes=[],
+            simulation_thoughts_metrics=[
+                [
+                    PromptMetrics(
+                        prompt_tokens=5,
+                        completion_tokens=5,
+                        total_tokens=5,
+                        prompt_cost=5,
+                        completion_cost=5,
+                        total_cost=5,
+                        prompt_time=5,
+                    ),
+                    PromptMetrics(
+                        prompt_tokens=5,
+                        completion_tokens=5,
+                        total_tokens=5,
+                        prompt_cost=5,
+                        completion_cost=5,
+                        total_cost=5,
+                        prompt_time=5,
+                    ),
+                ]
+            ],
+            simulation_actions_metrics=[
+                [
+                    PromptMetrics(
+                        prompt_tokens=5,
+                        completion_tokens=5,
+                        total_tokens=5,
+                        prompt_cost=5,
+                        completion_cost=5,
+                        total_cost=5,
+                        prompt_time=5,
+                    ),
+                    PromptMetrics(
+                        prompt_tokens=5,
+                        completion_tokens=5,
+                        total_tokens=5,
+                        prompt_cost=5,
+                        completion_cost=5,
+                        total_cost=5,
+                        prompt_time=5,
+                    ),
+                ]
+            ],
+            simulation_values=[],
+            simulation_values_metrics=[
+                [
+                    None,
+                    PromptMetrics(
+                        prompt_tokens=5,
+                        completion_tokens=5,
+                        total_tokens=5,
+                        prompt_cost=5,
+                        completion_cost=5,
+                        total_cost=5,
+                        prompt_time=5,
+                    ),
+                ]
+            ],
+        ),
+    )
+
+    assert accumulate_metrics([step, step]) == {
+        "total_prompt_tokens": 100,
+        "total_completion_tokens": 100,
+        "total_tokens": 100,
+        "total_prompt_cost": 100.0,
+        "total_completion_cost": 100.0,
+        "total_cost": 100.0,
+        "total_prompt_time": 100.0,
+    }
