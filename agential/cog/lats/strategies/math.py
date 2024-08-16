@@ -13,13 +13,13 @@ from agential.cog.lats.functional import (
 )
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import LATSReActStepOutput
-from agential.cog.lats.strategies.base import LATSBaseStrategy
+from agential.cog.lats.strategies.general import LATSGeneralStrategy
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM, ModelResponse
 from agential.utils.general import safe_execute
 
 
-class LATSMathStrategy(LATSBaseStrategy):
+class LATSMathStrategy(LATSGeneralStrategy):
     """A strategy class for Math benchmarks using the LATS agent.
 
     Attributes:
