@@ -281,6 +281,84 @@ class LATSMathStrategy(LATSBaseStrategy):
 
         return trajectory, reward, obs, done, external_tool_info
 
+    def evaluate_node(
+        self,
+        node: Node,
+        question: str,
+        examples: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> Tuple[List[Dict[str, Any]], List[Optional[ModelResponse]]]:
+        """Evaluate the given node and its children.
+
+        Args:
+            node (Node): The node to be evaluated.
+            question (str): The main question or task.
+            examples (str): Examples for context in evaluation.
+            prompt (str): The prompt template for evaluation.
+            additional_keys (Dict[str, str]): Additional keys for prompt formatting.
+
+        Returns:
+            Tuple[List[Dict[str, Any]], List[Optional[ModelResponse]]]: A list of dictionaries containing evaluation results for each child node and their model responses.
+        """
+        values, values_responses = [], []
+        child_trajectory_cache = {}
+        for idx, child in enumerate(node.children):
+            if not child.is_terminal:
+                trajectory = get_node_trajectory_math(child)
+                if trajectory in child_trajectory_cache:
+                    value = 0
+                    explanation = ""
+                    value_response = None
+                else:
+                    failed_trajectories = ""
+                    if len(self.reflection_map) > 0:
+                        for trajectory_reflection in self.reflection_map:
+                            failed_trajectories += (
+                                _build_failed_trajectory_format(
+                                    question=question,
+                                    trajectory=trajectory_reflection["trajectory"],
+                                    reflection=trajectory_reflection["reflection"],
+                                )
+                                + "\n\n"
+                            )
+                        failed_trajectories = failed_trajectories.rstrip("\n\n")
+
+                    unique_key = f"{trajectory}::{failed_trajectories}"
+                    if self.cache_values and unique_key in self.value_cache:
+                        value_str = self.value_cache[unique_key]
+                        value_response = None
+                    else:
+                        value_str_out = _prompt_value(
+                            llm=self.llm,
+                            question=question,
+                            examples=examples,
+                            trajectory=trajectory,
+                            failed_trajectories=failed_trajectories,
+                            prompt=prompt,
+                            additional_keys=additional_keys,
+                        )
+                        value_response = value_str_out
+                        value_str = value_str_out.choices[0].message.content
+
+                        if self.cache_values:
+                            self.value_cache[unique_key] = value_str
+
+                    explanation, value = parse_math_value(value_str)  # type: ignore
+                    value = value / 10.0  # type: ignore
+                    node.children[idx].value = value
+
+                    child_trajectory_cache[trajectory] = value
+
+                values_responses.append(value_response)
+                values.append({"explanation": explanation, "value": value})
+            else:
+                values_responses.append(None)
+                values.append({"explanation": "", "value": -1e10})
+
+        return values, values_responses
+
+
 class LATSGSM8KStrategy(LATSMathStrategy):
     """A strategy class for the GSM8K benchmark using the LATS agent."""
 
