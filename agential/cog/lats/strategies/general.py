@@ -60,7 +60,27 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         value_additional_keys: Dict[str, str],
         max_iterations: int,
         reset: bool,
-    ) -> Any:
+    ) -> LATSOutput:
+        """Generate child nodes for the given node.
+        
+        Args:
+            question (str): The question to answer.
+            key (str): The key for the current node.
+            examples (str): The examples for the current node.
+            reflect_examples (str): The examples for the current node.
+            value_examples (str): The examples for the current node.
+            prompt (str): The prompt to use for the current node.
+            reflect_prompt (str): The prompt to use for the current node.
+            value_prompt (str): The prompt to use for the current node.
+            additional_keys (Dict[str, str]): Additional keys for the current node.
+            reflect_additional_keys (Dict[str, str]): Additional keys for the current node.
+            value_additional_keys (Dict[str, str]): Additional keys for the current node.
+            max_iterations (int): The maximum number of iterations.
+            reset (bool): Whether to reset the strategy.
+
+        Returns:
+            LATSOutput: The output of the strategy.
+        """
         start = time.time()
 
         if reset:
@@ -477,9 +497,6 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         Args:
             node (Node): The node from which to start backpropagation.
             value (float): The value to backpropagate through the tree.
-
-        Returns:
-            None
         """
         while node:
             node.visits += 1
@@ -573,7 +590,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         simulation_values_model_responses: Optional[
             List[List[Optional[ModelResponse]]]
         ],
-    ) -> Dict[str, Any]:
+    ) -> LATSStepOutput:
         if values_responses:
             values_metrics = [
                 get_token_cost_time(response) if response is not None else None

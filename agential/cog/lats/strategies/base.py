@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from agential.cog.base.strategies import BaseStrategy
 from agential.cog.lats.node import Node
+from agential.cog.lats.output import LATSOutput, LATSStepOutput
 from agential.llm.llm import BaseLLM, ModelResponse
 
 
@@ -28,6 +29,45 @@ class LATSBaseStrategy(BaseStrategy):
         self.depth_limit = depth_limit
         self.max_unique = max_unique
         self.cache_values = cache_values
+     
+    @abstractmethod
+    def generate(
+        self,
+        question: str,
+        key: str,
+        examples: str,
+        reflect_examples: str,
+        value_examples: str,
+        prompt: str,
+        reflect_prompt: str,
+        value_prompt: str,
+        additional_keys: Dict[str, str],
+        reflect_additional_keys: Dict[str, str],
+        value_additional_keys: Dict[str, str],
+        max_iterations: int,
+        reset: bool,
+    ) -> LATSOutput:
+        """Generate child nodes for the given node.
+        
+        Args:
+            question (str): The question to answer.
+            key (str): The key for the current node.
+            examples (str): The examples for the current node.
+            reflect_examples (str): The examples for the current node.
+            value_examples (str): The examples for the current node.
+            prompt (str): The prompt to use for the current node.
+            reflect_prompt (str): The prompt to use for the current node.
+            value_prompt (str): The prompt to use for the current node.
+            additional_keys (Dict[str, str]): Additional keys for the current node.
+            reflect_additional_keys (Dict[str, str]): Additional keys for the current node.
+            value_additional_keys (Dict[str, str]): Additional keys for the current node.
+            max_iterations (int): The maximum number of iterations.
+            reset (bool): Whether to reset the strategy.
+
+        Returns:
+            LATSOutput: The output of the strategy.
+        """
+        raise NotImplementedError
 
     @abstractmethod
     def initialize(self) -> Node:
@@ -274,9 +314,6 @@ class LATSBaseStrategy(BaseStrategy):
         Args:
             node (Node): The node from which to start backpropagation.
             value (float): The value to backpropagate through the tree.
-
-        Returns:
-            None
         """
         raise NotImplementedError
 
@@ -327,18 +364,43 @@ class LATSBaseStrategy(BaseStrategy):
         thought_model_responses: List[ModelResponse],
         action_model_responses: List[ModelResponse],
         values: Optional[List[Dict[str, Any]]],
-        values_responses: Optional[List[ModelResponse]],
+        values_responses: Optional[List[Optional[ModelResponse]]],
         simulation_reward: Optional[float],
         simulation_terminal_node: Optional[Node],
-        simulation_results: Optional[List[Dict[str, Any]]],
-    ) -> Dict[str, Any]:
+        simulation_current_nodes: Optional[List[Node]],
+        simulation_children_nodes: Optional[List[List[Node]]],
+        simulation_thought_model_responses: Optional[List[List[ModelResponse]]],
+        simulation_action_model_responses: Optional[List[List[ModelResponse]]],
+        simulation_values: Optional[List[List[Dict[str, Any]]]],
+        simulation_values_model_responses: Optional[
+            List[List[Optional[ModelResponse]]]
+        ],
+    ) -> LATSStepOutput:
+        """Formats the output of a single step.
+        
+        Args:
+            iteration (int): The current iteration number.
+            current_node (Node): The current node.
+            children_nodes (List[Node]): The list of children nodes.
+            thought_model_responses (List[ModelResponse]): The list of thought model responses.
+            action_model_responses (List[ModelResponse]): The list of action model responses.
+            values (Optional[List[Dict[str, Any]]]): The list of values.
+            values_responses (Optional[List[Optional[ModelResponse]]]): The list of value model responses.
+            simulation_reward (Optional[float]): The simulation reward.
+            simulation_terminal_node (Optional[Node]): The terminal node of the simulation.
+            simulation_current_nodes (Optional[List[Node]]): The list of current nodes in the simulation.
+            simulation_children_nodes (Optional[List[List[Node]]]): The list of children nodes in the simulation.
+            simulation_thought_model_responses (Optional[List[List[ModelResponse]]]): The list of thought model responses in the simulation.
+            simulation_action_model_responses (Optional[List[List[ModelResponse]]]): The list of action model responses in the simulation.
+            simulation_values (Optional[List[List[Dict[str, Any]]]): The list of values in the simulation.
+            simulation_values_model_responses (Optional[List[List[Optional[ModelResponse]]]): The list of value model responses in the simulation.
+            
+        Returns:
+            LATSStepOutput: An object containing the formatted output.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def reset(self) -> None:
-        """Reset the strategy to its initial state.
-
-        Returns:
-            None
-        """
+        """Reset the strategy to its initial state."""
         raise NotImplementedError
