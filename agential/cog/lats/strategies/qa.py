@@ -484,11 +484,11 @@ class LATSQAStrategy(LATSGeneralStrategy):
                     value_str = value_str_out.choices[0].message.content
 
                     explanation, value = parse_qa_value(value_str)  # type: ignore
-                    values.append({"explanation": explanation, "value": value})
                     children_values_model_responses.append(value_str_out)
+                    values.append({"explanation": explanation, "value": value})
                 else:
-                    values.append({"explanation": "", "value": -1e10})
                     children_values_model_responses.append(None)
+                    values.append({"explanation": "", "value": -1e10})
 
             max_value = max(values, key=lambda x: x["value"])  # type: ignore
             max_value_index = values.index(max_value)
