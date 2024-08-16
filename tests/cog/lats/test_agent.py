@@ -1560,6 +1560,7 @@ def test_reset() -> None:
         "reflection": [],
     }
 
+
 def test_generate_child_nodes() -> None:
     """Test the generate_child_nodes method."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
