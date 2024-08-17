@@ -718,6 +718,8 @@ def test_evaluate_node() -> None:
     )
     root_node = strategy.initialize()
 
+def test_simulate_node() -> None:
+    """Test the simulate_node method."""
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
     key = -9867630
     examples = GSM8K_FEWSHOT_EXAMPLES_REACT
