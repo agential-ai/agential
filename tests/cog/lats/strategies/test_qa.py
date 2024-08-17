@@ -2099,13 +2099,13 @@ def test_simulate_node() -> None:
         "This trajectory is incorrect as the focus should have been on verifying the information related to the capital of France, rather than repeatedly trying the same search query that does not provide the desired information",
     ]
 
-    qa_strategy = LATSQAStrategy(
+    strategy = LATSQAStrategy(
         llm=MockLLM("gpt-3.5-turbo", responses=responses), depth_limit=3, n_samples=2
     )
-    qa_strategy.docstore.search = (
+    strategy.docstore.search = (
         lambda x: "Badr Hari is the best kick boxer in the world."
     )
-    root_node = qa_strategy.initialize()
+    root_node = strategy.initialize()
 
     question = "What is the capital of France?"
     key = "Paris"
@@ -2128,7 +2128,7 @@ def test_simulate_node() -> None:
         simulation_action_model_responses,
         simulation_values,
         simulation_values_model_responses,
-    ) = qa_strategy.simulate_node(
+    ) = strategy.simulate_node(
         node=root_node,
         question=question,
         key=key,
@@ -2207,6 +2207,21 @@ def test_simulate_node() -> None:
 
 def test_expand_node() -> None:
     """Test the expand_node method."""
+    gt_thought_model_responses = [
+        'I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes',
+        'I need to search for the best kickboxer who has been involved in controversies and crimes of violence',
+        'I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies',
+        'I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring',
+        'I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies',
+    ] 
+    gt_action_model_responses = [
+        'Search[best kick boxer controversies crimes]',
+        'Search[best kick boxer controversies crimes]\nObservation 0: No exact matches found',
+        'Search[best kick boxer controversies]\nObservation 0: Could not find [best kick boxer controversies]',
+        'Search[best kick boxer controversies violence]\nObservation 0: Could not find [best kick boxer controversies violence]',
+        'Search[best kickboxer controversies]\nObservation 0: The search results show multiple kickboxers who have been involved in controversies',
+    ] 
+
     responses = [
         "I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
         "Search[best kick boxer controversies crimes]",
@@ -2229,7 +2244,7 @@ def test_expand_node() -> None:
 
     root = strategy.initialize()
 
-    children_nodes, _, _ = strategy.expand_node(
+    children_nodes, thought_model_responses, action_model_responses, reflection_model_responses = strategy.expand_node(
         node=root,
         question=question,
         key=key,
@@ -2266,6 +2281,15 @@ def test_expand_node() -> None:
         assert node.to_dict() == expected_node
     assert len(children_nodes) == 5
 
+    assert reflection_model_responses == []
+    for t, a, gt_t, gt_a in zip(
+        thought_model_responses,
+        action_model_responses,
+        gt_thought_model_responses,
+        gt_action_model_responses,
+    ):
+        assert t.choices[0].message.content == gt_t
+        assert a.choices[0].message.content == gt_a
 
 def test_instantiate_strategies() -> None:
     """Test the instantiation of various LATS QA strategies."""
