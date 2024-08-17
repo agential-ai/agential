@@ -1549,107 +1549,22 @@ def test_generate_children_nodes() -> None:
             },
         ),
     ]
-    gt_prompt_metrics = {
-        "thought": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-        ],
-        "action": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-        ],
-        "value": [],
-        "simulate_thought": [],
-        "simulate_action": [],
-        "simulate_value": [],
-        "reflection": [],
-    }
+
+    gt_thought_model_responses = [
+        "I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
+        "I need to search for the best kickboxer who has been involved in controversies and crimes of violence",
+        "I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies",
+        "I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring",
+        "I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies",
+    ]
+
+    gt_action_model_responses = [
+        "Search[best kick boxer controversies crimes]",
+        "Search[best kick boxer controversies crimes]\nObservation 0: No exact matches found",
+        "Search[best kick boxer controversies]\nObservation 0: Could not find [best kick boxer controversies]",
+        "Search[best kick boxer controversies violence]\nObservation 0: Could not find [best kick boxer controversies violence]",
+        "Search[best kickboxer controversies]\nObservation 0: The search results show multiple kickboxers who have been involved in controversies",
+    ]
 
     responses = [
         "I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
@@ -1674,27 +1589,36 @@ def test_generate_children_nodes() -> None:
 
     root = strategy.initialize()
 
-    children_nodes = strategy.generate_children_nodes(
-        node=root,
-        question=question,
-        key=key,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
-        prompt=LATS_INSTRUCTION_HOTPOTQA,
-        reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
-        additional_keys={},
-        reflect_additional_keys={},
-        is_simulate=False,
+    children_nodes, thought_model_responses, action_model_responses = (
+        strategy.generate_children_nodes(
+            node=root,
+            question=question,
+            key=key,
+            examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+            reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
+            prompt=LATS_INSTRUCTION_HOTPOTQA,
+            reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
+            additional_keys={},
+            reflect_additional_keys={},
+        )
     )
     assert len(children_nodes) == 5
-    for gt_state, node in zip(gt_states, children_nodes):
+    for gt_state, node, t, a, gt_t, gt_a in zip(
+        gt_states,
+        children_nodes,
+        thought_model_responses,
+        action_model_responses,
+        gt_thought_model_responses,
+        gt_action_model_responses,
+    ):
         assert node.state == gt_state
         assert node.depth == 1
         assert node.reward == 0
         assert node.value == 0
         assert node.is_terminal is False
         assert node.visits == 0
-    assert strategy._prompt_metrics == gt_prompt_metrics
+        assert t.choices[0].message.content == gt_t
+        assert a.choices[0].message.content == gt_a
 
     # Test generate with reflections.
     gt_states = [
@@ -1754,126 +1678,23 @@ def test_generate_children_nodes() -> None:
             },
         ),
     ]
-    gt_prompt_metrics = {
-        "thought": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-        ],
-        "action": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-        ],
-        "value": [],
-        "simulate_thought": [],
-        "simulate_action": [],
-        "simulate_value": [],
-        "reflection": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-        ],
-    }
+
+    gt_thought_model_responses = [
+        "I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and crimes of violence outside the ring",
+        "I need to search for the best kick boxer in the world and then look into his controversies related to unsportsmanlike conduct and crimes of violence",
+        "I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and violence outside of the ring",
+        "I need to search for the best kickboxer in the world who has been involved in controversies regarding unsportsmanlike conduct and crimes of violence outside the ring",
+        "I need to search for the best kick boxer in the world and his controversies regarding unsportsmanlike conducts and crimes of violence",
+    ]
+
+    gt_action_model_responses = [
+        "Search[best kickboxer controversies violence]\nObservation 1: Could not find [best kickboxer controversies violence]",
+        "Search[best kick boxer in the world]\nObservation 1: There have been several renowned kickboxers throughout history, such as Buakaw Banchamek, Ernesto Hoost, and Ramon Dekkers",
+        "Search[best kick boxer in the world controversies]\nObservation 1: Could not find [best kick boxer in the world controversies]",
+        "Search[best kickboxer controversies]\nObservation 1: Could not find [best kickboxer controversies]",
+        "Search[best kick boxer in the world controversies]\nObservation 1: Could not find [best kick boxer in the world controversies]",
+    ]
+
     responses = [
         "My reasoning for this question failed because I did not narrow down the search to focus on kick boxers and instead ended up with unrelated information",
         "My reasoning failed because I did not focus on gathering specific information related to the individual's kickboxing career and controversies, leading to an incorrect answer",
@@ -1903,59 +1724,38 @@ def test_generate_children_nodes() -> None:
     ]
 
     root = strategy.initialize()
-    children_nodes = strategy.generate_children_nodes(
-        node=root,
-        question=question,
-        key=key,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
-        prompt=LATS_INSTRUCTION_HOTPOTQA,
-        reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
-        additional_keys={},
-        reflect_additional_keys={},
-        is_simulate=False,
+    children_nodes, thought_model_responses, action_model_responses = (
+        strategy.generate_children_nodes(
+            node=root,
+            question=question,
+            key=key,
+            examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+            reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
+            prompt=LATS_INSTRUCTION_HOTPOTQA,
+            reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
+            additional_keys={},
+            reflect_additional_keys={},
+        )
     )
     assert len(children_nodes) == 5
-    for gt_state, node in zip(gt_states, children_nodes):
+    for gt_state, node, t, a, gt_t, gt_a in zip(
+        gt_states,
+        children_nodes,
+        thought_model_responses,
+        action_model_responses,
+        gt_thought_model_responses,
+        gt_action_model_responses,
+    ):
         assert node.state == gt_state
         assert node.depth == 1
         assert node.reward == 0
         assert node.value == 0
         assert node.is_terminal is False
         assert node.visits == 0
-    assert strategy._prompt_metrics == gt_prompt_metrics
+        assert t.choices[0].message.content == gt_t
+        assert a.choices[0].message.content == gt_a
 
     # Test case with a terminal child node (reward 0)
-    gt_prompt_metrics = {
-        "thought": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            }
-        ],
-        "action": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            }
-        ],
-        "value": [],
-        "simulate_thought": [],
-        "simulate_action": [],
-        "simulate_value": [],
-        "reflection": [],
-    }
-
     responses = [
         "I think the answer is Mike Tyson.",
         "Finish[Mike Tyson]",
@@ -1964,17 +1764,18 @@ def test_generate_children_nodes() -> None:
     strategy = LATSQAStrategy(llm=llm, n_samples=1)
 
     root = strategy.initialize()
-    children_nodes = strategy.generate_children_nodes(
-        node=root,
-        question=question,
-        key=key,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
-        prompt=LATS_INSTRUCTION_HOTPOTQA,
-        reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
-        additional_keys={},
-        reflect_additional_keys={},
-        is_simulate=False,
+    children_nodes, thought_model_responses, action_model_responses = (
+        strategy.generate_children_nodes(
+            node=root,
+            question=question,
+            key=key,
+            examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+            reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
+            prompt=LATS_INSTRUCTION_HOTPOTQA,
+            reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
+            additional_keys={},
+            reflect_additional_keys={},
+        )
     )
     assert len(children_nodes) == 1
     assert children_nodes[0].state.thought == "I think the answer is Mike Tyson."
@@ -1983,7 +1784,13 @@ def test_generate_children_nodes() -> None:
     assert children_nodes[0].is_terminal
     assert children_nodes[0].reward == 0
 
-    assert strategy._prompt_metrics == gt_prompt_metrics
+    assert len(thought_model_responses) == 1
+    assert (
+        thought_model_responses[0].choices[0].message.content
+        == "I think the answer is Mike Tyson."
+    )
+    assert len(action_model_responses) == 1
+    assert action_model_responses[0].choices[0].message.content == "Finish[Mike Tyson]"
 
 
 def test_generate_action() -> None:
@@ -2029,7 +1836,6 @@ def test_generate_action() -> None:
         depth,
         prompt,
         additional_keys,
-        is_simulate=False,
     )
     assert (
         trajectory
