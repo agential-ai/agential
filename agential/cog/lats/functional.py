@@ -556,7 +556,7 @@ def parse_code_value(string: str) -> Tuple[str, float]:
 
 def _accumulate_metric(step: LATSStepOutput, metric_type: str) -> Union[int, float]:
     """Accumulate total metrics from a list of LATSStepOutput objects.
-    
+
     Args:
         step (LATSStepOutput): The LATSStepOutput object containing metrics.
         metric_type (str): The type of metric to accumulate.

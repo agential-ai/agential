@@ -72,7 +72,9 @@ class LATSCodeStrategy(LATSGeneralStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
-    ) -> Tuple[List[Node], List[ModelResponse], List[ModelResponse], List[ModelResponse]]:
+    ) -> Tuple[
+        List[Node], List[ModelResponse], List[ModelResponse], List[ModelResponse]
+    ]:
         """Generate child nodes for the given node.
 
         Args:
@@ -184,7 +186,12 @@ class LATSCodeStrategy(LATSGeneralStrategy):
             action_model_responses.append(action_model_response)
             children_nodes.append(new_node)
 
-        return children_nodes, thought_model_responses, action_model_responses, reflection_model_responses
+        return (
+            children_nodes,
+            thought_model_responses,
+            action_model_responses,
+            reflection_model_responses,
+        )
 
     def generate_action(
         self,
@@ -430,18 +437,21 @@ class LATSCodeStrategy(LATSGeneralStrategy):
             simulation_current_nodes.append(node)
 
             values: List[Dict[str, Any]] = []
-            children_nodes, thought_model_responses, action_model_responses, reflection_model_responses = (
-                self.generate_children_nodes(
-                    node=node,
-                    question=question,
-                    key=key,
-                    examples=examples,
-                    reflect_examples=reflect_examples,
-                    prompt=prompt,
-                    reflect_prompt=reflect_prompt,
-                    additional_keys=additional_keys,
-                    reflect_additional_keys=reflect_additional_keys,
-                )
+            (
+                children_nodes,
+                thought_model_responses,
+                action_model_responses,
+                reflection_model_responses,
+            ) = self.generate_children_nodes(
+                node=node,
+                question=question,
+                key=key,
+                examples=examples,
+                reflect_examples=reflect_examples,
+                prompt=prompt,
+                reflect_prompt=reflect_prompt,
+                additional_keys=additional_keys,
+                reflect_additional_keys=reflect_additional_keys,
             )
             simulation_children_nodes.append(children_nodes)
             simulation_thought_model_responses.append(thought_model_responses)

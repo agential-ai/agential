@@ -2126,6 +2126,7 @@ def test_simulate_node() -> None:
         simulation_children_nodes,
         simulation_thought_model_responses,
         simulation_action_model_responses,
+        simulation_reflection_model_responses,
         simulation_values,
         simulation_values_model_responses,
     ) = strategy.simulate_node(
@@ -2204,23 +2205,25 @@ def test_simulate_node() -> None:
             continue
         assert response["choices"][0]["message"]["content"] == message
 
+    assert simulation_reflection_model_responses == [[], [], []]
+
 
 def test_expand_node() -> None:
     """Test the expand_node method."""
     gt_thought_model_responses = [
-        'I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes',
-        'I need to search for the best kickboxer who has been involved in controversies and crimes of violence',
-        'I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies',
-        'I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring',
-        'I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies',
-    ] 
+        "I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
+        "I need to search for the best kickboxer who has been involved in controversies and crimes of violence",
+        "I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies",
+        "I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring",
+        "I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies",
+    ]
     gt_action_model_responses = [
-        'Search[best kick boxer controversies crimes]',
-        'Search[best kick boxer controversies crimes]\nObservation 0: No exact matches found',
-        'Search[best kick boxer controversies]\nObservation 0: Could not find [best kick boxer controversies]',
-        'Search[best kick boxer controversies violence]\nObservation 0: Could not find [best kick boxer controversies violence]',
-        'Search[best kickboxer controversies]\nObservation 0: The search results show multiple kickboxers who have been involved in controversies',
-    ] 
+        "Search[best kick boxer controversies crimes]",
+        "Search[best kick boxer controversies crimes]\nObservation 0: No exact matches found",
+        "Search[best kick boxer controversies]\nObservation 0: Could not find [best kick boxer controversies]",
+        "Search[best kick boxer controversies violence]\nObservation 0: Could not find [best kick boxer controversies violence]",
+        "Search[best kickboxer controversies]\nObservation 0: The search results show multiple kickboxers who have been involved in controversies",
+    ]
 
     responses = [
         "I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
@@ -2244,7 +2247,12 @@ def test_expand_node() -> None:
 
     root = strategy.initialize()
 
-    children_nodes, thought_model_responses, action_model_responses, reflection_model_responses = strategy.expand_node(
+    (
+        children_nodes,
+        thought_model_responses,
+        action_model_responses,
+        reflection_model_responses,
+    ) = strategy.expand_node(
         node=root,
         question=question,
         key=key,
@@ -2290,6 +2298,12 @@ def test_expand_node() -> None:
     ):
         assert t.choices[0].message.content == gt_t
         assert a.choices[0].message.content == gt_a
+
+    assert strategy.failed_trajectories == []
+    assert strategy.reflection_map == []
+    assert strategy.value_cache == {}
+    assert strategy.root == root
+
 
 def test_instantiate_strategies() -> None:
     """Test the instantiation of various LATS QA strategies."""

@@ -93,18 +93,21 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             simulation_terminal_node = None
             node = self.select_node(root)  # Selected node is always non-terminal.
 
-            children_nodes, thought_model_responses, action_model_responses, reflection_model_responses = (
-                self.expand_node(
-                    node=node,
-                    question=question,
-                    key=key,
-                    examples=examples,
-                    reflect_examples=reflect_examples,
-                    prompt=prompt,
-                    reflect_prompt=reflect_prompt,
-                    additional_keys=additional_keys,
-                    reflect_additional_keys=reflect_additional_keys,
-                )
+            (
+                children_nodes,
+                thought_model_responses,
+                action_model_responses,
+                reflection_model_responses,
+            ) = self.expand_node(
+                node=node,
+                question=question,
+                key=key,
+                examples=examples,
+                reflect_examples=reflect_examples,
+                prompt=prompt,
+                reflect_prompt=reflect_prompt,
+                additional_keys=additional_keys,
+                reflect_additional_keys=reflect_additional_keys,
             )
 
             for child_node in children_nodes:
@@ -235,7 +238,9 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
-    ) -> Tuple[List[Node], List[ModelResponse], List[ModelResponse], List[ModelResponse]]:
+    ) -> Tuple[
+        List[Node], List[ModelResponse], List[ModelResponse], List[ModelResponse]
+    ]:
         """Generate child nodes for the given node.
 
         Args:
@@ -409,22 +414,30 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         if node.depth >= self.depth_limit:
             node.is_terminal = True
             return [], [], []
-        children_nodes, thought_model_responses, action_model_responses, reflection_model_responses = (
-            self.generate_children_nodes(
-                node=node,
-                question=question,
-                key=key,
-                examples=examples,
-                reflect_examples=reflect_examples,
-                prompt=prompt,
-                reflect_prompt=reflect_prompt,
-                additional_keys=additional_keys,
-                reflect_additional_keys=reflect_additional_keys,
-            )
+        (
+            children_nodes,
+            thought_model_responses,
+            action_model_responses,
+            reflection_model_responses,
+        ) = self.generate_children_nodes(
+            node=node,
+            question=question,
+            key=key,
+            examples=examples,
+            reflect_examples=reflect_examples,
+            prompt=prompt,
+            reflect_prompt=reflect_prompt,
+            additional_keys=additional_keys,
+            reflect_additional_keys=reflect_additional_keys,
         )
         node.add_children([node for node in children_nodes if node.parent])  # type: ignore
 
-        return children_nodes, thought_model_responses, action_model_responses, reflection_model_responses
+        return (
+            children_nodes,
+            thought_model_responses,
+            action_model_responses,
+            reflection_model_responses,
+        )
 
     def evaluate_node(
         self,

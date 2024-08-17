@@ -90,7 +90,9 @@ class LATSBaseStrategy(BaseStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
-    ) -> Tuple[List[Node], List[ModelResponse], List[ModelResponse], List[ModelResponse]]:
+    ) -> Tuple[
+        List[Node], List[ModelResponse], List[ModelResponse], List[ModelResponse]
+    ]:
         """Generate child nodes for the given node.
 
         Args:
