@@ -1824,7 +1824,7 @@ def test_generate_action() -> None:
     assert action_type == "Search"
     assert query == "capital of France"
 
-    assert out.choices[0].message.content == 'Search[capital of France]'
+    assert out.choices[0].message.content == "Search[capital of France]"
 
 
 def test_generate_observation() -> None:
@@ -1892,26 +1892,6 @@ def test_generate_observation() -> None:
 
 def test_evaluate_node() -> None:
     """Test the evaluate_node method."""
-    gt_prompt_metrics = {
-        "thought": [],
-        "action": [],
-        "value": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            }
-        ],
-        "simulate_thought": [],
-        "simulate_action": [],
-        "simulate_value": [],
-        "reflection": [],
-    }
-
     llm = MockLLM(
         "gpt-3.5-turbo",
         responses=["Explanation: Good trajectory. Correctness score: 8"],
@@ -1956,60 +1936,43 @@ def test_evaluate_node() -> None:
         }
     ]
 
-    values = strategy.evaluate_node(root, question, examples, prompt, {})
+    values, values_responses = strategy.evaluate_node(
+        root, question, examples, prompt, {}
+    )
 
-    assert strategy._prompt_metrics == gt_prompt_metrics
-
-    assert len(values) == 1  # Only one non-terminal child.
-    assert "explanation" in values[0]
-    assert "value" in values[0]
-    assert values[0]["explanation"] == "Good trajectory."
-    assert values[0]["value"] == 0.8  # 8 / 10
+    assert len(values) == 2
+    assert values == [
+        {"explanation": "Good trajectory.", "value": 0.8},
+        {"explanation": "", "value": -10000000000.0},
+    ]
 
     assert child1.value == 0.8
     assert child2.value == 0  # Terminal node, value not updated.
 
+    gt_responses = ["Explanation: Good trajectory. Correctness score: 8", None]
+    assert values_responses[0].choices[0].message.content == gt_responses[0]
+    assert values_responses[1] == gt_responses[1]
+
     # Test caching.
-    gt_prompt_metrics = {
-        "thought": [],
-        "action": [],
-        "value": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-        ],
-        "simulate_thought": [],
-        "simulate_action": [],
-        "simulate_value": [],
-        "reflection": [],
-    }
     strategy.cache_values = True
-    cached_values = strategy.evaluate_node(root, question, examples, prompt, {})
+    cached_values, values_responses = strategy.evaluate_node(
+        root, question, examples, prompt, {}
+    )
     assert cached_values == values
+
+    assert values_responses == [None, None]
 
     # Test with empty reflection_map.
     strategy.reflection_map = []
-    empty_reflection_values = strategy.evaluate_node(
+    empty_reflection_values, values_responses = strategy.evaluate_node(
         root, question, examples, prompt, {}
     )
+    assert (
+        values_responses[0].choices[0].message.content
+        == "Explanation: Good trajectory. Correctness score: 8"
+    )
+    assert values_responses[1] is None
     assert empty_reflection_values == values
-
-    assert strategy._prompt_metrics == gt_prompt_metrics
 
 
 def test_simulate_node() -> None:
