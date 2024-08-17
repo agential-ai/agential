@@ -1795,26 +1795,6 @@ def test_generate_children_nodes() -> None:
 
 def test_generate_action() -> None:
     """Test the generate_action method."""
-    gt_prompt_metrics = {
-        "thought": [],
-        "action": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            }
-        ],
-        "value": [],
-        "simulate_thought": [],
-        "simulate_action": [],
-        "simulate_value": [],
-        "reflection": [],
-    }
-
     llm = MockLLM("gpt-3.5-turbo", responses=["Search[capital of France]"])
     strategy = LATSQAStrategy(llm=llm)
 
@@ -1828,7 +1808,7 @@ def test_generate_action() -> None:
     prompt = "Generate an action"
     additional_keys = {"key": "value"}
 
-    trajectory, action_type, query = strategy.generate_action(
+    trajectory, action_type, query, out = strategy.generate_action(
         question,
         examples,
         trajectory,
@@ -1844,7 +1824,7 @@ def test_generate_action() -> None:
     assert action_type == "Search"
     assert query == "capital of France"
 
-    assert strategy._prompt_metrics == gt_prompt_metrics
+    assert out.choices[0].message.content == 'Search[capital of France]'
 
 
 def test_generate_observation() -> None:
