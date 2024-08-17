@@ -59,6 +59,10 @@ class LATSSimulationOutput(BaseModel):
         ...,
         description="The metrics of the actions of the simulation.",
     )
+    simulation_reflections_metrics: List[List[PromptMetrics]] = Field(
+        ...,
+        description="The metrics of the reflections of the simulation.",
+    )
     simulation_values: List[List[Dict[str, Any]]] = Field(
         ...,
         description="The values of the children nodes of the simulation.",
@@ -99,6 +103,10 @@ class LATSStepOutput(BaseModel):
     actions_metrics: List[PromptMetrics] = Field(
         ...,
         description="The metrics of the actions.",
+    )
+    reflections_metrics: List[PromptMetrics] = Field(
+        ...,
+        description="The metrics of the reflections.",
     )
     values: List[Dict[str, Any]] = Field(
         ...,

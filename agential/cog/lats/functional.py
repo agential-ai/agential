@@ -105,21 +105,21 @@ def _prompt_reflection(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print(
-       "<PROMPT REFLECT======================================================================>"
-      )
-    print(prompt)
-    print(
-       "<PROMPT REFLECT======================================================================>"
-      )
+    # print(
+    #    "<PROMPT REFLECT======================================================================>"
+    #   )
+    # print(prompt)
+    # print(
+    #    "<PROMPT REFLECT======================================================================>"
+    #   )
     out = llm(prompt)
-    print(
-        "<OUT REFLECT======================================================================>"
-      )
-    print(repr(out.choices[0].message.content))
-    print(
-        "<OUT REFLECT======================================================================>"
-      )
+    # print(
+    #     "<OUT REFLECT======================================================================>"
+    #   )
+    # print(repr(out.choices[0].message.content))
+    # print(
+    #     "<OUT REFLECT======================================================================>"
+    #   )
 
     return out
 
@@ -186,21 +186,21 @@ def _prompt_value(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print(
-       "<PROMPT VALUE======================================================================>"
-    )
-    print(prompt)
-    print(
-       "<PROMPT VALUE======================================================================>"
-    )
+    # print(
+    #    "<PROMPT VALUE======================================================================>"
+    # )
+    # print(prompt)
+    # print(
+    #    "<PROMPT VALUE======================================================================>"
+    # )
     out = llm(prompt)
-    print(
-       "<OUT VALUE======================================================================>"
-    )
-    print(repr(out.choices[0].message.content))
-    print(
-       "<OUT VALUE======================================================================>"
-    )
+    # print(
+    #    "<OUT VALUE======================================================================>"
+    # )
+    # print(repr(out.choices[0].message.content))
+    # print(
+    #    "<OUT VALUE======================================================================>"
+    # )
 
     return out
 
@@ -267,21 +267,21 @@ def _prompt_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print(
-       "<PROMPT AGENT======================================================================>"
-    )
-    print(prompt)
-    print(
-       "<PROMPT AGENT======================================================================>"
-    )
+    # print(
+    #    "<PROMPT AGENT======================================================================>"
+    # )
+    # print(prompt)
+    # print(
+    #    "<PROMPT AGENT======================================================================>"
+    # )
     out = llm(prompt)
-    print(
-       "<OUT AGENT======================================================================>"
-    )
-    print(repr(out.choices[0].message.content))
-    print(
-       "<OUT AGENT======================================================================>"
-    )
+    # print(
+    #    "<OUT AGENT======================================================================>"
+    # )
+    # print(repr(out.choices[0].message.content))
+    # print(
+    #    "<OUT AGENT======================================================================>"
+    # )
 
     return out
 
@@ -555,7 +555,15 @@ def parse_code_value(string: str) -> Tuple[str, float]:
 
 
 def _accumulate_metric(step: LATSStepOutput, metric_type: str) -> Union[int, float]:
-    """Accumulate total metrics from a list of LATSStepOutput objects."""
+    """Accumulate total metrics from a list of LATSStepOutput objects.
+    
+    Args:
+        step (LATSStepOutput): The LATSStepOutput object containing metrics.
+        metric_type (str): The type of metric to accumulate.
+
+    Returns:
+        Union[int, float]: The accumulated metric value.
+    """
     out = (
         sum(
             [
@@ -567,6 +575,12 @@ def _accumulate_metric(step: LATSStepOutput, metric_type: str) -> Union[int, flo
             [
                 getattr(action_metrics, metric_type)
                 for action_metrics in step.actions_metrics
+            ]
+        )
+        + sum(
+            [
+                getattr(reflection_metrics, metric_type)
+                for reflection_metrics in step.reflections_metrics
             ]
         )
         + sum(
@@ -596,6 +610,17 @@ def _accumulate_metric(step: LATSStepOutput, metric_type: str) -> Union[int, flo
                     ]
                 )
                 for actions_metrics in step.simulation_results.simulation_actions_metrics
+            ]
+        )
+        + sum(
+            [
+                sum(
+                    [
+                        getattr(reflection_metrics, metric_type)
+                        for reflection_metrics in reflections_metrics
+                    ]
+                )
+                for reflections_metrics in step.simulation_results.simulation_reflections_metrics
             ]
         )
         + sum(
