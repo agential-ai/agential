@@ -71,7 +71,7 @@ class LATSMathStrategy(LATSGeneralStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
-    ) -> Tuple[List[Node], List[ModelResponse], List[ModelResponse]]:
+    ) -> Tuple[List[Node], List[ModelResponse], List[ModelResponse], List[ModelResponse]]:
         """Generate child nodes for the given node.
 
         Args:
@@ -86,11 +86,12 @@ class LATSMathStrategy(LATSGeneralStrategy):
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
 
         Returns:
-            Tuple[List[Node], List[ModelResponse], List[ModelResponse]]: A list of generated child nodes, and the corresponding model responses.
+            Tuple[List[Node], List[ModelResponse], List[ModelResponse], List[ModelResponse]]: A list of generated child nodes, and the corresponding model responses.
         """
         reflections_str = ""
+        reflection_model_responses = []
         if self.reflect_condition():
-            reflections = self.reflect(
+            reflections, reflection_model_responses = self.reflect(
                 question=question,
                 examples=reflect_examples,
                 prompt=reflect_prompt,
@@ -182,7 +183,7 @@ class LATSMathStrategy(LATSGeneralStrategy):
             action_model_responses.append(action_model_response)
             children_nodes.append(new_node)
 
-        return children_nodes, thought_model_responses, action_model_responses
+        return children_nodes, thought_model_responses, action_model_responses, reflection_model_responses
 
     def generate_action(
         self,
@@ -373,6 +374,7 @@ class LATSMathStrategy(LATSGeneralStrategy):
         List[List[Node]],
         List[List[ModelResponse]],
         List[List[ModelResponse]],
+        List[List[ModelResponse]],
         List[List[Dict[str, Any]]],
         List[List[Optional[ModelResponse]]],
     ]:
@@ -393,13 +395,14 @@ class LATSMathStrategy(LATSGeneralStrategy):
             value_additional_keys (Dict[str, str]): Additional keys for value estimation prompt formatting.
 
         Returns:
-            Tuple[float, Node, List[Node], List[List[Node]], List[List[ModelResponse]], List[List[ModelResponse]], List[List[Dict[str, Any]]], List[List[Optional[ModelResponse]]]]:
+            Tuple[float, Node, List[Node], List[List[Node]], List[List[ModelResponse]], List[List[ModelResponse]], List[List[ModelResponse]], List[List[Dict[str, Any]]], List[List[Optional[ModelResponse]]]]:
                 - The estimated value of the node.
                 - The simulated node.
                 - A list of the current nodes.
                 - A list of the newly-created children nodes.
                 - A list of thought model responses.
                 - A list of action model responses.
+                - A list of reflection model responses.
                 - A list of value estimates for newly-created children nodes.
                 - A list of value model responses.
         """
@@ -410,13 +413,14 @@ class LATSMathStrategy(LATSGeneralStrategy):
         simulation_children_nodes: List[List[Node]] = []
         simulation_thought_model_responses: List[List[ModelResponse]] = []
         simulation_action_model_responses: List[List[ModelResponse]] = []
+        simulation_reflection_model_responses: List[List[ModelResponse]] = []
         simulation_values: List[List[Dict[str, Any]]] = []
         simulation_values_model_responses: List[List[Optional[ModelResponse]]] = []
         while not node.is_terminal and depth < self.depth_limit:
             simulation_current_nodes.append(node)
 
             values: List[Dict[str, Any]] = []
-            children_nodes, thought_model_responses, action_model_responses = (
+            children_nodes, thought_model_responses, action_model_responses, reflection_model_responses = (
                 self.generate_children_nodes(
                     node=node,
                     question=question,
@@ -432,6 +436,7 @@ class LATSMathStrategy(LATSGeneralStrategy):
             simulation_children_nodes.append(children_nodes)
             simulation_thought_model_responses.append(thought_model_responses)
             simulation_action_model_responses.append(action_model_responses)
+            simulation_reflection_model_responses.append(reflection_model_responses)
 
             for node in children_nodes:
                 if node.is_terminal and node.parent:
@@ -442,6 +447,7 @@ class LATSMathStrategy(LATSGeneralStrategy):
                         simulation_children_nodes,
                         simulation_thought_model_responses,
                         simulation_action_model_responses,
+                        simulation_reflection_model_responses,
                         simulation_values,
                         simulation_values_model_responses,
                     )
@@ -500,6 +506,7 @@ class LATSMathStrategy(LATSGeneralStrategy):
             simulation_children_nodes,
             simulation_thought_model_responses,
             simulation_action_model_responses,
+            simulation_reflection_model_responses,
             simulation_values,
             simulation_values_model_responses,
         )
