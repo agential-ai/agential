@@ -87,6 +87,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             self.reset()
 
         output = []
+        simulation_terminal_node = None
 
         root = self.initialize()
         for i in range(max_iterations):
@@ -127,7 +128,11 @@ class LATSGeneralStrategy(LATSBaseStrategy):
                             simulation_values_model_responses=None,
                         )
                     )
-                    return child_node, output
+                    simulation_terminal_node = child_node
+                    break
+
+            if simulation_terminal_node:
+                break
 
             values, values_responses = self.evaluate_node(
                 node=node,
@@ -182,7 +187,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             )
 
             if self.halting_condition(simulation_terminal_node):
-                return simulation_terminal_node, output
+                break
 
             self.backpropagate_node(
                 node=simulation_terminal_node, value=simulation_reward
