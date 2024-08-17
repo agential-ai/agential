@@ -2002,31 +2002,16 @@ def test_simulate_node() -> None:
                 thought="I need to search for the capital of France",
                 action_type="Search",
                 query="capital of France",
-                observation="This is a chronological list of capitals of France. The capital of France has been Paris since its liberation in 1944.",
+                observation="Badr Hari is the best kick boxer in the world.",
                 answer="",
                 external_tool_info={
-                    "search_result": "This is a chronological list of capitals of France. The capital of France has been Paris since its liberation in 1944.",
+                    "search_result": "Badr Hari is the best kick boxer in the world.",
                     "lookup_result": "",
                 },
             ),
             "visits": 0,
             "value": 0,
             "depth": 1,
-            "is_terminal": False,
-            "reward": 0,
-        },
-        {
-            "state": LATSReActStepOutput(
-                thought="The trajectory provided is completely incorrect as the observation received does not relate to the search query at all, indicating that the search term might have been mistyped or confused",
-                action_type="",
-                query="",
-                observation="Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>].",
-                answer="",
-                external_tool_info={"search_result": "", "lookup_result": ""},
-            ),
-            "visits": 0,
-            "value": 0,
-            "depth": 2,
             "is_terminal": False,
             "reward": 0,
         },
@@ -2039,10 +2024,10 @@ def test_simulate_node() -> None:
                     thought="I need to search for the capital of France",
                     action_type="Search",
                     query="capital of France",
-                    observation="This is a chronological list of capitals of France. The capital of France has been Paris since its liberation in 1944.",
+                    observation="Badr Hari is the best kick boxer in the world.",
                     answer="",
                     external_tool_info={
-                        "search_result": "This is a chronological list of capitals of France. The capital of France has been Paris since its liberation in 1944.",
+                        "search_result": "Badr Hari is the best kick boxer in the world.",
                         "lookup_result": "",
                     },
                 ),
@@ -2051,96 +2036,17 @@ def test_simulate_node() -> None:
                 "depth": 1,
                 "is_terminal": False,
                 "reward": 0,
-            },
-            {
-                "state": LATSReActStepOutput(
-                    thought="I need to search for the capital of France",
-                    action_type="Search",
-                    query="capital of France",
-                    observation="",
-                    answer="",
-                    external_tool_info={},
-                ),
-                "visits": 0,
-                "value": 0,
-                "depth": 0,
-                "is_terminal": False,
-                "reward": 0,
-            },
-        ],
-        [
-            {
-                "state": LATSReActStepOutput(
-                    thought="The trajectory provided is completely incorrect as the observation received does not relate to the search query at all, indicating that the search term might have been mistyped or confused",
-                    action_type="",
-                    query="",
-                    observation="Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>].",
-                    answer="",
-                    external_tool_info={"search_result": "", "lookup_result": ""},
-                ),
-                "visits": 0,
-                "value": 0,
-                "depth": 2,
-                "is_terminal": False,
-                "reward": 0,
-            },
-            {
-                "state": LATSReActStepOutput(
-                    thought="Search[capital of France]Observation 2: The capital of France is Paris, known for its art, fashion, gastronomy, and culture",
-                    action_type="",
-                    query="",
-                    observation="Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>].",
-                    answer="",
-                    external_tool_info={"search_result": "", "lookup_result": ""},
-                ),
-                "visits": 0,
-                "value": 0,
-                "depth": 2,
-                "is_terminal": False,
-                "reward": 0,
-            },
-        ],
-        [
-            {
-                "state": LATSReActStepOutput(
-                    thought="This trajectory is incorrect as it did not provide any relevant information regarding the capital of France",
-                    action_type="",
-                    query="",
-                    observation="Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>].",
-                    answer="",
-                    external_tool_info={"search_result": "", "lookup_result": ""},
-                ),
-                "visits": 0,
-                "value": 0,
-                "depth": 3,
-                "is_terminal": False,
-                "reward": 0,
-            },
-            {
-                "state": LATSReActStepOutput(
-                    thought="Search[similar entities to the capital of France]Observation 3: Similar: [Paris, Marseille, Lyon, Toulouse, Lille]Thought 4: The capital of France is Paris",
-                    action_type="",
-                    query="",
-                    observation="Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>].",
-                    answer="",
-                    external_tool_info={"search_result": "", "lookup_result": ""},
-                ),
-                "visits": 0,
-                "value": 0,
-                "depth": 3,
-                "is_terminal": False,
-                "reward": 0,
-            },
+            }
         ],
     ]
 
     expected_thought_message = [
-        'I need to search for the capital of France',
-        'I need to search for the capital of France',
-        'The trajectory provided is completely incorrect as the observation received does not relate to the search query at all, indicating that the search term might have been mistyped or confused',
-        'Search[capital of France]\nObservation 2: The capital of France is Paris, known for its art, fashion, gastronomy, and culture',
-        'This trajectory is incorrect as it did not provide any relevant information regarding the capital of France',
-        'Search[similar entities to the capital of France]\nObservation 3: Similar: [Paris, Marseille, Lyon, Toulouse, Lille]\nThought 4: The capital of France is Paris'
+        "I need to search for the capital of France",
+        "I need to search for the capital of France",
+        "The trajectory provided is completely incorrect as the observation received does not relate to the search query at all, indicating that the search term might have been mistyped or confused",
+        "Search[capital of France]\nObservation 2: The capital of France is Paris, known for its art, fashion, gastronomy, and culture",
+        "This trajectory is incorrect as it did not provide any relevant information regarding the capital of France",
+        "Search[similar entities to the capital of France]\nObservation 3: Similar: [Paris, Marseille, Lyon, Toulouse, Lille]\nThought 4: The capital of France is Paris",
     ]
 
     expected_actions_message = [
@@ -2170,10 +2076,10 @@ def test_simulate_node() -> None:
     expected_simulation_values_model_response = [
         None,
         None,
-        'Search[capital of France Wikipedia]\nObservation 2: The capital of France is Paris, the largest city in France and its capital since the 4th century',
-        'The trajectory provided is incorrect because the environmental observation does not relate to the question asked',
-        'Search[capital of France]\nObservation 3: The capital of France is Paris',
-        'The trajectory is incorrect as the observations did not provide any relevant information related to the question'
+        "Search[capital of France Wikipedia]\nObservation 2: The capital of France is Paris, the largest city in France and its capital since the 4th century",
+        "The trajectory provided is incorrect because the environmental observation does not relate to the question asked",
+        "Search[capital of France]\nObservation 3: The capital of France is Paris",
+        "The trajectory is incorrect as the observations did not provide any relevant information related to the question",
     ]
 
     responses = [
@@ -2198,6 +2104,9 @@ def test_simulate_node() -> None:
 
     qa_strategy = LATSQAStrategy(
         llm=MockLLM("gpt-3.5-turbo", responses=responses), depth_limit=3, n_samples=2
+    )
+    qa_strategy.docstore.search = (
+        lambda x: "Badr Hari is the best kick boxer in the world."
     )
     root_node = qa_strategy.initialize()
 
@@ -2262,6 +2171,7 @@ def test_simulate_node() -> None:
         simulation_children_nodes, expected_simulation_children_nodes
     ):
         for node, expected_node in zip(node_list, expected_node_list):
+            print(node.to_dict())
             assert node.to_dict() == expected_node
 
     # Flatten the list using itertools.chain
@@ -2293,131 +2203,9 @@ def test_simulate_node() -> None:
     for response, message in zip(
         flattened_values_model_response, expected_simulation_values_model_response
     ):
-        if response== None:
+        if response == None:
             continue
         assert response["choices"][0]["message"]["content"] == message
-
-    # for node in simulation_current_nodes:
-    #     assert node.to_dict() ==
-
-    # assert isinstance(reward, float)
-    # assert isinstance(final_node, Node)
-    # assert isinstance(simulation_results, list)
-
-    # assert final_node.depth <= qa_strategy.depth_limit
-
-    # assert len(simulation_results) > 0
-
-    # assert -1 <= reward <= 1
-
-    # assert qa_strategy._prompt_metrics == gt_prompt_metrics
-
-
-#     assert len(result) == 8
-#     assert isinstance(result[0], float)
-#     assert isinstance(result[1], Node)
-#     assert isinstance(result[2], list)
-#     assert isinstance(result[3], list)
-#     assert isinstance(result[4], list)
-#     assert isinstance(result[5], list)
-#     assert isinstance(result[6], list)
-#     assert isinstance(result[7], list)
-
-# def test_simulate_node_terminal():
-#     llm = MockLLM("gpt-3.5-turbo", responses=["Finish[test answer]"])
-#     strategy = ReActQAStrategy(llm=llm)
-#     node = Node(depth=0, is_terminal=True, reward=1.0)
-#     question = "Test question"
-#     key = "Test key"
-#     examples = "Test examples"
-#     reflect_examples = "Test reflect examples"
-#     value_examples = "Test value examples"
-#     prompt = "Test prompt"
-#     reflect_prompt = "Test reflect prompt"
-#     value_prompt = "Test value prompt"
-#     additional_keys = {"key1": "value1"}
-#     reflect_additional_keys = {"key2": "value2"}
-#     value_additional_keys = {"key3": "value3"}
-
-#     result = strategy.simulate_node(
-#         node, question, key, examples, reflect_examples, value_examples,
-#         prompt, reflect_prompt, value_prompt, additional_keys,
-#         reflect_additional_keys, value_additional_keys
-#     )
-
-#     assert result[0] == 1.0
-#     assert result[1] == node
-#     assert len(result[2]) == 0
-#     assert len(result[3]) == 0
-#     assert len(result[4]) == 0
-#     assert len(result[5]) == 0
-#     assert len(result[6]) == 0
-#     assert len(result[7]) == 0
-
-# def test_simulate_node_depth_limit():
-#     llm = MockLLM("gpt-3.5-turbo", responses=["Search[test query]"] * 10)
-#     strategy = ReActQAStrategy(llm=llm, depth_limit=5)
-#     node = Node(depth=0)
-#     question = "Test question"
-#     key = "Test key"
-#     examples = "Test examples"
-#     reflect_examples = "Test reflect examples"
-#     value_examples = "Test value examples"
-#     prompt = "Test prompt"
-#     reflect_prompt = "Test reflect prompt"
-#     value_prompt = "Test value prompt"
-#     additional_keys = {"key1": "value1"}
-#     reflect_additional_keys = {"key2": "value2"}
-#     value_additional_keys = {"key3": "value3"}
-
-#     result = strategy.simulate_node(
-#         node, question, key, examples, reflect_examples, value_examples,
-#         prompt, reflect_prompt, value_prompt, additional_keys,
-#         reflect_additional_keys, value_additional_keys
-#     )
-
-#     assert result[0] == -1.0
-#     assert result[1].depth == 5
-#     assert len(result[2]) == 5
-#     assert len(result[3]) == 5
-#     assert len(result[4]) == 5
-#     assert len(result[5]) == 5
-#     assert len(result[6]) == 5
-#     assert len(result[7]) == 5
-
-# def test_simulate_node_with_reflection():
-#     llm = MockLLM("gpt-3.5-turbo", responses=["Search[test query]", "Finish[test answer]"])
-#     strategy = ReActQAStrategy(llm=llm)
-#     strategy.reflection_map = [
-#         {"trajectory": "Test trajectory", "reflection": "Test reflection"}
-#     ]
-#     node = Node(depth=0)
-#     question = "Test question"
-#     key = "Test key"
-#     examples = "Test examples"
-#     reflect_examples = "Test reflect examples"
-#     value_examples = "Test value examples"
-#     prompt = "Test prompt"
-#     reflect_prompt = "Test reflect prompt"
-#     value_prompt = "Test value prompt"
-#     additional_keys = {"key1": "value1"}
-#     reflect_additional_keys = {"key2": "value2"}
-#     value_additional_keys = {"key3": "value3"}
-
-#     result = strategy.simulate_node(
-#         node, question, key, examples, reflect_examples, value_examples,
-#         prompt, reflect_prompt, value_prompt, additional_keys,
-#         reflect_additional_keys, value_additional_keys
-#     )
-
-#     assert isinstance(result[0], float)
-#     assert isinstance(result[1], Node)
-#     assert len(result[2]) > 0
-#     assert len(result[3]) > 0
-#     assert len(result[4]) > 0
-#     assert len(result[5]) > 0
-#     assert len(result[6]) > 0
-#     assert len(result[7]) > 0
 
 
 def test_expand_node() -> None:
@@ -2436,24 +2224,24 @@ def test_expand_node() -> None:
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = LATSQAStrategy(llm=llm)
-
+    strategy.docstore.search = (
+        lambda x: "Badr Hari is the best kick boxer in the world."
+    )
     question = 'Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring'
     key = "Badr Hari"
 
     root = strategy.initialize()
 
-    children_nodes, thought_model_responses, action_model_responses = (
-        strategy.expand_node(
-            node=root,
-            question=question,
-            key=key,
-            examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-            reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
-            prompt=LATS_INSTRUCTION_HOTPOTQA,
-            reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
-            additional_keys={},
-            reflect_additional_keys={},
-        )
+    children_nodes, _, _ = strategy.expand_node(
+        node=root,
+        question=question,
+        key=key,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
+        prompt=LATS_INSTRUCTION_HOTPOTQA,
+        reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
+        reflect_additional_keys={},
     )
 
     expected_nodes = [
@@ -2462,10 +2250,10 @@ def test_expand_node() -> None:
                 thought="I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
                 action_type="Search",
                 query="best kick boxer controversies crimes",
-                observation='The Boxer Rebellion, also known as the Boxer Uprising or Boxer Insurrection, was an anti-foreign, anti-imperialist, and anti-Christian uprising in North China between 1899 and 1901, towards the end of the Qing dynasty, by the Society of Righteous and Harmonious Fists, known as the "Boxers" in English due to many of its members having practised Chinese martial arts, which at the time were referred to as "Chinese boxing". It was defeated by the Eight-Nation Alliance of foreign powers.Following the First Sino-Japanese War, villagers in North China feared the expansion of foreign spheres of influence and resented the extension of privileges to Christian missionaries, who used them to shield their followers. In 1898, North China experienced several natural disasters, including the Yellow River flooding and droughts, which Boxers blamed on foreign and Christian influence. Beginning in 1899, the movement spread across Shandong and the North China Plain, destroying foreign property such as railroads, and attacking or murdering Christian missionaries and Chinese Christians. The events came to a head in June 1900, when Boxer fighters, convinced they were invulnerable to foreign weapons, converged on Beijing with the slogan "Support the Qing government and exterminate the foreigners."Diplomats, missionaries, soldiers, and some Chinese Christians took refuge in the Legation Quarter, which the Boxers besieged. The Eight-Nation Alliance—comprising American, Austro-Hungarian, British, French, German, Italian, Japanese, and Russian troops—moved into China to lift the siege and on 17 June stormed the Dagu Fort at Tianjin. Empress Dowager Cixi, who had initially been hesitant, supported the Boxers and on 21 June issued an imperial decree that was a de facto declaration of war on the invading powers. Chinese officialdom was split between those supporting the Boxers and those favouring conciliation, led by Prince Qing. The supreme commander of the Chinese forces, the Manchu general Ronglu, later claimed he acted to protect the foreigners. Officials in the southern provinces ignored the imperial order to fight against foreigners.The Eight-Nation Alliance, after initially being turned back by the Imperial Chinese military and Boxer militia, brought 20,000 armed troops to China. They defeated the Imperial Army in Tianjin and arrived in Beijing on 14 August, relieving the 55-day Siege of the International Legations. Fighting over the capital and the surrounding countryside ensued, along with summary execution of those suspected of being Boxers in retribution. The Boxer Protocol of 7 September 1901 provided for the execution of government officials who had supported the Boxers, for foreign troops to be stationed in Beijing, and for 450 million taels of silver—more than the government\'s annual tax revenue—to be paid as indemnity over the course of the next 39 years to the eight invading nations. The Qing dynasty\'s handling of the Boxer Rebellion further weakened their control over China, and led to the Late Qing reforms.',
+                observation="Badr Hari is the best kick boxer in the world.",
                 answer="",
                 external_tool_info={
-                    "search_result": 'The Boxer Rebellion, also known as the Boxer Uprising or Boxer Insurrection, was an anti-foreign, anti-imperialist, and anti-Christian uprising in North China between 1899 and 1901, towards the end of the Qing dynasty, by the Society of Righteous and Harmonious Fists, known as the "Boxers" in English due to many of its members having practised Chinese martial arts, which at the time were referred to as "Chinese boxing". It was defeated by the Eight-Nation Alliance of foreign powers.\nFollowing the First Sino-Japanese War, villagers in North China feared the expansion of foreign spheres of influence and resented the extension of privileges to Christian missionaries, who used them to shield their followers. In 1898, North China experienced several natural disasters, including the Yellow River flooding and droughts, which Boxers blamed on foreign and Christian influence. Beginning in 1899, the movement spread across Shandong and the North China Plain, destroying foreign property such as railroads, and attacking or murdering Christian missionaries and Chinese Christians. The events came to a head in June 1900, when Boxer fighters, convinced they were invulnerable to foreign weapons, converged on Beijing with the slogan "Support the Qing government and exterminate the foreigners."\nDiplomats, missionaries, soldiers, and some Chinese Christians took refuge in the Legation Quarter, which the Boxers besieged. The Eight-Nation Alliance—comprising American, Austro-Hungarian, British, French, German, Italian, Japanese, and Russian troops—moved into China to lift the siege and on 17 June stormed the Dagu Fort at Tianjin. Empress Dowager Cixi, who had initially been hesitant, supported the Boxers and on 21 June issued an imperial decree that was a de facto declaration of war on the invading powers. Chinese officialdom was split between those supporting the Boxers and those favouring conciliation, led by Prince Qing. The supreme commander of the Chinese forces, the Manchu general Ronglu, later claimed he acted to protect the foreigners. Officials in the southern provinces ignored the imperial order to fight against foreigners.\nThe Eight-Nation Alliance, after initially being turned back by the Imperial Chinese military and Boxer militia, brought 20,000 armed troops to China. They defeated the Imperial Army in Tianjin and arrived in Beijing on 14 August, relieving the 55-day Siege of the International Legations. Fighting over the capital and the surrounding countryside ensued, along with summary execution of those suspected of being Boxers in retribution. The Boxer Protocol of 7 September 1901 provided for the execution of government officials who had supported the Boxers, for foreign troops to be stationed in Beijing, and for 450 million taels of silver—more than the government\'s annual tax revenue—to be paid as indemnity over the course of the next 39 years to the eight invading nations. The Qing dynasty\'s handling of the Boxer Rebellion further weakened their control over China, and led to the Late Qing reforms.',
+                    "search_result": "Badr Hari is the best kick boxer in the world.",
                     "lookup_result": "",
                 },
             ),
@@ -2474,79 +2262,7 @@ def test_expand_node() -> None:
             "depth": 1,
             "is_terminal": False,
             "reward": 0,
-        },
-        {
-            "state": LATSReActStepOutput(
-                thought="I need to search for the best kickboxer who has been involved in controversies and crimes of violence",
-                action_type="Search",
-                query="best kick boxer controversies crimes",
-                observation='The Boxer Rebellion, also known as the Boxer Uprising or Boxer Insurrection, was an anti-foreign, anti-imperialist, and anti-Christian uprising in North China between 1899 and 1901, towards the end of the Qing dynasty, by the Society of Righteous and Harmonious Fists, known as the "Boxers" in English due to many of its members having practised Chinese martial arts, which at the time were referred to as "Chinese boxing". It was defeated by the Eight-Nation Alliance of foreign powers.Following the First Sino-Japanese War, villagers in North China feared the expansion of foreign spheres of influence and resented the extension of privileges to Christian missionaries, who used them to shield their followers. In 1898, North China experienced several natural disasters, including the Yellow River flooding and droughts, which Boxers blamed on foreign and Christian influence. Beginning in 1899, the movement spread across Shandong and the North China Plain, destroying foreign property such as railroads, and attacking or murdering Christian missionaries and Chinese Christians. The events came to a head in June 1900, when Boxer fighters, convinced they were invulnerable to foreign weapons, converged on Beijing with the slogan "Support the Qing government and exterminate the foreigners."Diplomats, missionaries, soldiers, and some Chinese Christians took refuge in the Legation Quarter, which the Boxers besieged. The Eight-Nation Alliance—comprising American, Austro-Hungarian, British, French, German, Italian, Japanese, and Russian troops—moved into China to lift the siege and on 17 June stormed the Dagu Fort at Tianjin. Empress Dowager Cixi, who had initially been hesitant, supported the Boxers and on 21 June issued an imperial decree that was a de facto declaration of war on the invading powers. Chinese officialdom was split between those supporting the Boxers and those favouring conciliation, led by Prince Qing. The supreme commander of the Chinese forces, the Manchu general Ronglu, later claimed he acted to protect the foreigners. Officials in the southern provinces ignored the imperial order to fight against foreigners.The Eight-Nation Alliance, after initially being turned back by the Imperial Chinese military and Boxer militia, brought 20,000 armed troops to China. They defeated the Imperial Army in Tianjin and arrived in Beijing on 14 August, relieving the 55-day Siege of the International Legations. Fighting over the capital and the surrounding countryside ensued, along with summary execution of those suspected of being Boxers in retribution. The Boxer Protocol of 7 September 1901 provided for the execution of government officials who had supported the Boxers, for foreign troops to be stationed in Beijing, and for 450 million taels of silver—more than the government\'s annual tax revenue—to be paid as indemnity over the course of the next 39 years to the eight invading nations. The Qing dynasty\'s handling of the Boxer Rebellion further weakened their control over China, and led to the Late Qing reforms.',
-                answer="",
-                external_tool_info={
-                    "search_result": 'The Boxer Rebellion, also known as the Boxer Uprising or Boxer Insurrection, was an anti-foreign, anti-imperialist, and anti-Christian uprising in North China between 1899 and 1901, towards the end of the Qing dynasty, by the Society of Righteous and Harmonious Fists, known as the "Boxers" in English due to many of its members having practised Chinese martial arts, which at the time were referred to as "Chinese boxing". It was defeated by the Eight-Nation Alliance of foreign powers.\nFollowing the First Sino-Japanese War, villagers in North China feared the expansion of foreign spheres of influence and resented the extension of privileges to Christian missionaries, who used them to shield their followers. In 1898, North China experienced several natural disasters, including the Yellow River flooding and droughts, which Boxers blamed on foreign and Christian influence. Beginning in 1899, the movement spread across Shandong and the North China Plain, destroying foreign property such as railroads, and attacking or murdering Christian missionaries and Chinese Christians. The events came to a head in June 1900, when Boxer fighters, convinced they were invulnerable to foreign weapons, converged on Beijing with the slogan "Support the Qing government and exterminate the foreigners."\nDiplomats, missionaries, soldiers, and some Chinese Christians took refuge in the Legation Quarter, which the Boxers besieged. The Eight-Nation Alliance—comprising American, Austro-Hungarian, British, French, German, Italian, Japanese, and Russian troops—moved into China to lift the siege and on 17 June stormed the Dagu Fort at Tianjin. Empress Dowager Cixi, who had initially been hesitant, supported the Boxers and on 21 June issued an imperial decree that was a de facto declaration of war on the invading powers. Chinese officialdom was split between those supporting the Boxers and those favouring conciliation, led by Prince Qing. The supreme commander of the Chinese forces, the Manchu general Ronglu, later claimed he acted to protect the foreigners. Officials in the southern provinces ignored the imperial order to fight against foreigners.\nThe Eight-Nation Alliance, after initially being turned back by the Imperial Chinese military and Boxer militia, brought 20,000 armed troops to China. They defeated the Imperial Army in Tianjin and arrived in Beijing on 14 August, relieving the 55-day Siege of the International Legations. Fighting over the capital and the surrounding countryside ensued, along with summary execution of those suspected of being Boxers in retribution. The Boxer Protocol of 7 September 1901 provided for the execution of government officials who had supported the Boxers, for foreign troops to be stationed in Beijing, and for 450 million taels of silver—more than the government\'s annual tax revenue—to be paid as indemnity over the course of the next 39 years to the eight invading nations. The Qing dynasty\'s handling of the Boxer Rebellion further weakened their control over China, and led to the Late Qing reforms.',
-                    "lookup_result": "",
-                },
-            ),
-            "visits": 0,
-            "value": 0,
-            "depth": 1,
-            "is_terminal": False,
-            "reward": 0,
-        },
-        {
-            "state": LATSReActStepOutput(
-                thought="I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies",
-                action_type="Search",
-                query="best kick boxer controversies",
-                observation='The Boxer Rebellion, also known as the Boxer Uprising or Boxer Insurrection, was an anti-foreign, anti-imperialist, and anti-Christian uprising in North China between 1899 and 1901, towards the end of the Qing dynasty, by the Society of Righteous and Harmonious Fists, known as the "Boxers" in English due to many of its members having practised Chinese martial arts, which at the time were referred to as "Chinese boxing". It was defeated by the Eight-Nation Alliance of foreign powers.Following the First Sino-Japanese War, villagers in North China feared the expansion of foreign spheres of influence and resented the extension of privileges to Christian missionaries, who used them to shield their followers. In 1898, North China experienced several natural disasters, including the Yellow River flooding and droughts, which Boxers blamed on foreign and Christian influence. Beginning in 1899, the movement spread across Shandong and the North China Plain, destroying foreign property such as railroads, and attacking or murdering Christian missionaries and Chinese Christians. The events came to a head in June 1900, when Boxer fighters, convinced they were invulnerable to foreign weapons, converged on Beijing with the slogan "Support the Qing government and exterminate the foreigners."Diplomats, missionaries, soldiers, and some Chinese Christians took refuge in the Legation Quarter, which the Boxers besieged. The Eight-Nation Alliance—comprising American, Austro-Hungarian, British, French, German, Italian, Japanese, and Russian troops—moved into China to lift the siege and on 17 June stormed the Dagu Fort at Tianjin. Empress Dowager Cixi, who had initially been hesitant, supported the Boxers and on 21 June issued an imperial decree that was a de facto declaration of war on the invading powers. Chinese officialdom was split between those supporting the Boxers and those favouring conciliation, led by Prince Qing. The supreme commander of the Chinese forces, the Manchu general Ronglu, later claimed he acted to protect the foreigners. Officials in the southern provinces ignored the imperial order to fight against foreigners.The Eight-Nation Alliance, after initially being turned back by the Imperial Chinese military and Boxer militia, brought 20,000 armed troops to China. They defeated the Imperial Army in Tianjin and arrived in Beijing on 14 August, relieving the 55-day Siege of the International Legations. Fighting over the capital and the surrounding countryside ensued, along with summary execution of those suspected of being Boxers in retribution. The Boxer Protocol of 7 September 1901 provided for the execution of government officials who had supported the Boxers, for foreign troops to be stationed in Beijing, and for 450 million taels of silver—more than the government\'s annual tax revenue—to be paid as indemnity over the course of the next 39 years to the eight invading nations. The Qing dynasty\'s handling of the Boxer Rebellion further weakened their control over China, and led to the Late Qing reforms.',
-                answer="",
-                external_tool_info={
-                    "search_result": 'The Boxer Rebellion, also known as the Boxer Uprising or Boxer Insurrection, was an anti-foreign, anti-imperialist, and anti-Christian uprising in North China between 1899 and 1901, towards the end of the Qing dynasty, by the Society of Righteous and Harmonious Fists, known as the "Boxers" in English due to many of its members having practised Chinese martial arts, which at the time were referred to as "Chinese boxing". It was defeated by the Eight-Nation Alliance of foreign powers.\nFollowing the First Sino-Japanese War, villagers in North China feared the expansion of foreign spheres of influence and resented the extension of privileges to Christian missionaries, who used them to shield their followers. In 1898, North China experienced several natural disasters, including the Yellow River flooding and droughts, which Boxers blamed on foreign and Christian influence. Beginning in 1899, the movement spread across Shandong and the North China Plain, destroying foreign property such as railroads, and attacking or murdering Christian missionaries and Chinese Christians. The events came to a head in June 1900, when Boxer fighters, convinced they were invulnerable to foreign weapons, converged on Beijing with the slogan "Support the Qing government and exterminate the foreigners."\nDiplomats, missionaries, soldiers, and some Chinese Christians took refuge in the Legation Quarter, which the Boxers besieged. The Eight-Nation Alliance—comprising American, Austro-Hungarian, British, French, German, Italian, Japanese, and Russian troops—moved into China to lift the siege and on 17 June stormed the Dagu Fort at Tianjin. Empress Dowager Cixi, who had initially been hesitant, supported the Boxers and on 21 June issued an imperial decree that was a de facto declaration of war on the invading powers. Chinese officialdom was split between those supporting the Boxers and those favouring conciliation, led by Prince Qing. The supreme commander of the Chinese forces, the Manchu general Ronglu, later claimed he acted to protect the foreigners. Officials in the southern provinces ignored the imperial order to fight against foreigners.\nThe Eight-Nation Alliance, after initially being turned back by the Imperial Chinese military and Boxer militia, brought 20,000 armed troops to China. They defeated the Imperial Army in Tianjin and arrived in Beijing on 14 August, relieving the 55-day Siege of the International Legations. Fighting over the capital and the surrounding countryside ensued, along with summary execution of those suspected of being Boxers in retribution. The Boxer Protocol of 7 September 1901 provided for the execution of government officials who had supported the Boxers, for foreign troops to be stationed in Beijing, and for 450 million taels of silver—more than the government\'s annual tax revenue—to be paid as indemnity over the course of the next 39 years to the eight invading nations. The Qing dynasty\'s handling of the Boxer Rebellion further weakened their control over China, and led to the Late Qing reforms.',
-                    "lookup_result": "",
-                },
-            ),
-            "visits": 0,
-            "value": 0,
-            "depth": 1,
-            "is_terminal": False,
-            "reward": 0,
-        },
-        {
-            "state": LATSReActStepOutput(
-                thought="I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring",
-                action_type="Search",
-                query="best kick boxer controversies violence",
-                observation='The Boxer Rebellion, also known as the Boxer Uprising or Boxer Insurrection, was an anti-foreign, anti-imperialist, and anti-Christian uprising in North China between 1899 and 1901, towards the end of the Qing dynasty, by the Society of Righteous and Harmonious Fists, known as the "Boxers" in English due to many of its members having practised Chinese martial arts, which at the time were referred to as "Chinese boxing". It was defeated by the Eight-Nation Alliance of foreign powers.Following the First Sino-Japanese War, villagers in North China feared the expansion of foreign spheres of influence and resented the extension of privileges to Christian missionaries, who used them to shield their followers. In 1898, North China experienced several natural disasters, including the Yellow River flooding and droughts, which Boxers blamed on foreign and Christian influence. Beginning in 1899, the movement spread across Shandong and the North China Plain, destroying foreign property such as railroads, and attacking or murdering Christian missionaries and Chinese Christians. The events came to a head in June 1900, when Boxer fighters, convinced they were invulnerable to foreign weapons, converged on Beijing with the slogan "Support the Qing government and exterminate the foreigners."Diplomats, missionaries, soldiers, and some Chinese Christians took refuge in the Legation Quarter, which the Boxers besieged. The Eight-Nation Alliance—comprising American, Austro-Hungarian, British, French, German, Italian, Japanese, and Russian troops—moved into China to lift the siege and on 17 June stormed the Dagu Fort at Tianjin. Empress Dowager Cixi, who had initially been hesitant, supported the Boxers and on 21 June issued an imperial decree that was a de facto declaration of war on the invading powers. Chinese officialdom was split between those supporting the Boxers and those favouring conciliation, led by Prince Qing. The supreme commander of the Chinese forces, the Manchu general Ronglu, later claimed he acted to protect the foreigners. Officials in the southern provinces ignored the imperial order to fight against foreigners.The Eight-Nation Alliance, after initially being turned back by the Imperial Chinese military and Boxer militia, brought 20,000 armed troops to China. They defeated the Imperial Army in Tianjin and arrived in Beijing on 14 August, relieving the 55-day Siege of the International Legations. Fighting over the capital and the surrounding countryside ensued, along with summary execution of those suspected of being Boxers in retribution. The Boxer Protocol of 7 September 1901 provided for the execution of government officials who had supported the Boxers, for foreign troops to be stationed in Beijing, and for 450 million taels of silver—more than the government\'s annual tax revenue—to be paid as indemnity over the course of the next 39 years to the eight invading nations. The Qing dynasty\'s handling of the Boxer Rebellion further weakened their control over China, and led to the Late Qing reforms.',
-                answer="",
-                external_tool_info={
-                    "search_result": 'The Boxer Rebellion, also known as the Boxer Uprising or Boxer Insurrection, was an anti-foreign, anti-imperialist, and anti-Christian uprising in North China between 1899 and 1901, towards the end of the Qing dynasty, by the Society of Righteous and Harmonious Fists, known as the "Boxers" in English due to many of its members having practised Chinese martial arts, which at the time were referred to as "Chinese boxing". It was defeated by the Eight-Nation Alliance of foreign powers.\nFollowing the First Sino-Japanese War, villagers in North China feared the expansion of foreign spheres of influence and resented the extension of privileges to Christian missionaries, who used them to shield their followers. In 1898, North China experienced several natural disasters, including the Yellow River flooding and droughts, which Boxers blamed on foreign and Christian influence. Beginning in 1899, the movement spread across Shandong and the North China Plain, destroying foreign property such as railroads, and attacking or murdering Christian missionaries and Chinese Christians. The events came to a head in June 1900, when Boxer fighters, convinced they were invulnerable to foreign weapons, converged on Beijing with the slogan "Support the Qing government and exterminate the foreigners."\nDiplomats, missionaries, soldiers, and some Chinese Christians took refuge in the Legation Quarter, which the Boxers besieged. The Eight-Nation Alliance—comprising American, Austro-Hungarian, British, French, German, Italian, Japanese, and Russian troops—moved into China to lift the siege and on 17 June stormed the Dagu Fort at Tianjin. Empress Dowager Cixi, who had initially been hesitant, supported the Boxers and on 21 June issued an imperial decree that was a de facto declaration of war on the invading powers. Chinese officialdom was split between those supporting the Boxers and those favouring conciliation, led by Prince Qing. The supreme commander of the Chinese forces, the Manchu general Ronglu, later claimed he acted to protect the foreigners. Officials in the southern provinces ignored the imperial order to fight against foreigners.\nThe Eight-Nation Alliance, after initially being turned back by the Imperial Chinese military and Boxer militia, brought 20,000 armed troops to China. They defeated the Imperial Army in Tianjin and arrived in Beijing on 14 August, relieving the 55-day Siege of the International Legations. Fighting over the capital and the surrounding countryside ensued, along with summary execution of those suspected of being Boxers in retribution. The Boxer Protocol of 7 September 1901 provided for the execution of government officials who had supported the Boxers, for foreign troops to be stationed in Beijing, and for 450 million taels of silver—more than the government\'s annual tax revenue—to be paid as indemnity over the course of the next 39 years to the eight invading nations. The Qing dynasty\'s handling of the Boxer Rebellion further weakened their control over China, and led to the Late Qing reforms.',
-                    "lookup_result": "",
-                },
-            ),
-            "visits": 0,
-            "value": 0,
-            "depth": 1,
-            "is_terminal": False,
-            "reward": 0,
-        },
-        {
-            "state": LATSReActStepOutput(
-                thought="I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies",
-                action_type="Search",
-                query="best kickboxer controversies",
-                observation="Could not find [best kickboxer controversies]. Similar: ['Andrew Tate', 'Jean-Claude Van Damme', 'Lucia Rijker', 'Roufusport', 'Regian Eersel', 'Israel Adesanya', 'Cyril Abidi', 'Ajay Devgn filmography', 'Benny Urquidez', 'Tim Thomas (kickboxer)']",
-                answer="",
-                external_tool_info={
-                    "search_result": "Could not find [best kickboxer controversies]. Similar: ['Andrew Tate', 'Jean-Claude Van Damme', 'Lucia Rijker', 'Roufusport', 'Regian Eersel', 'Israel Adesanya', 'Cyril Abidi', 'Ajay Devgn filmography', 'Benny Urquidez', 'Tim Thomas (kickboxer)']",
-                    "lookup_result": "",
-                },
-            ),
-            "visits": 0,
-            "value": 0,
-            "depth": 1,
-            "is_terminal": False,
-            "reward": 0,
-        },
+        }
     ]
 
     for expected_node, node in zip(expected_nodes, children_nodes):
