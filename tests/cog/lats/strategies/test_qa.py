@@ -2,8 +2,6 @@
 
 import itertools
 
-import pytest
-
 from langchain_community.docstore.wikipedia import Wikipedia
 
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
@@ -26,11 +24,8 @@ from agential.cog.lats.strategies.qa import (
     LATSHotQAStrategy,
     LATSQAStrategy,
     LATSTriviaQAStrategy,
-    get_node_trajectory_qa,
-    parse_qa_action,
-    parse_qa_value,
 )
-from agential.llm.llm import Choices, Message, MockLLM, ModelResponse, Usage
+from agential.llm.llm import MockLLM
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.general import PromptMetrics
 
@@ -1365,15 +1360,15 @@ def test_generate() -> None:
         'This trajectory is incorrect as the search terms used did not directly relate to the question asked. The repeated use of generic search queries like "capital of France" or "France capital" did not yield relevant results. The failure to adjust the search terms to more specific and direct queries led to the inability to find the correct answer. In the future, it is essential to use precise and relevant search terms to obtain accurate information. \nCorrectness score: 1',
         "This trajectory is incorrect as the search results consistently did not provide the answer to the question. The actions taken to adjust the search terms were not effective in retrieving the correct information. In the future, it is important to use more specific search terms and reliable sources to ensure accurate information. This trajectory shows a lack of adaptation to the search results and a failure to use appropriate search terms related to the question.\nCorrectness score: 1",
     ]
-    agent = LATSQAStrategy(
+    strategy = LATSQAStrategy(
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         n_samples=2,
         depth_limit=5,
         testing=True,
     )
-    agent.docstore.search = lambda x: "Badr Hari is the best kick boxer in the world."
+    strategy.docstore.search = lambda x: "Badr Hari is the best kick boxer in the world."
 
-    out = agent.generate(
+    out = strategy.generate(
         question=question,
         key=key,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
@@ -1399,15 +1394,15 @@ def test_generate() -> None:
     assert out.total_prompt_time == 10.5
     assert out.total_time == 0.5
     assert out.additional_info == gt_additional_info
-    assert agent.failed_trajectories == [
+    assert strategy.failed_trajectories == [
         {
             "trajectory": "\nThought 1: I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: Badr Hari is the best kick boxer in the world.\nThought 2: The search result is incorrect. I need to search again for the capital of France.\nAction 2: Search[capital of France]\nObservation 2: Badr Hari is the best kick boxer in the world.\nThought 3: The search results are not providing the correct information. I should try a different approach to find the capital of France.\nAction 3: Search[Paris]\nObservation 3: Badr Hari is the best kick boxer in the world.\nThought 4: The search results are not helpful. I should try a different method to find the answer.\nAction 4: Finish[Paris]\nObservation 4: Answer is INCORRECT",
             "final_answer": "paris",
         }
     ]
-    assert agent.reflection_map == []
-    assert agent.value_cache == gt_value_cache
-    assert agent.root.to_dict() == gt_root_state
+    assert strategy.reflection_map == []
+    assert strategy.value_cache == gt_value_cache
+    assert strategy.root.to_dict() == gt_root_state
 
     question = "What's the capital of France?"
     key = "Paris"
@@ -1463,7 +1458,7 @@ def test_generate() -> None:
         "\nThought 1: I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: Badr Hari is the best kick boxer in the world.::Question: What's the capital of France?\n\nThought 1: I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: Badr Hari is the best kick boxer in the world.\nThought 2: The search result is incorrect. I need to search again for the capital of France.\nAction 2: Search[capital of France]\nObservation 2: Badr Hari is the best kick boxer in the world.\nThought 3: The search results are not providing the correct information. I should try a different approach to find the capital of France.\nAction 3: Search[Paris]\nObservation 3: Badr Hari is the best kick boxer in the world.\nThought 4: The search results are not helpful. I should try a different method to find the answer.\nAction 4: Finish[Paris]\nObservation 4: Answer is INCORRECT\n\nExplanation: This trajectory is incorrect as My reasoning failed because I kept encountering irrelevant search results and did not adjust my search strategy effectively to find the answer. In the future, I should prioritize using reliable sources and adjust my search terms to ensure I get relevant information. To mitigate this failure, I will focus on using specific search terms that directly relate to the question and consider using verified sources like official websites or databases to obtain accurate information.\nCorrectness score: 1": "This trajectory is incorrect as the search results are completely irrelevant to the question. The action taken did not lead to any relevant information or progress towards finding the answer. In the future, it is important to verify the search query and ensure that the information retrieved is related to the question being asked.\nCorrectness score: 1",
     }
 
-    out = agent.generate(
+    out = strategy.generate(
         question=question,
         key=key,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
@@ -1488,10 +1483,10 @@ def test_generate() -> None:
     assert out.total_cost == 0.0015949999999999996
     assert out.total_prompt_time == 14.5
     assert out.total_time == 0.5
-    assert agent.reflection_map == gt_reflection_map
-    assert agent.value_cache == gt_value_cache
-    assert agent.root.to_dict() == gt_root_state
-    assert agent.failed_trajectories == gt_failed_trajectories
+    assert strategy.reflection_map == gt_reflection_map
+    assert strategy.value_cache == gt_value_cache
+    assert strategy.root.to_dict() == gt_root_state
+    assert strategy.failed_trajectories == gt_failed_trajectories
 
 
 def test_generate_children_nodes() -> None:
