@@ -51,15 +51,6 @@ def test_init() -> None:
     assert strategy.failed_trajectories == []
     assert strategy.reflection_map == []
     assert strategy.value_cache == {}
-    assert strategy._prompt_metrics == {
-        "thought": [],
-        "action": [],
-        "value": [],
-        "simulate_thought": [],
-        "simulate_action": [],
-        "simulate_value": [],
-        "reflection": [],
-    }
 
 
 def test_generate() -> None:

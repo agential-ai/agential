@@ -2,17 +2,9 @@
 
 import pytest
 
-from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import (
-    LATSReActStepOutput,
-    LATSSimulationOutput,
     LATSStepOutput,
-)
-from agential.cog.lats.prompts import (
-    HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
-    LATS_INSTRUCTION_HOTPOTQA,
-    LATS_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.lats.strategies.general import LATSGeneralStrategy
 from agential.llm.llm import MockLLM, ModelResponse, Usage
