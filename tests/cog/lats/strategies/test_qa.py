@@ -1947,6 +1947,16 @@ def test_evaluate_node() -> None:
         {"explanation": "", "value": -10000000000.0},
     ]
 
+    assert strategy.failed_trajectories == []
+    assert strategy.reflection_map == [
+        {
+            "trajectory": "Failed trajectory",
+            "reflection": "This trajectory failed because...",
+        }
+    ]
+    assert strategy.value_cache == {'\nThought 1: Child 1::Question: What is the capital of France?\nFailed trajectory\n\nExplanation: This trajectory is incorrect as This trajectory failed because...\nCorrectness score: 1': 'Explanation: Good trajectory. Correctness score: 8'}
+    assert strategy.root == root
+
     assert child1.value == 0.8
     assert child2.value == 0  # Terminal node, value not updated.
 
@@ -1960,8 +1970,17 @@ def test_evaluate_node() -> None:
         root, question, examples, prompt, {}
     )
     assert cached_values == values
-
     assert values_responses == [None, None]
+
+    assert strategy.failed_trajectories == []
+    assert strategy.reflection_map == [
+        {
+            "trajectory": "Failed trajectory",
+            "reflection": "This trajectory failed because...",
+        }
+    ]
+    assert strategy.value_cache == {'\nThought 1: Child 1::Question: What is the capital of France?\nFailed trajectory\n\nExplanation: This trajectory is incorrect as This trajectory failed because...\nCorrectness score: 1': 'Explanation: Good trajectory. Correctness score: 8'}
+    assert strategy.root == root
 
     # Test with empty reflection_map.
     strategy.reflection_map = []
@@ -1975,6 +1994,10 @@ def test_evaluate_node() -> None:
     assert values_responses[1] is None
     assert empty_reflection_values == values
 
+    assert strategy.failed_trajectories == []
+    assert strategy.reflection_map == []
+    assert strategy.value_cache == {'\nThought 1: Child 1::Question: What is the capital of France?\nFailed trajectory\n\nExplanation: This trajectory is incorrect as This trajectory failed because...\nCorrectness score: 1': 'Explanation: Good trajectory. Correctness score: 8', '\nThought 1: Child 1::': 'Explanation: Good trajectory. Correctness score: 8'}
+    assert strategy.root == root
 
 def test_simulate_node() -> None:
     """Test the simulate_node method."""
@@ -2144,6 +2167,11 @@ def test_simulate_node() -> None:
         value_additional_keys=value_additional_keys,
     )
 
+    assert strategy.failed_trajectories == []
+    assert strategy.reflection_map == []
+    assert strategy.value_cache == {}
+    assert strategy.root == root_node
+    
     assert simulation_reward == -1.0
 
     assert simulation_terminal_node.to_dict() == {
