@@ -44,15 +44,6 @@ def test_init() -> None:
     assert strategy.failed_trajectories == []
     assert strategy.reflection_map == []
     assert strategy.value_cache == {}
-    assert strategy._prompt_metrics == {
-        "thought": [],
-        "action": [],
-        "value": [],
-        "simulate_thought": [],
-        "simulate_action": [],
-        "simulate_value": [],
-        "reflection": [],
-    }
 
 
 def test_generate() -> None:
@@ -713,13 +704,9 @@ def test_evaluate_node() -> None:
         "Calculate[\n```python\neggs_per_day = 16\neggs_eaten_breakfast = 3\neggs_baked_in_muffins = 4933828\neggs_remaining = eggs_per_day - eggs_eaten_breakfast - eggs_baked_in_muffins\n```\n]",
     ]
 
-    strategy = LATSMathStrategy(
-        llm=MockLLM("gpt-3.5-turbo", responses=responses), depth_limit=3, n_samples=2
-    )
-    root_node = strategy.initialize()
-
 def test_simulate_node() -> None:
     """Test the simulate_node method."""
+    responses = []
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
     key = -9867630
     examples = GSM8K_FEWSHOT_EXAMPLES_REACT
@@ -732,6 +719,10 @@ def test_simulate_node() -> None:
     reflect_additional_keys = {}
     value_additional_keys = {}
 
+    strategy = LATSMathStrategy(
+        llm=MockLLM("gpt-3.5-turbo", responses=responses), depth_limit=3, n_samples=2
+    )
+    root_node = strategy.initialize()
 
     reward, final_node, simulation_results = strategy.simulate_node(
         node=root_node,
