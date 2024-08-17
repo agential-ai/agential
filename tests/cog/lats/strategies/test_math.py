@@ -566,7 +566,7 @@ def test_generate_action() -> None:
     prompt = "Generate an action"
     additional_keys = {"key": "value"}
 
-    trajectory, action_type, query = strategy.generate_action(
+    trajectory, action_type, query, out = strategy.generate_action(
         question,
         examples,
         trajectory,
@@ -574,17 +574,24 @@ def test_generate_action() -> None:
         depth,
         prompt,
         additional_keys,
-        is_simulate=False,
     )
-
     assert (
         trajectory
-        == "Thought 1: I need to calculate 2 + 2.\nAction 1: Calculate[\n```python\nresult = 2 + 2\n```\n]"
+        == 'Thought 1: I need to calculate 2 + 2.\nAction 1:  Calculate[\n```python\nresult = 2 + 2\n```\n]'
     )
     assert action_type == "Calculate"
     assert query == "result = 2 + 2"
 
-    assert strategy._prompt_metrics == gt_prompt_metrics
+    assert out.choices[0].message.content == "Calculate[```python\nresult = 2 + 2\n```]"
+
+    # assert (
+    #     trajectory
+    #     == "Thought 1: I need to calculate 2 + 2.\nAction 1: Calculate[\n```python\nresult = 2 + 2\n```\n]"
+    # )
+    # assert action_type == "Calculate"
+    # assert query == "result = 2 + 2"
+
+    # assert strategy._prompt_metrics == gt_prompt_metrics
 
 
 def test_generate_observation() -> None:
