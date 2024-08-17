@@ -1366,7 +1366,9 @@ def test_generate() -> None:
         depth_limit=5,
         testing=True,
     )
-    strategy.docstore.search = lambda x: "Badr Hari is the best kick boxer in the world."
+    strategy.docstore.search = (
+        lambda x: "Badr Hari is the best kick boxer in the world."
+    )
 
     out = strategy.generate(
         question=question,
