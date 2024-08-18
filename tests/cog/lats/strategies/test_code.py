@@ -2,7 +2,15 @@
 
 from agential.cog.fewshots.humaneval import HUMANEVAL_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSReActStepOutput, LATSSimulationOutput
+from agential.cog.lats.output import (
+    LATSEvaluateMetrics,
+    LATSGenerateMetrics,
+    LATSReActStepOutput,
+    LATSSimulationMetrics,
+    LATSSimulationOutput,
+    LATSSimulationStepMetrics,
+    LATSStepOutput,
+)
 from agential.cog.lats.prompts import (
     HUMANEVAL_FEWSHOT_EXAMPLES_LATS_REFLECT,
     HUMANEVAL_FEWSHOT_EXAMPLES_LATS_VALUE,
@@ -16,10 +24,11 @@ from agential.cog.lats.strategies.code import (
     LATSMBPPStrategy,
     get_node_trajectory_code,
     parse_code_action,
-    parse_value,
     parse_latest_implement,
+    parse_value,
 )
 from agential.llm.llm import MockLLM
+from agential.utils.general import PromptMetrics
 
 
 def test_init() -> None:
@@ -48,154 +57,560 @@ def test_init() -> None:
 
 def test_generate() -> None:
     """Test the generate method."""
-    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    gt_terminal_node_state = {
+        "state": LATSReActStepOutput(
+            thought="The function passed all the test cases and seems to be working correctly. I can now return the implementation.",
+            action_type="Finish",
+            query="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
+            observation="Answer is CORRECT",
+            answer="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
+            external_tool_info={"execution_status": "Done"},
+        ),
+        "visits": 0,
+        "value": 0,
+        "depth": 3,
+        "is_terminal": True,
+        "reward": 1,
+    }
+
+    gt_additional_info = [
+        LATSStepOutput(
+            iteration=0,
+            current_node={
+                "state": LATSReActStepOutput(
+                    thought="",
+                    action_type="",
+                    query="",
+                    observation="",
+                    answer="",
+                    external_tool_info={},
+                ),
+                "visits": 0,
+                "value": 0,
+                "depth": 0,
+                "is_terminal": False,
+                "reward": 0,
+            },
+            children_nodes=[
+                {
+                    "state": LATSReActStepOutput(
+                        thought="I need to iterate through the list of numbers and compare each pair to see if the absolute difference is less than the threshold.",
+                        action_type="Implement",
+                        query="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
+                        observation="\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: ",
+                        answer="",
+                        external_tool_info={"execution_status": "Done"},
+                    ),
+                    "visits": 0,
+                    "value": 0.0,
+                    "depth": 1,
+                    "is_terminal": False,
+                    "reward": 0,
+                },
+                {
+                    "state": LATSReActStepOutput(
+                        thought="To solve this problem, I will iterate through the list of numbers and compare each pair of numbers to see if they are closer to each other than the given threshold.",
+                        action_type="Implement",
+                        query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
+                        observation="\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: ",
+                        answer="",
+                        external_tool_info={"execution_status": "Done"},
+                    ),
+                    "visits": 0,
+                    "value": 0.0,
+                    "depth": 1,
+                    "is_terminal": False,
+                    "reward": 0,
+                },
+            ],
+            generate_metrics=LATSGenerateMetrics(
+                thoughts_metrics=[
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                ],
+                actions_metrics=[
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                ],
+                reflections_metrics=[],
+            ),
+            values=[
+                {"explanation": "Explanation not found", "value": 0.0},
+                {"explanation": "Explanation not found", "value": 0.0},
+            ],
+            evaluate_metrics=LATSEvaluateMetrics(
+                values_metrics=[
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                ]
+            ),
+            simulation_results=LATSSimulationOutput(
+                simulation_reward=1.0,
+                simulation_terminal_node={
+                    "state": LATSReActStepOutput(
+                        thought="The function passed all the test cases and seems to be working correctly. I can now return the implementation.",
+                        action_type="Finish",
+                        query="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
+                        observation="Answer is CORRECT",
+                        answer="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
+                        external_tool_info={"execution_status": "Done"},
+                    ),
+                    "visits": 0,
+                    "value": 0,
+                    "depth": 3,
+                    "is_terminal": True,
+                    "reward": 1,
+                },
+                simulation_current_nodes=[
+                    {
+                        "state": LATSReActStepOutput(
+                            thought="I need to iterate through the list of numbers and compare each pair to see if the absolute difference is less than the threshold.",
+                            action_type="Implement",
+                            query="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
+                            observation="\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: ",
+                            answer="",
+                            external_tool_info={"execution_status": "Done"},
+                        ),
+                        "visits": 0,
+                        "value": 0.0,
+                        "depth": 1,
+                        "is_terminal": False,
+                        "reward": 0,
+                    },
+                    {
+                        "state": LATSReActStepOutput(
+                            thought="I need to test the function implementation with some test cases to verify its correctness.",
+                            action_type="Test",
+                            query="assert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\nassert has_close_elements([1.0, 1.3, 1.2, 1.1], 0.1) == True\nassert has_close_elements([5.0, 6.0, 7.0, 8.0, 9.0], 1.0) == False",
+                            observation="\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\nassert has_close_elements([1.0, 1.3, 1.2, 1.1], 0.1) == True\nassert has_close_elements([5.0, 6.0, 7.0, 8.0, 9.0], 1.0) == False\n```\nExecution Status: Done",
+                            answer="",
+                            external_tool_info={"execution_status": "Done"},
+                        ),
+                        "visits": 0,
+                        "value": 0,
+                        "depth": 2,
+                        "is_terminal": False,
+                        "reward": 0,
+                    },
+                ],
+                simulation_children_nodes=[
+                    [
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="I need to test the function implementation with some test cases to verify its correctness.",
+                                action_type="Test",
+                                query="assert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\nassert has_close_elements([1.0, 1.3, 1.2, 1.1], 0.1) == True\nassert has_close_elements([5.0, 6.0, 7.0, 8.0, 9.0], 1.0) == False",
+                                observation="\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\nassert has_close_elements([1.0, 1.3, 1.2, 1.1], 0.1) == True\nassert has_close_elements([5.0, 6.0, 7.0, 8.0, 9.0], 1.0) == False\n```\nExecution Status: Done",
+                                answer="",
+                                external_tool_info={"execution_status": "Done"},
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 2,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="I should test this code with some sample test cases to verify its correctness.",
+                                action_type="Test",
+                                query="from typing import List\n\ndef test_has_close_elements():\n    assert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\n    assert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n\ntest_has_close_elements()",
+                                observation="\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\nfrom typing import List\n\ndef test_has_close_elements():\n    assert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\n    assert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n\ntest_has_close_elements()\n```\nExecution Status: Done",
+                                answer="",
+                                external_tool_info={"execution_status": "Done"},
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 2,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                    ],
+                    [
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="The function passed all the test cases and seems to be working correctly. I can now return the implementation.",
+                                action_type="Finish",
+                                query="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
+                                observation="Answer is CORRECT",
+                                answer="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
+                                external_tool_info={"execution_status": "Done"},
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 3,
+                            "is_terminal": True,
+                            "reward": 1,
+                        },
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="The implementation is correct and all test cases passed. I can now finish this task.",
+                                action_type="Finish",
+                                query="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
+                                observation="Answer is CORRECT",
+                                answer="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
+                                external_tool_info={"execution_status": "Done"},
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 3,
+                            "is_terminal": True,
+                            "reward": 1,
+                        },
+                    ],
+                ],
+                simulation_values=[
+                    [
+                        {"explanation": "Explanation not found", "value": 0.0},
+                        {"explanation": "Explanation not found", "value": 0.0},
+                    ]
+                ],
+            ),
+            simulation_metrics=LATSSimulationMetrics(
+                simulation_step_metrics=[
+                    LATSSimulationStepMetrics(
+                        generate_metrics=LATSGenerateMetrics(
+                            thoughts_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            actions_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            reflections_metrics=[],
+                        ),
+                        evaluate_metrics=LATSEvaluateMetrics(
+                            values_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ]
+                        ),
+                    ),
+                    LATSSimulationStepMetrics(
+                        generate_metrics=LATSGenerateMetrics(
+                            thoughts_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            actions_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            reflections_metrics=[],
+                        ),
+                        evaluate_metrics=LATSEvaluateMetrics(values_metrics=[]),
+                    ),
+                ]
+            ),
+        )
+    ]
+
+    responses = [
+        "I need to iterate through the list of numbers and compare each pair to see if the absolute difference is less than the threshold.\n\nAction 1: Implement\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nThought 2: I need to test the implemented function with some test cases.\n\nAction 2: Test\n\n```python\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n```\n\nThought 3: The function should be able to correctly check if any two numbers in the list are closer than the given threshold.\n\nAction 3: Finish\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
+        "Implement the code to iterate through the list of numbers and compare each pair to check if the absolute difference is less than the threshold.\n\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nThought 2: Now, I need to test the implemented code with some test cases to verify its correctness.\nAction 2: \n\n```python\ndef test_has_close_elements():\n    assert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\n    assert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n\ntest_has_close_elements()\n```\n\nThought 3: The implemented function passed the test cases successfully, so I can finalize and finish this coding task.\nAction 3: \n\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
+        "To solve this problem, I will iterate through the list of numbers and compare each pair of numbers to see if they are closer to each other than the given threshold.\n\nAction 1: Implement\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nObservation 1:\nI have implemented the function to iterate through the list and compare each pair of numbers to see if they are closer than the given threshold. The function will return True if any pair is close enough, otherwise False.\n\n\nThought 2:\nNow, I will test the implemented function with some test cases.\n\nAction 2: Test\n\n```python\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n```\n\nObservation 2:\nThe tests passed successfully, indicating that the function is working as expected.\n\n\nThought 3:\nI have completed the implementation and testing of the function.\n\nAction 3: Finish\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
+        "Implement \n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nThought 2: Now that I have implemented the function, I need to test it with some test cases to ensure it works as expected.\nAction 2: \n\n```python\nTest \nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n```\n\nThought 3: The function has passed the test cases successfully. I can now finish and answer the question.\nAction 3: \n\nFinish\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
+        "The trajectory is incomplete, but the implementation correctly iterates through the list of numbers and compares each pair to see if the absolute difference is less than the threshold. However, the trajectory does not include testing the function to verify its correctness, leading to uncertainty about the accuracy of the solution.\n\nCorrectness score: 5",
+        "The trajectory correctly identifies the need to compare pairs of numbers in the list to see if they are closer to each other than the given threshold. The implementation iterates through all pairs of numbers and returns True if a pair is found that meets the condition. However, the implementation only considers pairs of numbers in the order they appear in the list and not all possible pairs.\n\nCorrectness Score: 6",
+        "I need to test the function implementation with some test cases to verify its correctness.\nAction 2: Test[\n```python\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n```\n]\nObservation 2: \n```python\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n```\nExecution Status: \nThought 3: ",
+        "Test[\n```python\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\nassert has_close_elements([1.0, 1.3, 1.2, 1.1], 0.1) == True\nassert has_close_elements([5.0, 6.0, 7.0, 8.0, 9.0], 1.0) == False\n```\n]\nObservation 2: All test cases passed successfully. The function is correctly implemented.\nAction 3: Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]",
+        "I should test this code with some sample test cases to verify its correctness.\nAction 2: Test[\n```python\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n```\n]\nObservation 2: \n```python\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n```\nExecution Status: All test cases passed.\n\nThought 3: The code is implemented correctly and passed test cases. I will finish this task by submitting the code.\nAction 3: Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]",
+        "Test[\n```python\nfrom typing import List\n\ndef test_has_close_elements():\n    assert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\n    assert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n\ntest_has_close_elements()\n```\n]\nObservation 2:\n```python\nfrom typing import List\n\ndef test_has_close_elements():\n    assert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\n    assert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n\ntest_has_close_elements()\n```\nTest Result: All test cases passed successfully.\nThought 3: Since the code implementation passed all the given test cases, I can consider this task complete.\nAction 3: Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]\nObservation 3: The task has been successfully completed with the implementation of the 'has_close_elements' function.",
+        "The trajectory is incorrect because it does not correctly compare the absolute difference between the numbers with the threshold value. The function implementation should compare the absolute difference with the threshold in a way that handles all pairs of numbers in the list properly.\n\nCorrectness score: 2",
+        "The code implementation correctly iterates through the list of numbers and compares each pair to check if the absolute difference is less than the threshold. \n\nHowever, there is an issue with the implementation where the threshold is not correctly calculated in the condition. When comparing the absolute difference between two numbers, it should be compared against the threshold directly but not comparing it directly without any modification.\n\nCorrectness Score: 4",
+        "The function passed all the test cases and seems to be working correctly. I can now return the implementation.\nAction 3: Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n``` \n]\nObservation 3: \n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
+        "Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]",
+        "The implementation is correct and all test cases passed. I can now finish this task.\nAction 3: Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]\nObservation 3: \n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: Done",
+        "Finish[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]",
+    ]
+    examples = HUMANEVAL_FEWSHOT_EXAMPLES_REACT
+    reflect_examples = HUMANEVAL_FEWSHOT_EXAMPLES_LATS_REFLECT
+    value_examples = HUMANEVAL_FEWSHOT_EXAMPLES_LATS_VALUE
+    prompt = LATS_INSTRUCTION_HUMANEVAL
+    reflect_prompt = LATS_REFLECT_INSTRUCTION_HUMANEVAL
+    value_prompt = LATS_VALUE_INSTRUCTION_HUMANEVAL
+    additional_keys = {}
+    reflect_additional_keys = {}
+    value_additional_keys = {}
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = LATSCodeStrategy(
         llm=llm,
-        n_samples=5,
+        n_samples=2,
         max_reflections=4,
-        depth_limit=7,
+        depth_limit=3,
         max_unique=5,
         cache_values=True,
+        testing=True,
     )
+    inst = {
+        "task_id": "HumanEval/0",
+        "prompt": 'from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    """ Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)\n    False\n    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)\n    True\n    """\n',
+        "entry_point": "has_close_elements",
+        "canonical_solution": "    for idx, elem in enumerate(numbers):\n        for idx2, elem2 in enumerate(numbers):\n            if idx != idx2:\n                distance = abs(elem - elem2)\n                if distance < threshold:\n                    return True\n\n    return False\n",
+        "test": "\n\nMETADATA = {\n    'author': 'jt',\n    'dataset': 'test'\n}\n\n\ndef check(candidate):\n    assert candidate([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.3) == True\n    assert candidate([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.05) == False\n    assert candidate([1.0, 2.0, 5.9, 4.0, 5.0], 0.95) == True\n    assert candidate([1.0, 2.0, 5.9, 4.0, 5.0], 0.8) == False\n    assert candidate([1.0, 2.0, 3.0, 4.0, 5.0, 2.0], 0.1) == True\n    assert candidate([1.1, 2.2, 3.1, 4.1, 5.1], 1.0) == True\n    assert candidate([1.1, 2.2, 3.1, 4.1, 5.1], 0.5) == False\n\n",
+    }
+    question = inst["prompt"]
+    key = f"{inst['test']}\ncheck({inst['entry_point']})"
+
+    out = strategy.generate(
+        question=question,
+        key=key,
+        examples=examples,
+        reflect_examples=reflect_examples,
+        value_examples=value_examples,
+        prompt=prompt,
+        reflect_prompt=reflect_prompt,
+        value_prompt=value_prompt,
+        additional_keys=additional_keys,
+        reflect_additional_keys=reflect_additional_keys,
+        value_additional_keys=value_additional_keys,
+        max_iterations=3,
+        reset=True,
+    )
+    assert out.answer.to_dict() == gt_terminal_node_state
+    assert out.total_completion_cost == 0.0006399999999999999
+    assert out.total_completion_tokens == 320
+    assert out.total_prompt_cost == 0.00024
+    assert out.total_prompt_tokens == 160
+    assert out.total_tokens == 480
+    assert out.total_cost == 0.0008799999999999998
+    assert out.total_prompt_time == 8.0
+    assert out.total_time == 0.5
+    assert out.additional_info == gt_additional_info
+    assert strategy.failed_trajectories == []
+    assert strategy.reflection_map == []
+    assert strategy.value_cache == {
+        "\nThought 1: I need to iterate through the list of numbers and compare each pair to see if the absolute difference is less than the threshold.\nAction 1: Implement[\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]\nObservation 1: \n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: ::": "The trajectory is incomplete, but the implementation correctly iterates through the list of numbers and compares each pair to see if the absolute difference is less than the threshold. However, the trajectory does not include testing the function to verify its correctness, leading to uncertainty about the accuracy of the solution.\n\nCorrectness score: 5",
+        "\nThought 1: To solve this problem, I will iterate through the list of numbers and compare each pair of numbers to see if they are closer to each other than the given threshold.\nAction 1: Implement[\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n]\nObservation 1: \n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: ::": "The trajectory correctly identifies the need to compare pairs of numbers in the list to see if they are closer to each other than the given threshold. The implementation iterates through all pairs of numbers and returns True if a pair is found that meets the condition. However, the implementation only considers pairs of numbers in the order they appear in the list and not all possible pairs.\n\nCorrectness Score: 6",
+    }
+    assert strategy.root.to_dict() == {
+        "state": LATSReActStepOutput(
+            thought="",
+            action_type="",
+            query="",
+            observation="",
+            answer="",
+            external_tool_info={},
+        ),
+        "visits": 0,
+        "value": 0,
+        "depth": 0,
+        "is_terminal": False,
+        "reward": 0,
+    }
 
 
 def test_generate_children_nodes() -> None:
     """Test the generate method."""
     gt_states = [
-        LATSReActStepOutput(
-            thought="We need to iterate through the list of numbers and check if any two numbers are closer to each other than the given threshold.",
-            action_type="Implement",
-            query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
-            observation="\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: ",
-            answer="",
-            external_tool_info={"execution_status": "Done"},
-        ),
-        LATSReActStepOutput(
-            thought="I need to iterate through the list of numbers and compare each pair to see if they are closer to each other than the threshold.",
-            action_type="Implement",
-            query="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
-            observation="\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: ",
-            answer="",
-            external_tool_info={"execution_status": "Done"},
-        ),
-        LATSReActStepOutput(
-            thought="We need to iterate through the list of numbers and check if any two numbers are closer to each other than the given threshold.",
-            action_type="Implement",
-            query="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
-            observation="\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: ",
-            answer="",
-            external_tool_info={"execution_status": "Done"},
-        ),
-        LATSReActStepOutput(
-            thought="To solve this problem, I need to iterate through the list of numbers and compare each pair of numbers to see if they are closer to each other than the threshold.",
-            action_type="Implement",
-            query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
-            observation="\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: ",
-            answer="",
-            external_tool_info={"execution_status": "Done"},
-        ),
+        {
+            "state": LATSReActStepOutput(
+                thought="We need to iterate through the list of numbers and check if any two numbers are closer to each other than the given threshold.",
+                action_type="Implement",
+                query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
+                observation="\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: ",
+                answer="",
+                external_tool_info={"execution_status": "Done"},
+            ),
+            "visits": 0,
+            "value": 0,
+            "depth": 1,
+            "is_terminal": False,
+            "reward": 0,
+        },
+        {
+            "state": LATSReActStepOutput(
+                thought="We need to iterate through the list of numbers and check if any two numbers are closer to each other than the given threshold.",
+                action_type="Implement",
+                query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
+                observation="",
+                answer="",
+                external_tool_info={},
+            ),
+            "visits": 0,
+            "value": 0,
+            "depth": 0,
+            "is_terminal": False,
+            "reward": 0,
+        },
+        {
+            "state": LATSReActStepOutput(
+                thought="I need to iterate through the list of numbers and compare each pair to see if they are closer to each other than the threshold.",
+                action_type="Implement",
+                query="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
+                observation="\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: ",
+                answer="",
+                external_tool_info={"execution_status": "Done"},
+            ),
+            "visits": 0,
+            "value": 0,
+            "depth": 1,
+            "is_terminal": False,
+            "reward": 0,
+        },
+        {
+            "state": LATSReActStepOutput(
+                thought="We need to iterate through the list of numbers and check if any two numbers are closer to each other than the given threshold.",
+                action_type="Implement",
+                query="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
+                observation="\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: ",
+                answer="",
+                external_tool_info={"execution_status": "Done"},
+            ),
+            "visits": 0,
+            "value": 0,
+            "depth": 1,
+            "is_terminal": False,
+            "reward": 0,
+        },
+        {
+            "state": LATSReActStepOutput(
+                thought="To solve this problem, I need to iterate through the list of numbers and compare each pair of numbers to see if they are closer to each other than the threshold.",
+                action_type="Implement",
+                query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
+                observation="\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: ",
+                answer="",
+                external_tool_info={"execution_status": "Done"},
+            ),
+            "visits": 0,
+            "value": 0,
+            "depth": 1,
+            "is_terminal": False,
+            "reward": 0,
+        },
     ]
-    gt_prompt_metrics = {
-        "thought": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-        ],
-        "action": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-        ],
-        "value": [],
-        "simulate_thought": [],
-        "simulate_action": [],
-        "simulate_value": [],
-        "reflection": [],
-    }
+
+    gt_generate_metrics = LATSGenerateMetrics(thoughts_metrics=[PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)], actions_metrics=[PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)], reflections_metrics=[])
+
     responses = [
         "We need to iterate through the list of numbers and check if any two numbers are closer to each other than the given threshold.\n\nAction 1: Implement\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nObservation 1: The implementation checks for each pair of numbers in the list if they are closer than the threshold and returns True if found, otherwise False.\n\n\nThought 2: We should test the implemented function with some test cases.\n\nAction 2: Test\n\n```python\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n```\n\nObservation 2: The test cases pass successfully, indicating that the implementation is correct.\n\n\nThought 3: We have successfully implemented and tested the function. Now we can finish the task.\n\nAction 3: Finish\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
         "Implement the function to check if any two numbers in the list are closer to each other than the given threshold.\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nObservation 1: The implementation checks all pairs of numbers in the list and returns True if any two numbers are closer to each other than the threshold.\n\nThought 2: We need to test the implementation with some test cases to verify if it works correctly.\nAction 2: \n\n```python\ndef test_has_close_elements():\n    assert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\n    assert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n    assert has_close_elements([], 0.5) == False\n    assert has_close_elements([1.0, 2.0, 3.0], 2.0) == True\n    assert has_close_elements([1.0, 2.0, 3.0], 3.0) == True\n\ntest_has_close_elements()\n```\n\nObservation 2: All test cases passed successfully, indicating that the implementation is correct.\n\nFinish: \n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
@@ -223,7 +638,7 @@ def test_generate_children_nodes() -> None:
 
     root = strategy.initialize()
 
-    children_nodes = strategy.generate_children_nodes(
+    children_nodes, generate_metrics = strategy.generate_children_nodes(
         node=root,
         question=question,
         key=key,
@@ -233,173 +648,25 @@ def test_generate_children_nodes() -> None:
         reflect_prompt=LATS_REFLECT_INSTRUCTION_HUMANEVAL,
         additional_keys={},
         reflect_additional_keys={},
-        is_simulate=False,
     )
-    assert len(children_nodes) == 4
+
+    assert len(children_nodes) == 5
     for gt_state, node in zip(gt_states, children_nodes):
-        assert node.state == gt_state
-        assert node.depth == 1
-        assert node.reward == 0
-        assert node.value == 0
-        assert node.is_terminal is False
-        assert node.visits == 0
-    assert strategy._prompt_metrics == gt_prompt_metrics
+        assert node.to_dict() == gt_state
+
+    assert generate_metrics == gt_generate_metrics
 
     # Test generate with reflections.
     gt_states = [
-        LATSReActStepOutput(
-            thought="Implement the `has_close_elements` function with nested loops to compare all pairs of numbers.```pythonfrom typing import Listdef has_close_elements(numbers: List[float], threshold: float) -> bool:    for i in range(len(numbers)):        for j in range(i + 1, len(numbers)):            if abs(numbers[i] - numbers[j]) < threshold:                return True    return False```Thought 2: I need to test the implemented function with test cases to ensure it works correctly.",
-            action_type="Implement",
-            query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
-            observation="\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: ",
-            answer="",
-            external_tool_info={"execution_status": "Done"},
-        ),
-        LATSReActStepOutput(
-            thought="Implement the `has_close_elements` function with the nested loop logic.```pythonfrom typing import Listdef has_close_elements(numbers: List[float], threshold: float) -> bool:    for i in range(len(numbers)):        for j in range(i+1, len(numbers)):            if abs(numbers[i] - numbers[j]) < threshold:                return True    return False```Thought 2: I need to test the implemented `has_close_elements` function with some test cases to ensure it works as expected.",
-            action_type="Implement",
-            query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
-            observation="\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: ",
-            answer="",
-            external_tool_info={"execution_status": "Done"},
-        ),
-        LATSReActStepOutput(
-            thought="Implement the `has_close_elements` function with nested loops to compare each pair of numbers in the list against the threshold.```pythonfrom typing import Listdef has_close_elements(numbers: List[float], threshold: float) -> bool:    for i in range(len(numbers)):        for j in range(i+1, len(numbers)):            if abs(numbers[i] - numbers[j]) < threshold:                return True    return False```Thought 2: I should test the implemented `has_close_elements` function with some test cases to ensure it works correctly.",
-            action_type="Implement",
-            query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
-            observation="\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: ",
-            answer="",
-            external_tool_info={"execution_status": "Done"},
-        ),
-        LATSReActStepOutput(
-            thought='Implement the `has_close_elements` function.```pythonfrom typing import Listdef has_close_elements(numbers: List[float], threshold: float) -> bool:    """ Check if in given list of numbers, are any two numbers closer to each other than    given threshold.    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)    False    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)    True    """        for i in range(len(numbers)):        for j in range(i+1, len(numbers)):            if abs(numbers[i] - numbers[j]) < threshold:                return True    return False```Thought 2: I now need to test the `has_close_elements` function with different test cases to ensure it works correctly.',
-            action_type="Implement",
-            query="from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
-            observation="\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: ",
-            answer="",
-            external_tool_info={"execution_status": "Done"},
-        ),
+        {'state': LATSReActStepOutput(thought='Implement the `has_close_elements` function with nested loops to compare all pairs of numbers.```pythonfrom typing import Listdef has_close_elements(numbers: List[float], threshold: float) -> bool:    for i in range(len(numbers)):        for j in range(i + 1, len(numbers)):            if abs(numbers[i] - numbers[j]) < threshold:                return True    return False```Thought 2: I need to test the implemented function with test cases to ensure it works correctly.', action_type='Implement', query='from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False', observation='\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: ', answer='', external_tool_info={'execution_status': 'Done'}), 'visits': 0, 'value': 0, 'depth': 1, 'is_terminal': False, 'reward': 0},
+        {'state': LATSReActStepOutput(thought='Implement the `has_close_elements` function with the nested loop logic.```pythonfrom typing import Listdef has_close_elements(numbers: List[float], threshold: float) -> bool:    for i in range(len(numbers)):        for j in range(i+1, len(numbers)):            if abs(numbers[i] - numbers[j]) < threshold:                return True    return False```Thought 2: I need to test the implemented `has_close_elements` function with some test cases to ensure it works as expected.', action_type='Implement', query='from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False', observation='\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i + 1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: ', answer='', external_tool_info={'execution_status': 'Done'}), 'visits': 0, 'value': 0, 'depth': 1, 'is_terminal': False, 'reward': 0},
+        {'state': LATSReActStepOutput(thought='Implement the `has_close_elements` function with nested loops to compare each pair of numbers in the list against the threshold.```pythonfrom typing import Listdef has_close_elements(numbers: List[float], threshold: float) -> bool:    for i in range(len(numbers)):        for j in range(i+1, len(numbers)):            if abs(numbers[i] - numbers[j]) < threshold:                return True    return False```Thought 2: I should test the implemented `has_close_elements` function with some test cases to ensure it works correctly.', action_type='Implement', query='from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False', observation='\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: ', answer='', external_tool_info={'execution_status': 'Done'}), 'visits': 0, 'value': 0, 'depth': 1, 'is_terminal': False, 'reward': 0},
+        {'state': LATSReActStepOutput(thought='Implement the `has_close_elements` function.```pythonfrom typing import Listdef has_close_elements(numbers: List[float], threshold: float) -> bool:    """ Check if in given list of numbers, are any two numbers closer to each other than    given threshold.    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)    False    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)    True    """        for i in range(len(numbers)):        for j in range(i+1, len(numbers)):            if abs(numbers[i] - numbers[j]) < threshold:                return True    return False```Thought 2: I now need to test the `has_close_elements` function with different test cases to ensure it works correctly.', action_type='Implement', query='from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False', observation='\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: ', answer='', external_tool_info={'execution_status': 'Done'}), 'visits': 0, 'value': 0, 'depth': 1, 'is_terminal': False, 'reward': 0},
+        {'state': LATSReActStepOutput(thought='Implement the `has_close_elements` function with the nested loop approach.```pythonfrom typing import Listdef has_close_elements(numbers: List[float], threshold: float) -> bool:    for i in range(len(numbers)):        for j in range(i + 1, len(numbers)):            if abs(numbers[i] - numbers[j]) < threshold:                return True    return False```Thought 2: Now that the implementation is done, I need to test the function with some test cases to ensure it works correctly.', action_type='', query='', observation='Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer].', answer='', external_tool_info={'execution_status': ''}), 'visits': 0, 'value': 0, 'depth': 1, 'is_terminal': False, 'reward': 0}
     ]
-    gt_prompt_metrics = {
-        "thought": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-        ],
-        "action": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-        ],
-        "value": [],
-        "simulate_thought": [],
-        "simulate_action": [],
-        "simulate_value": [],
-        "reflection": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-        ],
-    }
+
+    gt_generate_metrics = LATSGenerateMetrics(thoughts_metrics=[PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)], actions_metrics=[PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)], reflections_metrics=[PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)])
+    
     responses = [
         "My reasoning failed in the previous trial because I did not iterate through the list to compare each pair of numbers against the threshold. To mitigate this failure, I should implement a nested loop to compare all possible pairs of numbers in the list and return True if any pair is closer than the threshold.\n\nHigh-level plan:\n1. Implement a nested loop to iterate through all possible pairs of numbers in the list.\n2. Calculate the absolute difference between each pair of numbers.\n3. Check if the absolute difference is less than the threshold.\n4. If any pair meets the condition, return True.\n5. If no pair meets the condition, return False.",
         "My reasoning potentially failed because I did not provide an implementation for the `has_close_elements` function, leaving it with a `pass` statement. To mitigate this failure, I should ensure to complete the implementation of the function by iterating over the list of numbers and comparing each pair to check if their difference falls below the given threshold."
@@ -427,7 +694,7 @@ def test_generate_children_nodes() -> None:
     ]
 
     root = strategy.initialize()
-    children_nodes = strategy.generate_children_nodes(
+    children_nodes, generate_metrics = strategy.generate_children_nodes(
         node=root,
         question=question,
         key=key,
@@ -437,48 +704,19 @@ def test_generate_children_nodes() -> None:
         reflect_prompt=LATS_REFLECT_INSTRUCTION_HUMANEVAL,
         additional_keys={},
         reflect_additional_keys={},
-        is_simulate=False,
     )
     assert len(children_nodes) == 5
     for gt_state, node in zip(gt_states, children_nodes):
-        assert node.state == gt_state
-        assert node.depth == 1
-        assert node.reward == 0
-        assert node.value == 0
-        assert node.is_terminal is False
-        assert node.visits == 0
-    assert strategy._prompt_metrics == gt_prompt_metrics
+        assert node.to_dict() == gt_state
+
+    assert generate_metrics == gt_generate_metrics
 
     # Test case with a terminal child node (reward 0)
-    gt_prompt_metrics = {
-        "thought": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            }
-        ],
-        "action": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            }
-        ],
-        "value": [],
-        "simulate_thought": [],
-        "simulate_action": [],
-        "simulate_value": [],
-        "reflection": [],
-    }
+    gt_states = [
+        {'state': LATSReActStepOutput(thought='We need to iterate through the list of numbers and check if any two numbers are closer to each other than the threshold.', action_type='Implement', query='from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False', observation='\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: ', answer='', external_tool_info={'execution_status': 'Done'}), 'visits': 0, 'value': 0, 'depth': 1, 'is_terminal': False, 'reward': 0}
+    ]
+    gt_generate_metrics = LATSGenerateMetrics(thoughts_metrics=[PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)], actions_metrics=[PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)], reflections_metrics=[])
+
     responses = [
         "We need to iterate through the list of numbers and check if any two numbers are closer to each other than the threshold.\n\nAction 1:\nImplement the has_close_elements function.\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nObservation 1: We have implemented the function to check if any two numbers are closer to each other than the threshold.\n\nAction 2:\nTest the implemented function with test cases.\n\n```python\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n```\n\nObservation 2: The implemented function passed the test cases.\n\nAction 3:\nFinish the task.\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
         "Implement\n\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nThought 2: Now that we have implemented the function, we need to test it with some test cases.\nAction 2: \n\n```python\nTest\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n```\n\nThought 3: The function passed the test cases successfully. Now we can finish by providing the final implementation.\nAction 3: \n\n```python\nFinish\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
@@ -487,7 +725,7 @@ def test_generate_children_nodes() -> None:
     strategy = LATSCodeStrategy(llm=llm, n_samples=1)
 
     root = strategy.initialize()
-    children_nodes = strategy.generate_children_nodes(
+    children_nodes, generate_metrics = strategy.generate_children_nodes(
         node=root,
         question=question,
         key=key,
@@ -497,21 +735,11 @@ def test_generate_children_nodes() -> None:
         reflect_prompt=LATS_REFLECT_INSTRUCTION_HUMANEVAL,
         additional_keys={},
         reflect_additional_keys={},
-        is_simulate=False,
     )
-    assert len(children_nodes) == 1
-    assert (
-        children_nodes[0].state.thought
-        == "We need to iterate through the list of numbers and check if any two numbers are closer to each other than the threshold."
-    )
-    assert children_nodes[0].state.action_type == "Implement"
-    assert (
-        children_nodes[0].state.query
-        == "from typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False"
-    )
-    assert not children_nodes[0].is_terminal
-    assert children_nodes[0].reward == 0
-    assert strategy._prompt_metrics == gt_prompt_metrics
+    for gt_state, node in zip(gt_states, children_nodes):
+        assert node.to_dict() == gt_state
+
+    assert generate_metrics == gt_generate_metrics
 
 
 def test_generate_action() -> None:
@@ -557,7 +785,6 @@ def test_generate_action() -> None:
         depth,
         prompt,
         additional_keys,
-        is_simulate=False,
     )
 
     assert (

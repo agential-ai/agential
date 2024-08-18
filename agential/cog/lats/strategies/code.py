@@ -9,8 +9,8 @@ from agential.cog.lats.functional import (
     _prompt_value,
     get_node_trajectory_code,
     parse_code_action,
-    parse_value,
     parse_latest_implement,
+    parse_value,
 )
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import (

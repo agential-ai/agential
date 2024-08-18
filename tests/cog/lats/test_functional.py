@@ -19,10 +19,10 @@ from agential.cog.lats.functional import (
     get_node_trajectory_qa,
     get_unique_trajectories,
     parse_code_action,
-    parse_value,
     parse_latest_implement,
     parse_math_action,
     parse_qa_action,
+    parse_value,
 )
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import (
