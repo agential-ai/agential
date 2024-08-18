@@ -834,26 +834,6 @@ def test_generate_observation() -> None:
 
 def test_evaluate_node() -> None:
     """Test the evaluate_node method."""
-    gt_prompt_metrics = {
-        "thought": [],
-        "action": [],
-        "value": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            }
-        ],
-        "simulate_thought": [],
-        "simulate_action": [],
-        "simulate_value": [],
-        "reflection": [],
-    }
-
     llm = MockLLM(
         "gpt-3.5-turbo",
         responses=["Explanation: Good trajectory. Correctness score: 8"],
@@ -898,219 +878,100 @@ def test_evaluate_node() -> None:
         }
     ]
 
-    values = strategy.evaluate_node(root, question, examples, prompt, {})
-    assert strategy._prompt_metrics == gt_prompt_metrics
+    values, values_evaluation_metrics = strategy.evaluate_node(
+        root, question, examples, prompt, {}
+    )
 
-    assert len(values) == 1  # Only one non-terminal child.
-    assert "explanation" in values[0]
-    assert "value" in values[0]
-    assert values[0]["explanation"] == "Good trajectory."
-    assert values[0]["value"] == 0.8  # 8 / 10
+    assert len(values) == 2
+    assert values == [
+        {"explanation": "Good trajectory.", "value": 0.8},
+        {"explanation": "", "value": -10000000000.0},
+    ]
+
+    assert strategy.failed_trajectories == []
+    assert strategy.reflection_map == [
+        {
+            "trajectory": "Failed trajectory",
+            "reflection": "This trajectory failed because...",
+        }
+    ]
+    assert strategy.value_cache == {
+        "\nThought 1: Child 1::Question: What is the capital of France?\nFailed trajectory\n\nExplanation: This trajectory is incorrect as This trajectory failed because...\nCorrectness score: 1": "Explanation: Good trajectory. Correctness score: 8"
+    }
+    assert strategy.root == root
 
     assert child1.value == 0.8
     assert child2.value == 0  # Terminal node, value not updated.
 
-    # Test caching.
-    gt_prompt_metrics = {
-        "thought": [],
-        "action": [],
-        "value": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-        ],
-        "simulate_thought": [],
-        "simulate_action": [],
-        "simulate_value": [],
-        "reflection": [],
-    }
+    expected_value_metric = [
+        PromptMetrics(
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        None,
+    ]
 
+    for i, value_met in zip(
+        values_evaluation_metrics.values_metrics, expected_value_metric
+    ):
+        assert i == value_met
+
+    # Test caching.
     strategy.cache_values = True
-    cached_values = strategy.evaluate_node(root, question, examples, prompt, {})
+    cached_values, values_evaluation_metrics = strategy.evaluate_node(
+        root, question, examples, prompt, {}
+    )
     assert cached_values == values
+    assert values_evaluation_metrics.values_metrics == [None, None]
+
+    assert strategy.failed_trajectories == []
+    assert strategy.reflection_map == [
+        {
+            "trajectory": "Failed trajectory",
+            "reflection": "This trajectory failed because...",
+        }
+    ]
+    assert strategy.value_cache == {
+        "\nThought 1: Child 1::Question: What is the capital of France?\nFailed trajectory\n\nExplanation: This trajectory is incorrect as This trajectory failed because...\nCorrectness score: 1": "Explanation: Good trajectory. Correctness score: 8"
+    }
+    assert strategy.root == root
 
     # Test with empty reflection_map.
     strategy.reflection_map = []
-    empty_reflection_values = strategy.evaluate_node(
+    empty_reflection_values, values_evaluation_metrics = strategy.evaluate_node(
         root, question, examples, prompt, {}
     )
+    assert values_evaluation_metrics.values_metrics == [
+        PromptMetrics(
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        None,
+    ]
+
     assert empty_reflection_values == values
-    assert strategy._prompt_metrics == gt_prompt_metrics
+
+    assert strategy.failed_trajectories == []
+    assert strategy.reflection_map == []
+    assert strategy.value_cache == {
+        "\nThought 1: Child 1::Question: What is the capital of France?\nFailed trajectory\n\nExplanation: This trajectory is incorrect as This trajectory failed because...\nCorrectness score: 1": "Explanation: Good trajectory. Correctness score: 8",
+        "\nThought 1: Child 1::": "Explanation: Good trajectory. Correctness score: 8",
+    }
+    assert strategy.root == root
 
 
 def test_simulate_node() -> None:
     """Test the simulate_node method."""
-    gt_prompt_metrics = {
-        "thought": [],
-        "action": [],
-        "value": [],
-        "simulate_thought": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-        ],
-        "simulate_action": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-        ],
-        "simulate_value": [
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-            {
-                "prompt_tokens": 10,
-                "completion_tokens": 20,
-                "total_tokens": 30,
-                "prompt_tokens_cost": 1.5e-05,
-                "completion_tokens_cost": 3.9999999999999996e-05,
-                "total_tokens_cost": 5.4999999999999995e-05,
-                "time_sec": 0.5,
-            },
-        ],
-        "reflection": [],
-    }
     responses = [
         "We need to iterate through the list of numbers and check if any two numbers are closer to each other than the given threshold.\n\nAction 1: Implement\n\n```python\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nThought 2: \n\nNow that we have implemented the function, we should test it with some test cases to verify its correctness.\n\nAction 2: Test\n\n```python\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n```\n\nThought 3: \n\nThe tests passed successfully, so we can consider the implementation complete.\n\nAction 3: Finish\n\n```python\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
         "Implement the `has_close_elements` function by iterating through the list and checking the absolute difference between each pair of numbers.\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\n\nThought 2: Now we need to test the implemented function with some test cases to verify its correctness.\nAction 2: \n\nTest the `has_close_elements` function with test cases.\n```python\ndef test_has_close_elements():\n    assert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\n    assert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\n\ntest_has_close_elements()\n```\n\nThought 3: The function passed the test cases successfully and is working as expected.\nAction 3: \n\nFinish by providing the final implementation of the `has_close_elements` function.\n```python\nfrom typing import List\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
@@ -1177,8 +1038,6 @@ def test_simulate_node() -> None:
     assert final_node.depth <= strategy.depth_limit
     assert len(simulation_results) > 0
     assert -1 <= reward <= 1
-
-    assert strategy._prompt_metrics == gt_prompt_metrics
 
 
 def test_expand_node() -> None:
