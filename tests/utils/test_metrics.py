@@ -24,7 +24,15 @@ def test_get_token_cost_time() -> None:
 
     token_cost_time = get_token_cost_time(response)
 
-    assert token_cost_time == PromptMetrics(prompt_tokens=100, completion_tokens=50, total_tokens=150, prompt_cost=0.00015000000000000001, completion_cost=9.999999999999999e-05, total_cost=0.00025, prompt_time=0.5)
+    assert token_cost_time == PromptMetrics(
+        prompt_tokens=100,
+        completion_tokens=50,
+        total_tokens=150,
+        prompt_cost=0.00015000000000000001,
+        completion_cost=9.999999999999999e-05,
+        total_cost=0.00025,
+        prompt_time=0.5,
+    )
 
     # Test with different token counts and model.
     prompt_tokens = 200
@@ -44,4 +52,12 @@ def test_get_token_cost_time() -> None:
 
     token_cost_time = get_token_cost_time(response)
 
-    assert token_cost_time == PromptMetrics(prompt_tokens=200, completion_tokens=100, total_tokens=300, prompt_cost=0.006, completion_cost=0.006, total_cost=0.012, prompt_time=0.5)      
+    assert token_cost_time == PromptMetrics(
+        prompt_tokens=200,
+        completion_tokens=100,
+        total_tokens=300,
+        prompt_cost=0.006,
+        completion_cost=0.006,
+        total_cost=0.012,
+        prompt_time=0.5,
+    )
