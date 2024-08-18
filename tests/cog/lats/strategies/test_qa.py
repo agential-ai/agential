@@ -1590,18 +1590,21 @@ def test_generate_children_nodes() -> None:
 
     root = strategy.initialize()
 
-    children_nodes, thought_model_responses, action_model_responses, reflection_model_responses = (
-        strategy.generate_children_nodes(
-            node=root,
-            question=question,
-            key=key,
-            examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-            reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
-            prompt=LATS_INSTRUCTION_HOTPOTQA,
-            reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
-            additional_keys={},
-            reflect_additional_keys={},
-        )
+    (
+        children_nodes,
+        thought_model_responses,
+        action_model_responses,
+        reflection_model_responses,
+    ) = strategy.generate_children_nodes(
+        node=root,
+        question=question,
+        key=key,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
+        prompt=LATS_INSTRUCTION_HOTPOTQA,
+        reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
+        reflect_additional_keys={},
     )
     assert len(children_nodes) == 5
     for gt_state, node, t, a, gt_t, gt_a in zip(
@@ -1725,18 +1728,21 @@ def test_generate_children_nodes() -> None:
     ]
 
     root = strategy.initialize()
-    children_nodes, thought_model_responses, action_model_responses, reflection_model_responses = (
-        strategy.generate_children_nodes(
-            node=root,
-            question=question,
-            key=key,
-            examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-            reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
-            prompt=LATS_INSTRUCTION_HOTPOTQA,
-            reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
-            additional_keys={},
-            reflect_additional_keys={},
-        )
+    (
+        children_nodes,
+        thought_model_responses,
+        action_model_responses,
+        reflection_model_responses,
+    ) = strategy.generate_children_nodes(
+        node=root,
+        question=question,
+        key=key,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
+        prompt=LATS_INSTRUCTION_HOTPOTQA,
+        reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
+        reflect_additional_keys={},
     )
     assert len(children_nodes) == 5
     for gt_state, node, t, a, gt_t, gt_a in zip(
@@ -1765,18 +1771,21 @@ def test_generate_children_nodes() -> None:
     strategy = LATSQAStrategy(llm=llm, n_samples=1)
 
     root = strategy.initialize()
-    children_nodes, thought_model_responses, action_model_responses, reflection_model_responses = (
-        strategy.generate_children_nodes(
-            node=root,
-            question=question,
-            key=key,
-            examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-            reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
-            prompt=LATS_INSTRUCTION_HOTPOTQA,
-            reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
-            additional_keys={},
-            reflect_additional_keys={},
-        )
+    (
+        children_nodes,
+        thought_model_responses,
+        action_model_responses,
+        reflection_model_responses,
+    ) = strategy.generate_children_nodes(
+        node=root,
+        question=question,
+        key=key,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
+        prompt=LATS_INSTRUCTION_HOTPOTQA,
+        reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
+        reflect_additional_keys={},
     )
     assert len(children_nodes) == 1
     assert children_nodes[0].state.thought == "I think the answer is Mike Tyson."
@@ -1797,6 +1806,7 @@ def test_generate_children_nodes() -> None:
     assert strategy.reflection_map == []
     assert strategy.value_cache == {}
     assert strategy.root == root
+
 
 def test_generate_action() -> None:
     """Test the generate_action method."""
@@ -1958,7 +1968,9 @@ def test_evaluate_node() -> None:
             "reflection": "This trajectory failed because...",
         }
     ]
-    assert strategy.value_cache == {'\nThought 1: Child 1::Question: What is the capital of France?\nFailed trajectory\n\nExplanation: This trajectory is incorrect as This trajectory failed because...\nCorrectness score: 1': 'Explanation: Good trajectory. Correctness score: 8'}
+    assert strategy.value_cache == {
+        "\nThought 1: Child 1::Question: What is the capital of France?\nFailed trajectory\n\nExplanation: This trajectory is incorrect as This trajectory failed because...\nCorrectness score: 1": "Explanation: Good trajectory. Correctness score: 8"
+    }
     assert strategy.root == root
 
     assert child1.value == 0.8
@@ -1983,7 +1995,9 @@ def test_evaluate_node() -> None:
             "reflection": "This trajectory failed because...",
         }
     ]
-    assert strategy.value_cache == {'\nThought 1: Child 1::Question: What is the capital of France?\nFailed trajectory\n\nExplanation: This trajectory is incorrect as This trajectory failed because...\nCorrectness score: 1': 'Explanation: Good trajectory. Correctness score: 8'}
+    assert strategy.value_cache == {
+        "\nThought 1: Child 1::Question: What is the capital of France?\nFailed trajectory\n\nExplanation: This trajectory is incorrect as This trajectory failed because...\nCorrectness score: 1": "Explanation: Good trajectory. Correctness score: 8"
+    }
     assert strategy.root == root
 
     # Test with empty reflection_map.
@@ -2000,8 +2014,12 @@ def test_evaluate_node() -> None:
 
     assert strategy.failed_trajectories == []
     assert strategy.reflection_map == []
-    assert strategy.value_cache == {'\nThought 1: Child 1::Question: What is the capital of France?\nFailed trajectory\n\nExplanation: This trajectory is incorrect as This trajectory failed because...\nCorrectness score: 1': 'Explanation: Good trajectory. Correctness score: 8', '\nThought 1: Child 1::': 'Explanation: Good trajectory. Correctness score: 8'}
+    assert strategy.value_cache == {
+        "\nThought 1: Child 1::Question: What is the capital of France?\nFailed trajectory\n\nExplanation: This trajectory is incorrect as This trajectory failed because...\nCorrectness score: 1": "Explanation: Good trajectory. Correctness score: 8",
+        "\nThought 1: Child 1::": "Explanation: Good trajectory. Correctness score: 8",
+    }
     assert strategy.root == root
+
 
 def test_simulate_node() -> None:
     """Test the simulate_node method."""
@@ -2175,7 +2193,7 @@ def test_simulate_node() -> None:
     assert strategy.reflection_map == []
     assert strategy.value_cache == {}
     assert strategy.root == root_node
-    
+
     assert simulation_reward == -1.0
 
     assert simulation_terminal_node.to_dict() == {

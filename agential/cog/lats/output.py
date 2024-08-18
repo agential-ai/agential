@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
 
 from agential.cog.base.output import BaseOutput
+from agential.llm.llm import ModelResponse
 from agential.utils.general import PromptMetrics
 
 
@@ -70,6 +71,25 @@ class LATSSimulationOutput(BaseModel):
     simulation_values_metrics: List[List[Optional[PromptMetrics]]] = Field(
         ...,
         description="The metrics of the values of the children nodes of the simulation.",
+    )
+
+
+class LATSGenerateModelResponse(BaseModel):
+    """LATS generate model response Pydantic output class."""
+
+    thought_responses: List[ModelResponse] = Field(
+        ...,
+        description="The model responses of the thoughts.",
+    )
+
+    action_responses: List[ModelResponse] = Field(
+        ...,
+        description="The model responses of the actions.",
+    )
+
+    reflection_responses: List[ModelResponse] = Field(
+        ...,
+        description="The model responses of the reflections.",
     )
 
 

@@ -14,7 +14,7 @@ from agential.cog.lats.functional import (
     parse_qa_value,
 )
 from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSReActStepOutput
+from agential.cog.lats.output import LATSGenerateModelResponse, LATSReActStepOutput
 from agential.cog.lats.strategies.general import LATSGeneralStrategy
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM, ModelResponse
@@ -77,9 +77,7 @@ class LATSQAStrategy(LATSGeneralStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
-    ) -> Tuple[
-        List[Node], List[ModelResponse], List[ModelResponse], List[ModelResponse]
-    ]:
+    ) -> Tuple[List[Node], LATSGenerateModelResponse]:
         """Generate child nodes for the given node.
 
         Args:
@@ -94,12 +92,12 @@ class LATSQAStrategy(LATSGeneralStrategy):
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
 
         Returns:
-            Tuple[List[Node], List[ModelResponse], List[ModelResponse], List[ModelResponse]]: A list of generated child nodes, and the corresponding model responses.
+            Tuple[List[Node], LATSGenerateModelResponse]: A list of generated child nodes, and the pydantic of corresponding model responses.
         """
         reflections_str = ""
-        reflection_model_responses = []
+        reflection_responses = []
         if self.reflect_condition():
-            reflections, reflection_model_responses = self.reflect(
+            reflections, reflection_responses = self.reflect(
                 question=question,
                 examples=reflect_examples,
                 prompt=reflect_prompt,
@@ -117,9 +115,9 @@ class LATSQAStrategy(LATSGeneralStrategy):
         trajectory = get_node_trajectory_qa(node)
 
         unique_states = set()
-        children_nodes, thought_model_responses, action_model_responses = [], [], []
+        children_nodes, thought_responses, action_responses = [], [], []
         for _ in range(self.n_samples):
-            trajectory_i, thought, thought_model_response = self.generate_thought(
+            trajectory_i, thought, thought_response = self.generate_thought(
                 question=question,
                 examples=examples,
                 trajectory=trajectory,
@@ -128,16 +126,14 @@ class LATSQAStrategy(LATSGeneralStrategy):
                 prompt=prompt,
                 additional_keys=additional_keys,
             )
-            trajectory_i, action_type, query, action_model_response = (
-                self.generate_action(
-                    question=question,
-                    examples=examples,
-                    trajectory=trajectory_i,
-                    reflections=reflections_str,
-                    depth=node.depth,
-                    prompt=prompt,
-                    additional_keys=additional_keys,
-                )
+            trajectory_i, action_type, query, action_response = self.generate_action(
+                question=question,
+                examples=examples,
+                trajectory=trajectory_i,
+                reflections=reflections_str,
+                depth=node.depth,
+                prompt=prompt,
+                additional_keys=additional_keys,
             )
 
             unique_key = f"{thought}::{action_type}::{query}"
@@ -187,16 +183,15 @@ class LATSQAStrategy(LATSGeneralStrategy):
                     ),
                 )
 
-            thought_model_responses.append(thought_model_response)
-            action_model_responses.append(action_model_response)
+            thought_responses.append(thought_response)
+            action_responses.append(action_response)
             children_nodes.append(new_node)
 
-        return (
-            children_nodes,
-            thought_model_responses,
-            action_model_responses,
-            reflection_model_responses,
+        responses = LATSGenerateModelResponse(
+            thought_responses=thought_responses, action_responses=action_responses, reflection_responses=reflection_responses
         )
+
+        return (children_nodes, responses)
 
     def generate_action(
         self,

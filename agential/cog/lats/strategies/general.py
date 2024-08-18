@@ -11,7 +11,12 @@ from agential.cog.lats.functional import (
     get_unique_trajectories,
 )
 from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSOutput, LATSSimulationOutput, LATSStepOutput
+from agential.cog.lats.output import (
+    LATSGenerateModelResponse,
+    LATSOutput,
+    LATSSimulationOutput,
+    LATSStepOutput,
+)
 from agential.cog.lats.strategies.base import LATSBaseStrategy
 from agential.llm.llm import BaseLLM, ModelResponse
 from agential.utils.general import get_token_cost_time
@@ -238,9 +243,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
-    ) -> Tuple[
-        List[Node], List[ModelResponse], List[ModelResponse], List[ModelResponse]
-    ]:
+    ) -> Tuple[List[Node], LATSGenerateModelResponse]:
         """Generate child nodes for the given node.
 
         Args:
@@ -255,7 +258,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
 
         Returns:
-            Tuple[List[Node], List[ModelResponse], List[ModelResponse], List[ModelResponse]]: A list of generated child nodes, and the corresponding model responses.
+            Tuple[List[Node], LATSGenerateModelResponse]: A list of generated child nodes, and the pydantic of corresponding model responses.
         """
         raise NotImplementedError
 
