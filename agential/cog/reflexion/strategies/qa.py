@@ -1,7 +1,5 @@
 """Reflexion Agent strategies for QA."""
 
-import re
-
 from typing import Any, Dict, List, Optional, Tuple
 
 import tiktoken

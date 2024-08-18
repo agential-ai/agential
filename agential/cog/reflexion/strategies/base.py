@@ -12,6 +12,7 @@ from agential.cog.reflexion.reflect import (
     ReflexionReActReflector,
 )
 from agential.llm.llm import BaseLLM
+from agential.utils.metrics import PromptMetrics
 
 
 class ReflexionCoTBaseStrategy(BaseStrategy):
@@ -22,6 +23,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         reflector (Optional[ReflexionCoTReflector]): The reflector used for generating reflections.
         max_reflections (int): The maximum number of reflections allowed.
         max_trials (int): The maximum number of trials allowed.
+        testing (bool): Whether the strategy is being used for testing. Defaults to False.
     """
 
     def __init__(
@@ -30,13 +32,39 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         reflector: ReflexionCoTReflector,
         max_reflections: int,
         max_trials: int,
+        testing: bool = False,
     ) -> None:
         """Initialization."""
-        super().__init__(llm)
+        super().__init__(llm=llm, testing=testing)
         self.reflector = reflector
         self.max_reflections = max_reflections
         self.max_trials = max_trials
 
+    @abstractmethod
+    def generate_thought(
+        self,
+        idx: int,
+        scratchpad: str,
+        question: str,
+        examples: str,
+        reflections: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> Tuple[str, str, PromptMetrics]:
+        """Generates a thought based on the question, examples, and prompt.
+
+        Args:
+            question (str): The question to be answered.
+            examples (str): Examples to guide the generation process.
+            reflections (str): Reflections to consider during generation.
+            prompt (str): The prompt used for generating the thought.
+            additional_keys (Dict[str, str]): Additional keys for the generation process.
+
+        Returns:
+            Tuple[str, str, PromptMetrics]: The updated scratchpad, the generated thought, and the metrics for the thought.
+        """
+        raise NotImplementedError
+    
     @abstractmethod
     def generate_action(
         self,
@@ -58,7 +86,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         Returns:
             Tuple[str, str]: The generated action type and query.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def generate_observation(
@@ -74,7 +102,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         Returns:
             Tuple[bool, str]: A boolean indicating correctness and the generated observation.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def create_output_dict(
@@ -97,7 +125,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         Returns:
             Dict[str, Any]: A dictionary containing the thought, action type, observation, answer, is_correct, and a list of reflections.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
@@ -111,7 +139,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         Returns:
             bool: True if the halting condition is met, False otherwise.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def reflect(
@@ -134,7 +162,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         Returns:
             Tuple[List[str], str]: The reflection string.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def reflect_condition(
@@ -150,7 +178,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         Returns:
             bool: True if the reflection condition is met, False otherwise.
         """
-        pass
+        raise NotImplementedError
 
 
 class ReflexionReActBaseStrategy(BaseStrategy):
@@ -208,7 +236,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         Returns:
             Tuple[str, str]: The generated action type and query.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def generate_observation(
@@ -226,7 +254,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
             Tuple[bool, str, Dict[str, Any]]: A tuple containing a boolean indicating whether the answer is correct, a string representing the observation,
                 and a dictionary of the external tool outputs.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def create_output_dict(
@@ -241,7 +269,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         Returns:
             Dict[str, Any]: A dictionary containing the ReAct output and the reflections.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def react_create_output_dict(
@@ -266,7 +294,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         Returns:
             Dict[str, Any]: A dictionary containing the thought, action type, observation, answer, external_tool_info, and is_correct.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
@@ -280,7 +308,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         Returns:
             bool: True if the halting condition is met, False otherwise.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def react_halting_condition(
@@ -307,7 +335,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         Returns:
             bool: True if the halting condition is met, False otherwise.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def reflect(
@@ -330,7 +358,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         Returns:
             Tuple[List[str], str]: The reflections and reflection string.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def reflect_condition(
@@ -359,4 +387,4 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         Returns:
             bool: True if the reflection condition is met, False otherwise.
         """
-        pass
+        raise NotImplementedError
