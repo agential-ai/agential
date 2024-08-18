@@ -4,9 +4,6 @@ import time
 
 from abc import ABC, abstractmethod
 from typing import Any, List
-from pydantic import BaseModel, Field
-
-from litellm import completion, cost_per_token
 
 class Message:
     """Represents a message with content."""
