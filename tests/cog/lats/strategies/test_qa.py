@@ -960,6 +960,12 @@ def test_generate_children_nodes() -> None:
         assert t == gt_t
         assert a == gt_a
 
+    assert strategy.failed_trajectories == []
+    assert strategy.reflection_map == []
+    assert strategy.value_cache == {}
+    assert strategy.root.to_dict() == {'state': LATSReActStepOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}
+    
+
     # Test generate with reflections.
     gt_states = [
         LATSReActStepOutput(
@@ -1035,6 +1041,9 @@ def test_generate_children_nodes() -> None:
         "Search[best kick boxer in the world controversies]\nObservation 1: Could not find [best kick boxer in the world controversies]",
     ]
 
+    gt_failed_trajectories = [{'trajectory': 'Failed trajectory 1', 'final_answer': 'Incorrect answer 1'}, {'trajectory': 'Failed trajectory 2', 'final_answer': 'Incorrect answer 2'}, {'trajectory': 'Failed trajectory 1', 'final_answer': 'Incorrect answer 1'}]
+    gt_reflection_map = [{'trajectory': 'Failed trajectory 1', 'reflection': 'My reasoning for this question failed because I did not narrow down the search to focus on kick boxers and instead ended up with unrelated information'}, {'trajectory': 'Failed trajectory 2', 'reflection': "My reasoning failed because I did not focus on gathering specific information related to the individual's kickboxing career and controversies, leading to an incorrect answer"}]
+
     responses = [
         "My reasoning for this question failed because I did not narrow down the search to focus on kick boxers and instead ended up with unrelated information",
         "My reasoning failed because I did not focus on gathering specific information related to the individual's kickboxing career and controversies, leading to an incorrect answer",
@@ -1109,6 +1118,10 @@ def test_generate_children_nodes() -> None:
             total_cost=5.4999999999999995e-05,
             prompt_time=0.5,
         )
+    assert strategy.failed_trajectories == gt_failed_trajectories
+    assert strategy.reflection_map == gt_reflection_map
+    assert strategy.value_cache == {}
+    assert strategy.root.to_dict() == {'state': LATSReActStepOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}
 
     # Test case with a terminal child node (reward 0)
     responses = [
