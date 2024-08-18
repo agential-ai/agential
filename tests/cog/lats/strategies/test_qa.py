@@ -1536,7 +1536,7 @@ def test_generate() -> None:
     assert out.answer.to_dict() == gt_terminal_node_state
     assert out.total_completion_cost == 0.0012
     assert out.total_completion_tokens == 600
-    assert out.total_prompt_cost ==  0.00045000000000000015
+    assert out.total_prompt_cost == 0.00045000000000000015
     assert out.total_prompt_tokens == 300
     assert out.total_tokens == 900
     assert out.total_cost == 0.0016500000000000002
