@@ -11,8 +11,8 @@ from agential.cog.reflexion.functional import (
     _prompt_cot_agent,
     _prompt_react_agent,
     _truncate_scratchpad,
+    parse_math_code_action_cot,
     parse_math_code_action_react,
-    parse_math_code_action_cot
 )
 from agential.cog.reflexion.output import ReflexionReActStepOutput
 from agential.cog.reflexion.reflect import (
