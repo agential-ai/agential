@@ -5,8 +5,12 @@ import itertools
 from agential.cog.fewshots.gsm8k import GSM8K_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import (
+    LATSEvaluateMetrics,
+    LATSGenerateMetrics,
     LATSReActStepOutput,
+    LATSSimulationMetrics,
     LATSSimulationOutput,
+    LATSSimulationStepMetrics,
     LATSStepOutput,
 )
 from agential.cog.lats.prompts import (
@@ -67,8 +71,650 @@ def test_generate() -> None:
         "is_terminal": True,
         "reward": 0,
     }
- 
-    gt_additional_info = {}
+
+    gt_additional_info = [
+        LATSStepOutput(
+            iteration=0,
+            current_node={
+                "state": LATSReActStepOutput(
+                    thought="",
+                    action_type="",
+                    query="",
+                    observation="",
+                    answer="",
+                    external_tool_info={},
+                ),
+                "visits": 0,
+                "value": 0,
+                "depth": 0,
+                "is_terminal": False,
+                "reward": 0,
+            },
+            children_nodes=[
+                {
+                    "state": LATSReActStepOutput(
+                        thought="First, I need to calculate how many eggs Janet has left after eating three for breakfast and baking muffins.",
+                        action_type="Calculate",
+                        query="eggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins",
+                        observation="\n```python\neggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins\n```\nExecution Status: Done\nOutput: answer = None",
+                        answer="",
+                        external_tool_info={
+                            "execution_status": "Done",
+                            "code_answer": None,
+                        },
+                    ),
+                    "visits": 0,
+                    "value": 0.0,
+                    "depth": 1,
+                    "is_terminal": False,
+                    "reward": 0,
+                },
+                {
+                    "state": LATSReActStepOutput(
+                        thought="I need to figure out how much money Janet makes at the farmers' market daily.",
+                        action_type="Calculate",
+                        query="eggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nearning_per_day = eggs_sold * 2\nanswer = earning_per_day",
+                        observation="\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nearning_per_day = eggs_sold * 2\nanswer = earning_per_day\n```\nExecution Status: Done\nOutput: answer = -9867630",
+                        answer="",
+                        external_tool_info={
+                            "execution_status": "Done",
+                            "code_answer": -9867630,
+                        },
+                    ),
+                    "visits": 0,
+                    "value": 0.0,
+                    "depth": 1,
+                    "is_terminal": False,
+                    "reward": 0,
+                },
+            ],
+            generate_metrics=LATSGenerateMetrics(
+                thoughts_metrics=[
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                ],
+                actions_metrics=[
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                ],
+                reflections_metrics=[],
+            ),
+            values=[
+                {"explanation": "Explanation not found", "value": 0.0},
+                {"explanation": "Explanation not found", "value": 0.0},
+            ],
+            evaluate_metrics=LATSEvaluateMetrics(
+                values_metrics=[
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                ]
+            ),
+            simulation_results=LATSSimulationOutput(
+                simulation_reward=0.0,
+                simulation_terminal_node={
+                    "state": LATSReActStepOutput(
+                        thought="The result is $9,867,630 that Janet makes every day at the farmers' market.",
+                        action_type="Finish",
+                        query="answer = 9867630",
+                        observation="Answer is INCORRECT",
+                        answer="answer = 9867630",
+                        external_tool_info={
+                            "execution_status": "Done",
+                            "code_answer": 9867630,
+                        },
+                    ),
+                    "visits": 0,
+                    "value": 0,
+                    "depth": 5,
+                    "is_terminal": True,
+                    "reward": 0,
+                },
+                simulation_current_nodes=[
+                    {
+                        "state": LATSReActStepOutput(
+                            thought="First, I need to calculate how many eggs Janet has left after eating three for breakfast and baking muffins.",
+                            action_type="Calculate",
+                            query="eggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins",
+                            observation="\n```python\neggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins\n```\nExecution Status: Done\nOutput: answer = None",
+                            answer="",
+                            external_tool_info={
+                                "execution_status": "Done",
+                                "code_answer": None,
+                            },
+                        ),
+                        "visits": 0,
+                        "value": 0.0,
+                        "depth": 1,
+                        "is_terminal": False,
+                        "reward": 0,
+                    },
+                    {
+                        "state": LATSReActStepOutput(
+                            thought="I need to calculate how much money Janet makes by selling the remaining eggs at the farmers' market.",
+                            action_type="Calculate",
+                            query="price_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = money_made_daily",
+                            observation="\n```python\nprice_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = money_made_daily\n```\nExecution Status: NameError(\"name 'eggs_remaining' is not defined\")\nOutput: answer = None",
+                            answer="",
+                            external_tool_info={
+                                "execution_status": "NameError(\"name 'eggs_remaining' is not defined\")",
+                                "code_answer": None,
+                            },
+                        ),
+                        "visits": 0,
+                        "value": 0,
+                        "depth": 2,
+                        "is_terminal": False,
+                        "reward": 0,
+                    },
+                    {
+                        "state": LATSReActStepOutput(
+                            thought="I forgot to define the variable `eggs_remaining` before using it in the calculation. I need to go back and correct that.",
+                            action_type="Calculate",
+                            query="eggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = money_made_daily",
+                            observation="\n```python\neggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = money_made_daily\n```\nExecution Status: Done\nOutput: answer = -9867630",
+                            answer="",
+                            external_tool_info={
+                                "execution_status": "Done",
+                                "code_answer": -9867630,
+                            },
+                        ),
+                        "visits": 0,
+                        "value": 0,
+                        "depth": 3,
+                        "is_terminal": False,
+                        "reward": 0,
+                    },
+                    {
+                        "state": LATSReActStepOutput(
+                            thought="The calculation resulted in a negative value, which doesn't make sense. I need to review my calculations to find the error.",
+                            action_type="Calculate",
+                            query="eggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = abs(money_made_daily)  # Taking the absolute value to ensure a positive result",
+                            observation="\n```python\neggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = abs(money_made_daily)  # Taking the absolute value to ensure a positive result\n```\nExecution Status: Done\nOutput: answer = 9867630",
+                            answer="",
+                            external_tool_info={
+                                "execution_status": "Done",
+                                "code_answer": 9867630,
+                            },
+                        ),
+                        "visits": 0,
+                        "value": 0,
+                        "depth": 4,
+                        "is_terminal": False,
+                        "reward": 0,
+                    },
+                ],
+                simulation_children_nodes=[
+                    [
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="I need to calculate how much money Janet makes by selling the remaining eggs at the farmers' market.",
+                                action_type="Calculate",
+                                query="price_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = money_made_daily",
+                                observation="\n```python\nprice_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = money_made_daily\n```\nExecution Status: NameError(\"name 'eggs_remaining' is not defined\")\nOutput: answer = None",
+                                answer="",
+                                external_tool_info={
+                                    "execution_status": "NameError(\"name 'eggs_remaining' is not defined\")",
+                                    "code_answer": None,
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 2,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="I also need to calculate how many eggs Janet sells at the farmers' market.",
+                                action_type="Calculate",
+                                query="eggs_sold_daily = eggs_remaining\nprice_per_egg = 2\nincome_per_day = eggs_sold_daily * price_per_egg\nanswer = income_per_day",
+                                observation="\n```python\neggs_sold_daily = eggs_remaining\nprice_per_egg = 2\nincome_per_day = eggs_sold_daily * price_per_egg\nanswer = income_per_day\n```\nExecution Status: NameError(\"name 'eggs_remaining' is not defined\")\nOutput: answer = None",
+                                answer="",
+                                external_tool_info={
+                                    "execution_status": "NameError(\"name 'eggs_remaining' is not defined\")",
+                                    "code_answer": None,
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 2,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                    ],
+                    [
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="I forgot to define the variable `eggs_remaining` before using it in the calculation. I need to go back and correct that.",
+                                action_type="Calculate",
+                                query="eggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = money_made_daily",
+                                observation="\n```python\neggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = money_made_daily\n```\nExecution Status: Done\nOutput: answer = -9867630",
+                                answer="",
+                                external_tool_info={
+                                    "execution_status": "Done",
+                                    "code_answer": -9867630,
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 3,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="I forgot to define eggs_remaining before using it to calculate the money made daily. I need to go back and define eggs_remaining first.",
+                                action_type="Calculate",
+                                query="eggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = money_made_daily",
+                                observation="\n```python\neggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = money_made_daily\n```\nExecution Status: Done\nOutput: answer = -9867630",
+                                answer="",
+                                external_tool_info={
+                                    "execution_status": "Done",
+                                    "code_answer": -9867630,
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 3,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                    ],
+                    [
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="The calculation resulted in a negative value, which doesn't make sense. I need to review my calculations to find the error.",
+                                action_type="Calculate",
+                                query="eggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = abs(money_made_daily)  # Taking the absolute value to ensure a positive result",
+                                observation="\n```python\neggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = abs(money_made_daily)  # Taking the absolute value to ensure a positive result\n```\nExecution Status: Done\nOutput: answer = 9867630",
+                                answer="",
+                                external_tool_info={
+                                    "execution_status": "Done",
+                                    "code_answer": 9867630,
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 4,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="The calculation seems to have resulted in a negative value, which doesn't make sense in this context. I need to review the subtraction logic.",
+                                action_type="Calculate",
+                                query="eggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins\nif eggs_remaining < 0:\n    eggs_remaining = 0\nprice_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = money_made_daily",
+                                observation="\n```python\neggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins\nif eggs_remaining < 0:\n    eggs_remaining = 0\nprice_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = money_made_daily\n```\nExecution Status: Done\nOutput: answer = 0",
+                                answer="",
+                                external_tool_info={
+                                    "execution_status": "Done",
+                                    "code_answer": 0,
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 4,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                    ],
+                    [
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="The result is $9,867,630 that Janet makes every day at the farmers' market.",
+                                action_type="Finish",
+                                query="answer = 9867630",
+                                observation="Answer is INCORRECT",
+                                answer="answer = 9867630",
+                                external_tool_info={
+                                    "execution_status": "Done",
+                                    "code_answer": 9867630,
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 5,
+                            "is_terminal": True,
+                            "reward": 0,
+                        },
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="Janet makes $9,867,630 every day at the farmers' market.",
+                                action_type="Finish",
+                                query="answer = 9867630",
+                                observation="Answer is INCORRECT",
+                                answer="answer = 9867630",
+                                external_tool_info={
+                                    "execution_status": "Done",
+                                    "code_answer": 9867630,
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 5,
+                            "is_terminal": True,
+                            "reward": 0,
+                        },
+                    ],
+                ],
+                simulation_values=[
+                    [
+                        {"explanation": "Explanation not found", "value": 0.0},
+                        {"explanation": "Explanation not found", "value": 0.0},
+                    ],
+                    [
+                        {"explanation": "Explanation not found", "value": 0.0},
+                        {"explanation": "Explanation not found", "value": 0.0},
+                    ],
+                    [
+                        {"explanation": "Explanation not found", "value": 0.0},
+                        {"explanation": "Explanation not found", "value": 0.0},
+                    ],
+                ],
+            ),
+            simulation_metrics=LATSSimulationMetrics(
+                simulation_step_metrics=[
+                    LATSSimulationStepMetrics(
+                        generate_metrics=LATSGenerateMetrics(
+                            thoughts_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            actions_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            reflections_metrics=[],
+                        ),
+                        evaluate_metrics=LATSEvaluateMetrics(
+                            values_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ]
+                        ),
+                    ),
+                    LATSSimulationStepMetrics(
+                        generate_metrics=LATSGenerateMetrics(
+                            thoughts_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            actions_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            reflections_metrics=[],
+                        ),
+                        evaluate_metrics=LATSEvaluateMetrics(
+                            values_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ]
+                        ),
+                    ),
+                    LATSSimulationStepMetrics(
+                        generate_metrics=LATSGenerateMetrics(
+                            thoughts_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            actions_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            reflections_metrics=[],
+                        ),
+                        evaluate_metrics=LATSEvaluateMetrics(
+                            values_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ]
+                        ),
+                    ),
+                    LATSSimulationStepMetrics(
+                        generate_metrics=LATSGenerateMetrics(
+                            thoughts_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            actions_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            reflections_metrics=[],
+                        ),
+                        evaluate_metrics=LATSEvaluateMetrics(values_metrics=[]),
+                    ),
+                ]
+            ),
+        )
+    ]
+
+    gt_failed_trajectories = [{'trajectory': '\nThought 1: First, I need to calculate how many eggs Janet has left after eating three for breakfast and baking muffins.\nAction 1: Calculate[\n```python\neggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins\n```\n]\nObservation 1: \n```python\neggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins\n```\nExecution Status: Done\nOutput: answer = None\nThought 2: I need to calculate how much money Janet makes by selling the remaining eggs at the farmers\' market.\nAction 2: Calculate[\n```python\nprice_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = money_made_daily\n```\n]\nObservation 2: \n```python\nprice_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = money_made_daily\n```\nExecution Status: NameError("name \'eggs_remaining\' is not defined")\nOutput: answer = None\nThought 3: I forgot to define the variable `eggs_remaining` before using it in the calculation. I need to go back and correct that.\nAction 3: Calculate[\n```python\neggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = money_made_daily\n```\n]\nObservation 3: \n```python\neggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = money_made_daily\n```\nExecution Status: Done\nOutput: answer = -9867630\nThought 4: The calculation resulted in a negative value, which doesn\'t make sense. I need to review my calculations to find the error.\nAction 4: Calculate[\n```python\neggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = abs(money_made_daily)  # Taking the absolute value to ensure a positive result\n```\n]\nObservation 4: \n```python\neggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = abs(money_made_daily)  # Taking the absolute value to ensure a positive result\n```\nExecution Status: Done\nOutput: answer = 9867630\nThought 5: The result is $9,867,630 that Janet makes every day at the farmers\' market.\nAction 5: Finish[\n```python\nanswer = 9867630\n```\n]\nObservation 5: Answer is INCORRECT', 'final_answer': 'answer = 9867630'}, {'trajectory': '\nThought 1: First, I need to calculate how many eggs Janet has left after eating three for breakfast and baking muffins.\nAction 1: Calculate[\n```python\neggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins\n```\n]\nObservation 1: \n```python\neggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins\n```\nExecution Status: Done\nOutput: answer = None\nThought 2: I need to calculate how much money Janet makes by selling the remaining eggs at the farmers\' market.\nAction 2: Calculate[\n```python\nprice_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = money_made_daily\n```\n]\nObservation 2: \n```python\nprice_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = money_made_daily\n```\nExecution Status: NameError("name \'eggs_remaining\' is not defined")\nOutput: answer = None\nThought 3: I forgot to define the variable `eggs_remaining` before using it in the calculation. I need to go back and correct that.\nAction 3: Calculate[\n```python\neggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = money_made_daily\n```\n]\nObservation 3: \n```python\neggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = money_made_daily\n```\nExecution Status: Done\nOutput: answer = -9867630\nThought 4: The calculation resulted in a negative value, which doesn\'t make sense. I need to review my calculations to find the error.\nAction 4: Calculate[\n```python\neggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = abs(money_made_daily)  # Taking the absolute value to ensure a positive result\n```\n]\nObservation 4: \n```python\neggs_laid_per_day = 16\neggs_eaten_daily = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten_daily - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_daily = eggs_remaining * price_per_egg\nanswer = abs(money_made_daily)  # Taking the absolute value to ensure a positive result\n```\nExecution Status: Done\nOutput: answer = 9867630\nThought 5: Janet makes $9,867,630 every day at the farmers\' market.\nAction 5: Finish[\n```python\nanswer = 9867630\n```\n]\nObservation 5: Answer is INCORRECT', 'final_answer': 'answer = 9867630'}]
 
     responses = [
         "First, I need to calculate how many eggs Janet has left after eating three for breakfast and baking muffins.\nAction 1: Calculate[\n```python\neggs_laid_per_day = 16\neggs_eaten = 3\neggs_baked_into_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten - eggs_baked_into_muffins\n```\n]\nObservation 1: \n```python\neggs_laid_per_day = 16\neggs_eaten = 3\neggs_baked_into_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten - eggs_baked_into_muffins\n```\nExecution Status: Done\nOutput: eggs_sold = -4933815\nThought 2: The calculation resulted in a negative number because I subtracted the number of eggs baked into muffins incorrectly.\nAction 2: Calculate[\n```python\neggs_laid_per_day = 16\neggs_eaten = 3\neggs_baked_into_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten\neggs_sold = eggs_remaining - eggs_baked_into_muffins\n```\n]\nObservation 2: \n```python\neggs_laid_per_day = 16\neggs_eaten = 3\neggs_baked_into_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_eaten\neggs_sold = eggs_remaining - eggs_baked_into_muffins\n```\nExecution Status: Done\nOutput: eggs_sold = -4933815\nThought 3: The calculation is still incorrect. I need to properly account for the eggs baked into muffins.\nAction 3: Calculate[\n```python\neggs_laid_per_day = 16\neggs_eaten = 3\neggs_baked_into_muffins = 4933828\neggs_laid = eggs_laid_per_day\neggs_eaten_by_janet = eggs_eaten\neggs_used_for_muffins = eggs_baked_into_muffins\neggs_remaining = eggs_laid - eggs_eaten_by_janet - eggs_used_for_muffins\neggs_sold = eggs_remaining\n```\n]\nObservation 3: \n```python\neggs_laid_per_day = 16\neggs_eaten = 3\neggs_baked_into_muffins = 4933828\neggs_laid = eggs_laid_per_day\neggs_eaten_by_janet = eggs_eaten\neggs_used_for_muffins = eggs_baked_into_muffins\neggs_remaining = eggs_laid - eggs_eaten_by_janet - eggs_used_for_muffins\neggs_sold = eggs_remaining\n```\nExecution Status: Done\nOutput: eggs_sold = 13\nThought 4: Janet sells 13 fresh duck eggs daily at the farmers' market.\nAction 4: Finish[\n```python\nanswer = 13 * 2\n```\n]\nObservation 4: \n```python\nanswer = 13 * 2\n```",
@@ -138,8 +784,11 @@ def test_generate() -> None:
     assert out.total_cost == 0.0015400000000000001
     assert out.total_prompt_time == 14.0
     assert out.total_time == 0.5
-    print(out.additional_info)
     assert out.additional_info == gt_additional_info
+    assert strategy.failed_trajectories == gt_failed_trajectories
+    assert strategy.reflection_map == []
+    assert strategy.value_cache == {}
+    assert strategy.root.to_dict() == {}
 
 
 def test_generate_children_nodes() -> None:
