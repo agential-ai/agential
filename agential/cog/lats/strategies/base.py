@@ -1,7 +1,7 @@
 """Base LATS Agent strategy class."""
 
 from abc import abstractmethod
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Tuple
 
 from agential.cog.base.strategies import BaseStrategy
 from agential.cog.lats.node import Node
@@ -11,8 +11,8 @@ from agential.cog.lats.output import (
     LATSOutput,
     LATSSimulationMetrics,
 )
-from agential.llm.llm import BaseLLM, ModelResponse
-from agential.utils.general import PromptMetrics
+from agential.llm.llm import BaseLLM
+from agential.utils.metrics import PromptMetrics
 
 
 class LATSBaseStrategy(BaseStrategy):

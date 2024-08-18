@@ -10,7 +10,7 @@ from agential.cog.self_refine.functional import (
 from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
-from agential.utils.general import get_token_cost_time
+from agential.utils.metrics import get_token_cost_time
 
 
 class SelfRefineCodeStrategy(SelfRefineBaseStrategy):

@@ -21,7 +21,7 @@ from agential.cog.lats.output import (
 )
 from agential.cog.lats.strategies.base import LATSBaseStrategy
 from agential.llm.llm import BaseLLM
-from agential.utils.general import PromptMetrics, get_token_cost_time
+from agential.utils.metrics import PromptMetrics, get_token_cost_time
 from agential.utils.parse import remove_newline
 
 

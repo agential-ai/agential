@@ -5,11 +5,9 @@ import pytest
 from agential.cog.constants import Benchmarks
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.agent import LATSAgent
-from agential.cog.lats.node import Node
 from agential.cog.lats.output import (
     LATSEvaluateMetrics,
     LATSGenerateMetrics,
-    LATSOutput,
     LATSReActStepOutput,
     LATSSimulationMetrics,
     LATSSimulationOutput,
@@ -40,7 +38,7 @@ from agential.cog.lats.strategies.qa import (
     LATSTriviaQAStrategy,
 )
 from agential.llm.llm import BaseLLM, MockLLM
-from agential.utils.general import PromptMetrics
+from agential.utils.metrics import PromptMetrics
 
 
 def test_init() -> None:

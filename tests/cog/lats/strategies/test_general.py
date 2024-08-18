@@ -5,7 +5,7 @@ import pytest
 from agential.cog.lats.node import Node
 from agential.cog.lats.strategies.general import LATSGeneralStrategy
 from agential.llm.llm import MockLLM
-from agential.utils.general import PromptMetrics
+from agential.utils.metrics import PromptMetrics
 
 
 def test_init() -> None:

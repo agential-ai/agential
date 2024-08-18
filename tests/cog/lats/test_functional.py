@@ -42,7 +42,7 @@ from agential.cog.lats.prompts import (
     LATS_VALUE_INSTRUCTION_HOTPOTQA,
 )
 from agential.llm.llm import MockLLM
-from agential.utils.general import PromptMetrics
+from agential.utils.metrics import PromptMetrics
 
 
 def test__build_reflection_format() -> None:

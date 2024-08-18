@@ -11,7 +11,7 @@ from agential.cog.react.functional import _prompt_agent, parse_qa_action
 from agential.cog.react.strategies.general import ReActGeneralStrategy
 from agential.llm.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
-from agential.utils.general import PromptMetrics, get_token_cost_time
+from agential.utils.metrics import PromptMetrics, get_token_cost_time
 from agential.utils.parse import remove_newline
 
 

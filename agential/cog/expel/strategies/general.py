@@ -20,7 +20,8 @@ from agential.cog.expel.memory import (
 from agential.cog.expel.strategies.base import ExpeLBaseStrategy
 from agential.cog.reflexion.agent import ReflexionReActAgent
 from agential.llm.llm import BaseLLM
-from agential.utils.general import get_token_cost_time, shuffle_chunk_list
+from agential.utils.general import shuffle_chunk_list
+from agential.utils.metrics import get_token_cost_time
 
 
 class ExpeLStrategy(ExpeLBaseStrategy):

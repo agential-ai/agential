@@ -30,7 +30,7 @@ from agential.cog.react.strategies.qa import (
     ReActTriviaQAStrategy,
 )
 from agential.llm.llm import BaseLLM, MockLLM
-from agential.utils.general import PromptMetrics
+from agential.utils.metrics import PromptMetrics
 
 
 def test_init() -> None:

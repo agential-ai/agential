@@ -17,7 +17,7 @@ from agential.cog.react.functional import (
 from agential.cog.react.output import ReActStepOutput
 from agential.cog.react.prompts import REACT_INSTRUCTION_HOTPOTQA
 from agential.llm.llm import MockLLM
-from agential.utils.general import PromptMetrics
+from agential.utils.metrics import PromptMetrics
 
 
 def test__build_agent_prompt() -> None:

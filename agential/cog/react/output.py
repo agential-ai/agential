@@ -5,7 +5,7 @@ from typing import Any, Dict, List
 from pydantic import BaseModel, Field
 
 from agential.cog.base.output import BaseOutput
-from agential.utils.general import PromptMetrics
+from agential.utils.metrics import PromptMetrics
 
 
 class ReActStepOutput(BaseModel):

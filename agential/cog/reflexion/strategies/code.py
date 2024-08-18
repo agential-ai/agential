@@ -25,7 +25,8 @@ from agential.cog.reflexion.strategies.base import (
 )
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
-from agential.utils.general import get_token_cost_time, safe_execute
+from agential.utils.general import safe_execute
+from agential.utils.metrics import get_token_cost_time
 from agential.utils.parse import remove_newline
 
 

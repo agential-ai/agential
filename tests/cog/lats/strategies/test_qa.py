@@ -29,7 +29,7 @@ from agential.cog.lats.strategies.qa import (
 )
 from agential.llm.llm import MockLLM
 from agential.utils.docstore import DocstoreExplorer
-from agential.utils.general import PromptMetrics
+from agential.utils.metrics import PromptMetrics
 
 
 def test_init() -> None:

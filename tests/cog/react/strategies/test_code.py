@@ -10,7 +10,7 @@ from agential.cog.react.strategies.code import (
     ReActMBPPStrategy,
 )
 from agential.llm.llm import BaseLLM, MockLLM
-from agential.utils.general import PromptMetrics
+from agential.utils.metrics import PromptMetrics
 
 
 def test_init() -> None:
@@ -49,7 +49,15 @@ def test_generate_action() -> None:
     assert query == gt_query
 
     assert scratchpad == gt_scratchpad
-    assert action_metrics == PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)
+    assert action_metrics == PromptMetrics(
+        prompt_tokens=10,
+        completion_tokens=20,
+        total_tokens=30,
+        prompt_cost=1.5e-05,
+        completion_cost=3.9999999999999996e-05,
+        total_cost=5.4999999999999995e-05,
+        prompt_time=0.5,
+    )
 
 
 def test_generate_observation() -> None:
