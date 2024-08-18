@@ -1,7 +1,5 @@
 """Unit tests for LATS QA strategies."""
 
-import itertools
-
 from langchain_community.docstore.wikipedia import Wikipedia
 
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
