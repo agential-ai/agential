@@ -102,7 +102,7 @@ class LATSQAStrategy(LATSGeneralStrategy):
             Tuple[List[Node], LATSGenerateMetrics]: A list of generated child nodes, and the pydantic of corresponding metrics.
         """
         reflections_str = ""
-        reflection_metrics = []
+        reflection_metrics: List[PromptMetrics] = []
         if self.reflect_condition():
             reflections, reflection_metrics = self.reflect(
                 question=question,

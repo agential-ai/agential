@@ -22,7 +22,7 @@ from agential.cog.lats.output import (
 )
 from agential.cog.lats.strategies.general import LATSGeneralStrategy
 from agential.eval.em import EM
-from agential.llm.llm import BaseLLM, ModelResponse
+from agential.llm.llm import BaseLLM
 from agential.utils.general import PromptMetrics, get_token_cost_time, safe_execute
 
 
@@ -96,7 +96,7 @@ class LATSCodeStrategy(LATSGeneralStrategy):
             Tuple[List[Node], LATSGenerateMetrics]: A list of generated child nodes, and the pydantic of corresponding metrics.
         """
         reflections_str = ""
-        reflection_metrics = []
+        reflection_metrics: List[PromptMetrics] = []
         if self.reflect_condition():
             reflections, reflection_metrics = self.reflect(
                 question=question,

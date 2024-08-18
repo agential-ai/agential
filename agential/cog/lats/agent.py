@@ -290,7 +290,7 @@ class LATSAgent(BaseAgent):
         fewshot_type: str = "",
         max_iterations: int = 30,
         reset: bool = True,
-    ) -> Tuple[Node, List[LATSOutput]]:
+    ) -> LATSOutput:
         """Generate an output for the given question.
 
         Args:
@@ -310,7 +310,7 @@ class LATSAgent(BaseAgent):
             reset (bool): Whether to reset the agent before generating the output. Defaults to True.
 
         Returns:
-                Tuple[Node, List[LATSOutput]]: A tuple containing the root node and a list of outputs.
+            LATSOutput: The generated output.
         """
         if not prompt or not examples:
             if not fewshot_type:

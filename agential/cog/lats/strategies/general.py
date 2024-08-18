@@ -12,6 +12,7 @@ from agential.cog.lats.functional import (
 )
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import (
+    LATSEvaluateMetrics,
     LATSGenerateMetrics,
     LATSOutput,
     LATSSimulationMetrics,
@@ -19,7 +20,7 @@ from agential.cog.lats.output import (
     LATSStepOutput,
 )
 from agential.cog.lats.strategies.base import LATSBaseStrategy
-from agential.llm.llm import BaseLLM, ModelResponse
+from agential.llm.llm import BaseLLM
 from agential.utils.general import PromptMetrics, get_token_cost_time
 from agential.utils.parse import remove_newline
 
@@ -310,7 +311,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, str, ModelResponse]:
+    ) -> Tuple[str, str, str, PromptMetrics]:
         """Generate an action for the current step in the reasoning process.
 
         Args:
@@ -323,7 +324,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[str, str, str, ModelResponse]: A tuple containing the updated trajectory, action type, query, and the model response.
+            Tuple[str, str, str, PromptMetrics]: A tuple containing the updated trajectory, action type, query, and the metrics.
         """
         raise NotImplementedError
 
@@ -442,7 +443,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[List[Dict[str, Any]], List[Optional[ModelResponse]]]:
+    ) -> Tuple[List[Dict[str, Any]], LATSEvaluateMetrics]:
         """Evaluate the given node and its children.
 
         Args:
@@ -453,7 +454,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[List[Dict[str, Any]], List[Optional[ModelResponse]]]: A list of dictionaries containing evaluation results for each child node and their model responses.
+            Tuple[List[Dict[str, Any]], LATSEvaluateMetrics]: A list of dictionaries containing evaluation results for each child node and their metrics.
         """
         raise NotImplementedError
 

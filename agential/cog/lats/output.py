@@ -5,7 +5,6 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
 
 from agential.cog.base.output import BaseOutput
-from agential.llm.llm import ModelResponse
 from agential.utils.general import PromptMetrics
 
 
@@ -34,7 +33,13 @@ class LATSReActStepOutput(BaseModel):
 
 
 class LATSGenerateMetrics(BaseModel):
-    """LATS generate metrics Pydantic output class."""
+    """LATS generate metrics Pydantic output class.
+
+    Attributes:
+        thoughts_metrics (List[PromptMetrics]): The metrics of the thoughts.
+        actions_metrics (List[PromptMetrics]): The metrics of the actions.
+        reflections_metrics (List[PromptMetrics]): The metrics of the reflections.
+    """
 
     thoughts_metrics: List[PromptMetrics] = Field(
         ...,
@@ -53,7 +58,11 @@ class LATSGenerateMetrics(BaseModel):
 
 
 class LATSEvaluateMetrics(BaseModel):
-    """LATS evaluate metrics Pydantic output class."""
+    """LATS evaluate metrics Pydantic output class.
+
+    Attributes:
+        values_metrics (List[Optional[PromptMetrics]]): The metrics of the values.
+    """
 
     values_metrics: List[Optional[PromptMetrics]] = Field(
         ...,
@@ -62,7 +71,12 @@ class LATSEvaluateMetrics(BaseModel):
 
 
 class LATSSimulationStepMetrics(BaseModel):
-    """LATS simulation step metrics Pydantic output class."""
+    """LATS simulation step metrics Pydantic output class.
+
+    Attributes:
+        generate_metrics (LATSGenerateMetrics): The metrics of the thoughts, actions, and reflections.
+        evaluate_metrics (LATSEvaluateMetrics): The metrics of the values.
+    """
 
     generate_metrics: LATSGenerateMetrics = Field(
         ...,
@@ -75,7 +89,11 @@ class LATSSimulationStepMetrics(BaseModel):
 
 
 class LATSSimulationMetrics(BaseModel):
-    """LATS simulation metrics Pydantic output class."""
+    """LATS simulation metrics Pydantic output class.
+
+    Attributes:
+        simulation_step_metrics (List[LATSSimulationStepMetrics]): The metrics of the simulation.
+    """
 
     simulation_step_metrics: List[LATSSimulationStepMetrics] = Field(
         ...,
@@ -84,7 +102,16 @@ class LATSSimulationMetrics(BaseModel):
 
 
 class LATSSimulationOutput(BaseModel):
-    """LATS simulation Pydantic output class."""
+    """LATS simulation Pydantic output class.
+
+    Attributes:
+        simulation_reward (float): The reward of the simulation from the current node's most valuable child node.
+        simulation_terminal_node (Optional[Dict[str, Any]]): The terminal node of the simulation.
+        simulation_current_nodes (List[Dict[str, Any]]): The current nodes of the simulation.
+        simulation_children_nodes (List[List[Dict[str, Any]]]): The children nodes of the simulation.
+        simulation_values (List[List[Dict[str, Any]]]): The values of the children nodes of the simulation.
+        simulation_metrics (LATSSimulationMetrics): The metrics of the simulation.
+    """
 
     simulation_reward: float = Field(
         ...,
@@ -115,8 +142,11 @@ class LATSStepOutput(BaseModel):
         iteration (int): The iteration number.
         current_node (Dict[str, Any]): The current node.
         children_nodes (List[Dict[str, Any]]): The children nodes of the current node.
+        generate_metrics (LATSGenerateMetrics): The metrics of the thoughts, actions, and reflections.
         values (Optional[List[Dict[str, Any]]]): The values of the children nodes.
-        simulation_results (LATSSimulationOutput): The results of the simulation.
+        evaluate_metrics (Optional[LATSEvaluateMetrics]): The metrics of the values.
+        simulation_results (Optional[LATSSimulationOutput]): The results of the simulation.
+        simulation_metrics (Optional[LATSSimulationMetrics]): The metrics of the simulation.
     """
 
     iteration: int = Field(..., description="The iteration number.")
@@ -148,7 +178,11 @@ class LATSStepOutput(BaseModel):
 
 
 class LATSOutput(BaseOutput):
-    """LATS Pydantic output class."""
+    """LATS Pydantic output class.
+
+    Attributes:
+        additional_info (List[LATSStepOutput]): The additional information of the LATS step output.
+    """
 
     additional_info: List[LATSStepOutput] = Field(
         ...,

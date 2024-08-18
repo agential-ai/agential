@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from agential.cog.base.strategies import BaseStrategy
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import (
+    LATSEvaluateMetrics,
     LATSGenerateMetrics,
     LATSOutput,
     LATSSimulationMetrics,
@@ -124,7 +125,7 @@ class LATSBaseStrategy(BaseStrategy):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, ModelResponse]:
+    ) -> Tuple[str, str, PromptMetrics]:
         """Generate a thought for the current step in the reasoning process.
 
         Args:
@@ -137,7 +138,7 @@ class LATSBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[str, str, ModelResponse]: A tuple containing the updated trajectory, the generated thought, and the model response.
+            Tuple[str, str, PromptMetrics]: A tuple containing the updated trajectory, the generated thought, and the metrics.
         """
         raise NotImplementedError
 
@@ -151,7 +152,7 @@ class LATSBaseStrategy(BaseStrategy):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, str, ModelResponse]:
+    ) -> Tuple[str, str, str, PromptMetrics]:
         """Generate an action for the current step in the reasoning process.
 
         Args:
@@ -164,7 +165,7 @@ class LATSBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[str, str, str, ModelResponse]: A tuple containing the updated trajectory, action type, query, and the model response.
+            Tuple[str, str, str, PromptMetrics]: A tuple containing the updated trajectory, action type, query, and the metrics.
         """
         raise NotImplementedError
 
@@ -243,7 +244,7 @@ class LATSBaseStrategy(BaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[List[Dict[str, Any]], List[Optional[ModelResponse]]]:
+    ) -> Tuple[List[Dict[str, Any]], LATSEvaluateMetrics]:
         """Evaluate the given node and its children.
 
         Args:
@@ -254,7 +255,7 @@ class LATSBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[List[Dict[str, Any]], List[Optional[ModelResponse]]]: A list of dictionaries containing evaluation results for each child node.
+            Tuple[List[Dict[str, Any]], LATSEvaluateMetrics]: A list of dictionaries containing evaluation results for each child node and their metrics.
         """
         raise NotImplementedError
 
