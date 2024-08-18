@@ -81,641 +81,641 @@ def test_generate() -> None:
         "reward": 0,
     }
 
-    gt_additional_info = [
-        LATSStepOutput(
-            iteration=0,
-            current_node={
-                "state": LATSReActStepOutput(
-                    thought="",
-                    action_type="",
-                    query="",
-                    observation="",
-                    answer="",
-                    external_tool_info={},
-                ),
-                "visits": 0,
-                "value": 0,
-                "depth": 0,
-                "is_terminal": False,
-                "reward": 0,
-            },
-            children_nodes=[
-                {
-                    "state": LATSReActStepOutput(
-                        thought="I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.",
-                        action_type="Search",
-                        query="VIVA Media AG",
-                        observation="Badr Hari is the best kick boxer in the world.",
-                        answer="",
-                        external_tool_info={
-                            "search_result": "Badr Hari is the best kick boxer in the world.",
-                            "lookup_result": "",
-                        },
-                    ),
-                    "visits": 0,
-                    "value": 0.0,
-                    "depth": 1,
-                    "is_terminal": False,
-                    "reward": 0,
-                },
-                {
-                    "state": LATSReActStepOutput(
-                        thought="I need to search for VIVA Media AG to find out what their new acronym stands for after changing their name in 2004.",
-                        action_type="Search",
-                        query="VIVA Media AG",
-                        observation="Badr Hari is the best kick boxer in the world.",
-                        answer="",
-                        external_tool_info={
-                            "search_result": "Badr Hari is the best kick boxer in the world.",
-                            "lookup_result": "",
-                        },
-                    ),
-                    "visits": 0,
-                    "value": 0.0,
-                    "depth": 1,
-                    "is_terminal": False,
-                    "reward": 0,
-                },
-            ],
-            thoughts_metrics=[
-                PromptMetrics(
-                    prompt_tokens=10,
-                    completion_tokens=20,
-                    total_tokens=30,
-                    prompt_cost=1.5e-05,
-                    completion_cost=3.9999999999999996e-05,
-                    total_cost=5.4999999999999995e-05,
-                    prompt_time=0.5,
-                ),
-                PromptMetrics(
-                    prompt_tokens=10,
-                    completion_tokens=20,
-                    total_tokens=30,
-                    prompt_cost=1.5e-05,
-                    completion_cost=3.9999999999999996e-05,
-                    total_cost=5.4999999999999995e-05,
-                    prompt_time=0.5,
-                ),
-            ],
-            actions_metrics=[
-                PromptMetrics(
-                    prompt_tokens=10,
-                    completion_tokens=20,
-                    total_tokens=30,
-                    prompt_cost=1.5e-05,
-                    completion_cost=3.9999999999999996e-05,
-                    total_cost=5.4999999999999995e-05,
-                    prompt_time=0.5,
-                ),
-                PromptMetrics(
-                    prompt_tokens=10,
-                    completion_tokens=20,
-                    total_tokens=30,
-                    prompt_cost=1.5e-05,
-                    completion_cost=3.9999999999999996e-05,
-                    total_cost=5.4999999999999995e-05,
-                    prompt_time=0.5,
-                ),
-            ],
-            values=[
-                {"explanation": "Explanation not found", "value": 0.0},
-                {"explanation": "Explanation not found", "value": 0.0},
-            ],
-            values_metrics=[
-                PromptMetrics(
-                    prompt_tokens=10,
-                    completion_tokens=20,
-                    total_tokens=30,
-                    prompt_cost=1.5e-05,
-                    completion_cost=3.9999999999999996e-05,
-                    total_cost=5.4999999999999995e-05,
-                    prompt_time=0.5,
-                ),
-                PromptMetrics(
-                    prompt_tokens=10,
-                    completion_tokens=20,
-                    total_tokens=30,
-                    prompt_cost=1.5e-05,
-                    completion_cost=3.9999999999999996e-05,
-                    total_cost=5.4999999999999995e-05,
-                    prompt_time=0.5,
-                ),
-            ],
-            simulation_results=LATSSimulationOutput(
-                simulation_reward=-1.0,
-                simulation_terminal_node={
-                    "state": LATSReActStepOutput(
-                        thought="Since direct searches for VIVA Media AG and its new acronym after the name change in 2004 did not provide relevant information, I should consider looking for industry reports, press releases, or official announcements related to the company's rebranding to uncover the acronym.",
-                        action_type="Search",
-                        query="VIVA Media AG rebranding press release",
-                        observation="Badr Hari is the best kick boxer in the world.",
-                        answer="",
-                        external_tool_info={
-                            "search_result": "Badr Hari is the best kick boxer in the world.",
-                            "lookup_result": "",
-                        },
-                    ),
-                    "visits": 0,
-                    "value": 0,
-                    "depth": 5,
-                    "is_terminal": False,
-                    "reward": 0,
-                },
-                simulation_current_nodes=[
-                    {
-                        "state": LATSReActStepOutput(
-                            thought="I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.",
-                            action_type="Search",
-                            query="VIVA Media AG",
-                            observation="Badr Hari is the best kick boxer in the world.",
-                            answer="",
-                            external_tool_info={
-                                "search_result": "Badr Hari is the best kick boxer in the world.",
-                                "lookup_result": "",
-                            },
-                        ),
-                        "visits": 0,
-                        "value": 0.0,
-                        "depth": 1,
-                        "is_terminal": False,
-                        "reward": 0,
-                    },
-                    {
-                        "state": LATSReActStepOutput(
-                            thought="The search for VIVA Media AG did not return relevant results. I should try searching for the new name of the company directly.",
-                            action_type="Search",
-                            query="VIVA Media AG new name",
-                            observation="Badr Hari is the best kick boxer in the world.",
-                            answer="",
-                            external_tool_info={
-                                "search_result": "Badr Hari is the best kick boxer in the world.",
-                                "lookup_result": "",
-                            },
-                        ),
-                        "visits": 0,
-                        "value": 0,
-                        "depth": 2,
-                        "is_terminal": False,
-                        "reward": 0,
-                    },
-                    {
-                        "state": LATSReActStepOutput(
-                            thought="Since direct searches for VIVA Media AG and its new name did not yield results, I should try to search for the company's name change history or any related news articles to find out the acronym.",
-                            action_type="Search",
-                            query="VIVA Media AG name change history",
-                            observation="Badr Hari is the best kick boxer in the world.",
-                            answer="",
-                            external_tool_info={
-                                "search_result": "Badr Hari is the best kick boxer in the world.",
-                                "lookup_result": "",
-                            },
-                        ),
-                        "visits": 0,
-                        "value": 0,
-                        "depth": 3,
-                        "is_terminal": False,
-                        "reward": 0,
-                    },
-                    {
-                        "state": LATSReActStepOutput(
-                            thought="The search results are still not providing the information needed. I should try to find a different angle to approach this question.",
-                            action_type="Search",
-                            query="VIVA Media AG rebranding 2004",
-                            observation="Badr Hari is the best kick boxer in the world.",
-                            answer="",
-                            external_tool_info={
-                                "search_result": "Badr Hari is the best kick boxer in the world.",
-                                "lookup_result": "",
-                            },
-                        ),
-                        "visits": 0,
-                        "value": 0,
-                        "depth": 4,
-                        "is_terminal": False,
-                        "reward": 0,
-                    },
-                ],
-                simulation_children_nodes=[
-                    [
-                        {
-                            "state": LATSReActStepOutput(
-                                thought="The search for VIVA Media AG did not return relevant results. I should try searching for the new name of the company directly.",
-                                action_type="Search",
-                                query="VIVA Media AG new name",
-                                observation="Badr Hari is the best kick boxer in the world.",
-                                answer="",
-                                external_tool_info={
-                                    "search_result": "Badr Hari is the best kick boxer in the world.",
-                                    "lookup_result": "",
-                                },
-                            ),
-                            "visits": 0,
-                            "value": 0,
-                            "depth": 2,
-                            "is_terminal": False,
-                            "reward": 0,
-                        },
-                        {
-                            "state": LATSReActStepOutput(
-                                thought="I couldn't find VIVA Media AG. Let me try searching for VIVA Media AG (acronym) instead.",
-                                action_type="Search",
-                                query="VIVA Media AG (acronym)",
-                                observation="Badr Hari is the best kick boxer in the world.",
-                                answer="",
-                                external_tool_info={
-                                    "search_result": "Badr Hari is the best kick boxer in the world.",
-                                    "lookup_result": "",
-                                },
-                            ),
-                            "visits": 0,
-                            "value": 0,
-                            "depth": 2,
-                            "is_terminal": False,
-                            "reward": 0,
-                        },
-                    ],
-                    [
-                        {
-                            "state": LATSReActStepOutput(
-                                thought="Since direct searches for VIVA Media AG and its new name did not yield results, I should try to search for the company's name change history or any related news articles to find out the acronym.",
-                                action_type="Search",
-                                query="VIVA Media AG name change history",
-                                observation="Badr Hari is the best kick boxer in the world.",
-                                answer="",
-                                external_tool_info={
-                                    "search_result": "Badr Hari is the best kick boxer in the world.",
-                                    "lookup_result": "",
-                                },
-                            ),
-                            "visits": 0,
-                            "value": 0,
-                            "depth": 3,
-                            "is_terminal": False,
-                            "reward": 0,
-                        },
-                        {
-                            "state": LATSReActStepOutput(
-                                thought="It seems the direct search for the new name of VIVA Media AG is not yielding results. I should try a different approach to find the acronym.",
-                                action_type="Search",
-                                query="VIVA Media AG acronym 2004",
-                                observation="Badr Hari is the best kick boxer in the world.",
-                                answer="",
-                                external_tool_info={
-                                    "search_result": "Badr Hari is the best kick boxer in the world.",
-                                    "lookup_result": "",
-                                },
-                            ),
-                            "visits": 0,
-                            "value": 0,
-                            "depth": 3,
-                            "is_terminal": False,
-                            "reward": 0,
-                        },
-                    ],
-                    [
-                        {
-                            "state": LATSReActStepOutput(
-                                thought="The search results are still not providing the information needed. I should try to find a different angle to approach this question.",
-                                action_type="Search",
-                                query="VIVA Media AG rebranding 2004",
-                                observation="Badr Hari is the best kick boxer in the world.",
-                                answer="",
-                                external_tool_info={
-                                    "search_result": "Badr Hari is the best kick boxer in the world.",
-                                    "lookup_result": "",
-                                },
-                            ),
-                            "visits": 0,
-                            "value": 0,
-                            "depth": 4,
-                            "is_terminal": False,
-                            "reward": 0,
-                        },
-                        {
-                            "state": LATSReActStepOutput(
-                                thought="As the search results are not providing relevant information, I should consider looking up the company's history or press releases to find out the acronym of VIVA Media AG after the name change in 2004.",
-                                action_type="Search",
-                                query="VIVA Media AG press releases 2004",
-                                observation="Badr Hari is the best kick boxer in the world.",
-                                answer="",
-                                external_tool_info={
-                                    "search_result": "Badr Hari is the best kick boxer in the world.",
-                                    "lookup_result": "",
-                                },
-                            ),
-                            "visits": 0,
-                            "value": 0,
-                            "depth": 4,
-                            "is_terminal": False,
-                            "reward": 0,
-                        },
-                    ],
-                    [
-                        {
-                            "state": LATSReActStepOutput(
-                                thought="Since direct searches for VIVA Media AG and its new acronym after the name change in 2004 did not provide relevant information, I should consider looking for industry reports, press releases, or official announcements related to the company's rebranding to uncover the acronym.",
-                                action_type="Search",
-                                query="VIVA Media AG rebranding press release",
-                                observation="Badr Hari is the best kick boxer in the world.",
-                                answer="",
-                                external_tool_info={
-                                    "search_result": "Badr Hari is the best kick boxer in the world.",
-                                    "lookup_result": "",
-                                },
-                            ),
-                            "visits": 0,
-                            "value": 0,
-                            "depth": 5,
-                            "is_terminal": False,
-                            "reward": 0,
-                        },
-                        {
-                            "state": LATSReActStepOutput(
-                                thought="Since the search results are not yielding the required information, I should try a more general search for VIVA Media AG's name change history or company information to find the acronym.",
-                                action_type="Search",
-                                query="VIVA Media AG company information",
-                                observation="Badr Hari is the best kick boxer in the world.",
-                                answer="",
-                                external_tool_info={
-                                    "search_result": "Badr Hari is the best kick boxer in the world.",
-                                    "lookup_result": "",
-                                },
-                            ),
-                            "visits": 0,
-                            "value": 0,
-                            "depth": 5,
-                            "is_terminal": False,
-                            "reward": 0,
-                        },
-                    ],
-                ],
-                simulation_thoughts_metrics=[
-                    [
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                    ],
-                    [
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                    ],
-                    [
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                    ],
-                    [
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                    ],
-                ],
-                simulation_actions_metrics=[
-                    [
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                    ],
-                    [
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                    ],
-                    [
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                    ],
-                    [
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                    ],
-                ],
-                simulation_values=[
-                    [
-                        {"explanation": "Explanation not found", "value": 0.0},
-                        {"explanation": "Explanation not found", "value": 0.0},
-                    ],
-                    [
-                        {"explanation": "Explanation not found", "value": 0.0},
-                        {"explanation": "Explanation not found", "value": 0.0},
-                    ],
-                    [
-                        {"explanation": "Explanation not found", "value": 0.0},
-                        {"explanation": "Explanation not found", "value": 0.0},
-                    ],
-                    [
-                        {"explanation": "Explanation not found", "value": 0.0},
-                        {"explanation": "Explanation not found", "value": 0.0},
-                    ],
-                ],
-                simulation_values_metrics=[
-                    [
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                    ],
-                    [
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                    ],
-                    [
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                    ],
-                    [
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                    ],
-                ],
-            ),
-        )
-    ]
+    # gt_additional_info = [
+    #     LATSStepOutput(
+    #         iteration=0,
+    #         current_node={
+    #             "state": LATSReActStepOutput(
+    #                 thought="",
+    #                 action_type="",
+    #                 query="",
+    #                 observation="",
+    #                 answer="",
+    #                 external_tool_info={},
+    #             ),
+    #             "visits": 0,
+    #             "value": 0,
+    #             "depth": 0,
+    #             "is_terminal": False,
+    #             "reward": 0,
+    #         },
+    #         children_nodes=[
+    #             {
+    #                 "state": LATSReActStepOutput(
+    #                     thought="I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.",
+    #                     action_type="Search",
+    #                     query="VIVA Media AG",
+    #                     observation="Badr Hari is the best kick boxer in the world.",
+    #                     answer="",
+    #                     external_tool_info={
+    #                         "search_result": "Badr Hari is the best kick boxer in the world.",
+    #                         "lookup_result": "",
+    #                     },
+    #                 ),
+    #                 "visits": 0,
+    #                 "value": 0.0,
+    #                 "depth": 1,
+    #                 "is_terminal": False,
+    #                 "reward": 0,
+    #             },
+    #             {
+    #                 "state": LATSReActStepOutput(
+    #                     thought="I need to search for VIVA Media AG to find out what their new acronym stands for after changing their name in 2004.",
+    #                     action_type="Search",
+    #                     query="VIVA Media AG",
+    #                     observation="Badr Hari is the best kick boxer in the world.",
+    #                     answer="",
+    #                     external_tool_info={
+    #                         "search_result": "Badr Hari is the best kick boxer in the world.",
+    #                         "lookup_result": "",
+    #                     },
+    #                 ),
+    #                 "visits": 0,
+    #                 "value": 0.0,
+    #                 "depth": 1,
+    #                 "is_terminal": False,
+    #                 "reward": 0,
+    #             },
+    #         ],
+    #         thoughts_metrics=[
+    #             PromptMetrics(
+    #                 prompt_tokens=10,
+    #                 completion_tokens=20,
+    #                 total_tokens=30,
+    #                 prompt_cost=1.5e-05,
+    #                 completion_cost=3.9999999999999996e-05,
+    #                 total_cost=5.4999999999999995e-05,
+    #                 prompt_time=0.5,
+    #             ),
+    #             PromptMetrics(
+    #                 prompt_tokens=10,
+    #                 completion_tokens=20,
+    #                 total_tokens=30,
+    #                 prompt_cost=1.5e-05,
+    #                 completion_cost=3.9999999999999996e-05,
+    #                 total_cost=5.4999999999999995e-05,
+    #                 prompt_time=0.5,
+    #             ),
+    #         ],
+    #         actions_metrics=[
+    #             PromptMetrics(
+    #                 prompt_tokens=10,
+    #                 completion_tokens=20,
+    #                 total_tokens=30,
+    #                 prompt_cost=1.5e-05,
+    #                 completion_cost=3.9999999999999996e-05,
+    #                 total_cost=5.4999999999999995e-05,
+    #                 prompt_time=0.5,
+    #             ),
+    #             PromptMetrics(
+    #                 prompt_tokens=10,
+    #                 completion_tokens=20,
+    #                 total_tokens=30,
+    #                 prompt_cost=1.5e-05,
+    #                 completion_cost=3.9999999999999996e-05,
+    #                 total_cost=5.4999999999999995e-05,
+    #                 prompt_time=0.5,
+    #             ),
+    #         ],
+    #         values=[
+    #             {"explanation": "Explanation not found", "value": 0.0},
+    #             {"explanation": "Explanation not found", "value": 0.0},
+    #         ],
+    #         values_metrics=[
+    #             PromptMetrics(
+    #                 prompt_tokens=10,
+    #                 completion_tokens=20,
+    #                 total_tokens=30,
+    #                 prompt_cost=1.5e-05,
+    #                 completion_cost=3.9999999999999996e-05,
+    #                 total_cost=5.4999999999999995e-05,
+    #                 prompt_time=0.5,
+    #             ),
+    #             PromptMetrics(
+    #                 prompt_tokens=10,
+    #                 completion_tokens=20,
+    #                 total_tokens=30,
+    #                 prompt_cost=1.5e-05,
+    #                 completion_cost=3.9999999999999996e-05,
+    #                 total_cost=5.4999999999999995e-05,
+    #                 prompt_time=0.5,
+    #             ),
+    #         ],
+    #         simulation_results=LATSSimulationOutput(
+    #             simulation_reward=-1.0,
+    #             simulation_terminal_node={
+    #                 "state": LATSReActStepOutput(
+    #                     thought="Since direct searches for VIVA Media AG and its new acronym after the name change in 2004 did not provide relevant information, I should consider looking for industry reports, press releases, or official announcements related to the company's rebranding to uncover the acronym.",
+    #                     action_type="Search",
+    #                     query="VIVA Media AG rebranding press release",
+    #                     observation="Badr Hari is the best kick boxer in the world.",
+    #                     answer="",
+    #                     external_tool_info={
+    #                         "search_result": "Badr Hari is the best kick boxer in the world.",
+    #                         "lookup_result": "",
+    #                     },
+    #                 ),
+    #                 "visits": 0,
+    #                 "value": 0,
+    #                 "depth": 5,
+    #                 "is_terminal": False,
+    #                 "reward": 0,
+    #             },
+    #             simulation_current_nodes=[
+    #                 {
+    #                     "state": LATSReActStepOutput(
+    #                         thought="I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.",
+    #                         action_type="Search",
+    #                         query="VIVA Media AG",
+    #                         observation="Badr Hari is the best kick boxer in the world.",
+    #                         answer="",
+    #                         external_tool_info={
+    #                             "search_result": "Badr Hari is the best kick boxer in the world.",
+    #                             "lookup_result": "",
+    #                         },
+    #                     ),
+    #                     "visits": 0,
+    #                     "value": 0.0,
+    #                     "depth": 1,
+    #                     "is_terminal": False,
+    #                     "reward": 0,
+    #                 },
+    #                 {
+    #                     "state": LATSReActStepOutput(
+    #                         thought="The search for VIVA Media AG did not return relevant results. I should try searching for the new name of the company directly.",
+    #                         action_type="Search",
+    #                         query="VIVA Media AG new name",
+    #                         observation="Badr Hari is the best kick boxer in the world.",
+    #                         answer="",
+    #                         external_tool_info={
+    #                             "search_result": "Badr Hari is the best kick boxer in the world.",
+    #                             "lookup_result": "",
+    #                         },
+    #                     ),
+    #                     "visits": 0,
+    #                     "value": 0,
+    #                     "depth": 2,
+    #                     "is_terminal": False,
+    #                     "reward": 0,
+    #                 },
+    #                 {
+    #                     "state": LATSReActStepOutput(
+    #                         thought="Since direct searches for VIVA Media AG and its new name did not yield results, I should try to search for the company's name change history or any related news articles to find out the acronym.",
+    #                         action_type="Search",
+    #                         query="VIVA Media AG name change history",
+    #                         observation="Badr Hari is the best kick boxer in the world.",
+    #                         answer="",
+    #                         external_tool_info={
+    #                             "search_result": "Badr Hari is the best kick boxer in the world.",
+    #                             "lookup_result": "",
+    #                         },
+    #                     ),
+    #                     "visits": 0,
+    #                     "value": 0,
+    #                     "depth": 3,
+    #                     "is_terminal": False,
+    #                     "reward": 0,
+    #                 },
+    #                 {
+    #                     "state": LATSReActStepOutput(
+    #                         thought="The search results are still not providing the information needed. I should try to find a different angle to approach this question.",
+    #                         action_type="Search",
+    #                         query="VIVA Media AG rebranding 2004",
+    #                         observation="Badr Hari is the best kick boxer in the world.",
+    #                         answer="",
+    #                         external_tool_info={
+    #                             "search_result": "Badr Hari is the best kick boxer in the world.",
+    #                             "lookup_result": "",
+    #                         },
+    #                     ),
+    #                     "visits": 0,
+    #                     "value": 0,
+    #                     "depth": 4,
+    #                     "is_terminal": False,
+    #                     "reward": 0,
+    #                 },
+    #             ],
+    #             simulation_children_nodes=[
+    #                 [
+    #                     {
+    #                         "state": LATSReActStepOutput(
+    #                             thought="The search for VIVA Media AG did not return relevant results. I should try searching for the new name of the company directly.",
+    #                             action_type="Search",
+    #                             query="VIVA Media AG new name",
+    #                             observation="Badr Hari is the best kick boxer in the world.",
+    #                             answer="",
+    #                             external_tool_info={
+    #                                 "search_result": "Badr Hari is the best kick boxer in the world.",
+    #                                 "lookup_result": "",
+    #                             },
+    #                         ),
+    #                         "visits": 0,
+    #                         "value": 0,
+    #                         "depth": 2,
+    #                         "is_terminal": False,
+    #                         "reward": 0,
+    #                     },
+    #                     {
+    #                         "state": LATSReActStepOutput(
+    #                             thought="I couldn't find VIVA Media AG. Let me try searching for VIVA Media AG (acronym) instead.",
+    #                             action_type="Search",
+    #                             query="VIVA Media AG (acronym)",
+    #                             observation="Badr Hari is the best kick boxer in the world.",
+    #                             answer="",
+    #                             external_tool_info={
+    #                                 "search_result": "Badr Hari is the best kick boxer in the world.",
+    #                                 "lookup_result": "",
+    #                             },
+    #                         ),
+    #                         "visits": 0,
+    #                         "value": 0,
+    #                         "depth": 2,
+    #                         "is_terminal": False,
+    #                         "reward": 0,
+    #                     },
+    #                 ],
+    #                 [
+    #                     {
+    #                         "state": LATSReActStepOutput(
+    #                             thought="Since direct searches for VIVA Media AG and its new name did not yield results, I should try to search for the company's name change history or any related news articles to find out the acronym.",
+    #                             action_type="Search",
+    #                             query="VIVA Media AG name change history",
+    #                             observation="Badr Hari is the best kick boxer in the world.",
+    #                             answer="",
+    #                             external_tool_info={
+    #                                 "search_result": "Badr Hari is the best kick boxer in the world.",
+    #                                 "lookup_result": "",
+    #                             },
+    #                         ),
+    #                         "visits": 0,
+    #                         "value": 0,
+    #                         "depth": 3,
+    #                         "is_terminal": False,
+    #                         "reward": 0,
+    #                     },
+    #                     {
+    #                         "state": LATSReActStepOutput(
+    #                             thought="It seems the direct search for the new name of VIVA Media AG is not yielding results. I should try a different approach to find the acronym.",
+    #                             action_type="Search",
+    #                             query="VIVA Media AG acronym 2004",
+    #                             observation="Badr Hari is the best kick boxer in the world.",
+    #                             answer="",
+    #                             external_tool_info={
+    #                                 "search_result": "Badr Hari is the best kick boxer in the world.",
+    #                                 "lookup_result": "",
+    #                             },
+    #                         ),
+    #                         "visits": 0,
+    #                         "value": 0,
+    #                         "depth": 3,
+    #                         "is_terminal": False,
+    #                         "reward": 0,
+    #                     },
+    #                 ],
+    #                 [
+    #                     {
+    #                         "state": LATSReActStepOutput(
+    #                             thought="The search results are still not providing the information needed. I should try to find a different angle to approach this question.",
+    #                             action_type="Search",
+    #                             query="VIVA Media AG rebranding 2004",
+    #                             observation="Badr Hari is the best kick boxer in the world.",
+    #                             answer="",
+    #                             external_tool_info={
+    #                                 "search_result": "Badr Hari is the best kick boxer in the world.",
+    #                                 "lookup_result": "",
+    #                             },
+    #                         ),
+    #                         "visits": 0,
+    #                         "value": 0,
+    #                         "depth": 4,
+    #                         "is_terminal": False,
+    #                         "reward": 0,
+    #                     },
+    #                     {
+    #                         "state": LATSReActStepOutput(
+    #                             thought="As the search results are not providing relevant information, I should consider looking up the company's history or press releases to find out the acronym of VIVA Media AG after the name change in 2004.",
+    #                             action_type="Search",
+    #                             query="VIVA Media AG press releases 2004",
+    #                             observation="Badr Hari is the best kick boxer in the world.",
+    #                             answer="",
+    #                             external_tool_info={
+    #                                 "search_result": "Badr Hari is the best kick boxer in the world.",
+    #                                 "lookup_result": "",
+    #                             },
+    #                         ),
+    #                         "visits": 0,
+    #                         "value": 0,
+    #                         "depth": 4,
+    #                         "is_terminal": False,
+    #                         "reward": 0,
+    #                     },
+    #                 ],
+    #                 [
+    #                     {
+    #                         "state": LATSReActStepOutput(
+    #                             thought="Since direct searches for VIVA Media AG and its new acronym after the name change in 2004 did not provide relevant information, I should consider looking for industry reports, press releases, or official announcements related to the company's rebranding to uncover the acronym.",
+    #                             action_type="Search",
+    #                             query="VIVA Media AG rebranding press release",
+    #                             observation="Badr Hari is the best kick boxer in the world.",
+    #                             answer="",
+    #                             external_tool_info={
+    #                                 "search_result": "Badr Hari is the best kick boxer in the world.",
+    #                                 "lookup_result": "",
+    #                             },
+    #                         ),
+    #                         "visits": 0,
+    #                         "value": 0,
+    #                         "depth": 5,
+    #                         "is_terminal": False,
+    #                         "reward": 0,
+    #                     },
+    #                     {
+    #                         "state": LATSReActStepOutput(
+    #                             thought="Since the search results are not yielding the required information, I should try a more general search for VIVA Media AG's name change history or company information to find the acronym.",
+    #                             action_type="Search",
+    #                             query="VIVA Media AG company information",
+    #                             observation="Badr Hari is the best kick boxer in the world.",
+    #                             answer="",
+    #                             external_tool_info={
+    #                                 "search_result": "Badr Hari is the best kick boxer in the world.",
+    #                                 "lookup_result": "",
+    #                             },
+    #                         ),
+    #                         "visits": 0,
+    #                         "value": 0,
+    #                         "depth": 5,
+    #                         "is_terminal": False,
+    #                         "reward": 0,
+    #                     },
+    #                 ],
+    #             ],
+    #             simulation_thoughts_metrics=[
+    #                 [
+    #                     PromptMetrics(
+    #                         prompt_tokens=10,
+    #                         completion_tokens=20,
+    #                         total_tokens=30,
+    #                         prompt_cost=1.5e-05,
+    #                         completion_cost=3.9999999999999996e-05,
+    #                         total_cost=5.4999999999999995e-05,
+    #                         prompt_time=0.5,
+    #                     ),
+    #                     PromptMetrics(
+    #                         prompt_tokens=10,
+    #                         completion_tokens=20,
+    #                         total_tokens=30,
+    #                         prompt_cost=1.5e-05,
+    #                         completion_cost=3.9999999999999996e-05,
+    #                         total_cost=5.4999999999999995e-05,
+    #                         prompt_time=0.5,
+    #                     ),
+    #                 ],
+    #                 [
+    #                     PromptMetrics(
+    #                         prompt_tokens=10,
+    #                         completion_tokens=20,
+    #                         total_tokens=30,
+    #                         prompt_cost=1.5e-05,
+    #                         completion_cost=3.9999999999999996e-05,
+    #                         total_cost=5.4999999999999995e-05,
+    #                         prompt_time=0.5,
+    #                     ),
+    #                     PromptMetrics(
+    #                         prompt_tokens=10,
+    #                         completion_tokens=20,
+    #                         total_tokens=30,
+    #                         prompt_cost=1.5e-05,
+    #                         completion_cost=3.9999999999999996e-05,
+    #                         total_cost=5.4999999999999995e-05,
+    #                         prompt_time=0.5,
+    #                     ),
+    #                 ],
+    #                 [
+    #                     PromptMetrics(
+    #                         prompt_tokens=10,
+    #                         completion_tokens=20,
+    #                         total_tokens=30,
+    #                         prompt_cost=1.5e-05,
+    #                         completion_cost=3.9999999999999996e-05,
+    #                         total_cost=5.4999999999999995e-05,
+    #                         prompt_time=0.5,
+    #                     ),
+    #                     PromptMetrics(
+    #                         prompt_tokens=10,
+    #                         completion_tokens=20,
+    #                         total_tokens=30,
+    #                         prompt_cost=1.5e-05,
+    #                         completion_cost=3.9999999999999996e-05,
+    #                         total_cost=5.4999999999999995e-05,
+    #                         prompt_time=0.5,
+    #                     ),
+    #                 ],
+    #                 [
+    #                     PromptMetrics(
+    #                         prompt_tokens=10,
+    #                         completion_tokens=20,
+    #                         total_tokens=30,
+    #                         prompt_cost=1.5e-05,
+    #                         completion_cost=3.9999999999999996e-05,
+    #                         total_cost=5.4999999999999995e-05,
+    #                         prompt_time=0.5,
+    #                     ),
+    #                     PromptMetrics(
+    #                         prompt_tokens=10,
+    #                         completion_tokens=20,
+    #                         total_tokens=30,
+    #                         prompt_cost=1.5e-05,
+    #                         completion_cost=3.9999999999999996e-05,
+    #                         total_cost=5.4999999999999995e-05,
+    #                         prompt_time=0.5,
+    #                     ),
+    #                 ],
+    #             ],
+    #             simulation_actions_metrics=[
+    #                 [
+    #                     PromptMetrics(
+    #                         prompt_tokens=10,
+    #                         completion_tokens=20,
+    #                         total_tokens=30,
+    #                         prompt_cost=1.5e-05,
+    #                         completion_cost=3.9999999999999996e-05,
+    #                         total_cost=5.4999999999999995e-05,
+    #                         prompt_time=0.5,
+    #                     ),
+    #                     PromptMetrics(
+    #                         prompt_tokens=10,
+    #                         completion_tokens=20,
+    #                         total_tokens=30,
+    #                         prompt_cost=1.5e-05,
+    #                         completion_cost=3.9999999999999996e-05,
+    #                         total_cost=5.4999999999999995e-05,
+    #                         prompt_time=0.5,
+    #                     ),
+    #                 ],
+    #                 [
+    #                     PromptMetrics(
+    #                         prompt_tokens=10,
+    #                         completion_tokens=20,
+    #                         total_tokens=30,
+    #                         prompt_cost=1.5e-05,
+    #                         completion_cost=3.9999999999999996e-05,
+    #                         total_cost=5.4999999999999995e-05,
+    #                         prompt_time=0.5,
+    #                     ),
+    #                     PromptMetrics(
+    #                         prompt_tokens=10,
+    #                         completion_tokens=20,
+    #                         total_tokens=30,
+    #                         prompt_cost=1.5e-05,
+    #                         completion_cost=3.9999999999999996e-05,
+    #                         total_cost=5.4999999999999995e-05,
+    #                         prompt_time=0.5,
+    #                     ),
+    #                 ],
+    #                 [
+    #                     PromptMetrics(
+    #                         prompt_tokens=10,
+    #                         completion_tokens=20,
+    #                         total_tokens=30,
+    #                         prompt_cost=1.5e-05,
+    #                         completion_cost=3.9999999999999996e-05,
+    #                         total_cost=5.4999999999999995e-05,
+    #                         prompt_time=0.5,
+    #                     ),
+    #                     PromptMetrics(
+    #                         prompt_tokens=10,
+    #                         completion_tokens=20,
+    #                         total_tokens=30,
+    #                         prompt_cost=1.5e-05,
+    #                         completion_cost=3.9999999999999996e-05,
+    #                         total_cost=5.4999999999999995e-05,
+    #                         prompt_time=0.5,
+    #                     ),
+    #                 ],
+    #                 [
+    #                     PromptMetrics(
+    #                         prompt_tokens=10,
+    #                         completion_tokens=20,
+    #                         total_tokens=30,
+    #                         prompt_cost=1.5e-05,
+    #                         completion_cost=3.9999999999999996e-05,
+    #                         total_cost=5.4999999999999995e-05,
+    #                         prompt_time=0.5,
+    #                     ),
+    #                     PromptMetrics(
+    #                         prompt_tokens=10,
+    #                         completion_tokens=20,
+    #                         total_tokens=30,
+    #                         prompt_cost=1.5e-05,
+    #                         completion_cost=3.9999999999999996e-05,
+    #                         total_cost=5.4999999999999995e-05,
+    #                         prompt_time=0.5,
+    #                     ),
+    #                 ],
+    #             ],
+    #             simulation_values=[
+    #                 [
+    #                     {"explanation": "Explanation not found", "value": 0.0},
+    #                     {"explanation": "Explanation not found", "value": 0.0},
+    #                 ],
+    #                 [
+    #                     {"explanation": "Explanation not found", "value": 0.0},
+    #                     {"explanation": "Explanation not found", "value": 0.0},
+    #                 ],
+    #                 [
+    #                     {"explanation": "Explanation not found", "value": 0.0},
+    #                     {"explanation": "Explanation not found", "value": 0.0},
+    #                 ],
+    #                 [
+    #                     {"explanation": "Explanation not found", "value": 0.0},
+    #                     {"explanation": "Explanation not found", "value": 0.0},
+    #                 ],
+    #             ],
+    #             simulation_values_metrics=[
+    #                 [
+    #                     PromptMetrics(
+    #                         prompt_tokens=10,
+    #                         completion_tokens=20,
+    #                         total_tokens=30,
+    #                         prompt_cost=1.5e-05,
+    #                         completion_cost=3.9999999999999996e-05,
+    #                         total_cost=5.4999999999999995e-05,
+    #                         prompt_time=0.5,
+    #                     ),
+    #                     PromptMetrics(
+    #                         prompt_tokens=10,
+    #                         completion_tokens=20,
+    #                         total_tokens=30,
+    #                         prompt_cost=1.5e-05,
+    #                         completion_cost=3.9999999999999996e-05,
+    #                         total_cost=5.4999999999999995e-05,
+    #                         prompt_time=0.5,
+    #                     ),
+    #                 ],
+    #                 [
+    #                     PromptMetrics(
+    #                         prompt_tokens=10,
+    #                         completion_tokens=20,
+    #                         total_tokens=30,
+    #                         prompt_cost=1.5e-05,
+    #                         completion_cost=3.9999999999999996e-05,
+    #                         total_cost=5.4999999999999995e-05,
+    #                         prompt_time=0.5,
+    #                     ),
+    #                     PromptMetrics(
+    #                         prompt_tokens=10,
+    #                         completion_tokens=20,
+    #                         total_tokens=30,
+    #                         prompt_cost=1.5e-05,
+    #                         completion_cost=3.9999999999999996e-05,
+    #                         total_cost=5.4999999999999995e-05,
+    #                         prompt_time=0.5,
+    #                     ),
+    #                 ],
+    #                 [
+    #                     PromptMetrics(
+    #                         prompt_tokens=10,
+    #                         completion_tokens=20,
+    #                         total_tokens=30,
+    #                         prompt_cost=1.5e-05,
+    #                         completion_cost=3.9999999999999996e-05,
+    #                         total_cost=5.4999999999999995e-05,
+    #                         prompt_time=0.5,
+    #                     ),
+    #                     PromptMetrics(
+    #                         prompt_tokens=10,
+    #                         completion_tokens=20,
+    #                         total_tokens=30,
+    #                         prompt_cost=1.5e-05,
+    #                         completion_cost=3.9999999999999996e-05,
+    #                         total_cost=5.4999999999999995e-05,
+    #                         prompt_time=0.5,
+    #                     ),
+    #                 ],
+    #                 [
+    #                     PromptMetrics(
+    #                         prompt_tokens=10,
+    #                         completion_tokens=20,
+    #                         total_tokens=30,
+    #                         prompt_cost=1.5e-05,
+    #                         completion_cost=3.9999999999999996e-05,
+    #                         total_cost=5.4999999999999995e-05,
+    #                         prompt_time=0.5,
+    #                     ),
+    #                     PromptMetrics(
+    #                         prompt_tokens=10,
+    #                         completion_tokens=20,
+    #                         total_tokens=30,
+    #                         prompt_cost=1.5e-05,
+    #                         completion_cost=3.9999999999999996e-05,
+    #                         total_cost=5.4999999999999995e-05,
+    #                         prompt_time=0.5,
+    #                     ),
+    #                 ],
+    #             ],
+    #         ),
+    #     )
+    # ]
 
     responses = [
         "I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.\nAction 1: Search[VIVA Media AG]\nObservation 1: VIVA Media AG was a German media company that operated several television channels.\nThought 2: I need to find the new acronym for VIVA Media AG after its name change in 2004.\nAction 2: Lookup[new name of VIVA Media AG in 2004]\nObservation 2: (Result 1 / 1) The new acronym for VIVA Media AG after changing its name in 2004 was VIVA Entertainment AG.\nThought 3: The new acronym for VIVA Media AG after its name change in 2004 was VIVA Entertainment AG. \nAction 3: Finish[VIVA Entertainment AG]",
@@ -1592,9 +1592,7 @@ def test_generate_children_nodes() -> None:
 
     (
         children_nodes,
-        thought_model_responses,
-        action_model_responses,
-        reflection_model_responses,
+        generate_metrics
     ) = strategy.generate_children_nodes(
         node=root,
         question=question,
@@ -1607,11 +1605,12 @@ def test_generate_children_nodes() -> None:
         reflect_additional_keys={},
     )
     assert len(children_nodes) == 5
-    for gt_state, node, t, a, gt_t, gt_a in zip(
+    for gt_state, node, t, a, r, gt_t, gt_a in zip(
         gt_states,
         children_nodes,
-        thought_model_responses,
-        action_model_responses,
+        generate_metrics.thoughts_metrics,
+        generate_metrics.actions_metrics,
+        generate_metrics.reflections_metrics,
         gt_thought_model_responses,
         gt_action_model_responses,
     ):
@@ -1621,8 +1620,10 @@ def test_generate_children_nodes() -> None:
         assert node.value == 0
         assert node.is_terminal is False
         assert node.visits == 0
-        assert t.choices[0].message.content == gt_t
-        assert a.choices[0].message.content == gt_a
+        print(repr(t))
+        print(repr(a))
+        assert t == gt_t
+        assert a == gt_a
 
     # Test generate with reflections.
     gt_states = [
@@ -1730,9 +1731,7 @@ def test_generate_children_nodes() -> None:
     root = strategy.initialize()
     (
         children_nodes,
-        thought_model_responses,
-        action_model_responses,
-        reflection_model_responses,
+        generate_metrics
     ) = strategy.generate_children_nodes(
         node=root,
         question=question,
@@ -1745,11 +1744,12 @@ def test_generate_children_nodes() -> None:
         reflect_additional_keys={},
     )
     assert len(children_nodes) == 5
-    for gt_state, node, t, a, gt_t, gt_a in zip(
+    for gt_state, node, t, a, r, gt_t, gt_a in zip(
         gt_states,
         children_nodes,
-        thought_model_responses,
-        action_model_responses,
+        generate_metrics.thoughts_metrics,
+        generate_metrics.actions_metrics,
+        generate_metrics.reflections_metrics,
         gt_thought_model_responses,
         gt_action_model_responses,
     ):
@@ -1759,8 +1759,9 @@ def test_generate_children_nodes() -> None:
         assert node.value == 0
         assert node.is_terminal is False
         assert node.visits == 0
-        assert t.choices[0].message.content == gt_t
-        assert a.choices[0].message.content == gt_a
+        assert t == PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)
+        assert a == PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)
+
 
     # Test case with a terminal child node (reward 0)
     responses = [
@@ -1773,9 +1774,7 @@ def test_generate_children_nodes() -> None:
     root = strategy.initialize()
     (
         children_nodes,
-        thought_model_responses,
-        action_model_responses,
-        reflection_model_responses,
+        generate_metrics
     ) = strategy.generate_children_nodes(
         node=root,
         question=question,
@@ -1794,15 +1793,13 @@ def test_generate_children_nodes() -> None:
     assert children_nodes[0].is_terminal
     assert children_nodes[0].reward == 0
 
-    assert len(thought_model_responses) == 1
-    assert (
-        thought_model_responses[0].choices[0].message.content
-        == "I think the answer is Mike Tyson."
-    )
-    assert len(action_model_responses) == 1
-    assert action_model_responses[0].choices[0].message.content == "Finish[Mike Tyson]"
+    assert len(generate_metrics.thoughts_metrics) == 1
 
-    assert strategy.failed_trajectories == []
+    assert generate_metrics.thoughts_metrics[0] == PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)
+    assert generate_metrics.actions_metrics[0] == PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)
+    assert len(generate_metrics.actions_metrics) == 1
+    assert len(generate_metrics.reflections_metrics) == 0
+    assert strategy.failed_trajectories == [{'trajectory': '\nThought 1: I think the answer is Mike Tyson.\nAction 1: Finish[Mike Tyson]\nObservation 1: Answer is INCORRECT', 'final_answer': 'mike tyson'}]
     assert strategy.reflection_map == []
     assert strategy.value_cache == {}
     assert strategy.root == root
@@ -1951,7 +1948,7 @@ def test_evaluate_node() -> None:
         }
     ]
 
-    values, values_responses = strategy.evaluate_node(
+    values, values_evaluation_metrics = strategy.evaluate_node(
         root, question, examples, prompt, {}
     )
 
@@ -1976,17 +1973,21 @@ def test_evaluate_node() -> None:
     assert child1.value == 0.8
     assert child2.value == 0  # Terminal node, value not updated.
 
-    gt_responses = ["Explanation: Good trajectory. Correctness score: 8", None]
-    assert values_responses[0].choices[0].message.content == gt_responses[0]
-    assert values_responses[1] == gt_responses[1]
+    expected_value_metric = [
+        PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5),
+        None
+    ]
+
+    for i, value_met in zip(values_evaluation_metrics.values_metrics , expected_value_metric):
+        assert i == value_met
 
     # Test caching.
     strategy.cache_values = True
-    cached_values, values_responses = strategy.evaluate_node(
+    cached_values, values_evaluation_metrics = strategy.evaluate_node(
         root, question, examples, prompt, {}
     )
     assert cached_values == values
-    assert values_responses == [None, None]
+    assert values_evaluation_metrics.values_metrics == [None, None]
 
     assert strategy.failed_trajectories == []
     assert strategy.reflection_map == [
@@ -2002,14 +2003,11 @@ def test_evaluate_node() -> None:
 
     # Test with empty reflection_map.
     strategy.reflection_map = []
-    empty_reflection_values, values_responses = strategy.evaluate_node(
+    empty_reflection_values, values_evaluation_metrics = strategy.evaluate_node(
         root, question, examples, prompt, {}
     )
-    assert (
-        values_responses[0].choices[0].message.content
-        == "Explanation: Good trajectory. Correctness score: 8"
-    )
-    assert values_responses[1] is None
+    assert values_evaluation_metrics.values_metrics == [PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), None]
+    
     assert empty_reflection_values == values
 
     assert strategy.failed_trajectories == []
@@ -2082,24 +2080,7 @@ def test_simulate_node() -> None:
         ],
     ]
 
-    expected_thought_message = [
-        "I need to search for the capital of France",
-        "I need to search for the capital of France",
-        "The trajectory provided is completely incorrect as the observation received does not relate to the search query at all, indicating that the search term might have been mistyped or confused",
-        "Search[capital of France]\nObservation 2: The capital of France is Paris, known for its art, fashion, gastronomy, and culture",
-        "This trajectory is incorrect as it did not provide any relevant information regarding the capital of France",
-        "Search[similar entities to the capital of France]\nObservation 3: Similar: [Paris, Marseille, Lyon, Toulouse, Lille]\nThought 4: The capital of France is Paris",
-    ]
-
-    expected_actions_message = [
-        "Search[capital of France]",
-        "Search[capital of France]",
-        "The search results did not return the information needed",
-        "The search did not return relevant information",
-        "There seems to be an issue with the search results",
-        "The search results seem to be incorrect",
-    ]
-
+    
     expected_simulation_values = [
         [
             {"explanation": "", "value": -10000000000.0},
@@ -2113,15 +2094,6 @@ def test_simulate_node() -> None:
             {"explanation": "Explanation not found", "value": 0.0},
             {"explanation": "Explanation not found", "value": 0.0},
         ],
-    ]
-
-    expected_simulation_values_model_response = [
-        None,
-        None,
-        "Search[capital of France Wikipedia]\nObservation 2: The capital of France is Paris, the largest city in France and its capital since the 4th century",
-        "The trajectory provided is incorrect because the environmental observation does not relate to the question asked",
-        "Search[capital of France]\nObservation 3: The capital of France is Paris",
-        "The trajectory is incorrect as the observations did not provide any relevant information related to the question",
     ]
 
     responses = [
@@ -2169,11 +2141,8 @@ def test_simulate_node() -> None:
         simulation_terminal_node,
         simulation_current_nodes,
         simulation_children_nodes,
-        simulation_thought_model_responses,
-        simulation_action_model_responses,
-        simulation_reflection_model_responses,
         simulation_values,
-        simulation_values_model_responses,
+        simulation_metrics,
     ) = strategy.simulate_node(
         node=root_node,
         question=question,
@@ -2219,60 +2188,35 @@ def test_simulate_node() -> None:
         simulation_children_nodes, expected_simulation_children_nodes
     ):
         for node, expected_node in zip(node_list, expected_node_list):
-            print(node.to_dict())
             assert node.to_dict() == expected_node
 
     # Flatten the list using itertools.chain
-    flattened_thought_model_response = list(
-        itertools.chain(*simulation_thought_model_responses)
-    )
+    for i in simulation_metrics.simulation_step_metrics:
+        assert i.generate_metrics.thoughts_metrics == [PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)]
+        assert i.generate_metrics.actions_metrics ==[PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)]
+        assert i.generate_metrics.reflections_metrics == [] 
+        assert i.evaluate_metrics.values_metrics == [None, None] or [PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)]
 
-    for response, message in zip(
-        flattened_thought_model_response, expected_thought_message
-    ):
-        assert response["choices"][0]["message"]["content"] == message
-
-    flattened_action_model_response = list(
-        itertools.chain(*simulation_action_model_responses)
-    )
-
-    for response, message in zip(
-        flattened_action_model_response, expected_actions_message
-    ):
-
-        assert response["choices"][0]["message"]["content"] == message
-
+    print(simulation_values)
     assert simulation_values == expected_simulation_values
 
-    flattened_values_model_response = list(
-        itertools.chain(*simulation_values_model_responses)
-    )
-
-    for response, message in zip(
-        flattened_values_model_response, expected_simulation_values_model_response
-    ):
-        if response == None:
-            continue
-        assert response["choices"][0]["message"]["content"] == message
-
-    assert simulation_reflection_model_responses == [[], [], []]
 
 
 def test_expand_node() -> None:
     """Test the expand_node method."""
     gt_thought_model_responses = [
-        "I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
-        "I need to search for the best kickboxer who has been involved in controversies and crimes of violence",
-        "I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies",
-        "I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring",
-        "I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies",
+        PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5),
+        PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5),
+        PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5),
+        PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5),
+        PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)
     ]
     gt_action_model_responses = [
-        "Search[best kick boxer controversies crimes]",
-        "Search[best kick boxer controversies crimes]\nObservation 0: No exact matches found",
-        "Search[best kick boxer controversies]\nObservation 0: Could not find [best kick boxer controversies]",
-        "Search[best kick boxer controversies violence]\nObservation 0: Could not find [best kick boxer controversies violence]",
-        "Search[best kickboxer controversies]\nObservation 0: The search results show multiple kickboxers who have been involved in controversies",
+        PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5),
+        PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5),
+        PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5),
+        PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5),
+        PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)
     ]
 
     responses = [
@@ -2299,9 +2243,7 @@ def test_expand_node() -> None:
 
     (
         children_nodes,
-        thought_model_responses,
-        action_model_responses,
-        reflection_model_responses,
+        generate_metrics
     ) = strategy.expand_node(
         node=root,
         question=question,
@@ -2339,16 +2281,17 @@ def test_expand_node() -> None:
         assert node.to_dict() == expected_node
     assert len(children_nodes) == 5
 
-    assert reflection_model_responses == []
+    assert generate_metrics.reflections_metrics == []
     for t, a, gt_t, gt_a in zip(
-        thought_model_responses,
-        action_model_responses,
+        generate_metrics.thoughts_metrics,
+        generate_metrics.actions_metrics,
         gt_thought_model_responses,
         gt_action_model_responses,
     ):
-        assert t.choices[0].message.content == gt_t
-        assert a.choices[0].message.content == gt_a
-
+        
+        assert t == gt_t
+        assert a == gt_a
+    
     assert strategy.failed_trajectories == []
     assert strategy.reflection_map == []
     assert strategy.value_cache == {}

@@ -51,15 +51,19 @@ class LATSGenerateMetrics(BaseModel):
         description="The metrics of the reflections.",
     )
 
+
 class LATSEvaluateMetrics(BaseModel):
     """LATS evaluate metrics Pydantic output class."""
+
     values_metrics: List[Optional[PromptMetrics]] = Field(
         ...,
         description="The metrics of the values.",
     )
 
+
 class LATSSimulationStepMetrics(BaseModel):
     """LATS simulation step metrics Pydantic output class."""
+
     generate_metrics: LATSGenerateMetrics = Field(
         ...,
         description="The metrics of the thoughts, actions, and reflections.",
@@ -69,8 +73,10 @@ class LATSSimulationStepMetrics(BaseModel):
         description="The metrics of the values.",
     )
 
+
 class LATSSimulationMetrics(BaseModel):
     """LATS simulation metrics Pydantic output class."""
+
     simulation_step_metrics: List[LATSSimulationStepMetrics] = Field(
         ...,
         description="The metrics of the simulation.",
@@ -100,6 +106,7 @@ class LATSSimulationOutput(BaseModel):
         ...,
         description="The values of the children nodes of the simulation.",
     )
+
 
 class LATSStepOutput(BaseModel):
     """LATS Pydantic output class.

@@ -275,12 +275,12 @@ class LATSBaseStrategy(BaseStrategy):
         reflect_additional_keys: Dict[str, str],
         value_additional_keys: Dict[str, str],
     ) -> Tuple[
-        float, 
-        Node, 
-        List[Node], 
-        List[List[Node]], 
-        List[List[Dict[str, Any]]], 
-        LATSSimulationMetrics
+        float,
+        Node,
+        List[Node],
+        List[List[Node]],
+        List[List[Dict[str, Any]]],
+        LATSSimulationMetrics,
     ]:
         """Simulate the node to estimate its value and collect information about the simulation process.
 

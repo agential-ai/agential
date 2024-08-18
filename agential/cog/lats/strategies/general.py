@@ -99,10 +99,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             simulation_terminal_node = None
             node = self.select_node(root)  # Selected node is always non-terminal.
 
-            (
-                children_nodes,
-                generate_metrics
-            ) = self.expand_node(
+            (children_nodes, generate_metrics) = self.expand_node(
                 node=node,
                 question=question,
                 key=key,
@@ -175,8 +172,13 @@ class LATSGeneralStrategy(LATSBaseStrategy):
                     simulation_results=LATSSimulationOutput(
                         simulation_reward=simulation_reward,
                         simulation_terminal_node=simulation_terminal_node.to_dict(),
-                        simulation_current_nodes=[node.to_dict() for node in simulation_current_nodes],
-                        simulation_children_nodes=[[node.to_dict() for node in children_nodes] for children_nodes in simulation_children_nodes],
+                        simulation_current_nodes=[
+                            node.to_dict() for node in simulation_current_nodes
+                        ],
+                        simulation_children_nodes=[
+                            [node.to_dict() for node in children_nodes]
+                            for children_nodes in simulation_children_nodes
+                        ],
                         simulation_values=simulation_values,
                     ),
                     simulation_metrics=simulation_metrics,
@@ -401,7 +403,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         if node.depth >= self.depth_limit:
             node.is_terminal = True
             return [], [], []
-        
+
         children_nodes, generate_metrics = self.generate_children_nodes(
             node=node,
             question=question,
@@ -415,10 +417,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         )
         node.add_children([node for node in children_nodes if node.parent])  # type: ignore
 
-        return (
-            children_nodes,
-            generate_metrics
-        )
+        return (children_nodes, generate_metrics)
 
     def evaluate_node(
         self,
@@ -457,12 +456,12 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         reflect_additional_keys: Dict[str, str],
         value_additional_keys: Dict[str, str],
     ) -> Tuple[
-        float, 
-        Node, 
-        List[Node], 
-        List[List[Node]], 
-        List[List[Dict[str, Any]]], 
-        LATSSimulationMetrics
+        float,
+        Node,
+        List[Node],
+        List[List[Node]],
+        List[List[Dict[str, Any]]],
+        LATSSimulationMetrics,
     ]:
         """Simulate the node to estimate its value and collect information about the simulation process.
 

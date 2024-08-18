@@ -354,7 +354,9 @@ def test_reflect() -> None:
     prompt = "Reflect on the failed trajectory"
     additional_keys = {"key": "value"}
 
-    reflections = strategy.reflect(question, examples, prompt, additional_keys)
+    reflections, reflection_metrics = strategy.reflect(
+        question, examples, prompt, additional_keys
+    )
 
     assert len(reflections) == 2
     assert reflections[0]["trajectory"] == "Failed trajectory 1"
@@ -363,254 +365,26 @@ def test_reflect() -> None:
     assert reflections[1]["reflection"] == "Reflection 2"
 
     assert strategy.reflection_map == reflections
-
-
-def test_format_output() -> None:
-    """Test the format_output method."""
-    llm = MockLLM("gpt-3.5-turbo", responses=[])
-    strategy = LATSGeneralStrategy(llm=llm)
-    # Test with minimal input
-    iteration = 1
-    current_node = Node()
-    children_nodes = []
-    thought_model_responses = []
-    action_model_responses = []
-    result = strategy.format_output(
-        iteration,
-        current_node,
-        children_nodes,
-        thought_model_responses,
-        action_model_responses,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-    )
-    assert isinstance(result, LATSStepOutput)
-    assert result.iteration == 1
-    assert result.current_node == current_node.to_dict()
-    assert result.children_nodes == []
-    assert result.thoughts_metrics == []
-    assert result.actions_metrics == []
-    assert result.values == []
-    assert result.values_metrics == []
-    assert result.simulation_results.simulation_reward == 0.0
-    assert result.simulation_results.simulation_terminal_node is None
-    assert result.simulation_results.simulation_current_nodes == []
-    assert result.simulation_results.simulation_children_nodes == []
-    assert result.simulation_results.simulation_thoughts_metrics == []
-    assert result.simulation_results.simulation_actions_metrics == []
-    assert result.simulation_results.simulation_values == []
-    assert result.simulation_results.simulation_values_metrics == []
-
-    # Test with full input
-    strategy = LATSGeneralStrategy(llm=llm)
-    iteration = 2
-    current_node = Node()
-    children_nodes = [Node()]
-
-    # Test with sample token counts and model.
-    prompt_tokens = 100
-    completion_tokens = 50
-    model = "gpt-3.5-turbo"
-
-    usage = Usage()
-    usage.prompt_tokens = prompt_tokens
-    usage.completion_tokens = completion_tokens
-    usage.total_tokens = prompt_tokens + completion_tokens
-
-    response = ModelResponse()
-    response.choices = []
-    response.usage = usage
-    response.model = model
-    response.time_taken = 0.5
-
-    thought_model_responses = [response]
-
-    action_model_responses = [response]
-    values = [{"value": 0.5}]
-    values_responses = [response]
-    simulation_reward = 1.0
-    simulation_terminal_node = Node()
-    simulation_current_nodes = [Node()]
-    simulation_children_nodes = [[Node()]]
-    simulation_thought_model_responses = [[response]]
-    simulation_action_model_responses = [[response]]
-    simulation_values = [[{"value": 0.7}]]
-    simulation_values_model_responses = [[response]]
-
-    result = strategy.format_output(
-        iteration,
-        current_node,
-        children_nodes,
-        thought_model_responses,
-        action_model_responses,
-        values,
-        values_responses,
-        simulation_reward,
-        simulation_terminal_node,
-        simulation_current_nodes,
-        simulation_children_nodes,
-        simulation_thought_model_responses,
-        simulation_action_model_responses,
-        simulation_values,
-        simulation_values_model_responses,
-    )
-
-    expect_prompt_metrics = PromptMetrics(
-        prompt_tokens=100,
-        completion_tokens=50,
-        total_tokens=150,
-        prompt_cost=0.00015000000000000001,
-        completion_cost=9.999999999999999e-05,
-        total_cost=0.00025,
-        prompt_time=0.5,
-    )
-
-    assert isinstance(result, LATSStepOutput)
-    assert result.iteration == 2
-    assert result.current_node == current_node.to_dict()
-    assert result.children_nodes == [children_nodes[0].to_dict()]
-    assert result.thoughts_metrics == [expect_prompt_metrics]
-
-    assert result.actions_metrics == [expect_prompt_metrics]
-    assert result.values == [{"value": 0.5}]
-    assert result.values_metrics == [expect_prompt_metrics]
-    assert result.simulation_results.simulation_reward == 1.0
-    assert (
-        result.simulation_results.simulation_terminal_node
-        == simulation_terminal_node.to_dict()
-    )
-    assert result.simulation_results.simulation_current_nodes == [
-        simulation_current_nodes[0].to_dict()
+    assert reflection_metrics == [
+        PromptMetrics(
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        PromptMetrics(
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
     ]
-    assert result.simulation_results.simulation_children_nodes == [
-        [simulation_children_nodes[0][0].to_dict()]
-    ]
-    assert result.simulation_results.simulation_thoughts_metrics == [
-        [expect_prompt_metrics]
-    ]
-    assert result.simulation_results.simulation_actions_metrics == [
-        [expect_prompt_metrics]
-    ]
-    assert result.simulation_results.simulation_values == [[{"value": 0.7}]]
-    assert result.simulation_results.simulation_values_metrics == [
-        [expect_prompt_metrics]
-    ]
-
-    # Test with paritial simulation data
-    iteration = 3
-    current_node = Node()
-    children_nodes = [Node()]
-    thought_model_responses = [response]
-    action_model_responses = [response]
-    simulation_reward = 0.5
-    simulation_terminal_node = None
-    simulation_current_nodes = [Node()]
-    simulation_children_nodes = None
-    simulation_thought_model_responses = [[response]]
-    simulation_action_model_responses = None
-    simulation_values = None
-    simulation_values_model_responses = None
-
-    result = strategy.format_output(
-        iteration,
-        current_node,
-        children_nodes,
-        thought_model_responses,
-        action_model_responses,
-        None,
-        None,
-        simulation_reward,
-        simulation_terminal_node,
-        simulation_current_nodes,
-        simulation_children_nodes,
-        simulation_thought_model_responses,
-        simulation_action_model_responses,
-        simulation_values,
-        simulation_values_model_responses,
-    )
-
-    assert isinstance(result, LATSStepOutput)
-    assert result.iteration == 3
-    assert result.current_node == current_node.to_dict()
-    assert result.children_nodes == [children_nodes[0].to_dict()]
-    assert result.thoughts_metrics == [expect_prompt_metrics]
-    assert result.actions_metrics == [expect_prompt_metrics]
-    assert result.values == []
-    assert result.values_metrics == []
-    assert result.simulation_results.simulation_reward == 0.5
-    assert result.simulation_results.simulation_terminal_node is None
-    assert result.simulation_results.simulation_current_nodes == [
-        simulation_current_nodes[0].to_dict()
-    ]
-    assert result.simulation_results.simulation_children_nodes == []
-    assert result.simulation_results.simulation_thoughts_metrics == [
-        [expect_prompt_metrics]
-    ]
-    assert result.simulation_results.simulation_actions_metrics == []
-    assert result.simulation_results.simulation_values == []
-    assert result.simulation_results.simulation_values_metrics == []
-
-    # Test with empty lists
-    iteration = 4
-    current_node = Node()
-    children_nodes = [Node()]
-    thought_model_responses = [response]
-    action_model_responses = [response]
-    simulation_reward = 0.5
-    simulation_terminal_node = None
-    simulation_current_nodes = [Node()]
-    simulation_children_nodes = None
-    simulation_thought_model_responses = [[response]]
-    simulation_action_model_responses = None
-    simulation_values = None
-    simulation_values_model_responses = None
-
-    result = strategy.format_output(
-        iteration,
-        current_node,
-        children_nodes,
-        thought_model_responses,
-        action_model_responses,
-        None,
-        None,
-        simulation_reward,
-        simulation_terminal_node,
-        simulation_current_nodes,
-        simulation_children_nodes,
-        simulation_thought_model_responses,
-        simulation_action_model_responses,
-        simulation_values,
-        simulation_values_model_responses,
-    )
-
-    assert isinstance(result, LATSStepOutput)
-    assert result.iteration == 4
-    assert result.current_node == current_node.to_dict()
-    assert result.children_nodes == [children_nodes[0].to_dict()]
-    assert result.thoughts_metrics == [expect_prompt_metrics]
-    assert result.actions_metrics == [expect_prompt_metrics]
-    assert result.values == []
-    assert result.values_metrics == []
-    assert result.simulation_results.simulation_reward == 0.5
-    assert result.simulation_results.simulation_terminal_node is None
-    assert result.simulation_results.simulation_current_nodes == [
-        simulation_current_nodes[0].to_dict()
-    ]
-    assert result.simulation_results.simulation_children_nodes == []
-    assert result.simulation_results.simulation_thoughts_metrics == [
-        [expect_prompt_metrics]
-    ]
-    assert result.simulation_results.simulation_actions_metrics == []
-    assert result.simulation_results.simulation_values == []
-    assert result.simulation_results.simulation_values_metrics == []
 
 
 def test_reset() -> None:
