@@ -670,10 +670,10 @@ def test__accumulate_metric() -> None:
                                 prompt_time=5,
                             ),
                         ]
-                    )
+                    ),
                 )
             ]
-        )
+        ),
     )
 
     metric_types = [
@@ -806,10 +806,10 @@ def test_accumulate_metrics() -> None:
                                 prompt_time=5,
                             ),
                         ]
-                    )
+                    ),
                 )
             ]
-        )
+        ),
     )
 
     assert accumulate_metrics([step, step]) == {
