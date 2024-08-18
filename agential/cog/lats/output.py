@@ -33,6 +33,50 @@ class LATSReActStepOutput(BaseModel):
     )
 
 
+class LATSGenerateMetrics(BaseModel):
+    """LATS generate metrics Pydantic output class."""
+
+    thoughts_metrics: List[PromptMetrics] = Field(
+        ...,
+        description="The metrics of the thoughts.",
+    )
+
+    actions_metrics: List[PromptMetrics] = Field(
+        ...,
+        description="The metrics of the actions.",
+    )
+
+    reflections_metrics: List[PromptMetrics] = Field(
+        ...,
+        description="The metrics of the reflections.",
+    )
+
+class LATSEvaluateMetrics(BaseModel):
+    """LATS evaluate metrics Pydantic output class."""
+    values_metrics: List[Optional[PromptMetrics]] = Field(
+        ...,
+        description="The metrics of the values.",
+    )
+
+class LATSSimulationStepMetrics(BaseModel):
+    """LATS simulation step metrics Pydantic output class."""
+    generate_metrics: LATSGenerateMetrics = Field(
+        ...,
+        description="The metrics of the thoughts, actions, and reflections.",
+    )
+    evaluate_metrics: LATSEvaluateMetrics = Field(
+        ...,
+        description="The metrics of the values.",
+    )
+
+class LATSSimulationMetrics(BaseModel):
+    """LATS simulation metrics Pydantic output class."""
+    simulation_step_metrics: List[LATSSimulationStepMetrics] = Field(
+        ...,
+        description="The metrics of the simulation.",
+    )
+
+
 class LATSSimulationOutput(BaseModel):
     """LATS simulation Pydantic output class."""
 
@@ -52,46 +96,10 @@ class LATSSimulationOutput(BaseModel):
         ...,
         description="The children nodes of the simulation.",
     )
-    simulation_thoughts_metrics: List[List[PromptMetrics]] = Field(
-        ...,
-        description="The metrics of the thoughts of the simulation.",
-    )
-    simulation_actions_metrics: List[List[PromptMetrics]] = Field(
-        ...,
-        description="The metrics of the actions of the simulation.",
-    )
-    simulation_reflections_metrics: List[List[PromptMetrics]] = Field(
-        ...,
-        description="The metrics of the reflections of the simulation.",
-    )
     simulation_values: List[List[Dict[str, Any]]] = Field(
         ...,
         description="The values of the children nodes of the simulation.",
     )
-    simulation_values_metrics: List[List[Optional[PromptMetrics]]] = Field(
-        ...,
-        description="The metrics of the values of the children nodes of the simulation.",
-    )
-
-
-class LATSGenerateModelResponse(BaseModel):
-    """LATS generate model response Pydantic output class."""
-
-    thought_responses: List[ModelResponse] = Field(
-        ...,
-        description="The model responses of the thoughts.",
-    )
-
-    action_responses: List[ModelResponse] = Field(
-        ...,
-        description="The model responses of the actions.",
-    )
-
-    reflection_responses: List[ModelResponse] = Field(
-        ...,
-        description="The model responses of the reflections.",
-    )
-
 
 class LATSStepOutput(BaseModel):
     """LATS Pydantic output class.
@@ -100,14 +108,8 @@ class LATSStepOutput(BaseModel):
         iteration (int): The iteration number.
         current_node (Dict[str, Any]): The current node.
         children_nodes (List[Dict[str, Any]]): The children nodes of the current node.
-        thoughts_metrics (List[PromptMetrics]): The metrics of the thoughts.
-        actions_metrics (List[PromptMetrics]): The metrics of the actions.
-        values (List[Dict[str, Any]]): The values of the children nodes.
-        values_metrics (List[Optional[PromptMetrics]]): The metrics of the values.
-        simulation_reward (float): The reward of the simulation from the current node's most valuable child node.
-        simulation_terminal_node (Dict[str, Any]): The terminal node of the simulation.
-        simulation_results (List[LATSSimulationOutput]): The results of the simulation.
-        prompt_metrics (Dict[str, Any]): The metrics of the prompt including token usage, cost, and latency.
+        values (Optional[List[Dict[str, Any]]]): The values of the children nodes.
+        simulation_results (LATSSimulationOutput): The results of the simulation.
     """
 
     iteration: int = Field(..., description="The iteration number.")
@@ -116,29 +118,25 @@ class LATSStepOutput(BaseModel):
         ...,
         description="The children nodes of the current node.",
     )
-    thoughts_metrics: List[PromptMetrics] = Field(
+    generate_metrics: LATSGenerateMetrics = Field(
         ...,
-        description="The metrics of the thoughts.",
+        description="The metrics of the thoughts, actions, and reflections.",
     )
-    actions_metrics: List[PromptMetrics] = Field(
-        ...,
-        description="The metrics of the actions.",
-    )
-    reflections_metrics: List[PromptMetrics] = Field(
-        ...,
-        description="The metrics of the reflections.",
-    )
-    values: List[Dict[str, Any]] = Field(
+    values: Optional[List[Dict[str, Any]]] = Field(
         ...,
         description="The values of the children nodes.",
     )
-    values_metrics: List[Optional[PromptMetrics]] = Field(
+    evaluate_metrics: Optional[LATSEvaluateMetrics] = Field(
         ...,
         description="The metrics of the values.",
     )
-    simulation_results: LATSSimulationOutput = Field(
+    simulation_results: Optional[LATSSimulationOutput] = Field(
         ...,
         description="The results of the simulation.",
+    )
+    simulation_metrics: Optional[LATSSimulationMetrics] = Field(
+        ...,
+        description="The metrics of the simulation.",
     )
 
 

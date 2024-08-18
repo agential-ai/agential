@@ -564,78 +564,26 @@ def _accumulate_metric(step: LATSStepOutput, metric_type: str) -> Union[int, flo
     Returns:
         Union[int, float]: The accumulated metric value.
     """
-    out = (
-        sum(
-            [
-                getattr(thought_metrics, metric_type)
-                for thought_metrics in step.thoughts_metrics
-            ]
-        )
-        + sum(
-            [
-                getattr(action_metrics, metric_type)
-                for action_metrics in step.actions_metrics
-            ]
-        )
-        + sum(
-            [
-                getattr(reflection_metrics, metric_type)
-                for reflection_metrics in step.reflections_metrics
-            ]
-        )
-        + sum(
-            [
-                getattr(value_metrics, metric_type)
-                for value_metrics in step.values_metrics
-                if value_metrics
-            ]
-        )
-        + sum(
-            [
-                sum(
-                    [
-                        getattr(thought_metrics, metric_type)
-                        for thought_metrics in thoughts_metrics
-                    ]
-                )
-                for thoughts_metrics in step.simulation_results.simulation_thoughts_metrics
-            ]
-        )
-        + sum(
-            [
-                sum(
-                    [
-                        getattr(action_metrics, metric_type)
-                        for action_metrics in actions_metrics
-                    ]
-                )
-                for actions_metrics in step.simulation_results.simulation_actions_metrics
-            ]
-        )
-        + sum(
-            [
-                sum(
-                    [
-                        getattr(reflection_metrics, metric_type)
-                        for reflection_metrics in reflections_metrics
-                    ]
-                )
-                for reflections_metrics in step.simulation_results.simulation_reflections_metrics
-            ]
-        )
-        + sum(
-            [
-                sum(
-                    [
-                        getattr(value_metrics, metric_type)
-                        for value_metrics in values_metrics
-                        if value_metrics
-                    ]
-                )
-                for values_metrics in step.simulation_results.simulation_values_metrics
-            ]
-        )
-    )
+    out = 0
+
+    out += sum([getattr(thought_metrics, metric_type) for thought_metrics in step.generate_metrics.thoughts_metrics])
+    out += sum([getattr(action_metrics, metric_type) for action_metrics in step.generate_metrics.actions_metrics])
+    out += sum([getattr(reflection_metrics, metric_type) for reflection_metrics in step.generate_metrics.reflections_metrics])
+
+    if step.evaluate_metrics:
+        for value_metrics in step.evaluate_metrics.values_metrics:
+            if value_metrics:
+                out += getattr(value_metrics, metric_type)
+
+    if step.simulation_metrics:
+        for sim_step_metrics in step.simulation_metrics.simulation_step_metrics:
+            # generate_metrics.
+            out += sum([getattr(thought_metrics, metric_type) for thought_metrics in sim_step_metrics.generate_metrics.thoughts_metrics])
+            out += sum([getattr(action_metrics, metric_type) for action_metrics in sim_step_metrics.generate_metrics.actions_metrics])
+            out += sum([getattr(reflection_metrics, metric_type) for reflection_metrics in sim_step_metrics.generate_metrics.reflections_metrics])
+
+            # evaluate_metrics.
+            out += sum([getattr(value_metrics, metric_type) for value_metrics in sim_step_metrics.evaluate_metrics.values_metrics if value_metrics])
 
     return out
 

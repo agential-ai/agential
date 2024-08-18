@@ -12,14 +12,15 @@ from agential.cog.lats.functional import (
 )
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import (
-    LATSGenerateModelResponse,
+    LATSGenerateMetrics,
     LATSOutput,
+    LATSSimulationMetrics,
     LATSSimulationOutput,
     LATSStepOutput,
 )
 from agential.cog.lats.strategies.base import LATSBaseStrategy
 from agential.llm.llm import BaseLLM, ModelResponse
-from agential.utils.general import get_token_cost_time
+from agential.utils.general import PromptMetrics, get_token_cost_time
 from agential.utils.parse import remove_newline
 
 
@@ -100,9 +101,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
 
             (
                 children_nodes,
-                thought_model_responses,
-                action_model_responses,
-                reflection_model_responses,
+                generate_metrics
             ) = self.expand_node(
                 node=node,
                 question=question,
@@ -118,24 +117,15 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             for child_node in children_nodes:
                 if self.halting_condition(child_node):
                     output.append(
-                        self.format_output(
+                        LATSStepOutput(
                             iteration=i,
-                            current_node=node,
-                            children_nodes=children_nodes,
-                            thought_model_responses=thought_model_responses,
-                            action_model_responses=action_model_responses,
-                            reflection_model_responses=reflection_model_responses,
+                            current_node=node.to_dict(),
+                            children_nodes=[node.to_dict() for node in children_nodes],
+                            generate_metrics=generate_metrics,
                             values=None,
-                            values_responses=None,
-                            simulation_reward=None,
-                            simulation_terminal_node=None,
-                            simulation_current_nodes=None,
-                            simulation_children_nodes=None,
-                            simulation_thought_model_responses=None,
-                            simulation_action_model_responses=None,
-                            simulation_reflection_model_responses=None,
-                            simulation_values=None,
-                            simulation_values_model_responses=None,
+                            evaluate_metrics=None,
+                            simulation_results=None,
+                            simulation_metrics=None,
                         )
                     )
                     simulation_terminal_node = child_node
@@ -144,7 +134,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             if simulation_terminal_node:
                 break
 
-            values, values_responses = self.evaluate_node(
+            values, evaluate_metrics = self.evaluate_node(
                 node=node,
                 question=question,
                 examples=value_examples,
@@ -157,11 +147,8 @@ class LATSGeneralStrategy(LATSBaseStrategy):
                 simulation_terminal_node,
                 simulation_current_nodes,
                 simulation_children_nodes,
-                simulation_thought_model_responses,
-                simulation_action_model_responses,
-                simulation_reflection_model_responses,
                 simulation_values,
-                simulation_values_model_responses,
+                simulation_metrics,
             ) = self.simulate_node(
                 node=max(node.children, key=lambda child: child.value, default=node),
                 question=question,
@@ -178,24 +165,21 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             )
 
             output.append(
-                self.format_output(
+                LATSStepOutput(
                     iteration=i,
-                    current_node=node,
-                    children_nodes=children_nodes,
-                    thought_model_responses=thought_model_responses,
-                    action_model_responses=action_model_responses,
-                    reflection_model_responses=reflection_model_responses,
+                    current_node=node.to_dict(),
+                    children_nodes=[node.to_dict() for node in children_nodes],
+                    generate_metrics=generate_metrics,
                     values=values,
-                    values_responses=values_responses,
-                    simulation_reward=simulation_reward,
-                    simulation_terminal_node=simulation_terminal_node,
-                    simulation_current_nodes=simulation_current_nodes,
-                    simulation_children_nodes=simulation_children_nodes,
-                    simulation_thought_model_responses=simulation_thought_model_responses,
-                    simulation_action_model_responses=simulation_action_model_responses,
-                    simulation_reflection_model_responses=simulation_reflection_model_responses,
-                    simulation_values=simulation_values,
-                    simulation_values_model_responses=simulation_values_model_responses,
+                    evaluate_metrics=evaluate_metrics,
+                    simulation_results=LATSSimulationOutput(
+                        simulation_reward=simulation_reward,
+                        simulation_terminal_node=simulation_terminal_node.to_dict(),
+                        simulation_current_nodes=[node.to_dict() for node in simulation_current_nodes],
+                        simulation_children_nodes=[[node.to_dict() for node in children_nodes] for children_nodes in simulation_children_nodes],
+                        simulation_values=simulation_values,
+                    ),
+                    simulation_metrics=simulation_metrics,
                 )
             )
 
@@ -243,7 +227,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
-    ) -> Tuple[List[Node], LATSGenerateModelResponse]:
+    ) -> Tuple[List[Node], LATSGenerateMetrics]:
         """Generate child nodes for the given node.
 
         Args:
@@ -258,7 +242,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
 
         Returns:
-            Tuple[List[Node], LATSGenerateModelResponse]: A list of generated child nodes, and the pydantic of corresponding model responses.
+            Tuple[List[Node], LATSGenerateMetrics]: A list of generated child nodes, and the pydantic of corresponding metrics.
         """
         raise NotImplementedError
 
@@ -397,7 +381,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
-    ) -> Tuple[List[Node], List[ModelResponse], List[ModelResponse]]:
+    ) -> Tuple[List[Node], LATSGenerateMetrics]:
         """Expand the given node by generating its child nodes.
 
         Args:
@@ -412,17 +396,13 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
 
         Returns:
-            Tuple[List[Node], List[ModelResponse], List[ModelResponse]]: A list of generated child nodes, and the corresponding model responses.
+            Tuple[List[Node], LATSGenerateMetrics]: A list of generated child nodes, and the corresponding metrics.
         """
         if node.depth >= self.depth_limit:
             node.is_terminal = True
             return [], [], []
-        (
-            children_nodes,
-            thought_model_responses,
-            action_model_responses,
-            reflection_model_responses,
-        ) = self.generate_children_nodes(
+        
+        children_nodes, generate_metrics = self.generate_children_nodes(
             node=node,
             question=question,
             key=key,
@@ -437,9 +417,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
 
         return (
             children_nodes,
-            thought_model_responses,
-            action_model_responses,
-            reflection_model_responses,
+            generate_metrics
         )
 
     def evaluate_node(
@@ -479,15 +457,12 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         reflect_additional_keys: Dict[str, str],
         value_additional_keys: Dict[str, str],
     ) -> Tuple[
-        float,
-        Node,
-        List[Node],
-        List[List[Node]],
-        List[List[ModelResponse]],
-        List[List[ModelResponse]],
-        List[List[ModelResponse]],
-        List[List[Dict[str, Any]]],
-        List[List[Optional[ModelResponse]]],
+        float, 
+        Node, 
+        List[Node], 
+        List[List[Node]], 
+        List[List[Dict[str, Any]]], 
+        LATSSimulationMetrics
     ]:
         """Simulate the node to estimate its value and collect information about the simulation process.
 
@@ -506,16 +481,12 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             value_additional_keys (Dict[str, str]): Additional keys for value estimation prompt formatting.
 
         Returns:
-            Tuple[float, Node, List[Node], List[List[Node]], List[List[ModelResponse]], List[List[ModelResponse]], List[List[ModelResponse]], List[List[Dict[str, Any]]], List[List[Optional[ModelResponse]]]]:
-                - The estimated value of the node.
-                - The simulated node.
-                - A list of the current nodes.
-                - A list of the newly-created children nodes.
-                - A list of thought model responses.
-                - A list of action model responses.
-                - A list of reflection model responses.
-                - A list of value estimates for newly-created children nodes.
-                - A list of value model responses.
+            Tuple[float, Node, List[Node], List[List[Node]], List[List[Dict[str, Any]]], LATSSimulationMetrics]:
+                - The estimated value of the node
+                - The simulation's terminal node
+                - Each simulation iteration's children nodes
+                - Each simulation iteration's children nodes' values
+                - Metrics for the simulation process
         """
         raise NotImplementedError
 
@@ -565,7 +536,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
 
     def reflect(
         self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]
-    ) -> Tuple[List[Dict[str, str]], List[ModelResponse]]:
+    ) -> Tuple[List[Dict[str, str]], List[PromptMetrics]]:
         """Perform reflection on the current search state.
 
         Args:
@@ -575,14 +546,14 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[List[Dict[str, str]], List[ModelResponse]]: A list of dictionaries containing reflection results and the model responses.
+            Tuple[List[Dict[str, str]], List[PromptMetrics]]: A list of dictionaries containing reflection results and the metrics.
         """
         unique_trajectories = get_unique_trajectories(
             self.failed_trajectories, max_unique=self.max_unique
         )
 
         reflections: List[Dict[str, str]] = []
-        reflection_model_responses: List[ModelResponse] = []
+        reflection_metrics: List[PromptMetrics] = []
         for trajectory in unique_trajectories:
             reflection_out = _prompt_reflection(
                 self.llm,
@@ -592,161 +563,14 @@ class LATSGeneralStrategy(LATSBaseStrategy):
                 prompt=prompt,
                 additional_keys=additional_keys,
             )
-            reflection_model_responses.append(reflection_out)
+            reflection_metrics.append(get_token_cost_time(reflection_out))
             reflection = reflection_out.choices[0].message.content
 
             reflections.append({"trajectory": trajectory, "reflection": reflection})
 
         self.reflection_map = reflections
 
-        return reflections, reflection_model_responses
-
-    def format_output(
-        self,
-        iteration: int,
-        current_node: Node,
-        children_nodes: List[Node],
-        thought_model_responses: List[ModelResponse],
-        action_model_responses: List[ModelResponse],
-        reflection_model_responses: List[ModelResponse],
-        values: Optional[List[Dict[str, Any]]],
-        values_responses: Optional[List[Optional[ModelResponse]]],
-        simulation_reward: Optional[float],
-        simulation_terminal_node: Optional[Node],
-        simulation_current_nodes: Optional[List[Node]],
-        simulation_children_nodes: Optional[List[List[Node]]],
-        simulation_thought_model_responses: Optional[List[List[ModelResponse]]],
-        simulation_action_model_responses: Optional[List[List[ModelResponse]]],
-        simulation_reflection_model_responses: Optional[List[List[ModelResponse]]],
-        simulation_values: Optional[List[List[Dict[str, Any]]]],
-        simulation_values_model_responses: Optional[
-            List[List[Optional[ModelResponse]]]
-        ],
-    ) -> LATSStepOutput:
-        """Format the output for the current iteration.
-
-        Args:
-            iteration (int): The current iteration.
-            current_node (Node): The current node in the search tree.
-            children_nodes (List[Node]): The child nodes of the current node.
-            thought_model_responses (List[ModelResponse]): The responses from generating thoughts for children nodes.
-            action_model_responses (List[ModelResponse]): The responses from generating actions for children nodes.
-            reflection_model_responses (List[ModelResponse]): The responses from generating reflections for children nodes.
-            values (Optional[List[Dict[str, Any]]]): The values for each child node.
-            values_responses (Optional[List[Optional[ModelResponse]]]): The responses from generating values for each child node.
-            simulation_reward (Optional[float]): The reward from the simulation.
-            simulation_terminal_node (Optional[Node]): The terminal node from the simulation.
-            simulation_current_nodes (Optional[List[Node]]): The current nodes from the simulation.
-            simulation_children_nodes (Optional[List[List[Node]]]): The child nodes from the simulation.
-            simulation_thought_model_responses (Optional[List[List[ModelResponse]]]): The responses from generating thoughts for each child node in the simulation.
-            simulation_action_model_responses (Optional[List[List[ModelResponse]]]): The responses from generating actions for each child node in the simulation.
-            simulation_reflection_model_responses (Optional[List[List[ModelResponse]]]): The responses from generating reflections for each child node in the simulation.
-            simulation_values (Optional[List[List[Dict[str, Any]]]): The values for each child node in the simulation
-            simulation_values_model_responses (Optional[List[List[Optional[ModelResponse]]]): The responses from generating values for each child node in the simulation.
-
-        Returns:
-            LATSStepOutput: The formatted output for the current iteration.
-        """
-        if values_responses:
-            values_metrics = [
-                get_token_cost_time(response) if response is not None else None
-                for response in values_responses
-            ]
-        else:
-            values_metrics = []
-
-        if simulation_current_nodes:
-            simulation_current_nodes = [
-                node.to_dict() for node in simulation_current_nodes
-            ]
-        else:
-            simulation_current_nodes = []
-
-        if simulation_children_nodes:
-            simulation_children_nodes = [
-                [child_node.to_dict() for child_node in child_nodes]
-                for child_nodes in simulation_children_nodes
-            ]
-        else:
-            simulation_children_nodes = []
-
-        if simulation_thought_model_responses:
-            simulation_thoughts_metrics = [
-                [
-                    get_token_cost_time(model_response)
-                    for model_response in model_responses
-                ]
-                for model_responses in simulation_thought_model_responses
-            ]
-        else:
-            simulation_thoughts_metrics = []
-
-        if simulation_action_model_responses:
-            simulation_actions_metrics = [
-                [
-                    get_token_cost_time(model_response)
-                    for model_response in model_responses
-                ]
-                for model_responses in simulation_action_model_responses
-            ]
-        else:
-            simulation_actions_metrics = []
-
-        if simulation_reflection_model_responses:
-            simulation_reflections_metrics = [
-                [
-                    get_token_cost_time(model_response)
-                    for model_response in model_responses
-                ]
-                for model_responses in simulation_reflection_model_responses
-            ]
-        else:
-            simulation_reflections_metrics = []
-
-        if simulation_values_model_responses:
-            simulation_values_metrics = [
-                [
-                    get_token_cost_time(response) if response is not None else None
-                    for response in simulation_values_model_response
-                ]
-                for simulation_values_model_response in simulation_values_model_responses
-            ]
-        else:
-            simulation_values_metrics = []
-
-        simulation_results = LATSSimulationOutput(
-            simulation_reward=simulation_reward if simulation_reward else 0.0,
-            simulation_terminal_node=(
-                simulation_terminal_node.to_dict() if simulation_terminal_node else None
-            ),
-            simulation_current_nodes=simulation_current_nodes,
-            simulation_children_nodes=simulation_children_nodes,
-            simulation_thoughts_metrics=simulation_thoughts_metrics,
-            simulation_actions_metrics=simulation_actions_metrics,
-            simulation_reflections_metrics=simulation_reflections_metrics,
-            simulation_values=simulation_values if simulation_values else [],
-            simulation_values_metrics=simulation_values_metrics,
-        )
-
-        out = LATSStepOutput(
-            iteration=iteration,
-            current_node=current_node.to_dict(),
-            children_nodes=[child_node.to_dict() for child_node in children_nodes],
-            thoughts_metrics=[
-                get_token_cost_time(response) for response in thought_model_responses
-            ],
-            actions_metrics=[
-                get_token_cost_time(response) for response in action_model_responses
-            ],
-            reflections_metrics=[
-                get_token_cost_time(response) for response in reflection_model_responses
-            ],
-            values=values if values else [],
-            values_metrics=values_metrics,
-            simulation_results=simulation_results,
-        )
-
-        return out
+        return reflections, reflection_metrics
 
     def reset(self) -> None:
         """Reset the strategy to its initial state."""

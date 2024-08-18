@@ -6,11 +6,13 @@ from typing import Any, Dict, List, Optional, Tuple
 from agential.cog.base.strategies import BaseStrategy
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import (
-    LATSGenerateModelResponse,
+    LATSGenerateMetrics,
     LATSOutput,
+    LATSSimulationMetrics,
     LATSStepOutput,
 )
 from agential.llm.llm import BaseLLM, ModelResponse
+from agential.utils.general import PromptMetrics
 
 
 class LATSBaseStrategy(BaseStrategy):
@@ -94,7 +96,7 @@ class LATSBaseStrategy(BaseStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
-    ) -> Tuple[List[Node], LATSGenerateModelResponse]:
+    ) -> Tuple[List[Node], LATSGenerateMetrics]:
         """Generate child nodes for the given node.
 
         Args:
@@ -109,7 +111,7 @@ class LATSBaseStrategy(BaseStrategy):
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
 
         Returns:
-            Tuple[List[Node], LATSGenerateModelResponse]: A list of generated child nodes, and the pydantic of corresponding model responses.
+            Tuple[List[Node], LATSGenerateMetrics]: A list of generated child nodes, and the pydantic of corresponding metrics.
         """
         raise NotImplementedError
 
@@ -215,7 +217,7 @@ class LATSBaseStrategy(BaseStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
-    ) -> Tuple[List[Node], List[ModelResponse], List[ModelResponse]]:
+    ) -> Tuple[List[Node], LATSGenerateMetrics]:
         """Expand the given node by generating its child nodes.
 
         Args:
@@ -230,7 +232,7 @@ class LATSBaseStrategy(BaseStrategy):
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
 
         Returns:
-            Tuple[List[Node], List[ModelResponse], List[ModelResponse]]: A list of generated child nodes, and the corresponding model responses.
+            Tuple[List[Node], LATSGenerateMetrics]: A list of generated child nodes, and the corresponding metrics.
         """
         raise NotImplementedError
 
@@ -273,15 +275,12 @@ class LATSBaseStrategy(BaseStrategy):
         reflect_additional_keys: Dict[str, str],
         value_additional_keys: Dict[str, str],
     ) -> Tuple[
-        float,
-        Node,
-        List[Node],
-        List[List[Node]],
-        List[List[ModelResponse]],
-        List[List[ModelResponse]],
-        List[List[ModelResponse]],
-        List[List[Dict[str, Any]]],
-        List[List[Optional[ModelResponse]]],
+        float, 
+        Node, 
+        List[Node], 
+        List[List[Node]], 
+        List[List[Dict[str, Any]]], 
+        LATSSimulationMetrics
     ]:
         """Simulate the node to estimate its value and collect information about the simulation process.
 
@@ -300,16 +299,12 @@ class LATSBaseStrategy(BaseStrategy):
             value_additional_keys (Dict[str, str]): Additional keys for value estimation prompt formatting.
 
         Returns:
-            Tuple[float, Node, List[Node], List[List[Node]], List[List[ModelResponse]], List[List[ModelResponse]], List[List[ModelResponse]], List[List[Dict[str, Any]]], List[List[Optional[ModelResponse]]]]:
-                - The estimated value of the node.
-                - The simulated node.
-                - A list of the current nodes.
-                - A list of the newly-created children nodes.
-                - A list of thought model responses.
-                - A list of action model responses.
-                - A list of reflection model responses.
-                - A list of value estimates for newly-created children nodes.
-                - A list of value model responses.
+            Tuple[float, Node, List[Node], List[List[Node]], List[List[Dict[str, Any]]], LATSSimulationMetrics]:
+                - The estimated value of the node
+                - The simulation's terminal node
+                - Each simulation iteration's children nodes
+                - Each simulation iteration's children nodes' values
+                - Metrics for the simulation process
         """
         raise NotImplementedError
 
@@ -347,7 +342,7 @@ class LATSBaseStrategy(BaseStrategy):
     @abstractmethod
     def reflect(
         self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]
-    ) -> Tuple[List[Dict[str, str]], List[ModelResponse]]:
+    ) -> Tuple[List[Dict[str, str]], List[PromptMetrics]]:
         """Perform reflection on the current search state.
 
         Args:
@@ -357,56 +352,7 @@ class LATSBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[List[Dict[str, str]], List[ModelResponse]]: A list of dictionaries containing reflection results and the model responses.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def format_output(
-        self,
-        iteration: int,
-        current_node: Node,
-        children_nodes: List[Node],
-        thought_model_responses: List[ModelResponse],
-        action_model_responses: List[ModelResponse],
-        reflection_model_responses: List[ModelResponse],
-        values: Optional[List[Dict[str, Any]]],
-        values_responses: Optional[List[Optional[ModelResponse]]],
-        simulation_reward: Optional[float],
-        simulation_terminal_node: Optional[Node],
-        simulation_current_nodes: Optional[List[Node]],
-        simulation_children_nodes: Optional[List[List[Node]]],
-        simulation_thought_model_responses: Optional[List[List[ModelResponse]]],
-        simulation_action_model_responses: Optional[List[List[ModelResponse]]],
-        simulation_reflection_model_responses: Optional[List[List[ModelResponse]]],
-        simulation_values: Optional[List[List[Dict[str, Any]]]],
-        simulation_values_model_responses: Optional[
-            List[List[Optional[ModelResponse]]]
-        ],
-    ) -> LATSStepOutput:
-        """Format the output for the current iteration.
-
-        Args:
-            iteration (int): The current iteration.
-            current_node (Node): The current node in the search tree.
-            children_nodes (List[Node]): The child nodes of the current node.
-            thought_model_responses (List[ModelResponse]): The responses from generating thoughts for children nodes.
-            action_model_responses (List[ModelResponse]): The responses from generating actions for children nodes.
-            reflection_model_responses (List[ModelResponse]): The responses from generating reflections for children nodes.
-            values (Optional[List[Dict[str, Any]]]): The values for each child node.
-            values_responses (Optional[List[Optional[ModelResponse]]]): The responses from generating values for each child node.
-            simulation_reward (Optional[float]): The reward from the simulation.
-            simulation_terminal_node (Optional[Node]): The terminal node from the simulation.
-            simulation_current_nodes (Optional[List[Node]]): The current nodes from the simulation.
-            simulation_children_nodes (Optional[List[List[Node]]]): The child nodes from the simulation.
-            simulation_thought_model_responses (Optional[List[List[ModelResponse]]]): The responses from generating thoughts for each child node in the simulation.
-            simulation_action_model_responses (Optional[List[List[ModelResponse]]]): The responses from generating actions for each child node in the simulation.
-            simulation_reflection_model_responses (Optional[List[List[ModelResponse]]]): The responses from generating reflections for each child node in the simulation.
-            simulation_values (Optional[List[List[Dict[str, Any]]]): The values for each child node in the simulation
-            simulation_values_model_responses (Optional[List[List[Optional[ModelResponse]]]): The responses from generating values for each child node in the simulation.
-
-        Returns:
-            LATSStepOutput: The formatted output for the current iteration.
+            Tuple[List[Dict[str, str]], List[PromptMetrics]]: A list of dictionaries containing reflection results and the metrics.
         """
         raise NotImplementedError
 
