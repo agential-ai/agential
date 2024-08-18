@@ -43,7 +43,7 @@ def test_init() -> None:
     assert isinstance(agent.strategy, ReActBaseStrategy)
 
 
-def test_react_factory_get_strategy() -> None:
+def test_get_strategy() -> None:
     """Tests ReActAgent get_strategy method."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
 
@@ -96,7 +96,7 @@ def test_react_factory_get_strategy() -> None:
         ReActAgent.get_strategy("unknown", llm=llm)
 
 
-def test_react_factory_get_fewshots() -> None:
+def test_get_fewshots() -> None:
     """Tests ReActAgent get_fewshots method."""
     # Test valid input.
     benchmark = Benchmarks.HOTPOTQA
@@ -117,7 +117,7 @@ def test_react_factory_get_fewshots() -> None:
         ReActAgent.get_fewshots("hotpotqa", fewshot_type="pot")
 
 
-def test_react_factory_get_prompts() -> None:
+def test_get_prompts() -> None:
     """Tests ReActAgent get_prompts method."""
     # Test valid input.
     benchmark = Benchmarks.HOTPOTQA

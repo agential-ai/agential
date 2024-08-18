@@ -1,12 +1,20 @@
 """Test LATS agent."""
 
+import pytest
+
+from agential.cog.constants import Benchmarks
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.agent import LATSAgent
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import (
+    LATSEvaluateMetrics,
+    LATSGenerateMetrics,
     LATSOutput,
     LATSReActStepOutput,
+    LATSSimulationMetrics,
     LATSSimulationOutput,
+    LATSSimulationStepMetrics,
+    LATSStepOutput,
 )
 from agential.cog.lats.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
@@ -16,7 +24,23 @@ from agential.cog.lats.prompts import (
     LATS_VALUE_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.lats.strategies.base import LATSBaseStrategy
+from agential.cog.lats.strategies.code import (
+    LATSHEvalStrategy,
+    LATSMBPPStrategy,
+)
+from agential.cog.lats.strategies.math import (
+    LATSGSM8KStrategy,
+    LATSSVAMPStrategy,
+    LATSTabMWPStrategy,
+)
+from agential.cog.lats.strategies.qa import (
+    LATSAmbigNQStrategy,
+    LATSFEVERStrategy,
+    LATSHotQAStrategy,
+    LATSTriviaQAStrategy,
+)
 from agential.llm.llm import BaseLLM, MockLLM
+from agential.utils.general import PromptMetrics
 
 
 def test_init() -> None:
@@ -30,12 +54,109 @@ def test_init() -> None:
     assert agent.benchmark == "hotpotqa"
 
 
+def test_get_strategy() -> None:
+    """Tests LATSAgent get_strategy method."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+
+    # QA benchmarks.
+    assert isinstance(
+        LATSAgent.get_strategy(Benchmarks.HOTPOTQA, llm=llm),
+        LATSHotQAStrategy,
+    )
+    assert isinstance(
+        LATSAgent.get_strategy(Benchmarks.TRIVIAQA, llm=llm),
+        LATSTriviaQAStrategy,
+    )
+    assert isinstance(
+        LATSAgent.get_strategy(Benchmarks.AMBIGNQ, llm=llm),
+        LATSAmbigNQStrategy,
+    )
+    assert isinstance(
+        LATSAgent.get_strategy(Benchmarks.FEVER, llm=llm),
+        LATSFEVERStrategy,
+    )
+
+    # Math benchmarks.
+    assert isinstance(
+        LATSAgent.get_strategy(Benchmarks.GSM8K, llm=llm),
+        LATSGSM8KStrategy,
+    )
+    assert isinstance(
+        LATSAgent.get_strategy(Benchmarks.SVAMP, llm=llm),
+        LATSSVAMPStrategy,
+    )
+    assert isinstance(
+        LATSAgent.get_strategy(Benchmarks.TABMWP, llm=llm),
+        LATSTabMWPStrategy,
+    )
+
+    # Code benchmarks.
+    assert isinstance(
+        LATSAgent.get_strategy(Benchmarks.HUMANEVAL, llm=llm),
+        LATSHEvalStrategy,
+    )
+    assert isinstance(
+        LATSAgent.get_strategy(Benchmarks.MBPP, llm=llm),
+        LATSMBPPStrategy,
+    )
+
+    # Unsupported benchmark.
+    with pytest.raises(
+        ValueError, match="Unsupported benchmark: unknown for agent LATS"
+    ):
+        LATSAgent.get_strategy("unknown", llm=llm)
+
+
+def test_get_fewshots() -> None:
+    """Tests LATSAgent get_fewshots method."""
+    # Test valid input.
+    benchmark = Benchmarks.HOTPOTQA
+    result = LATSAgent.get_fewshots(benchmark, fewshot_type="react")
+    assert isinstance(result, dict)
+    assert result == {
+        "examples": HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        "reflect_examples": HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
+        "value_examples": HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE,
+    }
+
+    # Test unsupported benchmark.
+    with pytest.raises(
+        ValueError, match="Benchmark 'unknown' few-shots not found for LATS."
+    ):
+        LATSAgent.get_fewshots("unknown", fewshot_type="react")
+
+    # Test unsupported fewshot_type.
+    with pytest.raises(
+        ValueError, match="Benchmark 'hotpotqa' few-shot type not supported for LATS."
+    ):
+        LATSAgent.get_fewshots("hotpotqa", fewshot_type="pot")
+
+
+def test_get_prompts() -> None:
+    """Tests LATSAgent get_prompts method."""
+    # Test valid input.
+    benchmark = Benchmarks.HOTPOTQA
+    result = LATSAgent.get_prompts(benchmark)
+    assert result == {
+        "prompt": LATS_INSTRUCTION_HOTPOTQA,
+        "reflect_prompt": LATS_REFLECT_INSTRUCTION_HOTPOTQA,
+        "reflect_prompt": LATS_REFLECT_INSTRUCTION_HOTPOTQA,
+        "value_prompt": LATS_VALUE_INSTRUCTION_HOTPOTQA,
+    }
+
+    # Test unsupported benchmark.
+    with pytest.raises(
+        ValueError, match="Benchmark 'unknown' prompt not found for LATS."
+    ):
+        LATSAgent.get_prompts("unknown")
+
+
 def test_generate() -> None:
     """Test generate."""
     question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
     key = "Gesellschaft mit beschränkter Haftung"
 
-    gt_state = {
+    gt_terminal_node_state = {
         "state": LATSReActStepOutput(
             thought="Since direct searches for VIVA Media AG and its new acronym after the name change in 2004 did not provide relevant information, I should consider looking for industry reports, press releases, or official announcements related to the company's rebranding to uncover the acronym.",
             action_type="Search",
@@ -53,87 +174,26 @@ def test_generate() -> None:
         "is_terminal": False,
         "reward": 0,
     }
-    gt_out = LATSOutput(
-        iteration=0,
-        current_node={
-            "state": LATSReActStepOutput(
-                thought="",
-                action_type="",
-                query="",
-                observation="",
-                answer="",
-                external_tool_info={},
-            ),
-            "visits": 0,
-            "value": 0,
-            "depth": 0,
-            "is_terminal": False,
-            "reward": 0,
-        },
-        children_nodes=[
-            {
+    gt_additional_info = [
+        LATSStepOutput(
+            iteration=0,
+            current_node={
                 "state": LATSReActStepOutput(
-                    thought="I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.",
-                    action_type="Search",
-                    query="VIVA Media AG",
-                    observation="Badr Hari is the best kick boxer in the world.",
+                    thought="",
+                    action_type="",
+                    query="",
+                    observation="",
                     answer="",
-                    external_tool_info={
-                        "search_result": "Badr Hari is the best kick boxer in the world.",
-                        "lookup_result": "",
-                    },
+                    external_tool_info={},
                 ),
                 "visits": 0,
-                "value": 0.0,
-                "depth": 1,
+                "value": 0,
+                "depth": 0,
                 "is_terminal": False,
                 "reward": 0,
             },
-            {
-                "state": LATSReActStepOutput(
-                    thought="I need to search for VIVA Media AG to find out what their new acronym stands for after changing their name in 2004.",
-                    action_type="Search",
-                    query="VIVA Media AG",
-                    observation="Badr Hari is the best kick boxer in the world.",
-                    answer="",
-                    external_tool_info={
-                        "search_result": "Badr Hari is the best kick boxer in the world.",
-                        "lookup_result": "",
-                    },
-                ),
-                "visits": 0,
-                "value": 0.0,
-                "depth": 1,
-                "is_terminal": False,
-                "reward": 0,
-            },
-        ],
-        values=[
-            {"node_idx": 0, "explanation": "Explanation not found", "value": 0.0},
-            {"node_idx": 1, "explanation": "Explanation not found", "value": 0.0},
-        ],
-        simulation_reward=-1.0,
-        simulation_terminal_node={
-            "state": LATSReActStepOutput(
-                thought="Since direct searches for VIVA Media AG and its new acronym after the name change in 2004 did not provide relevant information, I should consider looking for industry reports, press releases, or official announcements related to the company's rebranding to uncover the acronym.",
-                action_type="Search",
-                query="VIVA Media AG rebranding press release",
-                observation="Badr Hari is the best kick boxer in the world.",
-                answer="",
-                external_tool_info={
-                    "search_result": "Badr Hari is the best kick boxer in the world.",
-                    "lookup_result": "",
-                },
-            ),
-            "visits": 0,
-            "value": 0,
-            "depth": 5,
-            "is_terminal": False,
-            "reward": 0,
-        },
-        simulation_results=[
-            LATSSimulationOutput(
-                current_node={
+            children_nodes=[
+                {
                     "state": LATSReActStepOutput(
                         thought="I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.",
                         action_type="Search",
@@ -151,7 +211,133 @@ def test_generate() -> None:
                     "is_terminal": False,
                     "reward": 0,
                 },
-                children_nodes=[
+                {
+                    "state": LATSReActStepOutput(
+                        thought="I need to search for VIVA Media AG to find out what their new acronym stands for after changing their name in 2004.",
+                        action_type="Search",
+                        query="VIVA Media AG",
+                        observation="Badr Hari is the best kick boxer in the world.",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Badr Hari is the best kick boxer in the world.",
+                            "lookup_result": "",
+                        },
+                    ),
+                    "visits": 0,
+                    "value": 0.0,
+                    "depth": 1,
+                    "is_terminal": False,
+                    "reward": 0,
+                },
+            ],
+            generate_metrics=LATSGenerateMetrics(
+                thoughts_metrics=[
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                ],
+                actions_metrics=[
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                ],
+                reflections_metrics=[],
+            ),
+            values=[
+                {"explanation": "Explanation not found", "value": 0.0},
+                {"explanation": "Explanation not found", "value": 0.0},
+            ],
+            evaluate_metrics=LATSEvaluateMetrics(
+                values_metrics=[
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                ]
+            ),
+            simulation_results=LATSSimulationOutput(
+                simulation_reward=-1.0,
+                simulation_terminal_node={
+                    "state": LATSReActStepOutput(
+                        thought="Since direct searches for VIVA Media AG and its new acronym after the name change in 2004 did not provide relevant information, I should consider looking for industry reports, press releases, or official announcements related to the company's rebranding to uncover the acronym.",
+                        action_type="Search",
+                        query="VIVA Media AG rebranding press release",
+                        observation="Badr Hari is the best kick boxer in the world.",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Badr Hari is the best kick boxer in the world.",
+                            "lookup_result": "",
+                        },
+                    ),
+                    "visits": 0,
+                    "value": 0,
+                    "depth": 5,
+                    "is_terminal": False,
+                    "reward": 0,
+                },
+                simulation_current_nodes=[
+                    {
+                        "state": LATSReActStepOutput(
+                            thought="I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.",
+                            action_type="Search",
+                            query="VIVA Media AG",
+                            observation="Badr Hari is the best kick boxer in the world.",
+                            answer="",
+                            external_tool_info={
+                                "search_result": "Badr Hari is the best kick boxer in the world.",
+                                "lookup_result": "",
+                            },
+                        ),
+                        "visits": 0,
+                        "value": 0.0,
+                        "depth": 1,
+                        "is_terminal": False,
+                        "reward": 0,
+                    },
                     {
                         "state": LATSReActStepOutput(
                             thought="The search for VIVA Media AG did not return relevant results. I should try searching for the new name of the company directly.",
@@ -172,50 +358,6 @@ def test_generate() -> None:
                     },
                     {
                         "state": LATSReActStepOutput(
-                            thought="I couldn't find VIVA Media AG. Let me try searching for VIVA Media AG (acronym) instead.",
-                            action_type="Search",
-                            query="VIVA Media AG (acronym)",
-                            observation="Badr Hari is the best kick boxer in the world.",
-                            answer="",
-                            external_tool_info={
-                                "search_result": "Badr Hari is the best kick boxer in the world.",
-                                "lookup_result": "",
-                            },
-                        ),
-                        "visits": 0,
-                        "value": 0,
-                        "depth": 2,
-                        "is_terminal": False,
-                        "reward": 0,
-                    },
-                ],
-                values=[
-                    {"node_idx": 0, "explanation": "Explanation not found", "value": 0},
-                    {"node_idx": 1, "explanation": "Explanation not found", "value": 0},
-                ],
-            ),
-            LATSSimulationOutput(
-                current_node={
-                    "state": LATSReActStepOutput(
-                        thought="The search for VIVA Media AG did not return relevant results. I should try searching for the new name of the company directly.",
-                        action_type="Search",
-                        query="VIVA Media AG new name",
-                        observation="Badr Hari is the best kick boxer in the world.",
-                        answer="",
-                        external_tool_info={
-                            "search_result": "Badr Hari is the best kick boxer in the world.",
-                            "lookup_result": "",
-                        },
-                    ),
-                    "visits": 0,
-                    "value": 0,
-                    "depth": 2,
-                    "is_terminal": False,
-                    "reward": 0,
-                },
-                children_nodes=[
-                    {
-                        "state": LATSReActStepOutput(
                             thought="Since direct searches for VIVA Media AG and its new name did not yield results, I should try to search for the company's name change history or any related news articles to find out the acronym.",
                             action_type="Search",
                             query="VIVA Media AG name change history",
@@ -234,50 +376,6 @@ def test_generate() -> None:
                     },
                     {
                         "state": LATSReActStepOutput(
-                            thought="It seems the direct search for the new name of VIVA Media AG is not yielding results. I should try a different approach to find the acronym.",
-                            action_type="Search",
-                            query="VIVA Media AG acronym 2004",
-                            observation="Badr Hari is the best kick boxer in the world.",
-                            answer="",
-                            external_tool_info={
-                                "search_result": "Badr Hari is the best kick boxer in the world.",
-                                "lookup_result": "",
-                            },
-                        ),
-                        "visits": 0,
-                        "value": 0,
-                        "depth": 3,
-                        "is_terminal": False,
-                        "reward": 0,
-                    },
-                ],
-                values=[
-                    {"node_idx": 0, "explanation": "Explanation not found", "value": 0},
-                    {"node_idx": 1, "explanation": "Explanation not found", "value": 0},
-                ],
-            ),
-            LATSSimulationOutput(
-                current_node={
-                    "state": LATSReActStepOutput(
-                        thought="Since direct searches for VIVA Media AG and its new name did not yield results, I should try to search for the company's name change history or any related news articles to find out the acronym.",
-                        action_type="Search",
-                        query="VIVA Media AG name change history",
-                        observation="Badr Hari is the best kick boxer in the world.",
-                        answer="",
-                        external_tool_info={
-                            "search_result": "Badr Hari is the best kick boxer in the world.",
-                            "lookup_result": "",
-                        },
-                    ),
-                    "visits": 0,
-                    "value": 0,
-                    "depth": 3,
-                    "is_terminal": False,
-                    "reward": 0,
-                },
-                children_nodes=[
-                    {
-                        "state": LATSReActStepOutput(
                             thought="The search results are still not providing the information needed. I should try to find a different angle to approach this question.",
                             action_type="Search",
                             query="VIVA Media AG rebranding 2004",
@@ -294,379 +392,454 @@ def test_generate() -> None:
                         "is_terminal": False,
                         "reward": 0,
                     },
-                    {
-                        "state": LATSReActStepOutput(
-                            thought="As the search results are not providing relevant information, I should consider looking up the company's history or press releases to find out the acronym of VIVA Media AG after the name change in 2004.",
-                            action_type="Search",
-                            query="VIVA Media AG press releases 2004",
-                            observation="Badr Hari is the best kick boxer in the world.",
-                            answer="",
-                            external_tool_info={
-                                "search_result": "Badr Hari is the best kick boxer in the world.",
-                                "lookup_result": "",
-                            },
-                        ),
-                        "visits": 0,
-                        "value": 0,
-                        "depth": 4,
-                        "is_terminal": False,
-                        "reward": 0,
-                    },
                 ],
-                values=[
-                    {"node_idx": 0, "explanation": "Explanation not found", "value": 0},
-                    {"node_idx": 1, "explanation": "Explanation not found", "value": 0},
-                ],
-            ),
-            LATSSimulationOutput(
-                current_node={
-                    "state": LATSReActStepOutput(
-                        thought="The search results are still not providing the information needed. I should try to find a different angle to approach this question.",
-                        action_type="Search",
-                        query="VIVA Media AG rebranding 2004",
-                        observation="Badr Hari is the best kick boxer in the world.",
-                        answer="",
-                        external_tool_info={
-                            "search_result": "Badr Hari is the best kick boxer in the world.",
-                            "lookup_result": "",
+                simulation_children_nodes=[
+                    [
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="The search for VIVA Media AG did not return relevant results. I should try searching for the new name of the company directly.",
+                                action_type="Search",
+                                query="VIVA Media AG new name",
+                                observation="Badr Hari is the best kick boxer in the world.",
+                                answer="",
+                                external_tool_info={
+                                    "search_result": "Badr Hari is the best kick boxer in the world.",
+                                    "lookup_result": "",
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 2,
+                            "is_terminal": False,
+                            "reward": 0,
                         },
-                    ),
-                    "visits": 0,
-                    "value": 0,
-                    "depth": 4,
-                    "is_terminal": False,
-                    "reward": 0,
-                },
-                children_nodes=[
-                    {
-                        "state": LATSReActStepOutput(
-                            thought="Since direct searches for VIVA Media AG and its new acronym after the name change in 2004 did not provide relevant information, I should consider looking for industry reports, press releases, or official announcements related to the company's rebranding to uncover the acronym.",
-                            action_type="Search",
-                            query="VIVA Media AG rebranding press release",
-                            observation="Badr Hari is the best kick boxer in the world.",
-                            answer="",
-                            external_tool_info={
-                                "search_result": "Badr Hari is the best kick boxer in the world.",
-                                "lookup_result": "",
-                            },
-                        ),
-                        "visits": 0,
-                        "value": 0,
-                        "depth": 5,
-                        "is_terminal": False,
-                        "reward": 0,
-                    },
-                    {
-                        "state": LATSReActStepOutput(
-                            thought="Since the search results are not yielding the required information, I should try a more general search for VIVA Media AG's name change history or company information to find the acronym.",
-                            action_type="Search",
-                            query="VIVA Media AG company information",
-                            observation="Badr Hari is the best kick boxer in the world.",
-                            answer="",
-                            external_tool_info={
-                                "search_result": "Badr Hari is the best kick boxer in the world.",
-                                "lookup_result": "",
-                            },
-                        ),
-                        "visits": 0,
-                        "value": 0,
-                        "depth": 5,
-                        "is_terminal": False,
-                        "reward": 0,
-                    },
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="I couldn't find VIVA Media AG. Let me try searching for VIVA Media AG (acronym) instead.",
+                                action_type="Search",
+                                query="VIVA Media AG (acronym)",
+                                observation="Badr Hari is the best kick boxer in the world.",
+                                answer="",
+                                external_tool_info={
+                                    "search_result": "Badr Hari is the best kick boxer in the world.",
+                                    "lookup_result": "",
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 2,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                    ],
+                    [
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="Since direct searches for VIVA Media AG and its new name did not yield results, I should try to search for the company's name change history or any related news articles to find out the acronym.",
+                                action_type="Search",
+                                query="VIVA Media AG name change history",
+                                observation="Badr Hari is the best kick boxer in the world.",
+                                answer="",
+                                external_tool_info={
+                                    "search_result": "Badr Hari is the best kick boxer in the world.",
+                                    "lookup_result": "",
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 3,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="It seems the direct search for the new name of VIVA Media AG is not yielding results. I should try a different approach to find the acronym.",
+                                action_type="Search",
+                                query="VIVA Media AG acronym 2004",
+                                observation="Badr Hari is the best kick boxer in the world.",
+                                answer="",
+                                external_tool_info={
+                                    "search_result": "Badr Hari is the best kick boxer in the world.",
+                                    "lookup_result": "",
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 3,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                    ],
+                    [
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="The search results are still not providing the information needed. I should try to find a different angle to approach this question.",
+                                action_type="Search",
+                                query="VIVA Media AG rebranding 2004",
+                                observation="Badr Hari is the best kick boxer in the world.",
+                                answer="",
+                                external_tool_info={
+                                    "search_result": "Badr Hari is the best kick boxer in the world.",
+                                    "lookup_result": "",
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 4,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="As the search results are not providing relevant information, I should consider looking up the company's history or press releases to find out the acronym of VIVA Media AG after the name change in 2004.",
+                                action_type="Search",
+                                query="VIVA Media AG press releases 2004",
+                                observation="Badr Hari is the best kick boxer in the world.",
+                                answer="",
+                                external_tool_info={
+                                    "search_result": "Badr Hari is the best kick boxer in the world.",
+                                    "lookup_result": "",
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 4,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                    ],
+                    [
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="Since direct searches for VIVA Media AG and its new acronym after the name change in 2004 did not provide relevant information, I should consider looking for industry reports, press releases, or official announcements related to the company's rebranding to uncover the acronym.",
+                                action_type="Search",
+                                query="VIVA Media AG rebranding press release",
+                                observation="Badr Hari is the best kick boxer in the world.",
+                                answer="",
+                                external_tool_info={
+                                    "search_result": "Badr Hari is the best kick boxer in the world.",
+                                    "lookup_result": "",
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 5,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="Since the search results are not yielding the required information, I should try a more general search for VIVA Media AG's name change history or company information to find the acronym.",
+                                action_type="Search",
+                                query="VIVA Media AG company information",
+                                observation="Badr Hari is the best kick boxer in the world.",
+                                answer="",
+                                external_tool_info={
+                                    "search_result": "Badr Hari is the best kick boxer in the world.",
+                                    "lookup_result": "",
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 5,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                    ],
                 ],
-                values=[
-                    {"node_idx": 0, "explanation": "Explanation not found", "value": 0},
-                    {"node_idx": 1, "explanation": "Explanation not found", "value": 0},
+                simulation_values=[
+                    [
+                        {"explanation": "Explanation not found", "value": 0.0},
+                        {"explanation": "Explanation not found", "value": 0.0},
+                    ],
+                    [
+                        {"explanation": "Explanation not found", "value": 0.0},
+                        {"explanation": "Explanation not found", "value": 0.0},
+                    ],
+                    [
+                        {"explanation": "Explanation not found", "value": 0.0},
+                        {"explanation": "Explanation not found", "value": 0.0},
+                    ],
+                    [
+                        {"explanation": "Explanation not found", "value": 0.0},
+                        {"explanation": "Explanation not found", "value": 0.0},
+                    ],
                 ],
             ),
-        ],
-        prompt_metrics={
-            "thought": [
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-            ],
-            "action": [
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-            ],
-            "value": [
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-            ],
-            "simulate_thought": [
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-            ],
-            "simulate_action": [
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-            ],
-            "simulate_value": [
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-                {
-                    "prompt_tokens": 10,
-                    "completion_tokens": 20,
-                    "total_tokens": 30,
-                    "prompt_tokens_cost": 1.5e-05,
-                    "completion_tokens_cost": 3.9999999999999996e-05,
-                    "total_tokens_cost": 5.4999999999999995e-05,
-                    "time_sec": 0.5,
-                },
-            ],
-            "reflection": [],
-        },
-    )
+            simulation_metrics=LATSSimulationMetrics(
+                simulation_step_metrics=[
+                    LATSSimulationStepMetrics(
+                        generate_metrics=LATSGenerateMetrics(
+                            thoughts_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            actions_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            reflections_metrics=[],
+                        ),
+                        evaluate_metrics=LATSEvaluateMetrics(
+                            values_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ]
+                        ),
+                    ),
+                    LATSSimulationStepMetrics(
+                        generate_metrics=LATSGenerateMetrics(
+                            thoughts_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            actions_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            reflections_metrics=[],
+                        ),
+                        evaluate_metrics=LATSEvaluateMetrics(
+                            values_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ]
+                        ),
+                    ),
+                    LATSSimulationStepMetrics(
+                        generate_metrics=LATSGenerateMetrics(
+                            thoughts_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            actions_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            reflections_metrics=[],
+                        ),
+                        evaluate_metrics=LATSEvaluateMetrics(
+                            values_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ]
+                        ),
+                    ),
+                    LATSSimulationStepMetrics(
+                        generate_metrics=LATSGenerateMetrics(
+                            thoughts_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            actions_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            reflections_metrics=[],
+                        ),
+                        evaluate_metrics=LATSEvaluateMetrics(
+                            values_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ]
+                        ),
+                    ),
+                ]
+            ),
+        )
+    ]
 
     responses = [
         "I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.\nAction 1: Search[VIVA Media AG]\nObservation 1: VIVA Media AG was a German media company that operated several television channels.\nThought 2: I need to find the new acronym for VIVA Media AG after its name change in 2004.\nAction 2: Lookup[new name of VIVA Media AG in 2004]\nObservation 2: (Result 1 / 1) The new acronym for VIVA Media AG after changing its name in 2004 was VIVA Entertainment AG.\nThought 3: The new acronym for VIVA Media AG after its name change in 2004 was VIVA Entertainment AG. \nAction 3: Finish[VIVA Entertainment AG]",
@@ -706,12 +879,13 @@ def test_generate() -> None:
         benchmark="hotpotqa",
         n_samples=2,
         depth_limit=5,
+        testing=True,
     )
     agent.strategy.docstore.search = (
         lambda x: "Badr Hari is the best kick boxer in the world."
     )
 
-    best_node, out = agent.generate(
+    out = agent.generate(
         question=question,
         key=key,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
@@ -726,10 +900,6 @@ def test_generate() -> None:
         max_iterations=1,
         reset=True,
     )
-
-    assert isinstance(best_node, Node)
-    assert isinstance(out, list)
-    assert len(out) == 1
 
     assert len(agent.strategy.failed_trajectories) == 0
     assert len(agent.strategy.reflection_map) == 0
@@ -737,831 +907,29 @@ def test_generate() -> None:
         "\nThought 1: I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.\nAction 1: Search[VIVA Media AG]\nObservation 1: Badr Hari is the best kick boxer in the world.::": "I need to search for VIVA Media AG to find out what their new acronym stands for after changing their name in 2004.\nAction 1: Search[VIVA Media AG]\nObservation 1: VIVA Media AG was a German media company that operated several television channels.\nThought 2: Since the search did not provide the information I need, I should look for the new acronym after their name change in 2004.\nAction 2: Lookup[new acronym'The trajectory is incorrect because the search query did not yield results for VIVA Media AG. This indicates that the initial search was not specific enough or possibly the entity has limited online presence. Future attempts should consider refining the search terms or looking for alternative sources of information.\nCorrectness score: 2",
         "\nThought 1: I need to search for VIVA Media AG to find out what their new acronym stands for after changing their name in 2004.\nAction 1: Search[VIVA Media AG]\nObservation 1: Badr Hari is the best kick boxer in the world.::": "This trajectory is incorrect because the search did not yield results for VIVA Media AG. The action taken was appropriate, but the lack of relevant information hindered progress towards finding the acronym. In the future, it would be beneficial to explore alternative sources or search for related entities that might provide the necessary information.\nCorrectness score: 2",
     }
-    assert best_node.to_dict() == gt_state
-    assert out[0] == gt_out
 
-    # Test generate with reflection.
-    question = "What's the capital of France?"
-    key = "France"
-
-    responses = [
-        # First try.
-        "I need to search for the capital of France.\nAction 1: Search[capital of France]",
-        "Search[capital of France]\nObservation 1: The capital of France is Paris.\nThought 2: The capital of France is Paris, so the answer is Paris.\nAction 2: Finish[Paris]",
-        "I need to search for the capital of France.\nAction 1: Search[capital of France]",
-        "Search[capital of France]",
-        "The trajectory is incorrect as the observation does not provide any relevant information about the capital of France. The action was not aligned with the question, leading to an incorrect trajectory.\nCorrectness score: 1",
-        "The search result is incorrect. I need to search again for the capital of France.\nAction 2: Search[capital of France]\nObservation 2: The capital of France is Paris.\nThought 3: The capital of France is Paris, so the answer is Paris.\nAction 3: Finish[Paris]",
-        "Search[capital of France]\nObservation 2: The capital of France is Paris.\nThought 3: The capital of France is Paris.\nAction 3: Finish[Paris]",
-        "The search result is incorrect. I need to search for the capital of France again.\nAction 2: Search[capital of France]\nObservation 2: Paris is the capital of France.\nThought 3: The capital of France is Paris.\nAction 3: Finish[Paris]",
-        "Search[capital of France]\nObservation 2: The capital of France is Paris.\nThought 3: The capital of France is Paris.\nAction 3: Finish[Paris]",
-        "The trajectory is incorrect because the search results are unrelated to the question asked. The focus should have been on verifying the capital of France directly instead of repeating the same unsuccessful search. \nCorrectness score: 1",
-        "The trajectory is incorrect because the search results are unrelated to the question. The focus should have been on verifying the capital of France directly instead of repeating the same search with no relevant information retrieved. \nCorrectness score: 1",
-        "The search results are not providing the correct information. I should try a different approach to find the capital of France.\nAction 3: Search[Paris]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris.\nAction 4: Finish[Paris]",
-        "Search[Paris]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris.\nAction 4: Finish[Paris]",
-        "The search results are not yielding the correct information. I need to try a different approach.\nAction 3: Search[Paris]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris.\nAction 4: Finish[Paris]",
-        "Search[Paris, France]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris.\nAction 4: Finish[Paris]",
-        'The trajectory is incorrect because the search results did not provide the relevant information needed to answer the question. The repeated searches for the capital of France yielded irrelevant results, and the final attempt to search for "Paris" also did not yield the correct answer. Future attempts should ensure to verify the accuracy and relevance of the search results before proceeding with the next steps.\nCorrectness score: 1',
-        "The trajectory is incorrect because despite recognizing the incorrect search results, the user did not adjust their search query or approach to find the correct answer. The repeated searches for the same incorrect information indicate a lack of adaptability in the search strategy. The user should have tried different variations of the search query or explored alternative sources to find the correct answer. \nCorrectness score: 1",
-        "The search results are still not providing the correct information. I need to try a different search term to find the capital of France.\nAction 4: Search[capital city France]\nObservation 4: Paris is the capital city of France.\nThought 5: Paris is indeed the capital of France. I can now provide the answer.\nAction 5: Finish[Paris]",
-        "Search[What is the capital of France?]\nObservation 4: The capital of France is Paris.\nThought 5: The correct answer is Paris.\nAction 5: Finish[Paris]",
-        "The search results are not helpful. I should try a different method to find the answer.\nAction 4: Finish[Paris]",
-        "Finish[Paris]",
-        # Second try.
-        "My reasoning failed because I kept encountering irrelevant search results and did not adjust my search strategy effectively to find the answer. In the future, I should prioritize using reliable sources and adjust my search terms to ensure I get relevant information. To mitigate this failure, I will focus on using specific search terms that directly relate to the question and consider using verified sources like official websites or databases to obtain accurate information.",
-        "I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: Paris is the capital of France.\nThought 2: The search results provided the correct answer. I can finish the task now.\nAction 2: Finish[Paris]",
-        "Search[capital of France]\nObservation 1: Paris is the capital of France.\nThought 2: Paris is the capital of France. I have found the answer.\nAction 2: Finish[Paris]",
-        "I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: The capital of France is Paris.\nThought 2: The search results provided the correct answer. I can now finish the task.\nAction 2: Finish[Paris]",
-        "Search[capital of France]\nObservation 1: Paris is the capital of France.\nThought 2: The search results provide the correct answer. I can now finish the task.\nAction 2: Finish[Paris]",
-        "This trajectory is incorrect as the search results are completely irrelevant to the question. The action taken did not lead to any relevant information or progress towards finding the answer. In the future, it is important to verify the search query and ensure that the information retrieved is related to the question being asked.\nCorrectness score: 1",
-        "The search results are not relevant to the question. I should try searching again for the capital of France.\nAction 2: Search[capital of France]\nObservation 2: The capital of France is Paris.\nThought 3: The capital of France is Paris.\nAction 3: Finish[Paris]",
-        "Search[capital of France]\nObservation 2: The capital of France is Paris.\nThought 3: The capital of France is Paris.\nAction 3: Finish[Paris]",
-        "The search result did not provide the information I needed. I need to try searching for the capital of France again.\nAction 2: Search[capital of France]\nObservation 2: The capital of France is Paris.\nThought 3: The capital of France is Paris.\nAction 3: Finish[Paris]",
-        "Search[capital of France]\nObservation 2: Paris is the capital of France.\nThought 3: The capital of France is Paris.\nAction 3: Finish[Paris]",
-        "This trajectory is incorrect as the search results consistently provide irrelevant information, and no further actions were taken to adjust the search strategy or try alternative keywords. The trajectory did not show any adaptation or improvement in the search process to find the correct answer. In the future, it is essential to evaluate the search results and modify search terms to ensure the relevance of the information obtained.\nCorrectness score: 2",
-        "This trajectory is incorrect as the search results were consistently irrelevant, and no adjustments were made to improve the search strategy. The focus should have been on finding accurate and relevant information related to the question. In the future, it is essential to verify the sources and adjust search terms to obtain the correct answer.\nCorrectness score: 1",
-        "The search results are still not relevant. I should try a different approach to find the answer.\nAction 3: Search[Paris capital of France]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris.\nAction 4: Finish[Paris]",
-        "Search[France capital]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris.\nAction 4: Finish[Paris]",
-        "The search results are still not relevant. I should try a different approach to find the answer to the question.\nAction 3: Search[Paris, France]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris, so the answer to the question is Paris.\nAction 4: Finish[Paris]",
-        "Search[Paris]\nObservation 3: Paris is the capital of France.\nThought 4: The capital of France is Paris.\nAction 4: Finish[Paris]",
-        "This trajectory is incorrect because the focus was solely on repeating the same search queries without considering the relevance of the search results. The observations remained consistent with irrelevant information, indicating a failure to adjust the search strategy effectively. In the future, it is important to evaluate the search results and adapt the search terms to ensure relevant information is obtained. \nCorrectness score: 1",
-        "This trajectory is incorrect as the focus remained on irrelevant search results and did not lead to the correct answer. The actions taken did not adjust the search terms effectively to find the answer. In the future, it is essential to adapt the search strategy based on the relevance of the search results and consider alternative search terms or sources to obtain accurate information.\nCorrectness score: 1",
-        "The search results are not providing the answer. I should try a different search query.\nAction 4: Search[capital city of France]\nObservation 4: Paris is the capital city of France.\nThought 5: Paris is the capital of France. I have found the answer.\nAction 5: Finish[Paris]",
-        "Search[Paris, France]\nObservation 4: Paris is the capital of France.\nThought 5: The answer is Paris.\nAction 5: Finish[Paris]",
-        " The search results are consistently incorrect. I should try a different search engine or source to find the answer.\nAction 4: Finish[Unable to find the answer]",
-        "Search[capital of France on Wikipedia]\nObservation 4: Paris is the capital of France.\nThought 5: The answer is Paris. \nAction 5: Finish[Paris]",
-        "This trajectory is incorrect as the focus was not on adjusting the search terms effectively to find the answer. The repeated use of the same search terms without success indicates a lack of adaptability in the search strategy. In the future, it would be beneficial to vary the search terms and approaches to enhance the chances of obtaining relevant information.\nCorrectness score: 2",
-        "This trajectory is incorrect as it failed to adjust the search terms effectively and kept encountering irrelevant results. The failure to find the answer despite multiple attempts indicates a lack of adaptability in the search strategy. In the future, it is essential to refine search terms, consider alternative sources, and verify the information obtained to ensure accuracy. \nCorrectness score: 1",
-        "The search results are not helpful. I should try a different search engine or source to find the answer to the question.\nAction 5: Search[capital of France]\nObservation 5: Paris is the capital of France.\nThought 6: The capital of France is Paris. I can now finish the task.\nAction 6: Finish[Paris]",
-        "Search[What is the capital of France]\nObservation 5: Paris is the capital of France.\nThought 6: The capital of France is Paris, so the answer to the question is Paris.\nAction 6: Finish[Paris]",
-        "The search results are not helping. I should try a different search engine or source to find the answer to the question. \nAction 5: Finish[Unable to find the answer]",
-        "Search[What is the capital of France]\nObservation 5: Paris is the capital of France.\nThought 6: The answer is Paris.\nAction 6: Finish[Paris]",
-        'This trajectory is incorrect as the search terms used did not directly relate to the question asked. The repeated use of generic search queries like "capital of France" or "France capital" did not yield relevant results. The failure to adjust the search terms to more specific and direct queries led to the inability to find the correct answer. In the future, it is essential to use precise and relevant search terms to obtain accurate information. \nCorrectness score: 1',
-        "This trajectory is incorrect as the search results consistently did not provide the answer to the question. The actions taken to adjust the search terms were not effective in retrieving the correct information. In the future, it is important to use more specific search terms and reliable sources to ensure accurate information. This trajectory shows a lack of adaptation to the search results and a failure to use appropriate search terms related to the question.\nCorrectness score: 1",
-    ]
-    agent = LATSAgent(
-        llm=MockLLM("gpt-3.5-turbo", responses=responses),
-        benchmark="hotpotqa",
-        n_samples=2,
-        depth_limit=5,
-    )
-    agent.strategy.docstore.search = (
-        lambda x: "Badr Hari is the best kick boxer in the world."
-    )
-
-    best_node, out = agent.generate(
-        question=question,
-        key=key,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
-        value_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE,
-        prompt=LATS_INSTRUCTION_HOTPOTQA,
-        reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
-        value_prompt=LATS_VALUE_INSTRUCTION_HOTPOTQA,
-        additional_keys={},
-        reflect_additional_keys={},
-        value_additional_keys={},
-        max_iterations=1,
-        reset=True,
-    )
-    assert agent.strategy.failed_trajectories == [
-        {
-            "trajectory": "\nThought 1: I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: Badr Hari is the best kick boxer in the world.\nThought 2: The search result is incorrect. I need to search again for the capital of France.\nAction 2: Search[capital of France]\nObservation 2: Badr Hari is the best kick boxer in the world.\nThought 3: The search results are not providing the correct information. I should try a different approach to find the capital of France.\nAction 3: Search[Paris]\nObservation 3: Badr Hari is the best kick boxer in the world.\nThought 4: The search results are not helpful. I should try a different method to find the answer.\nAction 4: Finish[Paris]\nObservation 4: Answer is INCORRECT",
-            "final_answer": "paris",
-        }
-    ]
-    assert agent.strategy.reflection_map == []
-
-    gt_state = {
+    assert out.answer.to_dict() == gt_terminal_node_state
+    assert out.total_completion_cost == 0.0012
+    assert out.total_completion_tokens == 600
+    assert out.total_prompt_cost == 0.00045000000000000015
+    assert out.total_prompt_tokens == 300
+    assert out.total_tokens == 900
+    assert out.total_cost == 0.0016500000000000002
+    assert out.total_prompt_time == 15.0
+    assert out.total_time == 0.5
+    assert out.additional_info == gt_additional_info
+    assert agent.strategy.root.to_dict() == {
         "state": LATSReActStepOutput(
-            thought="The search results are not helpful. I should try a different search engine or source to find the answer to the question.",
-            action_type="Search",
-            query="What is the capital of France",
-            observation="Badr Hari is the best kick boxer in the world.",
+            thought="",
+            action_type="",
+            query="",
+            observation="",
             answer="",
-            external_tool_info={
-                "search_result": "Badr Hari is the best kick boxer in the world.",
-                "lookup_result": "",
-            },
+            external_tool_info={},
         ),
         "visits": 1,
         "value": -1.0,
-        "depth": 5,
+        "depth": 0,
         "is_terminal": False,
         "reward": 0,
     }
-    gt_out = [
-        LATSOutput(
-            iteration=0,
-            current_node={
-                "state": LATSReActStepOutput(
-                    thought="",
-                    action_type="",
-                    query="",
-                    observation="",
-                    answer="",
-                    external_tool_info={},
-                ),
-                "visits": 0,
-                "value": 0,
-                "depth": 0,
-                "is_terminal": False,
-                "reward": 0,
-            },
-            children_nodes=[
-                {
-                    "state": LATSReActStepOutput(
-                        thought="I need to search for the capital of France.",
-                        action_type="Search",
-                        query="capital of France",
-                        observation="Badr Hari is the best kick boxer in the world.",
-                        answer="",
-                        external_tool_info={
-                            "search_result": "Badr Hari is the best kick boxer in the world.",
-                            "lookup_result": "",
-                        },
-                    ),
-                    "visits": 0,
-                    "value": 0.0,
-                    "depth": 1,
-                    "is_terminal": False,
-                    "reward": 0,
-                }
-            ],
-            values=[
-                {"node_idx": 0, "explanation": "Explanation not found", "value": 0.0}
-            ],
-            simulation_reward=-1.0,
-            simulation_terminal_node={
-                "state": LATSReActStepOutput(
-                    thought="The search results are not helpful. I should try a different search engine or source to find the answer to the question.",
-                    action_type="Search",
-                    query="What is the capital of France",
-                    observation="Badr Hari is the best kick boxer in the world.",
-                    answer="",
-                    external_tool_info={
-                        "search_result": "Badr Hari is the best kick boxer in the world.",
-                        "lookup_result": "",
-                    },
-                ),
-                "visits": 0,
-                "value": 0,
-                "depth": 5,
-                "is_terminal": False,
-                "reward": 0,
-            },
-            simulation_results=[
-                LATSSimulationOutput(
-                    current_node={
-                        "state": LATSReActStepOutput(
-                            thought="I need to search for the capital of France.",
-                            action_type="Search",
-                            query="capital of France",
-                            observation="Badr Hari is the best kick boxer in the world.",
-                            answer="",
-                            external_tool_info={
-                                "search_result": "Badr Hari is the best kick boxer in the world.",
-                                "lookup_result": "",
-                            },
-                        ),
-                        "visits": 0,
-                        "value": 0.0,
-                        "depth": 1,
-                        "is_terminal": False,
-                        "reward": 0,
-                    },
-                    children_nodes=[
-                        {
-                            "state": LATSReActStepOutput(
-                                thought="The search results are not relevant to the question. I should try searching again for the capital of France.",
-                                action_type="Search",
-                                query="capital of France",
-                                observation="Badr Hari is the best kick boxer in the world.",
-                                answer="",
-                                external_tool_info={
-                                    "search_result": "Badr Hari is the best kick boxer in the world.",
-                                    "lookup_result": "",
-                                },
-                            ),
-                            "visits": 0,
-                            "value": 0,
-                            "depth": 2,
-                            "is_terminal": False,
-                            "reward": 0,
-                        },
-                        {
-                            "state": LATSReActStepOutput(
-                                thought="The search result did not provide the information I needed. I need to try searching for the capital of France again.",
-                                action_type="Search",
-                                query="capital of France",
-                                observation="Badr Hari is the best kick boxer in the world.",
-                                answer="",
-                                external_tool_info={
-                                    "search_result": "Badr Hari is the best kick boxer in the world.",
-                                    "lookup_result": "",
-                                },
-                            ),
-                            "visits": 0,
-                            "value": 0,
-                            "depth": 2,
-                            "is_terminal": False,
-                            "reward": 0,
-                        },
-                    ],
-                    values=[
-                        {
-                            "node_idx": 0,
-                            "explanation": "Explanation not found",
-                            "value": 0,
-                        },
-                        {
-                            "node_idx": 1,
-                            "explanation": "Explanation not found",
-                            "value": 0,
-                        },
-                    ],
-                ),
-                LATSSimulationOutput(
-                    current_node={
-                        "state": LATSReActStepOutput(
-                            thought="The search results are not relevant to the question. I should try searching again for the capital of France.",
-                            action_type="Search",
-                            query="capital of France",
-                            observation="Badr Hari is the best kick boxer in the world.",
-                            answer="",
-                            external_tool_info={
-                                "search_result": "Badr Hari is the best kick boxer in the world.",
-                                "lookup_result": "",
-                            },
-                        ),
-                        "visits": 0,
-                        "value": 0,
-                        "depth": 2,
-                        "is_terminal": False,
-                        "reward": 0,
-                    },
-                    children_nodes=[
-                        {
-                            "state": LATSReActStepOutput(
-                                thought="The search results are still not relevant. I should try a different approach to find the answer.",
-                                action_type="Search",
-                                query="France capital",
-                                observation="Badr Hari is the best kick boxer in the world.",
-                                answer="",
-                                external_tool_info={
-                                    "search_result": "Badr Hari is the best kick boxer in the world.",
-                                    "lookup_result": "",
-                                },
-                            ),
-                            "visits": 0,
-                            "value": 0,
-                            "depth": 3,
-                            "is_terminal": False,
-                            "reward": 0,
-                        },
-                        {
-                            "state": LATSReActStepOutput(
-                                thought="The search results are still not relevant. I should try a different approach to find the answer to the question.",
-                                action_type="Search",
-                                query="Paris",
-                                observation="Badr Hari is the best kick boxer in the world.",
-                                answer="",
-                                external_tool_info={
-                                    "search_result": "Badr Hari is the best kick boxer in the world.",
-                                    "lookup_result": "",
-                                },
-                            ),
-                            "visits": 0,
-                            "value": 0,
-                            "depth": 3,
-                            "is_terminal": False,
-                            "reward": 0,
-                        },
-                    ],
-                    values=[
-                        {
-                            "node_idx": 0,
-                            "explanation": "Explanation not found",
-                            "value": 0,
-                        },
-                        {
-                            "node_idx": 1,
-                            "explanation": "Explanation not found",
-                            "value": 0,
-                        },
-                    ],
-                ),
-                LATSSimulationOutput(
-                    current_node={
-                        "state": LATSReActStepOutput(
-                            thought="The search results are still not relevant. I should try a different approach to find the answer.",
-                            action_type="Search",
-                            query="France capital",
-                            observation="Badr Hari is the best kick boxer in the world.",
-                            answer="",
-                            external_tool_info={
-                                "search_result": "Badr Hari is the best kick boxer in the world.",
-                                "lookup_result": "",
-                            },
-                        ),
-                        "visits": 0,
-                        "value": 0,
-                        "depth": 3,
-                        "is_terminal": False,
-                        "reward": 0,
-                    },
-                    children_nodes=[
-                        {
-                            "state": LATSReActStepOutput(
-                                thought="The search results are not providing the answer. I should try a different search query.",
-                                action_type="Search",
-                                query="Paris, France",
-                                observation="Badr Hari is the best kick boxer in the world.",
-                                answer="",
-                                external_tool_info={
-                                    "search_result": "Badr Hari is the best kick boxer in the world.",
-                                    "lookup_result": "",
-                                },
-                            ),
-                            "visits": 0,
-                            "value": 0,
-                            "depth": 4,
-                            "is_terminal": False,
-                            "reward": 0,
-                        },
-                        {
-                            "state": LATSReActStepOutput(
-                                thought="The search results are consistently incorrect. I should try a different search engine or source to find the answer.",
-                                action_type="Search",
-                                query="capital of France on Wikipedia",
-                                observation="Badr Hari is the best kick boxer in the world.",
-                                answer="",
-                                external_tool_info={
-                                    "search_result": "Badr Hari is the best kick boxer in the world.",
-                                    "lookup_result": "",
-                                },
-                            ),
-                            "visits": 0,
-                            "value": 0,
-                            "depth": 4,
-                            "is_terminal": False,
-                            "reward": 0,
-                        },
-                    ],
-                    values=[
-                        {
-                            "node_idx": 0,
-                            "explanation": "Explanation not found",
-                            "value": 0,
-                        },
-                        {
-                            "node_idx": 1,
-                            "explanation": "Explanation not found",
-                            "value": 0,
-                        },
-                    ],
-                ),
-                LATSSimulationOutput(
-                    current_node={
-                        "state": LATSReActStepOutput(
-                            thought="The search results are not providing the answer. I should try a different search query.",
-                            action_type="Search",
-                            query="Paris, France",
-                            observation="Badr Hari is the best kick boxer in the world.",
-                            answer="",
-                            external_tool_info={
-                                "search_result": "Badr Hari is the best kick boxer in the world.",
-                                "lookup_result": "",
-                            },
-                        ),
-                        "visits": 0,
-                        "value": 0,
-                        "depth": 4,
-                        "is_terminal": False,
-                        "reward": 0,
-                    },
-                    children_nodes=[
-                        {
-                            "state": LATSReActStepOutput(
-                                thought="The search results are not helpful. I should try a different search engine or source to find the answer to the question.",
-                                action_type="Search",
-                                query="What is the capital of France",
-                                observation="Badr Hari is the best kick boxer in the world.",
-                                answer="",
-                                external_tool_info={
-                                    "search_result": "Badr Hari is the best kick boxer in the world.",
-                                    "lookup_result": "",
-                                },
-                            ),
-                            "visits": 0,
-                            "value": 0,
-                            "depth": 5,
-                            "is_terminal": False,
-                            "reward": 0,
-                        },
-                        {
-                            "state": LATSReActStepOutput(
-                                thought="The search results are not helping. I should try a different search engine or source to find the answer to the question.",
-                                action_type="Search",
-                                query="What is the capital of France",
-                                observation="Badr Hari is the best kick boxer in the world.",
-                                answer="",
-                                external_tool_info={
-                                    "search_result": "Badr Hari is the best kick boxer in the world.",
-                                    "lookup_result": "",
-                                },
-                            ),
-                            "visits": 0,
-                            "value": 0,
-                            "depth": 5,
-                            "is_terminal": False,
-                            "reward": 0,
-                        },
-                    ],
-                    values=[
-                        {
-                            "node_idx": 0,
-                            "explanation": "Explanation not found",
-                            "value": 0,
-                        },
-                        {
-                            "node_idx": 1,
-                            "explanation": "Explanation not found",
-                            "value": 0,
-                        },
-                    ],
-                ),
-            ],
-            prompt_metrics={
-                "thought": [
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                ],
-                "action": [
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                ],
-                "value": [
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    }
-                ],
-                "simulate_thought": [
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                ],
-                "simulate_action": [
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                ],
-                "simulate_value": [
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    },
-                ],
-                "reflection": [
-                    {
-                        "prompt_tokens": 10,
-                        "completion_tokens": 20,
-                        "total_tokens": 30,
-                        "prompt_tokens_cost": 1.5e-05,
-                        "completion_tokens_cost": 3.9999999999999996e-05,
-                        "total_tokens_cost": 5.4999999999999995e-05,
-                        "time_sec": 0.5,
-                    }
-                ],
-            },
-        )
-    ]
-    gt_failed_trajectories = [
-        {
-            "trajectory": "\nThought 1: I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: Badr Hari is the best kick boxer in the world.\nThought 2: The search result is incorrect. I need to search again for the capital of France.\nAction 2: Search[capital of France]\nObservation 2: Badr Hari is the best kick boxer in the world.\nThought 3: The search results are not providing the correct information. I should try a different approach to find the capital of France.\nAction 3: Search[Paris]\nObservation 3: Badr Hari is the best kick boxer in the world.\nThought 4: The search results are not helpful. I should try a different method to find the answer.\nAction 4: Finish[Paris]\nObservation 4: Answer is INCORRECT",
-            "final_answer": "paris",
-        }
-    ]
-    gt_reflection_map = [
-        {
-            "trajectory": "\nThought 1: I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: Badr Hari is the best kick boxer in the world.\nThought 2: The search result is incorrect. I need to search again for the capital of France.\nAction 2: Search[capital of France]\nObservation 2: Badr Hari is the best kick boxer in the world.\nThought 3: The search results are not providing the correct information. I should try a different approach to find the capital of France.\nAction 3: Search[Paris]\nObservation 3: Badr Hari is the best kick boxer in the world.\nThought 4: The search results are not helpful. I should try a different method to find the answer.\nAction 4: Finish[Paris]\nObservation 4: Answer is INCORRECT",
-            "reflection": "My reasoning failed because I kept encountering irrelevant search results and did not adjust my search strategy effectively to find the answer. In the future, I should prioritize using reliable sources and adjust my search terms to ensure I get relevant information. To mitigate this failure, I will focus on using specific search terms that directly relate to the question and consider using verified sources like official websites or databases to obtain accurate information.",
-        }
-    ]
-    gt_value_cache = {
-        "\nThought 1: I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: Badr Hari is the best kick boxer in the world.::": "The trajectory is incorrect as the observation does not provide any relevant information about the capital of France. The action was not aligned with the question, leading to an incorrect trajectory.\nCorrectness score: 1",
-        "\nThought 1: I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: Badr Hari is the best kick boxer in the world.::Question: What's the capital of France?\n\nThought 1: I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: Badr Hari is the best kick boxer in the world.\nThought 2: The search result is incorrect. I need to search again for the capital of France.\nAction 2: Search[capital of France]\nObservation 2: Badr Hari is the best kick boxer in the world.\nThought 3: The search results are not providing the correct information. I should try a different approach to find the capital of France.\nAction 3: Search[Paris]\nObservation 3: Badr Hari is the best kick boxer in the world.\nThought 4: The search results are not helpful. I should try a different method to find the answer.\nAction 4: Finish[Paris]\nObservation 4: Answer is INCORRECT\n\nExplanation: This trajectory is incorrect as My reasoning failed because I kept encountering irrelevant search results and did not adjust my search strategy effectively to find the answer. In the future, I should prioritize using reliable sources and adjust my search terms to ensure I get relevant information. To mitigate this failure, I will focus on using specific search terms that directly relate to the question and consider using verified sources like official websites or databases to obtain accurate information.\nCorrectness score: 1": "This trajectory is incorrect as the search results are completely irrelevant to the question. The action taken did not lead to any relevant information or progress towards finding the answer. In the future, it is important to verify the search query and ensure that the information retrieved is related to the question being asked.\nCorrectness score: 1",
-    }
-
-    question = "What's the capital of France?"
-    key = "Paris"
-
-    best_node, out = agent.generate(
-        question=question,
-        key=key,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_REFLECT,
-        value_examples=HOTPOTQA_FEWSHOT_EXAMPLES_LATS_VALUE,
-        prompt=LATS_INSTRUCTION_HOTPOTQA,
-        reflect_prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
-        value_prompt=LATS_VALUE_INSTRUCTION_HOTPOTQA,
-        additional_keys={},
-        reflect_additional_keys={},
-        value_additional_keys={},
-        max_iterations=1,
-        reset=False,
-    )
-    assert best_node.to_dict() == gt_state
-    assert out == gt_out
-    assert agent.strategy.failed_trajectories == gt_failed_trajectories
-    assert agent.strategy.reflection_map == gt_reflection_map
-    assert agent.strategy.value_cache == gt_value_cache
-    assert agent.strategy._prompt_metrics == {
-        "thought": [],
-        "action": [],
-        "value": [],
-        "simulate_thought": [],
-        "simulate_action": [],
-        "simulate_value": [],
-        "reflection": [],
-    }
-
-
-def test_reset() -> None:
-    """Test the reset method."""
-    llm = MockLLM("gpt-3.5-turbo", responses=[])
-    agent = LATSAgent(llm=llm, benchmark="hotpotqa")
-
-    agent.strategy.root = "some_root"
-    agent.strategy.reflection_map = ["reflection1", "reflection2"]
-    agent.strategy.value_cache = {"value1": "value2"}
-    agent.strategy.failed_trajectories = ["trajectory1", "trajectory2"]
-    agent.strategy.prompt_metrics = {"metric1": "value1", "metric2": "value2"}
-
-    # Call reset.
-    agent.strategy.reset()
-
-    # Check if the state has been reset.
-    assert agent.strategy.root is None
-    assert agent.strategy.failed_trajectories == []
-    assert agent.strategy.reflection_map == []
-    assert agent.strategy.value_cache == {}
-    assert agent.strategy._prompt_metrics == {
-        "thought": [],
-        "action": [],
-        "value": [],
-        "simulate_thought": [],
-        "simulate_action": [],
-        "simulate_value": [],
-        "reflection": [],
-    }
-
-
-def test_generate_child_nodes() -> None:
-    """Test the generate_child_nodes method."""
-    llm = MockLLM("gpt-3.5-turbo", responses=[])
-    agent = LATSAgent(llm=llm, benchmark="hotpotqa")

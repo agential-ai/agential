@@ -119,7 +119,7 @@ class ReActAgent(BaseAgent):
         **strategy_kwargs: Any,
     ) -> None:
         """Initialization."""
-        super().__init__(llm, benchmark, testing)
+        super().__init__(llm=llm, benchmark=benchmark, testing=testing)
 
         self.strategy = ReActAgent.get_strategy(
             benchmark=self.benchmark,
