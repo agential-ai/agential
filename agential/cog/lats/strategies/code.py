@@ -116,9 +116,9 @@ class LATSCodeStrategy(LATSGeneralStrategy):
         trajectory = get_node_trajectory_code(node)
 
         unique_states = set()
-        children_nodes, thought_responses, action_responses = [], [], []
+        children_nodes, thoughts_metrics, actions_metrics = [], [], []
         for _ in range(self.n_samples):
-            trajectory_i, thought, thought_response = self.generate_thought(
+            trajectory_i, thought, thought_metrics = self.generate_thought(
                 question=question,
                 examples=examples,
                 trajectory=trajectory,
@@ -127,7 +127,7 @@ class LATSCodeStrategy(LATSGeneralStrategy):
                 prompt=prompt,
                 additional_keys=additional_keys,
             )
-            trajectory_i, action_type, query, action_response = self.generate_action(
+            trajectory_i, action_type, query, action_metrics = self.generate_action(
                 question=question,
                 examples=examples,
                 trajectory=trajectory_i,
@@ -184,17 +184,13 @@ class LATSCodeStrategy(LATSGeneralStrategy):
                     ),
                 )
 
-            thought_responses.append(thought_response)
-            action_responses.append(action_response)
+            thoughts_metrics.append(thought_metrics)
+            actions_metrics.append(action_metrics)
             children_nodes.append(new_node)
 
         metrics = LATSGenerateMetrics(
-            thoughts_metrics=[
-                get_token_cost_time(response) for response in thought_responses
-            ],
-            actions_metrics=[
-                get_token_cost_time(response) for response in action_responses
-            ],
+            thoughts_metrics=thoughts_metrics,
+            actions_metrics=actions_metrics,
             reflections_metrics=reflection_metrics,
         )
 
@@ -209,7 +205,7 @@ class LATSCodeStrategy(LATSGeneralStrategy):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, str, ModelResponse]:
+    ) -> Tuple[str, str, str, PromptMetrics]:
         """Generate an action for the current step in the reasoning process.
 
         Args:
@@ -222,7 +218,7 @@ class LATSCodeStrategy(LATSGeneralStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[str, str, str, ModelResponse]: A tuple containing the updated trajectory, action type, query, and model response.
+            Tuple[str, str, str, PromptMetrics]: A tuple containing the updated trajectory, action type, query, and the metrics.
         """
         trajectory += f"\nAction {depth + 1}: "
         out = _prompt_agent(
@@ -240,7 +236,7 @@ class LATSCodeStrategy(LATSGeneralStrategy):
         action_type, query = parse_code_action(action)
         trajectory += f" {action_type}[\n```python\n{query}\n```\n]"
 
-        return trajectory, action_type, query, out
+        return trajectory, action_type, query, get_token_cost_time(out)
 
     def generate_observation(
         self,

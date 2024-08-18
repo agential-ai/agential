@@ -257,7 +257,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, ModelResponse]:
+    ) -> Tuple[str, str, PromptMetrics]:
         """Generate a thought for the current step in the reasoning process.
 
         Args:
@@ -270,7 +270,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[str, str, ModelResponse]: A tuple containing the updated trajectory, the generated thought, and the model response.
+            Tuple[str, str, PromptMetrics]: A tuple containing the updated trajectory, the generated thought, and the metrics.
         """
         trajectory += f"\nThought {depth + 1}: "
         out = _prompt_agent(
@@ -287,7 +287,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         thought = remove_newline(thought).split("Action")[0].strip()
         trajectory += thought
 
-        return trajectory, thought, out
+        return trajectory, thought, get_token_cost_time(out)
 
     def generate_action(
         self,
