@@ -361,7 +361,7 @@ def parse_qa_action(string: str) -> Tuple[str, str]:
     return action_type, argument
 
 
-def parse_qa_value(string: str) -> Tuple[str, float]:
+def parse_value(string: str) -> Tuple[str, float]:
     """Extracts the explanation and correctness score from a given string.
 
     Args:
@@ -435,25 +435,6 @@ def parse_math_action(action: str) -> Tuple[str, str]:
         query = ""
 
     return action_type, query
-
-
-def parse_math_value(string: str) -> Tuple[str, float]:
-    """Extracts the explanation and correctness score from a given string.
-
-    Args:
-        string (str): The input string containing an explanation and correctness score.
-
-    Returns:
-        Tuple[str, float]: A tuple containing the explanation (str) and the correctness score (float).
-        If parsing fails, returns ("Explanation not found", 0.0).
-    """
-    try:
-        explanation_part = string.split("Explanation:")[1].strip()
-        explanation, score_part = explanation_part.split("Correctness score:")
-        score = float(int(score_part.strip()))
-        return explanation.strip(), score
-    except Exception:
-        return "Explanation not found", 0.0
 
 
 def parse_latest_implement(text: str) -> str:
@@ -535,7 +516,7 @@ def parse_code_action(action: str) -> Tuple[str, str]:
     return action_type, query
 
 
-def parse_code_value(string: str) -> Tuple[str, float]:
+def parse_value(string: str) -> Tuple[str, float]:
     """Extracts the explanation and correctness score from a given string.
 
     Args:

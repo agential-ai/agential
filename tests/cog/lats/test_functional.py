@@ -19,12 +19,10 @@ from agential.cog.lats.functional import (
     get_node_trajectory_qa,
     get_unique_trajectories,
     parse_code_action,
-    parse_code_value,
+    parse_value,
     parse_latest_implement,
     parse_math_action,
-    parse_math_value,
     parse_qa_action,
-    parse_qa_value,
 )
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import (
@@ -243,30 +241,30 @@ def test_parse_qa_action():
     assert parse_qa_action("Action[]") == ("", "")
 
 
-def test_parse_qa_value():
-    """Test the parse_qa_value function."""
+def test_parse_value():
+    """Test the parse_value function."""
     # Test valid value strings.
     valid_input = (
         "Some text. Explanation: This is the explanation. Correctness score: 5"
     )
-    assert parse_qa_value(valid_input) == ("This is the explanation.", 5)
+    assert parse_value(valid_input) == ("This is the explanation.", 5)
 
     # Test invalid value strings.
-    assert parse_qa_value("No explanation or score") == ("Explanation not found", 0)
-    assert parse_qa_value("Explanation: Only explanation") == (
+    assert parse_value("No explanation or score") == ("Explanation not found", 0)
+    assert parse_value("Explanation: Only explanation") == (
         "Explanation not found",
         0,
     )
-    assert parse_qa_value("Correctness score: 5") == ("Explanation not found", 0)
+    assert parse_value("Correctness score: 5") == ("Explanation not found", 0)
 
     # Test edge cases.
-    assert parse_qa_value("Explanation: Empty. Correctness score: 0") == ("Empty.", 0)
-    assert parse_qa_value(
+    assert parse_value("Explanation: Empty. Correctness score: 0") == ("Empty.", 0)
+    assert parse_value(
         "Explanation: Multi-line\nexplanation. Correctness score: 10"
     ) == ("Multi-line\nexplanation.", 10)
 
     # Test with unexpected format.
-    assert parse_qa_value("Explanation: Tricky: score. Correctness score: 7") == (
+    assert parse_value("Explanation: Tricky: score. Correctness score: 7") == (
         "Tricky: score.",
         7,
     )
@@ -353,35 +351,6 @@ def test_parse_math_action():
     for case in test_cases:
         result = parse_math_action(case["input"])
         assert result == case["expected"]
-
-
-def test_parse_math_value():
-    """Test the parse_math_value function."""
-    # Test valid value strings.
-    valid_input = (
-        "Some text. Explanation: This is the explanation. Correctness score: 5"
-    )
-    assert parse_math_value(valid_input) == ("This is the explanation.", 5)
-
-    # Test invalid value strings.
-    assert parse_math_value("No explanation or score") == ("Explanation not found", 0)
-    assert parse_math_value("Explanation: Only explanation") == (
-        "Explanation not found",
-        0,
-    )
-    assert parse_math_value("Correctness score: 5") == ("Explanation not found", 0)
-
-    # Test edge cases.
-    assert parse_math_value("Explanation: Empty. Correctness score: 0") == ("Empty.", 0)
-    assert parse_math_value(
-        "Explanation: Multi-line\nexplanation. Correctness score: 10"
-    ) == ("Multi-line\nexplanation.", 10)
-
-    # Test with unexpected format.
-    assert parse_math_value("Explanation: Tricky: score. Correctness score: 7") == (
-        "Tricky: score.",
-        7,
-    )
 
 
 def test_parse_latest_implement() -> None:
@@ -525,35 +494,6 @@ def test_parse_code_action() -> None:
     exception_case = "Implement[```python\nincomplete code"
     result = parse_code_action(exception_case)
     assert result == ("Implement", "incomplete code")
-
-
-def test_parse_code_value() -> None:
-    """Test the parse_code_value function."""
-    # Test valid value strings.
-    valid_input = (
-        "Some text. Explanation: This is the explanation. Correctness score: 5"
-    )
-    assert parse_code_value(valid_input) == ("This is the explanation.", 5)
-
-    # Test invalid value strings.
-    assert parse_code_value("No explanation or score") == ("Explanation not found", 0)
-    assert parse_code_value("Explanation: Only explanation") == (
-        "Explanation not found",
-        0,
-    )
-    assert parse_code_value("Correctness score: 5") == ("Explanation not found", 0)
-
-    # Test edge cases.
-    assert parse_code_value("Explanation: Empty. Correctness score: 0") == ("Empty.", 0)
-    assert parse_code_value(
-        "Explanation: Multi-line\nexplanation. Correctness score: 10"
-    ) == ("Multi-line\nexplanation.", 10)
-
-    # Test with unexpected format.
-    assert parse_code_value("Explanation: Tricky: score. Correctness score: 7") == (
-        "Tricky: score.",
-        7,
-    )
 
 
 def test__accumulate_metric() -> None:

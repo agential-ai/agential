@@ -11,7 +11,7 @@ from agential.cog.lats.functional import (
     _prompt_value,
     get_node_trajectory_qa,
     parse_qa_action,
-    parse_qa_value,
+    parse_value,
 )
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import (
@@ -363,7 +363,7 @@ class LATSQAStrategy(LATSGeneralStrategy):
                         if self.cache_values:
                             self.value_cache[unique_key] = value_str
 
-                    explanation, value = parse_qa_value(value_str)  # type: ignore
+                    explanation, value = parse_value(value_str)  # type: ignore
                     value = value / 10.0  # type: ignore
                     node.children[idx].value = value
 
@@ -503,7 +503,7 @@ class LATSQAStrategy(LATSGeneralStrategy):
 
                     value_str = value_str_out.choices[0].message.content
 
-                    explanation, value = parse_qa_value(value_str)  # type: ignore
+                    explanation, value = parse_value(value_str)  # type: ignore
                     values_metrics.append(get_token_cost_time(value_str_out))
                     values.append({"explanation": explanation, "value": value})
                 else:

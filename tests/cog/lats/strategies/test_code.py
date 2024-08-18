@@ -16,7 +16,7 @@ from agential.cog.lats.strategies.code import (
     LATSMBPPStrategy,
     get_node_trajectory_code,
     parse_code_action,
-    parse_code_value,
+    parse_value,
     parse_latest_implement,
 )
 from agential.llm.llm import MockLLM
@@ -44,15 +44,6 @@ def test_init() -> None:
     assert strategy.failed_trajectories == []
     assert strategy.reflection_map == []
     assert strategy.value_cache == {}
-    assert strategy._prompt_metrics == {
-        "thought": [],
-        "action": [],
-        "value": [],
-        "simulate_thought": [],
-        "simulate_action": [],
-        "simulate_value": [],
-        "reflection": [],
-    }
 
 
 def test_generate() -> None:
