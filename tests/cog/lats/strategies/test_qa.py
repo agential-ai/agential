@@ -7,8 +7,12 @@ from langchain_community.docstore.wikipedia import Wikipedia
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import (
+    LATSEvaluateMetrics,
+    LATSGenerateMetrics,
     LATSReActStepOutput,
+    LATSSimulationMetrics,
     LATSSimulationOutput,
+    LATSSimulationStepMetrics,
     LATSStepOutput,
 )
 from agential.cog.lats.prompts import (
@@ -81,641 +85,672 @@ def test_generate() -> None:
         "reward": 0,
     }
 
-    # gt_additional_info = [
-    #     LATSStepOutput(
-    #         iteration=0,
-    #         current_node={
-    #             "state": LATSReActStepOutput(
-    #                 thought="",
-    #                 action_type="",
-    #                 query="",
-    #                 observation="",
-    #                 answer="",
-    #                 external_tool_info={},
-    #             ),
-    #             "visits": 0,
-    #             "value": 0,
-    #             "depth": 0,
-    #             "is_terminal": False,
-    #             "reward": 0,
-    #         },
-    #         children_nodes=[
-    #             {
-    #                 "state": LATSReActStepOutput(
-    #                     thought="I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.",
-    #                     action_type="Search",
-    #                     query="VIVA Media AG",
-    #                     observation="Badr Hari is the best kick boxer in the world.",
-    #                     answer="",
-    #                     external_tool_info={
-    #                         "search_result": "Badr Hari is the best kick boxer in the world.",
-    #                         "lookup_result": "",
-    #                     },
-    #                 ),
-    #                 "visits": 0,
-    #                 "value": 0.0,
-    #                 "depth": 1,
-    #                 "is_terminal": False,
-    #                 "reward": 0,
-    #             },
-    #             {
-    #                 "state": LATSReActStepOutput(
-    #                     thought="I need to search for VIVA Media AG to find out what their new acronym stands for after changing their name in 2004.",
-    #                     action_type="Search",
-    #                     query="VIVA Media AG",
-    #                     observation="Badr Hari is the best kick boxer in the world.",
-    #                     answer="",
-    #                     external_tool_info={
-    #                         "search_result": "Badr Hari is the best kick boxer in the world.",
-    #                         "lookup_result": "",
-    #                     },
-    #                 ),
-    #                 "visits": 0,
-    #                 "value": 0.0,
-    #                 "depth": 1,
-    #                 "is_terminal": False,
-    #                 "reward": 0,
-    #             },
-    #         ],
-    #         thoughts_metrics=[
-    #             PromptMetrics(
-    #                 prompt_tokens=10,
-    #                 completion_tokens=20,
-    #                 total_tokens=30,
-    #                 prompt_cost=1.5e-05,
-    #                 completion_cost=3.9999999999999996e-05,
-    #                 total_cost=5.4999999999999995e-05,
-    #                 prompt_time=0.5,
-    #             ),
-    #             PromptMetrics(
-    #                 prompt_tokens=10,
-    #                 completion_tokens=20,
-    #                 total_tokens=30,
-    #                 prompt_cost=1.5e-05,
-    #                 completion_cost=3.9999999999999996e-05,
-    #                 total_cost=5.4999999999999995e-05,
-    #                 prompt_time=0.5,
-    #             ),
-    #         ],
-    #         actions_metrics=[
-    #             PromptMetrics(
-    #                 prompt_tokens=10,
-    #                 completion_tokens=20,
-    #                 total_tokens=30,
-    #                 prompt_cost=1.5e-05,
-    #                 completion_cost=3.9999999999999996e-05,
-    #                 total_cost=5.4999999999999995e-05,
-    #                 prompt_time=0.5,
-    #             ),
-    #             PromptMetrics(
-    #                 prompt_tokens=10,
-    #                 completion_tokens=20,
-    #                 total_tokens=30,
-    #                 prompt_cost=1.5e-05,
-    #                 completion_cost=3.9999999999999996e-05,
-    #                 total_cost=5.4999999999999995e-05,
-    #                 prompt_time=0.5,
-    #             ),
-    #         ],
-    #         values=[
-    #             {"explanation": "Explanation not found", "value": 0.0},
-    #             {"explanation": "Explanation not found", "value": 0.0},
-    #         ],
-    #         values_metrics=[
-    #             PromptMetrics(
-    #                 prompt_tokens=10,
-    #                 completion_tokens=20,
-    #                 total_tokens=30,
-    #                 prompt_cost=1.5e-05,
-    #                 completion_cost=3.9999999999999996e-05,
-    #                 total_cost=5.4999999999999995e-05,
-    #                 prompt_time=0.5,
-    #             ),
-    #             PromptMetrics(
-    #                 prompt_tokens=10,
-    #                 completion_tokens=20,
-    #                 total_tokens=30,
-    #                 prompt_cost=1.5e-05,
-    #                 completion_cost=3.9999999999999996e-05,
-    #                 total_cost=5.4999999999999995e-05,
-    #                 prompt_time=0.5,
-    #             ),
-    #         ],
-    #         simulation_results=LATSSimulationOutput(
-    #             simulation_reward=-1.0,
-    #             simulation_terminal_node={
-    #                 "state": LATSReActStepOutput(
-    #                     thought="Since direct searches for VIVA Media AG and its new acronym after the name change in 2004 did not provide relevant information, I should consider looking for industry reports, press releases, or official announcements related to the company's rebranding to uncover the acronym.",
-    #                     action_type="Search",
-    #                     query="VIVA Media AG rebranding press release",
-    #                     observation="Badr Hari is the best kick boxer in the world.",
-    #                     answer="",
-    #                     external_tool_info={
-    #                         "search_result": "Badr Hari is the best kick boxer in the world.",
-    #                         "lookup_result": "",
-    #                     },
-    #                 ),
-    #                 "visits": 0,
-    #                 "value": 0,
-    #                 "depth": 5,
-    #                 "is_terminal": False,
-    #                 "reward": 0,
-    #             },
-    #             simulation_current_nodes=[
-    #                 {
-    #                     "state": LATSReActStepOutput(
-    #                         thought="I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.",
-    #                         action_type="Search",
-    #                         query="VIVA Media AG",
-    #                         observation="Badr Hari is the best kick boxer in the world.",
-    #                         answer="",
-    #                         external_tool_info={
-    #                             "search_result": "Badr Hari is the best kick boxer in the world.",
-    #                             "lookup_result": "",
-    #                         },
-    #                     ),
-    #                     "visits": 0,
-    #                     "value": 0.0,
-    #                     "depth": 1,
-    #                     "is_terminal": False,
-    #                     "reward": 0,
-    #                 },
-    #                 {
-    #                     "state": LATSReActStepOutput(
-    #                         thought="The search for VIVA Media AG did not return relevant results. I should try searching for the new name of the company directly.",
-    #                         action_type="Search",
-    #                         query="VIVA Media AG new name",
-    #                         observation="Badr Hari is the best kick boxer in the world.",
-    #                         answer="",
-    #                         external_tool_info={
-    #                             "search_result": "Badr Hari is the best kick boxer in the world.",
-    #                             "lookup_result": "",
-    #                         },
-    #                     ),
-    #                     "visits": 0,
-    #                     "value": 0,
-    #                     "depth": 2,
-    #                     "is_terminal": False,
-    #                     "reward": 0,
-    #                 },
-    #                 {
-    #                     "state": LATSReActStepOutput(
-    #                         thought="Since direct searches for VIVA Media AG and its new name did not yield results, I should try to search for the company's name change history or any related news articles to find out the acronym.",
-    #                         action_type="Search",
-    #                         query="VIVA Media AG name change history",
-    #                         observation="Badr Hari is the best kick boxer in the world.",
-    #                         answer="",
-    #                         external_tool_info={
-    #                             "search_result": "Badr Hari is the best kick boxer in the world.",
-    #                             "lookup_result": "",
-    #                         },
-    #                     ),
-    #                     "visits": 0,
-    #                     "value": 0,
-    #                     "depth": 3,
-    #                     "is_terminal": False,
-    #                     "reward": 0,
-    #                 },
-    #                 {
-    #                     "state": LATSReActStepOutput(
-    #                         thought="The search results are still not providing the information needed. I should try to find a different angle to approach this question.",
-    #                         action_type="Search",
-    #                         query="VIVA Media AG rebranding 2004",
-    #                         observation="Badr Hari is the best kick boxer in the world.",
-    #                         answer="",
-    #                         external_tool_info={
-    #                             "search_result": "Badr Hari is the best kick boxer in the world.",
-    #                             "lookup_result": "",
-    #                         },
-    #                     ),
-    #                     "visits": 0,
-    #                     "value": 0,
-    #                     "depth": 4,
-    #                     "is_terminal": False,
-    #                     "reward": 0,
-    #                 },
-    #             ],
-    #             simulation_children_nodes=[
-    #                 [
-    #                     {
-    #                         "state": LATSReActStepOutput(
-    #                             thought="The search for VIVA Media AG did not return relevant results. I should try searching for the new name of the company directly.",
-    #                             action_type="Search",
-    #                             query="VIVA Media AG new name",
-    #                             observation="Badr Hari is the best kick boxer in the world.",
-    #                             answer="",
-    #                             external_tool_info={
-    #                                 "search_result": "Badr Hari is the best kick boxer in the world.",
-    #                                 "lookup_result": "",
-    #                             },
-    #                         ),
-    #                         "visits": 0,
-    #                         "value": 0,
-    #                         "depth": 2,
-    #                         "is_terminal": False,
-    #                         "reward": 0,
-    #                     },
-    #                     {
-    #                         "state": LATSReActStepOutput(
-    #                             thought="I couldn't find VIVA Media AG. Let me try searching for VIVA Media AG (acronym) instead.",
-    #                             action_type="Search",
-    #                             query="VIVA Media AG (acronym)",
-    #                             observation="Badr Hari is the best kick boxer in the world.",
-    #                             answer="",
-    #                             external_tool_info={
-    #                                 "search_result": "Badr Hari is the best kick boxer in the world.",
-    #                                 "lookup_result": "",
-    #                             },
-    #                         ),
-    #                         "visits": 0,
-    #                         "value": 0,
-    #                         "depth": 2,
-    #                         "is_terminal": False,
-    #                         "reward": 0,
-    #                     },
-    #                 ],
-    #                 [
-    #                     {
-    #                         "state": LATSReActStepOutput(
-    #                             thought="Since direct searches for VIVA Media AG and its new name did not yield results, I should try to search for the company's name change history or any related news articles to find out the acronym.",
-    #                             action_type="Search",
-    #                             query="VIVA Media AG name change history",
-    #                             observation="Badr Hari is the best kick boxer in the world.",
-    #                             answer="",
-    #                             external_tool_info={
-    #                                 "search_result": "Badr Hari is the best kick boxer in the world.",
-    #                                 "lookup_result": "",
-    #                             },
-    #                         ),
-    #                         "visits": 0,
-    #                         "value": 0,
-    #                         "depth": 3,
-    #                         "is_terminal": False,
-    #                         "reward": 0,
-    #                     },
-    #                     {
-    #                         "state": LATSReActStepOutput(
-    #                             thought="It seems the direct search for the new name of VIVA Media AG is not yielding results. I should try a different approach to find the acronym.",
-    #                             action_type="Search",
-    #                             query="VIVA Media AG acronym 2004",
-    #                             observation="Badr Hari is the best kick boxer in the world.",
-    #                             answer="",
-    #                             external_tool_info={
-    #                                 "search_result": "Badr Hari is the best kick boxer in the world.",
-    #                                 "lookup_result": "",
-    #                             },
-    #                         ),
-    #                         "visits": 0,
-    #                         "value": 0,
-    #                         "depth": 3,
-    #                         "is_terminal": False,
-    #                         "reward": 0,
-    #                     },
-    #                 ],
-    #                 [
-    #                     {
-    #                         "state": LATSReActStepOutput(
-    #                             thought="The search results are still not providing the information needed. I should try to find a different angle to approach this question.",
-    #                             action_type="Search",
-    #                             query="VIVA Media AG rebranding 2004",
-    #                             observation="Badr Hari is the best kick boxer in the world.",
-    #                             answer="",
-    #                             external_tool_info={
-    #                                 "search_result": "Badr Hari is the best kick boxer in the world.",
-    #                                 "lookup_result": "",
-    #                             },
-    #                         ),
-    #                         "visits": 0,
-    #                         "value": 0,
-    #                         "depth": 4,
-    #                         "is_terminal": False,
-    #                         "reward": 0,
-    #                     },
-    #                     {
-    #                         "state": LATSReActStepOutput(
-    #                             thought="As the search results are not providing relevant information, I should consider looking up the company's history or press releases to find out the acronym of VIVA Media AG after the name change in 2004.",
-    #                             action_type="Search",
-    #                             query="VIVA Media AG press releases 2004",
-    #                             observation="Badr Hari is the best kick boxer in the world.",
-    #                             answer="",
-    #                             external_tool_info={
-    #                                 "search_result": "Badr Hari is the best kick boxer in the world.",
-    #                                 "lookup_result": "",
-    #                             },
-    #                         ),
-    #                         "visits": 0,
-    #                         "value": 0,
-    #                         "depth": 4,
-    #                         "is_terminal": False,
-    #                         "reward": 0,
-    #                     },
-    #                 ],
-    #                 [
-    #                     {
-    #                         "state": LATSReActStepOutput(
-    #                             thought="Since direct searches for VIVA Media AG and its new acronym after the name change in 2004 did not provide relevant information, I should consider looking for industry reports, press releases, or official announcements related to the company's rebranding to uncover the acronym.",
-    #                             action_type="Search",
-    #                             query="VIVA Media AG rebranding press release",
-    #                             observation="Badr Hari is the best kick boxer in the world.",
-    #                             answer="",
-    #                             external_tool_info={
-    #                                 "search_result": "Badr Hari is the best kick boxer in the world.",
-    #                                 "lookup_result": "",
-    #                             },
-    #                         ),
-    #                         "visits": 0,
-    #                         "value": 0,
-    #                         "depth": 5,
-    #                         "is_terminal": False,
-    #                         "reward": 0,
-    #                     },
-    #                     {
-    #                         "state": LATSReActStepOutput(
-    #                             thought="Since the search results are not yielding the required information, I should try a more general search for VIVA Media AG's name change history or company information to find the acronym.",
-    #                             action_type="Search",
-    #                             query="VIVA Media AG company information",
-    #                             observation="Badr Hari is the best kick boxer in the world.",
-    #                             answer="",
-    #                             external_tool_info={
-    #                                 "search_result": "Badr Hari is the best kick boxer in the world.",
-    #                                 "lookup_result": "",
-    #                             },
-    #                         ),
-    #                         "visits": 0,
-    #                         "value": 0,
-    #                         "depth": 5,
-    #                         "is_terminal": False,
-    #                         "reward": 0,
-    #                     },
-    #                 ],
-    #             ],
-    #             simulation_thoughts_metrics=[
-    #                 [
-    #                     PromptMetrics(
-    #                         prompt_tokens=10,
-    #                         completion_tokens=20,
-    #                         total_tokens=30,
-    #                         prompt_cost=1.5e-05,
-    #                         completion_cost=3.9999999999999996e-05,
-    #                         total_cost=5.4999999999999995e-05,
-    #                         prompt_time=0.5,
-    #                     ),
-    #                     PromptMetrics(
-    #                         prompt_tokens=10,
-    #                         completion_tokens=20,
-    #                         total_tokens=30,
-    #                         prompt_cost=1.5e-05,
-    #                         completion_cost=3.9999999999999996e-05,
-    #                         total_cost=5.4999999999999995e-05,
-    #                         prompt_time=0.5,
-    #                     ),
-    #                 ],
-    #                 [
-    #                     PromptMetrics(
-    #                         prompt_tokens=10,
-    #                         completion_tokens=20,
-    #                         total_tokens=30,
-    #                         prompt_cost=1.5e-05,
-    #                         completion_cost=3.9999999999999996e-05,
-    #                         total_cost=5.4999999999999995e-05,
-    #                         prompt_time=0.5,
-    #                     ),
-    #                     PromptMetrics(
-    #                         prompt_tokens=10,
-    #                         completion_tokens=20,
-    #                         total_tokens=30,
-    #                         prompt_cost=1.5e-05,
-    #                         completion_cost=3.9999999999999996e-05,
-    #                         total_cost=5.4999999999999995e-05,
-    #                         prompt_time=0.5,
-    #                     ),
-    #                 ],
-    #                 [
-    #                     PromptMetrics(
-    #                         prompt_tokens=10,
-    #                         completion_tokens=20,
-    #                         total_tokens=30,
-    #                         prompt_cost=1.5e-05,
-    #                         completion_cost=3.9999999999999996e-05,
-    #                         total_cost=5.4999999999999995e-05,
-    #                         prompt_time=0.5,
-    #                     ),
-    #                     PromptMetrics(
-    #                         prompt_tokens=10,
-    #                         completion_tokens=20,
-    #                         total_tokens=30,
-    #                         prompt_cost=1.5e-05,
-    #                         completion_cost=3.9999999999999996e-05,
-    #                         total_cost=5.4999999999999995e-05,
-    #                         prompt_time=0.5,
-    #                     ),
-    #                 ],
-    #                 [
-    #                     PromptMetrics(
-    #                         prompt_tokens=10,
-    #                         completion_tokens=20,
-    #                         total_tokens=30,
-    #                         prompt_cost=1.5e-05,
-    #                         completion_cost=3.9999999999999996e-05,
-    #                         total_cost=5.4999999999999995e-05,
-    #                         prompt_time=0.5,
-    #                     ),
-    #                     PromptMetrics(
-    #                         prompt_tokens=10,
-    #                         completion_tokens=20,
-    #                         total_tokens=30,
-    #                         prompt_cost=1.5e-05,
-    #                         completion_cost=3.9999999999999996e-05,
-    #                         total_cost=5.4999999999999995e-05,
-    #                         prompt_time=0.5,
-    #                     ),
-    #                 ],
-    #             ],
-    #             simulation_actions_metrics=[
-    #                 [
-    #                     PromptMetrics(
-    #                         prompt_tokens=10,
-    #                         completion_tokens=20,
-    #                         total_tokens=30,
-    #                         prompt_cost=1.5e-05,
-    #                         completion_cost=3.9999999999999996e-05,
-    #                         total_cost=5.4999999999999995e-05,
-    #                         prompt_time=0.5,
-    #                     ),
-    #                     PromptMetrics(
-    #                         prompt_tokens=10,
-    #                         completion_tokens=20,
-    #                         total_tokens=30,
-    #                         prompt_cost=1.5e-05,
-    #                         completion_cost=3.9999999999999996e-05,
-    #                         total_cost=5.4999999999999995e-05,
-    #                         prompt_time=0.5,
-    #                     ),
-    #                 ],
-    #                 [
-    #                     PromptMetrics(
-    #                         prompt_tokens=10,
-    #                         completion_tokens=20,
-    #                         total_tokens=30,
-    #                         prompt_cost=1.5e-05,
-    #                         completion_cost=3.9999999999999996e-05,
-    #                         total_cost=5.4999999999999995e-05,
-    #                         prompt_time=0.5,
-    #                     ),
-    #                     PromptMetrics(
-    #                         prompt_tokens=10,
-    #                         completion_tokens=20,
-    #                         total_tokens=30,
-    #                         prompt_cost=1.5e-05,
-    #                         completion_cost=3.9999999999999996e-05,
-    #                         total_cost=5.4999999999999995e-05,
-    #                         prompt_time=0.5,
-    #                     ),
-    #                 ],
-    #                 [
-    #                     PromptMetrics(
-    #                         prompt_tokens=10,
-    #                         completion_tokens=20,
-    #                         total_tokens=30,
-    #                         prompt_cost=1.5e-05,
-    #                         completion_cost=3.9999999999999996e-05,
-    #                         total_cost=5.4999999999999995e-05,
-    #                         prompt_time=0.5,
-    #                     ),
-    #                     PromptMetrics(
-    #                         prompt_tokens=10,
-    #                         completion_tokens=20,
-    #                         total_tokens=30,
-    #                         prompt_cost=1.5e-05,
-    #                         completion_cost=3.9999999999999996e-05,
-    #                         total_cost=5.4999999999999995e-05,
-    #                         prompt_time=0.5,
-    #                     ),
-    #                 ],
-    #                 [
-    #                     PromptMetrics(
-    #                         prompt_tokens=10,
-    #                         completion_tokens=20,
-    #                         total_tokens=30,
-    #                         prompt_cost=1.5e-05,
-    #                         completion_cost=3.9999999999999996e-05,
-    #                         total_cost=5.4999999999999995e-05,
-    #                         prompt_time=0.5,
-    #                     ),
-    #                     PromptMetrics(
-    #                         prompt_tokens=10,
-    #                         completion_tokens=20,
-    #                         total_tokens=30,
-    #                         prompt_cost=1.5e-05,
-    #                         completion_cost=3.9999999999999996e-05,
-    #                         total_cost=5.4999999999999995e-05,
-    #                         prompt_time=0.5,
-    #                     ),
-    #                 ],
-    #             ],
-    #             simulation_values=[
-    #                 [
-    #                     {"explanation": "Explanation not found", "value": 0.0},
-    #                     {"explanation": "Explanation not found", "value": 0.0},
-    #                 ],
-    #                 [
-    #                     {"explanation": "Explanation not found", "value": 0.0},
-    #                     {"explanation": "Explanation not found", "value": 0.0},
-    #                 ],
-    #                 [
-    #                     {"explanation": "Explanation not found", "value": 0.0},
-    #                     {"explanation": "Explanation not found", "value": 0.0},
-    #                 ],
-    #                 [
-    #                     {"explanation": "Explanation not found", "value": 0.0},
-    #                     {"explanation": "Explanation not found", "value": 0.0},
-    #                 ],
-    #             ],
-    #             simulation_values_metrics=[
-    #                 [
-    #                     PromptMetrics(
-    #                         prompt_tokens=10,
-    #                         completion_tokens=20,
-    #                         total_tokens=30,
-    #                         prompt_cost=1.5e-05,
-    #                         completion_cost=3.9999999999999996e-05,
-    #                         total_cost=5.4999999999999995e-05,
-    #                         prompt_time=0.5,
-    #                     ),
-    #                     PromptMetrics(
-    #                         prompt_tokens=10,
-    #                         completion_tokens=20,
-    #                         total_tokens=30,
-    #                         prompt_cost=1.5e-05,
-    #                         completion_cost=3.9999999999999996e-05,
-    #                         total_cost=5.4999999999999995e-05,
-    #                         prompt_time=0.5,
-    #                     ),
-    #                 ],
-    #                 [
-    #                     PromptMetrics(
-    #                         prompt_tokens=10,
-    #                         completion_tokens=20,
-    #                         total_tokens=30,
-    #                         prompt_cost=1.5e-05,
-    #                         completion_cost=3.9999999999999996e-05,
-    #                         total_cost=5.4999999999999995e-05,
-    #                         prompt_time=0.5,
-    #                     ),
-    #                     PromptMetrics(
-    #                         prompt_tokens=10,
-    #                         completion_tokens=20,
-    #                         total_tokens=30,
-    #                         prompt_cost=1.5e-05,
-    #                         completion_cost=3.9999999999999996e-05,
-    #                         total_cost=5.4999999999999995e-05,
-    #                         prompt_time=0.5,
-    #                     ),
-    #                 ],
-    #                 [
-    #                     PromptMetrics(
-    #                         prompt_tokens=10,
-    #                         completion_tokens=20,
-    #                         total_tokens=30,
-    #                         prompt_cost=1.5e-05,
-    #                         completion_cost=3.9999999999999996e-05,
-    #                         total_cost=5.4999999999999995e-05,
-    #                         prompt_time=0.5,
-    #                     ),
-    #                     PromptMetrics(
-    #                         prompt_tokens=10,
-    #                         completion_tokens=20,
-    #                         total_tokens=30,
-    #                         prompt_cost=1.5e-05,
-    #                         completion_cost=3.9999999999999996e-05,
-    #                         total_cost=5.4999999999999995e-05,
-    #                         prompt_time=0.5,
-    #                     ),
-    #                 ],
-    #                 [
-    #                     PromptMetrics(
-    #                         prompt_tokens=10,
-    #                         completion_tokens=20,
-    #                         total_tokens=30,
-    #                         prompt_cost=1.5e-05,
-    #                         completion_cost=3.9999999999999996e-05,
-    #                         total_cost=5.4999999999999995e-05,
-    #                         prompt_time=0.5,
-    #                     ),
-    #                     PromptMetrics(
-    #                         prompt_tokens=10,
-    #                         completion_tokens=20,
-    #                         total_tokens=30,
-    #                         prompt_cost=1.5e-05,
-    #                         completion_cost=3.9999999999999996e-05,
-    #                         total_cost=5.4999999999999995e-05,
-    #                         prompt_time=0.5,
-    #                     ),
-    #                 ],
-    #             ],
-    #         ),
-    #     )
-    # ]
+    gt_additional_info = [
+        LATSStepOutput(
+            iteration=0,
+            current_node={
+                "state": LATSReActStepOutput(
+                    thought="",
+                    action_type="",
+                    query="",
+                    observation="",
+                    answer="",
+                    external_tool_info={},
+                ),
+                "visits": 0,
+                "value": 0,
+                "depth": 0,
+                "is_terminal": False,
+                "reward": 0,
+            },
+            children_nodes=[
+                {
+                    "state": LATSReActStepOutput(
+                        thought="I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.",
+                        action_type="Search",
+                        query="VIVA Media AG",
+                        observation="Badr Hari is the best kick boxer in the world.",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Badr Hari is the best kick boxer in the world.",
+                            "lookup_result": "",
+                        },
+                    ),
+                    "visits": 0,
+                    "value": 0.0,
+                    "depth": 1,
+                    "is_terminal": False,
+                    "reward": 0,
+                },
+                {
+                    "state": LATSReActStepOutput(
+                        thought="I need to search for VIVA Media AG to find out what their new acronym stands for after changing their name in 2004.",
+                        action_type="Search",
+                        query="VIVA Media AG",
+                        observation="Badr Hari is the best kick boxer in the world.",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Badr Hari is the best kick boxer in the world.",
+                            "lookup_result": "",
+                        },
+                    ),
+                    "visits": 0,
+                    "value": 0.0,
+                    "depth": 1,
+                    "is_terminal": False,
+                    "reward": 0,
+                },
+            ],
+            generate_metrics=LATSGenerateMetrics(
+                thoughts_metrics=[
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                ],
+                actions_metrics=[
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                ],
+                reflections_metrics=[],
+            ),
+            values=[
+                {"explanation": "Explanation not found", "value": 0.0},
+                {"explanation": "Explanation not found", "value": 0.0},
+            ],
+            evaluate_metrics=LATSEvaluateMetrics(
+                values_metrics=[
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                ]
+            ),
+            simulation_results=LATSSimulationOutput(
+                simulation_reward=-1.0,
+                simulation_terminal_node={
+                    "state": LATSReActStepOutput(
+                        thought="Since direct searches for VIVA Media AG and its new acronym after the name change in 2004 did not provide relevant information, I should consider looking for industry reports, press releases, or official announcements related to the company's rebranding to uncover the acronym.",
+                        action_type="Search",
+                        query="VIVA Media AG rebranding press release",
+                        observation="Badr Hari is the best kick boxer in the world.",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Badr Hari is the best kick boxer in the world.",
+                            "lookup_result": "",
+                        },
+                    ),
+                    "visits": 0,
+                    "value": 0,
+                    "depth": 5,
+                    "is_terminal": False,
+                    "reward": 0,
+                },
+                simulation_current_nodes=[
+                    {
+                        "state": LATSReActStepOutput(
+                            thought="I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.",
+                            action_type="Search",
+                            query="VIVA Media AG",
+                            observation="Badr Hari is the best kick boxer in the world.",
+                            answer="",
+                            external_tool_info={
+                                "search_result": "Badr Hari is the best kick boxer in the world.",
+                                "lookup_result": "",
+                            },
+                        ),
+                        "visits": 0,
+                        "value": 0.0,
+                        "depth": 1,
+                        "is_terminal": False,
+                        "reward": 0,
+                    },
+                    {
+                        "state": LATSReActStepOutput(
+                            thought="The search for VIVA Media AG did not return relevant results. I should try searching for the new name of the company directly.",
+                            action_type="Search",
+                            query="VIVA Media AG new name",
+                            observation="Badr Hari is the best kick boxer in the world.",
+                            answer="",
+                            external_tool_info={
+                                "search_result": "Badr Hari is the best kick boxer in the world.",
+                                "lookup_result": "",
+                            },
+                        ),
+                        "visits": 0,
+                        "value": 0,
+                        "depth": 2,
+                        "is_terminal": False,
+                        "reward": 0,
+                    },
+                    {
+                        "state": LATSReActStepOutput(
+                            thought="Since direct searches for VIVA Media AG and its new name did not yield results, I should try to search for the company's name change history or any related news articles to find out the acronym.",
+                            action_type="Search",
+                            query="VIVA Media AG name change history",
+                            observation="Badr Hari is the best kick boxer in the world.",
+                            answer="",
+                            external_tool_info={
+                                "search_result": "Badr Hari is the best kick boxer in the world.",
+                                "lookup_result": "",
+                            },
+                        ),
+                        "visits": 0,
+                        "value": 0,
+                        "depth": 3,
+                        "is_terminal": False,
+                        "reward": 0,
+                    },
+                    {
+                        "state": LATSReActStepOutput(
+                            thought="The search results are still not providing the information needed. I should try to find a different angle to approach this question.",
+                            action_type="Search",
+                            query="VIVA Media AG rebranding 2004",
+                            observation="Badr Hari is the best kick boxer in the world.",
+                            answer="",
+                            external_tool_info={
+                                "search_result": "Badr Hari is the best kick boxer in the world.",
+                                "lookup_result": "",
+                            },
+                        ),
+                        "visits": 0,
+                        "value": 0,
+                        "depth": 4,
+                        "is_terminal": False,
+                        "reward": 0,
+                    },
+                ],
+                simulation_children_nodes=[
+                    [
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="The search for VIVA Media AG did not return relevant results. I should try searching for the new name of the company directly.",
+                                action_type="Search",
+                                query="VIVA Media AG new name",
+                                observation="Badr Hari is the best kick boxer in the world.",
+                                answer="",
+                                external_tool_info={
+                                    "search_result": "Badr Hari is the best kick boxer in the world.",
+                                    "lookup_result": "",
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 2,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="I couldn't find VIVA Media AG. Let me try searching for VIVA Media AG (acronym) instead.",
+                                action_type="Search",
+                                query="VIVA Media AG (acronym)",
+                                observation="Badr Hari is the best kick boxer in the world.",
+                                answer="",
+                                external_tool_info={
+                                    "search_result": "Badr Hari is the best kick boxer in the world.",
+                                    "lookup_result": "",
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 2,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                    ],
+                    [
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="Since direct searches for VIVA Media AG and its new name did not yield results, I should try to search for the company's name change history or any related news articles to find out the acronym.",
+                                action_type="Search",
+                                query="VIVA Media AG name change history",
+                                observation="Badr Hari is the best kick boxer in the world.",
+                                answer="",
+                                external_tool_info={
+                                    "search_result": "Badr Hari is the best kick boxer in the world.",
+                                    "lookup_result": "",
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 3,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="It seems the direct search for the new name of VIVA Media AG is not yielding results. I should try a different approach to find the acronym.",
+                                action_type="Search",
+                                query="VIVA Media AG acronym 2004",
+                                observation="Badr Hari is the best kick boxer in the world.",
+                                answer="",
+                                external_tool_info={
+                                    "search_result": "Badr Hari is the best kick boxer in the world.",
+                                    "lookup_result": "",
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 3,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                    ],
+                    [
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="The search results are still not providing the information needed. I should try to find a different angle to approach this question.",
+                                action_type="Search",
+                                query="VIVA Media AG rebranding 2004",
+                                observation="Badr Hari is the best kick boxer in the world.",
+                                answer="",
+                                external_tool_info={
+                                    "search_result": "Badr Hari is the best kick boxer in the world.",
+                                    "lookup_result": "",
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 4,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="As the search results are not providing relevant information, I should consider looking up the company's history or press releases to find out the acronym of VIVA Media AG after the name change in 2004.",
+                                action_type="Search",
+                                query="VIVA Media AG press releases 2004",
+                                observation="Badr Hari is the best kick boxer in the world.",
+                                answer="",
+                                external_tool_info={
+                                    "search_result": "Badr Hari is the best kick boxer in the world.",
+                                    "lookup_result": "",
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 4,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                    ],
+                    [
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="Since direct searches for VIVA Media AG and its new acronym after the name change in 2004 did not provide relevant information, I should consider looking for industry reports, press releases, or official announcements related to the company's rebranding to uncover the acronym.",
+                                action_type="Search",
+                                query="VIVA Media AG rebranding press release",
+                                observation="Badr Hari is the best kick boxer in the world.",
+                                answer="",
+                                external_tool_info={
+                                    "search_result": "Badr Hari is the best kick boxer in the world.",
+                                    "lookup_result": "",
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 5,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                        {
+                            "state": LATSReActStepOutput(
+                                thought="Since the search results are not yielding the required information, I should try a more general search for VIVA Media AG's name change history or company information to find the acronym.",
+                                action_type="Search",
+                                query="VIVA Media AG company information",
+                                observation="Badr Hari is the best kick boxer in the world.",
+                                answer="",
+                                external_tool_info={
+                                    "search_result": "Badr Hari is the best kick boxer in the world.",
+                                    "lookup_result": "",
+                                },
+                            ),
+                            "visits": 0,
+                            "value": 0,
+                            "depth": 5,
+                            "is_terminal": False,
+                            "reward": 0,
+                        },
+                    ],
+                ],
+                simulation_values=[
+                    [
+                        {"explanation": "Explanation not found", "value": 0.0},
+                        {"explanation": "Explanation not found", "value": 0.0},
+                    ],
+                    [
+                        {"explanation": "Explanation not found", "value": 0.0},
+                        {"explanation": "Explanation not found", "value": 0.0},
+                    ],
+                    [
+                        {"explanation": "Explanation not found", "value": 0.0},
+                        {"explanation": "Explanation not found", "value": 0.0},
+                    ],
+                    [
+                        {"explanation": "Explanation not found", "value": 0.0},
+                        {"explanation": "Explanation not found", "value": 0.0},
+                    ],
+                ],
+            ),
+            simulation_metrics=LATSSimulationMetrics(
+                simulation_step_metrics=[
+                    LATSSimulationStepMetrics(
+                        generate_metrics=LATSGenerateMetrics(
+                            thoughts_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            actions_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            reflections_metrics=[],
+                        ),
+                        evaluate_metrics=LATSEvaluateMetrics(
+                            values_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ]
+                        ),
+                    ),
+                    LATSSimulationStepMetrics(
+                        generate_metrics=LATSGenerateMetrics(
+                            thoughts_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            actions_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            reflections_metrics=[],
+                        ),
+                        evaluate_metrics=LATSEvaluateMetrics(
+                            values_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ]
+                        ),
+                    ),
+                    LATSSimulationStepMetrics(
+                        generate_metrics=LATSGenerateMetrics(
+                            thoughts_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            actions_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            reflections_metrics=[],
+                        ),
+                        evaluate_metrics=LATSEvaluateMetrics(
+                            values_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ]
+                        ),
+                    ),
+                    LATSSimulationStepMetrics(
+                        generate_metrics=LATSGenerateMetrics(
+                            thoughts_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            actions_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            reflections_metrics=[],
+                        ),
+                        evaluate_metrics=LATSEvaluateMetrics(
+                            values_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ]
+                        ),
+                    ),
+                ]
+            ),
+        )
+    ]
 
     responses = [
         "I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.\nAction 1: Search[VIVA Media AG]\nObservation 1: VIVA Media AG was a German media company that operated several television channels.\nThought 2: I need to find the new acronym for VIVA Media AG after its name change in 2004.\nAction 2: Lookup[new name of VIVA Media AG in 2004]\nObservation 2: (Result 1 / 1) The new acronym for VIVA Media AG after changing its name in 2004 was VIVA Entertainment AG.\nThought 3: The new acronym for VIVA Media AG after its name change in 2004 was VIVA Entertainment AG. \nAction 3: Finish[VIVA Entertainment AG]",
@@ -783,15 +818,14 @@ def test_generate() -> None:
     assert out.answer.to_dict() == gt_terminal_node_state
     assert out.total_completion_cost == 0.0012
     assert out.total_completion_tokens == 600
-    assert out.total_prompt_cost == 0.00045
+    assert out.total_prompt_cost == 0.00045000000000000015
     assert out.total_prompt_tokens == 300
     assert out.total_tokens == 900
-    assert out.total_cost == 0.00165
+    assert out.total_cost == 0.0016500000000000002
     assert out.total_prompt_time == 15.0
     assert out.total_time == 0.5
-    #assert out.additional_info == gt_additional_info
-    print(repr(out.additional_info))
-    assert False
+    assert out.additional_info == gt_additional_info
+
     # Test generate with reflection.
     question = "What's the capital of France?"
     key = "France"
@@ -865,58 +899,63 @@ def test_generate() -> None:
                     "reward": 0,
                 },
             ],
-            thoughts_metrics=[
-                PromptMetrics(
-                    prompt_tokens=10,
-                    completion_tokens=20,
-                    total_tokens=30,
-                    prompt_cost=1.5e-05,
-                    completion_cost=3.9999999999999996e-05,
-                    total_cost=5.4999999999999995e-05,
-                    prompt_time=0.5,
-                ),
-                PromptMetrics(
-                    prompt_tokens=10,
-                    completion_tokens=20,
-                    total_tokens=30,
-                    prompt_cost=1.5e-05,
-                    completion_cost=3.9999999999999996e-05,
-                    total_cost=5.4999999999999995e-05,
-                    prompt_time=0.5,
-                ),
-            ],
-            actions_metrics=[
-                PromptMetrics(
-                    prompt_tokens=10,
-                    completion_tokens=20,
-                    total_tokens=30,
-                    prompt_cost=1.5e-05,
-                    completion_cost=3.9999999999999996e-05,
-                    total_cost=5.4999999999999995e-05,
-                    prompt_time=0.5,
-                ),
-                PromptMetrics(
-                    prompt_tokens=10,
-                    completion_tokens=20,
-                    total_tokens=30,
-                    prompt_cost=1.5e-05,
-                    completion_cost=3.9999999999999996e-05,
-                    total_cost=5.4999999999999995e-05,
-                    prompt_time=0.5,
-                ),
-            ],
+            generate_metrics=LATSGenerateMetrics(
+                thoughts_metrics=[
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                ],
+                actions_metrics=[
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    ),
+                ],
+                reflections_metrics=[],
+            ),
             values=[{"explanation": "Explanation not found", "value": 0.0}],
-            values_metrics=[
-                PromptMetrics(
-                    prompt_tokens=10,
-                    completion_tokens=20,
-                    total_tokens=30,
-                    prompt_cost=1.5e-05,
-                    completion_cost=3.9999999999999996e-05,
-                    total_cost=5.4999999999999995e-05,
-                    prompt_time=0.5,
-                )
-            ],
+            evaluate_metrics=LATSEvaluateMetrics(
+                values_metrics=[
+                    PromptMetrics(
+                        prompt_tokens=10,
+                        completion_tokens=20,
+                        total_tokens=30,
+                        prompt_cost=1.5e-05,
+                        completion_cost=3.9999999999999996e-05,
+                        total_cost=5.4999999999999995e-05,
+                        prompt_time=0.5,
+                    )
+                ]
+            ),
             simulation_results=LATSSimulationOutput(
                 simulation_reward=0.0,
                 simulation_terminal_node={
@@ -1106,130 +1145,6 @@ def test_generate() -> None:
                         },
                     ],
                 ],
-                simulation_thoughts_metrics=[
-                    [
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                    ],
-                    [
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                    ],
-                    [
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                    ],
-                ],
-                simulation_actions_metrics=[
-                    [
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                    ],
-                    [
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                    ],
-                    [
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
-                        ),
-                    ],
-                ],
                 simulation_values=[
                     [
                         {"explanation": "Explanation not found", "value": 0.0},
@@ -1240,48 +1155,190 @@ def test_generate() -> None:
                         {"explanation": "Explanation not found", "value": 0.0},
                     ],
                 ],
-                simulation_values_metrics=[
-                    [
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
+            ),
+            simulation_metrics=LATSSimulationMetrics(
+                simulation_step_metrics=[
+                    LATSSimulationStepMetrics(
+                        generate_metrics=LATSGenerateMetrics(
+                            thoughts_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            actions_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            reflections_metrics=[],
                         ),
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
+                        evaluate_metrics=LATSEvaluateMetrics(
+                            values_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ]
                         ),
-                    ],
-                    [
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
+                    ),
+                    LATSSimulationStepMetrics(
+                        generate_metrics=LATSGenerateMetrics(
+                            thoughts_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            actions_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            reflections_metrics=[],
                         ),
-                        PromptMetrics(
-                            prompt_tokens=10,
-                            completion_tokens=20,
-                            total_tokens=30,
-                            prompt_cost=1.5e-05,
-                            completion_cost=3.9999999999999996e-05,
-                            total_cost=5.4999999999999995e-05,
-                            prompt_time=0.5,
+                        evaluate_metrics=LATSEvaluateMetrics(
+                            values_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ]
                         ),
-                    ],
-                ],
+                    ),
+                    LATSSimulationStepMetrics(
+                        generate_metrics=LATSGenerateMetrics(
+                            thoughts_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            actions_metrics=[
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                                PromptMetrics(
+                                    prompt_tokens=10,
+                                    completion_tokens=20,
+                                    total_tokens=30,
+                                    prompt_cost=1.5e-05,
+                                    completion_cost=3.9999999999999996e-05,
+                                    total_cost=5.4999999999999995e-05,
+                                    prompt_time=0.5,
+                                ),
+                            ],
+                            reflections_metrics=[],
+                        ),
+                        evaluate_metrics=LATSEvaluateMetrics(values_metrics=[]),
+                    ),
+                ]
             ),
         )
     ]
@@ -1289,7 +1346,6 @@ def test_generate() -> None:
     gt_value_cache = {
         "\nThought 1: I need to search for the capital of France.\nAction 1: Search[capital of France]\nObservation 1: Badr Hari is the best kick boxer in the world.::": "The trajectory is incorrect as the observation does not provide any relevant information about the capital of France. The action was not aligned with the question, leading to an incorrect trajectory.\nCorrectness score: 1"
     }
-
     gt_root_state = {
         "state": LATSReActStepOutput(
             thought="",
@@ -1390,10 +1446,10 @@ def test_generate() -> None:
     assert out.answer.to_dict() == gt_terminal_node_state
     assert out.total_completion_cost == 0.0008399999999999999
     assert out.total_completion_tokens == 420
-    assert out.total_prompt_cost == 0.000315
+    assert out.total_prompt_cost == 0.00031500000000000007
     assert out.total_prompt_tokens == 210
     assert out.total_tokens == 630
-    assert out.total_cost == 0.001155
+    assert out.total_cost == 0.0011549999999999998
     assert out.total_prompt_time == 10.5
     assert out.total_time == 0.5
     assert out.additional_info == gt_additional_info
@@ -1478,13 +1534,13 @@ def test_generate() -> None:
     )
 
     assert out.answer.to_dict() == gt_terminal_node_state
-    assert out.total_completion_cost == 0.00116
-    assert out.total_completion_tokens == 580
-    assert out.total_prompt_cost == 0.000435
-    assert out.total_prompt_tokens == 290
-    assert out.total_tokens == 870
-    assert out.total_cost == 0.0015949999999999996
-    assert out.total_prompt_time == 14.5
+    assert out.total_completion_cost == 0.0012
+    assert out.total_completion_tokens == 600
+    assert out.total_prompt_cost == 0.00045000000000000015
+    assert out.total_prompt_tokens == 300
+    assert out.total_tokens == 900
+    assert out.total_cost == 0.0016500000000000002
+    assert out.total_prompt_time == 15.0
     assert out.total_time == 0.5
     assert strategy.reflection_map == gt_reflection_map
     assert strategy.value_cache == gt_value_cache

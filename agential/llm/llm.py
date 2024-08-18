@@ -1,9 +1,12 @@
 """Simple LLM wrapper for LiteLLM's completion function."""
 
 import time
-from litellm import completion
+
 from abc import ABC, abstractmethod
 from typing import Any, List
+
+from litellm import completion
+
 
 class Message:
     """Represents a message with content."""
