@@ -11,6 +11,7 @@ from agential.cog.react.strategies.math import (
     ReActTabMWPStrategy,
 )
 from agential.llm.llm import BaseLLM, MockLLM
+from agential.utils.general import PromptMetrics
 
 
 def test_init() -> None:
@@ -29,13 +30,12 @@ def test_generate_action() -> None:
 
     gt_scratchpad = "\nAction 0: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_used = eggs_for_breakfast + eggs_for_muffins\neggs_remaining = eggs_laid_per_day - eggs_used\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day\n```\n]"
     gt_query = "eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_used = eggs_for_breakfast + eggs_for_muffins\neggs_remaining = eggs_laid_per_day - eggs_used\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day"
-    gt_out = "Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_used = eggs_for_breakfast + eggs_for_muffins\neggs_remaining = eggs_laid_per_day - eggs_used\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day\n```\n]"
     responses = [
         "Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_used = eggs_for_breakfast + eggs_for_muffins\neggs_remaining = eggs_laid_per_day - eggs_used\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day\n```\n]"
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReActMathStrategy(llm=llm)
-    scratchpad, action_type, query, out = strategy.generate_action(
+    scratchpad, action_type, query, action_metrics = strategy.generate_action(
         idx=0,
         scratchpad="",
         question=question,
@@ -45,8 +45,8 @@ def test_generate_action() -> None:
     )
     assert action_type == "Calculate"
     assert query == gt_query
-    assert out.choices[0].message.content == gt_out
     assert scratchpad == gt_scratchpad
+    assert action_metrics == PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)
 
 
 def test_generate_observation() -> None:

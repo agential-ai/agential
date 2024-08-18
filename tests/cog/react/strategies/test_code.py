@@ -10,6 +10,7 @@ from agential.cog.react.strategies.code import (
     ReActMBPPStrategy,
 )
 from agential.llm.llm import BaseLLM, MockLLM
+from agential.utils.general import PromptMetrics
 
 
 def test_init() -> None:
@@ -31,13 +32,12 @@ def test_generate_action() -> None:
 
     gt_query = "def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None"
     gt_scratchpad = "\nAction 0: Implement[\n```python\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```\n]"
-    gt_out = "Implement[\n```python\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```\n]"
     responses = [
         "Implement[\n```python\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```\n]"
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReActCodeStrategy(llm=llm)
-    scratchpad, action_type, query, out = strategy.generate_action(
+    scratchpad, action_type, query, action_metrics = strategy.generate_action(
         idx=0,
         scratchpad="",
         question=question,
@@ -49,7 +49,7 @@ def test_generate_action() -> None:
     assert query == gt_query
 
     assert scratchpad == gt_scratchpad
-    assert out.choices[0].message.content == gt_out
+    assert action_metrics == PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)
 
 
 def test_generate_observation() -> None:
