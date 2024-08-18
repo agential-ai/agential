@@ -349,7 +349,7 @@ class LATSMathStrategy(LATSGeneralStrategy):
 
                     child_trajectory_cache[trajectory] = value
 
-                values_metrics.append(get_token_cost_time(value_response))
+                values_metrics.append(get_token_cost_time(value_response) if value_response else None)
                 values.append({"explanation": explanation, "value": value})
             else:
                 values_metrics.append(None)
