@@ -750,7 +750,10 @@ def test_generate() -> None:
         )
     ]
 
-    gt_value_cache = {'\nThought 1: I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.\nAction 1: Search[VIVA Media AG]\nObservation 1: Badr Hari is the best kick boxer in the world.::': "I need to search for VIVA Media AG to find out what their new acronym stands for after changing their name in 2004.\nAction 1: Search[VIVA Media AG]\nObservation 1: VIVA Media AG was a German media company that operated several television channels.\nThought 2: Since the search did not provide the information I need, I should look for the new acronym after their name change in 2004.\nAction 2: Lookup[new acronym'The trajectory is incorrect because the search query did not yield results for VIVA Media AG. This indicates that the initial search was not specific enough or possibly the entity has limited online presence. Future attempts should consider refining the search terms or looking for alternative sources of information.\nCorrectness score: 2", '\nThought 1: I need to search for VIVA Media AG to find out what their new acronym stands for after changing their name in 2004.\nAction 1: Search[VIVA Media AG]\nObservation 1: Badr Hari is the best kick boxer in the world.::': 'This trajectory is incorrect because the search did not yield results for VIVA Media AG. The action taken was appropriate, but the lack of relevant information hindered progress towards finding the acronym. In the future, it would be beneficial to explore alternative sources or search for related entities that might provide the necessary information.\nCorrectness score: 2'}
+    gt_value_cache = {
+        "\nThought 1: I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.\nAction 1: Search[VIVA Media AG]\nObservation 1: Badr Hari is the best kick boxer in the world.::": "I need to search for VIVA Media AG to find out what their new acronym stands for after changing their name in 2004.\nAction 1: Search[VIVA Media AG]\nObservation 1: VIVA Media AG was a German media company that operated several television channels.\nThought 2: Since the search did not provide the information I need, I should look for the new acronym after their name change in 2004.\nAction 2: Lookup[new acronym'The trajectory is incorrect because the search query did not yield results for VIVA Media AG. This indicates that the initial search was not specific enough or possibly the entity has limited online presence. Future attempts should consider refining the search terms or looking for alternative sources of information.\nCorrectness score: 2",
+        "\nThought 1: I need to search for VIVA Media AG to find out what their new acronym stands for after changing their name in 2004.\nAction 1: Search[VIVA Media AG]\nObservation 1: Badr Hari is the best kick boxer in the world.::": "This trajectory is incorrect because the search did not yield results for VIVA Media AG. The action taken was appropriate, but the lack of relevant information hindered progress towards finding the acronym. In the future, it would be beneficial to explore alternative sources or search for related entities that might provide the necessary information.\nCorrectness score: 2",
+    }
 
     responses = [
         "I need to search for VIVA Media AG and find out its new acronym after changing its name in 2004.\nAction 1: Search[VIVA Media AG]\nObservation 1: VIVA Media AG was a German media company that operated several television channels.\nThought 2: I need to find the new acronym for VIVA Media AG after its name change in 2004.\nAction 2: Lookup[new name of VIVA Media AG in 2004]\nObservation 2: (Result 1 / 1) The new acronym for VIVA Media AG after changing its name in 2004 was VIVA Entertainment AG.\nThought 3: The new acronym for VIVA Media AG after its name change in 2004 was VIVA Entertainment AG. \nAction 3: Finish[VIVA Entertainment AG]",
@@ -829,7 +832,22 @@ def test_generate() -> None:
     assert strategy.failed_trajectories == []
     assert strategy.reflection_map == []
     assert strategy.value_cache == gt_value_cache
-    assert strategy.root.to_dict() == {'state': LATSReActStepOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 1, 'value': -1.0, 'depth': 0, 'is_terminal': False, 'reward': 0}
+    assert strategy.root.to_dict() == {
+        "state": LATSReActStepOutput(
+            thought="",
+            action_type="",
+            query="",
+            observation="",
+            answer="",
+            external_tool_info={},
+        ),
+        "visits": 1,
+        "value": -1.0,
+        "depth": 0,
+        "is_terminal": False,
+        "reward": 0,
+    }
+
 
 def test_generate_children_nodes() -> None:
     """Test the generate method."""
@@ -963,8 +981,21 @@ def test_generate_children_nodes() -> None:
     assert strategy.failed_trajectories == []
     assert strategy.reflection_map == []
     assert strategy.value_cache == {}
-    assert strategy.root.to_dict() == {'state': LATSReActStepOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}
-    
+    assert strategy.root.to_dict() == {
+        "state": LATSReActStepOutput(
+            thought="",
+            action_type="",
+            query="",
+            observation="",
+            answer="",
+            external_tool_info={},
+        ),
+        "visits": 0,
+        "value": 0,
+        "depth": 0,
+        "is_terminal": False,
+        "reward": 0,
+    }
 
     # Test generate with reflections.
     gt_states = [
@@ -1041,8 +1072,21 @@ def test_generate_children_nodes() -> None:
         "Search[best kick boxer in the world controversies]\nObservation 1: Could not find [best kick boxer in the world controversies]",
     ]
 
-    gt_failed_trajectories = [{'trajectory': 'Failed trajectory 1', 'final_answer': 'Incorrect answer 1'}, {'trajectory': 'Failed trajectory 2', 'final_answer': 'Incorrect answer 2'}, {'trajectory': 'Failed trajectory 1', 'final_answer': 'Incorrect answer 1'}]
-    gt_reflection_map = [{'trajectory': 'Failed trajectory 1', 'reflection': 'My reasoning for this question failed because I did not narrow down the search to focus on kick boxers and instead ended up with unrelated information'}, {'trajectory': 'Failed trajectory 2', 'reflection': "My reasoning failed because I did not focus on gathering specific information related to the individual's kickboxing career and controversies, leading to an incorrect answer"}]
+    gt_failed_trajectories = [
+        {"trajectory": "Failed trajectory 1", "final_answer": "Incorrect answer 1"},
+        {"trajectory": "Failed trajectory 2", "final_answer": "Incorrect answer 2"},
+        {"trajectory": "Failed trajectory 1", "final_answer": "Incorrect answer 1"},
+    ]
+    gt_reflection_map = [
+        {
+            "trajectory": "Failed trajectory 1",
+            "reflection": "My reasoning for this question failed because I did not narrow down the search to focus on kick boxers and instead ended up with unrelated information",
+        },
+        {
+            "trajectory": "Failed trajectory 2",
+            "reflection": "My reasoning failed because I did not focus on gathering specific information related to the individual's kickboxing career and controversies, leading to an incorrect answer",
+        },
+    ]
 
     responses = [
         "My reasoning for this question failed because I did not narrow down the search to focus on kick boxers and instead ended up with unrelated information",
@@ -1121,7 +1165,21 @@ def test_generate_children_nodes() -> None:
     assert strategy.failed_trajectories == gt_failed_trajectories
     assert strategy.reflection_map == gt_reflection_map
     assert strategy.value_cache == {}
-    assert strategy.root.to_dict() == {'state': LATSReActStepOutput(thought='', action_type='', query='', observation='', answer='', external_tool_info={}), 'visits': 0, 'value': 0, 'depth': 0, 'is_terminal': False, 'reward': 0}
+    assert strategy.root.to_dict() == {
+        "state": LATSReActStepOutput(
+            thought="",
+            action_type="",
+            query="",
+            observation="",
+            answer="",
+            external_tool_info={},
+        ),
+        "visits": 0,
+        "value": 0,
+        "depth": 0,
+        "is_terminal": False,
+        "reward": 0,
+    }
 
     # Test case with a terminal child node (reward 0)
     responses = [
