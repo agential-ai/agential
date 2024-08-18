@@ -25,6 +25,18 @@ from agential.utils.parse import remove_newline
 
 
 class LATSGeneralStrategy(LATSBaseStrategy):
+    """LATS general strategy.
+
+    Args:
+        llm (BaseLLM): The LLM to use.
+        n_samples (int): The number of samples to use. Defaults to 5.
+        max_reflections (int): The maximum number of reflections to use. Defaults to 4.
+        depth_limit (int): The maximum depth of the tree. Defaults to 7.
+        max_unique (int): The maximum number of unique trajectories to use. Defaults to 5.
+        cache_values (bool): Whether to cache values. Defaults to True.
+        testing (bool): Whether to use testing mode. Defaults to False.
+    """
+
     def __init__(
         self,
         llm: BaseLLM,

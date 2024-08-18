@@ -16,6 +16,18 @@ from agential.llm.llm import ModelResponse
 
 
 class PromptMetrics(BaseModel):
+    """Prompt metrics Pydantic output class.
+
+    Attributes:
+        prompt_tokens (int): The number of tokens in the prompt.
+        completion_tokens (int): The number of tokens in the completion.
+        total_tokens (int): The total number of tokens in the prompt and completion.
+        prompt_cost (float): The cost of the prompt tokens in dollars.
+        completion_cost (float): The cost of the completion tokens in dollars.
+        total_cost (float): The total cost of the prompt and completion tokens in dollars.
+        prompt_time (float): The time it took to generate the prompt in seconds.
+    """
+
     prompt_tokens: int = Field(..., description="The number of tokens in the prompt.")
     completion_tokens: int = Field(
         ..., description="The number of tokens in the completion."
