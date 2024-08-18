@@ -14,7 +14,6 @@ from agential.cog.reflexion.functional import (
     _prompt_cot_agent,
     _prompt_react_agent,
     _truncate_scratchpad,
-    parse_qa_action
 )
 from agential.cog.reflexion.output import ReflexionReActStepOutput
 from agential.cog.reflexion.reflect import (
@@ -30,6 +29,29 @@ from agential.llm.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
 from agential.utils.metrics import get_token_cost_time
 from agential.utils.parse import remove_newline
+
+
+def parse_qa_action(string: str) -> Tuple[str, str]:
+    """Parses an action string into an action type and its argument.
+
+    This method is used in ReAct and Reflexion.
+
+    Args:
+        string (str): The action string to be parsed.
+
+    Returns:
+        Tuple[str, str]: A tuple containing the action type and argument.
+    """
+    pattern = r"^(\w+)\[(.+)\]$"
+    match = re.match(pattern, string)
+
+    if match:
+        action_type = match.group(1)
+        argument = match.group(2)
+    else:
+        action_type = ""
+        argument = ""
+    return action_type, argument
 
 
 class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):

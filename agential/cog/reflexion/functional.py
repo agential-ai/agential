@@ -1,5 +1,6 @@
 """Functional module for Reflexion."""
 
+import re
 from typing import Dict, List, Tuple
 
 import tiktoken
@@ -609,3 +610,85 @@ def react_reflect_last_attempt_and_reflexion(
     )
     reflections = [remove_newline(new_reflection_out.choices[0].message.content)]
     return reflections, new_reflection_out
+
+
+def parse_qa_action(string: str) -> Tuple[str, str]:
+    """Parses an action string into an action type and its argument.
+
+    This method is used in ReAct and Reflexion.
+
+    Args:
+        string (str): The action string to be parsed.
+
+    Returns:
+        Tuple[str, str]: A tuple containing the action type and argument.
+    """
+    pattern = r"^(\w+)\[(.+)\]$"
+    match = re.match(pattern, string)
+
+    if match:
+        action_type = match.group(1)
+        argument = match.group(2)
+    else:
+        action_type = ""
+        argument = ""
+    return action_type, argument
+
+
+
+def parse_math_code_action_cot(action: str) -> Tuple[str, str]:
+    """Parses an action string to extract the action type and code content.
+
+    Identifies action types (`Finish`) and extracts the
+    corresponding code content enclosed within Markdown-style code blocks.
+    The action type is case-insensitive and the code content is trimmed of
+    leading and trailing whitespace.
+
+    Args:
+        action (str): The action string containing the action type and code content.
+
+    Returns:
+        Tuple[str, str]: A tuple containing the extracted action type (capitalized)
+        and the extracted code content.
+    """
+    action_split = action.split("```python", maxsplit=1)
+    match = re.search(r"\b(Finish)\b", action_split[0], re.IGNORECASE)
+
+    action_type = match.group(0).lower().capitalize() if match else ""
+    try:
+        query = action_split[1].split("```")[0].strip() if action_type else ""
+    except:
+        action_type = ""
+        query = ""
+
+    return action_type, query
+
+
+def parse_math_code_action_react(action: str, action_types: List[str]) -> Tuple[str, str]:
+    """Parses an action string to extract the action type and code content.
+
+    Identifies action types (`Finish`, `Calculate`) and extracts the
+    corresponding code content enclosed within Markdown-style code blocks.
+    The action type is case-insensitive and the code content is trimmed of
+    leading and trailing whitespace.
+
+    Args:
+        action (str): The action string containing the action type and code content.
+        action_types (List[str]): List of action types to identify.
+        
+    Returns:
+        Tuple[str, str]: A tuple containing the extracted action type (capitalized)
+        and the extracted code content.
+    """
+    action_split = action.split("```python", maxsplit=1)
+    pattern = r"\b(" + "|".join(action_types) + r")\b"
+    match = re.search(pattern, action_split[0], re.IGNORECASE)
+
+    action_type = match.group(0).lower().capitalize() if match else ""
+    try:
+        query = action_split[1].split("```")[0].strip() if action_type else ""
+    except:
+        action_type = ""
+        query = ""
+
+    return action_type, query

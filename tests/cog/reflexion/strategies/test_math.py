@@ -25,41 +25,8 @@ from agential.cog.reflexion.strategies.math import (
     ReflexionReActMathStrategy,
     ReflexionReActSVAMPStrategy,
     ReflexionReActTabMWPStrategy,
-    parse_math_action_cot,
-    parse_math_action_react,
 )
 from agential.llm.llm import BaseLLM, MockLLM
-
-
-def test_parse_math_action_cot() -> None:
-    """Tests parse_math_action_cot."""
-    action = "Finish the calculation```python\nresult = 5 + 3\n```"
-    action_type, query = parse_math_action_cot(action)
-    assert action_type == "Finish"
-    assert query == "result = 5 + 3"
-
-    action = "complete the task```python\nanswer = 10 * 2\n```"
-    action_type, query = parse_math_action_cot(action)
-    assert action_type == ""
-    assert query == ""
-
-
-def test_parse_math_action_react() -> None:
-    """Tests parse_math_action_react."""
-    action = "Calculate the sum```python\nsum = 4 + 6\n```"
-    action_type, query = parse_math_action_react(action)
-    assert action_type == "Calculate"
-    assert query == "sum = 4 + 6"
-
-    action = "Finish the operation```python\nresult = 7 - 2\n```"
-    action_type, query = parse_math_action_react(action)
-    assert action_type == "Finish"
-    assert query == "result = 7 - 2"
-
-    action = "complete the task```python\noutput = 10 / 2\n```"
-    action_type, query = parse_math_action_react(action)
-    assert action_type == ""
-    assert query == ""
 
 
 def test_reflexion_cot_init() -> None:

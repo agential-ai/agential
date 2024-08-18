@@ -1,7 +1,5 @@
 """Reflexion Agent strategies for Code."""
 
-import re
-
 from typing import Any, Dict, List, Optional, Tuple
 
 import tiktoken
@@ -13,6 +11,8 @@ from agential.cog.reflexion.functional import (
     _prompt_cot_agent,
     _prompt_react_agent,
     _truncate_scratchpad,
+    parse_math_code_action_cot,
+    parse_math_code_action_react
 )
 from agential.cog.reflexion.output import ReflexionReActStepOutput
 from agential.cog.reflexion.reflect import (
@@ -28,62 +28,6 @@ from agential.llm.llm import BaseLLM
 from agential.utils.general import safe_execute
 from agential.utils.metrics import get_token_cost_time
 from agential.utils.parse import remove_newline
-
-
-def parse_code_action_cot(action: str) -> Tuple[str, str]:
-    """Parses an action string to extract the action type and code content.
-
-    Identifies action types (`Finish`) and extracts the
-    corresponding code content enclosed within Markdown-style code blocks.
-    The action type is case-insensitive and the code content is trimmed of
-    leading and trailing whitespace.
-
-    Args:
-        action (str): The action string containing the action type and code content.
-
-    Returns:
-        Tuple[str, str]: A tuple containing the extracted action type (capitalized)
-        and the extracted code content.
-    """
-    action_split = action.split("```python", maxsplit=1)
-    match = re.search(r"\b(Finish)\b", action_split[0], re.IGNORECASE)
-
-    action_type = match.group(0).lower().capitalize() if match else ""
-    try:
-        query = action_split[1].split("```")[0].strip() if action_type else ""
-    except:
-        action_type = ""
-        query = ""
-
-    return action_type, query
-
-
-def parse_code_action_react(action: str) -> Tuple[str, str]:
-    """Parses an action string to extract the action type and code content.
-
-    Identifies action types (`Finish`, `Implement`, `Test`) and extracts the
-    corresponding code content enclosed within Markdown-style code blocks.
-    The action type is case-insensitive and the code content is trimmed of
-    leading and trailing whitespace.
-
-    Args:
-        action (str): The action string containing the action type and code content.
-
-    Returns:
-        Tuple[str, str]: A tuple containing the extracted action type (capitalized)
-        and the extracted code content.
-    """
-    action_split = action.split("```python", maxsplit=1)
-    match = re.search(r"\b(Finish|Test|Implement)\b", action_split[0], re.IGNORECASE)
-
-    action_type = match.group(0).lower().capitalize() if match else ""
-    try:
-        query = action_split[1].split("```")[0].strip() if action_type else ""
-    except:
-        action_type = ""
-        query = ""
-
-    return action_type, query
 
 
 class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
@@ -194,7 +138,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
 
         action = action.split("Observation")[0].strip()
 
-        action_type, query = parse_code_action_cot(action)
+        action_type, query = parse_math_code_action_cot(action)
         self._scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
 
         return action_type, query
@@ -467,7 +411,7 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
 
         action = action.split("Observation")[0].strip()
 
-        action_type, query = parse_code_action_react(action)
+        action_type, query = parse_math_code_action_react(action, ["Finish", "Test", "Implement"])
         self._scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
 
         return action_type, query

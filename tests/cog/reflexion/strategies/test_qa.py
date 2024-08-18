@@ -27,37 +27,8 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActHotQAStrategy,
     ReflexionReActQAStrategy,
     ReflexionReActTriviaQAStrategy,
-    parse_qa_action,
 )
 from agential.llm.llm import BaseLLM, MockLLM
-
-
-def test_parse_qa_action() -> None:
-    """Tests parse_qa_action."""
-    action = "Calculate[sum = 4 + 6]"
-    action_type, argument = parse_qa_action(action)
-    assert action_type == "Calculate"
-    assert argument == "sum = 4 + 6"
-
-    action = "Finish[result = 7 - 2]"
-    action_type, argument = parse_qa_action(action)
-    assert action_type == "Finish"
-    assert argument == "result = 7 - 2"
-
-    action = "InvalidAction[result = 10 / 2]"
-    action_type, argument = parse_qa_action(action)
-    assert action_type == "InvalidAction"
-    assert argument == "result = 10 / 2"
-
-    action = "NoBrackets"
-    action_type, argument = parse_qa_action(action)
-    assert action_type == ""
-    assert argument == ""
-
-    action = "EmptyBrackets[]"
-    action_type, argument = parse_qa_action(action)
-    assert action_type == ""
-    assert argument == ""
 
 
 def test_reflexion_cot_init() -> None:

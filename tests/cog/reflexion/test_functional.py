@@ -1,6 +1,5 @@
 """Unit tests for Reflexion functional methods."""
 
-import pytest
 import tiktoken
 
 from litellm.types.utils import ModelResponse
@@ -25,6 +24,9 @@ from agential.cog.reflexion.functional import (
     cot_reflect_last_attempt,
     cot_reflect_last_attempt_and_reflexion,
     cot_reflect_reflexion,
+    parse_math_code_action_react,
+    parse_qa_action,
+    parse_math_code_action_cot,
     react_reflect_last_attempt,
     react_reflect_last_attempt_and_reflexion,
     react_reflect_reflexion,
@@ -672,3 +674,98 @@ def test_react_reflect_last_attempt_and_reflexion() -> None:
     assert isinstance(out, list)
     assert out == ["1"]
     assert model_response
+
+
+def test_parse_qa_action() -> None:
+    """Tests parse_qa_action."""
+    action = "Calculate[sum = 4 + 6]"
+    action_type, argument = parse_qa_action(action)
+    assert action_type == "Calculate"
+    assert argument == "sum = 4 + 6"
+
+    action = "Finish[result = 7 - 2]"
+    action_type, argument = parse_qa_action(action)
+    assert action_type == "Finish"
+    assert argument == "result = 7 - 2"
+
+    action = "InvalidAction[result = 10 / 2]"
+    action_type, argument = parse_qa_action(action)
+    assert action_type == "InvalidAction"
+    assert argument == "result = 10 / 2"
+
+    action = "NoBrackets"
+    action_type, argument = parse_qa_action(action)
+    assert action_type == ""
+    assert argument == ""
+
+    action = "EmptyBrackets[]"
+    action_type, argument = parse_qa_action(action)
+    assert action_type == ""
+    assert argument == ""
+
+
+def test_parse_math_code_action_cot() -> None:
+    """Tests parse_math_code_action_cot."""
+    # Test case 1: Correct Finish action.
+    action = "Finish```python\nprint('Hello, World!')\n```"
+    assert parse_math_code_action_cot(action) == ("Finish", "print('Hello, World!')")
+
+    # Test case 2: No action type.
+    action = "```python\nprint('Hello, World!')\n```"
+    assert parse_math_code_action_cot(action) == ("", "")
+
+    # Test case 3: Incorrect action type.
+    action = "End```python\nprint('Hello, World!')\n```"
+    assert parse_math_code_action_cot(action) == ("", "")
+
+    # Test case 4: Finish action with mixed case.
+    action = "fIniSh```python\nprint('Hello, World!')\n```"
+    assert parse_math_code_action_cot(action) == ("Finish", "print('Hello, World!')")
+
+
+def test_parse_math_code_action_react() -> None:
+    """Tests parse_math_code_action_react."""
+    action = "Calculate the sum```python\nsum = 4 + 6\n```"
+    action_type, query = parse_math_code_action_react(action, ["Finish", "Calculate"])
+    assert action_type == "Calculate"
+    assert query == "sum = 4 + 6"
+
+    action = "Finish the operation```python\nresult = 7 - 2\n```"
+    action_type, query = parse_math_code_action_react(action, ["Finish", "Calculate"])
+    assert action_type == "Finish"
+    assert query == "result = 7 - 2"
+
+    action = "complete the task```python\noutput = 10 / 2\n```"
+    action_type, query = parse_math_code_action_react(action, ["Finish", "Calculate"])
+    assert action_type == ""
+    assert query == ""
+
+    # Test case 1: Correct Finish action.
+    action = "Finish```python\nprint('Hello, World!')\n```"
+    assert parse_math_code_action_react(action, ["Finish", "Test", "Implement"]) == ("Finish", "print('Hello, World!')")
+
+    # Test case 2: Correct Implement action.
+    action = "Implement```python\nx = 10\n```"
+    assert parse_math_code_action_react(action, ["Finish", "Test", "Implement"]) == ("Implement", "x = 10")
+
+    # Test case 3: Correct Test action.
+    action = "Test```python\nassert x == 10\n```"
+    assert parse_math_code_action_react(action, ["Finish", "Test", "Implement"]) == ("Test", "assert x == 10")
+
+    # Test case 4: No action type.
+    action = "```python\nprint('Hello, World!')\n```"
+    assert parse_math_code_action_react(action, ["Finish", "Test", "Implement"]) == ("", "")
+
+    # Test case 5: Incorrect action type.
+    action = "End```python\nprint('Hello, World!')\n```"
+    assert parse_math_code_action_react(action, ["Finish", "Test", "Implement"]) == ("", "")
+
+    # Test case 6: Mixed case action types.
+    action = "FiNiSh```python\nprint('Hello, World!')\n```"
+    assert parse_math_code_action_react(action, ["Finish", "Test", "Implement"]) == ("Finish", "print('Hello, World!')")
+
+    action = "imPlEmEnT```python\nx = 10\n```"
+    assert parse_math_code_action_react(action, ["Finish", "Test", "Implement"]) == ("Implement", "x = 10")
+
+    action = "tEsT```python\nassert x == 10\n```"
+    assert parse_math_code_action_react(action, ["Finish", "Test", "Implement"]) == ("Test", "assert x == 10")
