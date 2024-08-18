@@ -11,8 +11,8 @@ from tiktoken.core import Encoding
 from agential.cog.react.functional import _is_halted, _prompt_agent, accumulate_metrics
 from agential.cog.react.output import ReActOutput, ReActStepOutput
 from agential.cog.react.strategies.base import ReActBaseStrategy
-from agential.llm.llm import BaseLLM, ModelResponse
-from agential.utils.general import get_token_cost_time
+from agential.llm.llm import BaseLLM
+from agential.utils.general import PromptMetrics, get_token_cost_time
 from agential.utils.parse import remove_newline
 
 
@@ -84,7 +84,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
             additional_keys=additional_keys,
         ):
             # Think.
-            scratchpad, thought, thought_model_response = self.generate_thought(
+            scratchpad, thought, thought_metrics = self.generate_thought(
                 idx=idx,
                 scratchpad=scratchpad,
                 question=question,
@@ -94,7 +94,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
             )
 
             # Act.
-            scratchpad, action_type, query, action_model_response = (
+            scratchpad, action_type, query, action_metrics = (
                 self.generate_action(
                     idx=idx,
                     scratchpad=scratchpad,
@@ -120,8 +120,8 @@ class ReActGeneralStrategy(ReActBaseStrategy):
                     observation=obs,
                     answer=answer,
                     external_tool_info=external_tool_info,
-                    thought_metrics=get_token_cost_time(thought_model_response),
-                    action_metrics=get_token_cost_time(action_model_response),
+                    thought_metrics=thought_metrics,
+                    action_metrics=action_metrics,
                 )
             )
 
@@ -152,7 +152,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, ModelResponse]:
+    ) -> Tuple[str, str, PromptMetrics]:
         """Generate a thought based on the given inputs.
 
         Args:
@@ -164,7 +164,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
             additional_keys (Dict[str, str]): Additional key-value pairs to pass to the language model.
 
         Returns:
-            Tuple[str, str, ModelResponse]: The updated scratchpad, the generated thought, and the model response.
+            Tuple[str, str, PromptMetrics]: The updated scratchpad, the generated thought, and the metrics for the thought.
         """
         scratchpad += f"\nThought {idx}: "
 
@@ -181,7 +181,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         thought = remove_newline(thought).split("Action")[0].strip()
         scratchpad += thought
 
-        return scratchpad, thought, out
+        return scratchpad, thought, get_token_cost_time(out)
 
     def generate_action(
         self,
@@ -191,7 +191,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, str, ModelResponse]:
+    ) -> Tuple[str, str, str, PromptMetrics]:
         """Generate an action based on the given inputs.
 
         Args:
@@ -203,7 +203,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
             additional_keys (Dict[str, str]): Additional key-value pairs to pass to the language model.
 
         Returns:
-            Tuple[str, str, str, ModelResponse]: The updated scratchpad, the generated action, the action type, and the model response.
+            Tuple[str, str, str, PromptMetrics]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
         """
         raise NotImplementedError
 

@@ -8,8 +8,8 @@ from tiktoken.core import Encoding
 
 from agential.cog.react.functional import _prompt_agent, parse_math_action
 from agential.cog.react.strategies.general import ReActGeneralStrategy
-from agential.llm.llm import BaseLLM, ModelResponse
-from agential.utils.general import safe_execute
+from agential.llm.llm import BaseLLM
+from agential.utils.general import PromptMetrics, get_token_cost_time, safe_execute
 
 
 class ReActMathStrategy(ReActGeneralStrategy):
@@ -48,7 +48,7 @@ class ReActMathStrategy(ReActGeneralStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, str, ModelResponse]:
+    ) -> Tuple[str, str, str, PromptMetrics]:
         """Generates an action based on the provided inputs, including the question, examples, prompt, and additional keys.
 
         Args:
@@ -60,7 +60,7 @@ class ReActMathStrategy(ReActGeneralStrategy):
             additional_keys (Dict[str, str]): Additional keys to be used in the prompt.
 
         Returns:
-            Tuple[str, str, str, ModelResponse]: The updated scratchpad, the action type, the query, and the model response.
+            Tuple[str, str, str, PromptMetrics]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
         """
         scratchpad += f"\nAction {idx}: "
 
@@ -78,7 +78,7 @@ class ReActMathStrategy(ReActGeneralStrategy):
         action_type, query = parse_math_action(action)
         scratchpad += f"{action_type}[\n```python\n{query}\n```\n]"
 
-        return scratchpad, action_type, query, out
+        return scratchpad, action_type, query, get_token_cost_time(out)
 
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str

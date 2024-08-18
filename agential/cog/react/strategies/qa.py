@@ -9,8 +9,9 @@ from tiktoken.core import Encoding
 
 from agential.cog.react.functional import _prompt_agent, parse_qa_action
 from agential.cog.react.strategies.general import ReActGeneralStrategy
-from agential.llm.llm import BaseLLM, ModelResponse
+from agential.llm.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
+from agential.utils.general import PromptMetrics, get_token_cost_time
 from agential.utils.parse import remove_newline
 
 
@@ -53,7 +54,7 @@ class ReActQAStrategy(ReActGeneralStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, str, ModelResponse]:
+    ) -> Tuple[str, str, str, PromptMetrics]:
         """Generates an action based on the provided input parameters.
 
         Args:
@@ -65,7 +66,7 @@ class ReActQAStrategy(ReActGeneralStrategy):
             additional_keys (Dict[str, str]): Additional key-value pairs to be passed to the language model.
 
         Returns:
-            Tuple[str, str, str, ModelResponse]: The updated scratchpad, the action type, the query, and the language model response.
+            Tuple[str, str, str, PromptMetrics]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
         """
         scratchpad += f"\nAction {idx}: "
 
@@ -83,7 +84,7 @@ class ReActQAStrategy(ReActGeneralStrategy):
         action_type, query = parse_qa_action(action)
         scratchpad += f"{action_type}[{query}]"
 
-        return scratchpad, action_type, query, out
+        return scratchpad, action_type, query, get_token_cost_time(out)
 
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str

@@ -7,7 +7,8 @@ from tiktoken import Encoding
 
 from agential.cog.base.strategies import BaseStrategy
 from agential.cog.react.output import ReActOutput
-from agential.llm.llm import BaseLLM, ModelResponse
+from agential.llm.llm import BaseLLM
+from agential.utils.general import PromptMetrics
 
 
 class ReActBaseStrategy(BaseStrategy):
@@ -67,7 +68,7 @@ class ReActBaseStrategy(BaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, ModelResponse]:
+    ) -> Tuple[str, str, PromptMetrics]:
         """Generates a thought based on the question, examples, and prompt.
 
         Args:
@@ -79,7 +80,7 @@ class ReActBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the generation process.
 
         Returns:
-            Tuple[str, str, ModelResponse]: The scratchpad, generated thought, and model response.
+            Tuple[str, str, PromptMetrics]: The updated scratchpad, the generated thought, and the metrics for the thought.
         """
         raise NotImplementedError
 
@@ -92,7 +93,7 @@ class ReActBaseStrategy(BaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, str, ModelResponse]:
+    ) -> Tuple[str, str, str, PromptMetrics]:
         """Generates an action based on the question, examples, and prompt.
 
         Args:
@@ -104,7 +105,7 @@ class ReActBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the generation process.
 
         Returns:
-            Tuple[str, str, str, ModelResponse]: The scratchpad, generated action type and query, and model response.
+            Tuple[str, str, str, PromptMetrics]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
         """
         raise NotImplementedError
 
