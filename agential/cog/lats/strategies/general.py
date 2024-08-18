@@ -402,7 +402,11 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         """
         if node.depth >= self.depth_limit:
             node.is_terminal = True
-            return [], [], []
+            return [], LATSGenerateMetrics(
+                thoughts_metrics=[],
+                actions_metrics=[],
+                reflections_metrics=[],
+            )
 
         children_nodes, generate_metrics = self.generate_children_nodes(
             node=node,
@@ -417,7 +421,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         )
         node.add_children([node for node in children_nodes if node.parent])  # type: ignore
 
-        return (children_nodes, generate_metrics)
+        return children_nodes, generate_metrics
 
     def evaluate_node(
         self,
