@@ -1590,7 +1590,7 @@ def test_generate_children_nodes() -> None:
 
     root = strategy.initialize()
 
-    children_nodes, thought_model_responses, action_model_responses = (
+    children_nodes, thought_model_responses, action_model_responses, reflection_model_responses = (
         strategy.generate_children_nodes(
             node=root,
             question=question,
@@ -1725,7 +1725,7 @@ def test_generate_children_nodes() -> None:
     ]
 
     root = strategy.initialize()
-    children_nodes, thought_model_responses, action_model_responses = (
+    children_nodes, thought_model_responses, action_model_responses, reflection_model_responses = (
         strategy.generate_children_nodes(
             node=root,
             question=question,
@@ -1765,7 +1765,7 @@ def test_generate_children_nodes() -> None:
     strategy = LATSQAStrategy(llm=llm, n_samples=1)
 
     root = strategy.initialize()
-    children_nodes, thought_model_responses, action_model_responses = (
+    children_nodes, thought_model_responses, action_model_responses, reflection_model_responses = (
         strategy.generate_children_nodes(
             node=root,
             question=question,
@@ -1793,6 +1793,10 @@ def test_generate_children_nodes() -> None:
     assert len(action_model_responses) == 1
     assert action_model_responses[0].choices[0].message.content == "Finish[Mike Tyson]"
 
+    assert strategy.failed_trajectories == []
+    assert strategy.reflection_map == []
+    assert strategy.value_cache == {}
+    assert strategy.root == root
 
 def test_generate_action() -> None:
     """Test the generate_action method."""
