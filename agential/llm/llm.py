@@ -58,6 +58,7 @@ class BaseLLM(ABC):
         """
         pass
 
+
 class LLM(BaseLLM):
     """Simple LLM wrapper for LiteLLM's completion function.
 

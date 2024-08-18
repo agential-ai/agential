@@ -789,8 +789,9 @@ def test_generate() -> None:
     assert out.total_cost == 0.00165
     assert out.total_prompt_time == 15.0
     assert out.total_time == 0.5
-    assert out.additional_info == gt_additional_info
-
+    #assert out.additional_info == gt_additional_info
+    print(repr(out.additional_info))
+    assert False
     # Test generate with reflection.
     question = "What's the capital of France?"
     key = "France"
@@ -1590,10 +1591,7 @@ def test_generate_children_nodes() -> None:
 
     root = strategy.initialize()
 
-    (
-        children_nodes,
-        generate_metrics
-    ) = strategy.generate_children_nodes(
+    (children_nodes, generate_metrics) = strategy.generate_children_nodes(
         node=root,
         question=question,
         key=key,
@@ -1729,10 +1727,7 @@ def test_generate_children_nodes() -> None:
     ]
 
     root = strategy.initialize()
-    (
-        children_nodes,
-        generate_metrics
-    ) = strategy.generate_children_nodes(
+    (children_nodes, generate_metrics) = strategy.generate_children_nodes(
         node=root,
         question=question,
         key=key,
@@ -1759,9 +1754,24 @@ def test_generate_children_nodes() -> None:
         assert node.value == 0
         assert node.is_terminal is False
         assert node.visits == 0
-        assert t == PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)
-        assert a == PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)
-
+        assert t == PromptMetrics(
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        )
+        assert a == PromptMetrics(
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        )
 
     # Test case with a terminal child node (reward 0)
     responses = [
@@ -1772,10 +1782,7 @@ def test_generate_children_nodes() -> None:
     strategy = LATSQAStrategy(llm=llm, n_samples=1)
 
     root = strategy.initialize()
-    (
-        children_nodes,
-        generate_metrics
-    ) = strategy.generate_children_nodes(
+    (children_nodes, generate_metrics) = strategy.generate_children_nodes(
         node=root,
         question=question,
         key=key,
@@ -1795,11 +1802,32 @@ def test_generate_children_nodes() -> None:
 
     assert len(generate_metrics.thoughts_metrics) == 1
 
-    assert generate_metrics.thoughts_metrics[0] == PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)
-    assert generate_metrics.actions_metrics[0] == PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)
+    assert generate_metrics.thoughts_metrics[0] == PromptMetrics(
+        prompt_tokens=10,
+        completion_tokens=20,
+        total_tokens=30,
+        prompt_cost=1.5e-05,
+        completion_cost=3.9999999999999996e-05,
+        total_cost=5.4999999999999995e-05,
+        prompt_time=0.5,
+    )
+    assert generate_metrics.actions_metrics[0] == PromptMetrics(
+        prompt_tokens=10,
+        completion_tokens=20,
+        total_tokens=30,
+        prompt_cost=1.5e-05,
+        completion_cost=3.9999999999999996e-05,
+        total_cost=5.4999999999999995e-05,
+        prompt_time=0.5,
+    )
     assert len(generate_metrics.actions_metrics) == 1
     assert len(generate_metrics.reflections_metrics) == 0
-    assert strategy.failed_trajectories == [{'trajectory': '\nThought 1: I think the answer is Mike Tyson.\nAction 1: Finish[Mike Tyson]\nObservation 1: Answer is INCORRECT', 'final_answer': 'mike tyson'}]
+    assert strategy.failed_trajectories == [
+        {
+            "trajectory": "\nThought 1: I think the answer is Mike Tyson.\nAction 1: Finish[Mike Tyson]\nObservation 1: Answer is INCORRECT",
+            "final_answer": "mike tyson",
+        }
+    ]
     assert strategy.reflection_map == []
     assert strategy.value_cache == {}
     assert strategy.root == root
@@ -1974,11 +2002,21 @@ def test_evaluate_node() -> None:
     assert child2.value == 0  # Terminal node, value not updated.
 
     expected_value_metric = [
-        PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5),
-        None
+        PromptMetrics(
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        None,
     ]
 
-    for i, value_met in zip(values_evaluation_metrics.values_metrics , expected_value_metric):
+    for i, value_met in zip(
+        values_evaluation_metrics.values_metrics, expected_value_metric
+    ):
         assert i == value_met
 
     # Test caching.
@@ -2006,8 +2044,19 @@ def test_evaluate_node() -> None:
     empty_reflection_values, values_evaluation_metrics = strategy.evaluate_node(
         root, question, examples, prompt, {}
     )
-    assert values_evaluation_metrics.values_metrics == [PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), None]
-    
+    assert values_evaluation_metrics.values_metrics == [
+        PromptMetrics(
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        None,
+    ]
+
     assert empty_reflection_values == values
 
     assert strategy.failed_trajectories == []
@@ -2080,7 +2129,6 @@ def test_simulate_node() -> None:
         ],
     ]
 
-    
     expected_simulation_values = [
         [
             {"explanation": "", "value": -10000000000.0},
@@ -2192,31 +2240,167 @@ def test_simulate_node() -> None:
 
     # Flatten the list using itertools.chain
     for i in simulation_metrics.simulation_step_metrics:
-        assert i.generate_metrics.thoughts_metrics == [PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)]
-        assert i.generate_metrics.actions_metrics ==[PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)]
-        assert i.generate_metrics.reflections_metrics == [] 
-        assert i.evaluate_metrics.values_metrics == [None, None] or [PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)]
+        assert i.generate_metrics.thoughts_metrics == [
+            PromptMetrics(
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=1.5e-05,
+                completion_cost=3.9999999999999996e-05,
+                total_cost=5.4999999999999995e-05,
+                prompt_time=0.5,
+            ),
+            PromptMetrics(
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=1.5e-05,
+                completion_cost=3.9999999999999996e-05,
+                total_cost=5.4999999999999995e-05,
+                prompt_time=0.5,
+            ),
+        ]
+        assert i.generate_metrics.actions_metrics == [
+            PromptMetrics(
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=1.5e-05,
+                completion_cost=3.9999999999999996e-05,
+                total_cost=5.4999999999999995e-05,
+                prompt_time=0.5,
+            ),
+            PromptMetrics(
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=1.5e-05,
+                completion_cost=3.9999999999999996e-05,
+                total_cost=5.4999999999999995e-05,
+                prompt_time=0.5,
+            ),
+        ]
+        assert i.generate_metrics.reflections_metrics == []
+        assert i.evaluate_metrics.values_metrics == [None, None] or [
+            PromptMetrics(
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=1.5e-05,
+                completion_cost=3.9999999999999996e-05,
+                total_cost=5.4999999999999995e-05,
+                prompt_time=0.5,
+            ),
+            PromptMetrics(
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=1.5e-05,
+                completion_cost=3.9999999999999996e-05,
+                total_cost=5.4999999999999995e-05,
+                prompt_time=0.5,
+            ),
+        ]
 
     print(simulation_values)
     assert simulation_values == expected_simulation_values
 
 
-
 def test_expand_node() -> None:
     """Test the expand_node method."""
     gt_thought_model_responses = [
-        PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5),
-        PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5),
-        PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5),
-        PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5),
-        PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)
+        PromptMetrics(
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        PromptMetrics(
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        PromptMetrics(
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        PromptMetrics(
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        PromptMetrics(
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
     ]
     gt_action_model_responses = [
-        PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5),
-        PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5),
-        PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5),
-        PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5),
-        PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)
+        PromptMetrics(
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        PromptMetrics(
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        PromptMetrics(
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        PromptMetrics(
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        PromptMetrics(
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
     ]
 
     responses = [
@@ -2241,10 +2425,7 @@ def test_expand_node() -> None:
 
     root = strategy.initialize()
 
-    (
-        children_nodes,
-        generate_metrics
-    ) = strategy.expand_node(
+    (children_nodes, generate_metrics) = strategy.expand_node(
         node=root,
         question=question,
         key=key,
@@ -2288,10 +2469,10 @@ def test_expand_node() -> None:
         gt_thought_model_responses,
         gt_action_model_responses,
     ):
-        
+
         assert t == gt_t
         assert a == gt_a
-    
+
     assert strategy.failed_trajectories == []
     assert strategy.reflection_map == []
     assert strategy.value_cache == {}

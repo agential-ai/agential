@@ -618,13 +618,12 @@ def test__accumulate_metric() -> None:
             simulation_values=[],
         ),
         simulation_metrics=LATSSimulationMetrics(
-            
             simulation_reward=0.5,
             simulation_terminal_node=None,
             simulation_current_nodes=[],
             simulation_children_nodes=[],
             simulation_values=[],
-        )
+        ),
     )
 
     metric_types = [

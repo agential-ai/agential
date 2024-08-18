@@ -13,7 +13,13 @@ from agential.cog.lats.functional import (
     parse_latest_implement,
 )
 from agential.cog.lats.node import Node
-from agential.cog.lats.output import LATSEvaluateMetrics, LATSGenerateMetrics, LATSReActStepOutput, LATSSimulationMetrics, LATSSimulationStepMetrics
+from agential.cog.lats.output import (
+    LATSEvaluateMetrics,
+    LATSGenerateMetrics,
+    LATSReActStepOutput,
+    LATSSimulationMetrics,
+    LATSSimulationStepMetrics,
+)
 from agential.cog.lats.strategies.general import LATSGeneralStrategy
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM, ModelResponse
@@ -183,9 +189,13 @@ class LATSCodeStrategy(LATSGeneralStrategy):
             children_nodes.append(new_node)
 
         metrics = LATSGenerateMetrics(
-            thoughts_metrics=[get_token_cost_time(response) for response in thought_responses], 
-            actions_metrics=[get_token_cost_time(response) for response in action_responses], 
-            reflections_metrics=reflection_metrics, 
+            thoughts_metrics=[
+                get_token_cost_time(response) for response in thought_responses
+            ],
+            actions_metrics=[
+                get_token_cost_time(response) for response in action_responses
+            ],
+            reflections_metrics=reflection_metrics,
         )
 
         return children_nodes, metrics
@@ -359,7 +369,9 @@ class LATSCodeStrategy(LATSGeneralStrategy):
 
                     child_trajectory_cache[trajectory] = value
 
-                values_metrics.append(get_token_cost_time(value_response) if value_response else None)
+                values_metrics.append(
+                    get_token_cost_time(value_response) if value_response else None
+                )
                 values.append({"explanation": explanation, "value": value})
             else:
                 values_metrics.append(None)
@@ -382,12 +394,12 @@ class LATSCodeStrategy(LATSGeneralStrategy):
         reflect_additional_keys: Dict[str, str],
         value_additional_keys: Dict[str, str],
     ) -> Tuple[
-        float, 
-        Node, 
-        List[Node], 
-        List[List[Node]], 
-        List[List[Dict[str, Any]]], 
-        LATSSimulationMetrics
+        float,
+        Node,
+        List[Node],
+        List[List[Node]],
+        List[List[Dict[str, Any]]],
+        LATSSimulationMetrics,
     ]:
         """Simulate the node to estimate its value and collect information about the simulation process.
 
@@ -444,7 +456,9 @@ class LATSCodeStrategy(LATSGeneralStrategy):
                     simulation_step_metrics.append(
                         LATSSimulationStepMetrics(
                             generate_metrics=generate_metrics,
-                            evaluate_metrics=LATSEvaluateMetrics(values_metrics=values_metrics),
+                            evaluate_metrics=LATSEvaluateMetrics(
+                                values_metrics=values_metrics
+                            ),
                         )
                     )
 
@@ -458,7 +472,7 @@ class LATSCodeStrategy(LATSGeneralStrategy):
                         simulation_current_nodes,
                         simulation_children_nodes,
                         simulation_values,
-                        simulation_metrics
+                        simulation_metrics,
                     )
 
             for child in children_nodes:
@@ -523,7 +537,7 @@ class LATSCodeStrategy(LATSGeneralStrategy):
             simulation_current_nodes,
             simulation_children_nodes,
             simulation_values,
-            simulation_metrics
+            simulation_metrics,
         )
 
 
