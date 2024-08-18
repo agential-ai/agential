@@ -9,7 +9,6 @@ from agential.cog.lats.output import (
     LATSGenerateMetrics,
     LATSOutput,
     LATSSimulationMetrics,
-    LATSStepOutput,
 )
 from agential.llm.llm import BaseLLM, ModelResponse
 from agential.utils.general import PromptMetrics
