@@ -8,7 +8,6 @@ from agential.cog.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
 )
 from agential.cog.reflexion.factory import (
-    ReflexionCoTFactory,
     ReflexionReActFactory,
 )
 from agential.cog.reflexion.prompts import (
@@ -44,59 +43,6 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActTriviaQAStrategy,
 )
 from agential.llm.llm import MockLLM
-
-
-def test_reflexion_cot_factory_get_strategy() -> None:
-    """Tests ReflexionCoTFactory get_strategy method."""
-    llm = MockLLM("gpt-3.5-turbo", responses=[])
-
-    # QA benchmarks.
-    assert isinstance(
-        ReflexionCoTFactory.get_strategy(Benchmarks.HOTPOTQA, llm=llm),
-        ReflexionCoTHotQAStrategy,
-    )
-    assert isinstance(
-        ReflexionCoTFactory.get_strategy(Benchmarks.TRIVIAQA, llm=llm),
-        ReflexionCoTTriviaQAStrategy,
-    )
-    assert isinstance(
-        ReflexionCoTFactory.get_strategy(Benchmarks.AMBIGNQ, llm=llm),
-        ReflexionCoTAmbigNQStrategy,
-    )
-    assert isinstance(
-        ReflexionCoTFactory.get_strategy(Benchmarks.FEVER, llm=llm),
-        ReflexionCoTFEVERStrategy,
-    )
-
-    # Math benchmarks.
-    assert isinstance(
-        ReflexionCoTFactory.get_strategy(Benchmarks.GSM8K, llm=llm),
-        ReflexionCoTGSM8KStrategy,
-    )
-    assert isinstance(
-        ReflexionCoTFactory.get_strategy(Benchmarks.SVAMP, llm=llm),
-        ReflexionCoTSVAMPStrategy,
-    )
-    assert isinstance(
-        ReflexionCoTFactory.get_strategy(Benchmarks.TABMWP, llm=llm),
-        ReflexionCoTTabMWPStrategy,
-    )
-
-    # Code benchmarks.
-    assert isinstance(
-        ReflexionCoTFactory.get_strategy(Benchmarks.HUMANEVAL, llm=llm),
-        ReflexionCoTHEvalStrategy,
-    )
-    assert isinstance(
-        ReflexionCoTFactory.get_strategy(Benchmarks.MBPP, llm=llm),
-        ReflexionCoTMBPPStrategy,
-    )
-
-    # Unsupported benchmark.
-    with pytest.raises(
-        ValueError, match="Unsupported benchmark: unknown for agent ReflexionCoT"
-    ):
-        ReflexionCoTFactory.get_strategy("unknown", llm=llm)
 
 
 def test_reflexion_react_factory_get_strategy() -> None:
@@ -150,49 +96,6 @@ def test_reflexion_react_factory_get_strategy() -> None:
         ValueError, match="Unsupported benchmark: unknown for agent ReflexionReAct"
     ):
         ReflexionReActFactory.get_strategy("unknown", llm=llm)
-
-
-def test_reflexion_cot_factory_get_fewshots() -> None:
-    """Tests ReflexionCoTFactory get_fewshots method."""
-    # Valid benchmark.
-    benchmark = Benchmarks.HOTPOTQA
-    fewshots = ReflexionCoTFactory.get_fewshots(benchmark, fewshot_type="cot")
-    assert isinstance(fewshots, dict)
-    assert fewshots == {
-        "examples": HOTPOTQA_FEWSHOT_EXAMPLES_COT,
-        "reflect_examples": HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    }
-
-    # Unsupported benchmark.
-    with pytest.raises(
-        ValueError, match="Benchmark 'unknown' few-shots not found for ReflexionCoT."
-    ):
-        ReflexionCoTFactory.get_fewshots("unknown", fewshot_type="cot")
-
-    # Unsupported fewshot_type.
-    with pytest.raises(
-        ValueError,
-        match="Benchmark 'hotpotqa' few-shot type not supported for ReflexionCoT.",
-    ):
-        ReflexionCoTFactory.get_fewshots("hotpotqa", fewshot_type="react")
-
-
-def test_reflexion_cot_factory_get_prompts() -> None:
-    """Tests ReflexionCoTFactory get_prompts method."""
-    # Valid benchmark.
-    benchmark = Benchmarks.HOTPOTQA
-    prompt = ReflexionCoTFactory.get_prompts(benchmark)
-    assert isinstance(prompt, dict)
-    assert prompt == {
-        "prompt": REFLEXION_COT_INSTRUCTION_HOTPOTQA,
-        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
-    }
-
-    # Unsupported benchmark.
-    with pytest.raises(
-        ValueError, match="Benchmark 'unknown' prompt not found for ReflexionCoT."
-    ):
-        ReflexionCoTFactory.get_prompts("unknown")
 
 
 def test_reflexion_react_factory_get_fewshots() -> None:

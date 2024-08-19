@@ -2,11 +2,13 @@
 
 import pytest
 
+from agential.cog.constants import Benchmarks
 from agential.cog.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
     HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
 )
 from agential.cog.reflexion.agent import ReflexionCoTAgent, ReflexionReActAgent
+from agential.cog.reflexion.output import ReflexionCoTOutput, ReflexionCoTStepOutput
 from agential.cog.reflexion.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
@@ -15,8 +17,36 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
-from agential.cog.reflexion.strategies.base import ReflexionReActBaseStrategy
+from agential.cog.reflexion.strategies.base import (
+    ReflexionCoTBaseStrategy,
+    ReflexionReActBaseStrategy,
+)
+from agential.cog.reflexion.strategies.code import (
+    ReflexionCoTHEvalStrategy,
+    ReflexionCoTMBPPStrategy,
+    ReflexionReActHEvalStrategy,
+    ReflexionReActMBPPStrategy,
+)
+from agential.cog.reflexion.strategies.math import (
+    ReflexionCoTGSM8KStrategy,
+    ReflexionCoTSVAMPStrategy,
+    ReflexionCoTTabMWPStrategy,
+    ReflexionReActGSM8KStrategy,
+    ReflexionReActSVAMPStrategy,
+    ReflexionReActTabMWPStrategy,
+)
+from agential.cog.reflexion.strategies.qa import (
+    ReflexionCoTAmbigNQStrategy,
+    ReflexionCoTFEVERStrategy,
+    ReflexionCoTHotQAStrategy,
+    ReflexionCoTTriviaQAStrategy,
+    ReflexionReActAmbigNQStrategy,
+    ReflexionReActFEVERStrategy,
+    ReflexionReActHotQAStrategy,
+    ReflexionReActTriviaQAStrategy,
+)
 from agential.llm.llm import BaseLLM, MockLLM
+from agential.utils.metrics import PromptMetrics
 
 
 def test_reflexion_cot_init() -> None:
@@ -27,26 +57,104 @@ def test_reflexion_cot_init() -> None:
     )
     assert isinstance(agent, ReflexionCoTAgent)
     assert isinstance(agent.llm, BaseLLM)
+    assert isinstance(agent.strategy, ReflexionCoTBaseStrategy)
     assert agent.benchmark == "hotpotqa"
 
 
-def test_reflexion_cot_reset() -> None:
-    """Test reset method."""
-    agent = ReflexionCoTAgent(
-        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
-        benchmark="hotpotqa",
+def test_reflexion_cot_factory_get_strategy() -> None:
+    """Tests ReflexionCoTAgent get_strategy method."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+
+    # QA benchmarks.
+    assert isinstance(
+        ReflexionCoTAgent.get_strategy(Benchmarks.HOTPOTQA, llm=llm),
+        ReflexionCoTHotQAStrategy,
     )
-    agent.strategy._scratchpad = "cat"
-    agent.strategy._finished = True
-    agent.strategy._answer = "cat"
-    agent.strategy.reflector.reflections = ["c", "a", "t"]
-    agent.strategy.reflector.reflections_str = "cat"
-    agent.reset()
-    assert not agent.strategy._scratchpad
-    assert not agent.strategy._finished
-    assert not agent.strategy._answer
-    assert not agent.strategy.reflector.reflections
-    assert not agent.strategy.reflector.reflections_str
+    assert isinstance(
+        ReflexionCoTAgent.get_strategy(Benchmarks.TRIVIAQA, llm=llm),
+        ReflexionCoTTriviaQAStrategy,
+    )
+    assert isinstance(
+        ReflexionCoTAgent.get_strategy(Benchmarks.AMBIGNQ, llm=llm),
+        ReflexionCoTAmbigNQStrategy,
+    )
+    assert isinstance(
+        ReflexionCoTAgent.get_strategy(Benchmarks.FEVER, llm=llm),
+        ReflexionCoTFEVERStrategy,
+    )
+
+    # Math benchmarks.
+    assert isinstance(
+        ReflexionCoTAgent.get_strategy(Benchmarks.GSM8K, llm=llm),
+        ReflexionCoTGSM8KStrategy,
+    )
+    assert isinstance(
+        ReflexionCoTAgent.get_strategy(Benchmarks.SVAMP, llm=llm),
+        ReflexionCoTSVAMPStrategy,
+    )
+    assert isinstance(
+        ReflexionCoTAgent.get_strategy(Benchmarks.TABMWP, llm=llm),
+        ReflexionCoTTabMWPStrategy,
+    )
+
+    # Code benchmarks.
+    assert isinstance(
+        ReflexionCoTAgent.get_strategy(Benchmarks.HUMANEVAL, llm=llm),
+        ReflexionCoTHEvalStrategy,
+    )
+    assert isinstance(
+        ReflexionCoTAgent.get_strategy(Benchmarks.MBPP, llm=llm),
+        ReflexionCoTMBPPStrategy,
+    )
+
+    # Unsupported benchmark.
+    with pytest.raises(
+        ValueError, match="Unsupported benchmark: unknown for agent ReflexionCoT"
+    ):
+        ReflexionCoTAgent.get_strategy("unknown", llm=llm)
+
+
+def test_reflexion_cot_factory_get_fewshots() -> None:
+    """Tests ReflexionCoTAgent get_fewshots method."""
+    # Valid benchmark.
+    benchmark = Benchmarks.HOTPOTQA
+    fewshots = ReflexionCoTAgent.get_fewshots(benchmark, fewshot_type="cot")
+    assert isinstance(fewshots, dict)
+    assert fewshots == {
+        "examples": HOTPOTQA_FEWSHOT_EXAMPLES_COT,
+        "reflect_examples": HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
+    }
+
+    # Unsupported benchmark.
+    with pytest.raises(
+        ValueError, match="Benchmark 'unknown' few-shots not found for ReflexionCoT."
+    ):
+        ReflexionCoTAgent.get_fewshots("unknown", fewshot_type="cot")
+
+    # Unsupported fewshot_type.
+    with pytest.raises(
+        ValueError,
+        match="Benchmark 'hotpotqa' few-shot type not supported for ReflexionCoT.",
+    ):
+        ReflexionCoTAgent.get_fewshots("hotpotqa", fewshot_type="react")
+
+
+def test_reflexion_cot_factory_get_prompts() -> None:
+    """Tests ReflexionCoTAgent get_prompts method."""
+    # Valid benchmark.
+    benchmark = Benchmarks.HOTPOTQA
+    prompt = ReflexionCoTAgent.get_prompts(benchmark)
+    assert isinstance(prompt, dict)
+    assert prompt == {
+        "prompt": REFLEXION_COT_INSTRUCTION_HOTPOTQA,
+        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
+    }
+
+    # Unsupported benchmark.
+    with pytest.raises(
+        ValueError, match="Benchmark 'unknown' prompt not found for ReflexionCoT."
+    ):
+        ReflexionCoTAgent.get_prompts("unknown")
 
 
 def test_reflexion_cot_generate() -> None:
@@ -55,6 +163,7 @@ def test_reflexion_cot_generate() -> None:
     key = "Gesellschaft mit beschränkter Haftung"
 
     # Test auto-select prompts and few-shots.
+    gt_out = ReflexionCoTOutput(answer='Gesellschaft mit beschränkter Haftung', total_prompt_tokens=50, total_completion_tokens=100, total_tokens=150, total_prompt_cost=7.500000000000001e-05, total_completion_cost=0.00019999999999999998, total_cost=0.00027499999999999996, total_prompt_time=2.5, total_time=0.5, additional_info=[ReflexionCoTStepOutput(thought='The context provided states that VIVA Media AG changed its name to VIVA Media GmbH in 2004. Based on the information given, the new acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.', action_type='Finish', observation='Answer is INCORRECT', answer='Company with limited liability', is_correct=False, reflections=[], thought_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), reflection_metrics=None), ReflexionCoTStepOutput(thought='The reflection provided valuable insight into the previous mistake. To align with the question\'s request for the meaning of the new acronym in German, I should provide the answer in German, which is "Gesellschaft mit beschränkter Haftung". This will ensure accuracy and avoid repeating the previous error.', action_type='Finish', observation='Answer is CORRECT', answer='Gesellschaft mit beschränkter Haftung', is_correct=True, reflections=['Upon reflection, the phrasing discrepancy in my answer may have been the reason for it being marked incorrect. While I provided the correct translation of "GmbH" in English, the question specifically asked for the acronym\'s meaning in German. To mitigate this failure in the future, I should provide the answer in the same language as requested in the question, which in this case would be "Gesellschaft mit beschränkter Haftung". This will ensure alignment between the question and my response.'], thought_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), reflection_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5))])
     responses = [
         'The context provided states that VIVA Media AG changed its name to VIVA Media GmbH in 2004. Based on the information given, the new acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with limited liability]',
         "Finish[Company with limited liability]",
@@ -66,6 +175,7 @@ def test_reflexion_cot_generate() -> None:
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=2,
+        testing=True
     )
     out = agent.generate(
         question=question,
@@ -73,10 +183,10 @@ def test_reflexion_cot_generate() -> None:
         reflect_strategy="reflexion",
         patience=2,
     )
-    assert isinstance(out, list)
-    assert len(out) == 2
+    assert out == gt_out
 
     # Test auto-select prompts and few-shots and specify fewshot_type.
+    gt_out = ReflexionCoTOutput(answer='Gesellschaft mit beschränkter Haftung', total_prompt_tokens=50, total_completion_tokens=100, total_tokens=150, total_prompt_cost=7.500000000000001e-05, total_completion_cost=0.00019999999999999998, total_cost=0.00027499999999999996, total_prompt_time=2.5, total_time=0.5, additional_info=[ReflexionCoTStepOutput(thought='The context provided states that VIVA Media AG changed its name to VIVA Media GmbH in 2004. Based on the information given, the new acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.', action_type='Finish', observation='Answer is INCORRECT', answer='Company with limited liability', is_correct=False, reflections=[], thought_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), reflection_metrics=None), ReflexionCoTStepOutput(thought='The reflection provided valuable insight into the previous mistake. To align with the question\'s request for the meaning of the new acronym in German, I should provide the answer in German, which is "Gesellschaft mit beschränkter Haftung". This will ensure accuracy and avoid repeating the previous error.', action_type='Finish', observation='Answer is CORRECT', answer='Gesellschaft mit beschränkter Haftung', is_correct=True, reflections=['Upon reflection, the phrasing discrepancy in my answer may have been the reason for it being marked incorrect. While I provided the correct translation of "GmbH" in English, the question specifically asked for the acronym\'s meaning in German. To mitigate this failure in the future, I should provide the answer in the same language as requested in the question, which in this case would be "Gesellschaft mit beschränkter Haftung". This will ensure alignment between the question and my response.'], thought_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), reflection_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5))])
     responses = [
         'The context provided states that VIVA Media AG changed its name to VIVA Media GmbH in 2004. Based on the information given, the new acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with limited liability]',
         "Finish[Company with limited liability]",
@@ -88,6 +198,7 @@ def test_reflexion_cot_generate() -> None:
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=2,
+        testing=True,
     )
     out = agent.generate(
         question=question,
@@ -96,8 +207,7 @@ def test_reflexion_cot_generate() -> None:
         fewshot_type="cot",
         patience=2,
     )
-    assert isinstance(out, list)
-    assert len(out) == 2
+    assert out == gt_out
 
     # Test auto-select prompts and few-shots and specify incorrect fewshot_type.
     agent = ReflexionCoTAgent(
@@ -109,7 +219,7 @@ def test_reflexion_cot_generate() -> None:
         ValueError,
         match="Benchmark 'hotpotqa' few-shot type not supported for ReflexionCoT.",
     ):
-        out = agent.generate(
+        _ = agent.generate(
             question=question,
             key=key,
             reflect_strategy="reflexion",
@@ -118,6 +228,7 @@ def test_reflexion_cot_generate() -> None:
         )
 
     # Incorrect.
+    gt_out = ReflexionCoTOutput(answer='', total_prompt_tokens=20, total_completion_tokens=40, total_tokens=60, total_prompt_cost=3e-05, total_completion_cost=7.999999999999999e-05, total_cost=0.00010999999999999999, total_prompt_time=1.0, total_time=0.5, additional_info=[ReflexionCoTStepOutput(thought="Let's think step by step. VIVA Media AG changed its name to VGL Group in 2004. VGL Group stands for VIVA GLobilization.", action_type='', observation='Invalid action type, please try again.', answer='', is_correct=False, reflections=[], thought_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), reflection_metrics=None)])
     responses = [
         "Let's think step by step. VIVA Media AG changed its name to VGL Group in 2004. VGL Group stands for VIVA GLobilization.\nAction: Finish[VIVA GLobilization]"
         "Finish[VIVA GLobilization]",
@@ -126,6 +237,7 @@ def test_reflexion_cot_generate() -> None:
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=1,
+        testing=True
     )
 
     out = agent.generate(
@@ -137,10 +249,10 @@ def test_reflexion_cot_generate() -> None:
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
         reflect_prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
-    assert isinstance(out, list)
-    assert len(out) == 1
+    assert out == gt_out
 
     # Correct.
+    gt_out = ReflexionCoTOutput(answer='Gesellschaft mit beschränkter Haftung', total_prompt_tokens=20, total_completion_tokens=40, total_tokens=60, total_prompt_cost=3e-05, total_completion_cost=7.999999999999999e-05, total_cost=0.00010999999999999999, total_prompt_time=1.0, total_time=0.5, additional_info=[ReflexionCoTStepOutput(thought='The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.', action_type='Finish', observation='Answer is CORRECT', answer='Gesellschaft mit beschränkter Haftung', is_correct=True, reflections=[], thought_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), reflection_metrics=None)])
     responses = [
         'The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.',
         "Finish[Gesellschaft mit beschränkter Haftung]",
@@ -149,6 +261,7 @@ def test_reflexion_cot_generate() -> None:
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=1,
+        testing=True
     )
 
     out = agent.generate(
@@ -160,10 +273,10 @@ def test_reflexion_cot_generate() -> None:
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
         reflect_prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
-    assert isinstance(out, list)
-    assert len(out) == 1
+    assert out == gt_out
 
     # Invalid.
+    gt_out = ReflexionCoTOutput(answer='', total_prompt_tokens=20, total_completion_tokens=40, total_tokens=60, total_prompt_cost=3e-05, total_completion_cost=7.999999999999999e-05, total_cost=0.00010999999999999999, total_prompt_time=1.0, total_time=0.5, additional_info=[ReflexionCoTStepOutput(thought='The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.', action_type='INVALID', observation='Invalid action type, please try again.', answer='', is_correct=False, reflections=[], thought_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), reflection_metrics=None)])
     responses = [
         'The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.',
         "INVALID[Gesellschaft mit beschränkter Haftung]",
@@ -172,6 +285,7 @@ def test_reflexion_cot_generate() -> None:
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=1,
+        testing=True
     )
 
     out = agent.generate(
@@ -183,10 +297,10 @@ def test_reflexion_cot_generate() -> None:
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
         reflect_prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
-    assert isinstance(out, list)
-    assert len(out) == 1
+    assert out == gt_out
 
     # With reflection strategy on (last attempt).
+    gt_out = ReflexionCoTOutput(answer='Company with Limited Liability', total_prompt_tokens=20, total_completion_tokens=40, total_tokens=60, total_prompt_cost=3e-05, total_completion_cost=7.999999999999999e-05, total_cost=0.00010999999999999999, total_prompt_time=1.0, total_time=0.5, additional_info=[ReflexionCoTStepOutput(thought='The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.', action_type='Finish', observation='Answer is INCORRECT', answer='Company with Limited Liability', is_correct=False, reflections=[], thought_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), reflection_metrics=None)])
     responses = [
         'The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.',
         "Finish[Company with Limited Liability]",
@@ -195,6 +309,7 @@ def test_reflexion_cot_generate() -> None:
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=1,
+        testing=True
     )
     out = agent.generate(
         question=question,
@@ -205,10 +320,10 @@ def test_reflexion_cot_generate() -> None:
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
         reflect_prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
-    assert isinstance(out, list)
-    assert len(out) == 1
+    assert out == gt_out
 
     # Test reach max_trials.
+    gt_out = ReflexionCoTOutput(answer='Gesellschaft mit beschränkter Haftung', total_prompt_tokens=50, total_completion_tokens=100, total_tokens=150, total_prompt_cost=7.500000000000001e-05, total_completion_cost=0.00019999999999999998, total_cost=0.00027499999999999996, total_prompt_time=2.5, total_time=0.5, additional_info=[ReflexionCoTStepOutput(thought='The context provided states that VIVA Media AG changed its name to VIVA Media GmbH in 2004. Based on the information given, the new acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.', action_type='Finish', observation='Answer is INCORRECT', answer='Company with limited liability', is_correct=False, reflections=[], thought_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), reflection_metrics=None), ReflexionCoTStepOutput(thought='The reflection provided valuable insight into the previous mistake. To align with the question\'s request for the meaning of the new acronym in German, I should provide the answer in German, which is "Gesellschaft mit beschränkter Haftung". This will ensure accuracy and avoid repeating the previous error.', action_type='Finish', observation='Answer is CORRECT', answer='Gesellschaft mit beschränkter Haftung', is_correct=True, reflections=['Upon reflection, the phrasing discrepancy in my answer may have been the reason for it being marked incorrect. While I provided the correct translation of "GmbH" in English, the question specifically asked for the acronym\'s meaning in German. To mitigate this failure in the future, I should provide the answer in the same language as requested in the question, which in this case would be "Gesellschaft mit beschränkter Haftung". This will ensure alignment between the question and my response.'], thought_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), reflection_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5))])
     responses = [
         'The context provided states that VIVA Media AG changed its name to VIVA Media GmbH in 2004. Based on the information given, the new acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.\nAction: Finish[Company with limited liability]',
         "Finish[Company with limited liability]",
@@ -220,6 +335,7 @@ def test_reflexion_cot_generate() -> None:
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=2,
+        testing=True
     )
     out = agent.generate(
         question=question,
@@ -231,10 +347,10 @@ def test_reflexion_cot_generate() -> None:
         reflect_prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
         patience=2,
     )
-    assert isinstance(out, list)
-    assert len(out) == 2
+    assert out == gt_out
 
     # Test exhaust patience and get incorrect answers for all trials.
+    gt_out = ReflexionCoTOutput(answer='GmbH', total_prompt_tokens=50, total_completion_tokens=100, total_tokens=150, total_prompt_cost=7.500000000000001e-05, total_completion_cost=0.00019999999999999998, total_cost=0.00027499999999999996, total_prompt_time=2.5, total_time=0.5, additional_info=[ReflexionCoTStepOutput(thought='Upon reflecting on the incorrect answer I provided, I realize that the phrasing discrepancy in my response may have been the reason for the error. While I correctly identified that the new acronym for VIVA Media AG was GmbH, I did not provide the full expansion of the acronym as "Gesellschaft mit beschränkter Haftung." This lack of completeness in my answer likely led to it being marked as incorrect. In the future, I will ensure to always provide the complete expansion of acronyms when responding to similar questions to avoid any phrasing discrepancies.', action_type='Finish', observation='Answer is INCORRECT', answer='VIVA Media GmbH', is_correct=False, reflections=[], thought_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), reflection_metrics=None), ReflexionCoTStepOutput(thought='The reason for the failure in this trial could be the discrepancy in the phrasing of the answer. The question asked for the acronym of the new name, while the provided answer included the full name "VIVA Media GmbH". To avoid this mistake, I should provide only the acronym "GmbH" as the answer, as it directly corresponds to the acronym in the question. This adjustment will ensure a more accurate match between the question and the answer provided.', action_type='Finish', observation='Answer is INCORRECT', answer='GmbH', is_correct=False, reflections=['The reason for the failure in this trial could be the discrepancy in the phrasing of the answer. The question asked for the acronym of the new name, while the provided answer included the full name "VIVA Media GmbH". To mitigate this issue in future trials, a more concise and high-level plan would be to provide only the acronym "GmbH" as the answer, as it directly corresponds to the acronym in the question. This adjustment will ensure a more accurate match between the question and the answer provided.'], thought_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), reflection_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5))])
     responses = [
         'Upon reflecting on the incorrect answer I provided, I realize that the phrasing discrepancy in my response may have been the reason for the error. While I correctly identified that the new acronym for VIVA Media AG was GmbH, I did not provide the full expansion of the acronym as "Gesellschaft mit beschränkter Haftung." This lack of completeness in my answer likely led to it being marked as incorrect. In the future, I will ensure to always provide the complete expansion of acronyms when responding to similar questions to avoid any phrasing discrepancies.',
         "Finish[VIVA Media GmbH]",
@@ -246,6 +362,7 @@ def test_reflexion_cot_generate() -> None:
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=3,
+        testing=True
     )
     out = agent.generate(
         question=question,
@@ -257,8 +374,7 @@ def test_reflexion_cot_generate() -> None:
         reflect_prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
         patience=2,
     )
-    assert isinstance(out, list)
-    assert len(out) == 2
+    assert out == gt_out
 
     # Test patience reset after incorrect answer and subsequent runs.
 
@@ -271,6 +387,7 @@ def test_reflexion_cot_generate() -> None:
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=1,
+        testing=True
     )
     out = agent.generate(
         question=question,
@@ -282,6 +399,8 @@ def test_reflexion_cot_generate() -> None:
         reflect_prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
         patience=1,
     )
+    print(repr(out))
+
     assert isinstance(out, list)
     assert len(out) == 1
 

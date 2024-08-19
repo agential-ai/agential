@@ -89,18 +89,6 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActTriviaQAStrategy,
 )
 
-REFLEXION_COT_BENCHMARK_FEWSHOTS = {
-    Benchmarks.HOTPOTQA: [FewShotType.COT],
-    Benchmarks.FEVER: [FewShotType.COT],
-    Benchmarks.TRIVIAQA: [FewShotType.COT],
-    Benchmarks.AMBIGNQ: [FewShotType.COT],
-    Benchmarks.GSM8K: [FewShotType.COT],
-    Benchmarks.SVAMP: [FewShotType.COT],
-    Benchmarks.TABMWP: [FewShotType.COT],
-    Benchmarks.HUMANEVAL: [FewShotType.COT],
-    Benchmarks.MBPP: [FewShotType.COT],
-}
-
 REFLEXION_REACT_BENCHMARK_FEWSHOTS = {
     Benchmarks.HOTPOTQA: [FewShotType.REACT],
     Benchmarks.FEVER: [FewShotType.REACT],
@@ -111,44 +99,6 @@ REFLEXION_REACT_BENCHMARK_FEWSHOTS = {
     Benchmarks.TABMWP: [FewShotType.REACT],
     Benchmarks.HUMANEVAL: [FewShotType.REACT],
     Benchmarks.MBPP: [FewShotType.REACT],
-}
-REFLEXION_COT_PROMPTS = {
-    Benchmarks.HOTPOTQA: {
-        "prompt": REFLEXION_COT_INSTRUCTION_HOTPOTQA,
-        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
-    },
-    Benchmarks.FEVER: {
-        "prompt": REFLEXION_COT_INSTRUCTION_FEVER,
-        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_FEVER,
-    },
-    Benchmarks.TRIVIAQA: {
-        "prompt": REFLEXION_COT_INSTRUCTION_TRIVIAQA,
-        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_TRIVIAQA,
-    },
-    Benchmarks.AMBIGNQ: {
-        "prompt": REFLEXION_COT_INSTRUCTION_AMBIGNQ,
-        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_AMBIGNQ,
-    },
-    Benchmarks.GSM8K: {
-        "prompt": REFLEXION_COT_INSTRUCTION_GSM8K,
-        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_GSM8K,
-    },
-    Benchmarks.SVAMP: {
-        "prompt": REFLEXION_COT_INSTRUCTION_SVAMP,
-        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_SVAMP,
-    },
-    Benchmarks.TABMWP: {
-        "prompt": REFLEXION_COT_INSTRUCTION_TABMWP,
-        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_TABMWP,
-    },
-    Benchmarks.HUMANEVAL: {
-        "prompt": REFLEXION_COT_INSTRUCTION_HUMANEVAL,
-        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_HUMANEVAL,
-    },
-    Benchmarks.MBPP: {
-        "prompt": REFLEXION_COT_INSTRUCTION_MBPP,
-        "reflect_prompt": REFLEXION_COT_REFLECT_INSTRUCTION_MBPP,
-    },
 }
 
 
@@ -192,37 +142,6 @@ REFLEXION_REACT_PROMPTS = {
 }
 
 
-REFLEXION_COT_FEWSHOTS = {
-    Benchmarks.HOTPOTQA: {
-        "reflect_examples": HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    },
-    Benchmarks.TRIVIAQA: {
-        "reflect_examples": TRIVIAQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    },
-    Benchmarks.AMBIGNQ: {
-        "reflect_examples": AMBIGNQ_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    },
-    Benchmarks.FEVER: {
-        "reflect_examples": FEVER_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    },
-    Benchmarks.GSM8K: {
-        "reflect_examples": GSM8K_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    },
-    Benchmarks.SVAMP: {
-        "reflect_examples": SVAMP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    },
-    Benchmarks.TABMWP: {
-        "reflect_examples": TABMWP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    },
-    Benchmarks.HUMANEVAL: {
-        "reflect_examples": HUMANEVAL_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    },
-    Benchmarks.MBPP: {
-        "reflect_examples": MBPP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-    },
-}
-
-
 REFLEXION_REACT_FEWSHOTS = {
     Benchmarks.HOTPOTQA: {
         "reflect_examples": HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
@@ -253,17 +172,6 @@ REFLEXION_REACT_FEWSHOTS = {
     },
 }
 
-REFLEXION_COT_STRATEGIES = {
-    Benchmarks.HOTPOTQA: ReflexionCoTHotQAStrategy,
-    Benchmarks.FEVER: ReflexionCoTFEVERStrategy,
-    Benchmarks.TRIVIAQA: ReflexionCoTTriviaQAStrategy,
-    Benchmarks.AMBIGNQ: ReflexionCoTAmbigNQStrategy,
-    Benchmarks.GSM8K: ReflexionCoTGSM8KStrategy,
-    Benchmarks.SVAMP: ReflexionCoTSVAMPStrategy,
-    Benchmarks.TABMWP: ReflexionCoTTabMWPStrategy,
-    Benchmarks.HUMANEVAL: ReflexionCoTHEvalStrategy,
-    Benchmarks.MBPP: ReflexionCoTMBPPStrategy,
-}
 
 REFLEXION_REACT_STRATEGIES = {
     Benchmarks.HOTPOTQA: ReflexionReActHotQAStrategy,
@@ -276,76 +184,6 @@ REFLEXION_REACT_STRATEGIES = {
     Benchmarks.HUMANEVAL: ReflexionReActHEvalStrategy,
     Benchmarks.MBPP: ReflexionReActMBPPStrategy,
 }
-
-
-class ReflexionCoTFactory(BaseFactory):
-    """A factory class for creating instances of ReflexionCoT strategies and selecting prompts and few-shot examples."""
-
-    @staticmethod
-    def get_fewshots(
-        benchmark: str, fewshot_type: str, **kwargs: Any
-    ) -> Dict[str, str]:
-        """Retrieve few-shot examples based on the benchmark.
-
-        Args:
-            benchmark (str): The benchmark name.
-            fewshot_type (str): The benchmark few-shot type.
-            **kwargs (Any): Additional arguments.
-
-        Returns:
-            Dict[str, str]: A dictionary of few-shot examples.
-        """
-        if benchmark not in REFLEXION_COT_FEWSHOTS:
-            raise ValueError(
-                f"Benchmark '{benchmark}' few-shots not found for ReflexionCoT."
-            )
-
-        if fewshot_type not in REFLEXION_COT_BENCHMARK_FEWSHOTS[benchmark]:
-            raise ValueError(
-                f"Benchmark '{benchmark}' few-shot type not supported for ReflexionCoT."
-            )
-
-        benchmark_fewshots = BENCHMARK_FEWSHOTS[benchmark][fewshot_type]
-
-        return {"examples": benchmark_fewshots, **REFLEXION_COT_FEWSHOTS[benchmark]}
-
-    @staticmethod
-    def get_prompts(benchmark: str, **kwargs: Any) -> Dict[str, str]:
-        """Retrieve the prompt instruction based on the benchmark.
-
-        Args:
-            benchmark (str): The benchmark name.
-            **kwargs (Any): Additional arguments.
-
-        Returns:
-            Dict[str, str]: The prompt instructions.
-        """
-        if benchmark not in REFLEXION_COT_PROMPTS:
-            raise ValueError(
-                f"Benchmark '{benchmark}' prompt not found for ReflexionCoT."
-            )
-
-        return REFLEXION_COT_PROMPTS[benchmark]
-
-    @staticmethod
-    def get_strategy(benchmark: str, **kwargs: Any) -> ReflexionCoTBaseStrategy:
-        """Returns an instance of the appropriate ReflexionCoT strategy based on the provided benchmark.
-
-        Args:
-            benchmark (str): The benchmark name.
-            **kwargs (Any): Additional keyword arguments to pass to
-                the strategy's constructor.
-
-        Returns:
-            ReflexionCoTBaseStrategy: An instance of the appropriate ReflexionCoT strategy.
-        """
-        if benchmark not in REFLEXION_COT_STRATEGIES:
-            raise ValueError(
-                f"Unsupported benchmark: {benchmark} for agent ReflexionCoT"
-            )
-
-        strategy = REFLEXION_COT_STRATEGIES[benchmark]
-        return strategy(**kwargs)  # type: ignore
 
 
 class ReflexionReActFactory(BaseFactory):

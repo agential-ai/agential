@@ -73,7 +73,7 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
             reset (bool): Whether to reset the agent.
 
         Returns:
-            ReActOutput: The output of the agent.
+            ReflexionCoTOutput: The output of the agent.
         """
         start = time.time()
 
