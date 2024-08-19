@@ -4,6 +4,7 @@ from agential.cog.fewshots.gsm8k import (
     GSM8K_FEWSHOT_EXAMPLES_COT,
     GSM8K_FEWSHOT_EXAMPLES_REACT,
 )
+from agential.cog.reflexion.output import ReflexionCoTOutput, ReflexionCoTStepOutput
 from agential.cog.reflexion.prompts import (
     GSM8K_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     GSM8K_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
@@ -27,6 +28,7 @@ from agential.cog.reflexion.strategies.math import (
     ReflexionReActTabMWPStrategy,
 )
 from agential.llm.llm import BaseLLM, MockLLM
+from agential.utils.metrics import PromptMetrics
 
 
 def test_reflexion_cot_init() -> None:
@@ -42,38 +44,68 @@ def test_reflexion_cot_init() -> None:
 def test_reflexion_cot_generate() -> None:
     """Tests ReflexionCoTMathStrategy generate."""
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
+    key = -9867630
 
-    gt_out = "Let's calculate the total number of eggs she sells after breakfast and baking muffins. Then, we can find out how much she makes daily at the farmers' market."
-    gt_scratchpad = "\nThought: Let's calculate the total number of eggs she sells after breakfast and baking muffins. Then, we can find out how much she makes daily at the farmers' market."
+    gt_out = ReflexionCoTOutput(
+        answer="eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nearnings_per_egg = 2\ntotal_earnings = eggs_sold * earnings_per_egg\nanswer = total_earnings",
+        total_prompt_tokens=20,
+        total_completion_tokens=40,
+        total_tokens=60,
+        total_prompt_cost=3e-05,
+        total_completion_cost=7.999999999999999e-05,
+        total_cost=0.00010999999999999999,
+        total_prompt_time=1.0,
+        total_time=0.5,
+        additional_info=[
+            ReflexionCoTStepOutput(
+                thought="Janet's ducks lay 16 eggs per day. Subtract the eggs eaten for breakfast from the total, then subtract the eggs used to make muffins. Finally, calculate the earnings by selling the remaining eggs at $2 per egg.Answer:",
+                action_type="Finish",
+                observation="Answer is CORRECT",
+                answer="eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nearnings_per_egg = 2\ntotal_earnings = eggs_sold * earnings_per_egg\nanswer = total_earnings",
+                is_correct=True,
+                reflections=[],
+                thought_metrics=PromptMetrics(
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+                action_metrics=PromptMetrics(
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+                reflection_metrics=None,
+            )
+        ],
+    )
     responses = [
-        "Let's calculate the total number of eggs she sells after breakfast and baking muffins. Then, we can find out how much she makes daily at the farmers' market.\nAction: Finish[\n```python\neggs_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\ntotal_eggs_sold = eggs_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\ndaily_income = total_eggs_sold * price_per_egg\nanswer = daily_income\n```\n]"
+        "Janet's ducks lay 16 eggs per day. Subtract the eggs eaten for breakfast from the total, then subtract the eggs used to make muffins. Finally, calculate the earnings by selling the remaining eggs at $2 per egg.\nAnswer: ",
+        "Finish[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nearnings_per_egg = 2\ntotal_earnings = eggs_sold * earnings_per_egg\nanswer = total_earnings\n``` \n]",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    strategy = ReflexionCoTMathStrategy(llm=llm)
+    strategy = ReflexionCoTMathStrategy(llm=llm, testing=True)
     out = strategy.generate(
         question=question,
+        key=key,
         examples=GSM8K_FEWSHOT_EXAMPLES_COT,
-        reflections="",
+        reflect_examples=GSM8K_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
         prompt=REFLEXION_COT_INSTRUCTION_GSM8K,
+        reflect_prompt=REFLEXION_COT_REFLECT_INSTRUCTION_GSM8K,
+        reflect_strategy="reflexion",
         additional_keys={},
+        reflect_additional_keys={},
+        patience=3,
+        reset=True,
     )
     assert out == gt_out
-    assert strategy._scratchpad == gt_scratchpad
-    assert strategy._finished == False
-    assert strategy._answer == ""
-    assert strategy._prompt_metrics == {
-        "thought": {
-            "prompt_tokens": 10,
-            "completion_tokens": 20,
-            "total_tokens": 30,
-            "prompt_tokens_cost": 1.5e-05,
-            "completion_tokens_cost": 3.9999999999999996e-05,
-            "total_tokens_cost": 5.4999999999999995e-05,
-            "time_sec": 0.5,
-        },
-        "action": None,
-        "reflection": None,
-    }
 
 
 def test_reflexion_cot_generate_action() -> None:
@@ -85,7 +117,8 @@ def test_reflexion_cot_generate_action() -> None:
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReflexionCoTMathStrategy(llm=llm)
-    action_type, query = strategy.generate_action(
+    scratchpad, action_type, query, action_metrics = strategy.generate_action(
+        scratchpad="",
         question=question,
         examples=GSM8K_FEWSHOT_EXAMPLES_COT,
         reflections="",
@@ -97,25 +130,19 @@ def test_reflexion_cot_generate_action() -> None:
         query
         == "eggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_per_day = eggs_sold * price_per_egg\nanswer = money_made_per_day"
     )
-    assert strategy._finished == False
-    assert strategy._answer == ""
     assert (
-        strategy._scratchpad
-        == "\nAction: Finish[\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_per_day = eggs_sold * price_per_egg\nanswer = money_made_per_day\n```\n]"
+        scratchpad
+        == "\nAction:  Finish[\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_per_day = eggs_sold * price_per_egg\nanswer = money_made_per_day\n```\n]"
     )
-    assert strategy._prompt_metrics == {
-        "thought": None,
-        "action": {
-            "prompt_tokens": 10,
-            "completion_tokens": 20,
-            "total_tokens": 30,
-            "prompt_tokens_cost": 1.5e-05,
-            "completion_tokens_cost": 3.9999999999999996e-05,
-            "total_tokens_cost": 5.4999999999999995e-05,
-            "time_sec": 0.5,
-        },
-        "reflection": None,
-    }
+    assert action_metrics == PromptMetrics(
+        prompt_tokens=10,
+        completion_tokens=20,
+        total_tokens=30,
+        prompt_cost=1.5e-05,
+        completion_cost=3.9999999999999996e-05,
+        total_cost=5.4999999999999995e-05,
+        prompt_time=0.5,
+    )
 
 
 def test_reflexion_cot_generate_observation() -> None:
@@ -123,36 +150,42 @@ def test_reflexion_cot_generate_observation() -> None:
     # Case 1: action_type is "Finish" and answer is correct.
     llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReflexionCoTMathStrategy(llm=llm)
-    is_correct, obs = strategy.generate_observation(
+    scratchpad, answer, is_correct, obs = strategy.generate_observation(
+        scratchpad="",
         action_type="Finish",
         query="correct_answer",
         key="correct_answer",
     )
     assert is_correct == False
     assert obs == "Answer is INCORRECT"
-    assert "Observation: Answer is INCORRECT" in strategy._scratchpad
+    assert "Observation: Answer is INCORRECT" in scratchpad
+    assert answer == "correct_answer"
 
     # Case 2: action_type is "Finish" and answer is incorrect.
     strategy = ReflexionCoTMathStrategy(llm=llm)
-    is_correct, obs = strategy.generate_observation(
+    scratchpad, answer, is_correct, obs = strategy.generate_observation(
+        scratchpad="",
         action_type="Finish",
         query="incorrect_answer",
         key="correct_answer",
     )
     assert is_correct == False
     assert obs == "Answer is INCORRECT"
-    assert "Observation: Answer is INCORRECT" in strategy._scratchpad
+    assert "Observation: Answer is INCORRECT" in scratchpad
+    assert answer == "incorrect_answer"
 
     # Case 3: action_type is not "Finish".
     strategy = ReflexionCoTMathStrategy(llm=llm)
-    is_correct, obs = strategy.generate_observation(
+    scratchpad, answer, is_correct, obs = strategy.generate_observation(
+        scratchpad="",
         action_type="Calculate",
         query="some_query",
         key="correct_answer",
     )
     assert is_correct == False
     assert obs == "Invalid action type, please try again."
-    assert "Observation: Invalid action type, please try again." in strategy._scratchpad
+    assert "Observation: Invalid action type, please try again." in scratchpad
+    assert answer == ""
 
 
 def test_reflexion_cot_halting_condition() -> None:
@@ -160,14 +193,11 @@ def test_reflexion_cot_halting_condition() -> None:
     llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReflexionCoTMathStrategy(llm=llm, max_trials=3)
 
-    strategy._answer = "incorrect_answer"
-    assert strategy.halting_condition(3, "correct_answer") == True
+    assert strategy.halting_condition(3, "correct_answer", "correct_answer") == True
 
-    strategy._answer = "correct_answer"
-    assert strategy.halting_condition(2, "correct_answer") == False
+    assert strategy.halting_condition(2, "correct_answer", "correct_answer") == False
 
-    strategy._answer = "incorrect_answer"
-    assert strategy.halting_condition(2, "correct_answer") == False
+    assert strategy.halting_condition(2, "correct_answer", "correct_answer") == False
 
 
 def test_reflexion_cot_reflect_condition() -> None:
@@ -175,10 +205,10 @@ def test_reflexion_cot_reflect_condition() -> None:
     llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReflexionCoTMathStrategy(llm)
 
-    assert not strategy.reflect_condition(0, "strategy1", "key1")
-    assert strategy.reflect_condition(1, "strategy1", "key1")
-    assert strategy.reflect_condition(1, "strategy1", "key2")
-    assert strategy.reflect_condition(1, "", "key2")
+    assert not strategy.reflect_condition(0, "strategy1", "key1", "key2")
+    assert strategy.reflect_condition(1, "strategy1", "key1", "key2")
+    assert strategy.reflect_condition(1, "strategy1", "key2", "key2")
+    assert strategy.reflect_condition(1, "", "key2", "key2")
 
 
 def test_reflexion_cot_instantiate_strategies() -> None:
