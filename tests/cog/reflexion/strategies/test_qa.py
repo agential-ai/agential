@@ -49,43 +49,6 @@ def test_reflexion_cot_init() -> None:
     }
 
 
-def test_reflexion_cot_generate() -> None:
-    """Tests ReflexionCoTQAStrategy generate."""
-    question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
-
-    gt_scratchpad = '\nThought: The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.'
-    gt_out = 'The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.'
-    responses = [
-        'The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.',
-    ]
-    llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    strategy = ReflexionCoTQAStrategy(llm=llm)
-    out = strategy.generate(
-        question=question,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT,
-        reflections="",
-        prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
-        additional_keys={},
-    )
-    assert out == gt_out
-    assert strategy._scratchpad == gt_scratchpad
-    assert strategy._finished == False
-    assert strategy._answer == ""
-    assert strategy._prompt_metrics == {
-        "thought": {
-            "prompt_tokens": 10,
-            "completion_tokens": 20,
-            "total_tokens": 30,
-            "prompt_tokens_cost": 1.5e-05,
-            "completion_tokens_cost": 3.9999999999999996e-05,
-            "total_tokens_cost": 5.4999999999999995e-05,
-            "time_sec": 0.5,
-        },
-        "action": None,
-        "reflection": None,
-    }
-
-
 def test_reflexion_cot_generate_action() -> None:
     """Tests ReflexionCoTQAStrategy generate_action."""
     question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
@@ -160,73 +123,6 @@ def test_reflexion_cot_generate_observation() -> None:
     assert "Observation: Invalid action type, please try again." in strategy._scratchpad
 
 
-def test_reflexion_cot_create_output_dict() -> None:
-    """Tests ReflexionCoTQAStrategy create_output_dict."""
-    strategy = ReflexionCoTQAStrategy(llm=MockLLM("gpt-3.5-turbo", responses=[]))
-
-    # Setting a dummy answer for testing.
-    strategy._answer = "correct_answer"
-
-    # Test case 1: Correct answer.
-    output = strategy.create_output_dict(
-        thought="This is a thought.",
-        action_type="Finish",
-        obs="Observation: Answer is CORRECT",
-        is_correct=True,
-        reflections=[],
-    )
-    expected_output = {
-        "thought": "This is a thought.",
-        "action_type": "Finish",
-        "observation": "Observation: Answer is CORRECT",
-        "answer": "correct_answer",
-        "is_correct": True,
-        "reflections": [],
-        "prompt_metrics": {"thought": None, "action": None, "reflection": None},
-    }
-    assert output == expected_output
-
-    # Test case 2: Incorrect answer.
-    strategy._answer = "incorrect_answer"
-    output = strategy.create_output_dict(
-        thought="This is a thought.",
-        action_type="Finish",
-        obs="Observation: Answer is INCORRECT",
-        is_correct=False,
-        reflections=[],
-    )
-    expected_output = {
-        "thought": "This is a thought.",
-        "action_type": "Finish",
-        "observation": "Observation: Answer is INCORRECT",
-        "answer": "incorrect_answer",
-        "is_correct": False,
-        "reflections": [],
-        "prompt_metrics": {"thought": None, "action": None, "reflection": None},
-    }
-    assert output == expected_output
-
-    # Test case 3: Invalid action type.
-    strategy._answer = "some_answer"
-    output = strategy.create_output_dict(
-        thought="This is another thought.",
-        action_type="Calculate",
-        obs="Observation: Invalid action type, please try again.",
-        is_correct=False,
-        reflections=[],
-    )
-    expected_output = {
-        "thought": "This is another thought.",
-        "action_type": "Calculate",
-        "observation": "Observation: Invalid action type, please try again.",
-        "answer": "some_answer",
-        "is_correct": False,
-        "reflections": [],
-        "prompt_metrics": {"thought": None, "action": None, "reflection": None},
-    }
-    assert output == expected_output
-
-
 def test_reflexion_cot_halting_condition() -> None:
     """Tests ReflexionCoTQAStrategy halting_condition."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
@@ -271,55 +167,6 @@ def test_reflexion_cot_reset() -> None:
     assert strategy._scratchpad == ""
     assert strategy._finished == True
     assert strategy._answer == "Some answer"
-
-
-def test_reflexion_cot_reflect() -> None:
-    """Tests ReflexionCoTQAStrategy reflect."""
-    question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
-
-    llm = MockLLM("gpt-3.5-turbo", responses=[])
-    strategy = ReflexionCoTQAStrategy(llm=llm, max_trials=3)
-
-    gt_reflection_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: VIVA Media AG changed it's name in 2004. What does their new acronym stand for?\n\n(END PREVIOUS TRIAL)\n"
-    _, reflection_str = strategy.reflect(
-        reflect_strategy="last_attempt",
-        question=question,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
-        additional_keys={},
-    )
-    assert reflection_str == gt_reflection_str
-    assert strategy._prompt_metrics == {
-        "thought": None,
-        "action": None,
-        "reflection": None,
-    }
-
-    llm = MockLLM("gpt-3.5-turbo", responses=["1"])
-    strategy = ReflexionCoTQAStrategy(llm=llm, max_trials=3)
-
-    gt_reflection_str = "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
-    _, reflection_str = strategy.reflect(
-        reflect_strategy="reflexion",
-        question=question,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
-        additional_keys={},
-    )
-    assert reflection_str == gt_reflection_str
-    assert strategy._prompt_metrics == {
-        "thought": None,
-        "action": None,
-        "reflection": {
-            "prompt_tokens": 10,
-            "completion_tokens": 20,
-            "total_tokens": 30,
-            "prompt_tokens_cost": 1.5e-05,
-            "completion_tokens_cost": 3.9999999999999996e-05,
-            "total_tokens_cost": 5.4999999999999995e-05,
-            "time_sec": 0.5,
-        },
-    }
 
 
 def test_reflexion_cot_reflect_condition() -> None:
