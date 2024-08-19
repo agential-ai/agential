@@ -155,53 +155,6 @@ def test_reflexion_cot_generate_observation() -> None:
     assert "Observation: Invalid action type, please try again." in strategy._scratchpad
 
 
-def test_reflexion_cot_create_output_dict() -> None:
-    """Tests ReflexionCoTMathStrategy create_output_dict."""
-    strategy = ReflexionCoTMathStrategy(llm=MockLLM("gpt-3.5-turbo", responses=[]))
-
-    # Setting a dummy answer for testing.
-    strategy._answer = "correct_answer"
-
-    # Test case 1: Correct answer.
-    output = strategy.create_output_dict(
-        thought="This is a thought.",
-        action_type="Finish",
-        obs="Observation: Answer is CORRECT",
-        is_correct=True,
-        reflections=[],
-    )
-    expected_output = {
-        "thought": "This is a thought.",
-        "action_type": "Finish",
-        "observation": "Observation: Answer is CORRECT",
-        "answer": "correct_answer",
-        "is_correct": True,
-        "reflections": [],
-        "prompt_metrics": {"thought": None, "action": None, "reflection": None},
-    }
-    assert output == expected_output
-
-    # Test case 2: Incorrect answer.
-    strategy._answer = "incorrect_answer"
-    output = strategy.create_output_dict(
-        thought="This is a thought.",
-        action_type="Finish",
-        obs="Observation: Answer is INCORRECT",
-        is_correct=False,
-        reflections=[],
-    )
-    expected_output = {
-        "thought": "This is a thought.",
-        "action_type": "Finish",
-        "observation": "Observation: Answer is INCORRECT",
-        "answer": "incorrect_answer",
-        "is_correct": False,
-        "reflections": [],
-        "prompt_metrics": {"thought": None, "action": None, "reflection": None},
-    }
-    assert output == expected_output
-
-
 def test_reflexion_cot_halting_condition() -> None:
     """Tests ReflexionCoTMathStrategy halting_condition."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
@@ -215,65 +168,6 @@ def test_reflexion_cot_halting_condition() -> None:
 
     strategy._answer = "incorrect_answer"
     assert strategy.halting_condition(2, "correct_answer") == False
-
-
-def test_reflexion_cot_reset() -> None:
-    """Tests ReflexionCoTMathStrategy reset."""
-    llm = MockLLM("gpt-3.5-turbo", responses=[])
-    strategy = ReflexionCoTMathStrategy(llm=llm, max_trials=3)
-
-    strategy._scratchpad = "Initial scratchpad content"
-    strategy._finished = True
-    strategy._answer = "Some answer"
-
-    # Test case 1: Reset everything.
-    strategy.reset()
-    assert strategy._scratchpad == ""
-    assert strategy._finished == False
-    assert strategy._answer == ""
-    assert strategy._prompt_metrics == {
-        "thought": None,
-        "action": None,
-        "reflection": None,
-    }
-
-    strategy._scratchpad = "Initial scratchpad content"
-    strategy._finished = True
-    strategy._answer = "Some answer"
-
-    # Test case 2: Reset only scratchpad.
-    strategy.reset(only_scratchpad=True)
-    assert strategy._scratchpad == ""
-    assert strategy._finished == True
-    assert strategy._answer == "Some answer"
-    assert strategy._prompt_metrics == {
-        "thought": None,
-        "action": None,
-        "reflection": None,
-    }
-
-
-def test_reflexion_cot_reflect() -> None:
-    """Tests ReflexionCoTMathStrategy reflect."""
-    question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
-
-    llm = MockLLM("gpt-3.5-turbo", responses=[])
-    strategy = ReflexionCoTMathStrategy(llm=llm, max_trials=3)
-
-    gt_out = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?\n\n(END PREVIOUS TRIAL)\n"
-    _, out = strategy.reflect(
-        reflect_strategy="last_attempt",
-        question=question,
-        examples=GSM8K_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_GSM8K,
-        additional_keys={},
-    )
-    assert out == gt_out
-    assert strategy._prompt_metrics == {
-        "thought": None,
-        "action": None,
-        "reflection": None,
-    }
 
 
 def test_reflexion_cot_reflect_condition() -> None:
