@@ -29,6 +29,7 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActTriviaQAStrategy,
 )
 from agential.llm.llm import BaseLLM, MockLLM
+from agential.utils.metrics import PromptMetrics
 
 
 def test_reflexion_cot_init() -> None:
@@ -39,14 +40,6 @@ def test_reflexion_cot_init() -> None:
     assert isinstance(strategy.reflector, ReflexionCoTReflector)
     assert strategy.max_reflections == 3
     assert strategy.max_trials == 3
-    assert strategy._scratchpad == ""
-    assert strategy._finished == False
-    assert strategy._answer == ""
-    assert strategy._prompt_metrics == {
-        "thought": None,
-        "action": None,
-        "reflection": None,
-    }
 
 
 def test_reflexion_cot_generate_action() -> None:
@@ -56,7 +49,9 @@ def test_reflexion_cot_generate_action() -> None:
     responses = ["Finish[Verwaltung von Internet Video und Audio]"]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReflexionCoTQAStrategy(llm=llm)
-    action_type, query = strategy.generate_action(
+    scratchpad, action_type, query, action_metrics = strategy.generate_action(
+        idx=0,
+        scratchpad="",
         question=question,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT,
         reflections="",
@@ -65,25 +60,11 @@ def test_reflexion_cot_generate_action() -> None:
     )
     assert action_type == "Finish"
     assert query == "Verwaltung von Internet Video und Audio"
-    assert strategy._finished == False
-    assert strategy._answer == ""
     assert (
-        strategy._scratchpad
-        == "\nAction: Finish[Verwaltung von Internet Video und Audio]"
+        scratchpad
+        == '\nAction 0: Finish[Verwaltung von Internet Video und Audio]'
     )
-    assert strategy._prompt_metrics == {
-        "thought": None,
-        "action": {
-            "prompt_tokens": 10,
-            "completion_tokens": 20,
-            "total_tokens": 30,
-            "prompt_tokens_cost": 1.5e-05,
-            "completion_tokens_cost": 3.9999999999999996e-05,
-            "total_tokens_cost": 5.4999999999999995e-05,
-            "time_sec": 0.5,
-        },
-        "reflection": None,
-    }
+    assert action_metrics == PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)
 
 
 def test_reflexion_cot_generate_observation() -> None:
@@ -91,36 +72,45 @@ def test_reflexion_cot_generate_observation() -> None:
     # Case 1: action_type is "Finish" and answer is correct.
     llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReflexionCoTQAStrategy(llm=llm)
-    is_correct, obs = strategy.generate_observation(
+    scratchpad, answer, is_correct, obs = strategy.generate_observation(
+        idx=0,
+        scratchpad="",
         action_type="Finish",
         query="correct_answer",
         key="correct_answer",
     )
     assert is_correct == True
     assert obs == "Answer is CORRECT"
-    assert "Observation: Answer is CORRECT" in strategy._scratchpad
+    assert "Observation 0: Answer is CORRECT" in scratchpad
+    assert answer == 'correct_answer'
 
     # Case 2: action_type is "Finish" and answer is incorrect.
     strategy = ReflexionCoTQAStrategy(llm=llm)
-    is_correct, obs = strategy.generate_observation(
+    scratchpad, answer, is_correct, obs = strategy.generate_observation(
+        idx=0,
+        scratchpad="",
         action_type="Finish",
         query="incorrect_answer",
         key="correct_answer",
     )
     assert is_correct == False
     assert obs == "Answer is INCORRECT"
-    assert "Observation: Answer is INCORRECT" in strategy._scratchpad
+    assert "Observation 0: Answer is INCORRECT" in scratchpad
+    assert answer == 'incorrect_answer'
 
     # Case 3: action_type is not "Finish".
     strategy = ReflexionCoTQAStrategy(llm=llm)
-    is_correct, obs = strategy.generate_observation(
+    scratchpad, answer, is_correct, obs = strategy.generate_observation(
+        idx=0,
+        scratchpad="",
         action_type="Calculate",
         query="some_query",
         key="correct_answer",
     )
     assert is_correct == False
     assert obs == "Invalid action type, please try again."
-    assert "Observation: Invalid action type, please try again." in strategy._scratchpad
+    assert "Observation 0: Invalid action type, please try again." in scratchpad
+    assert answer == ''
 
 
 def test_reflexion_cot_halting_condition() -> None:
