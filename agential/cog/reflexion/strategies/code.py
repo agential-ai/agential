@@ -23,14 +23,15 @@ from agential.cog.reflexion.strategies.base import (
     ReflexionCoTBaseStrategy,
     ReflexionReActBaseStrategy,
 )
+from agential.cog.reflexion.strategies.general import ReflexionCoTGeneralStrategy
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
 from agential.utils.general import safe_execute
-from agential.utils.metrics import get_token_cost_time
+from agential.utils.metrics import PromptMetrics, get_token_cost_time
 from agential.utils.parse import remove_newline
 
 
-class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
+class ReflexionCoTCodeStrategy(ReflexionCoTGeneralStrategy):
     """A strategy class for Code benchmarks using the ReflexionCoT agent.
 
     Attributes:
@@ -38,6 +39,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
         reflector (Optional[ReflexionCoTReflector]): The reflector used for generating reflections. Defaults to None.
         max_reflections (int): The maximum number of reflections allowed. Defaults to 3.
         max_trials (int): The maximum number of trials allowed. Defaults to 3.
+        testing (bool): Whether to run in testing mode. Defaults to False.
     """
 
     def __init__(
@@ -46,73 +48,34 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
         reflector: Optional[ReflexionCoTReflector] = None,
         max_reflections: int = 3,
         max_trials: int = 3,
+        testing: bool = False,
     ) -> None:
         """Initialization."""
         if reflector is None:
             reflector = ReflexionCoTReflector(llm=llm, max_reflections=max_reflections)
-        super().__init__(llm, reflector, max_reflections, max_trials)
-
-        self._scratchpad = ""
-        self._finished = False
-        self._answer = ""
-        self._prompt_metrics: Dict[str, Any] = {
-            "thought": None,
-            "action": None,
-            "reflection": None,
-        }
-
-    def generate(
-        self,
-        question: str,
-        examples: str,
-        reflections: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
-        **kwargs: Any,
-    ) -> str:
-        """Generates a thought based on the question, examples, and prompt.
-
-        Args:
-            question (str): The question to be answered.
-            examples (str): Examples to guide the generation process.
-            reflections (str): Reflections to consider during generation.
-            prompt (str): The prompt used for generating the thought.
-            additional_keys (Dict[str, str]): Additional keys for the generation process.
-            **kwargs (Any): Additional arguments.
-
-        Returns:
-            str: The generated thought.
-        """
-        self._scratchpad += "\nThought:"
-        out = _prompt_cot_agent(
-            llm=self.llm,
-            examples=examples,
-            reflections=reflections,
-            question=question,
-            scratchpad=self._scratchpad,
-            prompt=prompt,
-            additional_keys=additional_keys,
+        super().__init__(
+            llm=llm,
+            reflector=reflector,
+            max_reflections=max_reflections,
+            max_trials=max_trials,
+            testing=testing,
         )
-        self._prompt_metrics["thought"] = get_token_cost_time(out)
-        thought = out.choices[0].message.content
-
-        thought = remove_newline(thought).split("Action")[0].strip()
-        self._scratchpad += " " + thought
-
-        return thought
 
     def generate_action(
         self,
+        idx: int,
+        scratchpad: str,
         question: str,
         examples: str,
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Any,
-    ) -> Tuple[str, str]:
+    ) -> Tuple[str, str, str, PromptMetrics]:
         """Generates an action based on the question, examples, and prompt.
 
         Args:
+            idx (int): The current index of the action.
+            scratchpad (str): The current state of the scratchpad.
             question (str): The question to be answered.
             examples (str): Examples to guide the generation process.
             reflections (str): Reflections to consider during generation.
@@ -121,47 +84,46 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
             **kwargs (Any): Additional arguments.
 
         Returns:
-            Tuple[str, str]: The generated action type and query.
+            Tuple[str, str, str, PromptMetrics]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
         """
-        self._scratchpad += "\nAction:"
+        scratchpad += f"\nAction {idx}: "
         out = _prompt_cot_agent(
             llm=self.llm,
             examples=examples,
             reflections=reflections,
             question=question,
-            scratchpad=self._scratchpad,
+            scratchpad=scratchpad,
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics["action"] = get_token_cost_time(out)
         action = out.choices[0].message.content
-
         action = action.split("Observation")[0].strip()
-
         action_type, query = parse_math_code_action_cot(action)
-        self._scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
+        scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
 
-        return action_type, query
+        return scratchpad, action_type, query, get_token_cost_time(out)
 
     def generate_observation(
-        self, action_type: str, query: str, key: str
-    ) -> Tuple[bool, str]:
+        self, idx: int, scratchpad: str, action_type: str, query: str, key: str
+    ) -> Tuple[str, str, bool, str]:
         """Generates an observation based on the action type and query.
 
         Args:
+            idx (int): The current index of the observation.
+            scratchpad (str): The current state of the scratchpad.
             action_type (str): The type of action to be performed.
             query (str): The query for the action.
             key (str): The key for the observation.
 
         Returns:
-            Tuple[bool, str]: A boolean indicating correctness and the generated observation.
+            Tuple[str, str, bool, str, bool]: The updated scratchpad, the answer, a boolean indicating if the observation is correct, and the observation itself.
         """
+        answer = ""
         _, execution_status = safe_execute(f"{query}\n\n{key}")
 
-        self._scratchpad += f"\nObservation: "
+        scratchpad += f"\nObservation {idx}: "
         if action_type.lower() == "finish":
-            self._finished = True
-            self._answer = query
+            answer = query
             if EM(execution_status, "Done", normalize=False):
                 obs = "Answer is CORRECT"
             else:
@@ -169,109 +131,35 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
         else:
             obs = "Invalid action type, please try again. Valid action is Finish[```python<code>```]"
 
-        self._scratchpad += obs
+        scratchpad += obs
 
-        return EM(execution_status, "Done", normalize=False), obs
+        return scratchpad, answer, EM(execution_status, "Done", normalize=False), obs
 
-    def create_output_dict(
+    def halting_condition(
         self,
-        thought: str,
-        action_type: str,
-        obs: str,
-        is_correct: bool,
-        reflections: List[str],
-    ) -> Dict[str, Any]:
-        """Creates a dictionary of the output components.
-
-        Args:
-            thought (str): The generated thought.
-            action_type (str): The type of action performed.
-            obs (str): The generated observation.
-            is_correct (bool): Whether the answer is correct.
-            reflections (List[str]): The reflections.
-
-        Returns:
-            Dict[str, Any]: A dictionary containing the thought, action type, observation, answer, is_correct, and reflections.
-        """
-        return {
-            "thought": thought,
-            "action_type": action_type,
-            "observation": obs,
-            "answer": self._answer,
-            "is_correct": is_correct,
-            "reflections": reflections,
-            "prompt_metrics": self._prompt_metrics,
-        }
-
-    def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
+        idx: int,
+        key: str,
+        answer: str,
+    ) -> bool:
         """Determines whether the halting condition has been met.
 
         Args:
             idx (int): The current step index.
             key (str): The key for the observation.
-            **kwargs (Any): Additional arguments.
+            answer (str): The answer generated.
 
         Returns:
             bool: True if the halting condition is met, False otherwise.
         """
-        max_trials = kwargs.get("max_trials", self.max_trials)
-        _, execution_status = safe_execute(f"{self._answer}\n\n{key}")
-        return EM(execution_status, "Done", normalize=False) or idx >= max_trials
-
-    def reset(self, **kwargs: Any) -> None:
-        """Resets the internal state of the strategy.
-
-        Resets the scratchpad and the finished flag.
-        Resets only the scratchpad if specified with 'only_scratchpad'.
-
-        Args:
-            **kwargs (Any): Additional arguments.
-        """
-        only_scratchpad = kwargs.get("only_scratchpad", False)
-        if only_scratchpad:
-            self._scratchpad = ""
-        else:
-            self.reflector.reset()
-            self._scratchpad = ""
-            self._finished = False
-            self._answer = ""
-            self._prompt_metrics = {"thought": None, "action": None, "reflection": None}
-
-    def reflect(
-        self,
-        reflect_strategy: str,
-        question: str,
-        examples: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
-    ) -> Tuple[List[str], str]:
-        """Reflects on a given question, context, examples, prompt, and additional keys using the specified reflection strategy.
-
-        Args:
-            reflect_strategy (str): The strategy to use for reflection.
-            question (str): The question to be reflected upon.
-            examples (str): Examples to guide the reflection process.
-            prompt (str): The prompt or instruction to guide the reflection.
-            additional_keys (Dict[str, str]): Additional keys for the reflection process.
-
-        Returns:
-            Tuple[List[str], str]: The reflections and the reflection string.
-        """
-        reflections, reflections_str, reflections_out = self.reflector.reflect(
-            reflect_strategy=reflect_strategy,
-            question=question,
-            examples=examples,
-            scratchpad=self._scratchpad,
-            prompt=prompt,
-            additional_keys=additional_keys,
-        )
-        self._prompt_metrics["reflection"] = (
-            get_token_cost_time(reflections_out) if reflections_out else None
-        )
-        return reflections, reflections_str
+        _, execution_status = safe_execute(f"{answer}\n\n{key}")
+        return EM(execution_status, "Done", normalize=False) or idx >= self.max_trials
 
     def reflect_condition(
-        self, idx: int, reflect_strategy: Optional[str], key: str
+        self,
+        idx: int,
+        reflect_strategy: Optional[str],
+        key: str,
+        answer: str,
     ) -> bool:
         """Determines whether the reflection condition has been met.
 
@@ -279,11 +167,12 @@ class ReflexionCoTCodeStrategy(ReflexionCoTBaseStrategy):
             idx (int): The current step.
             reflect_strategy (Optional[str]): The strategy to use for reflection.
             key (str): The key for the observation.
+            answer (str): The answer generated.
 
         Returns:
             bool: True if the reflection condition is met, False otherwise.
         """
-        _, execution_status = safe_execute(f"{self._answer}\n\n{key}")
+        _, execution_status = safe_execute(f"{answer}\n\n{key}")
         return (
             idx > 0
             and not EM(execution_status, "Done", normalize=False)
@@ -686,18 +575,19 @@ class ReflexionCoTHEvalStrategy(ReflexionCoTCodeStrategy):
 
     def generate_action(
         self,
+        idx: int,
+        scratchpad: str,
         question: str,
         examples: str,
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Any,
-    ) -> Tuple[str, str]:
+    ) -> Tuple[str, str, str, PromptMetrics]:
         """Generates an action based on the question, examples, and prompt.
 
-        Fixes the action_type to "Finish".
-
         Args:
+            idx (int): The current index of the action.
+            scratchpad (str): The current state of the scratchpad.
             question (str): The question to be answered.
             examples (str): Examples to guide the generation process.
             reflections (str): Reflections to consider during generation.
@@ -706,28 +596,25 @@ class ReflexionCoTHEvalStrategy(ReflexionCoTCodeStrategy):
             **kwargs (Any): Additional arguments.
 
         Returns:
-            Tuple[str, str]: The generated action type and query.
+            Tuple[str, str, str, PromptMetrics]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
         """
-        self._scratchpad += "\nAction:"
+        scratchpad += f"\nAction {idx}: "
         out = _prompt_cot_agent(
             llm=self.llm,
             examples=examples,
             reflections=reflections,
             question=question,
-            scratchpad=self._scratchpad,
+            scratchpad=scratchpad,
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics["action"] = get_token_cost_time(out)
         action = out.choices[0].message.content
-
         action = action.split("Observation")[0].strip()
-
         query = action.split("```python")[-1].split("```")[0]
         action_type = "Finish"
-        self._scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
+        scratchpad += f"{action_type}[\n```python\n{query}\n```\n]"
 
-        return action_type, query
+        return scratchpad, action_type, query, get_token_cost_time(out)
 
 
 class ReflexionCoTMBPPStrategy(ReflexionCoTCodeStrategy):

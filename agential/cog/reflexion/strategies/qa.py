@@ -20,7 +20,6 @@ from agential.cog.reflexion.reflect import (
     ReflexionReActReflector,
 )
 from agential.cog.reflexion.strategies.base import (
-    ReflexionCoTBaseStrategy,
     ReflexionReActBaseStrategy,
 )
 from agential.cog.reflexion.strategies.general import ReflexionCoTGeneralStrategy
