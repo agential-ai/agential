@@ -21,6 +21,7 @@ from agential.cog.reflexion.functional import (
     _prompt_react_agent,
     _prompt_react_reflection,
     _truncate_scratchpad,
+    accumulate_metrics_cot,
     cot_reflect_last_attempt,
     cot_reflect_last_attempt_and_reflexion,
     cot_reflect_reflexion,
@@ -31,6 +32,7 @@ from agential.cog.reflexion.functional import (
     react_reflect_last_attempt_and_reflexion,
     react_reflect_reflexion,
 )
+from agential.cog.reflexion.output import ReflexionCoTStepOutput
 from agential.cog.reflexion.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
@@ -40,6 +42,7 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 from agential.llm.llm import MockLLM
+from agential.utils.metrics import PromptMetrics
 
 
 def test__truncate_scratchpad() -> None:
@@ -793,3 +796,75 @@ def test_parse_math_code_action_react() -> None:
         "Test",
         "assert x == 10",
     )
+
+
+def test_accumulate_metrics_cot() -> None:
+    """Tests accumulate_metrics_cot."""
+    steps = [
+        ReflexionCoTStepOutput(
+            thought="",
+            action_type="",
+            observation="",
+            answer="",
+            is_correct=True,
+            reflections=[],
+            thought_metrics=PromptMetrics(
+                prompt_tokens=15,
+                completion_tokens=25,
+                total_tokens=40,
+                prompt_cost=0.015,
+                completion_cost=0.025,
+                total_cost=0.04,
+                prompt_time=0.75,
+            ),
+            action_metrics=PromptMetrics(
+                prompt_tokens=10,
+                completion_tokens=15,
+                total_tokens=25,
+                prompt_cost=0.01,
+                completion_cost=0.015,
+                total_cost=0.025,
+                prompt_time=0.5,
+            ),
+            reflection_metrics=None,
+        ),
+        ReflexionCoTStepOutput(
+            thought="",
+            action_type="",
+            observation="",
+            answer="",
+            is_correct=True,
+            reflections=[],
+            thought_metrics=PromptMetrics(
+                prompt_tokens=15,
+                completion_tokens=25,
+                total_tokens=40,
+                prompt_cost=0.015,
+                completion_cost=0.025,
+                total_cost=0.04,
+                prompt_time=0.75,
+            ),
+            action_metrics=PromptMetrics(
+                prompt_tokens=10,
+                completion_tokens=15,
+                total_tokens=25,
+                prompt_cost=0.01,
+                completion_cost=0.015,
+                total_cost=0.025,
+                prompt_time=0.5,
+            ),
+            reflection_metrics=None,
+        ),
+    ]
+
+    expected_metrics = {
+        "total_prompt_tokens": 50,
+        "total_completion_tokens": 80,
+        "total_tokens": 130,
+        "total_prompt_cost": 0.05,
+        "total_completion_cost": 0.08,
+        "total_cost": 0.13,
+        "total_prompt_time": 2.5,
+    }
+    result = accumulate_metrics_cot(steps)
+    assert result == expected_metrics
