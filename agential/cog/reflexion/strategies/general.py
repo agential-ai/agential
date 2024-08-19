@@ -220,6 +220,8 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
         """Generates an observation based on the action type and query.
 
         Args:
+            idx (int): The current index of the observation.
+            scratchpad (str): The current state of the scratchpad.
             action_type (str): The type of action to be performed.
             query (str): The query for the action.
             key (str): The key for the observation.
@@ -233,12 +235,14 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
         self,
         idx: int,
         key: str,
+        answer: str,
     ) -> bool:
         """Determines whether the halting condition has been met.
 
         Args:
             idx (int): The current step index.
             key (str): The key for the observation.
+            answer (str): The answer generated.
 
         Returns:
             bool: True if the halting condition is met, False otherwise.
@@ -250,6 +254,7 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
         idx: int,
         reflect_strategy: Optional[str],
         key: str,
+        answer: str,
     ) -> bool:
         """Determines whether the reflection condition has been met.
 
@@ -257,7 +262,8 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
             idx (int): The current step.
             reflect_strategy (Optional[str]): The strategy to use for reflection.
             key (str): The key for the observation.
-
+            answer (str): The answer generated.
+            
         Returns:
             bool: True if the reflection condition is met, False otherwise.
         """
@@ -301,5 +307,3 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
     def reset(self) -> None:
         """Resets the internal state of the strategy."""
         self.reflector.reset()
-        self._finished = False
-        self._answer = ""
