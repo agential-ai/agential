@@ -51,43 +51,118 @@ def test_reflexion_cot_generate() -> None:
     assert first_repeated_char("123123") == "1\""""
 
     gt_out = ReflexionCoTOutput(
-        answer="\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n",
-        total_prompt_tokens=1577,
-        total_completion_tokens=132,
-        total_tokens=1709,
-        total_prompt_cost=0.0007884999999999999,
-        total_completion_cost=0.000198,
-        total_cost=0.0009865,
-        total_prompt_time=1.0,
+        answer="def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None",
+        total_prompt_tokens=80,
+        total_completion_tokens=160,
+        total_tokens=240,
+        total_prompt_cost=0.00012000000000000002,
+        total_completion_cost=0.00031999999999999997,
+        total_cost=0.00043999999999999996,
+        total_prompt_time=4.0,
         total_time=0.5,
         additional_info=[
             ReflexionCoTStepOutput(
                 thought="Let's think step by step. We need to iterate through the characters in the string and keep track of the characters we have seen so far to find the first repeated character.",
                 action_type="Finish",
-                observation="Answer is CORRECT",
-                answer="\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n",
-                is_correct=True,
+                observation="Answer is INCORRECT",
+                answer="def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None",
+                is_correct=False,
                 reflections=[],
                 thought_metrics=PromptMetrics(
-                    prompt_tokens=770,
-                    completion_tokens=87,
-                    total_tokens=857,
-                    prompt_cost=0.000385,
-                    completion_cost=0.0001305,
-                    total_cost=0.0005155,
-                    prompt_time=1.53713059425354,
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
                 ),
                 action_metrics=PromptMetrics(
-                    prompt_tokens=807,
-                    completion_tokens=45,
-                    total_tokens=852,
-                    prompt_cost=0.0004035,
-                    completion_cost=6.75e-05,
-                    total_cost=0.000471,
-                    prompt_time=0.8538527488708496,
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
                 ),
                 reflection_metrics=None,
-            )
+            ),
+            ReflexionCoTStepOutput(
+                thought="Finish[```pythondef first_repeated_char(s):    seen = set()    for char in s:        if char in seen:            return char        seen.add(char)    return None```]",
+                action_type="Finish",
+                observation="Answer is INCORRECT",
+                answer="def first_repeated_char(input_str):\n    seen_chars = set()\n    for char in input_str:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None",
+                is_correct=False,
+                reflections=[
+                    "Let's think step by step. We need to iterate through the characters in the string and keep track of the characters we have seen so far to find the first repeated character.Action: Finish[```pythondef first_repeated_char(input_str):    seen_chars = set()    for char in input_str:        if char in seen_chars:            return char        seen_chars.add(char)    return None```]"
+                ],
+                thought_metrics=PromptMetrics(
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+                action_metrics=PromptMetrics(
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+                reflection_metrics=PromptMetrics(
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+            ),
+            ReflexionCoTStepOutput(
+                thought="Let's think step by step. We need to iterate through the characters in the string and keep track of the characters we have seen so far to find the first repeated character.",
+                action_type="Finish",
+                observation="Answer is INCORRECT",
+                answer="def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None",
+                is_correct=False,
+                reflections=[
+                    "Let's think step by step. We need to iterate through the characters in the string and keep track of the characters we have seen so far to find the first repeated character.Action: Finish[```pythondef first_repeated_char(input_str):    seen_chars = set()    for char in input_str:        if char in seen_chars:            return char        seen_chars.add(char)    return None```]",
+                    "Finish[```pythondef first_repeated_char(s):    seen = set()    for char in s:        if char in seen:            return char        seen.add(char)    return None```]",
+                ],
+                thought_metrics=PromptMetrics(
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+                action_metrics=PromptMetrics(
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+                reflection_metrics=PromptMetrics(
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+            ),
         ],
     )
     responses = [
@@ -119,13 +194,13 @@ def test_reflexion_cot_generate_action() -> None:
     assert first_repeated_char("abc") == None
     assert first_repeated_char("123123") == "1\""""
 
-    gt_scratchpad = "\nAction: Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]"
     responses = [
         "Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]"
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReflexionCoTCodeStrategy(llm=llm)
-    action_type, query = strategy.generate_action(
+    scratchpad, action_type, query, action_metrics = strategy.generate_action(
+        scratchpad="",
         question=question,
         examples=MBPP_FEWSHOT_EXAMPLES_COT,
         reflections="",
@@ -137,22 +212,21 @@ def test_reflexion_cot_generate_action() -> None:
         query
         == "def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None"
     )
-    assert strategy._finished == False
-    assert strategy._answer == ""
-    assert strategy._scratchpad == gt_scratchpad
-    assert strategy._prompt_metrics == {
-        "thought": None,
-        "action": {
-            "prompt_tokens": 10,
-            "completion_tokens": 20,
-            "total_tokens": 30,
-            "prompt_tokens_cost": 1.5e-05,
-            "completion_tokens_cost": 3.9999999999999996e-05,
-            "total_tokens_cost": 5.4999999999999995e-05,
-            "time_sec": 0.5,
-        },
-        "reflection": None,
-    }
+    print(repr(scratchpad))
+    print(repr(action_metrics))
+    assert (
+        scratchpad
+        == "\nAction:  Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]"
+    )
+    assert action_metrics == PromptMetrics(
+        prompt_tokens=10,
+        completion_tokens=20,
+        total_tokens=30,
+        prompt_cost=1.5e-05,
+        completion_cost=3.9999999999999996e-05,
+        total_cost=5.4999999999999995e-05,
+        prompt_time=0.5,
+    )
 
 
 def test_reflexion_cot_generate_action_humaneval() -> None:
@@ -174,7 +248,8 @@ def test_reflexion_cot_generate_action_humaneval() -> None:
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReflexionCoTHEvalStrategy(llm=llm)
-    action_type, query = strategy.generate_action(
+    scratchpad, action_type, query, action_metrics = strategy.generate_action(
+        scratchpad="",
         question=question,
         examples=HUMANEVAL_FEWSHOT_EXAMPLES_COT,
         reflections="",
@@ -183,22 +258,19 @@ def test_reflexion_cot_generate_action_humaneval() -> None:
     )
     assert action_type == "Finish"
     assert query == gt_query
-    assert strategy._finished == False
-    assert strategy._answer == ""
-    assert strategy._scratchpad == gt_scratchpad
-    assert strategy._prompt_metrics == {
-        "thought": None,
-        "action": {
-            "prompt_tokens": 10,
-            "completion_tokens": 20,
-            "total_tokens": 30,
-            "prompt_tokens_cost": 1.5e-05,
-            "completion_tokens_cost": 3.9999999999999996e-05,
-            "total_tokens_cost": 5.4999999999999995e-05,
-            "time_sec": 0.5,
-        },
-        "reflection": None,
-    }
+    assert (
+        scratchpad
+        == "\nAction: Finish[\n```python\n\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```\n]"
+    )
+    assert action_metrics == PromptMetrics(
+        prompt_tokens=10,
+        completion_tokens=20,
+        total_tokens=30,
+        prompt_cost=1.5e-05,
+        completion_cost=3.9999999999999996e-05,
+        total_cost=5.4999999999999995e-05,
+        prompt_time=0.5,
+    )
 
 
 def test_reflexion_cot_generate_observation() -> None:
@@ -207,29 +279,35 @@ def test_reflexion_cot_generate_observation() -> None:
 
     # Case 1: action_type is "Finish" and answer is correct.
     strategy = ReflexionCoTCodeStrategy(llm=llm)
-    is_correct, obs = strategy.generate_observation(
+    scratchpad, answer, is_correct, obs = strategy.generate_observation(
+        scratchpad="",
         action_type="Finish",
         query="print('Hello World!')",
         key="print('Hi World!')",
     )
     assert is_correct == True
     assert obs == "Answer is CORRECT"
-    assert "Observation: Answer is CORRECT" in strategy._scratchpad
+    assert "Observation: Answer is CORRECT" in scratchpad
+    assert answer == "print('Hello World!')"
 
     # Case 2: action_type is "Finish" and answer is incorrect.
     strategy = ReflexionCoTCodeStrategy(llm=llm)
-    is_correct, obs = strategy.generate_observation(
+    scratchpad, answer, is_correct, obs = strategy.generate_observation(
+        scratchpad="",
         action_type="Finish",
         query="correct_answer",
         key="correct_answer",
     )
     assert is_correct == False
     assert obs == "Answer is INCORRECT"
-    assert "Observation: Answer is INCORRECT" in strategy._scratchpad
+    assert "Observation: Answer is INCORRECT" in scratchpad
+    assert answer == "correct_answer"
+
 
     # Case 3: action_type is not "Finish".
     strategy = ReflexionCoTCodeStrategy(llm=llm)
-    is_correct, obs = strategy.generate_observation(
+    scratchpad, answer, is_correct, obs = strategy.generate_observation(
+        scratchpad="",
         action_type="Calculate",
         query="some_query",
         key="correct_answer",
@@ -239,7 +317,8 @@ def test_reflexion_cot_generate_observation() -> None:
         obs
         == "Invalid action type, please try again. Valid action is Finish[```python<code>```]"
     )
-    assert "Observation: Invalid action type, please try again." in strategy._scratchpad
+    assert "Observation: Invalid action type, please try again." in scratchpad
+    assert answer == ""
 
 
 def test_reflexion_cot_halting_condition() -> None:
@@ -248,13 +327,13 @@ def test_reflexion_cot_halting_condition() -> None:
     strategy = ReflexionCoTCodeStrategy(llm=llm, max_trials=3)
 
     strategy._answer = "incorrect_answer"
-    assert strategy.halting_condition(3, "correct_answer") == True
+    assert strategy.halting_condition(3, "correct_answer", "correct_answer") == True
 
     strategy._answer = "correct_answer"
-    assert strategy.halting_condition(2, "correct_answer") == False
+    assert strategy.halting_condition(2, "correct_answer", "correct_answer") == False
 
     strategy._answer = "incorrect_answer"
-    assert strategy.halting_condition(2, "correct_answer") == False
+    assert strategy.halting_condition(2, "correct_answer", "correct_answer") == False
 
 
 def test_reflexion_cot_reflect_condition() -> None:
@@ -262,10 +341,10 @@ def test_reflexion_cot_reflect_condition() -> None:
     llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReflexionCoTCodeStrategy(llm)
 
-    assert not strategy.reflect_condition(0, "strategy1", "key1")
-    assert strategy.reflect_condition(1, "strategy1", "key1")
-    assert strategy.reflect_condition(1, "strategy1", "key2")
-    assert strategy.reflect_condition(1, "", "key2")
+    assert not strategy.reflect_condition(0, "strategy1", "key1", "key2")
+    assert strategy.reflect_condition(1, "strategy1", "key1", "key2")
+    assert strategy.reflect_condition(1, "strategy1", "key2", "key2")
+    assert strategy.reflect_condition(1, "", "key2", "key2")
 
 
 def test_reflexion_cot_instantiate_strategies() -> None:
