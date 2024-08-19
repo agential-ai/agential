@@ -4,7 +4,7 @@ import time
 
 from typing import Dict, List, Optional, Tuple
 
-from agential.cog.reflexion.functional import _prompt_cot_agent, accumulate_metrics
+from agential.cog.reflexion.functional import _prompt_cot_agent, accumulate_metrics_cot
 from agential.cog.reflexion.output import ReflexionCoTOutput, ReflexionCoTStepOutput
 from agential.cog.reflexion.reflect import ReflexionCoTReflector
 from agential.cog.reflexion.strategies.base import ReflexionCoTBaseStrategy
@@ -96,6 +96,7 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
                 answer=answer,
             ):
                 reflections, reflections_str, reflection_metrics = self.reflect(
+                    scratchpad=scratchpad,
                     reflect_strategy=reflect_strategy,
                     question=question,
                     examples=reflect_examples,
@@ -160,7 +161,7 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
             idx += 1
 
         total_time = time.time() - start
-        total_metrics = accumulate_metrics(steps)
+        total_metrics = accumulate_metrics_cot(steps)
         out = ReflexionCoTOutput(
             answer=answer,
             total_prompt_tokens=total_metrics["total_prompt_tokens"],

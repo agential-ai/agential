@@ -697,8 +697,8 @@ def parse_math_code_action_react(
     return action_type, query
 
 
-def accumulate_metrics(steps: List[ReflexionCoTStepOutput]) -> Union[int, float]:
-    """Accumulates metrics.
+def accumulate_metrics_cot(steps: List[ReflexionCoTStepOutput]) -> Union[int, float]:
+    """Accumulates metrics for ReflexionCoT.
 
     Args:
         steps (List[ReflexionCoTStepOutput]): List of ReflexionCoTStepOutput objects.
