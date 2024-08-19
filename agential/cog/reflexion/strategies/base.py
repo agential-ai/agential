@@ -54,6 +54,8 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         """Generates a thought based on the question, examples, and prompt.
 
         Args:
+            idx (int): The index of the thought.
+            scratchpad (str): The scratchpad containing previous thoughts.
             question (str): The question to be answered.
             examples (str): Examples to guide the generation process.
             reflections (str): Reflections to consider during generation.
@@ -68,30 +70,35 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
     @abstractmethod
     def generate_action(
         self,
+        idx: int,
+        scratchpad: str,
         question: str,
         examples: str,
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str]:
+    ) -> Tuple[str, str, str, PromptMetrics]:
         """Generates an action based on the question, examples, and prompt.
 
         Args:
+            idx (int): The current index of the action.
+            scratchpad (str): The current state of the scratchpad.
             question (str): The question to be answered.
             examples (str): Examples to guide the generation process.
-            reflections (str): Reflections to guide the generation process.
+            reflections (str): Reflections to consider during generation.
             prompt (str): The prompt used for generating the action.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
+            **kwargs (Any): Additional arguments.
 
         Returns:
-            Tuple[str, str]: The generated action type and query.
+            Tuple[str, str, str, PromptMetrics]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
         """
         raise NotImplementedError
 
     @abstractmethod
     def generate_observation(
-        self, action_type: str, query: str, key: str
-    ) -> Tuple[bool, str]:
+        self, idx: int, scratchpad: str, action_type: str, query: str, key: str
+    ) -> Tuple[str, str, bool, str, bool]:
         """Generates an observation based on the action type and query.
 
         Args:
@@ -100,30 +107,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
             key (str): The key for the observation.
 
         Returns:
-            Tuple[bool, str]: A boolean indicating correctness and the generated observation.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def create_output_dict(
-        self,
-        thought: str,
-        action_type: str,
-        obs: str,
-        is_correct: bool,
-        reflections: List[str],
-    ) -> Dict[str, Any]:
-        """Creates a dictionary of the output components.
-
-        Args:
-            thought (str): The generated thought.
-            action_type (str): The type of action performed.
-            obs (str): The generated observation.
-            is_correct (bool): Whether the observation is correct.
-            reflections (List[str]): A list of reflections.
-
-        Returns:
-            Dict[str, Any]: A dictionary containing the thought, action type, observation, answer, is_correct, and a list of reflections.
+            Tuple[str, str, bool, str, bool]: The updated scratchpad, the answer, a boolean indicating if the observation is correct, the observation itself, and a boolean indicating if the observation is finished.
         """
         raise NotImplementedError
 
@@ -142,29 +126,6 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         raise NotImplementedError
 
     @abstractmethod
-    def reflect(
-        self,
-        reflect_strategy: str,
-        question: str,
-        examples: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
-    ) -> Tuple[List[str], str]:
-        """An abstract method that defines the behavior for reflecting on a given question, context, examples, prompt, and additional keys.
-
-        Args:
-            reflect_strategy (str): The strategy to use for reflection.
-            question (str): The question to be reflected upon.
-            examples (str): Examples to guide the reflection process.
-            prompt (str): The prompt or instruction to guide the reflection.
-            additional_keys (Dict[str, str]): Additional keys for the reflection process.
-
-        Returns:
-            Tuple[List[str], str]: The reflection string.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
     def reflect_condition(
         self, idx: int, reflect_strategy: Optional[str], key: str
     ) -> bool:
@@ -179,7 +140,37 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
             bool: True if the reflection condition is met, False otherwise.
         """
         raise NotImplementedError
+    
+    @abstractmethod
+    def reflect(
+        self,
+        scratchpad: str,
+        reflect_strategy: str,
+        question: str,
+        examples: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> Tuple[List[str], str, PromptMetrics]:
+        """Reflects on a given question, context, examples, prompt, and additional keys using the specified reflection strategy.
 
+        Args:
+            scratchpad (str): The scratchpad containing previous reflections.
+            reflect_strategy (str): The strategy to use for reflection.
+            question (str): The question to be reflected upon.
+            examples (str): Examples to guide the reflection process.
+            prompt (str): The prompt or instruction to guide the reflection.
+            additional_keys (Dict[str, str]): Additional keys for the reflection process.
+
+        Returns:
+            Tuple[List[str], str, PromptMetrics]: The reflections, the reflection string, and the metrics.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def reset(self) -> None:
+        """Resets the internal state of the strategy."""
+        raise NotImplementedError
+    
 
 class ReflexionReActBaseStrategy(BaseStrategy):
     """An abstract base class for defining strategies for the ReflexionReAct Agent.

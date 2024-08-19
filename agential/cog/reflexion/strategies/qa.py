@@ -23,6 +23,7 @@ from agential.cog.reflexion.strategies.base import (
     ReflexionCoTBaseStrategy,
     ReflexionReActBaseStrategy,
 )
+from agential.cog.reflexion.strategies.general import ReflexionCoTGeneralStrategy
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
@@ -30,7 +31,7 @@ from agential.utils.metrics import get_token_cost_time
 from agential.utils.parse import remove_newline
 
 
-class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
+class ReflexionCoTQAStrategy(ReflexionCoTGeneralStrategy):
     """A strategy class for QA benchmarks using the ReflexionCoT agent.
 
     Attributes:
@@ -38,6 +39,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         reflector (Optional[ReflexionCoTReflector]): The reflector used for generating reflections. Defaults to None.
         max_reflections (int): The maximum number of reflections allowed. Defaults to 3.
         max_trials (int): The maximum number of trials allowed. Defaults to 3.
+        testing (bool): Whether to run in testing mode. Defaults to False.
     """
 
     def __init__(
@@ -46,60 +48,16 @@ class ReflexionCoTQAStrategy(ReflexionCoTBaseStrategy):
         reflector: Optional[ReflexionCoTReflector] = None,
         max_reflections: int = 3,
         max_trials: int = 3,
+        testing: bool = False,
     ) -> None:
         """Initialization."""
         if reflector is None:
             reflector = ReflexionCoTReflector(llm=llm, max_reflections=max_reflections)
-        super().__init__(llm, reflector, max_reflections, max_trials)
+        super().__init__(llm=llm, reflector=reflector, max_reflections=max_reflections, max_trials=max_trials, testing=testing)
 
         self._scratchpad = ""
         self._finished = False
         self._answer = ""
-        self._prompt_metrics: Dict[str, Any] = {
-            "thought": None,
-            "action": None,
-            "reflection": None,
-        }
-
-    def generate(
-        self,
-        question: str,
-        examples: str,
-        reflections: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
-        **kwargs: Any,
-    ) -> str:
-        """Generates a thought based on the question, examples, and prompt.
-
-        Args:
-            question (str): The question to be answered.
-            examples (str): Examples to guide the generation process.
-            reflections (str): Reflections to consider during generation.
-            prompt (str): The prompt used for generating the thought.
-            additional_keys (Dict[str, str]): Additional keys for the generation process.
-            **kwargs (Any): Additional arguments.
-
-        Returns:
-            str: The generated thought.
-        """
-        self._scratchpad += "\nThought:"
-        out = _prompt_cot_agent(
-            llm=self.llm,
-            examples=examples,
-            reflections=reflections,
-            question=question,
-            scratchpad=self._scratchpad,
-            prompt=prompt,
-            additional_keys=additional_keys,
-        )
-        self._prompt_metrics["thought"] = get_token_cost_time(out)
-        thought = out.choices[0].message.content
-
-        thought = remove_newline(thought).split("Action")[0].strip()
-        self._scratchpad += " " + thought
-
-        return thought
 
     def generate_action(
         self,
