@@ -7,6 +7,7 @@ from agential.cog.fewshots.mbpp import (
     MBPP_FEWSHOT_EXAMPLES_COT,
     MBPP_FEWSHOT_EXAMPLES_REACT,
 )
+from agential.cog.reflexion.output import ReflexionCoTOutput, ReflexionCoTStepOutput
 from agential.cog.reflexion.prompts import (
     MBPP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     MBPP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
@@ -29,6 +30,7 @@ from agential.cog.reflexion.strategies.code import (
     ReflexionReActMBPPStrategy,
 )
 from agential.llm.llm import BaseLLM, MockLLM
+from agential.utils.metrics import PromptMetrics
 
 
 def test_reflexion_cot_init() -> None:
@@ -39,14 +41,6 @@ def test_reflexion_cot_init() -> None:
     assert isinstance(strategy.reflector, ReflexionCoTReflector)
     assert strategy.max_reflections == 3
     assert strategy.max_trials == 3
-    assert strategy._scratchpad == ""
-    assert strategy._finished == False
-    assert strategy._answer == ""
-    assert strategy._prompt_metrics == {
-        "thought": None,
-        "action": None,
-        "reflection": None,
-    }
 
 
 def test_reflexion_cot_generate() -> None:
@@ -56,37 +50,66 @@ def test_reflexion_cot_generate() -> None:
     assert first_repeated_char("abc") == None
     assert first_repeated_char("123123") == "1\""""
 
-    gt_out = "Let's think step by step. We need to iterate through the string and keep track of characters we have seen so far to identify the first repeated character."
-    gt_scratchpad = "\nThought: Let's think step by step. We need to iterate through the string and keep track of characters we have seen so far to identify the first repeated character."
+    gt_out = ReflexionCoTOutput(
+        answer="\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n",
+        total_prompt_tokens=1577,
+        total_completion_tokens=132,
+        total_tokens=1709,
+        total_prompt_cost=0.0007884999999999999,
+        total_completion_cost=0.000198,
+        total_cost=0.0009865,
+        total_prompt_time=1.0,
+        total_time=0.5,
+        additional_info=[
+            ReflexionCoTStepOutput(
+                thought="Let's think step by step. We need to iterate through the characters in the string and keep track of the characters we have seen so far to find the first repeated character.",
+                action_type="Finish",
+                observation="Answer is CORRECT",
+                answer="\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n",
+                is_correct=True,
+                reflections=[],
+                thought_metrics=PromptMetrics(
+                    prompt_tokens=770,
+                    completion_tokens=87,
+                    total_tokens=857,
+                    prompt_cost=0.000385,
+                    completion_cost=0.0001305,
+                    total_cost=0.0005155,
+                    prompt_time=1.53713059425354,
+                ),
+                action_metrics=PromptMetrics(
+                    prompt_tokens=807,
+                    completion_tokens=45,
+                    total_tokens=852,
+                    prompt_cost=0.0004035,
+                    completion_cost=6.75e-05,
+                    total_cost=0.000471,
+                    prompt_time=0.8538527488708496,
+                ),
+                reflection_metrics=None,
+            )
+        ],
+    )
     responses = [
-        "Let's think step by step. We need to iterate through the string and keep track of characters we have seen so far to identify the first repeated character.\nAction: Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]"
+        "Let's think step by step. We need to iterate through the characters in the string and keep track of the characters we have seen so far to find the first repeated character.\nAction: Finish[\n```python\ndef first_repeated_char(input_str):\n    seen_chars = set()\n    for char in input_str:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]",
+        "Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    strategy = ReflexionCoTCodeStrategy(llm=llm)
+    strategy = ReflexionCoTCodeStrategy(llm=llm, testing=True)
     out = strategy.generate(
         question=question,
+        key=key,
         examples=MBPP_FEWSHOT_EXAMPLES_COT,
-        reflections="",
         prompt=REFLEXION_COT_INSTRUCTION_MBPP,
+        reflect_examples=MBPP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
+        reflect_prompt=REFLEXION_COT_REFLECT_INSTRUCTION_MBPP,
+        reflect_strategy="reflexion",
         additional_keys={"tests": key},
+        reflect_additional_keys={"tests": key},
+        patience=3,
+        reset=True,
     )
     assert out == gt_out
-    assert strategy._scratchpad == gt_scratchpad
-    assert strategy._finished == False
-    assert strategy._answer == ""
-    assert strategy._prompt_metrics == {
-        "thought": {
-            "prompt_tokens": 10,
-            "completion_tokens": 20,
-            "total_tokens": 30,
-            "prompt_tokens_cost": 1.5e-05,
-            "completion_tokens_cost": 3.9999999999999996e-05,
-            "total_tokens_cost": 5.4999999999999995e-05,
-            "time_sec": 0.5,
-        },
-        "action": None,
-        "reflection": None,
-    }
 
 
 def test_reflexion_cot_generate_action() -> None:
@@ -219,53 +242,6 @@ def test_reflexion_cot_generate_observation() -> None:
     assert "Observation: Invalid action type, please try again." in strategy._scratchpad
 
 
-def test_reflexion_cot_create_output_dict() -> None:
-    """Tests ReflexionCoTCodeStrategy create_output_dict."""
-    strategy = ReflexionCoTCodeStrategy(llm=MockLLM("gpt-3.5-turbo", responses=[]))
-
-    # Setting a dummy answer for testing.
-    strategy._answer = "correct_answer"
-
-    # Test case 1: Correct answer.
-    output = strategy.create_output_dict(
-        thought="This is a thought.",
-        action_type="Finish",
-        obs="Observation: Answer is CORRECT",
-        is_correct=True,
-        reflections=[],
-    )
-    expected_output = {
-        "thought": "This is a thought.",
-        "action_type": "Finish",
-        "observation": "Observation: Answer is CORRECT",
-        "answer": "correct_answer",
-        "is_correct": True,
-        "reflections": [],
-        "prompt_metrics": {"thought": None, "action": None, "reflection": None},
-    }
-    assert output == expected_output
-
-    # Test case 2: Incorrect answer.
-    strategy._answer = "incorrect_answer"
-    output = strategy.create_output_dict(
-        thought="This is a thought.",
-        action_type="Finish",
-        obs="Observation: Answer is INCORRECT",
-        is_correct=False,
-        reflections=[],
-    )
-    expected_output = {
-        "thought": "This is a thought.",
-        "action_type": "Finish",
-        "observation": "Observation: Answer is INCORRECT",
-        "answer": "incorrect_answer",
-        "is_correct": False,
-        "reflections": [],
-        "prompt_metrics": {"thought": None, "action": None, "reflection": None},
-    }
-    assert output == expected_output
-
-
 def test_reflexion_cot_halting_condition() -> None:
     """Tests ReflexionCoTCodeStrategy halting_condition."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
@@ -279,68 +255,6 @@ def test_reflexion_cot_halting_condition() -> None:
 
     strategy._answer = "incorrect_answer"
     assert strategy.halting_condition(2, "correct_answer") == False
-
-
-def test_reflexion_cot_reset() -> None:
-    """Tests ReflexionCoTCodeStrategy reset."""
-    llm = MockLLM("gpt-3.5-turbo", responses=[])
-    strategy = ReflexionCoTCodeStrategy(llm=llm, max_trials=3)
-
-    strategy._scratchpad = "Initial scratchpad content"
-    strategy._finished = True
-    strategy._answer = "Some answer"
-
-    # Test case 1: Reset everything.
-    strategy.reset()
-    assert strategy._scratchpad == ""
-    assert strategy._finished == False
-    assert strategy._answer == ""
-    assert strategy._prompt_metrics == {
-        "thought": None,
-        "action": None,
-        "reflection": None,
-    }
-
-    strategy._scratchpad = "Initial scratchpad content"
-    strategy._finished = True
-    strategy._answer = "Some answer"
-
-    # Test case 2: Reset only scratchpad.
-    strategy.reset(only_scratchpad=True)
-    assert strategy._scratchpad == ""
-    assert strategy._finished == True
-    assert strategy._answer == "Some answer"
-    assert strategy._prompt_metrics == {
-        "thought": None,
-        "action": None,
-        "reflection": None,
-    }
-
-
-def test_reflexion_cot_reflect() -> None:
-    """Tests ReflexionCoTCodeStrategy reflect."""
-    question = "Write a python function to find the first repeated character in a given string."
-    key = """assert first_repeated_char("abcabc") == "a"
-    assert first_repeated_char("abc") == None
-    assert first_repeated_char("123123") == "1\""""
-
-    llm = MockLLM("gpt-3.5-turbo", responses=[])
-    strategy = ReflexionCoTCodeStrategy(llm=llm, max_trials=3)
-
-    gt_out = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: Write a python function to find the first repeated character in a given string.\n\n(END PREVIOUS TRIAL)\n"
-    _, out = strategy.reflect(
-        reflect_strategy="last_attempt",
-        question=question,
-        examples=MBPP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
-        prompt=REFLEXION_COT_REFLECT_INSTRUCTION_MBPP,
-        additional_keys={"tests": key},
-    )
-    assert out == gt_out
-    assert strategy._prompt_metrics == {
-        "thought": None,
-        "action": None,
-        "reflection": None,
-    }
 
 
 def test_reflexion_cot_reflect_condition() -> None:
