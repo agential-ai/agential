@@ -1,5 +1,6 @@
 """Reflexion general strategy."""
 
+import time
 from typing import Dict, List, Optional, Tuple
 
 from agential.cog.reflexion.output import ReflexionCoTStepOutput, ReflexionCoTOutput
@@ -67,24 +68,27 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
         Returns:
             ReActOutput: The output of the agent.
         """
+        start = time.time()
+
         if reset:
             self.reset()
 
         scratchpad = ""
         answer = ""
         idx, patience_cnt = 0, 0
-        out = []
+        steps = []
         while not self.halting_condition(idx=idx, key=key, answer=answer):
             # Reflect if possible.
             reflections: List[str] = []
             reflections_str = ""
+            reflection_metrics: Optional[PromptMetrics] = None
             if self.reflect_condition(
                 idx=idx,
                 reflect_strategy=reflect_strategy,
                 key=key,
                 answer=answer,
             ):
-                reflections, reflections_str = self.reflect(
+                reflections, reflections_str, reflection_metrics = self.reflect(
                     reflect_strategy=reflect_strategy,
                     question=question,
                     examples=reflect_examples,
@@ -125,7 +129,7 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
                 key=key,
             )
 
-            out.append(
+            steps.append(
                 ReflexionCoTStepOutput(
                     thought=thought,
                     action_type=action_type,
@@ -136,6 +140,7 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
                     reflections=reflections,
                     thought_metrics=thought_metrics,
                     action_metrics=action_metrics,
+                    reflection_metrics=reflection_metrics,
                 )
             )
 
@@ -146,6 +151,20 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
                 break
 
             idx += 1
+
+        total_time = time.time() - start
+        out = ReflexionCoTOutput(
+            answer=answer,
+            total_prompt_tokens=total_metrics["total_prompt_tokens"],
+            total_completion_tokens=total_metrics["total_completion_tokens"],
+            total_tokens=total_metrics["total_tokens"],
+            total_prompt_cost=total_metrics["total_prompt_cost"],
+            total_completion_cost=total_metrics["total_completion_cost"],
+            total_cost=total_metrics["total_cost"],
+            total_prompt_time=total_metrics["total_prompt_time"],
+            total_time=total_time if not self.testing else 0.5,
+            additional_info=steps,
+        )
 
         return out
 

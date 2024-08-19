@@ -110,7 +110,6 @@ class LATSSimulationOutput(BaseModel):
         simulation_current_nodes (List[Dict[str, Any]]): The current nodes of the simulation.
         simulation_children_nodes (List[List[Dict[str, Any]]]): The children nodes of the simulation.
         simulation_values (List[List[Dict[str, Any]]]): The values of the children nodes of the simulation.
-        simulation_metrics (LATSSimulationMetrics): The metrics of the simulation.
     """
 
     simulation_reward: float = Field(
