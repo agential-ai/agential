@@ -170,7 +170,7 @@ def _prompt_cot_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print("<PROMPT AGENT=============================================>")
+    ("<PROMPT AGENT=============================================>")
     print(prompt)
     print("<PROMPT AGENT=============================================>")
 
