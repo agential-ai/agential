@@ -55,10 +55,6 @@ class ReflexionCoTQAStrategy(ReflexionCoTGeneralStrategy):
             reflector = ReflexionCoTReflector(llm=llm, max_reflections=max_reflections)
         super().__init__(llm=llm, reflector=reflector, max_reflections=max_reflections, max_trials=max_trials, testing=testing)
 
-        self._scratchpad = ""
-        self._finished = False
-        self._answer = ""
-
     def generate_action(
         self,
         idx: int,
@@ -103,7 +99,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTGeneralStrategy):
 
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str, key: str
-    ) -> Tuple[str, str, bool, str, bool]:
+    ) -> Tuple[str, str, bool, str]:
         """Generates an observation based on the action type and query.
 
         Args:
@@ -114,13 +110,11 @@ class ReflexionCoTQAStrategy(ReflexionCoTGeneralStrategy):
             key (str): The key for the observation.
 
         Returns:
-            Tuple[str, str, bool, str, bool]: The updated scratchpad, the answer, a boolean indicating if the observation is correct, the observation itself, and a boolean indicating if the observation is finished.
+            Tuple[str, str, bool, str, bool]: The updated scratchpad, the answer, a boolean indicating if the observation is correct, and the observation itself.
         """
-        finished = False
         answer = ""
         scratchpad += f"\nObservation {idx}: "
         if action_type.lower() == "finish":
-            finished = True
             answer = query
             if EM(answer, key):
                 obs = "Answer is CORRECT"
@@ -130,7 +124,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTGeneralStrategy):
             obs = "Invalid action type, please try again."
         scratchpad += obs
 
-        return scratchpad, answer, EM(answer, key), obs, finished
+        return scratchpad, answer, EM(answer, key), obs
 
     def halting_condition(
         self,

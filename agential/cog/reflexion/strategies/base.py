@@ -98,7 +98,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
     @abstractmethod
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str, key: str
-    ) -> Tuple[str, str, bool, str, bool]:
+    ) -> Tuple[str, str, bool, str]:
         """Generates an observation based on the action type and query.
 
         Args:
@@ -109,7 +109,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
             key (str): The key for the observation.
 
         Returns:
-            Tuple[str, str, bool, str, bool]: The updated scratchpad, the answer, a boolean indicating if the observation is correct, the observation itself, and a boolean indicating if the observation is finished.
+            Tuple[str, str, bool, str, bool]: The updated scratchpad, the answer, a boolean indicating if the observation is correct, and the observation itself.
         """
         raise NotImplementedError
 

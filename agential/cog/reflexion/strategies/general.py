@@ -1,8 +1,8 @@
 """Reflexion general strategy."""
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
-from agential.cog.react.output import ReActOutput
+from agential.cog.reflexion.output import ReflexionCoTStepOutput, ReflexionCoTOutput
 from agential.cog.reflexion.functional import _prompt_cot_agent
 from agential.cog.reflexion.reflect import ReflexionCoTReflector
 from agential.cog.reflexion.strategies.base import ReflexionCoTBaseStrategy
@@ -48,7 +48,7 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
         reflect_additional_keys: Dict[str, str],
         patience: int,
         reset: bool,
-    ) -> ReActOutput:
+    ) -> ReflexionCoTOutput:
         """Generates a thought based on the question, examples, and prompt.
 
         Args:
@@ -72,10 +72,9 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
 
         scratchpad = ""
         answer = ""
-        finished = False
         idx, patience_cnt = 0, 0
         out = []
-        while not self.halting_condition(idx=idx, key=key):
+        while not self.halting_condition(idx=idx, key=key, answer=answer):
             # Reflect if possible.
             reflections: List[str] = []
             reflections_str = ""
@@ -83,6 +82,7 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
                 idx=idx,
                 reflect_strategy=reflect_strategy,
                 key=key,
+                answer=answer,
             ):
                 reflections, reflections_str = self.reflect(
                     reflect_strategy=reflect_strategy,
@@ -117,7 +117,7 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
             )
 
             # Observe.
-            scratchpad, answer, is_correct, obs, finished = self.generate_observation(
+            scratchpad, answer, is_correct, obs = self.generate_observation(
                 idx=idx,
                 scratchpad=scratchpad,
                 action_type=action_type,
@@ -127,13 +127,15 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
 
             out.append(
                 ReflexionCoTStepOutput(
-                    **self.strategy.create_output_dict(
-                        thought=thought,
-                        action_type=action_type,
-                        obs=obs,
-                        is_correct=is_correct,
-                        reflections=reflections,
-                    )
+                    thought=thought,
+                    action_type=action_type,
+                    query=query,
+                    observation=obs,
+                    answer=answer,
+                    is_correct=is_correct,
+                    reflections=reflections,
+                    thought_metrics=thought_metrics,
+                    action_metrics=action_metrics,
                 )
             )
 
@@ -216,7 +218,7 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
     
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str, key: str
-    ) -> Tuple[str, str, bool, str, bool]:
+    ) -> Tuple[str, str, bool, str]:
         """Generates an observation based on the action type and query.
 
         Args:
@@ -227,7 +229,7 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
             key (str): The key for the observation.
 
         Returns:
-            Tuple[str, str, bool, str, bool]: The updated scratchpad, the answer, a boolean indicating if the observation is correct, the observation itself, and a boolean indicating if the observation is finished.
+            Tuple[str, str, bool, str, bool]: The updated scratchpad, the answer, a boolean indicating if the observation is correct, and the observation itself.
         """
         raise NotImplementedError
     
