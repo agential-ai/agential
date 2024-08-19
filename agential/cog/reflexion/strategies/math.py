@@ -410,7 +410,9 @@ class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
 
         action = action.split("Observation")[0].strip()
 
-        action_type, query = parse_math_code_action_react(action, ["Finish", "Calculate"])
+        action_type, query = parse_math_code_action_react(
+            action, ["Finish", "Calculate"]
+        )
         self._scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
 
         return action_type, query

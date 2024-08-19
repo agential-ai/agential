@@ -1,10 +1,11 @@
 """Reflexion general strategy."""
 
 import time
+
 from typing import Dict, List, Optional, Tuple
 
-from agential.cog.reflexion.output import ReflexionCoTStepOutput, ReflexionCoTOutput
-from agential.cog.reflexion.functional import _prompt_cot_agent
+from agential.cog.reflexion.functional import _prompt_cot_agent, accumulate_metrics
+from agential.cog.reflexion.output import ReflexionCoTOutput, ReflexionCoTStepOutput
 from agential.cog.reflexion.reflect import ReflexionCoTReflector
 from agential.cog.reflexion.strategies.base import ReflexionCoTBaseStrategy
 from agential.llm.llm import BaseLLM
@@ -29,15 +30,21 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
         reflector: Optional[ReflexionCoTReflector] = None,
         max_reflections: int = 3,
         max_trials: int = 3,
-        testing: bool = False
+        testing: bool = False,
     ) -> None:
         """Initialization."""
         if reflector is None:
             reflector = ReflexionCoTReflector(llm=llm, max_reflections=max_reflections)
-        super().__init__(llm=llm, reflector=reflector, max_reflections=max_reflections, max_trials=max_trials, testing=testing)
+        super().__init__(
+            llm=llm,
+            reflector=reflector,
+            max_reflections=max_reflections,
+            max_trials=max_trials,
+            testing=testing,
+        )
 
     def generate(
-        self, 
+        self,
         question: str,
         key: str,
         examples: str,
@@ -153,6 +160,7 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
             idx += 1
 
         total_time = time.time() - start
+        total_metrics = accumulate_metrics(steps)
         out = ReflexionCoTOutput(
             answer=answer,
             total_prompt_tokens=total_metrics["total_prompt_tokens"],
@@ -234,7 +242,7 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
             Tuple[str, str, str, PromptMetrics]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
         """
         raise NotImplementedError
-    
+
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str, key: str
     ) -> Tuple[str, str, bool, str]:
@@ -251,7 +259,7 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
             Tuple[str, str, bool, str, bool]: The updated scratchpad, the answer, a boolean indicating if the observation is correct, and the observation itself.
         """
         raise NotImplementedError
-    
+
     def halting_condition(
         self,
         idx: int,
@@ -269,7 +277,7 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
             bool: True if the halting condition is met, False otherwise.
         """
         raise NotImplementedError
-    
+
     def reflect_condition(
         self,
         idx: int,
@@ -284,7 +292,7 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
             reflect_strategy (Optional[str]): The strategy to use for reflection.
             key (str): The key for the observation.
             answer (str): The answer generated.
-            
+
         Returns:
             bool: True if the reflection condition is met, False otherwise.
         """

@@ -12,7 +12,7 @@ from agential.cog.reflexion.functional import (
     _prompt_cot_agent,
     _prompt_react_agent,
     _truncate_scratchpad,
-    parse_qa_action
+    parse_qa_action,
 )
 from agential.cog.reflexion.output import ReflexionReActStepOutput
 from agential.cog.reflexion.reflect import (
@@ -53,7 +53,13 @@ class ReflexionCoTQAStrategy(ReflexionCoTGeneralStrategy):
         """Initialization."""
         if reflector is None:
             reflector = ReflexionCoTReflector(llm=llm, max_reflections=max_reflections)
-        super().__init__(llm=llm, reflector=reflector, max_reflections=max_reflections, max_trials=max_trials, testing=testing)
+        super().__init__(
+            llm=llm,
+            reflector=reflector,
+            max_reflections=max_reflections,
+            max_trials=max_trials,
+            testing=testing,
+        )
 
     def generate_action(
         self,
@@ -158,7 +164,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTGeneralStrategy):
             reflect_strategy (Optional[str]): The strategy to use for reflection.
             key (str): The key for the observation.
             answer (str): The answer generated.
-            
+
         Returns:
             bool: True if the reflection condition is met, False otherwise.
         """

@@ -66,7 +66,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
             Tuple[str, str, PromptMetrics]: The updated scratchpad, the generated thought, and the metrics for the thought.
         """
         raise NotImplementedError
-    
+
     @abstractmethod
     def generate_action(
         self,
@@ -147,12 +147,12 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
             reflect_strategy (Optional[str]): The strategy to use for reflection.
             key (str): The key for the observation.
             answer (str): The answer generated.
-            
+
         Returns:
             bool: True if the reflection condition is met, False otherwise.
         """
         raise NotImplementedError
-    
+
     @abstractmethod
     def reflect(
         self,
@@ -182,7 +182,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
     def reset(self) -> None:
         """Resets the internal state of the strategy."""
         raise NotImplementedError
-    
+
 
 class ReflexionReActBaseStrategy(BaseStrategy):
     """An abstract base class for defining strategies for the ReflexionReAct Agent.

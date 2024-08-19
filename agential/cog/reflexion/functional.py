@@ -1,12 +1,14 @@
 """Functional module for Reflexion."""
 
 import re
-from typing import Dict, List, Tuple
+
+from typing import Dict, List, Tuple, Union
 
 import tiktoken
 
 from tiktoken.core import Encoding
 
+from agential.cog.reflexion.output import ReflexionCoTStepOutput
 from agential.cog.reflexion.prompts import (
     LAST_TRIAL_HEADER,
     REFLECTION_HEADER,
@@ -635,7 +637,6 @@ def parse_qa_action(string: str) -> Tuple[str, str]:
     return action_type, argument
 
 
-
 def parse_math_code_action_cot(action: str) -> Tuple[str, str]:
     """Parses an action string to extract the action type and code content.
 
@@ -664,7 +665,9 @@ def parse_math_code_action_cot(action: str) -> Tuple[str, str]:
     return action_type, query
 
 
-def parse_math_code_action_react(action: str, action_types: List[str]) -> Tuple[str, str]:
+def parse_math_code_action_react(
+    action: str, action_types: List[str]
+) -> Tuple[str, str]:
     """Parses an action string to extract the action type and code content.
 
     Identifies action types (`Finish`, `Calculate`) and extracts the
@@ -675,7 +678,7 @@ def parse_math_code_action_react(action: str, action_types: List[str]) -> Tuple[
     Args:
         action (str): The action string containing the action type and code content.
         action_types (List[str]): List of action types to identify.
-        
+
     Returns:
         Tuple[str, str]: A tuple containing the extracted action type (capitalized)
         and the extracted code content.
@@ -692,3 +695,83 @@ def parse_math_code_action_react(action: str, action_types: List[str]) -> Tuple[
         query = ""
 
     return action_type, query
+
+
+def accumulate_metrics(steps: List[ReflexionCoTStepOutput]) -> Union[int, float]:
+    """Accumulates metrics.
+
+    Args:
+        steps (List[ReflexionCoTStepOutput]): List of ReflexionCoTStepOutput objects.
+
+    Returns:
+        Dict[str, Any]: A dictionary containing the following accumulated metrics:
+            - total_prompt_tokens (int): Total number of prompt tokens used.
+            - total_completion_tokens (int): Total number of completion tokens generated.
+            - total_tokens (int): Total number of tokens (prompt + completion).
+            - total_prompt_cost (float): Total cost associated with prompts.
+            - total_completion_cost (float): Total cost associated with completions.
+            - total_cost (float): Total overall cost (prompt + completion).
+            - total_prompt_time (float): Total time spent on prompts.
+    """
+    total_prompt_tokens = 0
+    total_completion_tokens = 0
+    total_tokens = 0
+    total_prompt_cost = 0.0
+    total_completion_cost = 0.0
+    total_cost = 0.0
+    total_prompt_time = 0.0
+
+    for step in steps:
+        total_prompt_tokens += (
+            step.thought_metrics.prompt_tokens
+            + step.action_metrics.prompt_tokens
+            + (step.reflection_metrics.prompt_tokens if step.reflection_metrics else 0)
+        )
+        total_completion_tokens += (
+            step.thought_metrics.completion_tokens
+            + step.action_metrics.completion_tokens
+            + (
+                step.reflection_metrics.completion_tokens
+                if step.reflection_metrics
+                else 0
+            )
+        )
+        total_tokens += (
+            step.thought_metrics.total_tokens
+            + step.action_metrics.total_tokens
+            + (step.reflection_metrics.total_tokens if step.reflection_metrics else 0)
+        )
+        total_prompt_cost += (
+            step.thought_metrics.prompt_cost
+            + step.action_metrics.prompt_cost
+            + (step.reflection_metrics.prompt_cost if step.reflection_metrics else 0.0)
+        )
+        total_completion_cost += (
+            step.thought_metrics.completion_cost
+            + step.action_metrics.completion_cost
+            + (
+                step.reflection_metrics.completion_cost
+                if step.reflection_metrics
+                else 0.0
+            )
+        )
+        total_cost += (
+            step.thought_metrics.total_cost
+            + step.action_metrics.total_cost
+            + (step.reflection_metrics.total_cost if step.reflection_metrics else 0.0)
+        )
+        total_prompt_time += (
+            step.thought_metrics.prompt_time
+            + step.action_metrics.prompt_time
+            + (step.reflection_metrics.prompt_time if step.reflection_metrics else 0.0)
+        )
+
+    return {
+        "total_prompt_tokens": total_prompt_tokens,
+        "total_completion_tokens": total_completion_tokens,
+        "total_tokens": total_tokens,
+        "total_prompt_cost": total_prompt_cost,
+        "total_completion_cost": total_completion_cost,
+        "total_cost": total_cost,
+        "total_prompt_time": total_prompt_time,
+    }

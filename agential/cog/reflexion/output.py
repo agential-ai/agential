@@ -33,12 +33,8 @@ class ReflexionCoTStepOutput(BaseModel):
     reflections: List[str] = Field(
         ..., description="Additional reflections on the action."
     )
-    thought_metrics: PromptMetrics = Field(
-        ..., description="Thought metrics."
-    )
-    action_metrics: PromptMetrics = Field(
-        ..., description="Action metrics."
-    )
+    thought_metrics: PromptMetrics = Field(..., description="Thought metrics.")
+    action_metrics: PromptMetrics = Field(..., description="Action metrics.")
     reflection_metrics: Optional[PromptMetrics] = Field(
         ..., description="Reflection metrics."
     )
@@ -54,7 +50,6 @@ class ReflexionCoTOutput(BaseOutput):
     additional_info: List[ReflexionCoTStepOutput] = Field(
         ..., description="The list of ReflexionCoTStepOutput."
     )
-
 
 
 class ReflexionReActStepOutput(BaseModel):
