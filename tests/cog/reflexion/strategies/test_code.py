@@ -303,7 +303,6 @@ def test_reflexion_cot_generate_observation() -> None:
     assert "Observation: Answer is INCORRECT" in scratchpad
     assert answer == "correct_answer"
 
-
     # Case 3: action_type is not "Finish".
     strategy = ReflexionCoTCodeStrategy(llm=llm)
     scratchpad, answer, is_correct, obs = strategy.generate_observation(
