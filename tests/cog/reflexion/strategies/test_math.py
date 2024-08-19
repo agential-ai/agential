@@ -37,14 +37,6 @@ def test_reflexion_cot_init() -> None:
     assert isinstance(strategy.reflector, ReflexionCoTReflector)
     assert strategy.max_reflections == 3
     assert strategy.max_trials == 3
-    assert strategy._scratchpad == ""
-    assert strategy._finished == False
-    assert strategy._answer == ""
-    assert strategy._prompt_metrics == {
-        "thought": None,
-        "action": None,
-        "reflection": None,
-    }
 
 
 def test_reflexion_cot_generate() -> None:

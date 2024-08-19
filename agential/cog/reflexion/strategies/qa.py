@@ -62,7 +62,6 @@ class ReflexionCoTQAStrategy(ReflexionCoTGeneralStrategy):
 
     def generate_action(
         self,
-        idx: int,
         scratchpad: str,
         question: str,
         examples: str,
@@ -73,7 +72,6 @@ class ReflexionCoTQAStrategy(ReflexionCoTGeneralStrategy):
         """Generates an action based on the question, examples, and prompt.
 
         Args:
-            idx (int): The current index of the action.
             scratchpad (str): The current state of the scratchpad.
             question (str): The question to be answered.
             examples (str): Examples to guide the generation process.
@@ -85,7 +83,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTGeneralStrategy):
         Returns:
             Tuple[str, str, str, PromptMetrics]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
         """
-        scratchpad += f"\nAction {idx}: "
+        scratchpad += f"\nAction: "
         out = _prompt_cot_agent(
             llm=self.llm,
             examples=examples,
@@ -103,12 +101,11 @@ class ReflexionCoTQAStrategy(ReflexionCoTGeneralStrategy):
         return scratchpad, action_type, query, get_token_cost_time(out)
 
     def generate_observation(
-        self, idx: int, scratchpad: str, action_type: str, query: str, key: str
+        self, scratchpad: str, action_type: str, query: str, key: str
     ) -> Tuple[str, str, bool, str]:
         """Generates an observation based on the action type and query.
 
         Args:
-            idx (int): The current index of the observation.
             scratchpad (str): The current state of the scratchpad.
             action_type (str): The type of action to be performed.
             query (str): The query for the action.
@@ -118,7 +115,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTGeneralStrategy):
             Tuple[str, str, bool, str, bool]: The updated scratchpad, the answer, a boolean indicating if the observation is correct, and the observation itself.
         """
         answer = ""
-        scratchpad += f"\nObservation {idx}: "
+        scratchpad += f"\nObservation: "
         if action_type.lower() == "finish":
             answer = query
             if EM(answer, key):

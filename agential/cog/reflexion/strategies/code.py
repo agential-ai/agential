@@ -63,7 +63,6 @@ class ReflexionCoTCodeStrategy(ReflexionCoTGeneralStrategy):
 
     def generate_action(
         self,
-        idx: int,
         scratchpad: str,
         question: str,
         examples: str,
@@ -74,7 +73,6 @@ class ReflexionCoTCodeStrategy(ReflexionCoTGeneralStrategy):
         """Generates an action based on the question, examples, and prompt.
 
         Args:
-            idx (int): The current index of the action.
             scratchpad (str): The current state of the scratchpad.
             question (str): The question to be answered.
             examples (str): Examples to guide the generation process.
@@ -86,7 +84,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTGeneralStrategy):
         Returns:
             Tuple[str, str, str, PromptMetrics]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
         """
-        scratchpad += f"\nAction {idx}: "
+        scratchpad += f"\nAction: "
         out = _prompt_cot_agent(
             llm=self.llm,
             examples=examples,
@@ -104,12 +102,11 @@ class ReflexionCoTCodeStrategy(ReflexionCoTGeneralStrategy):
         return scratchpad, action_type, query, get_token_cost_time(out)
 
     def generate_observation(
-        self, idx: int, scratchpad: str, action_type: str, query: str, key: str
+        self, scratchpad: str, action_type: str, query: str, key: str
     ) -> Tuple[str, str, bool, str]:
         """Generates an observation based on the action type and query.
 
         Args:
-            idx (int): The current index of the observation.
             scratchpad (str): The current state of the scratchpad.
             action_type (str): The type of action to be performed.
             query (str): The query for the action.
@@ -121,7 +118,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTGeneralStrategy):
         answer = ""
         _, execution_status = safe_execute(f"{query}\n\n{key}")
 
-        scratchpad += f"\nObservation {idx}: "
+        scratchpad += f"\nObservation: "
         if action_type.lower() == "finish":
             answer = query
             if EM(execution_status, "Done", normalize=False):
@@ -575,7 +572,6 @@ class ReflexionCoTHEvalStrategy(ReflexionCoTCodeStrategy):
 
     def generate_action(
         self,
-        idx: int,
         scratchpad: str,
         question: str,
         examples: str,
@@ -586,7 +582,6 @@ class ReflexionCoTHEvalStrategy(ReflexionCoTCodeStrategy):
         """Generates an action based on the question, examples, and prompt.
 
         Args:
-            idx (int): The current index of the action.
             scratchpad (str): The current state of the scratchpad.
             question (str): The question to be answered.
             examples (str): Examples to guide the generation process.
@@ -598,7 +593,7 @@ class ReflexionCoTHEvalStrategy(ReflexionCoTCodeStrategy):
         Returns:
             Tuple[str, str, str, PromptMetrics]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
         """
-        scratchpad += f"\nAction {idx}: "
+        scratchpad += f"\nAction: "
         out = _prompt_cot_agent(
             llm=self.llm,
             examples=examples,

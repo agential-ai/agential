@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from tiktoken import Encoding
 
 from agential.cog.base.strategies import BaseStrategy
-from agential.cog.reflexion.output import ReflexionReActStepOutput
+from agential.cog.reflexion.output import ReflexionCoTOutput, ReflexionReActStepOutput
 from agential.cog.reflexion.reflect import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
@@ -41,9 +41,43 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         self.max_trials = max_trials
 
     @abstractmethod
+    def generate(
+        self,
+        question: str,
+        key: str,
+        examples: str,
+        reflect_examples: str,
+        prompt: str,
+        reflect_prompt: str,
+        reflect_strategy: str,
+        additional_keys: Dict[str, str],
+        reflect_additional_keys: Dict[str, str],
+        patience: int,
+        reset: bool,
+    ) -> ReflexionCoTOutput:
+        """Generates a thought based on the question, examples, and prompt.
+
+        Args:
+            question (str): The question to be answered.
+            key (str): The key for the output.
+            examples (str): Examples to guide the generation process.
+            reflect_examples (str): Examples to guide the reflection process.
+            prompt (str): The prompt to guide the generation process.
+            reflect_prompt (str): The prompt to guide the reflection process.
+            reflect_strategy (str): The strategy to use for reflection.
+            additional_keys (Dict[str, str]): Additional keys to include in the output.
+            reflect_additional_keys (Dict[str, str]): Additional keys to include in the reflection output.
+            patience (int): The patience level for the agent.
+            reset (bool): Whether to reset the agent.
+
+        Returns:
+            ReActOutput: The output of the agent.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
     def generate_thought(
         self,
-        idx: int,
         scratchpad: str,
         question: str,
         examples: str,
@@ -54,7 +88,6 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         """Generates a thought based on the question, examples, and prompt.
 
         Args:
-            idx (int): The index of the thought.
             scratchpad (str): The scratchpad containing previous thoughts.
             question (str): The question to be answered.
             examples (str): Examples to guide the generation process.
@@ -70,7 +103,6 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
     @abstractmethod
     def generate_action(
         self,
-        idx: int,
         scratchpad: str,
         question: str,
         examples: str,
@@ -81,7 +113,6 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         """Generates an action based on the question, examples, and prompt.
 
         Args:
-            idx (int): The current index of the action.
             scratchpad (str): The current state of the scratchpad.
             question (str): The question to be answered.
             examples (str): Examples to guide the generation process.
@@ -97,12 +128,11 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
 
     @abstractmethod
     def generate_observation(
-        self, idx: int, scratchpad: str, action_type: str, query: str, key: str
+        self, scratchpad: str, action_type: str, query: str, key: str
     ) -> Tuple[str, str, bool, str]:
         """Generates an observation based on the action type and query.
 
         Args:
-            idx (int): The current index of the observation.
             scratchpad (str): The current state of the scratchpad.
             action_type (str): The type of action to be performed.
             query (str): The query for the action.

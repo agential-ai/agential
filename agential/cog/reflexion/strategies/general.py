@@ -48,8 +48,8 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
         question: str,
         key: str,
         examples: str,
-        prompt: str,
         reflect_examples: str,
+        prompt: str,
         reflect_prompt: str,
         reflect_strategy: str,
         additional_keys: Dict[str, str],
@@ -63,8 +63,8 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
             question (str): The question to be answered.
             key (str): The key for the output.
             examples (str): Examples to guide the generation process.
-            prompt (str): The prompt to guide the generation process.
             reflect_examples (str): Examples to guide the reflection process.
+            prompt (str): The prompt to guide the generation process.
             reflect_prompt (str): The prompt to guide the reflection process.
             reflect_strategy (str): The strategy to use for reflection.
             additional_keys (Dict[str, str]): Additional keys to include in the output.
@@ -108,7 +108,6 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
 
             # Think.
             scratchpad, thought, thought_metrics = self.generate_thought(
-                idx=idx,
                 scratchpad=scratchpad,
                 question=question,
                 examples=examples,
@@ -119,7 +118,6 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
 
             # Act.
             scratchpad, action_type, query, action_metrics = self.generate_action(
-                idx=idx,
                 scratchpad=scratchpad,
                 question=question,
                 examples=examples,
@@ -130,7 +128,6 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
 
             # Observe.
             scratchpad, answer, is_correct, obs = self.generate_observation(
-                idx=idx,
                 scratchpad=scratchpad,
                 action_type=action_type,
                 query=query,
@@ -179,7 +176,6 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
 
     def generate_thought(
         self,
-        idx: int,
         scratchpad: str,
         question: str,
         examples: str,
@@ -190,7 +186,6 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
         """Generates a thought based on the question, examples, and prompt.
 
         Args:
-            idx (int): The index of the thought.
             scratchpad (str): The scratchpad containing previous thoughts.
             question (str): The question to be answered.
             examples (str): Examples to guide the generation process.
@@ -201,7 +196,7 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
         Returns:
             Tuple[str, str, PromptMetrics]: The updated scratchpad, the generated thought, and the metrics for the thought.
         """
-        scratchpad += f"\nThought {idx}: "
+        scratchpad += f"\nThought: "
         out = _prompt_cot_agent(
             llm=self.llm,
             examples=examples,
@@ -219,7 +214,6 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
 
     def generate_action(
         self,
-        idx: int,
         scratchpad: str,
         question: str,
         examples: str,
@@ -230,7 +224,6 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
         """Generates an action based on the question, examples, and prompt.
 
         Args:
-            idx (int): The current index of the action.
             scratchpad (str): The current state of the scratchpad.
             question (str): The question to be answered.
             examples (str): Examples to guide the generation process.
@@ -245,12 +238,11 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
         raise NotImplementedError
 
     def generate_observation(
-        self, idx: int, scratchpad: str, action_type: str, query: str, key: str
+        self, scratchpad: str, action_type: str, query: str, key: str
     ) -> Tuple[str, str, bool, str]:
         """Generates an observation based on the action type and query.
 
         Args:
-            idx (int): The current index of the observation.
             scratchpad (str): The current state of the scratchpad.
             action_type (str): The type of action to be performed.
             query (str): The query for the action.
