@@ -118,45 +118,11 @@ def test_reflexion_cot_halting_condition() -> None:
     llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReflexionCoTQAStrategy(llm=llm, max_trials=3)
 
-    strategy._answer = "incorrect_answer"
-    assert strategy.halting_condition(3, "correct_answer") == True
+    assert strategy.halting_condition(3, "correct_answer", "incorrect_answer") == True
 
-    strategy._answer = "correct_answer"
-    assert strategy.halting_condition(2, "correct_answer") == True
+    assert strategy.halting_condition(2, "correct_answer", "correct_answer") == True
 
-    strategy._answer = "incorrect_answer"
-    assert strategy.halting_condition(2, "correct_answer") == False
-
-
-def test_reflexion_cot_reset() -> None:
-    """Tests ReflexionCoTQAStrategy reset."""
-    llm = MockLLM("gpt-3.5-turbo", responses=[])
-    strategy = ReflexionCoTQAStrategy(llm=llm, max_trials=3)
-
-    strategy._scratchpad = "Initial scratchpad content"
-    strategy._finished = True
-    strategy._answer = "Some answer"
-
-    # Test case 1: Reset everything.
-    strategy.reset()
-    assert strategy._scratchpad == ""
-    assert strategy._finished == False
-    assert strategy._answer == ""
-    assert strategy._prompt_metrics == {
-        "thought": None,
-        "action": None,
-        "reflection": None,
-    }
-
-    strategy._scratchpad = "Initial scratchpad content"
-    strategy._finished = True
-    strategy._answer = "Some answer"
-
-    # Test case 2: Reset only scratchpad.
-    strategy.reset(only_scratchpad=True)
-    assert strategy._scratchpad == ""
-    assert strategy._finished == True
-    assert strategy._answer == "Some answer"
+    assert strategy.halting_condition(2, "correct_answer", "incorrect_answer") == False
 
 
 def test_reflexion_cot_reflect_condition() -> None:
