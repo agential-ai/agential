@@ -225,6 +225,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         max_steps (int): The maximum number of steps allowed.
         max_tokens (int): The maximum number of tokens allowed.
         enc (Encoding): The encoding for tokenization.
+        testing (bool): Whether to run in testing mode. Defaults to False.
     """
 
     def __init__(
@@ -236,9 +237,10 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         max_steps: int,
         max_tokens: int,
         enc: Encoding,
+        testing: bool = False,
     ) -> None:
         """Initialization."""
-        super().__init__(llm)
+        super().__init__(llm=llm, testing=testing)
         self.reflector = reflector
         self.max_reflections = max_reflections
         self.max_trials = max_trials
@@ -247,27 +249,58 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         self.enc = enc
 
     @abstractmethod
-    def generate_action(
+    def generate_thought(
         self,
+        idx: int,
+        scratchpad: str,
         question: str,
         examples: str,
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Any,
-    ) -> Tuple[str, str]:
-        """Generates an action based on the question, examples, and prompt.
+    ) -> Tuple[str, str, PromptMetrics]:
+        """Generates a thought based on the given question, examples, reflections, prompt, and additional keys.
 
         Args:
-            question (str): The question to be answered.
-            examples (str): Examples to guide the generation process.
-            reflections (str): Reflections to guide the generation process.
-            prompt (str): The prompt used for generating the action.
-            additional_keys (Dict[str, str]): Additional keys for the generation process.
-            **kwargs (Any): Additional arguments.
+            idx (int): The current step.
+            scratchpad (str): The scratchpad containing previous thoughts and reflections.
+            question (str): The question to generate a thought for.
+            examples (str): Examples to guide the thought generation process.
+            reflections (str): Reflections to consider during the thought generation process.
+            prompt (str): The prompt or instruction to guide the thought generation.
+            additional_keys (Dict[str, str]): Additional keys for the thought generation process.
 
         Returns:
-            Tuple[str, str]: The generated action type and query.
+            Tuple[str, str, PromptMetrics]: The updated scratchpad, the generated thought, and the thought metrics.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def generate_action(
+        self,
+        idx: int,
+        scratchpad: str,
+        question: str,
+        examples: str,
+        reflections: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> Tuple[str, str, str, PromptMetrics]:
+        """Generate an action for the current step in the reasoning process.
+
+        Args:
+            idx (int): The current step index.
+            scratchpad (str): The scratchpad containing previous thoughts and actions.
+            question (str): The main question or task to be addressed.
+            examples (str): Relevant examples to provide context for action generation.
+            trajectory (str): The current trajectory or history of thoughts and actions.
+            reflections (str): Previous reflections to guide the action generation.
+            depth (int): The current depth in the search tree.
+            prompt (str): The prompt template for action generation.
+            additional_keys (Dict[str, str]): Additional keys for prompt formatting.
+
+        Returns:
+            Tuple[str, str, str, PromptMetrics]: A tuple containing the updated trajectory, action type, query, and the metrics.
         """
         raise NotImplementedError
 
@@ -290,53 +323,18 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         raise NotImplementedError
 
     @abstractmethod
-    def create_output_dict(
-        self, react_out: List[ReflexionReActStepOutput], reflections: List[str]
-    ) -> Dict[str, Any]:
-        """Creates a dictionary of the output components.
-
-        Args:
-            react_out (List[ReflexionReActStepOutput]): The output from the ReAct agent.
-            reflections (List[str]): The output from the ReAct reflections.
-
-        Returns:
-            Dict[str, Any]: A dictionary containing the ReAct output and the reflections.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def react_create_output_dict(
+    def halting_condition(
         self,
-        thought: str,
-        action_type: str,
-        query: str,
-        obs: str,
-        external_tool_info: Dict[str, Any],
-        is_correct: bool,
-    ) -> Dict[str, Any]:
-        """Creates a dictionary of the output components.
-
-        Args:
-            thought (str): The generated thought.
-            action_type (str): The type of action performed.
-            query (str): The query for the action.
-            obs (str): The generated observation.
-            external_tool_info (Dict[str, Any]): The external tool outputs.
-            is_correct (bool): Whether the observation is correct.
-
-        Returns:
-            Dict[str, Any]: A dictionary containing the thought, action type, observation, answer, external_tool_info, and is_correct.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
+        idx: int,
+        key: str,
+        answer: str,
+    ) -> bool:
         """Determines whether the halting condition has been met.
 
         Args:
             idx (int): The current step index.
             key (str): The key for the observation.
-            **kwargs (Any): Additional arguments.
+            answer (str): The answer generated.
 
         Returns:
             bool: True if the halting condition is met, False otherwise.
@@ -346,42 +344,79 @@ class ReflexionReActBaseStrategy(BaseStrategy):
     @abstractmethod
     def react_halting_condition(
         self,
-        step_idx: int,
+        finished: bool,
+        idx: int,
+        scratchpad: str,
         question: str,
         examples: str,
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Any,
     ) -> bool:
-        """Determines whether the halting condition for the ReAct agent has been met.
+        """Determine whether the halting condition has been met in the ReflexionReAct agent.
 
         Args:
-            step_idx (int): The index of the current step.
-            question (str): The question to be answered.
-            examples (str): Examples to guide the generation process.
-            reflections (str): Reflections to guide the generation process.
-            prompt (str): The prompt used for generating the action.
-            additional_keys (Dict[str, str]): Additional keys for the generation process.
-            kwargs (Dict[str, Any]): Additional keyword arguments.
+            finished (bool): A boolean indicating whether the task is finished.
+            idx (int): The index of the current step.
+            scratchpad (str): The scratchpad containing previous thoughts and actions.
+            question (str): The question to generate an action for.
+            examples (str): Examples to guide the action generation process.
+            reflections (str): Reflections to consider during the action generation process.
+            prompt (str): The prompt or instruction to guide the action generation.
+            additional_keys (Dict[str, str]): Additional keys for the action generation process.
 
         Returns:
-            bool: True if the halting condition is met, False otherwise.
+            bool: True if the halting condition is met, False otherwise. The halting condition is met when the answer is not correct and the current step index is less than the maximum number of steps plus one.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def reflect_condition(
+        self,
+        answer: str,
+        finished: bool,
+        idx: int,
+        scratchpad: str,
+        reflect_strategy: Optional[str],
+        question: str,
+        examples: str,
+        key: str,
+        prompt: str,
+        additional_keys: Dict[str, str],
+    ) -> bool:
+        """Determine whether the reflection condition has been met in the ReflexionReAct agent.
+
+        Args:
+            answer (str): The answer generated.
+            finished (bool): A boolean indicating whether the task is finished.
+            idx (int): The index of the current step.
+            scratchpad (str): The scratchpad containing previous thoughts and actions.
+            reflect_strategy (Optional[str]): The strategy to use for reflection.
+            question (str): The question to be reflected upon.
+            examples (str): Examples to guide the reflection process.
+            key (str): The key for the observation.
+            prompt (str): The prompt or instruction to guide the reflection.
+            additional_keys (Dict[str, str]): Additional keys for the reflection process.
+
+        Returns:
+            bool: True if the reflection condition is met, False otherwise. The reflection condition is met when the agent is halted, the answer is not correct, and the reflection strategy is provided.
         """
         raise NotImplementedError
 
     @abstractmethod
     def reflect(
         self,
+        scratchpad: str,
         reflect_strategy: str,
         question: str,
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[List[str], str]:
-        """An abstract method that defines the behavior for reflecting on a given question, context, examples, prompt, and additional keys.
+    ) -> Tuple[List[str], str, PromptMetrics]:
+        """Reflects on a given question, context, examples, prompt, and additional keys using the specified reflection strategy.
 
         Args:
+            scratchpad (str): The scratchpad containing previous thoughts and actions.
             reflect_strategy (str): The strategy to use for reflection.
             question (str): The question to be reflected upon.
             examples (str): Examples to guide the reflection process.
@@ -389,35 +424,6 @@ class ReflexionReActBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the reflection process.
 
         Returns:
-            Tuple[List[str], str]: The reflections and reflection string.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def reflect_condition(
-        self,
-        step_idx: int,
-        reflect_strategy: Optional[str],
-        question: str,
-        examples: str,
-        key: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
-        **kwargs: Dict[str, str],
-    ) -> bool:
-        """Determines whether the reflection condition has been met.
-
-        Args:
-            step_idx (int): The current step index.
-            reflect_strategy (Optional[str]): The strategy to use for reflection.
-            question (str): The question to be reflected upon.
-            examples (str): Examples to guide the reflection process.
-            key (str): The key for the observation.
-            prompt (str): The prompt or instruction to guide the reflection.
-            additional_keys (Dict[str, str]): Additional keys for the reflection process.
-            kwargs (Dict[str, str]): Additional keyword arguments.
-
-        Returns:
-            bool: True if the reflection condition is met, False otherwise.
+            Tuple[List[str], str, PromptMetrics]: The reflections, reflection string, and the metrics for the reflection process.
         """
         raise NotImplementedError

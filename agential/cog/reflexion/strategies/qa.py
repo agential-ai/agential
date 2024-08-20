@@ -22,7 +22,7 @@ from agential.cog.reflexion.reflect import (
 from agential.cog.reflexion.strategies.base import (
     ReflexionReActBaseStrategy,
 )
-from agential.cog.reflexion.strategies.general import ReflexionCoTGeneralStrategy
+from agential.cog.reflexion.strategies.general import ReflexionCoTGeneralStrategy, ReflexionReActGeneralStrategy
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
@@ -167,7 +167,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTGeneralStrategy):
         return idx > 0 and not EM(answer, key) and reflect_strategy is not None
 
 
-class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
+class ReflexionReActQAStrategy(ReflexionReActGeneralStrategy):
     """A strategy class for QA benchmarks using the ReflexionReAct agent.
 
     Attributes:
@@ -179,6 +179,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         max_tokens (int): The maximum number of tokens allowed. Defaults to 5000.
         enc (Encoding): The encoding for tokenization. Defaults to gpt-3.5-turbo.
         docstore (DocstoreExplorer): The document store explorer for retrieving relevant documents. Defaults to Wikipedia.
+        testing (bool): Whether the strategy is in testing mode. Defaults to False.
     """
 
     def __init__(
@@ -191,6 +192,7 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
         max_tokens: int = 5000,
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
         docstore: DocstoreExplorer = DocstoreExplorer(Wikipedia()),
+        testing: bool = False,
     ) -> None:
         """Initialization."""
         if reflector is None:
@@ -198,101 +200,64 @@ class ReflexionReActQAStrategy(ReflexionReActBaseStrategy):
                 llm=llm, max_reflections=max_reflections
             )
         super().__init__(
-            llm, reflector, max_reflections, max_trials, max_steps, max_tokens, enc
+            llm=llm, 
+            reflector=reflector, 
+            max_reflections=max_reflections, 
+            max_trials=max_trials, 
+            max_steps=max_steps, 
+            max_tokens=max_tokens, 
+            enc=enc,
+            testing=testing
         )
         self.docstore = docstore
 
         self._finished = False
         self._answer = ""
         self._scratchpad = ""
-        self._prompt_metrics: Dict[str, Any] = {"reflection": None}
-        self._prompt_metrics_react: Dict[str, Any] = {"thought": None, "action": None}
-
-    def generate(
-        self,
-        question: str,
-        examples: str,
-        reflections: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
-        **kwargs: Any,
-    ) -> str:
-        """Generates a thought based on the given question, examples, reflections, prompt, and additional keys.
-
-        Args:
-            question (str): The question to generate a thought for.
-            examples (str): Examples to guide the thought generation process.
-            reflections (str): Reflections to consider during the thought generation process.
-            prompt (str): The prompt or instruction to guide the thought generation.
-            additional_keys (Dict[str, str]): Additional keys for the thought generation process.
-            kwargs (Dict[str, Any]): Additional keyword arguments.
-
-        Returns:
-            str: The generated thought.
-        """
-        max_steps = kwargs.get("max_steps", self.max_steps)  # type: ignore
-
-        self._scratchpad += "\nThought:"
-        out = _prompt_react_agent(
-            llm=self.llm,
-            question=question,
-            examples=examples,
-            reflections=reflections,
-            scratchpad=self._scratchpad,
-            max_steps=max_steps,  # type: ignore
-            prompt=prompt,
-            additional_keys=additional_keys,
-        )
-        self._prompt_metrics_react["thought"] = get_token_cost_time(out)
-        thought = out.choices[0].message.content
-
-        thought = remove_newline(thought).split("Action")[0].strip()
-        self._scratchpad += " " + thought
-
-        return thought
 
     def generate_action(
         self,
+        idx: int,
+        scratchpad: str,
         question: str,
         examples: str,
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Any,
-    ) -> Tuple[str, str]:
-        """Generates an action based on the given question, examples, reflections, prompt, and additional keys.
+    ) -> Tuple[str, str, str, PromptMetrics]:
+        """Generate an action for the current step in the reasoning process.
 
         Args:
-            question (str): The question to generate an action for.
-            examples (str): Examples to guide the action generation process.
-            reflections (str): Reflections to consider during the action generation process.
-            prompt (str): The prompt or instruction to guide the action generation.
-            additional_keys (Dict[str, str]): Additional keys for the action generation process.
-            kwargs (Dict[str, Any]): Additional keyword arguments.
+            idx (int): The current step index.
+            scratchpad (str): The scratchpad containing previous thoughts and actions.
+            question (str): The main question or task to be addressed.
+            examples (str): Relevant examples to provide context for action generation.
+            trajectory (str): The current trajectory or history of thoughts and actions.
+            reflections (str): Previous reflections to guide the action generation.
+            depth (int): The current depth in the search tree.
+            prompt (str): The prompt template for action generation.
+            additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[str, str]: The generated action type and query.
+            Tuple[str, str, str, PromptMetrics]: A tuple containing the updated trajectory, action type, query, and the metrics.
         """
-        max_steps = kwargs.get("max_steps", self.max_steps)
-        self._scratchpad += "\nAction:"
+        scratchpad += f"\nAction {idx}: "
         out = _prompt_react_agent(
             llm=self.llm,
             question=question,
             examples=examples,
             reflections=reflections,
-            scratchpad=self._scratchpad,
-            max_steps=max_steps,  # type: ignore
+            scratchpad=scratchpad,
+            max_steps=self.max_steps,
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics_react["action"] = get_token_cost_time(out)
         action = out.choices[0].message.content
-
         action = remove_newline(action).split("Observation")[0]
-        self._scratchpad += " " + action
+        scratchpad += action
         action_type, query = parse_qa_action(action)
 
-        return action_type, query
+        return scratchpad, action_type, query, get_token_cost_time(out)
 
     def generate_observation(
         self,

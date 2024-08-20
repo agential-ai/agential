@@ -379,6 +379,7 @@ def test_reflexion_cot_generate() -> None:
     # Test patience reset after incorrect answer and subsequent runs.
 
     # Answer incorrectly.
+    gt_out = ReflexionCoTOutput(answer='Company with Limited Liability', total_prompt_tokens=20, total_completion_tokens=40, total_tokens=60, total_prompt_cost=3e-05, total_completion_cost=7.999999999999999e-05, total_cost=0.00010999999999999999, total_prompt_time=1.0, total_time=0.5, additional_info=[ReflexionCoTStepOutput(thought='The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.', action_type='Finish', observation='Answer is INCORRECT', answer='Company with Limited Liability', is_correct=False, reflections=[], thought_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), reflection_metrics=None)])
     responses = [
         'The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.',
         "Finish[Company with Limited Liability]",
@@ -399,12 +400,10 @@ def test_reflexion_cot_generate() -> None:
         reflect_prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
         patience=1,
     )
-    print(repr(out))
-
-    assert isinstance(out, list)
-    assert len(out) == 1
+    assert out == gt_out
 
     # In a subsequent run, answer correctly (reset defaults to True). Output is non-empty if patience is correctly reset.
+    gt_out = ReflexionCoTOutput(answer='Company with Limited Liability', total_prompt_tokens=20, total_completion_tokens=40, total_tokens=60, total_prompt_cost=3e-05, total_completion_cost=7.999999999999999e-05, total_cost=0.00010999999999999999, total_prompt_time=1.0, total_time=0.5, additional_info=[ReflexionCoTStepOutput(thought='The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.', action_type='Finish', observation='Answer is INCORRECT', answer='Company with Limited Liability', is_correct=False, reflections=[], thought_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), reflection_metrics=None)])
     out = agent.generate(
         question=question,
         key=key,
@@ -415,8 +414,7 @@ def test_reflexion_cot_generate() -> None:
         reflect_prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
         patience=2,
     )
-    assert isinstance(out, list)
-    assert len(out) == 1
+    assert out == gt_out
 
 
 def test_reflexion_react_init() -> None:
