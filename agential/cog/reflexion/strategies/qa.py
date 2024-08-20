@@ -260,31 +260,36 @@ class ReflexionReActQAStrategy(ReflexionReActGeneralStrategy):
         return scratchpad, action_type, query, get_token_cost_time(out)
 
     def generate_observation(
-        self,
-        step_idx: int,
-        action_type: str,
-        query: str,
-        key: str,
-    ) -> Tuple[bool, str, Dict[str, Any]]:
-        """Generate an observation based on the action type and query.
+        self, idx: int, scratchpad: str, action_type: str, query: str, key: str
+    ) -> Tuple[str, str, bool, bool, str, Dict[str, Any]]:
+        """Generate an observation based on the given inputs.
 
         Args:
-            step_idx (int): The index of the current step.
-            action_type (str): The type of action to be performed.
-            query (str): The query for the action.
+            idx (int): The current index of the observation.
+            scratchpad (str): The current state of the scratchpad.
+            action_type (str): The type of action performed.
+            query (str): The query or action to observe.
             key (str): The key for the observation.
 
         Returns:
-            Tuple[bool, str, Dict[str, Any]]: A tuple containing a boolean indicating whether the answer is correct, a string representing the observation,
-                and a dictionary of the external tool outputs.
+            Tuple[str, str, str, bool, Dict[str, Any]]: A tuple containing:
+                - The updated scratchpad.
+                - The answer.
+                - A boolean indicating if finished.
+                - The generated observation.
+                - A boolean indicating if the task is finished.
+                - The observation.
+                - A dictionary with additional information.
         """
         external_tool_info = {"search_result": "", "lookup_result": ""}
 
-        self._scratchpad += f"\nObservation {step_idx}: "
+        answer = ""
+        finished = False
+        scratchpad += f"\nObservation {idx}: "
         if action_type.lower() == "finish":
-            self._answer = query
-            self._finished = True
-            if EM(self._answer, key):
+            answer = query
+            finished = True
+            if EM(answer, key):
                 obs = "Answer is CORRECT"
             else:
                 obs = "Answer is INCORRECT"
@@ -304,9 +309,9 @@ class ReflexionReActQAStrategy(ReflexionReActGeneralStrategy):
                 obs = "The last page Searched was not found, so you cannot Lookup a keyword in it. Please try one of the similar pages given."
         else:
             obs = "Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>]."
-        self._scratchpad += obs
+        scratchpad += obs
 
-        return EM(self._answer, key), obs, external_tool_info
+        return scratchpad, answer, finished, EM(answer, key), obs, external_tool_info
 
     def create_output_dict(
         self,
@@ -361,54 +366,59 @@ class ReflexionReActQAStrategy(ReflexionReActGeneralStrategy):
             "prompt_metrics": self._prompt_metrics_react,
         }
 
-    def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
-        """Determine whether the halting condition has been met.
+    def halting_condition(
+        self,
+        idx: int,
+        key: str,
+        answer: str,
+    ) -> bool:
+        """Determines whether the halting condition has been met.
 
         Args:
             idx (int): The current step index.
             key (str): The key for the observation.
-            kwargs (Dict[str, Any]): Additional keyword arguments.
+            answer (str): The answer generated.
 
         Returns:
-            bool: True if the halting condition is met, False otherwise. The halting condition is met when the answer is not correct and the current step index is less than the maximum number of trials plus one.
+            bool: True if the halting condition is met, False otherwise.
         """
-        max_trials: int = kwargs.get("max_trials", self.max_trials)
-        return EM(self._answer, key) or idx >= max_trials + 1
+        return EM(answer, key) or idx >= self.max_trials + 1
 
     def react_halting_condition(
         self,
-        step_idx: int,
+        finished: bool,
+        idx: int,
+        scratchpad: str,
         question: str,
         examples: str,
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Any,
     ) -> bool:
         """Determine whether the halting condition has been met in the ReflexionReAct agent.
 
         Args:
-            step_idx (int): The index of the current step.
+            finished (bool): A boolean indicating whether the task is finished.
+            idx (int): The index of the current step.
+            scratchpad (str): The scratchpad containing previous thoughts and actions.
             question (str): The question to generate an action for.
             examples (str): Examples to guide the action generation process.
             reflections (str): Reflections to consider during the action generation process.
             prompt (str): The prompt or instruction to guide the action generation.
             additional_keys (Dict[str, str]): Additional keys for the action generation process.
-            kwargs (Dict[str, Any]): Additional keyword arguments.
 
         Returns:
             bool: True if the halting condition is met, False otherwise. The halting condition is met when the answer is not correct and the current step index is less than the maximum number of steps plus one.
         """
-        max_steps = kwargs.get("max_steps", self.max_steps)
 
         return _is_halted(
-            finished=self._finished,
-            step_idx=step_idx,
+            finished=finished,
+            step_idx=idx,
             question=question,
-            scratchpad=self._scratchpad,
+            scratchpad=scratchpad,
             examples=examples,
             reflections=reflections,
-            max_steps=max_steps,
+            max_steps=self.max_steps,
             max_tokens=self.max_tokens,
             enc=self.enc,
             prompt=prompt,
@@ -471,47 +481,50 @@ class ReflexionReActQAStrategy(ReflexionReActGeneralStrategy):
 
     def reflect_condition(
         self,
-        step_idx: int,
+        answer: str,
+        finished: bool,
+        idx: int,
+        scratchpad: str,
         reflect_strategy: Optional[str],
         question: str,
         examples: str,
         key: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Dict[str, str],
     ) -> bool:
         """Determine whether the reflection condition has been met in the ReflexionReAct agent.
 
         Args:
-            step_idx (int): The index of the current step.
+            answer (str): The answer generated.
+            finished (bool): A boolean indicating whether the task is finished.
+            idx (int): The index of the current step.
+            scratchpad (str): The scratchpad containing previous thoughts and actions.
             reflect_strategy (Optional[str]): The strategy to use for reflection.
             question (str): The question to be reflected upon.
             examples (str): Examples to guide the reflection process.
             key (str): The key for the observation.
             prompt (str): The prompt or instruction to guide the reflection.
             additional_keys (Dict[str, str]): Additional keys for the reflection process.
-            kwargs (Dict[str, str]): Additional keyword arguments.
 
         Returns:
             bool: True if the reflection condition is met, False otherwise. The reflection condition is met when the agent is halted, the answer is not correct, and the reflection strategy is provided.
         """
-        max_steps = kwargs.get("max_steps", self.max_steps)
 
         halted = _is_halted(
-            finished=self._finished,
-            step_idx=step_idx,
+            finished=finished,
+            step_idx=idx,
             question=question,
-            scratchpad=self._scratchpad,
+            scratchpad=scratchpad,
             examples=examples,
             reflections=self.reflector.reflections_str,
-            max_steps=max_steps,  # type: ignore
+            max_steps=self.max_steps,
             max_tokens=self.max_tokens,
             enc=self.enc,
             prompt=prompt,
             additional_keys=additional_keys,
         )
 
-        return halted and not EM(self._answer, key) and reflect_strategy is not None
+        return halted and not EM(answer, key) and reflect_strategy is not None
 
 
 class ReflexionCoTHotQAStrategy(ReflexionCoTQAStrategy):

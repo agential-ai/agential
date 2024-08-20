@@ -8,7 +8,7 @@ from tiktoken import Encoding
 import tiktoken
 
 from agential.cog.reflexion.functional import _is_halted, _prompt_cot_agent, _prompt_react_agent, _truncate_scratchpad, accumulate_metrics_cot
-from agential.cog.reflexion.output import ReflexionCoTOutput, ReflexionCoTStepOutput
+from agential.cog.reflexion.output import ReflexionCoTOutput, ReflexionCoTStepOutput, ReflexionReActOutput, ReflexionReActReActStepOutput, ReflexionReActStepOutput
 from agential.cog.reflexion.reflect import ReflexionCoTReflector, ReflexionReActReflector
 from agential.cog.reflexion.strategies.base import ReflexionCoTBaseStrategy, ReflexionReActBaseStrategy
 from agential.eval.em import EM
@@ -380,6 +380,93 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
         self._answer = ""
         self._scratchpad = ""
 
+    def generate_react(
+        self,
+        question: str,
+        key: str,
+        examples: str,
+        reflections: str,
+        prompt: str,
+        additional_keys: Dict[str, str] = {},
+    ) -> Tuple[int, bool, str, bool, str, List[ReflexionReActReActStepOutput]]:
+        """Generates a reaction based on the given question, key, examples, reflections, prompt, and additional keys.
+
+        Args:
+            question (str): The question to be answered.
+            key (str): The key for the observation.
+            examples (str): Examples to guide the reaction process.
+            reflections (str): The reflections to guide the reaction process.
+            prompt (str): The prompt or instruction to guide the reaction.
+            additional_keys (Dict[str, str]): Additional keys for the reaction process.
+
+        Returns:
+            Tuple[int, bool, str, bool, str, List[ReflexionReActReActStepOutput]]: The reaction, whether the reaction is finished, the answer, whether the reaction is valid, the scratchpad, and the steps.
+        """
+       
+        react_steps = []
+        step_idx = 1
+        scratchpad = ""
+        finished = False
+        answer = ""
+        while not self.react_halting_condition(
+            finished=finished,
+            idx=step_idx,
+            scratchpad=scratchpad,
+            question=question,
+            examples=examples,
+            reflections=reflections,
+            prompt=prompt,
+            additional_keys=additional_keys,
+        ):
+            # Think.
+            scratchpad, thought, thought_metrics = self.generate_thought(
+                idx=step_idx,
+                scratchpad=scratchpad,
+                question=question,
+                examples=examples,
+                reflections=reflections,
+                prompt=prompt,
+                additional_keys=additional_keys,
+            )
+
+            # Act.
+            scratchpad, action_type, query, action_metrics = self.generate_action(
+                idx=step_idx,
+                scratchpad=scratchpad,
+                question=question,
+                examples=examples,
+                reflections=reflections,
+                prompt=prompt,
+                additional_keys=additional_keys,
+            )
+
+            # Observe.
+            scratchpad, answer, finished, is_correct, obs, external_tool_info = self.generate_observation(
+                idx=step_idx,
+                scratchpad=scratchpad,
+                action_type=action_type,
+                query=query,
+                key=key,
+            )
+
+            react_steps.append(
+                ReflexionReActReActStepOutput(
+                    thought=thought,
+                    action_type=action_type,
+                    query=query,
+                    obs=obs,
+                    answer=answer,
+                    external_tool_info=external_tool_info,
+                    is_correct=is_correct,
+                    thought_metrics=thought_metrics,
+                    action_metrics=action_metrics,
+                )
+            )
+
+            step_idx += 1
+
+        return step_idx, is_correct, scratchpad, finished, answer, react_steps
+
     def generate(
         self,
         question: str,
@@ -399,32 +486,37 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
         if reset:
             self.reset()
 
+        scratchpad = ""
+        answer = ""
+        finished = False
         idx, step_idx, patience_cnt = 1, 1, 0
         out = []
-        while not self.halting_condition(idx=idx, key=key, **kwargs):
+        while not self.halting_condition(idx=idx, key=key, answer=answer):
             # Reflect if possible.
             reflections: List[str] = []
             reflections_str = ""
             if self.reflect_condition(
-                step_idx=step_idx,
+                answer=answer,
+                finished=finished,
+                idx=step_idx,
+                scratchpad=scratchpad,
                 reflect_strategy=reflect_strategy,
                 question=question,
                 examples=examples,
                 key=key,
                 prompt=prompt,
                 additional_keys=additional_keys,
-                **kwargs,
             ):
-                assert isinstance(reflect_strategy, str)
-                reflections, reflections_str = self.reflect(
+                reflections, reflections_str, reflection_metrics = self.reflect(
+                    scratchpad=scratchpad,
                     reflect_strategy=reflect_strategy,
                     question=question,
                     examples=reflect_examples,
                     prompt=reflect_prompt,
                     additional_keys=reflect_additional_keys,
                 )
-
-            step_idx, is_correct, react_out = self._generate_react(
+                
+            step_idx, is_correct, scratchpad, finished, answer, steps = self.generate_react(
                 question=question,
                 key=key,
                 examples=examples,
@@ -435,11 +527,10 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
             )
 
             out.append(
-                ReflexionReActOutput(
-                    **self.create_output_dict(
-                        react_out=react_out,
-                        reflections=reflections,
-                    )
+                ReflexionReActStepOutput(
+                    steps=steps,
+                    reflections=reflections,
+                    reflection_metrics=reflection_metrics,
                 )
             )
 
@@ -450,6 +541,8 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
                 break
 
             idx += 1
+
+
 
         return out
 
@@ -524,8 +617,8 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
         raise NotImplementedError
     
     def generate_observation(
-        self, idx: int, scratchpad: str, action_type: str, query: str
-    ) -> Tuple[str, str, str, bool, Dict[str, Any]]:
+        self, idx: int, scratchpad: str, action_type: str, query: str, key: str
+    ) -> Tuple[str, str, bool, bool, str, Dict[str, Any]]:
         """Generate an observation based on the given inputs.
 
         Args:
@@ -533,17 +626,44 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
             scratchpad (str): The current state of the scratchpad.
             action_type (str): The type of action performed.
             query (str): The query or action to observe.
+            key (str): The key for the observation.
 
         Returns:
             Tuple[str, str, str, bool, Dict[str, Any]]: A tuple containing:
                 - The updated scratchpad.
+                - The answer.
+                - A boolean indicating if finished.
                 - The generated observation.
-                - The observation type.
                 - A boolean indicating if the task is finished.
+                - The observation.
                 - A dictionary with additional information.
         """
         raise NotImplementedError
     
+    def generate_observation(
+        self, idx: int, scratchpad: str, action_type: str, query: str, key: str
+    ) -> Tuple[str, str, bool, bool, str, Dict[str, Any]]:
+        """Generate an observation based on the given inputs.
+
+        Args:
+            idx (int): The current index of the observation.
+            scratchpad (str): The current state of the scratchpad.
+            action_type (str): The type of action performed.
+            query (str): The query or action to observe.
+            key (str): The key for the observation.
+
+        Returns:
+            Tuple[str, str, str, bool, Dict[str, Any]]: A tuple containing:
+                - The updated scratchpad.
+                - The answer.
+                - A boolean indicating if finished.
+                - The generated observation.
+                - A boolean indicating if the task is finished.
+                - The observation.
+                - A dictionary with additional information.
+        """
+        raise NotImplementedError
+
     def halting_condition(
         self,
         idx: int,
@@ -633,22 +753,7 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
         Returns:
             bool: True if the reflection condition is met, False otherwise. The reflection condition is met when the agent is halted, the answer is not correct, and the reflection strategy is provided.
         """
-
-        halted = _is_halted(
-            finished=finished,
-            step_idx=idx,
-            question=question,
-            scratchpad=scratchpad,
-            examples=examples,
-            reflections=self.reflector.reflections_str,
-            max_steps=self.max_steps,
-            max_tokens=self.max_tokens,
-            enc=self.enc,
-            prompt=prompt,
-            additional_keys=additional_keys,
-        )
-
-        return halted and not EM(answer, key) and reflect_strategy is not None
+        raise NotImplementedError
 
     def reflect(
         self,

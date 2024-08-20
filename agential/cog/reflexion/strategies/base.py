@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from tiktoken import Encoding
 
 from agential.cog.base.strategies import BaseStrategy
-from agential.cog.reflexion.output import ReflexionCoTOutput, ReflexionReActStepOutput
+from agential.cog.reflexion.output import ReflexionCoTOutput, ReflexionReActReActStepOutput, ReflexionReActStepOutput
 from agential.cog.reflexion.reflect import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
@@ -249,6 +249,31 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         self.enc = enc
 
     @abstractmethod
+    def generate_react(
+        self,
+        question: str,
+        key: str,
+        examples: str,
+        reflections: str,
+        prompt: str,
+        additional_keys: Dict[str, str] = {},
+    ) -> Tuple[int, bool, str, bool, str, List[ReflexionReActReActStepOutput]]:
+        """Generates a reaction based on the given question, key, examples, reflections, prompt, and additional keys.
+
+        Args:
+            question (str): The question to be answered.
+            key (str): The key for the observation.
+            examples (str): Examples to guide the reaction process.
+            reflections (str): The reflections to guide the reaction process.
+            prompt (str): The prompt or instruction to guide the reaction.
+            additional_keys (Dict[str, str]): Additional keys for the reaction process.
+
+        Returns:
+            Tuple[int, bool, str, bool, str, List[ReflexionReActReActStepOutput]]: The reaction, whether the reaction is finished, the answer, whether the reaction is valid, the scratchpad, and the steps.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
     def generate_thought(
         self,
         idx: int,
@@ -306,19 +331,26 @@ class ReflexionReActBaseStrategy(BaseStrategy):
 
     @abstractmethod
     def generate_observation(
-        self, step_idx: int, action_type: str, query: str, key: str
-    ) -> Tuple[bool, str, Dict[str, Any]]:
-        """Generates an observation based on the action type and query.
+        self, idx: int, scratchpad: str, action_type: str, query: str, key: str
+    ) -> Tuple[str, str, bool, bool, str, Dict[str, Any]]:
+        """Generate an observation based on the given inputs.
 
         Args:
-            step_idx (int): The index of the step.
-            action_type (str): The type of action to be performed.
-            query (str): The query for the action.
+            idx (int): The current index of the observation.
+            scratchpad (str): The current state of the scratchpad.
+            action_type (str): The type of action performed.
+            query (str): The query or action to observe.
             key (str): The key for the observation.
 
         Returns:
-            Tuple[bool, str, Dict[str, Any]]: A tuple containing a boolean indicating whether the answer is correct, a string representing the observation,
-                and a dictionary of the external tool outputs.
+            Tuple[str, str, str, bool, Dict[str, Any]]: A tuple containing:
+                - The updated scratchpad.
+                - The answer.
+                - A boolean indicating if finished.
+                - The generated observation.
+                - A boolean indicating if the task is finished.
+                - The observation.
+                - A dictionary with additional information.
         """
         raise NotImplementedError
 
