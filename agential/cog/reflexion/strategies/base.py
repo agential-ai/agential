@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from tiktoken import Encoding
 
 from agential.cog.base.strategies import BaseStrategy
-from agential.cog.reflexion.output import ReflexionCoTOutput, ReflexionReActReActStepOutput, ReflexionReActStepOutput
+from agential.cog.reflexion.output import ReflexionCoTOutput, ReflexionReActOutput, ReflexionReActReActStepOutput, ReflexionReActStepOutput
 from agential.cog.reflexion.reflect import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
@@ -71,7 +71,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
             reset (bool): Whether to reset the agent.
 
         Returns:
-            ReActOutput: The output of the agent.
+            ReflexionCoTOutput: The output of the agent.
         """
         raise NotImplementedError
 
@@ -247,6 +247,41 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         self.max_steps = max_steps
         self.max_tokens = max_tokens
         self.enc = enc
+
+    @abstractmethod
+    def generate(
+        self,
+        question: str,
+        key: str,
+        examples: str,
+        reflect_examples: str,
+        prompt: str,
+        reflect_prompt: str,
+        reflect_strategy: str,
+        additional_keys: Dict[str, str],
+        reflect_additional_keys: Dict[str, str],
+        patience: int,
+        reset: bool,        
+    ) -> ReflexionReActOutput:
+        """Generates a thought based on the question, examples, and prompt.
+
+        Args:
+            question (str): The question to be answered.
+            key (str): The key for the output.
+            examples (str): Examples to guide the generation process.
+            reflect_examples (str): Examples to guide the reflection process.
+            prompt (str): The prompt to guide the generation process.
+            reflect_prompt (str): The prompt to guide the reflection process.
+            reflect_strategy (str): The strategy to use for reflection.
+            additional_keys (Dict[str, str]): Additional keys to include in the output.
+            reflect_additional_keys (Dict[str, str]): Additional keys to include in the reflection output.
+            patience (int): The patience level for the agent.
+            reset (bool): Whether to reset the agent.
+
+        Returns:
+            ReflexionReActOutput: The output of the agent.
+        """
+        raise NotImplementedError
 
     @abstractmethod
     def generate_react(

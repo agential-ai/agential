@@ -380,6 +380,106 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
         self._answer = ""
         self._scratchpad = ""
 
+    def generate(
+        self,
+        question: str,
+        key: str,
+        examples: str,
+        reflect_examples: str,
+        prompt: str,
+        reflect_prompt: str,
+        reflect_strategy: str,
+        additional_keys: Dict[str, str],
+        reflect_additional_keys: Dict[str, str],
+        patience: int,
+        reset: bool,        
+    ) -> ReflexionReActOutput:
+        """Generates a thought based on the question, examples, and prompt.
+
+        Args:
+            question (str): The question to be answered.
+            key (str): The key for the output.
+            examples (str): Examples to guide the generation process.
+            reflect_examples (str): Examples to guide the reflection process.
+            prompt (str): The prompt to guide the generation process.
+            reflect_prompt (str): The prompt to guide the reflection process.
+            reflect_strategy (str): The strategy to use for reflection.
+            additional_keys (Dict[str, str]): Additional keys to include in the output.
+            reflect_additional_keys (Dict[str, str]): Additional keys to include in the reflection output.
+            patience (int): The patience level for the agent.
+            reset (bool): Whether to reset the agent.
+
+        Returns:
+            ReflexionReActOutput: The output of the agent.
+        """
+        # Reset.
+        if reset:
+            self.reset()
+
+        scratchpad = ""
+        answer = ""
+        finished = False
+        idx, step_idx, patience_cnt = 1, 1, 0
+        steps = []
+        while not self.halting_condition(idx=idx, key=key, answer=answer):
+            # Reflect if possible.
+            reflections: List[str] = []
+            reflections_str = ""
+            if self.reflect_condition(
+                answer=answer,
+                finished=finished,
+                idx=step_idx,
+                scratchpad=scratchpad,
+                reflect_strategy=reflect_strategy,
+                question=question,
+                examples=examples,
+                key=key,
+                prompt=prompt,
+                additional_keys=additional_keys,
+            ):
+                reflections, reflections_str, reflection_metrics = self.reflect(
+                    scratchpad=scratchpad,
+                    reflect_strategy=reflect_strategy,
+                    question=question,
+                    examples=reflect_examples,
+                    prompt=reflect_prompt,
+                    additional_keys=reflect_additional_keys,
+                )
+                
+            step_idx, is_correct, scratchpad, finished, answer, react_steps = self.generate_react(
+                question=question,
+                key=key,
+                examples=examples,
+                reflections=reflections_str,
+                prompt=prompt,
+                additional_keys=additional_keys,
+            )
+
+            steps.append(
+                ReflexionReActStepOutput(
+                    steps=react_steps,
+                    reflections=reflections,
+                    reflection_metrics=reflection_metrics,
+                )
+            )
+
+            # Increment patience counter.
+            if not is_correct:
+                patience_cnt += 1
+            if patience_cnt == patience:
+                break
+
+            idx += 1
+
+        out = ReflexionReActOutput(
+            answer=answer,
+            total_prompt_tokens=,
+
+            additional_info=steps
+        )
+
+        return out
+
     def generate_react(
         self,
         question: str,
@@ -467,84 +567,6 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
 
         return step_idx, is_correct, scratchpad, finished, answer, react_steps
 
-    def generate(
-        self,
-        question: str,
-        key: str,
-        examples: str,
-        prompt: str,
-        reflect_examples: str,
-        reflect_prompt: str,
-        reflect_strategy: str,
-        additional_keys: Dict[str, str],
-        reflect_additional_keys: Dict[str, str],
-        patience: int,
-        reset: bool,        
-        **kwargs: Any,
-    ) -> ReflexionReActOutput:
-        # Reset.
-        if reset:
-            self.reset()
-
-        scratchpad = ""
-        answer = ""
-        finished = False
-        idx, step_idx, patience_cnt = 1, 1, 0
-        out = []
-        while not self.halting_condition(idx=idx, key=key, answer=answer):
-            # Reflect if possible.
-            reflections: List[str] = []
-            reflections_str = ""
-            if self.reflect_condition(
-                answer=answer,
-                finished=finished,
-                idx=step_idx,
-                scratchpad=scratchpad,
-                reflect_strategy=reflect_strategy,
-                question=question,
-                examples=examples,
-                key=key,
-                prompt=prompt,
-                additional_keys=additional_keys,
-            ):
-                reflections, reflections_str, reflection_metrics = self.reflect(
-                    scratchpad=scratchpad,
-                    reflect_strategy=reflect_strategy,
-                    question=question,
-                    examples=reflect_examples,
-                    prompt=reflect_prompt,
-                    additional_keys=reflect_additional_keys,
-                )
-                
-            step_idx, is_correct, scratchpad, finished, answer, steps = self.generate_react(
-                question=question,
-                key=key,
-                examples=examples,
-                reflections=reflections_str,
-                prompt=prompt,
-                additional_keys=additional_keys,
-                **kwargs,
-            )
-
-            out.append(
-                ReflexionReActStepOutput(
-                    steps=steps,
-                    reflections=reflections,
-                    reflection_metrics=reflection_metrics,
-                )
-            )
-
-            # Increment patience counter.
-            if not is_correct:
-                patience_cnt += 1
-            if patience_cnt == patience:
-                break
-
-            idx += 1
-
-
-
-        return out
 
     def generate_thought(
         self,
