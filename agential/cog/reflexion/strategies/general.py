@@ -7,11 +7,10 @@ from typing import Any, Dict, List, Optional, Tuple
 from tiktoken import Encoding
 import tiktoken
 
-from agential.cog.reflexion.functional import _is_halted, _prompt_cot_agent, _prompt_react_agent, _truncate_scratchpad, accumulate_metrics_cot
+from agential.cog.reflexion.functional import _is_halted, _prompt_cot_agent, _prompt_react_agent, _truncate_scratchpad, accumulate_metrics_cot, accumulate_metrics_react
 from agential.cog.reflexion.output import ReflexionCoTOutput, ReflexionCoTStepOutput, ReflexionReActOutput, ReflexionReActReActStepOutput, ReflexionReActStepOutput
 from agential.cog.reflexion.reflect import ReflexionCoTReflector, ReflexionReActReflector
 from agential.cog.reflexion.strategies.base import ReflexionCoTBaseStrategy, ReflexionReActBaseStrategy
-from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
 from agential.utils.metrics import PromptMetrics, get_token_cost_time
 from agential.utils.parse import remove_newline
@@ -412,6 +411,8 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
         Returns:
             ReflexionReActOutput: The output of the agent.
         """
+        start = time.time()
+
         # Reset.
         if reset:
             self.reset()
@@ -420,7 +421,7 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
         answer = ""
         finished = False
         idx, step_idx, patience_cnt = 1, 1, 0
-        steps = []
+        steps: List[ReflexionReActStepOutput] = []
         while not self.halting_condition(idx=idx, key=key, answer=answer):
             # Reflect if possible.
             reflections: List[str] = []
@@ -471,10 +472,18 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
 
             idx += 1
 
+        total_time = time.time() - start
+        total_metrics = accumulate_metrics_react(steps)
         out = ReflexionReActOutput(
             answer=answer,
-            total_prompt_tokens=,
-
+            total_prompt_tokens=total_metrics["total_prompt_tokens"],
+            total_completion_tokens=total_metrics["total_completion_tokens"],
+            total_tokens=total_metrics["total_tokens"],
+            total_prompt_cost=total_metrics["total_prompt_cost"],
+            total_completion_cost=total_metrics["total_completion_cost"],
+            total_cost=total_metrics["total_cost"],
+            total_prompt_time=total_metrics["total_prompt_time"],
+            total_time=total_time if not self.testing else 0.5,
             additional_info=steps
         )
 

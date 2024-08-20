@@ -8,7 +8,7 @@ import tiktoken
 
 from tiktoken.core import Encoding
 
-from agential.cog.reflexion.output import ReflexionCoTStepOutput
+from agential.cog.reflexion.output import ReflexionCoTStepOutput, ReflexionReActStepOutput
 from agential.cog.reflexion.prompts import (
     LAST_TRIAL_HEADER,
     REFLECTION_HEADER,
@@ -777,6 +777,50 @@ def accumulate_metrics_cot(steps: List[ReflexionCoTStepOutput]) -> Union[int, fl
             + step.action_metrics.prompt_time
             + (step.reflection_metrics.prompt_time if step.reflection_metrics else 0.0)
         )
+
+    return {
+        "total_prompt_tokens": total_prompt_tokens,
+        "total_completion_tokens": total_completion_tokens,
+        "total_tokens": total_tokens,
+        "total_prompt_cost": total_prompt_cost,
+        "total_completion_cost": total_completion_cost,
+        "total_cost": total_cost,
+        "total_prompt_time": total_prompt_time,
+    }
+
+
+def accumulate_metrics_react(steps: List[ReflexionReActStepOutput]) -> Union[int, float]:
+    """Accumulates metrics for ReflexionReAct.
+
+    Args:
+        steps (List[ReflexionReActStepOutput]): List of ReflexionReActStepOutput objects.
+
+    Returns:
+        Dict[str, Any]: A dictionary containing the following accumulated metrics:
+            - total_prompt_tokens (int): Total number of prompt tokens used.
+            - total_completion_tokens (int): Total number of completion tokens generated.
+            - total_tokens (int): Total number of tokens (prompt + completion).
+            - total_prompt_cost (float): Total cost associated with prompts.
+            - total_completion_cost (float): Total cost associated with completions.
+            - total_cost (float): Total overall cost (prompt + completion).
+            - total_prompt_time (float): Total time spent on prompts.
+    """
+    total_prompt_tokens = 0
+    total_completion_tokens = 0
+    total_tokens = 0
+    total_prompt_cost = 0.0
+    total_completion_cost = 0.0
+    total_cost = 0.0
+    total_prompt_time = 0.0
+
+    for step in steps:
+        total_prompt_tokens += sum([s.thought_metrics.prompt_tokens for s in step.steps]) + sum([s.action_metrics.prompt_tokens for s in step.steps]) + (step.reflection_metrics.prompt_tokens if step.reflection_metrics else 0)
+        total_completion_tokens += sum([s.thought_metrics.completion_tokens for s in step.steps]) + sum([s.action_metrics.completion_tokens for s in step.steps]) + (step.reflection_metrics.completion_tokens if step.reflection_metrics else 0)
+        total_tokens += sum([s.thought_metrics.total_tokens for s in step.steps]) + sum([s.action_metrics.total_tokens for s in step.steps]) + (step.reflection_metrics.total_tokens if step.reflection_metrics else 0)
+        total_prompt_cost += sum([s.thought_metrics.prompt_cost for s in step.steps]) + sum([s.action_metrics.prompt_cost for s in step.steps]) + (step.reflection_metrics.prompt_cost if step.reflection_metrics else 0.0)
+        total_completion_cost += sum([s.thought_metrics.completion_cost for s in step.steps]) + sum([s.action_metrics.completion_cost for s in step.steps]) + (step.reflection_metrics.completion_cost if step.reflection_metrics else 0.0)
+        total_cost += sum([s.thought_metrics.total_cost for s in step.steps]) + sum([s.action_metrics.total_cost for s in step.steps]) + (step.reflection_metrics.total_cost if step.reflection_metrics else 0.0)
+        total_prompt_time += sum([s.thought_metrics.prompt_time for s in step.steps]) + sum([s.action_metrics.prompt_time for s in step.steps]) + (step.reflection_metrics.prompt_time if step.reflection_metrics else 0.0)
 
     return {
         "total_prompt_tokens": total_prompt_tokens,
