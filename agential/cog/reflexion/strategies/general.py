@@ -4,13 +4,33 @@ import time
 
 from typing import Any, Dict, List, Optional, Tuple
 
-from tiktoken import Encoding
 import tiktoken
 
-from agential.cog.reflexion.functional import _is_halted, _prompt_cot_agent, _prompt_react_agent, _truncate_scratchpad, accumulate_metrics_cot, accumulate_metrics_react
-from agential.cog.reflexion.output import ReflexionCoTOutput, ReflexionCoTStepOutput, ReflexionReActOutput, ReflexionReActReActStepOutput, ReflexionReActStepOutput
-from agential.cog.reflexion.reflect import ReflexionCoTReflector, ReflexionReActReflector
-from agential.cog.reflexion.strategies.base import ReflexionCoTBaseStrategy, ReflexionReActBaseStrategy
+from tiktoken import Encoding
+
+from agential.cog.reflexion.functional import (
+    _is_halted,
+    _prompt_cot_agent,
+    _prompt_react_agent,
+    _truncate_scratchpad,
+    accumulate_metrics_cot,
+    accumulate_metrics_react,
+)
+from agential.cog.reflexion.output import (
+    ReflexionCoTOutput,
+    ReflexionCoTStepOutput,
+    ReflexionReActOutput,
+    ReflexionReActReActStepOutput,
+    ReflexionReActStepOutput,
+)
+from agential.cog.reflexion.reflect import (
+    ReflexionCoTReflector,
+    ReflexionReActReflector,
+)
+from agential.cog.reflexion.strategies.base import (
+    ReflexionCoTBaseStrategy,
+    ReflexionReActBaseStrategy,
+)
 from agential.llm.llm import BaseLLM
 from agential.utils.metrics import PromptMetrics, get_token_cost_time
 from agential.utils.parse import remove_newline
@@ -365,19 +385,15 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
                 llm=llm, max_reflections=max_reflections
             )
         super().__init__(
-            llm=llm, 
-            reflector=reflector, 
-            max_reflections=max_reflections, 
-            max_trials=max_trials, 
-            max_steps=max_steps, 
-            max_tokens=max_tokens, 
-            enc=enc, 
+            llm=llm,
+            reflector=reflector,
+            max_reflections=max_reflections,
+            max_trials=max_trials,
+            max_steps=max_steps,
+            max_tokens=max_tokens,
+            enc=enc,
             testing=testing,
         )
-
-        self._finished = False
-        self._answer = ""
-        self._scratchpad = ""
 
     def generate(
         self,
@@ -391,7 +407,7 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
         patience: int,
-        reset: bool,        
+        reset: bool,
     ) -> ReflexionReActOutput:
         """Generates a thought based on the question, examples, and prompt.
 
@@ -446,14 +462,16 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
                     prompt=reflect_prompt,
                     additional_keys=reflect_additional_keys,
                 )
-                
-            step_idx, is_correct, scratchpad, finished, answer, react_steps = self.generate_react(
-                question=question,
-                key=key,
-                examples=examples,
-                reflections=reflections_str,
-                prompt=prompt,
-                additional_keys=additional_keys,
+
+            step_idx, is_correct, scratchpad, finished, answer, react_steps = (
+                self.generate_react(
+                    question=question,
+                    key=key,
+                    examples=examples,
+                    reflections=reflections_str,
+                    prompt=prompt,
+                    additional_keys=additional_keys,
+                )
             )
 
             steps.append(
@@ -484,7 +502,7 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
             total_cost=total_metrics["total_cost"],
             total_prompt_time=total_metrics["total_prompt_time"],
             total_time=total_time if not self.testing else 0.5,
-            additional_info=steps
+            additional_info=steps,
         )
 
         return out
@@ -511,7 +529,6 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
         Returns:
             Tuple[int, bool, str, bool, str, List[ReflexionReActReActStepOutput]]: The reaction, whether the reaction is finished, the answer, whether the reaction is valid, the scratchpad, and the steps.
         """
-       
         react_steps = []
         step_idx = 1
         scratchpad = ""
@@ -550,12 +567,14 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
             )
 
             # Observe.
-            scratchpad, answer, finished, is_correct, obs, external_tool_info = self.generate_observation(
-                idx=step_idx,
-                scratchpad=scratchpad,
-                action_type=action_type,
-                query=query,
-                key=key,
+            scratchpad, answer, finished, is_correct, obs, external_tool_info = (
+                self.generate_observation(
+                    idx=step_idx,
+                    scratchpad=scratchpad,
+                    action_type=action_type,
+                    query=query,
+                    key=key,
+                )
             )
 
             react_steps.append(
@@ -575,7 +594,6 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
             step_idx += 1
 
         return step_idx, is_correct, scratchpad, finished, answer, react_steps
-
 
     def generate_thought(
         self,
@@ -601,7 +619,6 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
         Returns:
             Tuple[str, str, PromptMetrics]: The updated scratchpad, the generated thought, and the thought metrics.
         """
-
         scratchpad += f"\nThought {idx}: "
         out = _prompt_react_agent(
             llm=self.llm,
@@ -618,7 +635,7 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
         scratchpad += thought
 
         return scratchpad, thought, get_token_cost_time(out)
-    
+
     def generate_action(
         self,
         idx: int,
@@ -646,7 +663,7 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
             Tuple[str, str, str, PromptMetrics]: A tuple containing the updated trajectory, action type, query, and the metrics.
         """
         raise NotImplementedError
-    
+
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str, key: str
     ) -> Tuple[str, str, bool, bool, str, Dict[str, Any]]:
@@ -670,7 +687,7 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
                 - A dictionary with additional information.
         """
         raise NotImplementedError
-    
+
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str, key: str
     ) -> Tuple[str, str, bool, bool, str, Dict[str, Any]]:
@@ -712,7 +729,7 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
             bool: True if the halting condition is met, False otherwise.
         """
         raise NotImplementedError
-    
+
     def react_halting_condition(
         self,
         finished: bool,
@@ -739,7 +756,6 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
         Returns:
             bool: True if the halting condition is met, False otherwise. The halting condition is met when the answer is not correct and the current step index is less than the maximum number of steps plus one.
         """
-
         return _is_halted(
             finished=finished,
             step_idx=idx,
@@ -812,28 +828,16 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
             reflect_strategy=reflect_strategy,
             question=question,
             examples=examples,
-            scratchpad=_truncate_scratchpad(
-                scratchpad=scratchpad, tokenizer=self.enc
-            ),
+            scratchpad=_truncate_scratchpad(scratchpad=scratchpad, tokenizer=self.enc),
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        reflection_metrics = get_token_cost_time(reflections_out) if reflections_out else None
+        reflection_metrics = (
+            get_token_cost_time(reflections_out) if reflections_out else None
+        )
 
         return reflections, reflections_str, reflection_metrics
 
-    def reset(self, **kwargs: Any) -> None:
-        """Resets the internal state of the strategy.
-
-        Resets the scratchpad and the finished flag.
-        Resets only the scratchpad if specified with 'only_scratchpad'.
-
-        Args:
-            **kwargs (Any): Additional keyword arguments.
-        """
-        no_reflector = kwargs.get("no_reflector", False)
-        if not no_reflector:
-            self.reflector.reset()
-        self._scratchpad = ""
-        self._finished = False
-        self._answer = ""
+    def reset(self) -> None:
+        """Resets the internal state of the strategy."""
+        self.reflector.reset()

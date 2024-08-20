@@ -6,7 +6,12 @@ from typing import Any, Dict, List, Optional, Tuple
 from tiktoken import Encoding
 
 from agential.cog.base.strategies import BaseStrategy
-from agential.cog.reflexion.output import ReflexionCoTOutput, ReflexionReActOutput, ReflexionReActReActStepOutput, ReflexionReActStepOutput
+from agential.cog.reflexion.output import (
+    ReflexionCoTOutput,
+    ReflexionReActOutput,
+    ReflexionReActReActStepOutput,
+    ReflexionReActStepOutput,
+)
 from agential.cog.reflexion.reflect import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
@@ -261,7 +266,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
         patience: int,
-        reset: bool,        
+        reset: bool,
     ) -> ReflexionReActOutput:
         """Generates a thought based on the question, examples, and prompt.
 
@@ -493,4 +498,8 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         Returns:
             Tuple[List[str], str, PromptMetrics]: The reflections, reflection string, and the metrics for the reflection process.
         """
+        raise NotImplementedError
+
+    def reset(self) -> None:
+        """Resets the internal state of the strategy."""
         raise NotImplementedError
