@@ -22,7 +22,7 @@ from agential.cog.reflexion.reflect import (
 from agential.cog.reflexion.strategies.base import (
     ReflexionReActBaseStrategy,
 )
-from agential.cog.reflexion.strategies.general import ReflexionCoTGeneralStrategy
+from agential.cog.reflexion.strategies.general import ReflexionCoTGeneralStrategy, ReflexionReActGeneralStrategy
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
 from agential.utils.general import safe_execute
@@ -174,7 +174,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTGeneralStrategy):
         )
 
 
-class ReflexionReActMathStrategy(ReflexionReActBaseStrategy):
+class ReflexionReActMathStrategy(ReflexionReActGeneralStrategy):
     """A strategy class for Math benchmarks using the ReflexionReAct agent.
 
     Attributes:
