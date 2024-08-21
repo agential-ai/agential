@@ -1,11 +1,18 @@
 """Unit tests for Reflexion Math strategies."""
 
 import tiktoken
+
 from agential.cog.fewshots.gsm8k import (
     GSM8K_FEWSHOT_EXAMPLES_COT,
     GSM8K_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.cog.reflexion.output import ReflexionCoTOutput, ReflexionCoTStepOutput, ReflexionReActOutput, ReflexionReActReActStepOutput, ReflexionReActStepOutput
+from agential.cog.reflexion.output import (
+    ReflexionCoTOutput,
+    ReflexionCoTStepOutput,
+    ReflexionReActOutput,
+    ReflexionReActReActStepOutput,
+    ReflexionReActStepOutput,
+)
 from agential.cog.reflexion.prompts import (
     GSM8K_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     GSM8K_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
@@ -40,7 +47,6 @@ def test_reflexion_cot_init() -> None:
     assert isinstance(strategy.reflector, ReflexionCoTReflector)
     assert strategy.max_reflections == 3
     assert strategy.max_trials == 3
-    
 
 
 def test_reflexion_cot_generate() -> None:
@@ -237,31 +243,314 @@ def test_reflexion_react_init() -> None:
     assert strategy.max_tokens == 5000
     assert isinstance(strategy.enc, tiktoken.Encoding)
 
+
 def test_reflexion_react_generate() -> None:
     """Tests ReflexionReActMathStrategy generate."""
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
     key = -9867630
 
-    gt_out = ReflexionReActOutput(answer='eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\ntotal_daily_income = eggs_to_sell * price_per_egg\nanswer = total_daily_income', total_prompt_tokens=180, total_completion_tokens=360, total_tokens=540, total_prompt_cost=0.00027, total_completion_cost=0.0007199999999999999, total_cost=0.00099, total_prompt_time=9.0, total_time=0.5, additional_info=[ReflexionReActStepOutput(steps=[ReflexionReActReActStepOutput(thought="Let's calculate how many eggs she has left after eating and baking for her friends.Thought 2: She lays 16 eggs per day, eats 3, bakes muffins with the rest, which leaves 16 - 3 = 13 eggs to sell.", action_type='', query='', observation='Invalid Action. Valid Actions are Calculate[code] and Finish[answer].', answer='', external_tool_info={'execution_status': '', 'code_answer': ''}, is_correct=False, thought_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)), ReflexionReActReActStepOutput(thought="Janet has 13 eggs left to sell at the farmers' market.", action_type='Finish', query='eggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_for_friends = 4933828\nremaining_eggs_to_sell = eggs_laid_per_day - eggs_eaten_for_breakfast\nsales_per_day = remaining_eggs_to_sell * 2\nanswer = sales_per_day', observation='Answer is INCORRECT', answer='eggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_for_friends = 4933828\nremaining_eggs_to_sell = eggs_laid_per_day - eggs_eaten_for_breakfast\nsales_per_day = remaining_eggs_to_sell * 2\nanswer = sales_per_day', external_tool_info={'execution_status': 'Done', 'code_answer': 26}, is_correct=False, thought_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5))], reflections=[], reflection_metrics=None), ReflexionReActStepOutput(steps=[ReflexionReActReActStepOutput(thought="Let's break down the relevant components. Janet's ducks lay 16 eggs per day, of which she eats 3 for breakfast. This means she has 16 - 3 = 13 eggs left to sell. Since she sells each fresh duck egg for $2, the total amount she makes daily can be calculated by multiplying the number of eggs she sells by the price per egg.Thought 2: To calculate how much in dollars Janet makes every day at the farmers' market, I need to multiply the number of eggs she sells daily (13) by the price per egg ($2).", action_type='Calculate', query='eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast\nprice_per_egg = 2\ntotal_daily_income = eggs_to_sell * price_per_egg\nanswer = total_daily_income', observation='\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast\nprice_per_egg = 2\ntotal_daily_income = eggs_to_sell * price_per_egg\nanswer = total_daily_income\n```\nExecution Status: Done\nOutput: answer = 26', answer='eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast\nprice_per_egg = 2\ntotal_daily_income = eggs_to_sell * price_per_egg\nanswer = total_daily_income', external_tool_info={'execution_status': 'Done', 'code_answer': 26}, is_correct=False, thought_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)), ReflexionReActReActStepOutput(thought='This plan is correct, and by following these steps, the answer should be accurate.', action_type='', query='', observation='Invalid Action. Valid Actions are Calculate[code] and Finish[answer].', answer='', external_tool_info={'execution_status': '', 'code_answer': ''}, is_correct=False, thought_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)), ReflexionReActReActStepOutput(thought="I have successfully calculated that Janet makes $26 every day at the farmers' market by selling the remaining eggs from her ducks.", action_type='Finish', query='total_daily_income = 26\nanswer = total_daily_income', observation='Answer is INCORRECT', answer='total_daily_income = 26\nanswer = total_daily_income', external_tool_info={'execution_status': 'Done', 'code_answer': 26}, is_correct=False, thought_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5))], reflections=["My reasoning failed because I mistakenly included the number of eggs she bakes for her friends (4933828) in the calculation, which skewed the result. In the future, I should carefully exclude irrelevant information and focus on the relevant calculations to accurately determine the amount she makes from selling eggs at the farmers' market. High-level Plan: Next time, I will correctly identify the relevant components needed for the calculation, such as the number of eggs she eats for breakfast and the price she sells the remaining eggs for. By accurately isolating these values and performing the correct arithmetic operations, I will calculate the total amount she makes daily at the farmers' market."], reflection_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)), ReflexionReActStepOutput(steps=[ReflexionReActReActStepOutput(thought="Let's accurately identify the relevant components for this calculation: the number of eggs laid per day, the eggs used for breakfast, the eggs used for muffins, and the price per fresh duck egg. We need to subtract the eggs used for breakfast and muffins to determine the eggs available for sale.Thought 2: To avoid the previous mistake, I should focus on the key figures: the number of eggs used for breakfast and the number of eggs baked into muffins. By correctly deducting these from the total eggs laid, I can determine the amount Janet has available to sell at the farmers' market.Plan: Calculate the total income by multiplying the number of eggs available for sale by the price per egg. Be careful not to include irrelevant information like the eggs used for muffins as part of the income calculation.", action_type='', query='', observation='Invalid Action. Valid Actions are Calculate[code] and Finish[answer].', answer='', external_tool_info={'execution_status': '', 'code_answer': ''}, is_correct=False, thought_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)), ReflexionReActReActStepOutput(thought="I should focus on correctly identifying the relevant components, such as the number of eggs available for sale and the price per egg, to calculate Janet's daily income accurately. Plan: Calculate the total income by multiplying the number of eggs available for sale by the price per egg. Be careful not to include irrelevant information like the eggs used for muffins as part of the income calculation.", action_type='Calculate', query='eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\ntotal_daily_income = eggs_to_sell * price_per_egg\nanswer = total_daily_income', observation='\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\ntotal_daily_income = eggs_to_sell * price_per_egg\nanswer = total_daily_income\n```\nExecution Status: Done\nOutput: answer = -9867630', answer='eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\ntotal_daily_income = eggs_to_sell * price_per_egg\nanswer = total_daily_income', external_tool_info={'execution_status': 'Done', 'code_answer': -9867630}, is_correct=True, thought_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)), ReflexionReActReActStepOutput(thought="I made a mistake in the calculation. The negative value for total_daily_income indicates an error in the subtraction of eggs_for_muffins. Let's correct it by ensuring the deduction is accurate and recalculating the total daily income correctly.", action_type='Finish', query='eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\ntotal_daily_income = eggs_to_sell * price_per_egg\nanswer = total_daily_income', observation='Answer is CORRECT', answer='eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\ntotal_daily_income = eggs_to_sell * price_per_egg\nanswer = total_daily_income', external_tool_info={'execution_status': 'Done', 'code_answer': -9867630}, is_correct=True, thought_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), action_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5))], reflections=["My reasoning failed because I mistakenly included the number of eggs she bakes for her friends (4933828) in the calculation, which skewed the result. In the future, I should carefully exclude irrelevant information and focus on the relevant calculations to accurately determine the amount she makes from selling eggs at the farmers' market. High-level Plan: Next time, I will correctly identify the relevant components needed for the calculation, such as the number of eggs she eats for breakfast and the price she sells the remaining eggs for. By accurately isolating these values and performing the correct arithmetic operations, I will calculate the total amount she makes daily at the farmers' market.", "My reasoning failed because in the initial calculation, I forgot to account for the number of muffins Janet bakes for her friends each day (4933828) and mistakenly assumed that this number represented eggs. In the future, I should ensure that all quantities are correctly identified and included in the calculations. To mitigate this mistake, I will revise the plan by correctly reflecting the actual number of eggs Janet has to sell daily and include the quantity baked into muffins for her friends.Revised Plan:Question: Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?Thought: Let's break down the relevant components. Since Janet eats 3 eggs for breakfast and bakes the remaining ones into muffins, we need to consider those additional deductions before determining the actual number of eggs she has to sell. By ensuring all components are accounted for accurately, the revised calculation will provide the correct answer for the daily income from selling fresh duck eggs at the farmers' market.Action: Calculate[```pythoneggs_laid_per_day = 16eggs_for_breakfast = 3eggs_for_muffins = 4933828eggs_to_sell = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffinsprice_per_egg = 2total_daily_income = eggs_to_sell * price_per_egganswer = total_daily_income```]"], reflection_metrics=PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5))])
+    gt_out = ReflexionReActOutput(
+        answer="eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\ntotal_daily_income = eggs_to_sell * price_per_egg\nanswer = total_daily_income",
+        total_prompt_tokens=180,
+        total_completion_tokens=360,
+        total_tokens=540,
+        total_prompt_cost=0.00027,
+        total_completion_cost=0.0007199999999999999,
+        total_cost=0.00099,
+        total_prompt_time=9.0,
+        total_time=0.5,
+        additional_info=[
+            ReflexionReActStepOutput(
+                steps=[
+                    ReflexionReActReActStepOutput(
+                        thought="Let's calculate how many eggs she has left after eating and baking for her friends.Thought 2: She lays 16 eggs per day, eats 3, bakes muffins with the rest, which leaves 16 - 3 = 13 eggs to sell.",
+                        action_type="",
+                        query="",
+                        observation="Invalid Action. Valid Actions are Calculate[code] and Finish[answer].",
+                        answer="",
+                        external_tool_info={"execution_status": "", "code_answer": ""},
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="Janet has 13 eggs left to sell at the farmers' market.",
+                        action_type="Finish",
+                        query="eggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_for_friends = 4933828\nremaining_eggs_to_sell = eggs_laid_per_day - eggs_eaten_for_breakfast\nsales_per_day = remaining_eggs_to_sell * 2\nanswer = sales_per_day",
+                        observation="Answer is INCORRECT",
+                        answer="eggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_for_friends = 4933828\nremaining_eggs_to_sell = eggs_laid_per_day - eggs_eaten_for_breakfast\nsales_per_day = remaining_eggs_to_sell * 2\nanswer = sales_per_day",
+                        external_tool_info={
+                            "execution_status": "Done",
+                            "code_answer": 26,
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                ],
+                reflections=[],
+                reflection_metrics=None,
+            ),
+            ReflexionReActStepOutput(
+                steps=[
+                    ReflexionReActReActStepOutput(
+                        thought="Let's break down the relevant components. Janet's ducks lay 16 eggs per day, of which she eats 3 for breakfast. This means she has 16 - 3 = 13 eggs left to sell. Since she sells each fresh duck egg for $2, the total amount she makes daily can be calculated by multiplying the number of eggs she sells by the price per egg.Thought 2: To calculate how much in dollars Janet makes every day at the farmers' market, I need to multiply the number of eggs she sells daily (13) by the price per egg ($2).",
+                        action_type="Calculate",
+                        query="eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast\nprice_per_egg = 2\ntotal_daily_income = eggs_to_sell * price_per_egg\nanswer = total_daily_income",
+                        observation="\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast\nprice_per_egg = 2\ntotal_daily_income = eggs_to_sell * price_per_egg\nanswer = total_daily_income\n```\nExecution Status: Done\nOutput: answer = 26",
+                        answer="eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast\nprice_per_egg = 2\ntotal_daily_income = eggs_to_sell * price_per_egg\nanswer = total_daily_income",
+                        external_tool_info={
+                            "execution_status": "Done",
+                            "code_answer": 26,
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="This plan is correct, and by following these steps, the answer should be accurate.",
+                        action_type="",
+                        query="",
+                        observation="Invalid Action. Valid Actions are Calculate[code] and Finish[answer].",
+                        answer="",
+                        external_tool_info={"execution_status": "", "code_answer": ""},
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="I have successfully calculated that Janet makes $26 every day at the farmers' market by selling the remaining eggs from her ducks.",
+                        action_type="Finish",
+                        query="total_daily_income = 26\nanswer = total_daily_income",
+                        observation="Answer is INCORRECT",
+                        answer="total_daily_income = 26\nanswer = total_daily_income",
+                        external_tool_info={
+                            "execution_status": "Done",
+                            "code_answer": 26,
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                ],
+                reflections=[
+                    "My reasoning failed because I mistakenly included the number of eggs she bakes for her friends (4933828) in the calculation, which skewed the result. In the future, I should carefully exclude irrelevant information and focus on the relevant calculations to accurately determine the amount she makes from selling eggs at the farmers' market. High-level Plan: Next time, I will correctly identify the relevant components needed for the calculation, such as the number of eggs she eats for breakfast and the price she sells the remaining eggs for. By accurately isolating these values and performing the correct arithmetic operations, I will calculate the total amount she makes daily at the farmers' market."
+                ],
+                reflection_metrics=PromptMetrics(
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+            ),
+            ReflexionReActStepOutput(
+                steps=[
+                    ReflexionReActReActStepOutput(
+                        thought="Let's accurately identify the relevant components for this calculation: the number of eggs laid per day, the eggs used for breakfast, the eggs used for muffins, and the price per fresh duck egg. We need to subtract the eggs used for breakfast and muffins to determine the eggs available for sale.Thought 2: To avoid the previous mistake, I should focus on the key figures: the number of eggs used for breakfast and the number of eggs baked into muffins. By correctly deducting these from the total eggs laid, I can determine the amount Janet has available to sell at the farmers' market.Plan: Calculate the total income by multiplying the number of eggs available for sale by the price per egg. Be careful not to include irrelevant information like the eggs used for muffins as part of the income calculation.",
+                        action_type="",
+                        query="",
+                        observation="Invalid Action. Valid Actions are Calculate[code] and Finish[answer].",
+                        answer="",
+                        external_tool_info={"execution_status": "", "code_answer": ""},
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="I should focus on correctly identifying the relevant components, such as the number of eggs available for sale and the price per egg, to calculate Janet's daily income accurately. Plan: Calculate the total income by multiplying the number of eggs available for sale by the price per egg. Be careful not to include irrelevant information like the eggs used for muffins as part of the income calculation.",
+                        action_type="Calculate",
+                        query="eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\ntotal_daily_income = eggs_to_sell * price_per_egg\nanswer = total_daily_income",
+                        observation="\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\ntotal_daily_income = eggs_to_sell * price_per_egg\nanswer = total_daily_income\n```\nExecution Status: Done\nOutput: answer = -9867630",
+                        answer="eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\ntotal_daily_income = eggs_to_sell * price_per_egg\nanswer = total_daily_income",
+                        external_tool_info={
+                            "execution_status": "Done",
+                            "code_answer": -9867630,
+                        },
+                        is_correct=True,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="I made a mistake in the calculation. The negative value for total_daily_income indicates an error in the subtraction of eggs_for_muffins. Let's correct it by ensuring the deduction is accurate and recalculating the total daily income correctly.",
+                        action_type="Finish",
+                        query="eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\ntotal_daily_income = eggs_to_sell * price_per_egg\nanswer = total_daily_income",
+                        observation="Answer is CORRECT",
+                        answer="eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\ntotal_daily_income = eggs_to_sell * price_per_egg\nanswer = total_daily_income",
+                        external_tool_info={
+                            "execution_status": "Done",
+                            "code_answer": -9867630,
+                        },
+                        is_correct=True,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                ],
+                reflections=[
+                    "My reasoning failed because I mistakenly included the number of eggs she bakes for her friends (4933828) in the calculation, which skewed the result. In the future, I should carefully exclude irrelevant information and focus on the relevant calculations to accurately determine the amount she makes from selling eggs at the farmers' market. High-level Plan: Next time, I will correctly identify the relevant components needed for the calculation, such as the number of eggs she eats for breakfast and the price she sells the remaining eggs for. By accurately isolating these values and performing the correct arithmetic operations, I will calculate the total amount she makes daily at the farmers' market.",
+                    "My reasoning failed because in the initial calculation, I forgot to account for the number of muffins Janet bakes for her friends each day (4933828) and mistakenly assumed that this number represented eggs. In the future, I should ensure that all quantities are correctly identified and included in the calculations. To mitigate this mistake, I will revise the plan by correctly reflecting the actual number of eggs Janet has to sell daily and include the quantity baked into muffins for her friends.Revised Plan:Question: Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?Thought: Let's break down the relevant components. Since Janet eats 3 eggs for breakfast and bakes the remaining ones into muffins, we need to consider those additional deductions before determining the actual number of eggs she has to sell. By ensuring all components are accounted for accurately, the revised calculation will provide the correct answer for the daily income from selling fresh duck eggs at the farmers' market.Action: Calculate[```pythoneggs_laid_per_day = 16eggs_for_breakfast = 3eggs_for_muffins = 4933828eggs_to_sell = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffinsprice_per_egg = 2total_daily_income = eggs_to_sell * price_per_egganswer = total_daily_income```]",
+                ],
+                reflection_metrics=PromptMetrics(
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+            ),
+        ],
+    )
     responses = [
         "Let's calculate how many eggs she has left after eating and baking for her friends.\nThought 2: She lays 16 eggs per day, eats 3, bakes muffins with the rest, which leaves 16 - 3 = 13 eggs to sell.\nAction: Finish[\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_to_sell = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nmoney_per_fresh_duck_egg = 2\nmoney_made_per_day = eggs_to_sell * money_per_fresh_duck_egg\nanswer = money_made_per_day\n```\n]",
-        '```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_to_sell = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\n```\nAction 2:',
+        "```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_into_muffins = 4933828\neggs_to_sell = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_baked_into_muffins\n```\nAction 2:",
         "Janet has 13 eggs left to sell at the farmers' market.\nAction 2: Finish[\n```python\neggs_left_to_sell = 13\neggs_sold_price = 2\nmoney_made_per_day = eggs_left_to_sell * eggs_sold_price\nanswer = money_made_per_day\n``` \n]",
-        'Finish[\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_for_friends = 4933828\nremaining_eggs_to_sell = eggs_laid_per_day - eggs_eaten_for_breakfast\nsales_per_day = remaining_eggs_to_sell * 2\nanswer = sales_per_day\n``` \n]',
+        "Finish[\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_baked_for_friends = 4933828\nremaining_eggs_to_sell = eggs_laid_per_day - eggs_eaten_for_breakfast\nsales_per_day = remaining_eggs_to_sell * 2\nanswer = sales_per_day\n``` \n]",
         "My reasoning failed because I mistakenly included the number of eggs she bakes for her friends (4933828) in the calculation, which skewed the result. In the future, I should carefully exclude irrelevant information and focus on the relevant calculations to accurately determine the amount she makes from selling eggs at the farmers' market. \n\nHigh-level Plan: Next time, I will correctly identify the relevant components needed for the calculation, such as the number of eggs she eats for breakfast and the price she sells the remaining eggs for. By accurately isolating these values and performing the correct arithmetic operations, I will calculate the total amount she makes daily at the farmers' market.",
         "Let's break down the relevant components. Janet's ducks lay 16 eggs per day, of which she eats 3 for breakfast. This means she has 16 - 3 = 13 eggs left to sell. Since she sells each fresh duck egg for $2, the total amount she makes daily can be calculated by multiplying the number of eggs she sells by the price per egg.\nThought 2: To calculate how much in dollars Janet makes every day at the farmers' market, I need to multiply the number of eggs she sells daily (13) by the price per egg ($2).\nAction: Finish[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast\nprice_per_egg = 2\ntotal_income_daily = eggs_to_sell * price_per_egg\nanswer = total_income_daily\n```\n]",
         "Let's calculate the total amount Janet makes daily at the farmers' market.\n\nAction 2: Finish[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast\nprice_per_egg = 2\ntotal_daily_income = eggs_to_sell * price_per_egg\nanswer = total_daily_income\n```\n]",
-        'This plan is correct, and by following these steps, the answer should be accurate.',
-        'Finish[26]',
+        "This plan is correct, and by following these steps, the answer should be accurate.",
+        "Finish[26]",
         "I have successfully calculated that Janet makes $26 every day at the farmers' market by selling the remaining eggs from her ducks.",
-        'Finish[\n```python\ntotal_daily_income = 26\nanswer = total_daily_income\n``` \n]',
+        "Finish[\n```python\ntotal_daily_income = 26\nanswer = total_daily_income\n``` \n]",
         "My reasoning failed because in the initial calculation, I forgot to account for the number of muffins Janet bakes for her friends each day (4933828) and mistakenly assumed that this number represented eggs. In the future, I should ensure that all quantities are correctly identified and included in the calculations. To mitigate this mistake, I will revise the plan by correctly reflecting the actual number of eggs Janet has to sell daily and include the quantity baked into muffins for her friends.\n\nRevised Plan:\nQuestion: Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?\nThought: Let's break down the relevant components. Since Janet eats 3 eggs for breakfast and bakes the remaining ones into muffins, we need to consider those additional deductions before determining the actual number of eggs she has to sell. By ensuring all components are accounted for accurately, the revised calculation will provide the correct answer for the daily income from selling fresh duck eggs at the farmers' market.\nAction: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\ntotal_daily_income = eggs_to_sell * price_per_egg\nanswer = total_daily_income\n```\n]",
         "Let's accurately identify the relevant components for this calculation: the number of eggs laid per day, the eggs used for breakfast, the eggs used for muffins, and the price per fresh duck egg. We need to subtract the eggs used for breakfast and muffins to determine the eggs available for sale.\nThought 2: To avoid the previous mistake, I should focus on the key figures: the number of eggs used for breakfast and the number of eggs baked into muffins. By correctly deducting these from the total eggs laid, I can determine the amount Janet has available to sell at the farmers' market.\nPlan: Calculate the total income by multiplying the number of eggs available for sale by the price per egg. Be careful not to include irrelevant information like the eggs used for muffins as part of the income calculation.\nAction: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\n\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\n\ntotal_daily_income = eggs_to_sell * price_per_egg\nanswer = total_daily_income\n```\n]",
-        '[```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\ntotal_daily_income = eggs_to_sell * price_per_egg\n```\n]',
+        "[```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\ntotal_daily_income = eggs_to_sell * price_per_egg\n```\n]",
         "I should focus on correctly identifying the relevant components, such as the number of eggs available for sale and the price per egg, to calculate Janet's daily income accurately. Plan: Calculate the total income by multiplying the number of eggs available for sale by the price per egg. Be careful not to include irrelevant information like the eggs used for muffins as part of the income calculation. Action: Calculate[```python```]",
-        'Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\ntotal_daily_income = eggs_to_sell * price_per_egg\nanswer = total_daily_income\n``` \n]',
+        "Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\ntotal_daily_income = eggs_to_sell * price_per_egg\nanswer = total_daily_income\n``` \n]",
         "I made a mistake in the calculation. The negative value for total_daily_income indicates an error in the subtraction of eggs_for_muffins. Let's correct it by ensuring the deduction is accurate and recalculating the total daily income correctly.\nAction 3: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\ntotal_daily_income = eggs_to_sell * price_per_egg\nanswer = total_daily_income\n```\n]",
-        'Finish[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\ntotal_daily_income = eggs_to_sell * price_per_egg\nanswer = total_daily_income\n``` \n]',
+        "Finish[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_to_sell = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nprice_per_egg = 2\ntotal_daily_income = eggs_to_sell * price_per_egg\nanswer = total_daily_income\n``` \n]",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReflexionReActMathStrategy(llm=llm, testing=True)
@@ -285,7 +574,7 @@ def test_reflexion_react_generate_action() -> None:
     """Tests ReflexionReActMathStrategy generate_action."""
     question = "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"
 
-    gt_scratchpad = '\nAction 0: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income\n```\n]'
+    gt_scratchpad = "\nAction 0: Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income\n```\n]"
     responses = [
         "Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income\n```\n]"
     ]
@@ -306,8 +595,15 @@ def test_reflexion_react_generate_action() -> None:
         == "eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income"
     )
     assert scratchpad == gt_scratchpad
-    assert thought_metrics == PromptMetrics(prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)
-
+    assert thought_metrics == PromptMetrics(
+        prompt_tokens=10,
+        completion_tokens=20,
+        total_tokens=30,
+        prompt_cost=1.5e-05,
+        completion_cost=3.9999999999999996e-05,
+        total_cost=5.4999999999999995e-05,
+        prompt_time=0.5,
+    )
 
 
 def test_reflexion_react_generate_observation() -> None:
@@ -316,70 +612,87 @@ def test_reflexion_react_generate_observation() -> None:
     strategy = ReflexionReActMathStrategy(llm=llm)
 
     # Test Calculate.
-    scratchpad, answer, finished, is_correct, obs, external_tool_info = strategy.generate_observation(
-        idx=0,
-        scratchpad="",
-        action_type="Calculate",
-        query="eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income",
-        key=-9867630,
+    scratchpad, answer, finished, is_correct, obs, external_tool_info = (
+        strategy.generate_observation(
+            idx=0,
+            scratchpad="",
+            action_type="Calculate",
+            query="eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income",
+            key=-9867630,
+        )
     )
     assert is_correct
     assert (
         obs
         == "\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income\n```\nExecution Status: Done\nOutput: answer = -9867630"
     )
-    assert scratchpad == '\nObservation 0: \n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income\n```\nExecution Status: Done\nOutput: answer = -9867630'
-    assert answer == 'eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income'
+    assert (
+        scratchpad
+        == "\nObservation 0: \n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income\n```\nExecution Status: Done\nOutput: answer = -9867630"
+    )
+    assert (
+        answer
+        == "eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income"
+    )
     assert not finished
-    assert external_tool_info == {'execution_status': 'Done', 'code_answer': -9867630}
+    assert external_tool_info == {"execution_status": "Done", "code_answer": -9867630}
 
     # Test Finish incorrect.
-    scratchpad, answer, finished, is_correct, obs, external_tool_info = strategy.generate_observation(
-        idx=0,
-        scratchpad="",
-        action_type="Finish",
-        query="answer = 5",
-        key="key1",
+    scratchpad, answer, finished, is_correct, obs, external_tool_info = (
+        strategy.generate_observation(
+            idx=0,
+            scratchpad="",
+            action_type="Finish",
+            query="answer = 5",
+            key="key1",
+        )
     )
     assert not is_correct
     assert obs == "Answer is INCORRECT"
 
-    assert scratchpad == '\nObservation 0: Answer is INCORRECT'
-    assert answer == 'answer = 5'
+    assert scratchpad == "\nObservation 0: Answer is INCORRECT"
+    assert answer == "answer = 5"
     assert finished
-    assert external_tool_info == {'execution_status': 'Done', 'code_answer': 5}
+    assert external_tool_info == {"execution_status": "Done", "code_answer": 5}
 
     # Test Finish correct.
-    scratchpad, answer, finished, is_correct, obs, external_tool_info = strategy.generate_observation(
-        idx=0,
-        scratchpad="",
-        action_type="Finish",
-        query="answer = 5",
-        key=5,
+    scratchpad, answer, finished, is_correct, obs, external_tool_info = (
+        strategy.generate_observation(
+            idx=0,
+            scratchpad="",
+            action_type="Finish",
+            query="answer = 5",
+            key=5,
+        )
     )
     assert is_correct
     assert obs == "Answer is CORRECT"
-    assert scratchpad == '\nObservation 0: Answer is CORRECT'
-    assert answer == 'answer = 5'
+    assert scratchpad == "\nObservation 0: Answer is CORRECT"
+    assert answer == "answer = 5"
     assert finished
-    assert external_tool_info == {'execution_status': 'Done', 'code_answer': 5}
+    assert external_tool_info == {"execution_status": "Done", "code_answer": 5}
 
     # Test invalid.
-    scratchpad, answer, finished, is_correct, obs, external_tool_info = strategy.generate_observation(
-        idx=0,
-        scratchpad="",
-        action_type="Invalid",
-        query="answer = 5",
-        key=5,
+    scratchpad, answer, finished, is_correct, obs, external_tool_info = (
+        strategy.generate_observation(
+            idx=0,
+            scratchpad="",
+            action_type="Invalid",
+            query="answer = 5",
+            key=5,
+        )
     )
     assert is_correct
     assert (
         obs == "Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
     )
-    assert scratchpad == '\nObservation 0: Invalid Action. Valid Actions are Calculate[code] and Finish[answer].'
+    assert (
+        scratchpad
+        == "\nObservation 0: Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
+    )
     assert answer == ""
     assert not finished
-    assert external_tool_info == {'execution_status': '', 'code_answer': ''}
+    assert external_tool_info == {"execution_status": "", "code_answer": ""}
 
 
 def test_reflexion_react_create_output_dict() -> None:

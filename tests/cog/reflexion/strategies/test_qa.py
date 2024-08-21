@@ -844,7 +844,7 @@ def test_reflexion_react_generate_observation() -> None:
     assert not is_correct
     assert isinstance(obs, str)
     assert external_tool_info == {"search_result": "Search result", "lookup_result": ""}
-    assert scratchpad == '\nObservation 1: Search result'
+    assert scratchpad == "\nObservation 1: Search result"
     assert answer == ""
     assert not finished
 
@@ -861,7 +861,7 @@ def test_reflexion_react_generate_observation() -> None:
     assert not is_correct
     assert isinstance(obs, str)
     assert external_tool_info == {"search_result": "", "lookup_result": "Lookup result"}
-    assert scratchpad == '\nObservation 1: Lookup result'
+    assert scratchpad == "\nObservation 1: Lookup result"
     assert answer == ""
     assert not finished
 
@@ -877,8 +877,8 @@ def test_reflexion_react_generate_observation() -> None:
     assert not is_correct
     assert isinstance(obs, str)
     assert external_tool_info == {"search_result": "", "lookup_result": ""}
-    assert scratchpad == '\nObservation 1: Answer is INCORRECT'
-    assert answer == 'VIVA Media AG'
+    assert scratchpad == "\nObservation 1: Answer is INCORRECT"
+    assert answer == "VIVA Media AG"
     assert finished
 
 

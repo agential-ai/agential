@@ -23,7 +23,10 @@ from agential.cog.reflexion.strategies.base import (
     ReflexionCoTBaseStrategy,
     ReflexionReActBaseStrategy,
 )
-from agential.cog.reflexion.strategies.general import ReflexionCoTGeneralStrategy, ReflexionReActGeneralStrategy
+from agential.cog.reflexion.strategies.general import (
+    ReflexionCoTGeneralStrategy,
+    ReflexionReActGeneralStrategy,
+)
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
 from agential.utils.general import safe_execute
@@ -323,7 +326,14 @@ class ReflexionReActCodeStrategy(ReflexionReActGeneralStrategy):
             obs = "Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer]."
         scratchpad += obs
 
-        return scratchpad, answer, finished, EM(execution_status, "Done", normalize=False), obs, external_tool_info
+        return (
+            scratchpad,
+            answer,
+            finished,
+            EM(execution_status, "Done", normalize=False),
+            obs,
+            external_tool_info,
+        )
 
     def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
         """Determine whether the halting condition has been met.
