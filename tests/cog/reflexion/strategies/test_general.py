@@ -9,7 +9,7 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.reflexion.reflect import ReflexionCoTReflector
-from agential.cog.reflexion.strategies.general import ReflexionCoTGeneralStrategy
+from agential.cog.reflexion.strategies.general import ReflexionCoTGeneralStrategy, ReflexionReActGeneralStrategy
 from agential.llm.llm import BaseLLM, MockLLM
 from agential.utils.metrics import PromptMetrics
 
@@ -157,3 +157,52 @@ def test_reflexion_cot_reset() -> None:
     strategy.reset()
 
     assert strategy.reflector.reflections == []
+
+
+def test_reflexion_react_init() -> None:
+    """Tests ReflexionReactGeneralStrategy init."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = ReflexionReActGeneralStrategy(llm=llm)
+
+def test_reflexion_react_generate_thought() -> None:
+    """Tests ReflexionReactGeneralStrategy generate_thought."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = ReflexionReActGeneralStrategy(llm=llm)
+
+def test_reflexion_react_generate_action() -> None:
+    """Tests ReflexionReactGeneralStrategy generate_action."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = ReflexionReActGeneralStrategy(llm=llm)
+
+def test_reflexion_react_generate_observation() -> None:
+    """Tests ReflexionReactGeneralStrategy generate_observation."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = ReflexionReActGeneralStrategy(llm=llm)
+
+
+def test_reflexion_react_halting_condition() -> None:
+    """Tests ReflexionReactGeneralStrategy halting_condition."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = ReflexionReActGeneralStrategy(llm=llm)
+
+
+def test_reflexion_react_react_halting_condition() -> None:
+    """Tests ReflexionReactGeneralStrategy react_halting_condition."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = ReflexionReActGeneralStrategy(llm=llm)
+
+def test_reflexion_react_reflect_condition() -> None:
+    """Tests ReflexionReactGeneralStrategy reflect_condition."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = ReflexionReActGeneralStrategy(llm=llm)
+
+def test_reflexion_react_reflect() -> None:
+    """Tests ReflexionReactGeneralStrategy reflect."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = ReflexionReActGeneralStrategy(llm=llm)
+
+def test_reflexion_react_reset() -> None:
+    """Tests ReflexionReactGeneralStrategy reset."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = ReflexionReActGeneralStrategy(llm=llm)
+

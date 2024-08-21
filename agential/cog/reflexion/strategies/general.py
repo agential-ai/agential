@@ -689,30 +689,6 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
         """
         raise NotImplementedError
 
-    def generate_observation(
-        self, idx: int, scratchpad: str, action_type: str, query: str, key: str
-    ) -> Tuple[str, str, bool, bool, str, Dict[str, Any]]:
-        """Generate an observation based on the given inputs.
-
-        Args:
-            idx (int): The current index of the observation.
-            scratchpad (str): The current state of the scratchpad.
-            action_type (str): The type of action performed.
-            query (str): The query or action to observe.
-            key (str): The key for the observation.
-
-        Returns:
-            Tuple[str, str, str, bool, Dict[str, Any]]: A tuple containing:
-                - The updated scratchpad.
-                - The answer.
-                - A boolean indicating if finished.
-                - The generated observation.
-                - A boolean indicating if the task is finished.
-                - The observation.
-                - A dictionary with additional information.
-        """
-        raise NotImplementedError
-
     def halting_condition(
         self,
         idx: int,
