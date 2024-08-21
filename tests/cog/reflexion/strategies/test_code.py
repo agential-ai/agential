@@ -212,8 +212,6 @@ def test_reflexion_cot_generate_action() -> None:
         query
         == "def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None"
     )
-    print(repr(scratchpad))
-    print(repr(action_metrics))
     assert (
         scratchpad
         == "\nAction:  Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]"

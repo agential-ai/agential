@@ -559,87 +559,7 @@ def test_reflexion_react_generate() -> None:
         reset=True,
     )
 
-    print(repr(out))
     assert out == gt_out
-
-
-def test_reflexion_react_generate_action() -> None:
-    """Tests ReflexionReActQAStrategy generate_action."""
-    question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
-
-    gt_scratchpad = "\nAction 1: Search[VIVA Media AG]"
-    responses = [
-        "Search[VIVA Media AG]",
-    ]
-    llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    strategy = ReflexionReActQAStrategy(llm=llm)
-    scratchpad, action_type, query, thought_metrics = strategy.generate_action(
-        idx=1,
-        scratchpad="",
-        question=question,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        reflections="",
-        prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-        additional_keys={},
-    )
-    assert action_type == "Search"
-    assert query == "VIVA Media AG"
-    assert scratchpad == gt_scratchpad
-    assert thought_metrics == PromptMetrics(
-        prompt_tokens=10,
-        completion_tokens=20,
-        total_tokens=30,
-        prompt_cost=1.5e-05,
-        completion_cost=3.9999999999999996e-05,
-        total_cost=5.4999999999999995e-05,
-        prompt_time=0.5,
-    )
-
-
-def test_reflexion_react_generate_observation() -> None:
-    """Tests ReflexionReActQAStrategy generate_observation."""
-    llm = MockLLM("gpt-3.5-turbo", responses=[])
-    strategy = ReflexionReActQAStrategy(llm=llm)
-    strategy.docstore.search = lambda x: "Search result"
-    scratchpad, answer, finished, is_correct, obs, external_tool_info = (
-        strategy.generate_observation(
-            idx=1,
-            scratchpad="",
-            action_type="Search",
-            query="VIVA Media AG",
-            key="key1",
-        )
-    )
-    assert not is_correct
-    assert isinstance(obs, str)
-    assert external_tool_info == {"search_result": "Search result", "lookup_result": ""}
-
-    strategy.docstore.lookup = lambda x: "Lookup result"
-    scratchpad, answer, finished, is_correct, obs, external_tool_info = (
-        strategy.generate_observation(
-            idx=1,
-            scratchpad="",
-            action_type="Lookup",
-            query="VIVA Media AG",
-            key="key1",
-        )
-    )
-    assert not is_correct
-    assert isinstance(obs, str)
-    assert external_tool_info == {"search_result": "", "lookup_result": "Lookup result"}
-
-    scratchpad, answer, finished, is_correct, obs, external_tool_info = (
-        strategy.generate_observation(
-            idx=1,
-            scratchpad="",
-            action_type="Finish",
-            query="VIVA Media AG",
-            key="key1",
-        )
-    )
-    assert not is_correct
-    assert isinstance(obs, str)
-    assert external_tool_info == {"search_result": "", "lookup_result": ""}
 
 
 def test_reflexion_react_generate_react() -> None:
@@ -874,33 +794,116 @@ def test_reflexion_react_generate_react() -> None:
     assert react_steps == steps
 
 
+def test_reflexion_react_generate_action() -> None:
+    """Tests ReflexionReActQAStrategy generate_action."""
+    question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
+
+    gt_scratchpad = "\nAction 1: Search[VIVA Media AG]"
+    responses = [
+        "Search[VIVA Media AG]",
+    ]
+    llm = MockLLM("gpt-3.5-turbo", responses=responses)
+    strategy = ReflexionReActQAStrategy(llm=llm)
+    scratchpad, action_type, query, thought_metrics = strategy.generate_action(
+        idx=1,
+        scratchpad="",
+        question=question,
+        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        reflections="",
+        prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+        additional_keys={},
+    )
+    assert action_type == "Search"
+    assert query == "VIVA Media AG"
+    assert scratchpad == gt_scratchpad
+    assert thought_metrics == PromptMetrics(
+        prompt_tokens=10,
+        completion_tokens=20,
+        total_tokens=30,
+        prompt_cost=1.5e-05,
+        completion_cost=3.9999999999999996e-05,
+        total_cost=5.4999999999999995e-05,
+        prompt_time=0.5,
+    )
+
+
+def test_reflexion_react_generate_observation() -> None:
+    """Tests ReflexionReActQAStrategy generate_observation."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = ReflexionReActQAStrategy(llm=llm)
+    strategy.docstore.search = lambda x: "Search result"
+    scratchpad, answer, finished, is_correct, obs, external_tool_info = (
+        strategy.generate_observation(
+            idx=1,
+            scratchpad="",
+            action_type="Search",
+            query="VIVA Media AG",
+            key="key1",
+        )
+    )
+    assert not is_correct
+    assert isinstance(obs, str)
+    assert external_tool_info == {"search_result": "Search result", "lookup_result": ""}
+    assert scratchpad == '\nObservation 1: Search result'
+    assert answer == ""
+    assert not finished
+
+    strategy.docstore.lookup = lambda x: "Lookup result"
+    scratchpad, answer, finished, is_correct, obs, external_tool_info = (
+        strategy.generate_observation(
+            idx=1,
+            scratchpad="",
+            action_type="Lookup",
+            query="VIVA Media AG",
+            key="key1",
+        )
+    )
+    assert not is_correct
+    assert isinstance(obs, str)
+    assert external_tool_info == {"search_result": "", "lookup_result": "Lookup result"}
+    assert scratchpad == '\nObservation 1: Lookup result'
+    assert answer == ""
+    assert not finished
+
+    scratchpad, answer, finished, is_correct, obs, external_tool_info = (
+        strategy.generate_observation(
+            idx=1,
+            scratchpad="",
+            action_type="Finish",
+            query="VIVA Media AG",
+            key="key1",
+        )
+    )
+    assert not is_correct
+    assert isinstance(obs, str)
+    assert external_tool_info == {"search_result": "", "lookup_result": ""}
+    assert scratchpad == '\nObservation 1: Answer is INCORRECT'
+    assert answer == 'VIVA Media AG'
+    assert finished
+
+
 def test_reflexion_react_halting_condition() -> None:
     """Tests ReflexionReActQAStrategy halting_condition."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
 
     # Test case 1: Halting condition met because answer is incorrect and index is less than max_trials.
     strategy = ReflexionReActQAStrategy(llm=llm, max_trials=5)
-    strategy._answer = "incorrect_answer"
     assert strategy.halting_condition(3, "correct_answer", "incorrect_answer") == False
 
     # Test case 2: Halting condition not met because answer is correct.
     strategy = ReflexionReActQAStrategy(llm=llm, max_trials=5)
-    strategy._answer = "correct_answer"
     assert strategy.halting_condition(3, "correct_answer", "correct_answer") == True
 
     # Test case 3: Halting condition not met because index is greater than or equal to max_trials.
     strategy = ReflexionReActQAStrategy(llm=llm, max_trials=3)
-    strategy._answer = "incorrect_answer"
     assert strategy.halting_condition(4, "correct_answer", "correct_answer") == True
 
     # Test case 4: Halting condition met using max_trials from kwargs.
     strategy = ReflexionReActQAStrategy(llm=llm, max_trials=5)
-    strategy._answer = "incorrect_answer"
     assert strategy.halting_condition(3, "correct_answer", "incorrect_answer") == False
 
     # Test case 5: Halting condition not met using max_trials from kwargs.
     strategy = ReflexionReActQAStrategy(llm=llm, max_trials=5)
-    strategy._answer = "incorrect_answer"
     assert strategy.halting_condition(4, "correct_answer", "correct_answer") == True
 
 
