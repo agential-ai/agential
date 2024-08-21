@@ -173,15 +173,7 @@ def _prompt_cot_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    ("<PROMPT AGENT=============================================>")
-    print(prompt)
-    print("<PROMPT AGENT=============================================>")
-
     out = llm(prompt)
-    print("<OUT AGENT=============================================>")
-    print(repr(out.choices[0].message.content))
-    print("<OUT AGENT=============================================>")
-
     return out
 
 
@@ -244,13 +236,7 @@ def _prompt_cot_reflection(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print("<PROMPT REFLECT=============================================>")
-    print(prompt)
-    print("<PROMPT REFLECT=============================================>")
     out = llm(prompt)
-    print("<OUT REFLECT=============================================>")
-    print(repr(out.choices[0].message.content))
-    print("<OUT REFLECT=============================================>")
     return out
 
 
@@ -416,13 +402,13 @@ def _prompt_react_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print("<PROMPT AGENT=============================================>")
-    print(prompt)
-    print("<PROMPT AGENT=============================================>")
+    # print("<PROMPT AGENT=============================================>")
+    # print(prompt)
+    # print("<PROMPT AGENT=============================================>")
     out = llm(prompt)
-    print("<OUT AGENT=============================================>")
-    print(repr(out.choices[0].message.content))
-    print("<OUT AGENT=============================================>")
+    # print("<OUT AGENT=============================================>")
+    # print(repr(out.choices[0].message.content))
+    # print("<OUT AGENT=============================================>")
     return out
 
 
@@ -540,13 +526,13 @@ def _prompt_react_reflection(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print("<PROMPT REFLECT=============================================>")
-    print(prompt)
-    print("<PROMPT REFLECT=============================================>")
+    # print("<PROMPT REFLECT=============================================>")
+    # print(prompt)
+    # print("<PROMPT REFLECT=============================================>")
     out = llm(prompt)
-    print("<OUT REFLECT=============================================>")
-    print(repr(out.choices[0].message.content))
-    print("<OUT REFLECT=============================================>")
+    # print("<OUT REFLECT=============================================>")
+    # print(repr(out.choices[0].message.content))
+    # print("<OUT REFLECT=============================================>")
     return out
 
 
