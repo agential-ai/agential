@@ -137,6 +137,7 @@ class LLM(BaseLLM):
 
     Parameters:
         model (str): The name or identifier of the language model to use.
+        kwargs (Any): Additional keyword arguments to pass to the completion function.
     """
 
     def __init__(self, model: str, **kwargs) -> None:
@@ -162,8 +163,9 @@ class LLM(BaseLLM):
             ModelResponse: The response from the language model, typically containing generated text and metadata.
         """
         start_time = time.time()
+        merged_kwargs = {**self.kwargs, **kwargs}
         response = completion(
-            model=self.model, messages=[{"role": "user", "content": prompt}], **self.kwargs
+            model=self.model, messages=[{"role": "user", "content": prompt}], **merged_kwargs
         )
         end_time = time.time()
 
