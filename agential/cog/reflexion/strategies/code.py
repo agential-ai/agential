@@ -23,7 +23,7 @@ from agential.cog.reflexion.strategies.base import (
     ReflexionCoTBaseStrategy,
     ReflexionReActBaseStrategy,
 )
-from agential.cog.reflexion.strategies.general import ReflexionCoTGeneralStrategy
+from agential.cog.reflexion.strategies.general import ReflexionCoTGeneralStrategy, ReflexionReActGeneralStrategy
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
 from agential.utils.general import safe_execute
@@ -177,7 +177,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTGeneralStrategy):
         )
 
 
-class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
+class ReflexionReActCodeStrategy(ReflexionReActGeneralStrategy):
     """A strategy class for Code benchmarks using the ReflexionReAct agent.
 
     Attributes:
@@ -188,6 +188,7 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
         max_steps (int): The maximum number of steps allowed. Defaults to 6.
         max_tokens (int): The maximum number of tokens allowed. Defaults to 5000.
         enc (Encoding): The encoding for tokenization. Defaults to gpt-3.5-turbo.
+        testing (bool): Whether the strategy is in testing mode. Defaults to False.
     """
 
     def __init__(
@@ -199,6 +200,7 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
         max_steps: int = 6,
         max_tokens: int = 5000,
         enc: Encoding = tiktoken.encoding_for_model("gpt-3.5-turbo"),
+        testing: bool = False,
     ) -> None:
         """Initialization."""
         if reflector is None:
@@ -206,129 +208,96 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
                 llm=llm, max_reflections=max_reflections
             )
         super().__init__(
-            llm, reflector, max_reflections, max_trials, max_steps, max_tokens, enc
+            llm=llm,
+            reflector=reflector,
+            max_reflections=max_reflections,
+            max_trials=max_trials,
+            max_steps=max_steps,
+            max_tokens=max_tokens,
+            enc=enc,
+            testing=testing,
         )
-
-        self._finished = False
-        self._answer = ""
-        self._scratchpad = ""
-        self._prompt_metrics: Dict[str, Any] = {"reflection": None}
-        self._prompt_metrics_react: Dict[str, Any] = {"thought": None, "action": None}
-
-    def generate(
-        self,
-        question: str,
-        examples: str,
-        reflections: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
-        **kwargs: Any,
-    ) -> str:
-        """Generates a thought based on the given question, examples, reflections, prompt, and additional keys.
-
-        Args:
-            question (str): The question to generate a thought for.
-            examples (str): Examples to guide the thought generation process.
-            reflections (str): Reflections to consider during the thought generation process.
-            prompt (str): The prompt or instruction to guide the thought generation.
-            additional_keys (Dict[str, str]): Additional keys for the thought generation process.
-            kwargs (Dict[str, Any]): Additional keyword arguments.
-
-        Returns:
-            str: The generated thought.
-        """
-        max_steps = kwargs.get("max_steps", self.max_steps)  # type: ignore
-
-        self._scratchpad += "\nThought:"
-        out = _prompt_react_agent(
-            llm=self.llm,
-            question=question,
-            examples=examples,
-            reflections=reflections,
-            scratchpad=self._scratchpad,
-            max_steps=max_steps,  # type: ignore
-            prompt=prompt,
-            additional_keys=additional_keys,
-        )
-        self._prompt_metrics_react["thought"] = get_token_cost_time(out)
-        thought = out.choices[0].message.content
-
-        thought = remove_newline(thought).split("Action")[0].strip()
-        self._scratchpad += " " + thought
-
-        return thought
 
     def generate_action(
         self,
+        idx: int,
+        scratchpad: str,
         question: str,
         examples: str,
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Any,
-    ) -> Tuple[str, str]:
-        """Generates an action based on the given question, examples, reflections, prompt, and additional keys.
+    ) -> Tuple[str, str, str, PromptMetrics]:
+        """Generate an action for the current step in the reasoning process.
 
         Args:
-            question (str): The question to generate an action for.
-            examples (str): Examples to guide the action generation process.
-            reflections (str): Reflections to consider during the action generation process.
-            prompt (str): The prompt or instruction to guide the action generation.
-            additional_keys (Dict[str, str]): Additional keys for the action generation process.
-            kwargs (Dict[str, Any]): Additional keyword arguments.
+            idx (int): The current step index.
+            scratchpad (str): The scratchpad containing previous thoughts and actions.
+            question (str): The main question or task to be addressed.
+            examples (str): Relevant examples to provide context for action generation.
+            trajectory (str): The current trajectory or history of thoughts and actions.
+            reflections (str): Previous reflections to guide the action generation.
+            depth (int): The current depth in the search tree.
+            prompt (str): The prompt template for action generation.
+            additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[str, str]: The generated action type and query.
+            Tuple[str, str, str, PromptMetrics]: A tuple containing the updated trajectory, action type, query, and the metrics.
         """
-        max_steps = kwargs.get("max_steps", self.max_steps)
-        self._scratchpad += "\nAction:"
+        scratchpad += f"\nAction {idx}: "
         out = _prompt_react_agent(
             llm=self.llm,
             question=question,
             examples=examples,
             reflections=reflections,
-            scratchpad=self._scratchpad,
-            max_steps=max_steps,  # type: ignore
+            scratchpad=scratchpad,
+            max_steps=self.max_steps,
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics_react["action"] = get_token_cost_time(out)
         action = out.choices[0].message.content
-
         action = action.split("Observation")[0].strip()
-
         action_type, query = parse_math_code_action_react(
             action, ["Finish", "Test", "Implement"]
         )
-        self._scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
+        scratchpad += f"{action_type}[\n```python\n{query}\n```\n]"
 
-        return action_type, query
+        return scratchpad, action_type, query, get_token_cost_time(out)
 
     def generate_observation(
-        self, step_idx: int, action_type: str, query: str, key: str
-    ) -> Tuple[bool, str, Dict[str, Any]]:
-        """Generate an observation based on the action type and query.
+        self, idx: int, scratchpad: str, action_type: str, query: str, key: str
+    ) -> Tuple[str, str, bool, bool, str, Dict[str, Any]]:
+        """Generate an observation based on the given inputs.
 
         Args:
-            step_idx (int): The index of the current step.
-            action_type (str): The type of action to be performed.
-            query (str): The query for the action.
+            idx (int): The current index of the observation.
+            scratchpad (str): The current state of the scratchpad.
+            action_type (str): The type of action performed.
+            query (str): The query or action to observe.
             key (str): The key for the observation.
 
         Returns:
-            Tuple[bool, str, Dict[str, Any]]: A tuple containing a boolean indicating whether the answer is correct, a string representing the observation,
-                and a dictionary of the external tool outputs.
+            Tuple[str, str, str, bool, Dict[str, Any]]: A tuple containing:
+                - The updated scratchpad.
+                - The answer.
+                - A boolean indicating if finished.
+                - The generated observation.
+                - A boolean indicating if the task is finished.
+                - The observation.
+                - A dictionary with additional information.
         """
         external_tool_info = {"execution_status": ""}
 
-        self._scratchpad += f"\nObservation {step_idx}: "
+        answer = ""
+        finished = False
+        scratchpad += f"\nObservation {idx}: "
         if action_type.lower() == "finish":
             obs = f"{query}\n\n{key}"
             _, execution_status = safe_execute(obs)
             external_tool_info["execution_status"] = execution_status
-
             self._answer = query
-            self._finished = True
+            answer = query
+            finished = True
 
             if EM(execution_status, "Done", normalize=False):
                 obs = "Answer is CORRECT"
@@ -340,9 +309,9 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
             execution_status = (
                 ""  # Execution status may be done, but not necessarily correct.
             )
-
             self._answer = query
-            obs = f"\n```python\n{self._answer}\n```\nExecution Status: {execution_status}"
+            answer = query
+            obs = f"\n```python\n{answer}\n```\nExecution Status: {execution_status}"
         elif action_type.lower() == "test":
             obs = f"{self._answer}\n\n{query}"
             _, execution_status = safe_execute(obs)
@@ -352,60 +321,9 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
         else:
             execution_status = ""
             obs = "Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer]."
-        self._scratchpad += obs
+        scratchpad += obs
 
-        return EM(execution_status, "Done", normalize=False), obs, external_tool_info
-
-    def create_output_dict(
-        self, react_out: List[ReflexionReActStepOutput], reflections: List[str]
-    ) -> Dict[str, Any]:
-        """Create a dictionary containing the output of the ReflexionReAct agent.
-
-        Args:
-            react_out (List[ReflexionReActStepOutput]): The output of the ReflexionReAct agent, containing the thought, action type, query, observation, and whether the answer is correct for each step.
-            reflections (List[str]): The reflections generated by the ReflexionReAct agent.
-
-        Returns:
-            Dict[str, str]: A dictionary containing the 'react_output' and 'reflections'.
-        """
-        return {
-            "react_output": react_out,
-            "reflections": reflections,
-            "prompt_metrics": self._prompt_metrics,
-        }
-
-    def react_create_output_dict(
-        self,
-        thought: str,
-        action_type: str,
-        query: str,
-        obs: str,
-        external_tool_info: Dict[str, Any],
-        is_correct: bool,
-    ) -> Dict[str, Any]:
-        """Create a dictionary containing the output of a single step in the ReflexionReAct agent.
-
-        Args:
-            thought (str): The thought generated in the current step.
-            action_type (str): The type of action performed in the current step.
-            query (str): The query or information related to the action performed in the current step.
-            obs (str): The observation generated in the current step.
-            external_tool_info (Dict[str, Any]): The external tool outputs.
-            is_correct (bool): A boolean indicating whether the answer generated in the current step is correct.
-
-        Returns:
-            Dict[str, Any]: A dictionary containing the 'thought', 'action_type', 'query', 'observation', 'answer', 'external_tool_info', and 'is_correct' of the current step.
-        """
-        return {
-            "thought": thought,
-            "action_type": action_type,
-            "query": query,
-            "observation": obs,
-            "answer": self._answer,
-            "external_tool_info": external_tool_info,
-            "is_correct": is_correct,
-            "prompt_metrics": self._prompt_metrics_react,
-        }
+        return scratchpad, answer, finished, EM(execution_status, "Done", normalize=False), obs, external_tool_info
 
     def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
         """Determine whether the halting condition has been met.
@@ -422,149 +340,62 @@ class ReflexionReActCodeStrategy(ReflexionReActBaseStrategy):
         _, execution_status = safe_execute(f"{self._answer}\n\n{key}")
         return EM(execution_status, "Done", normalize=False) or idx >= max_trials + 1
 
-    def react_halting_condition(
-        self,
-        step_idx: int,
-        question: str,
-        examples: str,
-        reflections: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
-        **kwargs: Any,
-    ) -> bool:
-        """Determine whether the halting condition has been met in the ReflexionReAct agent.
-
-        Args:
-            step_idx (int): The index of the current step.
-            question (str): The question to generate an action for.
-            examples (str): Examples to guide the action generation process.
-            reflections (str): Reflections to consider during the action generation process.
-            prompt (str): The prompt or instruction to guide the action generation.
-            additional_keys (Dict[str, str]): Additional keys for the action generation process.
-            kwargs (Dict[str, Any]): Additional keyword arguments.
-
-        Returns:
-            bool: True if the halting condition is met, False otherwise. The halting condition is met when the answer is not correct and the current step index is less than the maximum number of steps plus one.
-        """
-        max_steps = kwargs.get("max_steps", self.max_steps)
-
-        return _is_halted(
-            finished=self._finished,
-            step_idx=step_idx,
-            question=question,
-            scratchpad=self._scratchpad,
-            examples=examples,
-            reflections=reflections,
-            max_steps=max_steps,
-            max_tokens=self.max_tokens,
-            enc=self.enc,
-            prompt=prompt,
-            additional_keys=additional_keys,
-        )
-
-    def reset(self, **kwargs: Any) -> None:
-        """Resets the internal state of the strategy.
-
-        Resets the scratchpad and the finished flag.
-        Resets only the scratchpad if specified with 'only_scratchpad'.
-
-        Args:
-            **kwargs (Any): Additional keyword arguments.
-        """
-        no_reflector = kwargs.get("no_reflector", False)
-        if not no_reflector:
-            self.reflector.reset()
-        self._scratchpad = ""
-        self._finished = False
-        self._answer = ""
-        self._prompt_metrics_react = {"thought": None, "action": None}
-        self._prompt_metrics = {"reflection": None}
-
-    def reflect(
-        self,
-        reflect_strategy: str,
-        question: str,
-        examples: str,
-        prompt: str,
-        additional_keys: Dict[str, str],
-    ) -> Tuple[List[str], str]:
-        """Reflects on a given question, context, examples, prompt, and additional keys using the specified reflection strategy.
-
-        Args:
-            reflect_strategy (str): The strategy to use for reflection.
-            question (str): The question to be reflected upon.
-            examples (str): Examples to guide the reflection process.
-            prompt (str): The prompt or instruction to guide the reflection.
-            additional_keys (Dict[str, str]): Additional keys for the reflection process.
-
-        Returns:
-            Tuple[List[str], str]: The reflections and reflection string.
-        """
-        reflections, reflections_str, reflections_out = self.reflector.reflect(
-            reflect_strategy=reflect_strategy,
-            question=question,
-            examples=examples,
-            scratchpad=_truncate_scratchpad(
-                scratchpad=self._scratchpad, tokenizer=self.enc
-            ),
-            prompt=prompt,
-            additional_keys=additional_keys,
-        )
-        self._prompt_metrics["reflection"] = (
-            get_token_cost_time(reflections_out) if reflections_out else None
-        )
-
-        return reflections, reflections_str
-
     def reflect_condition(
         self,
-        step_idx: int,
+        answer: str,
+        finished: bool,
+        idx: int,
+        scratchpad: str,
         reflect_strategy: Optional[str],
         question: str,
         examples: str,
         key: str,
         prompt: str,
         additional_keys: Dict[str, str],
-        **kwargs: Dict[str, str],
     ) -> bool:
         """Determine whether the reflection condition has been met in the ReflexionReAct agent.
 
         Args:
-            step_idx (int): The index of the current step.
+            answer (str): The answer generated.
+            finished (bool): A boolean indicating whether the task is finished.
+            idx (int): The index of the current step.
+            scratchpad (str): The scratchpad containing previous thoughts and actions.
             reflect_strategy (Optional[str]): The strategy to use for reflection.
             question (str): The question to be reflected upon.
             examples (str): Examples to guide the reflection process.
             key (str): The key for the observation.
             prompt (str): The prompt or instruction to guide the reflection.
             additional_keys (Dict[str, str]): Additional keys for the reflection process.
-            kwargs (Dict[str, str]): Additional keyword arguments.
 
         Returns:
             bool: True if the reflection condition is met, False otherwise. The reflection condition is met when the agent is halted, the answer is not correct, and the reflection strategy is provided.
         """
-        max_steps = kwargs.get("max_steps", self.max_steps)
-
         halted = _is_halted(
-            finished=self._finished,
-            step_idx=step_idx,
+            finished=finished,
+            step_idx=idx,
             question=question,
-            scratchpad=self._scratchpad,
+            scratchpad=scratchpad,
             examples=examples,
             reflections=self.reflector.reflections_str,
-            max_steps=max_steps,  # type: ignore
+            max_steps=self.max_steps,
             max_tokens=self.max_tokens,
             enc=self.enc,
             prompt=prompt,
             additional_keys=additional_keys,
         )
 
-        _, execution_status = safe_execute(f"{self._answer}\n\n{key}")
+        _, execution_status = safe_execute(f"{answer}\n\n{key}")
 
         return (
             halted
             and not EM(execution_status, "Done", normalize=False)
             and reflect_strategy is not None
         )
+
+    def reset(self) -> None:
+        """Resets the internal state of the strategy."""
+        self.reflector.reset()
+        self._answer = ""
 
 
 class ReflexionCoTHEvalStrategy(ReflexionCoTCodeStrategy):
