@@ -139,7 +139,7 @@ class LLM(BaseLLM):
         model (str): The name or identifier of the language model to use.
     """
 
-    def __init__(self, model: str) -> None:
+    def __init__(self, model: str, **kwargs) -> None:
         """Initialize."""
         super().__init__(model=model)
         self.total_prompt_tokens = 0
@@ -149,6 +149,7 @@ class LLM(BaseLLM):
         self.total_completion_cost = 0
         self.total_cost = 0
         self.total_prompt_time = 0
+        self.kwargs = kwargs
 
     def __call__(self, prompt: str, **kwargs: Any) -> ModelResponse:
         """Generate a response using the language model.
@@ -162,7 +163,7 @@ class LLM(BaseLLM):
         """
         start_time = time.time()
         response = completion(
-            model=self.model, messages=[{"role": "user", "content": prompt}], **kwargs
+            model=self.model, messages=[{"role": "user", "content": prompt}], **self.kwargs
         )
         end_time = time.time()
 
