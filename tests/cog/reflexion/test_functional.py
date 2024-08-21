@@ -22,6 +22,7 @@ from agential.cog.reflexion.functional import (
     _prompt_react_reflection,
     _truncate_scratchpad,
     accumulate_metrics_cot,
+    accumulate_metrics_react,
     cot_reflect_last_attempt,
     cot_reflect_last_attempt_and_reflexion,
     cot_reflect_reflexion,
@@ -32,7 +33,11 @@ from agential.cog.reflexion.functional import (
     react_reflect_last_attempt_and_reflexion,
     react_reflect_reflexion,
 )
-from agential.cog.reflexion.output import ReflexionCoTStepOutput
+from agential.cog.reflexion.output import (
+    ReflexionCoTStepOutput,
+    ReflexionReActReActStepOutput,
+    ReflexionReActStepOutput,
+)
 from agential.cog.reflexion.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
@@ -867,4 +872,90 @@ def test_accumulate_metrics_cot() -> None:
         "total_prompt_time": 2.5,
     }
     result = accumulate_metrics_cot(steps)
+    assert result == expected_metrics
+
+
+def test_accumulate_metrics_react() -> None:
+    """Tests accumulate_metrics_cot."""
+    steps = [
+        ReflexionReActReActStepOutput(
+            thought="",
+            action_type="",
+            query="",
+            observation="",
+            answer="",
+            external_tool_info={},
+            is_correct=True,
+            thought_metrics=PromptMetrics(
+                prompt_tokens=15,
+                completion_tokens=25,
+                total_tokens=40,
+                prompt_cost=0.015,
+                completion_cost=0.025,
+                total_cost=0.04,
+                prompt_time=0.75,
+            ),
+            action_metrics=PromptMetrics(
+                prompt_tokens=10,
+                completion_tokens=15,
+                total_tokens=25,
+                prompt_cost=0.01,
+                completion_cost=0.015,
+                total_cost=0.025,
+                prompt_time=0.5,
+            ),
+        ),
+        ReflexionReActReActStepOutput(
+            thought="",
+            action_type="",
+            query="",
+            observation="",
+            answer="",
+            external_tool_info={},
+            is_correct=True,
+            thought_metrics=PromptMetrics(
+                prompt_tokens=15,
+                completion_tokens=25,
+                total_tokens=40,
+                prompt_cost=0.015,
+                completion_cost=0.025,
+                total_cost=0.04,
+                prompt_time=0.75,
+            ),
+            action_metrics=PromptMetrics(
+                prompt_tokens=10,
+                completion_tokens=15,
+                total_tokens=25,
+                prompt_cost=0.01,
+                completion_cost=0.015,
+                total_cost=0.025,
+                prompt_time=0.5,
+            ),
+        ),
+    ]
+
+    inputs = [
+        ReflexionReActStepOutput(
+            steps=steps,
+            reflections=[],
+            reflection_metrics=None,
+        ),
+        ReflexionReActStepOutput(
+            steps=steps,
+            reflections=[],
+            reflection_metrics=None,
+        ),
+    ]
+
+    expected_metrics = {
+        "total_prompt_tokens": 100,
+        "total_completion_tokens": 160,
+        "total_tokens": 260,
+        "total_prompt_cost": 0.1,
+        "total_completion_cost": 0.16,
+        "total_cost": 0.26,
+        "total_prompt_time": 5.0,
+    }
+
+    result = accumulate_metrics_react(inputs)
     assert result == expected_metrics

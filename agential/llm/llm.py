@@ -165,7 +165,9 @@ class LLM(BaseLLM):
         start_time = time.time()
         merged_kwargs = {**self.kwargs, **kwargs}
         response = completion(
-            model=self.model, messages=[{"role": "user", "content": prompt}], **merged_kwargs
+            model=self.model,
+            messages=[{"role": "user", "content": prompt}],
+            **merged_kwargs,
         )
         end_time = time.time()
 
