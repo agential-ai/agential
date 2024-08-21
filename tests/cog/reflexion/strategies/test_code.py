@@ -7,7 +7,13 @@ from agential.cog.fewshots.mbpp import (
     MBPP_FEWSHOT_EXAMPLES_COT,
     MBPP_FEWSHOT_EXAMPLES_REACT,
 )
-from agential.cog.reflexion.output import ReflexionCoTOutput, ReflexionCoTStepOutput
+from agential.cog.reflexion.output import (
+    ReflexionCoTOutput,
+    ReflexionCoTStepOutput,
+    ReflexionReActOutput,
+    ReflexionReActReActStepOutput,
+    ReflexionReActStepOutput,
+)
 from agential.cog.reflexion.prompts import (
     MBPP_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     MBPP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
@@ -362,11 +368,7 @@ def test_reflexion_react_init() -> None:
     assert isinstance(strategy.reflector, ReflexionReActReflector)
     assert strategy.max_reflections == 3
     assert strategy.max_trials == 3
-    assert strategy._scratchpad == ""
-    assert strategy._finished == False
     assert strategy._answer == ""
-    assert strategy._prompt_metrics_react == {"thought": None, "action": None}
-    assert strategy._prompt_metrics == {"reflection": None}
 
 
 def test_reflexion_react_generate() -> None:
@@ -376,37 +378,144 @@ def test_reflexion_react_generate() -> None:
     assert first_repeated_char("abc") == None
     assert first_repeated_char("123123") == "1\""""
 
-    gt_scratchpad = "\nThought: Let's think step by step. We need to iterate through the string and keep track of characters we have seen so far. Once we encounter a character that has already been seen, we return it as the first repeated character."
-    gt_out = "Let's think step by step. We need to iterate through the string and keep track of characters we have seen so far. Once we encounter a character that has already been seen, we return it as the first repeated character."
+    gt_out = ReflexionReActOutput(
+        answer="def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None",
+        total_prompt_tokens=60,
+        total_completion_tokens=120,
+        total_tokens=180,
+        total_prompt_cost=9e-05,
+        total_completion_cost=0.00023999999999999998,
+        total_cost=0.00033,
+        total_prompt_time=3.0,
+        total_time=0.5,
+        additional_info=[
+            ReflexionReActStepOutput(
+                steps=[
+                    ReflexionReActReActStepOutput(
+                        thought="I need to write a function that finds the first repeated character in a given string by iterating through the characters and checking for duplicates.",
+                        action_type="Implement",
+                        query="def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None",
+                        observation="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\nExecution Status: ",
+                        answer="def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None",
+                        external_tool_info={"execution_status": "Done"},
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="I need to test the function to ensure it works correctly with different test cases.",
+                        action_type="Test",
+                        query='assert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"',
+                        observation='\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done',
+                        answer="",
+                        external_tool_info={"execution_status": "Done"},
+                        is_correct=True,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="The function works correctly for the provided test cases.",
+                        action_type="Finish",
+                        query="def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None",
+                        observation="Answer is CORRECT",
+                        answer="def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None",
+                        external_tool_info={"execution_status": "Done"},
+                        is_correct=True,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                ],
+                reflections=[],
+                reflection_metrics=None,
+            )
+        ],
+    )
     responses = [
-        "Let's think step by step. We need to iterate through the string and keep track of characters we have seen so far. Once we encounter a character that has already been seen, we return it as the first repeated character.\nAction: Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]"
+        'I need to write a function that finds the first repeated character in a given string by iterating through the characters and checking for duplicates.\nAction 1: Implement[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 1: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\nExecution Status: Done\nThought 2: I need to test the function to ensure it works correctly with different test cases.\nAction 2: Test[\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n]\nObservation 2: \n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done\nThought 3: The function works correctly for the provided test cases.\nAction 3: Finish[\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```',
+        "Implement[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]",
+        "I need to test the function to ensure it works correctly with different test cases.",
+        'Test[\n```python\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\n]\nObservation 2: \n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n\nassert first_repeated_char("abcabc") == "a"\nassert first_repeated_char("abc") == None\nassert first_repeated_char("123123") == "1"\n```\nExecution Status: Done\nThought 3: The function works correctly for the provided test cases.\nAction 3: Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]\nObservation 3: \n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```',
+        "The function works correctly for the provided test cases.\nAction 3: Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```",
+        "Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]\nObservation 3:\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    strategy = ReflexionReActCodeStrategy(llm=llm)
+    strategy = ReflexionReActCodeStrategy(llm=llm, testing=True)
     out = strategy.generate(
         question=question,
-        examples=MBPP_FEWSHOT_EXAMPLES_COT,
-        reflections="",
-        prompt=REFLEXION_COT_INSTRUCTION_MBPP,
+        key=key,
+        examples=MBPP_FEWSHOT_EXAMPLES_REACT,
+        prompt=REFLEXION_REACT_INSTRUCTION_MBPP,
+        reflect_examples=MBPP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+        reflect_prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_MBPP,
+        reflect_strategy="reflexion",
         additional_keys={"tests": key},
+        reflect_additional_keys={"tests": key},
+        patience=3,
+        reset=True,
     )
+
+    assert (
+        strategy._answer
+        == "def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None"
+    )
+    print(repr(out))
     assert out == gt_out
-    assert strategy._scratchpad == gt_scratchpad
-    assert strategy._finished == False
-    assert strategy._answer == ""
-    assert strategy._prompt_metrics == {"reflection": None}
-    assert strategy._prompt_metrics_react == {
-        "thought": {
-            "prompt_tokens": 10,
-            "completion_tokens": 20,
-            "total_tokens": 30,
-            "prompt_tokens_cost": 1.5e-05,
-            "completion_tokens_cost": 3.9999999999999996e-05,
-            "total_tokens_cost": 5.4999999999999995e-05,
-            "time_sec": 0.5,
-        },
-        "action": None,
-    }
+
+
+def test_reflexion_react_generate_react() -> None:
+    """Tests ReflexionReActCodeStrategy generate_react."""
+    question = "Write a python function to find the first repeated character in a given string."
+    key = """assert first_repeated_char("abcabc") == "a"
+    assert first_repeated_char("abc") == None
+    assert first_repeated_char("123123") == "1\""""
 
 
 def test_reflexion_react_generate_action() -> None:
@@ -528,54 +637,6 @@ def test_reflexion_react_generate_observation() -> None:
     assert external_tool_info == {"execution_status": ""}
 
 
-def test_reflexion_react_create_output_dict() -> None:
-    """Tests ReflexionReActCodeStrategy create_output_dict."""
-    strategy = ReflexionReActCodeStrategy(llm=MockLLM("gpt-3.5-turbo", responses=[]))
-    react_out = [
-        {
-            "thought": "First thought",
-            "action_type": "Query",
-            "query": "What is the capital of France?",
-            "observation": "Observation: Answer is CORRECT",
-            "is_correct": True,
-        }
-    ]
-    reflections = "Reflection on the first thought."
-    output = strategy.create_output_dict(react_out, reflections)
-    expected_output = {
-        "react_output": react_out,
-        "reflections": reflections,
-        "prompt_metrics": {"reflection": None},
-    }
-    assert output == expected_output
-
-
-def test_reflexion_react_react_create_output_dict() -> None:
-    """Tests ReflexionReActCodeStrategy react_create_output_dict."""
-    strategy = ReflexionReActCodeStrategy(llm=MockLLM("gpt-3.5-turbo", responses=[]))
-
-    # Test case 1: Valid output creation
-    output = strategy.react_create_output_dict(
-        thought="Initial thought",
-        action_type="Query",
-        query="What is the capital of France?",
-        obs="Observation: Answer is CORRECT",
-        external_tool_info={"search_result": "", "lookup_result": ""},
-        is_correct=True,
-    )
-    expected_output = {
-        "thought": "Initial thought",
-        "action_type": "Query",
-        "query": "What is the capital of France?",
-        "observation": "Observation: Answer is CORRECT",
-        "answer": "",
-        "external_tool_info": {"search_result": "", "lookup_result": ""},
-        "is_correct": True,
-        "prompt_metrics": {"thought": None, "action": None},
-    }
-    assert output == expected_output
-
-
 def test_reflexion_react_halting_condition() -> None:
     """Tests ReflexionReActCodeStrategy halting_condition."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
@@ -594,78 +655,6 @@ def test_reflexion_react_halting_condition() -> None:
     strategy = ReflexionReActCodeStrategy(llm=llm, max_trials=3)
     strategy._answer = "incorrect_answer"
     assert strategy.halting_condition(4, "correct_answer") == True
-
-    # Test case 4: Halting condition met using max_trials from kwargs.
-    strategy = ReflexionReActCodeStrategy(llm=llm, max_trials=5)
-    strategy._answer = "incorrect_answer"
-    assert strategy.halting_condition(3, "correct_answer", max_trials=4) == False
-
-    # Test case 5: Halting condition not met using max_trials from kwargs.
-    strategy = ReflexionReActCodeStrategy(llm=llm, max_trials=5)
-    strategy._answer = "incorrect_answer"
-    assert strategy.halting_condition(4, "correct_answer", max_trials=3) == True
-
-
-def test_reflexion_react_react_halting_condition() -> None:
-    """Tests ReflexionReActCodeStrategy react_halting_condition."""
-    strategy = ReflexionReActCodeStrategy(llm=MockLLM("gpt-3.5-turbo", responses=[]))
-
-    idx = 0
-    question = "What is the capital of France?"
-    examples = ""
-    reflections = ""
-    prompt = "Answer the question."
-
-    assert not strategy.react_halting_condition(
-        idx, question, examples, reflections, prompt, {}
-    )
-
-
-def test_reflexion_react_reset() -> None:
-    """Tests ReflexionReActCodeStrategy reset."""
-    llm = MockLLM("gpt-3.5-turbo", responses=[])
-    strategy = ReflexionReActCodeStrategy(llm=llm)
-    strategy._scratchpad = "Some previous state"
-    strategy._finished = True
-
-    strategy.reset()
-
-    assert strategy._scratchpad == ""
-    assert not strategy._finished
-    assert strategy._prompt_metrics == {"reflection": None}
-    assert strategy._prompt_metrics_react == {"action": None, "thought": None}
-
-
-def test_reflexion_react_reflect() -> None:
-    """Tests ReflexionReActCodeStrategy reflect."""
-    question = "Write a python function to find the first repeated character in a given string."
-    key = """assert first_repeated_char("abcabc") == "a"
-    assert first_repeated_char("abc") == None
-    assert first_repeated_char("123123") == "1\""""
-
-    gt_reflections = "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
-    llm = MockLLM("gpt-3.5-turbo", responses=["1"])
-    strategy = ReflexionReActCodeStrategy(llm=llm)
-    _, reflections = strategy.reflect(
-        reflect_strategy="reflexion",
-        question=question,
-        examples=MBPP_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-        prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_MBPP,
-        additional_keys={"tests": key},
-    )
-    assert reflections == gt_reflections
-    assert strategy._prompt_metrics_react == {"thought": None, "action": None}
-    assert strategy._prompt_metrics == {
-        "reflection": {
-            "prompt_tokens": 10,
-            "completion_tokens": 20,
-            "total_tokens": 30,
-            "prompt_tokens_cost": 1.5e-05,
-            "completion_tokens_cost": 3.9999999999999996e-05,
-            "total_tokens_cost": 5.4999999999999995e-05,
-            "time_sec": 0.5,
-        }
-    }
 
 
 def test_reflexion_react_reflect_condition() -> None:
@@ -687,6 +676,17 @@ def test_reflexion_react_reflect_condition() -> None:
         additional_keys={"tests": key},
     )
     assert not out
+
+
+def test_reflexion_react_reset() -> None:
+    """Tests ReflexionReActCodeStrategy reset."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+    strategy = ReflexionReActCodeStrategy(llm=llm)
+    strategy._answer = "Some previous state"
+
+    strategy.reset()
+
+    assert strategy._answer == ""
 
 
 def test_reflexion_react_instantiate_strategies() -> None:
