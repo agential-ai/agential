@@ -2,7 +2,7 @@
 
 import time
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import tiktoken
 
@@ -442,6 +442,7 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
             # Reflect if possible.
             reflections: List[str] = []
             reflections_str = ""
+            reflection_metrics: Union[PromptMetrics, None] = None
             if self.reflect_condition(
                 answer=answer,
                 finished=finished,
@@ -582,7 +583,7 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
                     thought=thought,
                     action_type=action_type,
                     query=query,
-                    obs=obs,
+                    observation=obs,
                     answer=answer,
                     external_tool_info=external_tool_info,
                     is_correct=is_correct,
