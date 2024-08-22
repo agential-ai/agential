@@ -11,8 +11,7 @@ from tiktoken.core import Encoding
 from agential.cog.react.functional import _is_halted, _prompt_agent, accumulate_metrics
 from agential.cog.react.output import ReActOutput, ReActStepOutput
 from agential.cog.react.strategies.base import ReActBaseStrategy
-from agential.llm.llm import BaseLLM
-from agential.utils.metrics import Response, get_prompt_info
+from agential.llm.llm import BaseLLM, Response
 from agential.utils.parse import remove_newline
 
 
@@ -84,7 +83,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
             additional_keys=additional_keys,
         ):
             # Think.
-            scratchpad, thought, thought_metrics = self.generate_thought(
+            scratchpad, thought, thought_response = self.generate_thought(
                 idx=idx,
                 scratchpad=scratchpad,
                 question=question,
@@ -94,7 +93,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
             )
 
             # Act.
-            scratchpad, action_type, query, action_metrics = self.generate_action(
+            scratchpad, action_type, query, action_response = self.generate_action(
                 idx=idx,
                 scratchpad=scratchpad,
                 question=question,
@@ -118,8 +117,8 @@ class ReActGeneralStrategy(ReActBaseStrategy):
                     observation=obs,
                     answer=answer,
                     external_tool_info=external_tool_info,
-                    thought_metrics=thought_metrics,
-                    action_metrics=action_metrics,
+                    thought_response=thought_response,
+                    action_response=action_response,
                 )
             )
 
@@ -175,11 +174,10 @@ class ReActGeneralStrategy(ReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        thought = out.choices[0].message.content
-        thought = remove_newline(thought).split("Action")[0].strip()
+        thought = remove_newline(out.output_text).split("Action")[0].strip()
         scratchpad += thought
 
-        return scratchpad, thought, get_prompt_info(out)
+        return scratchpad, thought, out
 
     def generate_action(
         self,

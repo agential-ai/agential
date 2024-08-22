@@ -9,9 +9,8 @@ from tiktoken.core import Encoding
 
 from agential.cog.react.functional import _prompt_agent, parse_qa_action
 from agential.cog.react.strategies.general import ReActGeneralStrategy
-from agential.llm.llm import BaseLLM
+from agential.llm.llm import BaseLLM, Response
 from agential.utils.docstore import DocstoreExplorer
-from agential.utils.metrics import Response, get_prompt_info
 from agential.utils.parse import remove_newline
 
 
@@ -79,12 +78,11 @@ class ReActQAStrategy(ReActGeneralStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        action = out.choices[0].message.content
-        action = remove_newline(action).split("Observation")[0]
+        action = remove_newline(out.output_text).split("Observation")[0]
         action_type, query = parse_qa_action(action)
         scratchpad += f"{action_type}[{query}]"
 
-        return scratchpad, action_type, query, get_prompt_info(out)
+        return scratchpad, action_type, query, out
 
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str

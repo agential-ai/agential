@@ -243,24 +243,24 @@ def accumulate_metrics(steps: List[ReActStepOutput]) -> Dict[str, Any]:
 
     for step in steps:
         total_prompt_tokens += (
-            step.thought_metrics.prompt_tokens + step.action_metrics.prompt_tokens
+            step.thought_response.prompt_tokens + step.action_response.prompt_tokens
         )
         total_completion_tokens += (
-            step.thought_metrics.completion_tokens
-            + step.action_metrics.completion_tokens
+            step.thought_response.completion_tokens
+            + step.action_response.completion_tokens
         )
         total_tokens += (
-            step.thought_metrics.total_tokens + step.action_metrics.total_tokens
+            step.thought_response.total_tokens + step.action_response.total_tokens
         )
         total_prompt_cost += (
-            step.thought_metrics.prompt_cost + step.action_metrics.prompt_cost
+            step.thought_response.prompt_cost + step.action_response.prompt_cost
         )
         total_completion_cost += (
-            step.thought_metrics.completion_cost + step.action_metrics.completion_cost
+            step.thought_response.completion_cost + step.action_response.completion_cost
         )
-        total_cost += step.thought_metrics.total_cost + step.action_metrics.total_cost
+        total_cost += step.thought_response.total_cost + step.action_response.total_cost
         total_prompt_time += (
-            step.thought_metrics.prompt_time + step.action_metrics.prompt_time
+            step.thought_response.prompt_time + step.action_response.prompt_time
         )
 
     return {
