@@ -29,12 +29,16 @@ class Usage:
 
 
 class ModelResponse:
-    """Represents a model response with choices."""
+    """Extended ModelResponse with additional attributes."""
 
-    choices: List[Choices]
-    usage: Usage
-    model: str
-    time_taken: float
+    def __init__(self, choices: List[Choices], usage: Usage, model: str, time_taken: float, input_text: str, output_text: str) -> None:
+        """"Initialize."""
+        self.choices = choices
+        self.usage = usage
+        self.model = model
+        self.time_taken = time_taken
+        self.input_text = input_text
+        self.output_text = output_text
 
 
 class BaseLLM(ABC):
@@ -58,80 +62,6 @@ class BaseLLM(ABC):
         pass
 
 
-from litellm import cost_per_token
-from pydantic import BaseModel, Field
-
-from agential.llm.llm import ModelResponse
-
-
-class PromptMetrics(BaseModel):
-    """Prompt metrics Pydantic output class.
-
-    Attributes:
-        prompt_tokens (int): The number of tokens in the prompt.
-        completion_tokens (int): The number of tokens in the completion.
-        total_tokens (int): The total number of tokens in the prompt and completion.
-        prompt_cost (float): The cost of the prompt tokens in dollars.
-        completion_cost (float): The cost of the completion tokens in dollars.
-        total_cost (float): The total cost of the prompt and completion tokens in dollars.
-        prompt_time (float): The time it took to generate the prompt in seconds.
-    """
-
-    prompt_tokens: int = Field(..., description="The number of tokens in the prompt.")
-    completion_tokens: int = Field(
-        ..., description="The number of tokens in the completion."
-    )
-    total_tokens: int = Field(
-        ..., description="The total number of tokens in the prompt and completion."
-    )
-    prompt_cost: float = Field(
-        ..., description="The cost of the prompt tokens in dollars."
-    )
-    completion_cost: float = Field(
-        ..., description="The cost of the completion tokens in dollars."
-    )
-    total_cost: float = Field(
-        ...,
-        description="The total cost of the prompt and completion tokens in dollars.",
-    )
-    prompt_time: float = Field(
-        ..., description="The time taken to generate the response in seconds."
-    )
-
-
-def get_token_cost_time(response: ModelResponse) -> PromptMetrics:
-    """Calculates the token usage and cost of a prompt and completion in dollars.
-
-    Args:
-        response (ModelResponse): The response object containing the usage information.
-
-    Returns:
-        PromptMetrics: A Pydantic object containing the token usage and cost breakdown:
-            - "prompt_tokens": The number of tokens in the prompt.
-            - "completion_tokens": The number of tokens in the completion.
-            - "total_tokens": The total number of tokens in the prompt and completion.
-            - "prompt_cost": The cost of the prompt tokens in dollars.
-            - "completion_cost": The cost of the completion tokens in dollars.
-            - "total_cost": The total cost of the prompt and completion tokens in dollars.
-            - "prompt_time": The time taken to generate the response in seconds.
-    """
-    prompt_tokens_cost_usd_dollar, completion_tokens_cost_usd_dollar = cost_per_token(
-        model=response.model,
-        prompt_tokens=response.usage.prompt_tokens,
-        completion_tokens=response.usage.completion_tokens,
-    )
-
-    return PromptMetrics(
-        prompt_tokens=response.usage.prompt_tokens,
-        completion_tokens=response.usage.completion_tokens,
-        total_tokens=response.usage.total_tokens,
-        prompt_cost=prompt_tokens_cost_usd_dollar,
-        completion_cost=completion_tokens_cost_usd_dollar,
-        total_cost=prompt_tokens_cost_usd_dollar + completion_tokens_cost_usd_dollar,
-        prompt_time=response.time_taken,
-    )
-
-
 class LLM(BaseLLM):
     """Simple LLM wrapper for LiteLLM's completion function.
 
@@ -143,13 +73,6 @@ class LLM(BaseLLM):
     def __init__(self, model: str, **kwargs) -> None:
         """Initialize."""
         super().__init__(model=model)
-        self.total_prompt_tokens = 0
-        self.total_completion_tokens = 0
-        self.total_tokens = 0
-        self.total_prompt_cost = 0
-        self.total_completion_cost = 0
-        self.total_cost = 0
-        self.total_prompt_time = 0
         self.kwargs = kwargs
 
     def __call__(self, prompt: str, **kwargs: Any) -> ModelResponse:
@@ -162,8 +85,8 @@ class LLM(BaseLLM):
         Returns:
             ModelResponse: The response from the language model, typically containing generated text and metadata.
         """
-        start_time = time.time()
         merged_kwargs = {**self.kwargs, **kwargs}
+        start_time = time.time()
         response = completion(
             model=self.model,
             messages=[{"role": "user", "content": prompt}],
@@ -171,20 +94,18 @@ class LLM(BaseLLM):
         )
         end_time = time.time()
 
-        response.time_taken = end_time - start_time
+        time_taken = end_time - start_time
 
-        o = get_token_cost_time(response)
-        self.total_prompt_tokens += o.prompt_tokens
-        self.total_completion_tokens += o.completion_tokens
-        self.total_tokens += o.total_tokens
-        self.total_prompt_cost += o.prompt_cost
-        self.total_completion_cost += o.completion_cost
-        self.total_cost += o.total_cost
-        self.total_prompt_time += o.prompt_time
-
-        return response
-
-
+        return ModelResponse(
+            choices=response.choices,
+            usage=response.usage,
+            model=response.model,
+            time_taken=time_taken,
+            input_text=prompt,
+            output_text=response.choices[0].message.content,
+        )
+    
+    
 class MockLLM(BaseLLM):
     """Mock LLM class for testing purposes.
 

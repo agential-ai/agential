@@ -52,7 +52,7 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActTriviaQAStrategy,
 )
 from agential.llm.llm import BaseLLM, MockLLM
-from agential.utils.metrics import PromptMetrics
+from agential.utils.metrics import PromptInfo
 
 
 def test_reflexion_cot_init() -> None:
@@ -187,7 +187,7 @@ def test_reflexion_cot_generate() -> None:
                 answer="Company with limited liability",
                 is_correct=False,
                 reflections=[],
-                thought_metrics=PromptMetrics(
+                thought_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -196,7 +196,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptMetrics(
+                action_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -216,7 +216,7 @@ def test_reflexion_cot_generate() -> None:
                 reflections=[
                     'Upon reflection, the phrasing discrepancy in my answer may have been the reason for it being marked incorrect. While I provided the correct translation of "GmbH" in English, the question specifically asked for the acronym\'s meaning in German. To mitigate this failure in the future, I should provide the answer in the same language as requested in the question, which in this case would be "Gesellschaft mit beschränkter Haftung". This will ensure alignment between the question and my response.'
                 ],
-                thought_metrics=PromptMetrics(
+                thought_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -225,7 +225,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptMetrics(
+                action_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -234,7 +234,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                reflection_metrics=PromptMetrics(
+                reflection_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -286,7 +286,7 @@ def test_reflexion_cot_generate() -> None:
                 answer="Company with limited liability",
                 is_correct=False,
                 reflections=[],
-                thought_metrics=PromptMetrics(
+                thought_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -295,7 +295,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptMetrics(
+                action_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -315,7 +315,7 @@ def test_reflexion_cot_generate() -> None:
                 reflections=[
                     'Upon reflection, the phrasing discrepancy in my answer may have been the reason for it being marked incorrect. While I provided the correct translation of "GmbH" in English, the question specifically asked for the acronym\'s meaning in German. To mitigate this failure in the future, I should provide the answer in the same language as requested in the question, which in this case would be "Gesellschaft mit beschränkter Haftung". This will ensure alignment between the question and my response.'
                 ],
-                thought_metrics=PromptMetrics(
+                thought_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -324,7 +324,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptMetrics(
+                action_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -333,7 +333,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                reflection_metrics=PromptMetrics(
+                reflection_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -404,7 +404,7 @@ def test_reflexion_cot_generate() -> None:
                 answer="",
                 is_correct=False,
                 reflections=[],
-                thought_metrics=PromptMetrics(
+                thought_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -413,7 +413,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptMetrics(
+                action_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -467,7 +467,7 @@ def test_reflexion_cot_generate() -> None:
                 answer="Gesellschaft mit beschränkter Haftung",
                 is_correct=True,
                 reflections=[],
-                thought_metrics=PromptMetrics(
+                thought_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -476,7 +476,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptMetrics(
+                action_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -530,7 +530,7 @@ def test_reflexion_cot_generate() -> None:
                 answer="",
                 is_correct=False,
                 reflections=[],
-                thought_metrics=PromptMetrics(
+                thought_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -539,7 +539,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptMetrics(
+                action_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -593,7 +593,7 @@ def test_reflexion_cot_generate() -> None:
                 answer="Company with Limited Liability",
                 is_correct=False,
                 reflections=[],
-                thought_metrics=PromptMetrics(
+                thought_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -602,7 +602,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptMetrics(
+                action_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -655,7 +655,7 @@ def test_reflexion_cot_generate() -> None:
                 answer="Company with limited liability",
                 is_correct=False,
                 reflections=[],
-                thought_metrics=PromptMetrics(
+                thought_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -664,7 +664,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptMetrics(
+                action_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -684,7 +684,7 @@ def test_reflexion_cot_generate() -> None:
                 reflections=[
                     'Upon reflection, the phrasing discrepancy in my answer may have been the reason for it being marked incorrect. While I provided the correct translation of "GmbH" in English, the question specifically asked for the acronym\'s meaning in German. To mitigate this failure in the future, I should provide the answer in the same language as requested in the question, which in this case would be "Gesellschaft mit beschränkter Haftung". This will ensure alignment between the question and my response.'
                 ],
-                thought_metrics=PromptMetrics(
+                thought_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -693,7 +693,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptMetrics(
+                action_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -702,7 +702,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                reflection_metrics=PromptMetrics(
+                reflection_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -758,7 +758,7 @@ def test_reflexion_cot_generate() -> None:
                 answer="VIVA Media GmbH",
                 is_correct=False,
                 reflections=[],
-                thought_metrics=PromptMetrics(
+                thought_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -767,7 +767,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptMetrics(
+                action_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -787,7 +787,7 @@ def test_reflexion_cot_generate() -> None:
                 reflections=[
                     'The reason for the failure in this trial could be the discrepancy in the phrasing of the answer. The question asked for the acronym of the new name, while the provided answer included the full name "VIVA Media GmbH". To mitigate this issue in future trials, a more concise and high-level plan would be to provide only the acronym "GmbH" as the answer, as it directly corresponds to the acronym in the question. This adjustment will ensure a more accurate match between the question and the answer provided.'
                 ],
-                thought_metrics=PromptMetrics(
+                thought_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -796,7 +796,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptMetrics(
+                action_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -805,7 +805,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                reflection_metrics=PromptMetrics(
+                reflection_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -863,7 +863,7 @@ def test_reflexion_cot_generate() -> None:
                 answer="Company with Limited Liability",
                 is_correct=False,
                 reflections=[],
-                thought_metrics=PromptMetrics(
+                thought_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -872,7 +872,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptMetrics(
+                action_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -926,7 +926,7 @@ def test_reflexion_cot_generate() -> None:
                 answer="Company with Limited Liability",
                 is_correct=False,
                 reflections=[],
-                thought_metrics=PromptMetrics(
+                thought_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -935,7 +935,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptMetrics(
+                action_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -1099,7 +1099,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1108,7 +1108,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1129,7 +1129,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1138,7 +1138,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1159,7 +1159,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "Lookup result",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1168,7 +1168,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1189,7 +1189,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1198,7 +1198,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1216,7 +1216,7 @@ def test_reflexion_react_generate() -> None:
                         answer="unable to determine",
                         external_tool_info={"search_result": "", "lookup_result": ""},
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1225,7 +1225,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1295,7 +1295,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1304,7 +1304,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1325,7 +1325,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1334,7 +1334,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1355,7 +1355,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "Lookup result",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1364,7 +1364,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1385,7 +1385,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1394,7 +1394,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1412,7 +1412,7 @@ def test_reflexion_react_generate() -> None:
                         answer="unable to determine",
                         external_tool_info={"search_result": "", "lookup_result": ""},
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1421,7 +1421,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1508,7 +1508,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1517,7 +1517,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1538,7 +1538,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1547,7 +1547,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1568,7 +1568,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "Lookup result",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1577,7 +1577,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1598,7 +1598,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1607,7 +1607,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1625,7 +1625,7 @@ def test_reflexion_react_generate() -> None:
                         answer="unable to determine",
                         external_tool_info={"search_result": "", "lookup_result": ""},
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1634,7 +1634,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1708,7 +1708,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1717,7 +1717,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1738,7 +1738,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1747,7 +1747,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1768,7 +1768,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1777,7 +1777,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1795,7 +1795,7 @@ def test_reflexion_react_generate() -> None:
                         answer="unable to find answer",
                         external_tool_info={"search_result": "", "lookup_result": ""},
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1804,7 +1804,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1883,7 +1883,7 @@ def test_reflexion_react_generate() -> None:
                         answer="",
                         external_tool_info={"search_result": "", "lookup_result": ""},
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1892,7 +1892,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1910,7 +1910,7 @@ def test_reflexion_react_generate() -> None:
                         answer="",
                         external_tool_info={"search_result": "", "lookup_result": ""},
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1919,7 +1919,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1937,7 +1937,7 @@ def test_reflexion_react_generate() -> None:
                         answer="",
                         external_tool_info={"search_result": "", "lookup_result": ""},
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1946,7 +1946,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1964,7 +1964,7 @@ def test_reflexion_react_generate() -> None:
                         answer="",
                         external_tool_info={"search_result": "", "lookup_result": ""},
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1973,7 +1973,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -1991,7 +1991,7 @@ def test_reflexion_react_generate() -> None:
                         answer="",
                         external_tool_info={"search_result": "", "lookup_result": ""},
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2000,7 +2000,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2018,7 +2018,7 @@ def test_reflexion_react_generate() -> None:
                         answer="",
                         external_tool_info={"search_result": "", "lookup_result": ""},
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2027,7 +2027,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2081,7 +2081,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2090,7 +2090,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2111,7 +2111,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2120,7 +2120,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2141,7 +2141,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2150,7 +2150,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2171,7 +2171,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2180,7 +2180,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2201,7 +2201,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2210,7 +2210,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2228,7 +2228,7 @@ def test_reflexion_react_generate() -> None:
                         answer="Unable to find information",
                         external_tool_info={"search_result": "", "lookup_result": ""},
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2237,7 +2237,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2264,7 +2264,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2273,7 +2273,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2294,7 +2294,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2303,7 +2303,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2324,7 +2324,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2333,7 +2333,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2354,7 +2354,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2363,7 +2363,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2384,7 +2384,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2393,7 +2393,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2414,7 +2414,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2423,7 +2423,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2437,7 +2437,7 @@ def test_reflexion_react_generate() -> None:
                 reflections=[
                     'In this reasoning trial, the failure to find information on VIVA Media AG\'s name change and new acronym in 2004 was due to the lack of specific search terms and a narrow approach. To mitigate this failure, a new high-level plan could involve starting by searching for general information on VIVA Media AG, then broadening the search to include terms like "name change," "acronym," and "rebranding" to gather more relevant information. This approach will help in exploring different avenues to find the desired information effectively.'
                 ],
-                reflection_metrics=PromptMetrics(
+                reflection_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -2526,7 +2526,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2535,7 +2535,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2556,7 +2556,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2565,7 +2565,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2586,7 +2586,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2595,7 +2595,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2622,7 +2622,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2631,7 +2631,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2652,7 +2652,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2661,7 +2661,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2682,7 +2682,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2691,7 +2691,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2705,7 +2705,7 @@ def test_reflexion_react_generate() -> None:
                 reflections=[
                     "The failure in this reasoning trial could be due to the lack of specific keywords used in the search query. To mitigate this failure, a new plan could involve searching for the specific name change of VIVA Media AG in 2004, then looking for the new acronym directly instead of searching for the acronym from the start. This approach would provide more targeted and accurate results."
                 ],
-                reflection_metrics=PromptMetrics(
+                reflection_metrics=PromptInfo(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -2784,7 +2784,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2793,7 +2793,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2814,7 +2814,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2823,7 +2823,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2844,7 +2844,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2853,7 +2853,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2923,7 +2923,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2932,7 +2932,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2953,7 +2953,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2962,7 +2962,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2983,7 +2983,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptMetrics(
+                        thought_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -2992,7 +2992,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptMetrics(
+                        action_metrics=PromptInfo(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,

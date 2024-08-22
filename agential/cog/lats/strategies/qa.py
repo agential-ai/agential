@@ -25,7 +25,7 @@ from agential.cog.lats.strategies.general import LATSGeneralStrategy
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
-from agential.utils.metrics import PromptMetrics, get_token_cost_time
+from agential.utils.metrics import PromptInfo, get_token_cost_time
 from agential.utils.parse import remove_newline
 
 
@@ -102,7 +102,7 @@ class LATSQAStrategy(LATSGeneralStrategy):
             Tuple[List[Node], LATSGenerateMetrics]: A list of generated child nodes, and the pydantic of corresponding metrics.
         """
         reflections_str = ""
-        reflection_metrics: List[PromptMetrics] = []
+        reflection_metrics: List[PromptInfo] = []
         if self.reflect_condition():
             reflections, reflection_metrics = self.reflect(
                 question=question,
@@ -211,7 +211,7 @@ class LATSQAStrategy(LATSGeneralStrategy):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, str, PromptMetrics]:
+    ) -> Tuple[str, str, str, PromptInfo]:
         """Generate an action for the current step in the reasoning process.
 
         Args:
@@ -224,7 +224,7 @@ class LATSQAStrategy(LATSGeneralStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[str, str, str, PromptMetrics]: A tuple containing the updated trajectory, action type, query, and the metrics.
+            Tuple[str, str, str, PromptInfo]: A tuple containing the updated trajectory, action type, query, and the metrics.
         """
         trajectory += f"\nAction {depth + 1}: "
         out = _prompt_agent(
@@ -432,7 +432,7 @@ class LATSQAStrategy(LATSGeneralStrategy):
             simulation_current_nodes.append(node)
 
             values: List[Dict[str, Any]] = []
-            values_metrics: List[Optional[PromptMetrics]] = []
+            values_metrics: List[Optional[PromptInfo]] = []
 
             children_nodes, generate_metrics = self.generate_children_nodes(
                 node=node,

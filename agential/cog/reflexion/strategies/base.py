@@ -16,7 +16,7 @@ from agential.cog.reflexion.reflect import (
     ReflexionReActReflector,
 )
 from agential.llm.llm import BaseLLM
-from agential.utils.metrics import PromptMetrics
+from agential.utils.metrics import PromptInfo
 
 
 class ReflexionCoTBaseStrategy(BaseStrategy):
@@ -88,7 +88,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, PromptMetrics]:
+    ) -> Tuple[str, str, PromptInfo]:
         """Generates a thought based on the question, examples, and prompt.
 
         Args:
@@ -100,7 +100,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the generation process.
 
         Returns:
-            Tuple[str, str, PromptMetrics]: The updated scratchpad, the generated thought, and the metrics for the thought.
+            Tuple[str, str, PromptInfo]: The updated scratchpad, the generated thought, and the metrics for the thought.
         """
         raise NotImplementedError
 
@@ -113,7 +113,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, str, PromptMetrics]:
+    ) -> Tuple[str, str, str, PromptInfo]:
         """Generates an action based on the question, examples, and prompt.
 
         Args:
@@ -125,7 +125,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the generation process.
 
         Returns:
-            Tuple[str, str, str, PromptMetrics]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
+            Tuple[str, str, str, PromptInfo]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
         """
         raise NotImplementedError
 
@@ -195,7 +195,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[List[str], str, Optional[PromptMetrics]]:
+    ) -> Tuple[List[str], str, Optional[PromptInfo]]:
         """Reflects on a given question, context, examples, prompt, and additional keys using the specified reflection strategy.
 
         Args:
@@ -207,7 +207,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the reflection process.
 
         Returns:
-            Tuple[List[str], str, Optional[PromptMetrics]]: The reflections, the reflection string, and the metrics.
+            Tuple[List[str], str, Optional[PromptInfo]]: The reflections, the reflection string, and the metrics.
         """
         raise NotImplementedError
 
@@ -321,7 +321,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, PromptMetrics]:
+    ) -> Tuple[str, str, PromptInfo]:
         """Generates a thought based on the given question, examples, reflections, prompt, and additional keys.
 
         Args:
@@ -334,7 +334,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the thought generation process.
 
         Returns:
-            Tuple[str, str, PromptMetrics]: The updated scratchpad, the generated thought, and the thought metrics.
+            Tuple[str, str, PromptInfo]: The updated scratchpad, the generated thought, and the thought metrics.
         """
         raise NotImplementedError
 
@@ -348,7 +348,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, str, PromptMetrics]:
+    ) -> Tuple[str, str, str, PromptInfo]:
         """Generate an action for the current step in the reasoning process.
 
         Args:
@@ -363,7 +363,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[str, str, str, PromptMetrics]: A tuple containing the updated trajectory, action type, query, and the metrics.
+            Tuple[str, str, str, PromptInfo]: A tuple containing the updated trajectory, action type, query, and the metrics.
         """
         raise NotImplementedError
 
@@ -482,7 +482,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[List[str], str, Optional[PromptMetrics]]:
+    ) -> Tuple[List[str], str, Optional[PromptInfo]]:
         """Reflects on a given question, context, examples, prompt, and additional keys using the specified reflection strategy.
 
         Args:
@@ -494,7 +494,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the reflection process.
 
         Returns:
-            Tuple[List[str], str, Optional[PromptMetrics]]: The reflections, reflection string, and the metrics for the reflection process.
+            Tuple[List[str], str, Optional[PromptInfo]]: The reflections, reflection string, and the metrics for the reflection process.
         """
         raise NotImplementedError
 

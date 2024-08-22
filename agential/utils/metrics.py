@@ -6,10 +6,12 @@ from pydantic import BaseModel, Field
 from agential.llm.llm import ModelResponse
 
 
-class PromptMetrics(BaseModel):
-    """Prompt metrics Pydantic output class.
+class PromptInfo(BaseModel):
+    """Prompt info Pydantic output class.
 
     Attributes:
+        input_text (str): The input text.
+        output_text (str): The output text.
         prompt_tokens (int): The number of tokens in the prompt.
         completion_tokens (int): The number of tokens in the completion.
         total_tokens (int): The total number of tokens in the prompt and completion.
@@ -19,6 +21,8 @@ class PromptMetrics(BaseModel):
         prompt_time (float): The time it took to generate the prompt in seconds.
     """
 
+    input_text: str = Field(..., description="The input text.")
+    output_text: str = Field(..., description="The output text.")
     prompt_tokens: int = Field(..., description="The number of tokens in the prompt.")
     completion_tokens: int = Field(
         ..., description="The number of tokens in the completion."
@@ -41,14 +45,14 @@ class PromptMetrics(BaseModel):
     )
 
 
-def get_token_cost_time(response: ModelResponse) -> PromptMetrics:
+def get_token_cost_time(response: ModelResponse) -> PromptInfo:
     """Calculates the token usage and cost of a prompt and completion in dollars.
 
     Args:
         response (ModelResponse): The response object containing the usage information.
 
     Returns:
-        PromptMetrics: A Pydantic object containing the token usage and cost breakdown:
+        PromptInfo: A Pydantic object containing the token usage and cost breakdown:
             - "prompt_tokens": The number of tokens in the prompt.
             - "completion_tokens": The number of tokens in the completion.
             - "total_tokens": The total number of tokens in the prompt and completion.
@@ -63,7 +67,7 @@ def get_token_cost_time(response: ModelResponse) -> PromptMetrics:
         completion_tokens=response.usage.completion_tokens,
     )
 
-    return PromptMetrics(
+    return PromptInfo(
         prompt_tokens=response.usage.prompt_tokens,
         completion_tokens=response.usage.completion_tokens,
         total_tokens=response.usage.total_tokens,

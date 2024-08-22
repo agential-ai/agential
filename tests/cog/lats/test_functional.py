@@ -42,7 +42,7 @@ from agential.cog.lats.prompts import (
     LATS_VALUE_INSTRUCTION_HOTPOTQA,
 )
 from agential.llm.llm import MockLLM
-from agential.utils.metrics import PromptMetrics
+from agential.utils.metrics import PromptInfo
 
 
 def test__build_reflection_format() -> None:
@@ -504,7 +504,7 @@ def test__accumulate_metric() -> None:
         children_nodes=[],
         generate_metrics=LATSGenerateMetrics(
             thoughts_metrics=[
-                PromptMetrics(
+                PromptInfo(
                     prompt_tokens=5,
                     completion_tokens=5,
                     total_tokens=5,
@@ -515,7 +515,7 @@ def test__accumulate_metric() -> None:
                 ),
             ],
             actions_metrics=[
-                PromptMetrics(
+                PromptInfo(
                     prompt_tokens=5,
                     completion_tokens=5,
                     total_tokens=5,
@@ -526,7 +526,7 @@ def test__accumulate_metric() -> None:
                 ),
             ],
             reflections_metrics=[
-                PromptMetrics(
+                PromptInfo(
                     prompt_tokens=5,
                     completion_tokens=5,
                     total_tokens=5,
@@ -541,7 +541,7 @@ def test__accumulate_metric() -> None:
         evaluate_metrics=LATSEvaluateMetrics(
             values_metrics=[
                 None,
-                PromptMetrics(
+                PromptInfo(
                     prompt_tokens=5,
                     completion_tokens=5,
                     total_tokens=5,
@@ -564,7 +564,7 @@ def test__accumulate_metric() -> None:
                 LATSSimulationStepMetrics(
                     generate_metrics=LATSGenerateMetrics(
                         thoughts_metrics=[
-                            PromptMetrics(
+                            PromptInfo(
                                 prompt_tokens=5,
                                 completion_tokens=5,
                                 total_tokens=5,
@@ -575,7 +575,7 @@ def test__accumulate_metric() -> None:
                             ),
                         ],
                         actions_metrics=[
-                            PromptMetrics(
+                            PromptInfo(
                                 prompt_tokens=5,
                                 completion_tokens=5,
                                 total_tokens=5,
@@ -586,7 +586,7 @@ def test__accumulate_metric() -> None:
                             ),
                         ],
                         reflections_metrics=[
-                            PromptMetrics(
+                            PromptInfo(
                                 prompt_tokens=5,
                                 completion_tokens=5,
                                 total_tokens=5,
@@ -600,7 +600,7 @@ def test__accumulate_metric() -> None:
                     evaluate_metrics=LATSEvaluateMetrics(
                         values_metrics=[
                             None,
-                            PromptMetrics(
+                            PromptInfo(
                                 prompt_tokens=5,
                                 completion_tokens=5,
                                 total_tokens=5,
@@ -640,7 +640,7 @@ def test_accumulate_metrics() -> None:
         children_nodes=[],
         generate_metrics=LATSGenerateMetrics(
             thoughts_metrics=[
-                PromptMetrics(
+                PromptInfo(
                     prompt_tokens=5,
                     completion_tokens=5,
                     total_tokens=5,
@@ -651,7 +651,7 @@ def test_accumulate_metrics() -> None:
                 ),
             ],
             actions_metrics=[
-                PromptMetrics(
+                PromptInfo(
                     prompt_tokens=5,
                     completion_tokens=5,
                     total_tokens=5,
@@ -662,7 +662,7 @@ def test_accumulate_metrics() -> None:
                 ),
             ],
             reflections_metrics=[
-                PromptMetrics(
+                PromptInfo(
                     prompt_tokens=5,
                     completion_tokens=5,
                     total_tokens=5,
@@ -677,7 +677,7 @@ def test_accumulate_metrics() -> None:
         evaluate_metrics=LATSEvaluateMetrics(
             values_metrics=[
                 None,
-                PromptMetrics(
+                PromptInfo(
                     prompt_tokens=5,
                     completion_tokens=5,
                     total_tokens=5,
@@ -700,7 +700,7 @@ def test_accumulate_metrics() -> None:
                 LATSSimulationStepMetrics(
                     generate_metrics=LATSGenerateMetrics(
                         thoughts_metrics=[
-                            PromptMetrics(
+                            PromptInfo(
                                 prompt_tokens=5,
                                 completion_tokens=5,
                                 total_tokens=5,
@@ -711,7 +711,7 @@ def test_accumulate_metrics() -> None:
                             ),
                         ],
                         actions_metrics=[
-                            PromptMetrics(
+                            PromptInfo(
                                 prompt_tokens=5,
                                 completion_tokens=5,
                                 total_tokens=5,
@@ -722,7 +722,7 @@ def test_accumulate_metrics() -> None:
                             ),
                         ],
                         reflections_metrics=[
-                            PromptMetrics(
+                            PromptInfo(
                                 prompt_tokens=5,
                                 completion_tokens=5,
                                 total_tokens=5,
@@ -736,7 +736,7 @@ def test_accumulate_metrics() -> None:
                     evaluate_metrics=LATSEvaluateMetrics(
                         values_metrics=[
                             None,
-                            PromptMetrics(
+                            PromptInfo(
                                 prompt_tokens=5,
                                 completion_tokens=5,
                                 total_tokens=5,

@@ -23,7 +23,7 @@ from agential.cog.reflexion.strategies.general import (
     ReflexionReActGeneralStrategy,
 )
 from agential.llm.llm import BaseLLM, MockLLM
-from agential.utils.metrics import PromptMetrics
+from agential.utils.metrics import PromptInfo
 
 
 def test_reflexion_cot_init() -> None:
@@ -57,7 +57,7 @@ def test_reflexion_cot_generate_thought() -> None:
     )
     assert out == gt_out
     assert scratchpad == gt_scratchpad
-    assert thought_metrics == PromptMetrics(
+    assert thought_metrics == PromptInfo(
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,
@@ -148,7 +148,7 @@ def test_reflexion_cot_reflect() -> None:
     )
     assert reflections == ["1"]
     assert reflection_str == gt_reflection_str
-    assert reflection_metrics == PromptMetrics(
+    assert reflection_metrics == PromptInfo(
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,
@@ -205,7 +205,7 @@ def test_reflexion_react_generate_thought() -> None:
     )
     assert out == gt_out
     assert scratchpad == gt_scratchpad
-    assert thought_metrics == PromptMetrics(
+    assert thought_metrics == PromptInfo(
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,
@@ -330,7 +330,7 @@ def test_reflexion_react_reflect() -> None:
     )
     assert reflections == ["1"]
     assert reflection_str == gt_reflection_str
-    assert reflection_metrics == PromptMetrics(
+    assert reflection_metrics == PromptInfo(
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,

@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
 
 from agential.cog.base.output import BaseOutput
-from agential.utils.metrics import PromptMetrics
+from agential.utils.metrics import PromptInfo
 
 
 class LATSReActStepOutput(BaseModel):
@@ -36,22 +36,22 @@ class LATSGenerateMetrics(BaseModel):
     """LATS generate metrics Pydantic output class.
 
     Attributes:
-        thoughts_metrics (List[PromptMetrics]): The metrics of the thoughts.
-        actions_metrics (List[PromptMetrics]): The metrics of the actions.
-        reflections_metrics (List[PromptMetrics]): The metrics of the reflections.
+        thoughts_metrics (List[PromptInfo]): The metrics of the thoughts.
+        actions_metrics (List[PromptInfo]): The metrics of the actions.
+        reflections_metrics (List[PromptInfo]): The metrics of the reflections.
     """
 
-    thoughts_metrics: List[PromptMetrics] = Field(
+    thoughts_metrics: List[PromptInfo] = Field(
         ...,
         description="The metrics of the thoughts.",
     )
 
-    actions_metrics: List[PromptMetrics] = Field(
+    actions_metrics: List[PromptInfo] = Field(
         ...,
         description="The metrics of the actions.",
     )
 
-    reflections_metrics: List[PromptMetrics] = Field(
+    reflections_metrics: List[PromptInfo] = Field(
         ...,
         description="The metrics of the reflections.",
     )
@@ -61,10 +61,10 @@ class LATSEvaluateMetrics(BaseModel):
     """LATS evaluate metrics Pydantic output class.
 
     Attributes:
-        values_metrics (List[Optional[PromptMetrics]]): The metrics of the values.
+        values_metrics (List[Optional[PromptInfo]]): The metrics of the values.
     """
 
-    values_metrics: List[Optional[PromptMetrics]] = Field(
+    values_metrics: List[Optional[PromptInfo]] = Field(
         ...,
         description="The metrics of the values.",
     )

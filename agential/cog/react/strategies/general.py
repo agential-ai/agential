@@ -12,7 +12,7 @@ from agential.cog.react.functional import _is_halted, _prompt_agent, accumulate_
 from agential.cog.react.output import ReActOutput, ReActStepOutput
 from agential.cog.react.strategies.base import ReActBaseStrategy
 from agential.llm.llm import BaseLLM
-from agential.utils.metrics import PromptMetrics, get_token_cost_time
+from agential.utils.metrics import PromptInfo, get_token_cost_time
 from agential.utils.parse import remove_newline
 
 
@@ -150,7 +150,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, PromptMetrics]:
+    ) -> Tuple[str, str, PromptInfo]:
         """Generate a thought based on the given inputs.
 
         Args:
@@ -162,7 +162,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
             additional_keys (Dict[str, str]): Additional key-value pairs to pass to the language model.
 
         Returns:
-            Tuple[str, str, PromptMetrics]: The updated scratchpad, the generated thought, and the metrics for the thought.
+            Tuple[str, str, PromptInfo]: The updated scratchpad, the generated thought, and the metrics for the thought.
         """
         scratchpad += f"\nThought {idx}: "
 
@@ -189,7 +189,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, str, PromptMetrics]:
+    ) -> Tuple[str, str, str, PromptInfo]:
         """Generate an action based on the given inputs.
 
         Args:
@@ -201,7 +201,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
             additional_keys (Dict[str, str]): Additional key-value pairs to pass to the language model.
 
         Returns:
-            Tuple[str, str, str, PromptMetrics]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
+            Tuple[str, str, str, PromptInfo]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
         """
         raise NotImplementedError
 

@@ -47,7 +47,7 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 from agential.llm.llm import MockLLM
-from agential.utils.metrics import PromptMetrics
+from agential.utils.metrics import PromptInfo
 
 
 def test__truncate_scratchpad() -> None:
@@ -813,7 +813,7 @@ def test_accumulate_metrics_cot() -> None:
             answer="",
             is_correct=True,
             reflections=[],
-            thought_metrics=PromptMetrics(
+            thought_metrics=PromptInfo(
                 prompt_tokens=15,
                 completion_tokens=25,
                 total_tokens=40,
@@ -822,7 +822,7 @@ def test_accumulate_metrics_cot() -> None:
                 total_cost=0.04,
                 prompt_time=0.75,
             ),
-            action_metrics=PromptMetrics(
+            action_metrics=PromptInfo(
                 prompt_tokens=10,
                 completion_tokens=15,
                 total_tokens=25,
@@ -840,7 +840,7 @@ def test_accumulate_metrics_cot() -> None:
             answer="",
             is_correct=True,
             reflections=[],
-            thought_metrics=PromptMetrics(
+            thought_metrics=PromptInfo(
                 prompt_tokens=15,
                 completion_tokens=25,
                 total_tokens=40,
@@ -849,7 +849,7 @@ def test_accumulate_metrics_cot() -> None:
                 total_cost=0.04,
                 prompt_time=0.75,
             ),
-            action_metrics=PromptMetrics(
+            action_metrics=PromptInfo(
                 prompt_tokens=10,
                 completion_tokens=15,
                 total_tokens=25,
@@ -886,7 +886,7 @@ def test_accumulate_metrics_react() -> None:
             answer="",
             external_tool_info={},
             is_correct=True,
-            thought_metrics=PromptMetrics(
+            thought_metrics=PromptInfo(
                 prompt_tokens=15,
                 completion_tokens=25,
                 total_tokens=40,
@@ -895,7 +895,7 @@ def test_accumulate_metrics_react() -> None:
                 total_cost=0.04,
                 prompt_time=0.75,
             ),
-            action_metrics=PromptMetrics(
+            action_metrics=PromptInfo(
                 prompt_tokens=10,
                 completion_tokens=15,
                 total_tokens=25,
@@ -913,7 +913,7 @@ def test_accumulate_metrics_react() -> None:
             answer="",
             external_tool_info={},
             is_correct=True,
-            thought_metrics=PromptMetrics(
+            thought_metrics=PromptInfo(
                 prompt_tokens=15,
                 completion_tokens=25,
                 total_tokens=40,
@@ -922,7 +922,7 @@ def test_accumulate_metrics_react() -> None:
                 total_cost=0.04,
                 prompt_time=0.75,
             ),
-            action_metrics=PromptMetrics(
+            action_metrics=PromptInfo(
                 prompt_tokens=10,
                 completion_tokens=15,
                 total_tokens=25,

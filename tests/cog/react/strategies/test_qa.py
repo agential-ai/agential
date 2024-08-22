@@ -15,7 +15,7 @@ from agential.cog.react.strategies.qa import (
 )
 from agential.llm.llm import BaseLLM, MockLLM
 from agential.utils.docstore import DocstoreExplorer
-from agential.utils.metrics import PromptMetrics
+from agential.utils.metrics import PromptInfo
 
 
 def test_init() -> None:
@@ -53,7 +53,7 @@ def test_generate_action() -> None:
     assert scratchpad == gt_scratchpad
     assert action_type == gt_action_type
     assert query == gt_query
-    assert action_metrics == PromptMetrics(
+    assert action_metrics == PromptInfo(
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,

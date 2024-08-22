@@ -24,7 +24,7 @@ from agential.cog.reflexion.strategies.general import (
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
 from agential.utils.general import safe_execute
-from agential.utils.metrics import PromptMetrics, get_token_cost_time
+from agential.utils.metrics import PromptInfo, get_token_cost_time
 
 
 class ReflexionCoTMathStrategy(ReflexionCoTGeneralStrategy):
@@ -65,7 +65,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTGeneralStrategy):
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, str, PromptMetrics]:
+    ) -> Tuple[str, str, str, PromptInfo]:
         """Generates an action based on the question, examples, and prompt.
 
         Args:
@@ -77,7 +77,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTGeneralStrategy):
             additional_keys (Dict[str, str]): Additional keys for the generation process.
 
         Returns:
-            Tuple[str, str, str, PromptMetrics]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
+            Tuple[str, str, str, PromptInfo]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
         """
         scratchpad += f"\nAction: "
         out = _prompt_cot_agent(
@@ -220,7 +220,7 @@ class ReflexionReActMathStrategy(ReflexionReActGeneralStrategy):
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, str, PromptMetrics]:
+    ) -> Tuple[str, str, str, PromptInfo]:
         """Generate an action for the current step in the reasoning process.
 
         Args:
@@ -235,7 +235,7 @@ class ReflexionReActMathStrategy(ReflexionReActGeneralStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[str, str, str, PromptMetrics]: A tuple containing the updated trajectory, action type, query, and the metrics.
+            Tuple[str, str, str, PromptInfo]: A tuple containing the updated trajectory, action type, query, and the metrics.
         """
         scratchpad += f"\nAction {idx}: "
         out = _prompt_react_agent(

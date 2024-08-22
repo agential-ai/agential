@@ -29,7 +29,7 @@ from agential.cog.lats.strategies.qa import (
 )
 from agential.llm.llm import MockLLM
 from agential.utils.docstore import DocstoreExplorer
-from agential.utils.metrics import PromptMetrics
+from agential.utils.metrics import PromptInfo
 
 
 def test_init() -> None:
@@ -141,7 +141,7 @@ def test_generate() -> None:
             ],
             generate_metrics=LATSGenerateMetrics(
                 thoughts_metrics=[
-                    PromptMetrics(
+                    PromptInfo(
                         prompt_tokens=10,
                         completion_tokens=20,
                         total_tokens=30,
@@ -150,7 +150,7 @@ def test_generate() -> None:
                         total_cost=5.4999999999999995e-05,
                         prompt_time=0.5,
                     ),
-                    PromptMetrics(
+                    PromptInfo(
                         prompt_tokens=10,
                         completion_tokens=20,
                         total_tokens=30,
@@ -161,7 +161,7 @@ def test_generate() -> None:
                     ),
                 ],
                 actions_metrics=[
-                    PromptMetrics(
+                    PromptInfo(
                         prompt_tokens=10,
                         completion_tokens=20,
                         total_tokens=30,
@@ -170,7 +170,7 @@ def test_generate() -> None:
                         total_cost=5.4999999999999995e-05,
                         prompt_time=0.5,
                     ),
-                    PromptMetrics(
+                    PromptInfo(
                         prompt_tokens=10,
                         completion_tokens=20,
                         total_tokens=30,
@@ -188,7 +188,7 @@ def test_generate() -> None:
             ],
             evaluate_metrics=LATSEvaluateMetrics(
                 values_metrics=[
-                    PromptMetrics(
+                    PromptInfo(
                         prompt_tokens=10,
                         completion_tokens=20,
                         total_tokens=30,
@@ -197,7 +197,7 @@ def test_generate() -> None:
                         total_cost=5.4999999999999995e-05,
                         prompt_time=0.5,
                     ),
-                    PromptMetrics(
+                    PromptInfo(
                         prompt_tokens=10,
                         completion_tokens=20,
                         total_tokens=30,
@@ -480,7 +480,7 @@ def test_generate() -> None:
                     LATSSimulationStepMetrics(
                         generate_metrics=LATSGenerateMetrics(
                             thoughts_metrics=[
-                                PromptMetrics(
+                                PromptInfo(
                                     prompt_tokens=10,
                                     completion_tokens=20,
                                     total_tokens=30,
@@ -489,7 +489,7 @@ def test_generate() -> None:
                                     total_cost=5.4999999999999995e-05,
                                     prompt_time=0.5,
                                 ),
-                                PromptMetrics(
+                                PromptInfo(
                                     prompt_tokens=10,
                                     completion_tokens=20,
                                     total_tokens=30,
@@ -500,7 +500,7 @@ def test_generate() -> None:
                                 ),
                             ],
                             actions_metrics=[
-                                PromptMetrics(
+                                PromptInfo(
                                     prompt_tokens=10,
                                     completion_tokens=20,
                                     total_tokens=30,
@@ -509,7 +509,7 @@ def test_generate() -> None:
                                     total_cost=5.4999999999999995e-05,
                                     prompt_time=0.5,
                                 ),
-                                PromptMetrics(
+                                PromptInfo(
                                     prompt_tokens=10,
                                     completion_tokens=20,
                                     total_tokens=30,
@@ -523,7 +523,7 @@ def test_generate() -> None:
                         ),
                         evaluate_metrics=LATSEvaluateMetrics(
                             values_metrics=[
-                                PromptMetrics(
+                                PromptInfo(
                                     prompt_tokens=10,
                                     completion_tokens=20,
                                     total_tokens=30,
@@ -532,7 +532,7 @@ def test_generate() -> None:
                                     total_cost=5.4999999999999995e-05,
                                     prompt_time=0.5,
                                 ),
-                                PromptMetrics(
+                                PromptInfo(
                                     prompt_tokens=10,
                                     completion_tokens=20,
                                     total_tokens=30,
@@ -547,7 +547,7 @@ def test_generate() -> None:
                     LATSSimulationStepMetrics(
                         generate_metrics=LATSGenerateMetrics(
                             thoughts_metrics=[
-                                PromptMetrics(
+                                PromptInfo(
                                     prompt_tokens=10,
                                     completion_tokens=20,
                                     total_tokens=30,
@@ -556,7 +556,7 @@ def test_generate() -> None:
                                     total_cost=5.4999999999999995e-05,
                                     prompt_time=0.5,
                                 ),
-                                PromptMetrics(
+                                PromptInfo(
                                     prompt_tokens=10,
                                     completion_tokens=20,
                                     total_tokens=30,
@@ -567,7 +567,7 @@ def test_generate() -> None:
                                 ),
                             ],
                             actions_metrics=[
-                                PromptMetrics(
+                                PromptInfo(
                                     prompt_tokens=10,
                                     completion_tokens=20,
                                     total_tokens=30,
@@ -576,7 +576,7 @@ def test_generate() -> None:
                                     total_cost=5.4999999999999995e-05,
                                     prompt_time=0.5,
                                 ),
-                                PromptMetrics(
+                                PromptInfo(
                                     prompt_tokens=10,
                                     completion_tokens=20,
                                     total_tokens=30,
@@ -590,7 +590,7 @@ def test_generate() -> None:
                         ),
                         evaluate_metrics=LATSEvaluateMetrics(
                             values_metrics=[
-                                PromptMetrics(
+                                PromptInfo(
                                     prompt_tokens=10,
                                     completion_tokens=20,
                                     total_tokens=30,
@@ -599,7 +599,7 @@ def test_generate() -> None:
                                     total_cost=5.4999999999999995e-05,
                                     prompt_time=0.5,
                                 ),
-                                PromptMetrics(
+                                PromptInfo(
                                     prompt_tokens=10,
                                     completion_tokens=20,
                                     total_tokens=30,
@@ -614,7 +614,7 @@ def test_generate() -> None:
                     LATSSimulationStepMetrics(
                         generate_metrics=LATSGenerateMetrics(
                             thoughts_metrics=[
-                                PromptMetrics(
+                                PromptInfo(
                                     prompt_tokens=10,
                                     completion_tokens=20,
                                     total_tokens=30,
@@ -623,7 +623,7 @@ def test_generate() -> None:
                                     total_cost=5.4999999999999995e-05,
                                     prompt_time=0.5,
                                 ),
-                                PromptMetrics(
+                                PromptInfo(
                                     prompt_tokens=10,
                                     completion_tokens=20,
                                     total_tokens=30,
@@ -634,7 +634,7 @@ def test_generate() -> None:
                                 ),
                             ],
                             actions_metrics=[
-                                PromptMetrics(
+                                PromptInfo(
                                     prompt_tokens=10,
                                     completion_tokens=20,
                                     total_tokens=30,
@@ -643,7 +643,7 @@ def test_generate() -> None:
                                     total_cost=5.4999999999999995e-05,
                                     prompt_time=0.5,
                                 ),
-                                PromptMetrics(
+                                PromptInfo(
                                     prompt_tokens=10,
                                     completion_tokens=20,
                                     total_tokens=30,
@@ -657,7 +657,7 @@ def test_generate() -> None:
                         ),
                         evaluate_metrics=LATSEvaluateMetrics(
                             values_metrics=[
-                                PromptMetrics(
+                                PromptInfo(
                                     prompt_tokens=10,
                                     completion_tokens=20,
                                     total_tokens=30,
@@ -666,7 +666,7 @@ def test_generate() -> None:
                                     total_cost=5.4999999999999995e-05,
                                     prompt_time=0.5,
                                 ),
-                                PromptMetrics(
+                                PromptInfo(
                                     prompt_tokens=10,
                                     completion_tokens=20,
                                     total_tokens=30,
@@ -681,7 +681,7 @@ def test_generate() -> None:
                     LATSSimulationStepMetrics(
                         generate_metrics=LATSGenerateMetrics(
                             thoughts_metrics=[
-                                PromptMetrics(
+                                PromptInfo(
                                     prompt_tokens=10,
                                     completion_tokens=20,
                                     total_tokens=30,
@@ -690,7 +690,7 @@ def test_generate() -> None:
                                     total_cost=5.4999999999999995e-05,
                                     prompt_time=0.5,
                                 ),
-                                PromptMetrics(
+                                PromptInfo(
                                     prompt_tokens=10,
                                     completion_tokens=20,
                                     total_tokens=30,
@@ -701,7 +701,7 @@ def test_generate() -> None:
                                 ),
                             ],
                             actions_metrics=[
-                                PromptMetrics(
+                                PromptInfo(
                                     prompt_tokens=10,
                                     completion_tokens=20,
                                     total_tokens=30,
@@ -710,7 +710,7 @@ def test_generate() -> None:
                                     total_cost=5.4999999999999995e-05,
                                     prompt_time=0.5,
                                 ),
-                                PromptMetrics(
+                                PromptInfo(
                                     prompt_tokens=10,
                                     completion_tokens=20,
                                     total_tokens=30,
@@ -724,7 +724,7 @@ def test_generate() -> None:
                         ),
                         evaluate_metrics=LATSEvaluateMetrics(
                             values_metrics=[
-                                PromptMetrics(
+                                PromptInfo(
                                     prompt_tokens=10,
                                     completion_tokens=20,
                                     total_tokens=30,
@@ -733,7 +733,7 @@ def test_generate() -> None:
                                     total_cost=5.4999999999999995e-05,
                                     prompt_time=0.5,
                                 ),
-                                PromptMetrics(
+                                PromptInfo(
                                     prompt_tokens=10,
                                     completion_tokens=20,
                                     total_tokens=30,
@@ -1144,7 +1144,7 @@ def test_generate_children_nodes() -> None:
         assert node.value == 0
         assert node.is_terminal is False
         assert node.visits == 0
-        assert t == PromptMetrics(
+        assert t == PromptInfo(
             prompt_tokens=10,
             completion_tokens=20,
             total_tokens=30,
@@ -1153,7 +1153,7 @@ def test_generate_children_nodes() -> None:
             total_cost=5.4999999999999995e-05,
             prompt_time=0.5,
         )
-        assert a == PromptMetrics(
+        assert a == PromptInfo(
             prompt_tokens=10,
             completion_tokens=20,
             total_tokens=30,
@@ -1210,7 +1210,7 @@ def test_generate_children_nodes() -> None:
 
     assert len(generate_metrics.thoughts_metrics) == 1
 
-    assert generate_metrics.thoughts_metrics[0] == PromptMetrics(
+    assert generate_metrics.thoughts_metrics[0] == PromptInfo(
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,
@@ -1219,7 +1219,7 @@ def test_generate_children_nodes() -> None:
         total_cost=5.4999999999999995e-05,
         prompt_time=0.5,
     )
-    assert generate_metrics.actions_metrics[0] == PromptMetrics(
+    assert generate_metrics.actions_metrics[0] == PromptInfo(
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,
@@ -1271,7 +1271,7 @@ def test_generate_action() -> None:
     )
     assert action_type == "Search"
     assert query == "capital of France"
-    assert action_metrics == PromptMetrics(
+    assert action_metrics == PromptInfo(
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,
@@ -1417,7 +1417,7 @@ def test_evaluate_node() -> None:
     assert child2.value == 0  # Terminal node, value not updated.
 
     expected_value_metric = [
-        PromptMetrics(
+        PromptInfo(
             prompt_tokens=10,
             completion_tokens=20,
             total_tokens=30,
@@ -1460,7 +1460,7 @@ def test_evaluate_node() -> None:
         root, question, examples, prompt, {}
     )
     assert values_evaluation_metrics.values_metrics == [
-        PromptMetrics(
+        PromptInfo(
             prompt_tokens=10,
             completion_tokens=20,
             total_tokens=30,
@@ -1656,7 +1656,7 @@ def test_simulate_node() -> None:
     # Flatten the list using itertools.chain
     for i in simulation_metrics.simulation_step_metrics:
         assert i.generate_metrics.thoughts_metrics == [
-            PromptMetrics(
+            PromptInfo(
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -1665,7 +1665,7 @@ def test_simulate_node() -> None:
                 total_cost=5.4999999999999995e-05,
                 prompt_time=0.5,
             ),
-            PromptMetrics(
+            PromptInfo(
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -1676,7 +1676,7 @@ def test_simulate_node() -> None:
             ),
         ]
         assert i.generate_metrics.actions_metrics == [
-            PromptMetrics(
+            PromptInfo(
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -1685,7 +1685,7 @@ def test_simulate_node() -> None:
                 total_cost=5.4999999999999995e-05,
                 prompt_time=0.5,
             ),
-            PromptMetrics(
+            PromptInfo(
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -1697,7 +1697,7 @@ def test_simulate_node() -> None:
         ]
         assert i.generate_metrics.reflections_metrics == []
         assert i.evaluate_metrics.values_metrics == [None, None] or [
-            PromptMetrics(
+            PromptInfo(
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -1706,7 +1706,7 @@ def test_simulate_node() -> None:
                 total_cost=5.4999999999999995e-05,
                 prompt_time=0.5,
             ),
-            PromptMetrics(
+            PromptInfo(
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -1723,7 +1723,7 @@ def test_simulate_node() -> None:
 def test_expand_node() -> None:
     """Test the expand_node method."""
     gt_thought_model_responses = [
-        PromptMetrics(
+        PromptInfo(
             prompt_tokens=10,
             completion_tokens=20,
             total_tokens=30,
@@ -1732,7 +1732,7 @@ def test_expand_node() -> None:
             total_cost=5.4999999999999995e-05,
             prompt_time=0.5,
         ),
-        PromptMetrics(
+        PromptInfo(
             prompt_tokens=10,
             completion_tokens=20,
             total_tokens=30,
@@ -1741,7 +1741,7 @@ def test_expand_node() -> None:
             total_cost=5.4999999999999995e-05,
             prompt_time=0.5,
         ),
-        PromptMetrics(
+        PromptInfo(
             prompt_tokens=10,
             completion_tokens=20,
             total_tokens=30,
@@ -1750,7 +1750,7 @@ def test_expand_node() -> None:
             total_cost=5.4999999999999995e-05,
             prompt_time=0.5,
         ),
-        PromptMetrics(
+        PromptInfo(
             prompt_tokens=10,
             completion_tokens=20,
             total_tokens=30,
@@ -1759,7 +1759,7 @@ def test_expand_node() -> None:
             total_cost=5.4999999999999995e-05,
             prompt_time=0.5,
         ),
-        PromptMetrics(
+        PromptInfo(
             prompt_tokens=10,
             completion_tokens=20,
             total_tokens=30,
@@ -1770,7 +1770,7 @@ def test_expand_node() -> None:
         ),
     ]
     gt_action_model_responses = [
-        PromptMetrics(
+        PromptInfo(
             prompt_tokens=10,
             completion_tokens=20,
             total_tokens=30,
@@ -1779,7 +1779,7 @@ def test_expand_node() -> None:
             total_cost=5.4999999999999995e-05,
             prompt_time=0.5,
         ),
-        PromptMetrics(
+        PromptInfo(
             prompt_tokens=10,
             completion_tokens=20,
             total_tokens=30,
@@ -1788,7 +1788,7 @@ def test_expand_node() -> None:
             total_cost=5.4999999999999995e-05,
             prompt_time=0.5,
         ),
-        PromptMetrics(
+        PromptInfo(
             prompt_tokens=10,
             completion_tokens=20,
             total_tokens=30,
@@ -1797,7 +1797,7 @@ def test_expand_node() -> None:
             total_cost=5.4999999999999995e-05,
             prompt_time=0.5,
         ),
-        PromptMetrics(
+        PromptInfo(
             prompt_tokens=10,
             completion_tokens=20,
             total_tokens=30,
@@ -1806,7 +1806,7 @@ def test_expand_node() -> None:
             total_cost=5.4999999999999995e-05,
             prompt_time=0.5,
         ),
-        PromptMetrics(
+        PromptInfo(
             prompt_tokens=10,
             completion_tokens=20,
             total_tokens=30,
