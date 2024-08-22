@@ -281,8 +281,8 @@ class ReflexionReActMathStrategy(ReflexionReActGeneralStrategy):
                 - The updated scratchpad.
                 - The answer.
                 - A boolean indicating if finished.
-                - The generated observation.
                 - A boolean indicating if the task is finished.
+                - The generated observation.
                 - The observation.
                 - A dictionary with additional information.
         """
