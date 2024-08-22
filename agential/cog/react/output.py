@@ -33,10 +33,12 @@ class ReActStepOutput(BaseModel):
         ..., description="The external tool outputs."
     )
     thought_response: Response = Field(
-        ..., description="The thought response including input/output text, token usage, cost, and latency."
+        ...,
+        description="The thought response including input/output text, token usage, cost, and latency.",
     )
     action_response: Response = Field(
-        ..., description="The action response including input/output text, token usage, cost, and latency."
+        ...,
+        description="The action response including input/output text, token usage, cost, and latency.",
     )
 
 

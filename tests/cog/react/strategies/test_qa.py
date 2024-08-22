@@ -13,9 +13,8 @@ from agential.cog.react.strategies.qa import (
     ReActQAStrategy,
     ReActTriviaQAStrategy,
 )
-from agential.llm.llm import BaseLLM, MockLLM
+from agential.llm.llm import BaseLLM, MockLLM, Response
 from agential.utils.docstore import DocstoreExplorer
-from agential.utils.metrics import Response
 
 
 def test_init() -> None:
@@ -41,11 +40,11 @@ def test_generate_action() -> None:
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReActQAStrategy(llm=llm)
 
-    scratchpad, action_type, query, action_metrics = strategy.generate_action(
+    scratchpad, action_type, query, action_response = strategy.generate_action(
         idx=0,
         scratchpad="",
         question=question,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        examples="",
         prompt=REACT_INSTRUCTION_HOTPOTQA,
         additional_keys={},
     )
@@ -53,7 +52,9 @@ def test_generate_action() -> None:
     assert scratchpad == gt_scratchpad
     assert action_type == gt_action_type
     assert query == gt_query
-    assert action_metrics == Response(
+    assert action_response == Response(
+        input_text='Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: \n(1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.\n(2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.\n(3) Finish[answer], which returns the answer and finishes the task.\nYou have a maximum of 6 steps.\n\nHere are some examples:\n\n(END OF EXAMPLES)\n\nQuestion: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring\nAction 0: ',
+        output_text="Search[best kick boxer in the world controversies crimes]",
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,

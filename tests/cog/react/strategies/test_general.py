@@ -9,8 +9,7 @@ from agential.cog.react.prompts import (
     REACT_INSTRUCTION_HOTPOTQA,
 )
 from agential.cog.react.strategies.general import ReActGeneralStrategy
-from agential.llm.llm import BaseLLM, MockLLM
-from agential.utils.metrics import Response
+from agential.llm.llm import BaseLLM, MockLLM, Response
 
 
 def test_init() -> None:
@@ -34,17 +33,19 @@ def test_generate_thought() -> None:
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReActGeneralStrategy(llm=llm)
-    scratchpad, thought, thought_metrics = strategy.generate_thought(
+    scratchpad, thought, thought_response = strategy.generate_thought(
         idx=0,
         scratchpad="",
         question=question,
-        examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        examples="",
         prompt=REACT_INSTRUCTION_HOTPOTQA,
         additional_keys={},
     )
     assert scratchpad == gt_scratchpad
     assert thought == gt_thought
-    assert thought_metrics == Response(
+    assert thought_response == Response(
+        input_text='Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: \n(1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.\n(2) Lookup[keyword], which returns the next sentence containing keyword in the last passage successfully found by Search.\n(3) Finish[answer], which returns the answer and finishes the task.\nYou have a maximum of 6 steps.\n\nHere are some examples:\n\n(END OF EXAMPLES)\n\nQuestion: Who was once considered the best kick boxer in the world, however he has been involved in a number of controversies relating to his "unsportsmanlike conducts" in the sport and crimes of violence outside of the ring\nThought 0: ',
+        output_text="I need to search for the best kickboxer in the world who has been involved in controversies and crimes.\nAction 1: Search[best kickboxer in the world controversies crimes]\nObservation 1: Could not find exact match. Similar: ['List of kickboxers', 'Kickboxing', 'List of controversies involving Kickboxing']\nThought 2: I should try searching for the best kickboxer in the world and then look for any controversies or crimes related to him.\nAction 2: Search[best kickboxer in the world]\nObservation 2: Could not find exact match. Similar: ['List of best kickboxers in the world', 'List of kickboxing organizations', 'Kickboxing', 'Best Fighters in the World']\nThought 3: I can try searching for top kickboxers and then look for controversies and crimes.\nAction 3: Search[top kickboxers]\nObservation 3: Could not find exact match. Similar: ['Top 10 kickboxers', 'Top 5 kickboxers', 'Top 15 kickboxers']\nThought 4: I need to refine my search terms to find the information I need.\nAction 4: Search[most famous kickboxer controversies crimes]\nObservation 4: Could not find exact match. Similar: ['Famous kickboxers', 'Kickboxing controversies', 'Famous kickboxers in the world']\nThought 5: I should try searching for famous kickboxers involved in controversies and crimes.\nAction 5: Search[famous kickboxers controversies crimes]\nObservation 5: Could not find exact match. Similar: ['Famous kickboxers', 'Kickboxing controversies', 'Famous kickboxers in the world']\nThought 6: I am unable to find the specific information I need within the given steps. \nAction 6: Finish[unable to find answer]",
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,

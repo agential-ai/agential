@@ -7,8 +7,7 @@ from tiktoken import Encoding
 
 from agential.cog.base.strategies import BaseStrategy
 from agential.cog.react.output import ReActOutput
-from agential.llm.llm import BaseLLM
-from agential.utils.metrics import Response
+from agential.llm.llm import BaseLLM, Response
 
 
 class ReActBaseStrategy(BaseStrategy):

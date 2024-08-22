@@ -2,8 +2,6 @@
 
 import tiktoken
 
-from litellm.types.utils import Response
-
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.react.functional import (
     _build_agent_prompt,
@@ -16,8 +14,7 @@ from agential.cog.react.functional import (
 )
 from agential.cog.react.output import ReActStepOutput
 from agential.cog.react.prompts import REACT_INSTRUCTION_HOTPOTQA
-from agential.llm.llm import MockLLM
-from agential.utils.metrics import Response
+from agential.llm.llm import MockLLM, Response
 
 
 def test__build_agent_prompt() -> None:
@@ -54,7 +51,7 @@ def test__prompt_agent() -> None:
         prompt=REACT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, Response)
-    assert out.choices[0].message.content == "1"
+    assert out.output_text == "1"
 
     # Test with custom prompt template string.
     out = _prompt_agent(
@@ -66,7 +63,7 @@ def test__prompt_agent() -> None:
         prompt="{question} {scratchpad} {examples} {max_steps}",
     )
     assert isinstance(out, Response)
-    assert out.choices[0].message.content == "1"
+    assert out.output_text == "1"
 
 
 def test__is_halted() -> None:
@@ -274,7 +271,9 @@ def test_accumulate_metrics() -> None:
             observation="Observation 1",
             answer="Answer 1",
             external_tool_info={"tool": "info1"},
-            thought_metrics=Response(
+            thought_response=Response(
+                input_text="",
+                output_text="",
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -283,7 +282,9 @@ def test_accumulate_metrics() -> None:
                 total_cost=0.03,
                 prompt_time=0.5,
             ),
-            action_metrics=Response(
+            action_response=Response(
+                input_text="",
+                output_text="",
                 prompt_tokens=5,
                 completion_tokens=10,
                 total_tokens=15,
@@ -300,7 +301,9 @@ def test_accumulate_metrics() -> None:
             observation="Observation 2",
             answer="Answer 2",
             external_tool_info={"tool": "info2"},
-            thought_metrics=Response(
+            thought_response=Response(
+                input_text="",
+                output_text="",
                 prompt_tokens=15,
                 completion_tokens=25,
                 total_tokens=40,
@@ -309,7 +312,9 @@ def test_accumulate_metrics() -> None:
                 total_cost=0.04,
                 prompt_time=0.75,
             ),
-            action_metrics=Response(
+            action_response=Response(
+                input_text="",
+                output_text="",
                 prompt_tokens=10,
                 completion_tokens=15,
                 total_tokens=25,

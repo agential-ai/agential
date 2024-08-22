@@ -9,8 +9,7 @@ from agential.cog.react.strategies.code import (
     ReActHEvalStrategy,
     ReActMBPPStrategy,
 )
-from agential.llm.llm import BaseLLM, MockLLM
-from agential.utils.metrics import Response
+from agential.llm.llm import BaseLLM, MockLLM, Response
 
 
 def test_init() -> None:
@@ -37,11 +36,11 @@ def test_generate_action() -> None:
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReActCodeStrategy(llm=llm)
-    scratchpad, action_type, query, action_metrics = strategy.generate_action(
+    scratchpad, action_type, query, action_response = strategy.generate_action(
         idx=0,
         scratchpad="",
         question=question,
-        examples=MBPP_FEWSHOT_EXAMPLES_REACT,
+        examples="",
         prompt=REACT_INSTRUCTION_MBPP,
         additional_keys={"tests": tests},
     )
@@ -49,7 +48,9 @@ def test_generate_action() -> None:
     assert query == gt_query
 
     assert scratchpad == gt_scratchpad
-    assert action_metrics == Response(
+    assert action_response == Response(
+        input_text='Answer a coding question with interleaving Thought, Action, Observation steps. Thought can reason about the current question and plan the retrieval steps, and Action can be three types:\n(1) Implement[code], which implements the function to answer the question.\n(2) Test[code], which implements assert statement test cases to test the implemented code.\n(3) Finish[answer], which returns the code implementation and finishes the task.\nYou have a maximum of 6 steps.\n\nHere are some examples:\n\n(END OF EXAMPLES)\n\nYou are an expert Python programmer, and here is your task: Write a python function to find the first repeated character in a given string..\nYour code should pass these tests:\n\nassert first_repeated_char("abcabc") == "a"\n    assert first_repeated_char("abc") == None\n    assert first_repeated_char("123123") == "1"\n\n\nAction 0: ',
+        output_text="Implement[\n```python\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```\n]",
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,
