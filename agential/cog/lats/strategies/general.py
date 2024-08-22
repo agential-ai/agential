@@ -21,7 +21,7 @@ from agential.cog.lats.output import (
 )
 from agential.cog.lats.strategies.base import LATSBaseStrategy
 from agential.llm.llm import BaseLLM
-from agential.utils.metrics import PromptInfo, get_prompt_info
+from agential.utils.metrics import Response, get_prompt_info
 from agential.utils.parse import remove_newline
 
 
@@ -270,7 +270,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, PromptInfo]:
+    ) -> Tuple[str, str, Response]:
         """Generate a thought for the current step in the reasoning process.
 
         Args:
@@ -283,7 +283,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[str, str, PromptInfo]: A tuple containing the updated trajectory, the generated thought, and the metrics.
+            Tuple[str, str, Response]: A tuple containing the updated trajectory, the generated thought, and the metrics.
         """
         trajectory += f"\nThought {depth + 1}: "
         out = _prompt_agent(
@@ -311,7 +311,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, str, PromptInfo]:
+    ) -> Tuple[str, str, str, Response]:
         """Generate an action for the current step in the reasoning process.
 
         Args:
@@ -324,7 +324,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[str, str, str, PromptInfo]: A tuple containing the updated trajectory, action type, query, and the metrics.
+            Tuple[str, str, str, Response]: A tuple containing the updated trajectory, action type, query, and the metrics.
         """
         raise NotImplementedError
 
@@ -552,7 +552,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
 
     def reflect(
         self, question: str, examples: str, prompt: str, additional_keys: Dict[str, str]
-    ) -> Tuple[List[Dict[str, str]], List[PromptInfo]]:
+    ) -> Tuple[List[Dict[str, str]], List[Response]]:
         """Perform reflection on the current search state.
 
         Args:
@@ -562,14 +562,14 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[List[Dict[str, str]], List[PromptInfo]]: A list of dictionaries containing reflection results and the metrics.
+            Tuple[List[Dict[str, str]], List[Response]]: A list of dictionaries containing reflection results and the metrics.
         """
         unique_trajectories = get_unique_trajectories(
             self.failed_trajectories, max_unique=self.max_unique
         )
 
         reflections: List[Dict[str, str]] = []
-        reflection_metrics: List[PromptInfo] = []
+        reflection_metrics: List[Response] = []
         for trajectory in unique_trajectories:
             reflection_out = _prompt_reflection(
                 self.llm,

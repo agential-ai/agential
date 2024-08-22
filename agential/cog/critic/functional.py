@@ -2,7 +2,7 @@
 
 from typing import Dict
 
-from agential.llm.llm import BaseLLM, ModelResponse
+from agential.llm.llm import BaseLLM, Response
 
 
 # Ref: https://github.com/microsoft/ProphetNet/blob/master/CRITIC/src/program/utils.py.
@@ -48,7 +48,7 @@ def _prompt_agent(
     examples: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> ModelResponse:
+) -> Response:
     """Prompts the agent to answer a question using the language model.
 
     Parameters:
@@ -59,7 +59,7 @@ def _prompt_agent(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        ModelResponse: The answer from the language model, with no leading or trailing whitespace.
+        Response: The answer from the language model, with no leading or trailing whitespace.
     """
     prompt = _build_agent_prompt(
         question=question,
@@ -111,7 +111,7 @@ def _prompt_critique(
     critique: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> ModelResponse:
+) -> Response:
     """Prompts the agent for a critique of an answer using the language model.
 
     Parameters:
@@ -124,7 +124,7 @@ def _prompt_critique(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        ModelResponse: The critique from the language model, with no leading or trailing whitespace.
+        Response: The critique from the language model, with no leading or trailing whitespace.
     """
     prompt = _build_critique_prompt(
         question=question,

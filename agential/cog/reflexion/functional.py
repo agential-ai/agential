@@ -16,7 +16,7 @@ from agential.cog.reflexion.prompts import (
     LAST_TRIAL_HEADER,
     REFLECTION_HEADER,
 )
-from agential.llm.llm import BaseLLM, ModelResponse
+from agential.llm.llm import BaseLLM, Response
 from agential.utils.parse import remove_newline
 
 gpt3_5_turbo_enc = tiktoken.encoding_for_model(
@@ -148,7 +148,7 @@ def _prompt_cot_agent(
     scratchpad: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> ModelResponse:
+) -> Response:
     """Generates a CoT prompt for thought and action.
 
     Used with ReflexionCoT.
@@ -163,7 +163,7 @@ def _prompt_cot_agent(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        ModelResponse: The generated reflection prompt.
+        Response: The generated reflection prompt.
     """
     prompt = _build_cot_agent_prompt(
         examples=examples,
@@ -213,7 +213,7 @@ def _prompt_cot_reflection(
     scratchpad: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> ModelResponse:
+) -> Response:
     """Generates a reflection prompt.
 
     Used with ReflexionCoT.
@@ -227,7 +227,7 @@ def _prompt_cot_reflection(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        ModelResponse: The generated reflection prompt.
+        Response: The generated reflection prompt.
     """
     prompt = _build_cot_reflection_prompt(
         examples=examples,
@@ -263,7 +263,7 @@ def cot_reflect_reflexion(
     scratchpad: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> Tuple[List[str], ModelResponse]:
+) -> Tuple[List[str], Response]:
     """Perform reflexion-based reflecting.
 
     Used with ReflexionCoT. This function uses a language model to generate a new reflection based on the provided context, question,
@@ -279,7 +279,7 @@ def cot_reflect_reflexion(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}
 
     Returns:
-        Tuple[List[str], ModelResponse]: An updated list of reflections and the ModelResponse.
+        Tuple[List[str], Response]: An updated list of reflections and the Response.
     """
     new_reflection = _prompt_cot_reflection(
         llm=llm,
@@ -301,7 +301,7 @@ def cot_reflect_last_attempt_and_reflexion(
     scratchpad: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> Tuple[List[str], ModelResponse]:
+) -> Tuple[List[str], Response]:
     """Performs reflection with the reflection of the last attempt and reflexion.
 
     Used with ReflexionCoT.
@@ -316,7 +316,7 @@ def cot_reflect_last_attempt_and_reflexion(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}
 
     Returns:
-        Tuple[List[str], ModelResponse]: An updated list of reflections and the ModelResponse.
+        Tuple[List[str], Response]: An updated list of reflections and the Response.
     """
     new_reflection = _prompt_cot_reflection(
         llm=llm,
@@ -375,7 +375,7 @@ def _prompt_react_agent(
     max_steps: int,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> ModelResponse:
+) -> Response:
     """Generates a ReAct prompt for thought and action.
 
     Used with ReflexionReAct.
@@ -391,7 +391,7 @@ def _prompt_react_agent(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        ModelResponse: The generated reflection prompt.
+        Response: The generated reflection prompt.
     """
     prompt = _build_react_agent_prompt(
         question=question,
@@ -497,7 +497,7 @@ def _prompt_react_reflection(
     scratchpad: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> ModelResponse:
+) -> Response:
     """Generates a reflection prompt.
 
     Used with ReflexionReAct.
@@ -511,7 +511,7 @@ def _prompt_react_reflection(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        ModelResponse: The generated reflection prompt.
+        Response: The generated reflection prompt.
     """
     prompt = _build_react_reflection_prompt(
         question=question,
@@ -547,7 +547,7 @@ def react_reflect_reflexion(
     scratchpad: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> Tuple[List[str], ModelResponse]:
+) -> Tuple[List[str], Response]:
     """Perform reflexion-based reflecting.
 
     Used with ReflexionReAct. This function uses a language model to generate a new reflection based on the provided context, question,
@@ -563,7 +563,7 @@ def react_reflect_reflexion(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        Tuple[List[str], ModelResponse]: An updated tuple of reflections and model response.
+        Tuple[List[str], Response]: An updated tuple of reflections and model response.
     """
     new_reflection_out = _prompt_react_reflection(
         llm=llm,
@@ -585,7 +585,7 @@ def react_reflect_last_attempt_and_reflexion(
     scratchpad: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> Tuple[List[str], ModelResponse]:
+) -> Tuple[List[str], Response]:
     """Performs reflection with the reflection of the last attempt and reflexion.
 
     Used with ReflexionReAct.
@@ -599,7 +599,7 @@ def react_reflect_last_attempt_and_reflexion(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        Tuple[List[str], ModelResponse]: A list with the new reflections and model response.
+        Tuple[List[str], Response]: A list with the new reflections and model response.
     """
     new_reflection_out = _prompt_react_reflection(
         llm=llm,

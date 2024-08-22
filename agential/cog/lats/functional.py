@@ -10,7 +10,7 @@ from agential.cog.lats.prompts import (
     LATS_FAILED_TRAJECTORY_FORMAT,
     LATS_REFLECTION_FORMAT,
 )
-from agential.llm.llm import BaseLLM, ModelResponse
+from agential.llm.llm import BaseLLM, Response
 
 
 def _build_reflection_format(trajectory: str, reflection: str) -> str:
@@ -84,7 +84,7 @@ def _prompt_reflection(
     trajectory: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> ModelResponse:
+) -> Response:
     """Generates a reflection using the language model based on the given inputs.
 
     Args:
@@ -96,7 +96,7 @@ def _prompt_reflection(
         additional_keys (Dict[str, str], optional): Additional formatting keys. Defaults to {}.
 
     Returns:
-        ModelResponse: The generated reflection content.
+        Response: The generated reflection content.
     """
     prompt = _build_reflection_prompt(
         question=question,
@@ -149,7 +149,7 @@ def _prompt_value(
     failed_trajectories: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> ModelResponse:
+) -> Response:
     """Generates a value assessment using the language model based on the given inputs.
 
     Args:
@@ -162,7 +162,7 @@ def _prompt_value(
         additional_keys (Dict[str, str], optional): Additional formatting keys. Defaults to {}.
 
     Returns:
-        ModelResponse: The generated value assessment content.
+        Response: The generated value assessment content.
     """
     prompt = _build_value_prompt(
         question=question,
@@ -216,7 +216,7 @@ def _prompt_agent(
     reflections: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> ModelResponse:
+) -> Response:
     """Generates an agent response using the language model based on the given inputs.
 
     Args:
@@ -229,7 +229,7 @@ def _prompt_agent(
         additional_keys (Dict[str, str], optional): Additional formatting keys. Defaults to {}.
 
     Returns:
-        ModelResponse: The generated agent response content.
+        Response: The generated agent response content.
     """
     prompt = _build_agent_prompt(
         question=question,

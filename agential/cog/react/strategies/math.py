@@ -10,7 +10,7 @@ from agential.cog.react.functional import _prompt_agent, parse_math_action
 from agential.cog.react.strategies.general import ReActGeneralStrategy
 from agential.llm.llm import BaseLLM
 from agential.utils.general import safe_execute
-from agential.utils.metrics import PromptInfo, get_prompt_info
+from agential.utils.metrics import Response, get_prompt_info
 
 
 class ReActMathStrategy(ReActGeneralStrategy):
@@ -49,7 +49,7 @@ class ReActMathStrategy(ReActGeneralStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, str, PromptInfo]:
+    ) -> Tuple[str, str, str, Response]:
         """Generates an action based on the provided inputs, including the question, examples, prompt, and additional keys.
 
         Args:
@@ -61,7 +61,7 @@ class ReActMathStrategy(ReActGeneralStrategy):
             additional_keys (Dict[str, str]): Additional keys to be used in the prompt.
 
         Returns:
-            Tuple[str, str, str, PromptInfo]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
+            Tuple[str, str, str, Response]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
         """
         scratchpad += f"\nAction {idx}: "
 

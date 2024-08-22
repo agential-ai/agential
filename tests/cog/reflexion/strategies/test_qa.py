@@ -36,7 +36,7 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActTriviaQAStrategy,
 )
 from agential.llm.llm import BaseLLM, MockLLM
-from agential.utils.metrics import PromptInfo
+from agential.utils.metrics import Response
 
 
 def test_reflexion_cot_init() -> None:
@@ -72,7 +72,7 @@ def test_reflexion_cot_generate() -> None:
                 answer="I'm sorry, I can't provide the answer as the information is not available in the provided context.",
                 is_correct=False,
                 reflections=[],
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -81,7 +81,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -101,7 +101,7 @@ def test_reflexion_cot_generate() -> None:
                 reflections=[
                     "My reasoning for not providing an answer to the question about the new acronym for VIVA Media AG in 2004 failed because I did not attempt to deduce or estimate the new name based on the given information. In the future, I should try to make an educated guess or use logical deductions to provide a more informed response. To improve, I will try to infer potential names based on common practices in company name changes or industry trends to offer a more insightful answer."
                 ],
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -110,7 +110,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -119,7 +119,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                reflection_metrics=PromptInfo(
+                reflection_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -139,7 +139,7 @@ def test_reflexion_cot_generate() -> None:
                     "My reasoning for not providing an answer to the question about the new acronym for VIVA Media AG in 2004 failed because I did not attempt to deduce or estimate the new name based on the given information. In the future, I should try to make an educated guess or use logical deductions to provide a more informed response. To improve, I will try to infer potential names based on common practices in company name changes or industry trends to offer a more insightful answer.",
                     'The reasoning for the acronym of VIVACOM being "VIVA Communication" failed because it did not consider other possible words that could fit the acronym. In the future, when attempting this question, I should broaden the scope of potential words that could be used in the acronym to avoid limiting the possibilities. New Plan: When trying to determine the acronym for VIVACOM, consider a wider range of words that could fit the letters in the acronym while also taking into account the company\'s industry, focus, and branding to ensure a more accurate answer.',
                 ],
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -148,7 +148,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -157,7 +157,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                reflection_metrics=PromptInfo(
+                reflection_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -216,7 +216,7 @@ def test_reflexion_cot_generate_action() -> None:
     assert action_type == "Finish"
     assert query == "Verwaltung von Internet Video und Audio"
     assert scratchpad == "\nAction: Finish[Verwaltung von Internet Video und Audio]"
-    assert action_metrics == PromptInfo(
+    assert action_metrics == Response(
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,
@@ -348,7 +348,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptInfo(
+                        thought_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -357,7 +357,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptInfo(
+                        action_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -378,7 +378,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptInfo(
+                        thought_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -387,7 +387,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptInfo(
+                        action_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -408,7 +408,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptInfo(
+                        thought_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -417,7 +417,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptInfo(
+                        action_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -438,7 +438,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptInfo(
+                        thought_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -447,7 +447,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptInfo(
+                        action_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -468,7 +468,7 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=PromptInfo(
+                        thought_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -477,7 +477,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptInfo(
+                        action_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -495,7 +495,7 @@ def test_reflexion_react_generate() -> None:
                         answer="unknown",
                         external_tool_info={"search_result": "", "lookup_result": ""},
                         is_correct=False,
-                        thought_metrics=PromptInfo(
+                        thought_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -504,7 +504,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptInfo(
+                        action_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -596,7 +596,7 @@ def test_reflexion_react_generate_react() -> None:
                 "lookup_result": "",
             },
             is_correct=False,
-            thought_metrics=PromptInfo(
+            thought_metrics=Response(
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -605,7 +605,7 @@ def test_reflexion_react_generate_react() -> None:
                 total_cost=5.4999999999999995e-05,
                 prompt_time=0.5,
             ),
-            action_metrics=PromptInfo(
+            action_metrics=Response(
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -626,7 +626,7 @@ def test_reflexion_react_generate_react() -> None:
                 "lookup_result": "",
             },
             is_correct=False,
-            thought_metrics=PromptInfo(
+            thought_metrics=Response(
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -635,7 +635,7 @@ def test_reflexion_react_generate_react() -> None:
                 total_cost=5.4999999999999995e-05,
                 prompt_time=0.5,
             ),
-            action_metrics=PromptInfo(
+            action_metrics=Response(
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -656,7 +656,7 @@ def test_reflexion_react_generate_react() -> None:
                 "lookup_result": "",
             },
             is_correct=False,
-            thought_metrics=PromptInfo(
+            thought_metrics=Response(
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -665,7 +665,7 @@ def test_reflexion_react_generate_react() -> None:
                 total_cost=5.4999999999999995e-05,
                 prompt_time=0.5,
             ),
-            action_metrics=PromptInfo(
+            action_metrics=Response(
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -686,7 +686,7 @@ def test_reflexion_react_generate_react() -> None:
                 "lookup_result": "",
             },
             is_correct=False,
-            thought_metrics=PromptInfo(
+            thought_metrics=Response(
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -695,7 +695,7 @@ def test_reflexion_react_generate_react() -> None:
                 total_cost=5.4999999999999995e-05,
                 prompt_time=0.5,
             ),
-            action_metrics=PromptInfo(
+            action_metrics=Response(
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -716,7 +716,7 @@ def test_reflexion_react_generate_react() -> None:
                 "lookup_result": "",
             },
             is_correct=False,
-            thought_metrics=PromptInfo(
+            thought_metrics=Response(
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -725,7 +725,7 @@ def test_reflexion_react_generate_react() -> None:
                 total_cost=5.4999999999999995e-05,
                 prompt_time=0.5,
             ),
-            action_metrics=PromptInfo(
+            action_metrics=Response(
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -743,7 +743,7 @@ def test_reflexion_react_generate_react() -> None:
             answer="unknown",
             external_tool_info={"search_result": "", "lookup_result": ""},
             is_correct=False,
-            thought_metrics=PromptInfo(
+            thought_metrics=Response(
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -752,7 +752,7 @@ def test_reflexion_react_generate_react() -> None:
                 total_cost=5.4999999999999995e-05,
                 prompt_time=0.5,
             ),
-            action_metrics=PromptInfo(
+            action_metrics=Response(
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -816,7 +816,7 @@ def test_reflexion_react_generate_action() -> None:
     assert action_type == "Search"
     assert query == "VIVA Media AG"
     assert scratchpad == gt_scratchpad
-    assert thought_metrics == PromptInfo(
+    assert thought_metrics == Response(
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,

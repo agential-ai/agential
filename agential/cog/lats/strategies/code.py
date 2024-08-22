@@ -24,7 +24,7 @@ from agential.cog.lats.strategies.general import LATSGeneralStrategy
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
 from agential.utils.general import safe_execute
-from agential.utils.metrics import PromptInfo, get_prompt_info
+from agential.utils.metrics import Response, get_prompt_info
 
 
 class LATSCodeStrategy(LATSGeneralStrategy):
@@ -97,7 +97,7 @@ class LATSCodeStrategy(LATSGeneralStrategy):
             Tuple[List[Node], LATSGenerateMetrics]: A list of generated child nodes, and the pydantic of corresponding metrics.
         """
         reflections_str = ""
-        reflection_metrics: List[PromptInfo] = []
+        reflection_metrics: List[Response] = []
         if self.reflect_condition():
             reflections, reflection_metrics = self.reflect(
                 question=question,
@@ -206,7 +206,7 @@ class LATSCodeStrategy(LATSGeneralStrategy):
         depth: int,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, str, PromptInfo]:
+    ) -> Tuple[str, str, str, Response]:
         """Generate an action for the current step in the reasoning process.
 
         Args:
@@ -219,7 +219,7 @@ class LATSCodeStrategy(LATSGeneralStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[str, str, str, PromptInfo]: A tuple containing the updated trajectory, action type, query, and the metrics.
+            Tuple[str, str, str, Response]: A tuple containing the updated trajectory, action type, query, and the metrics.
         """
         trajectory += f"\nAction {depth + 1}: "
         out = _prompt_agent(
@@ -433,7 +433,7 @@ class LATSCodeStrategy(LATSGeneralStrategy):
             simulation_current_nodes.append(node)
 
             values: List[Dict[str, Any]] = []
-            values_metrics: List[Optional[PromptInfo]] = []
+            values_metrics: List[Optional[Response]] = []
 
             children_nodes, generate_metrics = self.generate_children_nodes(
                 node=node,

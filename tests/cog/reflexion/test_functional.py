@@ -2,7 +2,7 @@
 
 import tiktoken
 
-from litellm.types.utils import ModelResponse
+from litellm.types.utils import Response
 
 from agential.cog.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
@@ -47,7 +47,7 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 from agential.llm.llm import MockLLM
-from agential.utils.metrics import PromptInfo
+from agential.utils.metrics import Response
 
 
 def test__truncate_scratchpad() -> None:
@@ -140,7 +140,7 @@ def test__prompt_cot_agent() -> None:
         scratchpad="",
         prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
     )
-    assert isinstance(out, ModelResponse)
+    assert isinstance(out, Response)
     assert out.choices[0].message.content == "1"
 
     # Test simple case (no reflection).
@@ -238,7 +238,7 @@ def test__prompt_cot_reflection() -> None:
         scratchpad="",
         prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
-    assert isinstance(out, ModelResponse)
+    assert isinstance(out, Response)
     assert out.choices[0].message.content == "1"
 
     # Test with no context.
@@ -249,7 +249,7 @@ def test__prompt_cot_reflection() -> None:
         scratchpad="",
         prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
-    assert isinstance(out, ModelResponse)
+    assert isinstance(out, Response)
     assert out.choices[0].message.content == "1"
 
     # Test simple case with context.
@@ -381,7 +381,7 @@ def test__prompt_react_agent() -> None:
         max_steps=1,
         prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     )
-    assert isinstance(out, ModelResponse)
+    assert isinstance(out, Response)
     assert out.choices[0].message.content == "1"
 
     # Test simple case no reflections.
@@ -607,7 +607,7 @@ def test__prompt_react_reflection() -> None:
         scratchpad="",
         prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
-    assert isinstance(out, ModelResponse)
+    assert isinstance(out, Response)
     assert out.choices[0].message.content == "1"
 
     # Test simple case.
@@ -813,7 +813,7 @@ def test_accumulate_metrics_cot() -> None:
             answer="",
             is_correct=True,
             reflections=[],
-            thought_metrics=PromptInfo(
+            thought_metrics=Response(
                 prompt_tokens=15,
                 completion_tokens=25,
                 total_tokens=40,
@@ -822,7 +822,7 @@ def test_accumulate_metrics_cot() -> None:
                 total_cost=0.04,
                 prompt_time=0.75,
             ),
-            action_metrics=PromptInfo(
+            action_metrics=Response(
                 prompt_tokens=10,
                 completion_tokens=15,
                 total_tokens=25,
@@ -840,7 +840,7 @@ def test_accumulate_metrics_cot() -> None:
             answer="",
             is_correct=True,
             reflections=[],
-            thought_metrics=PromptInfo(
+            thought_metrics=Response(
                 prompt_tokens=15,
                 completion_tokens=25,
                 total_tokens=40,
@@ -849,7 +849,7 @@ def test_accumulate_metrics_cot() -> None:
                 total_cost=0.04,
                 prompt_time=0.75,
             ),
-            action_metrics=PromptInfo(
+            action_metrics=Response(
                 prompt_tokens=10,
                 completion_tokens=15,
                 total_tokens=25,
@@ -886,7 +886,7 @@ def test_accumulate_metrics_react() -> None:
             answer="",
             external_tool_info={},
             is_correct=True,
-            thought_metrics=PromptInfo(
+            thought_metrics=Response(
                 prompt_tokens=15,
                 completion_tokens=25,
                 total_tokens=40,
@@ -895,7 +895,7 @@ def test_accumulate_metrics_react() -> None:
                 total_cost=0.04,
                 prompt_time=0.75,
             ),
-            action_metrics=PromptInfo(
+            action_metrics=Response(
                 prompt_tokens=10,
                 completion_tokens=15,
                 total_tokens=25,
@@ -913,7 +913,7 @@ def test_accumulate_metrics_react() -> None:
             answer="",
             external_tool_info={},
             is_correct=True,
-            thought_metrics=PromptInfo(
+            thought_metrics=Response(
                 prompt_tokens=15,
                 completion_tokens=25,
                 total_tokens=40,
@@ -922,7 +922,7 @@ def test_accumulate_metrics_react() -> None:
                 total_cost=0.04,
                 prompt_time=0.75,
             ),
-            action_metrics=PromptInfo(
+            action_metrics=Response(
                 prompt_tokens=10,
                 completion_tokens=15,
                 total_tokens=25,

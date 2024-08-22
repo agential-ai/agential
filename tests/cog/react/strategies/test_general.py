@@ -10,7 +10,7 @@ from agential.cog.react.prompts import (
 )
 from agential.cog.react.strategies.general import ReActGeneralStrategy
 from agential.llm.llm import BaseLLM, MockLLM
-from agential.utils.metrics import PromptInfo
+from agential.utils.metrics import Response
 
 
 def test_init() -> None:
@@ -44,7 +44,7 @@ def test_generate_thought() -> None:
     )
     assert scratchpad == gt_scratchpad
     assert thought == gt_thought
-    assert thought_metrics == PromptInfo(
+    assert thought_metrics == Response(
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,

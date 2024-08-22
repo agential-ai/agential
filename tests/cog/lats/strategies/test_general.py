@@ -5,7 +5,7 @@ import pytest
 from agential.cog.lats.node import Node
 from agential.cog.lats.strategies.general import LATSGeneralStrategy
 from agential.llm.llm import MockLLM
-from agential.utils.metrics import PromptInfo
+from agential.utils.metrics import Response
 
 
 def test_init() -> None:
@@ -105,7 +105,7 @@ def test_generate_thought() -> None:
         updated_trajectory
         == "Previous thought\nThought 2: I should search for information about the topic."
     )
-    assert thought_metrics == PromptInfo(
+    assert thought_metrics == Response(
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,
@@ -364,7 +364,7 @@ def test_reflect() -> None:
 
     assert strategy.reflection_map == reflections
     assert reflection_metrics == [
-        PromptInfo(
+        Response(
             prompt_tokens=10,
             completion_tokens=20,
             total_tokens=30,
@@ -373,7 +373,7 @@ def test_reflect() -> None:
             total_cost=5.4999999999999995e-05,
             prompt_time=0.5,
         ),
-        PromptInfo(
+        Response(
             prompt_tokens=10,
             completion_tokens=20,
             total_tokens=30,

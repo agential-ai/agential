@@ -36,7 +36,7 @@ from agential.cog.reflexion.strategies.math import (
     ReflexionReActTabMWPStrategy,
 )
 from agential.llm.llm import BaseLLM, MockLLM
-from agential.utils.metrics import PromptInfo
+from agential.utils.metrics import Response
 
 
 def test_reflexion_cot_init() -> None:
@@ -72,7 +72,7 @@ def test_reflexion_cot_generate() -> None:
                 answer="eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nearnings_per_egg = 2\ntotal_earnings = eggs_sold * earnings_per_egg\nanswer = total_earnings",
                 is_correct=True,
                 reflections=[],
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -81,7 +81,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -142,7 +142,7 @@ def test_reflexion_cot_generate_action() -> None:
         scratchpad
         == "\nAction:  Finish[\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_per_day = eggs_sold * price_per_egg\nanswer = money_made_per_day\n```\n]"
     )
-    assert action_metrics == PromptInfo(
+    assert action_metrics == Response(
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,
@@ -273,7 +273,7 @@ def test_reflexion_react_generate() -> None:
                             "code_answer": None,
                         },
                         is_correct=False,
-                        thought_metrics=PromptInfo(
+                        thought_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -282,7 +282,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptInfo(
+                        action_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -303,7 +303,7 @@ def test_reflexion_react_generate() -> None:
                             "code_answer": 26,
                         },
                         is_correct=False,
-                        thought_metrics=PromptInfo(
+                        thought_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -312,7 +312,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptInfo(
+                        action_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -333,7 +333,7 @@ def test_reflexion_react_generate() -> None:
                             "code_answer": 26,
                         },
                         is_correct=False,
-                        thought_metrics=PromptInfo(
+                        thought_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -342,7 +342,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptInfo(
+                        action_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -369,7 +369,7 @@ def test_reflexion_react_generate() -> None:
                             "code_answer": None,
                         },
                         is_correct=False,
-                        thought_metrics=PromptInfo(
+                        thought_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -378,7 +378,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptInfo(
+                        action_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -399,7 +399,7 @@ def test_reflexion_react_generate() -> None:
                             "code_answer": None,
                         },
                         is_correct=False,
-                        thought_metrics=PromptInfo(
+                        thought_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -408,7 +408,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptInfo(
+                        action_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -429,7 +429,7 @@ def test_reflexion_react_generate() -> None:
                             "code_answer": None,
                         },
                         is_correct=False,
-                        thought_metrics=PromptInfo(
+                        thought_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -438,7 +438,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptInfo(
+                        action_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -459,7 +459,7 @@ def test_reflexion_react_generate() -> None:
                             "code_answer": -9867630,
                         },
                         is_correct=True,
-                        thought_metrics=PromptInfo(
+                        thought_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -468,7 +468,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptInfo(
+                        action_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -489,7 +489,7 @@ def test_reflexion_react_generate() -> None:
                             "code_answer": -9867630,
                         },
                         is_correct=True,
-                        thought_metrics=PromptInfo(
+                        thought_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -498,7 +498,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptInfo(
+                        action_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -519,7 +519,7 @@ def test_reflexion_react_generate() -> None:
                             "code_answer": 0,
                         },
                         is_correct=False,
-                        thought_metrics=PromptInfo(
+                        thought_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -528,7 +528,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptInfo(
+                        action_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -542,7 +542,7 @@ def test_reflexion_react_generate() -> None:
                 reflections=[
                     "My reasoning failed because I overlooked the step where Janet bakes muffins for her friends daily before selling the remainder at the farmers' market. In the future, I should ensure to include this intermediate step in my calculations for accurate results. To mitigate this failure, I will revise my plan by accounting for the number of eggs used for baking muffins before calculating the money made at the farmers' market."
                 ],
-                reflection_metrics=PromptInfo(
+                reflection_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -565,7 +565,7 @@ def test_reflexion_react_generate() -> None:
                             "code_answer": 0,
                         },
                         is_correct=False,
-                        thought_metrics=PromptInfo(
+                        thought_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -574,7 +574,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptInfo(
+                        action_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -595,7 +595,7 @@ def test_reflexion_react_generate() -> None:
                             "code_answer": 0,
                         },
                         is_correct=False,
-                        thought_metrics=PromptInfo(
+                        thought_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -604,7 +604,7 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptInfo(
+                        action_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -619,7 +619,7 @@ def test_reflexion_react_generate() -> None:
                     "My reasoning failed because I overlooked the step where Janet bakes muffins for her friends daily before selling the remainder at the farmers' market. In the future, I should ensure to include this intermediate step in my calculations for accurate results. To mitigate this failure, I will revise my plan by accounting for the number of eggs used for baking muffins before calculating the money made at the farmers' market.",
                     "My reasoning failed because I did not properly consider the negative outcome when calculating the remaining eggs. Janet cannot have negative eggs to sell. To mitigate this failure, I should explicitly check for negative values in the remaining eggs calculation and set the money made per day to zero in such cases. This ensures a more accurate representation of the scenario and prevents illogical results.",
                 ],
-                reflection_metrics=PromptInfo(
+                reflection_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -695,7 +695,7 @@ def test_reflexion_react_generate_react() -> None:
                 answer="eggs_laid_per_day = 16\neggs_consumed = 3\neggs_remaining = eggs_laid_per_day - eggs_consumed",
                 external_tool_info={"execution_status": "Done", "code_answer": None},
                 is_correct=False,
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -704,7 +704,7 @@ def test_reflexion_react_generate_react() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -722,7 +722,7 @@ def test_reflexion_react_generate_react() -> None:
                 answer="eggs_remaining = 13  # from previous calculation\negg_price = 2\nmoney_per_day = eggs_remaining * egg_price\nanswer = money_per_day",
                 external_tool_info={"execution_status": "Done", "code_answer": 26},
                 is_correct=False,
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -731,7 +731,7 @@ def test_reflexion_react_generate_react() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -749,7 +749,7 @@ def test_reflexion_react_generate_react() -> None:
                 answer="answer = 26",
                 external_tool_info={"execution_status": "Done", "code_answer": 26},
                 is_correct=False,
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -758,7 +758,7 @@ def test_reflexion_react_generate_react() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -816,7 +816,7 @@ def test_reflexion_react_generate_action() -> None:
         == "eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income"
     )
     assert scratchpad == gt_scratchpad
-    assert thought_metrics == PromptInfo(
+    assert thought_metrics == Response(
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,

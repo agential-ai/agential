@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Tuple
 from tiktoken import Encoding
 
 from agential.cog.react.output import ReActStepOutput
-from agential.llm.llm import BaseLLM, ModelResponse
+from agential.llm.llm import BaseLLM, Response
 
 
 def _build_agent_prompt(
@@ -52,7 +52,7 @@ def _prompt_agent(
     max_steps: int,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> ModelResponse:
+) -> Response:
     """Generates a response from the LLM based on a given question and scratchpad.
 
     This function creates a prompt using `_build_agent_prompt` and then gets the LLM's
@@ -68,7 +68,7 @@ def _prompt_agent(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        ModelResponse: The processed response from the language model.
+        Response: The processed response from the language model.
     """
     prompt = _build_agent_prompt(
         question=question,

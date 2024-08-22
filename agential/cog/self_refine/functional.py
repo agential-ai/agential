@@ -2,7 +2,7 @@
 
 from typing import Dict
 
-from agential.llm.llm import BaseLLM, ModelResponse
+from agential.llm.llm import BaseLLM, Response
 
 
 def _build_agent_prompt(
@@ -36,7 +36,7 @@ def _prompt_agent(
     examples: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> ModelResponse:
+) -> Response:
     """Generates a response from the LLM based on a given question with fewshot examples.
 
     This function creates a prompt using `_build_agent_prompt` and then gets the LLM's
@@ -50,7 +50,7 @@ def _prompt_agent(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        ModelResponse: The processed response from the language model.
+        Response: The processed response from the language model.
     """
     prompt = _build_agent_prompt(
         question=question,
@@ -102,7 +102,7 @@ def _prompt_critique(
     answer: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> ModelResponse:
+) -> Response:
     """Requests critique from the language model based on a provided answer and contextual examples.
 
     A critique prompt is constructed using the provided examples and answer.
@@ -116,7 +116,7 @@ def _prompt_critique(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        ModelResponse: The language model's critique, with no leading or trailing whitespace.
+        Response: The language model's critique, with no leading or trailing whitespace.
     """
     prompt = _build_critique_prompt(
         question=question,
@@ -169,7 +169,7 @@ def _prompt_refine(
     critique: str,
     prompt: str,
     additional_keys: Dict[str, str] = {},
-) -> ModelResponse:
+) -> Response:
     """Refines answer based on critique from the language model.
 
     A refine prompt is constructed using the provided answer, examples, and critique.
@@ -184,7 +184,7 @@ def _prompt_refine(
         additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
-        ModelResponse: The language model's critique, with no leading or trailing whitespace.
+        Response: The language model's critique, with no leading or trailing whitespace.
     """
     prompt = _build_refine_prompt(
         question=question,

@@ -37,7 +37,7 @@ from agential.cog.reflexion.strategies.code import (
 )
 from agential.llm.llm import BaseLLM, MockLLM
 from agential.utils.general import safe_execute
-from agential.utils.metrics import PromptInfo
+from agential.utils.metrics import Response
 
 
 def test_reflexion_cot_init() -> None:
@@ -75,7 +75,7 @@ def test_reflexion_cot_generate() -> None:
                 answer="def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None",
                 is_correct=False,
                 reflections=[],
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -84,7 +84,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -104,7 +104,7 @@ def test_reflexion_cot_generate() -> None:
                 reflections=[
                     "Let's think step by step. We need to iterate through the characters in the string and keep track of the characters we have seen so far to find the first repeated character.Action: Finish[```pythondef first_repeated_char(input_str):    seen_chars = set()    for char in input_str:        if char in seen_chars:            return char        seen_chars.add(char)    return None```]"
                 ],
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -113,7 +113,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -122,7 +122,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                reflection_metrics=PromptInfo(
+                reflection_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -142,7 +142,7 @@ def test_reflexion_cot_generate() -> None:
                     "Let's think step by step. We need to iterate through the characters in the string and keep track of the characters we have seen so far to find the first repeated character.Action: Finish[```pythondef first_repeated_char(input_str):    seen_chars = set()    for char in input_str:        if char in seen_chars:            return char        seen_chars.add(char)    return None```]",
                     "Finish[```pythondef first_repeated_char(s):    seen = set()    for char in s:        if char in seen:            return char        seen.add(char)    return None```]",
                 ],
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -151,7 +151,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -160,7 +160,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                reflection_metrics=PromptInfo(
+                reflection_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -223,7 +223,7 @@ def test_reflexion_cot_generate_action() -> None:
         scratchpad
         == "\nAction:  Finish[\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n]"
     )
-    assert action_metrics == PromptInfo(
+    assert action_metrics == Response(
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,
@@ -267,7 +267,7 @@ def test_reflexion_cot_generate_action_humaneval() -> None:
         scratchpad
         == "\nAction: Finish[\n```python\n\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```\n]"
     )
-    assert action_metrics == PromptInfo(
+    assert action_metrics == Response(
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,
@@ -397,7 +397,7 @@ assert first_repeated_char("123123") == "1\""""
                         answer="def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None",
                         external_tool_info={"execution_status": "Done"},
                         is_correct=False,
-                        thought_metrics=PromptInfo(
+                        thought_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -406,7 +406,7 @@ assert first_repeated_char("123123") == "1\""""
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptInfo(
+                        action_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -424,7 +424,7 @@ assert first_repeated_char("123123") == "1\""""
                         answer="",
                         external_tool_info={"execution_status": "Done"},
                         is_correct=True,
-                        thought_metrics=PromptInfo(
+                        thought_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -433,7 +433,7 @@ assert first_repeated_char("123123") == "1\""""
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptInfo(
+                        action_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -451,7 +451,7 @@ assert first_repeated_char("123123") == "1\""""
                         answer="def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None",
                         external_tool_info={"execution_status": "Done"},
                         is_correct=True,
-                        thought_metrics=PromptInfo(
+                        thought_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -460,7 +460,7 @@ assert first_repeated_char("123123") == "1\""""
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=PromptInfo(
+                        action_metrics=Response(
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -530,7 +530,7 @@ assert first_repeated_char("123123") == "1\""""
                 answer="def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None",
                 external_tool_info={"execution_status": "Done"},
                 is_correct=False,
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -539,7 +539,7 @@ assert first_repeated_char("123123") == "1\""""
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -557,7 +557,7 @@ assert first_repeated_char("123123") == "1\""""
                 answer="",
                 external_tool_info={"execution_status": "Done"},
                 is_correct=True,
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -566,7 +566,7 @@ assert first_repeated_char("123123") == "1\""""
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -584,7 +584,7 @@ assert first_repeated_char("123123") == "1\""""
                 answer="def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None",
                 external_tool_info={"execution_status": "Done"},
                 is_correct=True,
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -593,7 +593,7 @@ assert first_repeated_char("123123") == "1\""""
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -634,7 +634,7 @@ def test_reflexion_react_generate_action() -> None:
 assert first_repeated_char("abc") == None
 assert first_repeated_char("123123") == "1\""""
 
-    gt_action_metrics = PromptInfo(
+    gt_action_metrics = Response(
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,

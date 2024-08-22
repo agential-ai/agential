@@ -2,7 +2,7 @@
 
 import joblib
 
-from litellm.types.utils import ModelResponse
+from litellm.types.utils import Response
 
 from agential.cog.expel.functional import (
     _build_all_success_prompt,
@@ -166,7 +166,7 @@ def test__prompt_compare_critique() -> None:
         failed_trial=failed_trial,
         is_full=is_full,
     )
-    assert isinstance(result, ModelResponse)
+    assert isinstance(result, Response)
     assert result.choices[0].message.content == "1"
 
 
@@ -187,7 +187,7 @@ def test__prompt_all_success_critique() -> None:
         success_trajs_str=success_trajs_str,
         is_full=is_full,
     )
-    assert isinstance(result, ModelResponse)
+    assert isinstance(result, Response)
     assert result.choices[0].message.content == "1"
 
 

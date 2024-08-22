@@ -24,7 +24,7 @@ from agential.cog.reflexion.strategies.general import (
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
 from agential.utils.general import safe_execute
-from agential.utils.metrics import PromptInfo, get_prompt_info
+from agential.utils.metrics import Response, get_prompt_info
 
 
 class ReflexionCoTCodeStrategy(ReflexionCoTGeneralStrategy):
@@ -65,7 +65,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTGeneralStrategy):
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, str, PromptInfo]:
+    ) -> Tuple[str, str, str, Response]:
         """Generates an action based on the question, examples, and prompt.
 
         Args:
@@ -77,7 +77,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTGeneralStrategy):
             additional_keys (Dict[str, str]): Additional keys for the generation process.
 
         Returns:
-            Tuple[str, str, str, PromptInfo]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
+            Tuple[str, str, str, Response]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
         """
         scratchpad += f"\nAction: "
         out = _prompt_cot_agent(
@@ -224,7 +224,7 @@ class ReflexionReActCodeStrategy(ReflexionReActGeneralStrategy):
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, str, PromptInfo]:
+    ) -> Tuple[str, str, str, Response]:
         """Generate an action for the current step in the reasoning process.
 
         Args:
@@ -239,7 +239,7 @@ class ReflexionReActCodeStrategy(ReflexionReActGeneralStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[str, str, str, PromptInfo]: A tuple containing the updated trajectory, action type, query, and the metrics.
+            Tuple[str, str, str, Response]: A tuple containing the updated trajectory, action type, query, and the metrics.
         """
         scratchpad += f"\nAction {idx}: "
         out = _prompt_react_agent(
@@ -419,7 +419,7 @@ class ReflexionCoTHEvalStrategy(ReflexionCoTCodeStrategy):
         reflections: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[str, str, str, PromptInfo]:
+    ) -> Tuple[str, str, str, Response]:
         """Generates an action based on the question, examples, and prompt.
 
         Args:
@@ -431,7 +431,7 @@ class ReflexionCoTHEvalStrategy(ReflexionCoTCodeStrategy):
             additional_keys (Dict[str, str]): Additional keys for the generation process.
 
         Returns:
-            Tuple[str, str, str, PromptInfo]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
+            Tuple[str, str, str, Response]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
         """
         scratchpad += f"\nAction: "
         out = _prompt_cot_agent(

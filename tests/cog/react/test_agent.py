@@ -30,7 +30,7 @@ from agential.cog.react.strategies.qa import (
     ReActTriviaQAStrategy,
 )
 from agential.llm.llm import BaseLLM, MockLLM
-from agential.utils.metrics import PromptInfo
+from agential.utils.metrics import Response
 
 
 def test_init() -> None:
@@ -156,7 +156,7 @@ def test_generate() -> None:
                     "search_result": "Buakaw Banchamek has faced several controversies and legal issues.",
                     "lookup_result": "",
                 },
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -165,7 +165,7 @@ def test_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -185,7 +185,7 @@ def test_generate() -> None:
                     "search_result": "Buakaw Banchamek has faced several controversies and legal issues.",
                     "lookup_result": "",
                 },
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -194,7 +194,7 @@ def test_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -214,7 +214,7 @@ def test_generate() -> None:
                     "search_result": "Buakaw Banchamek has faced several controversies and legal issues.",
                     "lookup_result": "",
                 },
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -223,7 +223,7 @@ def test_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -243,7 +243,7 @@ def test_generate() -> None:
                     "search_result": "Buakaw Banchamek has faced several controversies and legal issues.",
                     "lookup_result": "",
                 },
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -252,7 +252,7 @@ def test_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -272,7 +272,7 @@ def test_generate() -> None:
                     "search_result": "Buakaw Banchamek has faced several controversies and legal issues.",
                     "lookup_result": "",
                 },
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -281,7 +281,7 @@ def test_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -301,7 +301,7 @@ def test_generate() -> None:
                     "search_result": "Buakaw Banchamek has faced several controversies and legal issues.",
                     "lookup_result": "",
                 },
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -310,7 +310,7 @@ def test_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -365,7 +365,7 @@ def test_generate() -> None:
                 observation="\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: Done",
                 answer="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
                 external_tool_info={"execution_status": "Done"},
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -374,7 +374,7 @@ def test_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -391,7 +391,7 @@ def test_generate() -> None:
                 observation="\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\nassert has_close_elements([1.0, 2.0, 3.0, 4.0], 0.1) == True\nassert has_close_elements([1.0, 2.0, 3.0, 4.0], 0.01) == False\n```\nExecution Status: AssertionError()",
                 answer="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
                 external_tool_info={"execution_status": "AssertionError()"},
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -400,7 +400,7 @@ def test_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -417,7 +417,7 @@ def test_generate() -> None:
                 observation="\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
                 answer="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
                 external_tool_info={"execution_status": "Done"},
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -426,7 +426,7 @@ def test_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -483,7 +483,7 @@ def test_generate() -> None:
                 observation="\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: Done",
                 answer="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
                 external_tool_info={"execution_status": "Done"},
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -492,7 +492,7 @@ def test_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -509,7 +509,7 @@ def test_generate() -> None:
                 observation="\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\nassert has_close_elements([1.0, 2.0, 3.0, 4.0], 0.1) == True\nassert has_close_elements([1.0, 2.0, 3.0, 4.0], 0.01) == False\n```\nExecution Status: AssertionError()",
                 answer="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
                 external_tool_info={"execution_status": "AssertionError()"},
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -518,7 +518,7 @@ def test_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -535,7 +535,7 @@ def test_generate() -> None:
                 observation="\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
                 answer="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
                 external_tool_info={"execution_status": "Done"},
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -544,7 +544,7 @@ def test_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -591,7 +591,7 @@ def test_generate() -> None:
                 observation="\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: Done",
                 answer="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
                 external_tool_info={"execution_status": "Done"},
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -600,7 +600,7 @@ def test_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -617,7 +617,7 @@ def test_generate() -> None:
                 observation="\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\nassert has_close_elements([1.0, 2.0, 3.0, 4.0], 0.1) == True\nassert has_close_elements([1.0, 2.0, 3.0, 4.0], 0.01) == False\n```\nExecution Status: AssertionError()",
                 answer="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
                 external_tool_info={"execution_status": "AssertionError()"},
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -626,7 +626,7 @@ def test_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -643,7 +643,7 @@ def test_generate() -> None:
                 observation="\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
                 answer="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
                 external_tool_info={"execution_status": "Done"},
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -652,7 +652,7 @@ def test_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -699,7 +699,7 @@ def test_generate() -> None:
                 observation="\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```\nExecution Status: Done",
                 answer="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
                 external_tool_info={"execution_status": "Done"},
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -708,7 +708,7 @@ def test_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -725,7 +725,7 @@ def test_generate() -> None:
                 observation="\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\nassert has_close_elements([1.0, 2.0, 3.0], 0.5) == False\nassert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3) == True\nassert has_close_elements([1.0, 2.0, 3.0, 4.0], 0.1) == True\nassert has_close_elements([1.0, 2.0, 3.0, 4.0], 0.01) == False\n```\nExecution Status: AssertionError()",
                 answer="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
                 external_tool_info={"execution_status": "AssertionError()"},
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -734,7 +734,7 @@ def test_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -751,7 +751,7 @@ def test_generate() -> None:
                 observation="\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```",
                 answer="from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False",
                 external_tool_info={"execution_status": "Done"},
-                thought_metrics=PromptInfo(
+                thought_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -760,7 +760,7 @@ def test_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=PromptInfo(
+                action_metrics=Response(
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
