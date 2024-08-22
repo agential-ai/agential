@@ -600,7 +600,7 @@ class ReflexionReActAgent(BaseAgent):
         fewshot_type: str = "",
         patience: int = 3,
         reset: bool = True,
-    ) -> List[ReflexionReActOutput]:
+    ) -> ReflexionReActOutput:
         """Processes a given question through ReAct and reflects using Reflexion strategies when possible.
 
         Iteratively applies the think-act-observe cycle to generate an answer for the question.
@@ -624,8 +624,7 @@ class ReflexionReActAgent(BaseAgent):
             reset (bool): Whether to reset the internal state before processing. Defaults to True.
 
         Returns:
-            List[ReflexionReActOutput]: List of ReflexionReActOutput where each ReflexionReActOutput contains the ReAct output and
-                the reflections at the end of the trial.
+            ReflexionReActOutput: The agent's output.
         """
         if not prompt or not reflect_prompt or not examples or not reflect_examples:
             if not fewshot_type:

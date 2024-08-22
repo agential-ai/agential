@@ -2,7 +2,7 @@
 
 import re
 
-from typing import Dict, List, Tuple, Union
+from typing import Any, Dict, List, Tuple, Union
 
 import tiktoken
 
@@ -696,7 +696,7 @@ def parse_math_code_action_react(
     return action_type, query
 
 
-def accumulate_metrics_cot(steps: List[ReflexionCoTStepOutput]) -> Union[int, float]:
+def accumulate_metrics_cot(steps: List[ReflexionCoTStepOutput]) -> Dict[str, Any]:
     """Accumulates metrics for ReflexionCoT.
 
     Args:
@@ -778,7 +778,7 @@ def accumulate_metrics_cot(steps: List[ReflexionCoTStepOutput]) -> Union[int, fl
 
 def accumulate_metrics_react(
     steps: List[ReflexionReActStepOutput],
-) -> Union[int, float]:
+) -> Dict[str, Any]:
     """Accumulates metrics for ReflexionReAct.
 
     Args:

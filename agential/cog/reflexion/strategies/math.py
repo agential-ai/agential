@@ -1,6 +1,6 @@
 """Reflexion Agent strategies for Math."""
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 import tiktoken
 
@@ -10,17 +10,12 @@ from agential.cog.reflexion.functional import (
     _is_halted,
     _prompt_cot_agent,
     _prompt_react_agent,
-    _truncate_scratchpad,
     parse_math_code_action_cot,
     parse_math_code_action_react,
 )
-from agential.cog.reflexion.output import ReflexionReActStepOutput
 from agential.cog.reflexion.reflect import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
-)
-from agential.cog.reflexion.strategies.base import (
-    ReflexionReActBaseStrategy,
 )
 from agential.cog.reflexion.strategies.general import (
     ReflexionCoTGeneralStrategy,
@@ -30,7 +25,6 @@ from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
 from agential.utils.general import safe_execute
 from agential.utils.metrics import PromptMetrics, get_token_cost_time
-from agential.utils.parse import remove_newline
 
 
 class ReflexionCoTMathStrategy(ReflexionCoTGeneralStrategy):
@@ -81,7 +75,6 @@ class ReflexionCoTMathStrategy(ReflexionCoTGeneralStrategy):
             reflections (str): Reflections to consider during generation.
             prompt (str): The prompt used for generating the action.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
-            **kwargs (Any): Additional arguments.
 
         Returns:
             Tuple[str, str, str, PromptMetrics]: The updated scratchpad, the generated action, the action type, and the metrics for the action.

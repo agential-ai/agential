@@ -1,6 +1,6 @@
 """Reflexion Agent strategies for QA."""
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 import tiktoken
 
@@ -11,16 +11,11 @@ from agential.cog.reflexion.functional import (
     _is_halted,
     _prompt_cot_agent,
     _prompt_react_agent,
-    _truncate_scratchpad,
     parse_qa_action,
 )
-from agential.cog.reflexion.output import ReflexionReActStepOutput
 from agential.cog.reflexion.reflect import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
-)
-from agential.cog.reflexion.strategies.base import (
-    ReflexionReActBaseStrategy,
 )
 from agential.cog.reflexion.strategies.general import (
     ReflexionCoTGeneralStrategy,
@@ -81,7 +76,6 @@ class ReflexionCoTQAStrategy(ReflexionCoTGeneralStrategy):
             reflections (str): Reflections to consider during generation.
             prompt (str): The prompt used for generating the action.
             additional_keys (Dict[str, str]): Additional keys for the generation process.
-            **kwargs (Any): Additional arguments.
 
         Returns:
             Tuple[str, str, str, PromptMetrics]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
@@ -115,7 +109,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTGeneralStrategy):
             key (str): The key for the observation.
 
         Returns:
-            Tuple[str, str, bool, str, bool]: The updated scratchpad, the answer, a boolean indicating if the observation is correct, and the observation itself.
+            Tuple[str, str, bool, str]: The updated scratchpad, the answer, a boolean indicating if the observation is correct, and the observation itself.
         """
         answer = ""
         scratchpad += f"\nObservation: "
@@ -275,8 +269,8 @@ class ReflexionReActQAStrategy(ReflexionReActGeneralStrategy):
                 - The updated scratchpad.
                 - The answer.
                 - A boolean indicating if finished.
-                - The generated observation.
                 - A boolean indicating if the task is finished.
+                - The generated observation.
                 - The observation.
                 - A dictionary with additional information.
         """
