@@ -8,7 +8,13 @@ from agential.cog.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
 )
 from agential.cog.reflexion.agent import ReflexionCoTAgent, ReflexionReActAgent
-from agential.cog.reflexion.output import ReflexionCoTOutput, ReflexionCoTStepOutput
+from agential.cog.reflexion.output import (
+    ReflexionCoTOutput,
+    ReflexionCoTStepOutput,
+    ReflexionReActOutput,
+    ReflexionReActReActStepOutput,
+    ReflexionReActStepOutput,
+)
 from agential.cog.reflexion.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_COT_REFLECT,
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
@@ -967,23 +973,100 @@ def test_reflexion_react_init() -> None:
     assert isinstance(agent.strategy, ReflexionReActBaseStrategy)
 
 
-def test_reflexion_react_reset() -> None:
-    """Test reset method."""
-    agent = ReflexionReActAgent(
-        llm=MockLLM("gpt-3.5-turbo", responses=["1"]),
-        benchmark="hotpotqa",
+def test_reflexion_react_factory_get_strategy() -> None:
+    """Tests ReflexionReActAgent get_strategy method."""
+    llm = MockLLM("gpt-3.5-turbo", responses=[])
+
+    # QA benchmarks.
+    assert isinstance(
+        ReflexionReActAgent.get_strategy(Benchmarks.HOTPOTQA, llm=llm),
+        ReflexionReActHotQAStrategy,
     )
-    agent.strategy._finished = True
-    agent.strategy._answer = "cat"
-    agent.strategy._scratchpad = "dog"
-    agent.strategy.reflector.reflections = ["puppy"]
-    agent.strategy.reflector.reflections_str = "puppy"
-    agent.reset()
-    assert not agent.strategy._finished
-    assert not agent.strategy._scratchpad
-    assert not agent.strategy._answer
-    assert not agent.strategy.reflector.reflections
-    assert not agent.strategy.reflector.reflections_str
+    assert isinstance(
+        ReflexionReActAgent.get_strategy(Benchmarks.TRIVIAQA, llm=llm),
+        ReflexionReActTriviaQAStrategy,
+    )
+    assert isinstance(
+        ReflexionReActAgent.get_strategy(Benchmarks.AMBIGNQ, llm=llm),
+        ReflexionReActAmbigNQStrategy,
+    )
+    assert isinstance(
+        ReflexionReActAgent.get_strategy(Benchmarks.FEVER, llm=llm),
+        ReflexionReActFEVERStrategy,
+    )
+
+    # Math benchmarks.
+    assert isinstance(
+        ReflexionReActAgent.get_strategy(Benchmarks.GSM8K, llm=llm),
+        ReflexionReActGSM8KStrategy,
+    )
+    assert isinstance(
+        ReflexionReActAgent.get_strategy(Benchmarks.SVAMP, llm=llm),
+        ReflexionReActSVAMPStrategy,
+    )
+    assert isinstance(
+        ReflexionReActAgent.get_strategy(Benchmarks.TABMWP, llm=llm),
+        ReflexionReActTabMWPStrategy,
+    )
+
+    # Code benchmarks.
+    assert isinstance(
+        ReflexionReActAgent.get_strategy(Benchmarks.HUMANEVAL, llm=llm),
+        ReflexionReActHEvalStrategy,
+    )
+    assert isinstance(
+        ReflexionReActAgent.get_strategy(Benchmarks.MBPP, llm=llm),
+        ReflexionReActMBPPStrategy,
+    )
+
+    # Unsupported benchmark.
+    with pytest.raises(
+        ValueError, match="Unsupported benchmark: unknown for agent ReflexionReAct"
+    ):
+        ReflexionReActAgent.get_strategy("unknown", llm=llm)
+
+
+def test_reflexion_react_factory_get_fewshots() -> None:
+    """Tests ReflexionReActAgent get_fewshots method."""
+    # Valid benchmark.
+    benchmark = Benchmarks.HOTPOTQA
+    fewshots = ReflexionReActAgent.get_fewshots(benchmark, fewshot_type="react")
+    assert isinstance(fewshots, dict)
+    assert fewshots == {
+        "examples": HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
+        "reflect_examples": HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
+    }
+
+    # Unsupported benchmark.
+    with pytest.raises(
+        ValueError, match="Benchmark 'unknown' few-shots not found for ReflexionReAct."
+    ):
+        ReflexionReActAgent.get_fewshots("unknown", fewshot_type="cot")
+
+    # Unsupported fewshot_type.
+    with pytest.raises(
+        ValueError,
+        match="Benchmark 'hotpotqa' few-shot type not supported for ReflexionReAct.",
+    ):
+        ReflexionReActAgent.get_fewshots("hotpotqa", fewshot_type="cot")
+
+
+def test_reflexion_react_factory_get_prompts() -> None:
+    """Tests ReflexionReActAgent get_prompts method."""
+    # Valid benchmark.
+    benchmark = Benchmarks.HOTPOTQA
+    prompt = ReflexionReActAgent.get_prompts(benchmark)
+    assert isinstance(prompt, dict)
+    assert prompt == {
+        "prompt": REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+        "reflect_prompt": REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+    }
+
+    # Unsupported benchmark.
+    with pytest.raises(
+        ValueError, match="Benchmark 'unknown' prompt not found for ReflexionReAct."
+    ):
+        ReflexionReActAgent.get_prompts("unknown")
 
 
 def test_reflexion_react_generate() -> None:
@@ -992,6 +1075,172 @@ def test_reflexion_react_generate() -> None:
     key = "Gesellschaft mit beschränkter Haftung"
 
     # Test auto-select prompts and few-shots.
+    gt_out = ReflexionReActOutput(
+        answer="unable to determine",
+        total_prompt_tokens=100,
+        total_completion_tokens=200,
+        total_tokens=300,
+        total_prompt_cost=0.00015000000000000001,
+        total_completion_cost=0.00039999999999999996,
+        total_cost=0.0005499999999999999,
+        total_prompt_time=5.0,
+        total_time=0.5,
+        additional_info=[
+            ReflexionReActStepOutput(
+                steps=[
+                    ReflexionReActReActStepOutput(
+                        thought="I need to search for VIVA Media AG and find out what their new acronym stands for.",
+                        action_type="Search",
+                        query="VIVA Media AG",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="The search for VIVA Media AG did not yield any results. I should try searching for their new acronym instead.",
+                        action_type="Search",
+                        query="new acronym for VIVA Media AG",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="The search for the new acronym for VIVA Media AG also did not yield any results. I should try looking for any information about the name change in 2004 and see if it mentions the new acronym.",
+                        action_type="Lookup",
+                        query="name change of VIVA Media AG in 2004",
+                        observation="Lookup result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "",
+                            "lookup_result": "Lookup result",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="The lookup for the name change of VIVA Media AG in 2004 did not yield any results either. I should try searching for any news articles or press releases about the company's name change in 2004.",
+                        action_type="Search",
+                        query="VIVA Media AG name change 2004 news articles",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="The search for information about VIVA Media AG's name change in 2004 did not yield any results. It seems that there is limited information available on this topic. Without further information, I am unable to determine what their new acronym stands for.",
+                        action_type="Finish",
+                        query="unable to determine",
+                        observation="Answer is INCORRECT",
+                        answer="unable to determine",
+                        external_tool_info={"search_result": "", "lookup_result": ""},
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                ],
+                reflections=[],
+                reflection_metrics=None,
+            )
+        ],
+    )
     responses = [
         "I need to search for VIVA Media AG and find out what their new acronym stands for.",
         "Search[VIVA Media AG]",
@@ -1008,17 +1257,186 @@ def test_reflexion_react_generate() -> None:
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=1,
+        testing=True,
     )
+    agent.strategy.docstore.search = lambda x: "Search result"
+    agent.strategy.docstore.lookup = lambda x: "Lookup result"
+
     out = agent.generate(
         question=question,
         key=key,
         reflect_strategy=None,
         patience=2,
     )
-    assert isinstance(out, list)
-    assert len(out) == 1
+    assert out == gt_out
 
     # Test auto-select prompts and few-shots with fewshot_type.
+    gt_out = ReflexionReActOutput(
+        answer="unable to determine",
+        total_prompt_tokens=100,
+        total_completion_tokens=200,
+        total_tokens=300,
+        total_prompt_cost=0.00015000000000000001,
+        total_completion_cost=0.00039999999999999996,
+        total_cost=0.0005499999999999999,
+        total_prompt_time=5.0,
+        total_time=0.5,
+        additional_info=[
+            ReflexionReActStepOutput(
+                steps=[
+                    ReflexionReActReActStepOutput(
+                        thought="I need to search for VIVA Media AG and find out what their new acronym stands for.",
+                        action_type="Search",
+                        query="VIVA Media AG",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="The search for VIVA Media AG did not yield any results. I should try searching for their new acronym instead.",
+                        action_type="Search",
+                        query="new acronym for VIVA Media AG",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="The search for the new acronym for VIVA Media AG also did not yield any results. I should try looking for any information about the name change in 2004 and see if it mentions the new acronym.",
+                        action_type="Lookup",
+                        query="name change of VIVA Media AG in 2004",
+                        observation="Lookup result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "",
+                            "lookup_result": "Lookup result",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="The lookup for the name change of VIVA Media AG in 2004 did not yield any results either. I should try searching for any news articles or press releases about the company's name change in 2004.",
+                        action_type="Search",
+                        query="VIVA Media AG name change 2004 news articles",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="The search for information about VIVA Media AG's name change in 2004 did not yield any results. It seems that there is limited information available on this topic. Without further information, I am unable to determine what their new acronym stands for.",
+                        action_type="Finish",
+                        query="unable to determine",
+                        observation="Answer is INCORRECT",
+                        answer="unable to determine",
+                        external_tool_info={"search_result": "", "lookup_result": ""},
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                ],
+                reflections=[],
+                reflection_metrics=None,
+            )
+        ],
+    )
     responses = [
         "I need to search for VIVA Media AG and find out what their new acronym stands for.",
         "Search[VIVA Media AG]",
@@ -1035,7 +1453,11 @@ def test_reflexion_react_generate() -> None:
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=1,
+        testing=True,
     )
+    agent.strategy.docstore.search = lambda x: "Search result"
+    agent.strategy.docstore.lookup = lambda x: "Lookup result"
+
     out = agent.generate(
         question=question,
         key=key,
@@ -1043,8 +1465,7 @@ def test_reflexion_react_generate() -> None:
         reflect_strategy=None,
         patience=2,
     )
-    assert isinstance(out, list)
-    assert len(out) == 1
+    assert out == gt_out
 
     # Test auto-select prompts and few-shots with incorrect fewshot_type.
     agent = ReflexionReActAgent(
@@ -1063,6 +1484,172 @@ def test_reflexion_react_generate() -> None:
         )
 
     # General generate.
+    gt_out = ReflexionReActOutput(
+        answer="unable to determine",
+        total_prompt_tokens=100,
+        total_completion_tokens=200,
+        total_tokens=300,
+        total_prompt_cost=0.00015000000000000001,
+        total_completion_cost=0.00039999999999999996,
+        total_cost=0.0005499999999999999,
+        total_prompt_time=5.0,
+        total_time=0.5,
+        additional_info=[
+            ReflexionReActStepOutput(
+                steps=[
+                    ReflexionReActReActStepOutput(
+                        thought="I need to search for VIVA Media AG and find out what their new acronym stands for.",
+                        action_type="Search",
+                        query="VIVA Media AG",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="The search for VIVA Media AG did not yield any results. I should try searching for their new acronym instead.",
+                        action_type="Search",
+                        query="new acronym for VIVA Media AG",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="The search for the new acronym for VIVA Media AG also did not yield any results. I should try looking for any information about the name change in 2004 and see if it mentions the new acronym.",
+                        action_type="Lookup",
+                        query="name change of VIVA Media AG in 2004",
+                        observation="Lookup result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "",
+                            "lookup_result": "Lookup result",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="The lookup for the name change of VIVA Media AG in 2004 did not yield any results either. I should try searching for any news articles or press releases about the company's name change in 2004.",
+                        action_type="Search",
+                        query="VIVA Media AG name change 2004 news articles",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="The search for information about VIVA Media AG's name change in 2004 did not yield any results. It seems that there is limited information available on this topic. Without further information, I am unable to determine what their new acronym stands for.",
+                        action_type="Finish",
+                        query="unable to determine",
+                        observation="Answer is INCORRECT",
+                        answer="unable to determine",
+                        external_tool_info={"search_result": "", "lookup_result": ""},
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                ],
+                reflections=[],
+                reflection_metrics=None,
+            )
+        ],
+    )
     responses = [
         "I need to search for VIVA Media AG and find out what their new acronym stands for.",
         "Search[VIVA Media AG]",
@@ -1079,6 +1666,7 @@ def test_reflexion_react_generate() -> None:
         llm=MockLLM("gpt-3.5-turbo", responses=responses),
         benchmark="hotpotqa",
         max_trials=1,
+        testing=True,
     )
     agent.strategy.docstore.search = lambda x: "Search result"
     agent.strategy.docstore.lookup = lambda x: "Lookup result"
@@ -1091,14 +1679,147 @@ def test_reflexion_react_generate() -> None:
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         reflect_prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
-    assert isinstance(out, list)
-    assert len(out) == 1
-    assert agent.strategy._answer == "unable to determine"
-    assert agent.strategy._finished
+    assert out == gt_out
     assert agent.strategy.reflector.reflections == []
     assert agent.strategy.reflector.reflections_str == ""
 
     # Test generate with reflection (last_attempt_and_reflexion).
+    gt_out = ReflexionReActOutput(
+        answer="unable to find answer",
+        total_prompt_tokens=80,
+        total_completion_tokens=160,
+        total_tokens=240,
+        total_prompt_cost=0.00012,
+        total_completion_cost=0.00031999999999999997,
+        total_cost=0.00043999999999999996,
+        total_prompt_time=4.0,
+        total_time=0.5,
+        additional_info=[
+            ReflexionReActStepOutput(
+                steps=[
+                    ReflexionReActReActStepOutput(
+                        thought="I need to search for VIVA Media AG and find out what their new acronym stands for.",
+                        action_type="Search",
+                        query="VIVA Media AG",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="The search for VIVA Media AG did not yield any results. I should try searching for their new acronym instead.",
+                        action_type="Search",
+                        query="new acronym for VIVA Media AG",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="The search for the new acronym for VIVA Media AG also did not yield any results. I should try searching for any information about the name change in 2004.",
+                        action_type="Search",
+                        query="VIVA Media AG name change 2004",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="The search for information about the name change in 2004 also did not yield any results. It seems that I am unable to find the answer using the available search options. I should consider other sources or methods to find the acronym for VIVA Media AG after their name change.",
+                        action_type="Finish",
+                        query="unable to find answer",
+                        observation="Answer is INCORRECT",
+                        answer="unable to find answer",
+                        external_tool_info={"search_result": "", "lookup_result": ""},
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                ],
+                reflections=[],
+                reflection_metrics=None,
+            )
+        ],
+    )
     responses = [
         "I need to search for VIVA Media AG and find out what their new acronym stands for.",
         "Search[VIVA Media AG]",
@@ -1123,7 +1844,9 @@ def test_reflexion_react_generate() -> None:
         "Search[VIVA Media AG interview 2004]",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa", max_trials=1)
+    agent = ReflexionReActAgent(
+        llm=llm, benchmark="hotpotqa", max_trials=1, testing=True
+    )
     agent.strategy.docstore.search = lambda x: "Search result"
     agent.strategy.docstore.lookup = lambda x: "Lookup result"
     out = agent.generate(
@@ -1135,13 +1858,191 @@ def test_reflexion_react_generate() -> None:
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         reflect_prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
-    assert isinstance(out, list)
-    assert len(out) == 1
-    assert agent.strategy._answer == "unable to find answer"
-    assert agent.strategy._finished
+    assert out == gt_out
     assert agent.strategy.reflector.reflections == []
     assert agent.strategy.reflector.reflections_str == ""
 
+    gt_out = ReflexionReActOutput(
+        answer="",
+        total_prompt_tokens=120,
+        total_completion_tokens=240,
+        total_tokens=360,
+        total_prompt_cost=0.00018,
+        total_completion_cost=0.00047999999999999996,
+        total_cost=0.0006599999999999999,
+        total_prompt_time=6.0,
+        total_time=0.5,
+        additional_info=[
+            ReflexionReActStepOutput(
+                steps=[
+                    ReflexionReActReActStepOutput(
+                        thought="The failure in this reasoning trial was due to the inability to find the necessary information through the available search options. To mitigate this failure, a new plan could involve expanding the search to different sources such as news articles, company websites, or industry publications. Additionally, utilizing different search terms or variations of the company name could help in finding the desired information.",
+                        action_type="",
+                        query="",
+                        observation="Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>].",
+                        answer="",
+                        external_tool_info={"search_result": "", "lookup_result": ""},
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="Search[VIVA Media AG name change]",
+                        action_type="",
+                        query="",
+                        observation="Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>].",
+                        answer="",
+                        external_tool_info={"search_result": "", "lookup_result": ""},
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="Search[VIVA Media AG rebranding 2004]",
+                        action_type="",
+                        query="",
+                        observation="Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>].",
+                        answer="",
+                        external_tool_info={"search_result": "", "lookup_result": ""},
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="Search[VIVA Media AG news articles 2004]",
+                        action_type="",
+                        query="",
+                        observation="Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>].",
+                        answer="",
+                        external_tool_info={"search_result": "", "lookup_result": ""},
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="Search[VIVA Media AG history]",
+                        action_type="",
+                        query="",
+                        observation="Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>].",
+                        answer="",
+                        external_tool_info={"search_result": "", "lookup_result": ""},
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="Search[VIVA Media AG press release 2004]",
+                        action_type="",
+                        query="",
+                        observation="Invalid Action. Valid Actions are Lookup[<topic>] Search[<topic>] and Finish[<answer>].",
+                        answer="",
+                        external_tool_info={"search_result": "", "lookup_result": ""},
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                ],
+                reflections=[],
+                reflection_metrics=None,
+            )
+        ],
+    )
     out = agent.generate(
         question=question,
         key=key,
@@ -1151,14 +2052,403 @@ def test_reflexion_react_generate() -> None:
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         reflect_prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
-    assert isinstance(out, list)
-    assert len(out) == 1
-    assert agent.strategy._answer == ""
-    assert not agent.strategy._finished
+    assert out == gt_out
     assert agent.strategy.reflector.reflections == []
     assert agent.strategy.reflector.reflections_str == ""
 
     # Test reach max_trials.
+    gt_out = ReflexionReActOutput(
+        answer="",
+        total_prompt_tokens=250,
+        total_completion_tokens=500,
+        total_tokens=750,
+        total_prompt_cost=0.000375,
+        total_completion_cost=0.001,
+        total_cost=0.001375,
+        total_prompt_time=12.5,
+        total_time=0.5,
+        additional_info=[
+            ReflexionReActStepOutput(
+                steps=[
+                    ReflexionReActReActStepOutput(
+                        thought="I need to search for VIVA Media AG's new acronym and find out what it stands for.",
+                        action_type="Search",
+                        query="VIVA Media AG new acronym",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="I should try searching for the new name of VIVA Media AG instead.",
+                        action_type="Search",
+                        query="VIVA Media AG new name",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="Since I couldn't find the new name of VIVA Media AG, I should try searching for the history of VIVA Media AG.",
+                        action_type="Search",
+                        query="history of VIVA Media AG",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="I should try searching for the history of VIVA Media AG to see if there is any mention of the name change in 2004.",
+                        action_type="Search",
+                        query="VIVA Media AG history 2004",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="Since I'm unable to find the information through direct searches, I should try searching for VIVA Media AG's corporate announcements in 2004 to see if the new name and its acronym are mentioned.",
+                        action_type="Search",
+                        query="VIVA Media AG corporate announcements 2004",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="Since I have exhausted all direct search options, I should try looking for a general history of VIVA Media AG and see if there is any mention of the name change and new acronym.",
+                        action_type="Finish",
+                        query="Unable to find information",
+                        observation="Answer is INCORRECT",
+                        answer="Unable to find information",
+                        external_tool_info={"search_result": "", "lookup_result": ""},
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                ],
+                reflections=[],
+                reflection_metrics=None,
+            ),
+            ReflexionReActStepOutput(
+                steps=[
+                    ReflexionReActReActStepOutput(
+                        thought="I need to search for information on VIVA Media AG and their name change in 2004, then look for their new acronym. I should use broad search terms to gather more relevant information this time.",
+                        action_type="Search",
+                        query="VIVA Media AG",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought='I should try a different approach and search for VIVA Media AG with more specific search terms like "history" or "company information" to gather more relevant information.',
+                        action_type="Search",
+                        query="VIVA Media AG history",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought='I should try searching for VIVA Media AG on a different platform like a business database or news archive to gather more specific information on their name change in 2004 and their new acronym. I will broaden my search to include terms like "rebranding," "corporate changes," and "2004 updates" to find the relevant details.',
+                        action_type="Search",
+                        query="VIVA Media AG rebranding 2004",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought='I should try searching for VIVA Media AG on a business news website or industry-specific database to find information on their name change in 2004 and their new acronym. Terms like "corporate rebranding," "company updates," and "2004 changes" might yield more specific results. This broader approach will help me gather the necessary information to answer the question accurately.',
+                        action_type="Search",
+                        query="VIVA Media AG corporate rebranding 2004",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought='I need to try searching for VIVA Media AG on a different platform or using different search terms to find information on their name change in 2004 and their new acronym. Terms like "company updates 2004," "VIVA Media AG name change," or "acronym change" might lead me to the relevant details. I should also consider looking for industry reports or press releases to gather more specific information. This broader approach will help me find the necessary information to answer the question correctly.',
+                        action_type="Search",
+                        query="VIVA Media AG name change 2004 acronym",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="I should try a different approach to find information on VIVA Media AG's name change in 2004 and their new acronym. Instead of focusing only on specific search terms, I should consider looking for industry reports, press releases, or news articles that might mention the company's rebranding. This broader search strategy will help me gather the necessary information to answer the question accurately.",
+                        action_type="Search",
+                        query="VIVA Media AG rebranding 2004 new acronym",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                ],
+                reflections=[
+                    'In this reasoning trial, the failure to find information on VIVA Media AG\'s name change and new acronym in 2004 was due to the lack of specific search terms and a narrow approach. To mitigate this failure, a new high-level plan could involve starting by searching for general information on VIVA Media AG, then broadening the search to include terms like "name change," "acronym," and "rebranding" to gather more relevant information. This approach will help in exploring different avenues to find the desired information effectively.'
+                ],
+                reflection_metrics=PromptMetrics(
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+            ),
+        ],
+    )
     gt_out_reflections = [
         'In this reasoning trial, the failure to find information on VIVA Media AG\'s name change and new acronym in 2004 was due to the lack of specific search terms and a narrow approach. To mitigate this failure, a new high-level plan could involve starting by searching for general information on VIVA Media AG, then broadening the search to include terms like "name change," "acronym," and "rebranding" to gather more relevant information. This approach will help in exploring different avenues to find the desired information effectively.',
     ]
@@ -1192,9 +2482,7 @@ def test_reflexion_react_generate() -> None:
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     agent = ReflexionReActAgent(
-        llm=llm,
-        benchmark="hotpotqa",
-        max_trials=2,
+        llm=llm, benchmark="hotpotqa", max_trials=2, max_steps=6, testing=True
     )
     agent.strategy.docstore.search = lambda x: "Search result"
     agent.strategy.docstore.lookup = lambda x: "Lookup result"
@@ -1206,20 +2494,229 @@ def test_reflexion_react_generate() -> None:
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         reflect_prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
         reflect_strategy="reflexion",
-        max_steps=6,
-        max_trials=2,
         patience=3,
         reset=True,
     )
-    assert (
-        len(out) == 2
-    )  # Outputs vary because of Wikipedia API, though overall output format is correct. Checking if terminates correctly.
-    assert agent.strategy._answer == ""
-    assert not agent.strategy._finished
+    assert out == gt_out
     assert agent.strategy.reflector.reflections == gt_out_reflections
     assert agent.strategy.reflector.reflections_str == gt_out_reflections_str
 
     # Test exhaust patience and get incorrect answers for all trials.
+    gt_out = ReflexionReActOutput(
+        answer="",
+        total_prompt_tokens=130,
+        total_completion_tokens=260,
+        total_tokens=390,
+        total_prompt_cost=0.00019500000000000002,
+        total_completion_cost=0.00052,
+        total_cost=0.0007149999999999999,
+        total_prompt_time=6.5,
+        total_time=0.5,
+        additional_info=[
+            ReflexionReActStepOutput(
+                steps=[
+                    ReflexionReActReActStepOutput(
+                        thought="I need to search for VIVA Media AG and find out what their new acronym stands for after changing their name in 2004. Let's start by searching for VIVA Media AG.",
+                        action_type="Search",
+                        query="VIVA Media AG",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="I couldn't find VIVA Media AG, but some similar entities are listed. I should try searching for VIVA Media AG on a different platform or with a different search query. Let's try searching for VIVA Media AG on a different search engine.",
+                        action_type="Search",
+                        query="VIVA Media AG on different search engine",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="I still couldn't find VIVA Media AG. I should try searching for the new acronym directly. Let's search for the new acronym of VIVA Media AG after changing its name in 2004.",
+                        action_type="Search",
+                        query="VIVA Media AG new acronym 2004",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                ],
+                reflections=[],
+                reflection_metrics=None,
+            ),
+            ReflexionReActStepOutput(
+                steps=[
+                    ReflexionReActReActStepOutput(
+                        thought="I should refine my search query further by including specific keywords related to the name change of VIVA Media AG in 2004. Let's try searching for the name change details or the company's history to find the new acronym directly.",
+                        action_type="Search",
+                        query="VIVA Media AG name change 2004",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="I should try to search for the specific name change details of VIVA Media AG in 2004. Let's search for the history of VIVA Media AG name change in 2004 to find the new acronym directly.",
+                        action_type="Search",
+                        query="VIVA Media AG name change history 2004",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="I should try to search for specific information about the rebranding or renaming of VIVA Media AG in 2004. Let's search for the specific details of the name change process or any announcements related to the new acronym.",
+                        action_type="Search",
+                        query="VIVA Media AG rebranding 2004",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                ],
+                reflections=[
+                    "The failure in this reasoning trial could be due to the lack of specific keywords used in the search query. To mitigate this failure, a new plan could involve searching for the specific name change of VIVA Media AG in 2004, then looking for the new acronym directly instead of searching for the acronym from the start. This approach would provide more targeted and accurate results."
+                ],
+                reflection_metrics=PromptMetrics(
+                    prompt_tokens=10,
+                    completion_tokens=20,
+                    total_tokens=30,
+                    prompt_cost=1.5e-05,
+                    completion_cost=3.9999999999999996e-05,
+                    total_cost=5.4999999999999995e-05,
+                    prompt_time=0.5,
+                ),
+            ),
+        ],
+    )
     gt_out_reflections = [
         "The failure in this reasoning trial could be due to the lack of specific keywords used in the search query. To mitigate this failure, a new plan could involve searching for the specific name change of VIVA Media AG in 2004, then looking for the new acronym directly instead of searching for the acronym from the start. This approach would provide more targeted and accurate results."
     ]
@@ -1240,7 +2737,9 @@ def test_reflexion_react_generate() -> None:
         "Search[VIVA Media AG rebranding 2004]",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
+    agent = ReflexionReActAgent(
+        llm=llm, benchmark="hotpotqa", max_steps=3, max_trials=3, testing=True
+    )
     agent.strategy.docstore.search = lambda x: "Search result"
     agent.strategy.docstore.lookup = lambda x: "Lookup result"
     out = agent.generate(
@@ -1251,22 +2750,125 @@ def test_reflexion_react_generate() -> None:
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         reflect_prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
         reflect_strategy="reflexion",
-        max_steps=3,
-        max_trials=3,
         patience=2,
         reset=True,
     )
-    assert (
-        len(out) == 2
-    )  # Outputs vary because of Wikipedia API, though overall output format is correct. Checking if terminates correctly.
-    assert agent.strategy._answer == ""
-    assert not agent.strategy._finished
+    assert out == gt_out
     assert agent.strategy.reflector.reflections == gt_out_reflections
     assert agent.strategy.reflector.reflections_str == gt_out_reflections_str
 
     # Test patience reset after incorrect answer and subsequent runs.
 
     # Answer incorrectly.
+    gt_out = ReflexionReActOutput(
+        answer="",
+        total_prompt_tokens=60,
+        total_completion_tokens=120,
+        total_tokens=180,
+        total_prompt_cost=9e-05,
+        total_completion_cost=0.00023999999999999998,
+        total_cost=0.00033,
+        total_prompt_time=3.0,
+        total_time=0.5,
+        additional_info=[
+            ReflexionReActStepOutput(
+                steps=[
+                    ReflexionReActReActStepOutput(
+                        thought="I need to search for VIVA Media AG to find out their new acronym and what it stands for. Let's start by searching for VIVA Media AG.",
+                        action_type="Search",
+                        query="VIVA Media AG",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="Since I couldn't find VIVA Media AG, I should try searching for VIVA Media AG name change 2004 to see if I can find their new acronym and what it stands for.",
+                        action_type="Search",
+                        query="VIVA Media AG name change 2004",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="Since I couldn't find information about VIVA Media AG's name change in 2004, I should try searching for VIVA Media AG acronym to see if I can find any relevant information.",
+                        action_type="Search",
+                        query="VIVA Media AG acronym",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                ],
+                reflections=[],
+                reflection_metrics=None,
+            )
+        ],
+    )
     responses = [
         "I need to search for VIVA Media AG to find out their new acronym and what it stands for. Let's start by searching for VIVA Media AG.",
         "Search[VIVA Media AG]",
@@ -1276,7 +2878,9 @@ def test_reflexion_react_generate() -> None:
         "Search[VIVA Media AG acronym]",
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
-    agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
+    agent = ReflexionReActAgent(
+        llm=llm, benchmark="hotpotqa", max_trials=1, max_steps=3, testing=True
+    )
     agent.strategy.docstore.search = lambda x: "Search result"
     agent.strategy.docstore.lookup = lambda x: "Lookup result"
     out = agent.generate(
@@ -1287,19 +2891,126 @@ def test_reflexion_react_generate() -> None:
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         reflect_prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
         reflect_strategy="reflexion",
-        max_trials=1,
-        max_steps=3,
         patience=1,
         reset=True,
     )
-    assert len(out) == 1  # Assert 1 trial only ran.
-    assert agent.strategy._answer == ""
-    assert not agent.strategy._finished
+    assert out == gt_out
     assert agent.strategy.reflector.reflections == []
     assert agent.strategy.reflector.reflections_str == ""
 
     # In a subsequent run, answer correctly (reset defaults to True). Output is non-empty if patience is correctly reset.
-    agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
+    gt_out = ReflexionReActOutput(
+        answer="",
+        total_prompt_tokens=60,
+        total_completion_tokens=120,
+        total_tokens=180,
+        total_prompt_cost=9e-05,
+        total_completion_cost=0.00023999999999999998,
+        total_cost=0.00033,
+        total_prompt_time=3.0,
+        total_time=0.5,
+        additional_info=[
+            ReflexionReActStepOutput(
+                steps=[
+                    ReflexionReActReActStepOutput(
+                        thought="I need to search for VIVA Media AG to find out their new acronym and what it stands for. Let's start by searching for VIVA Media AG.",
+                        action_type="Search",
+                        query="VIVA Media AG",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="Since I couldn't find VIVA Media AG, I should try searching for VIVA Media AG name change 2004 to see if I can find their new acronym and what it stands for.",
+                        action_type="Search",
+                        query="VIVA Media AG name change 2004",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                    ReflexionReActReActStepOutput(
+                        thought="Since I couldn't find information about VIVA Media AG's name change in 2004, I should try searching for VIVA Media AG acronym to see if I can find any relevant information.",
+                        action_type="Search",
+                        query="VIVA Media AG acronym",
+                        observation="Search result",
+                        answer="",
+                        external_tool_info={
+                            "search_result": "Search result",
+                            "lookup_result": "",
+                        },
+                        is_correct=False,
+                        thought_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                        action_metrics=PromptMetrics(
+                            prompt_tokens=10,
+                            completion_tokens=20,
+                            total_tokens=30,
+                            prompt_cost=1.5e-05,
+                            completion_cost=3.9999999999999996e-05,
+                            total_cost=5.4999999999999995e-05,
+                            prompt_time=0.5,
+                        ),
+                    ),
+                ],
+                reflections=[],
+                reflection_metrics=None,
+            )
+        ],
+    )
+    agent = ReflexionReActAgent(
+        llm=llm, benchmark="hotpotqa", max_trials=1, max_steps=3, testing=True
+    )
     agent.strategy.docstore.search = lambda x: "Search result"
     agent.strategy.docstore.lookup = lambda x: "Lookup result"
     out = agent.generate(
@@ -1310,13 +3021,9 @@ def test_reflexion_react_generate() -> None:
         reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
         reflect_prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
         reflect_strategy="reflexion",
-        max_trials=1,
-        max_steps=3,
         patience=1,
         reset=True,
     )
-    assert len(out) == 1  # Assert 1 trial only ran.
-    assert agent.strategy._answer == ""
-    assert not agent.strategy._finished
+    assert out == gt_out
     assert agent.strategy.reflector.reflections == []
     assert agent.strategy.reflector.reflections_str == ""
