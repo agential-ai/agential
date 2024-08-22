@@ -4,9 +4,9 @@ import time
 
 from abc import ABC, abstractmethod
 from typing import Any, List
-from pydantic import BaseModel, Field
 
 from litellm import completion, cost_per_token
+from pydantic import BaseModel, Field
 
 
 class Response(BaseModel):
@@ -103,10 +103,12 @@ class LLM(BaseLLM):
 
         time_taken = end_time - start_time
 
-        prompt_tokens_cost_usd_dollar, completion_tokens_cost_usd_dollar = cost_per_token(
-            model=response.model,
-            prompt_tokens=response.usage.prompt_tokens,
-            completion_tokens=response.usage.completion_tokens,
+        prompt_tokens_cost_usd_dollar, completion_tokens_cost_usd_dollar = (
+            cost_per_token(
+                model=response.model,
+                prompt_tokens=response.usage.prompt_tokens,
+                completion_tokens=response.usage.completion_tokens,
+            )
         )
 
         return Response(
@@ -117,10 +119,11 @@ class LLM(BaseLLM):
             total_tokens=response.usage.total_tokens,
             prompt_cost=prompt_tokens_cost_usd_dollar,
             completion_cost=completion_tokens_cost_usd_dollar,
-            total_cost=prompt_tokens_cost_usd_dollar + completion_tokens_cost_usd_dollar,
+            total_cost=prompt_tokens_cost_usd_dollar
+            + completion_tokens_cost_usd_dollar,
             prompt_time=time_taken,
         )
-    
+
 
 class MockLLM(BaseLLM):
     """Mock LLM class for testing purposes.
@@ -155,11 +158,13 @@ class MockLLM(BaseLLM):
             mock_response=response,
             **kwargs,
         )
-    
-        prompt_tokens_cost_usd_dollar, completion_tokens_cost_usd_dollar = cost_per_token(
-            model=response.model,
-            prompt_tokens=response.usage.prompt_tokens,
-            completion_tokens=response.usage.completion_tokens,
+
+        prompt_tokens_cost_usd_dollar, completion_tokens_cost_usd_dollar = (
+            cost_per_token(
+                model=response.model,
+                prompt_tokens=response.usage.prompt_tokens,
+                completion_tokens=response.usage.completion_tokens,
+            )
         )
 
         return Response(
@@ -170,6 +175,7 @@ class MockLLM(BaseLLM):
             total_tokens=response.usage.total_tokens,
             prompt_cost=prompt_tokens_cost_usd_dollar,
             completion_cost=completion_tokens_cost_usd_dollar,
-            total_cost=prompt_tokens_cost_usd_dollar + completion_tokens_cost_usd_dollar,
+            total_cost=prompt_tokens_cost_usd_dollar
+            + completion_tokens_cost_usd_dollar,
             prompt_time=0.5,
         )

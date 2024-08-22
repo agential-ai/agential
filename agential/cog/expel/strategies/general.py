@@ -254,9 +254,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
                         failed_trial=failed_trial,
                         is_full=self.insight_memory.max_num_insights < len(insights),
                     )
-                    self._prompt_metrics["compare"].append(
-                        get_prompt_info(compare_out)
-                    )
+                    self._prompt_metrics["compare"].append(get_prompt_info(compare_out))
                     insights_str = compare_out.choices[0].message.content
                     insights_str = insights_str.strip("\n").strip()
 
@@ -295,9 +293,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
                         success_trajs_str=success_trials,
                         is_full=self.insight_memory.max_num_insights < len(insights),
                     )
-                    self._prompt_metrics["success"].append(
-                        get_prompt_info(success_out)
-                    )
+                    self._prompt_metrics["success"].append(get_prompt_info(success_out))
                     insights_str = success_out.choices[0].message.content
                     insights_str = insights_str.strip("\n").strip()
 

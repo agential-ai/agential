@@ -81,9 +81,7 @@ class ReflexionReActReActStepOutput(BaseModel):
     thought_metrics: Response = Field(
         ..., description="Prompt metrics for the thought."
     )
-    action_metrics: Response = Field(
-        ..., description="Prompt metrics for the thought."
-    )
+    action_metrics: Response = Field(..., description="Prompt metrics for the thought.")
 
 
 class ReflexionReActStepOutput(BaseModel):
