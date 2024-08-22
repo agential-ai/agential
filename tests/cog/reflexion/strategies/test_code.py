@@ -329,13 +329,10 @@ def test_reflexion_cot_halting_condition() -> None:
     llm = MockLLM("gpt-3.5-turbo", responses=[])
     strategy = ReflexionCoTCodeStrategy(llm=llm, max_trials=3)
 
-    strategy._answer = "incorrect_answer"
     assert strategy.halting_condition(3, "correct_answer", "correct_answer") == True
 
-    strategy._answer = "correct_answer"
     assert strategy.halting_condition(2, "correct_answer", "correct_answer") == False
 
-    strategy._answer = "incorrect_answer"
     assert strategy.halting_condition(2, "correct_answer", "correct_answer") == False
 
 
@@ -756,13 +753,10 @@ def test_reflexion_react_generate() -> None:
         reset=True,
     )
 
-    # assert (
-    #     strategy._answer
-    #     == "def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None"
-    # )
-    print(repr(out))
-    # print(out.total_tokens)
-    # print(gt_out.total_tokens)
+    assert (
+        strategy._answer
+        == "def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None"
+    )
     assert out == gt_out
 
 
