@@ -1,11 +1,11 @@
 """Unit tests for metric utilities."""
 
 from agential.llm.llm import ModelResponse, Usage
-from agential.utils.metrics import PromptInfo, get_token_cost_time
+from agential.utils.metrics import PromptInfo, get_prompt_info
 
 
-def test_get_token_cost_time() -> None:
-    """Test get_token_cost_time function."""
+def test_get_prompt_info() -> None:
+    """Test get_prompt_info function."""
     # Test with sample token counts and model.
     prompt_tokens = 100
     completion_tokens = 50
@@ -22,7 +22,7 @@ def test_get_token_cost_time() -> None:
     response.model = model
     response.time_taken = 0.5
 
-    token_cost_time = get_token_cost_time(response)
+    token_cost_time = get_prompt_info(response)
 
     assert token_cost_time == PromptInfo(
         prompt_tokens=100,
@@ -50,7 +50,7 @@ def test_get_token_cost_time() -> None:
     response.model = model
     response.time_taken = 0.5
 
-    token_cost_time = get_token_cost_time(response)
+    token_cost_time = get_prompt_info(response)
 
     assert token_cost_time == PromptInfo(
         prompt_tokens=200,

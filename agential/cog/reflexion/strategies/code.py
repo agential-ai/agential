@@ -24,7 +24,7 @@ from agential.cog.reflexion.strategies.general import (
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
 from agential.utils.general import safe_execute
-from agential.utils.metrics import PromptInfo, get_token_cost_time
+from agential.utils.metrics import PromptInfo, get_prompt_info
 
 
 class ReflexionCoTCodeStrategy(ReflexionCoTGeneralStrategy):
@@ -94,7 +94,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTGeneralStrategy):
         action_type, query = parse_math_code_action_cot(action)
         scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
 
-        return scratchpad, action_type, query, get_token_cost_time(out)
+        return scratchpad, action_type, query, get_prompt_info(out)
 
     def generate_observation(
         self, scratchpad: str, action_type: str, query: str, key: str
@@ -259,7 +259,7 @@ class ReflexionReActCodeStrategy(ReflexionReActGeneralStrategy):
         )
         scratchpad += f"{action_type}[\n```python\n{query}\n```\n]"
 
-        return scratchpad, action_type, query, get_token_cost_time(out)
+        return scratchpad, action_type, query, get_prompt_info(out)
 
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str, key: str
@@ -449,7 +449,7 @@ class ReflexionCoTHEvalStrategy(ReflexionCoTCodeStrategy):
         action_type = "Finish"
         scratchpad += f"{action_type}[\n```python\n{query}\n```\n]"
 
-        return scratchpad, action_type, query, get_token_cost_time(out)
+        return scratchpad, action_type, query, get_prompt_info(out)
 
 
 class ReflexionCoTMBPPStrategy(ReflexionCoTCodeStrategy):

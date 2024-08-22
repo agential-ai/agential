@@ -24,7 +24,7 @@ from agential.cog.reflexion.strategies.general import (
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
-from agential.utils.metrics import PromptInfo, get_token_cost_time
+from agential.utils.metrics import PromptInfo, get_prompt_info
 from agential.utils.parse import remove_newline
 
 
@@ -95,7 +95,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTGeneralStrategy):
         scratchpad += action
         action_type, query = parse_qa_action(action)
 
-        return scratchpad, action_type, query, get_token_cost_time(out)
+        return scratchpad, action_type, query, get_prompt_info(out)
 
     def generate_observation(
         self, scratchpad: str, action_type: str, query: str, key: str
@@ -250,7 +250,7 @@ class ReflexionReActQAStrategy(ReflexionReActGeneralStrategy):
         scratchpad += action
         action_type, query = parse_qa_action(action)
 
-        return scratchpad, action_type, query, get_token_cost_time(out)
+        return scratchpad, action_type, query, get_prompt_info(out)
 
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str, key: str

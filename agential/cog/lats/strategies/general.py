@@ -21,7 +21,7 @@ from agential.cog.lats.output import (
 )
 from agential.cog.lats.strategies.base import LATSBaseStrategy
 from agential.llm.llm import BaseLLM
-from agential.utils.metrics import PromptInfo, get_token_cost_time
+from agential.utils.metrics import PromptInfo, get_prompt_info
 from agential.utils.parse import remove_newline
 
 
@@ -300,7 +300,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         thought = remove_newline(thought).split("Action")[0].strip()
         trajectory += thought
 
-        return trajectory, thought, get_token_cost_time(out)
+        return trajectory, thought, get_prompt_info(out)
 
     def generate_action(
         self,
@@ -579,7 +579,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
                 prompt=prompt,
                 additional_keys=additional_keys,
             )
-            reflection_metrics.append(get_token_cost_time(reflection_out))
+            reflection_metrics.append(get_prompt_info(reflection_out))
             reflection = reflection_out.choices[0].message.content
 
             reflections.append({"trajectory": trajectory, "reflection": reflection})

@@ -12,7 +12,7 @@ from agential.cog.react.functional import _is_halted, _prompt_agent, accumulate_
 from agential.cog.react.output import ReActOutput, ReActStepOutput
 from agential.cog.react.strategies.base import ReActBaseStrategy
 from agential.llm.llm import BaseLLM
-from agential.utils.metrics import PromptInfo, get_token_cost_time
+from agential.utils.metrics import PromptInfo, get_prompt_info
 from agential.utils.parse import remove_newline
 
 
@@ -179,7 +179,7 @@ class ReActGeneralStrategy(ReActBaseStrategy):
         thought = remove_newline(thought).split("Action")[0].strip()
         scratchpad += thought
 
-        return scratchpad, thought, get_token_cost_time(out)
+        return scratchpad, thought, get_prompt_info(out)
 
     def generate_action(
         self,

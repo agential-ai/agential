@@ -10,7 +10,7 @@ from agential.cog.self_refine.functional import (
 from agential.cog.self_refine.strategies.base import SelfRefineBaseStrategy
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
-from agential.utils.metrics import get_token_cost_time
+from agential.utils.metrics import get_prompt_info
 
 
 class SelfRefineMathStrategy(SelfRefineBaseStrategy):
@@ -62,7 +62,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics["answer"] = get_token_cost_time(out)
+        self._prompt_metrics["answer"] = get_prompt_info(out)
         answer = out.choices[0].message.content
         answer = answer.strip().split("```python")[-1].split("```")[0].strip()
 
@@ -99,7 +99,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics["critique"] = get_token_cost_time(out)
+        self._prompt_metrics["critique"] = get_prompt_info(out)
         critique = out.choices[0].message.content
         critique = critique.strip()
 
@@ -159,7 +159,7 @@ class SelfRefineMathStrategy(SelfRefineBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics["updated_answer"] = get_token_cost_time(out)
+        self._prompt_metrics["updated_answer"] = get_prompt_info(out)
         new_answer = out.choices[0].message.content
         new_answer = new_answer.strip().split("```python")[-1].split("```")[0].strip()
 

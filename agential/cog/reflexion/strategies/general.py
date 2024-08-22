@@ -32,7 +32,7 @@ from agential.cog.reflexion.strategies.base import (
     ReflexionReActBaseStrategy,
 )
 from agential.llm.llm import BaseLLM
-from agential.utils.metrics import PromptInfo, get_token_cost_time
+from agential.utils.metrics import PromptInfo, get_prompt_info
 from agential.utils.parse import remove_newline
 
 
@@ -232,7 +232,7 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
         thought = remove_newline(thought).split("Action")[0].strip()
         scratchpad += thought
 
-        return scratchpad, thought, get_token_cost_time(out)
+        return scratchpad, thought, get_prompt_info(out)
 
     def generate_action(
         self,
@@ -343,7 +343,7 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
             additional_keys=additional_keys,
         )
         reflection_metrics = (
-            get_token_cost_time(reflections_out) if reflections_out else None
+            get_prompt_info(reflections_out) if reflections_out else None
         )
         return reflections, reflections_str, reflection_metrics
 
@@ -633,7 +633,7 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
         thought = remove_newline(thought).split("Action")[0].strip()
         scratchpad += thought
 
-        return scratchpad, thought, get_token_cost_time(out)
+        return scratchpad, thought, get_prompt_info(out)
 
     def generate_action(
         self,
@@ -808,7 +808,7 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
             additional_keys=additional_keys,
         )
         reflection_metrics = (
-            get_token_cost_time(reflections_out) if reflections_out else None
+            get_prompt_info(reflections_out) if reflections_out else None
         )
 
         return reflections, reflections_str, reflection_metrics

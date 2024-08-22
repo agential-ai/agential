@@ -45,7 +45,7 @@ class PromptInfo(BaseModel):
     )
 
 
-def get_token_cost_time(response: ModelResponse) -> PromptInfo:
+def get_prompt_info(response: ModelResponse) -> PromptInfo:
     """Calculates the token usage and cost of a prompt and completion in dollars.
 
     Args:

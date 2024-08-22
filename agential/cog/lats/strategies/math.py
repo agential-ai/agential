@@ -23,7 +23,7 @@ from agential.cog.lats.strategies.general import LATSGeneralStrategy
 from agential.eval.em import EM
 from agential.llm.llm import BaseLLM
 from agential.utils.general import safe_execute
-from agential.utils.metrics import PromptInfo, get_token_cost_time
+from agential.utils.metrics import PromptInfo, get_prompt_info
 
 
 class LATSMathStrategy(LATSGeneralStrategy):
@@ -236,7 +236,7 @@ class LATSMathStrategy(LATSGeneralStrategy):
         action_type, query = parse_math_action(action)
         trajectory += f" {action_type}[\n```python\n{query}\n```\n]"
 
-        return trajectory, action_type, query, get_token_cost_time(out)
+        return trajectory, action_type, query, get_prompt_info(out)
 
     def generate_observation(
         self,
@@ -357,7 +357,7 @@ class LATSMathStrategy(LATSGeneralStrategy):
                     child_trajectory_cache[trajectory] = value
 
                 values_metrics.append(
-                    get_token_cost_time(value_response) if value_response else None
+                    get_prompt_info(value_response) if value_response else None
                 )
                 values.append({"explanation": explanation, "value": value})
             else:
@@ -491,7 +491,7 @@ class LATSMathStrategy(LATSGeneralStrategy):
                     value_str = value_str_out.choices[0].message.content
 
                     explanation, value = parse_value(value_str)  # type: ignore
-                    values_metrics.append(get_token_cost_time(value_str_out))
+                    values_metrics.append(get_prompt_info(value_str_out))
                     values.append({"explanation": explanation, "value": value})
                 else:
                     values_metrics.append(None)

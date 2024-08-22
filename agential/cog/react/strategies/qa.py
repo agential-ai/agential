@@ -11,7 +11,7 @@ from agential.cog.react.functional import _prompt_agent, parse_qa_action
 from agential.cog.react.strategies.general import ReActGeneralStrategy
 from agential.llm.llm import BaseLLM
 from agential.utils.docstore import DocstoreExplorer
-from agential.utils.metrics import PromptInfo, get_token_cost_time
+from agential.utils.metrics import PromptInfo, get_prompt_info
 from agential.utils.parse import remove_newline
 
 
@@ -84,7 +84,7 @@ class ReActQAStrategy(ReActGeneralStrategy):
         action_type, query = parse_qa_action(action)
         scratchpad += f"{action_type}[{query}]"
 
-        return scratchpad, action_type, query, get_token_cost_time(out)
+        return scratchpad, action_type, query, get_prompt_info(out)
 
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str

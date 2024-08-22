@@ -21,7 +21,7 @@ from agential.cog.expel.strategies.base import ExpeLBaseStrategy
 from agential.cog.reflexion.agent import ReflexionReActAgent
 from agential.llm.llm import BaseLLM
 from agential.utils.general import shuffle_chunk_list
-from agential.utils.metrics import get_token_cost_time
+from agential.utils.metrics import get_prompt_info
 
 
 class ExpeLStrategy(ExpeLBaseStrategy):
@@ -255,7 +255,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
                         is_full=self.insight_memory.max_num_insights < len(insights),
                     )
                     self._prompt_metrics["compare"].append(
-                        get_token_cost_time(compare_out)
+                        get_prompt_info(compare_out)
                     )
                     insights_str = compare_out.choices[0].message.content
                     insights_str = insights_str.strip("\n").strip()
@@ -296,7 +296,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
                         is_full=self.insight_memory.max_num_insights < len(insights),
                     )
                     self._prompt_metrics["success"].append(
-                        get_token_cost_time(success_out)
+                        get_prompt_info(success_out)
                     )
                     insights_str = success_out.choices[0].message.content
                     insights_str = insights_str.strip("\n").strip()

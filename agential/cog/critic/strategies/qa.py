@@ -7,7 +7,7 @@ from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 from agential.cog.critic.functional import _prompt_agent, _prompt_critique
 from agential.cog.critic.strategies.base import CriticBaseStrategy
 from agential.llm.llm import BaseLLM
-from agential.utils.metrics import get_token_cost_time
+from agential.utils.metrics import get_prompt_info
 
 
 class CriticQAStrategy(CriticBaseStrategy):
@@ -69,7 +69,7 @@ class CriticQAStrategy(CriticBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        self._prompt_metrics["answer"] = get_token_cost_time(out)
+        self._prompt_metrics["answer"] = get_prompt_info(out)
 
         return out.choices[0].message.content
 
@@ -173,7 +173,7 @@ class CriticQAStrategy(CriticBaseStrategy):
             new_critique = new_critique.split("most possible answer: ")[-1].strip()
             self._halt = True
 
-        self._prompt_metrics["critique"] = get_token_cost_time(out)
+        self._prompt_metrics["critique"] = get_prompt_info(out)
 
         return new_critique, external_tool_info
 
