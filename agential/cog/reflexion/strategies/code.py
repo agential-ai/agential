@@ -221,6 +221,8 @@ class ReflexionReActCodeStrategy(ReflexionReActGeneralStrategy):
             testing=testing,
         )
 
+        self._answer = ""
+
     def generate_action(
         self,
         idx: int,
@@ -335,20 +337,26 @@ class ReflexionReActCodeStrategy(ReflexionReActGeneralStrategy):
             external_tool_info,
         )
 
-    def halting_condition(self, idx: int, key: str, **kwargs: Any) -> bool:
-        """Determine whether the halting condition has been met.
+    def halting_condition(
+        self,
+        idx: int,
+        key: str,
+        answer: str,
+    ) -> bool:
+        """Determines whether the halting condition has been met.
 
         Args:
             idx (int): The current step index.
             key (str): The key for the observation.
-            kwargs (Dict[str, Any]): Additional keyword arguments.
+            answer (str): The answer generated.
 
         Returns:
-            bool: True if the halting condition is met, False otherwise. The halting condition is met when the answer is not correct and the current step index is less than the maximum number of trials plus one.
+            bool: True if the halting condition is met, False otherwise.
         """
-        max_trials: int = kwargs.get("max_trials", self.max_trials)
-        _, execution_status = safe_execute(f"{self._answer}\n\n{key}")
-        return EM(execution_status, "Done", normalize=False) or idx >= max_trials + 1
+        _, execution_status = safe_execute(f"{answer}\n\n{key}")
+        return (
+            EM(execution_status, "Done", normalize=False) or idx >= self.max_trials + 1
+        )
 
     def reflect_condition(
         self,
