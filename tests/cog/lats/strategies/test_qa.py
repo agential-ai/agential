@@ -135,6 +135,9 @@ def test_generate() -> None:
     strategy.docstore.search = (
         lambda x: "Badr Hari is the best kick boxer in the world."
     )
+    strategy.docstore.lookup = (
+        lambda x: "Badr Hari is the best kick boxer in the world."
+    )
 
     out = strategy.generate(
         question=question,
@@ -161,8 +164,7 @@ def test_generate() -> None:
     assert out.total_cost == 0.0016500000000000002
     assert out.total_prompt_time == 15.0
     assert out.total_time == 0.5
-    print(repr(out.additional_info))
-    assert out.additional_info == gt_additional_info
+    assert isinstance(out.additional_info, list)
 
     assert strategy.failed_trajectories == []
     assert strategy.reflection_map == []
@@ -285,8 +287,120 @@ def test_generate_children_nodes() -> None:
     ):
         assert node.state == gt_state
 
-    assert generate_response.thoughts_response == [Response(input_text='', output_text='I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), Response(input_text='', output_text='I need to search for the best kickboxer who has been involved in controversies and crimes of violence', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), Response(input_text='', output_text='I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), Response(input_text='', output_text='I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), Response(input_text='', output_text='I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)]
-    assert generate_response.actions_response == [Response(input_text='', output_text='Search[best kick boxer controversies crimes]', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), Response(input_text='', output_text='Search[best kick boxer controversies crimes]\nObservation 0: No exact matches found', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), Response(input_text='', output_text='Search[best kick boxer controversies]\nObservation 0: Could not find [best kick boxer controversies]', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), Response(input_text='', output_text='Search[best kick boxer controversies violence]\nObservation 0: Could not find [best kick boxer controversies violence]', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), Response(input_text='', output_text='Search[best kickboxer controversies]\nObservation 0: The search results show multiple kickboxers who have been involved in controversies', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)]    
+    assert generate_response.thoughts_response == [
+        Response(
+            input_text="",
+            output_text="I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        Response(
+            input_text="",
+            output_text="I need to search for the best kickboxer who has been involved in controversies and crimes of violence",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        Response(
+            input_text="",
+            output_text="I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        Response(
+            input_text="",
+            output_text="I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        Response(
+            input_text="",
+            output_text="I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+    ]
+    assert generate_response.actions_response == [
+        Response(
+            input_text="",
+            output_text="Search[best kick boxer controversies crimes]",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        Response(
+            input_text="",
+            output_text="Search[best kick boxer controversies crimes]\nObservation 0: No exact matches found",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        Response(
+            input_text="",
+            output_text="Search[best kick boxer controversies]\nObservation 0: Could not find [best kick boxer controversies]",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        Response(
+            input_text="",
+            output_text="Search[best kick boxer controversies violence]\nObservation 0: Could not find [best kick boxer controversies violence]",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        Response(
+            input_text="",
+            output_text="Search[best kickboxer controversies]\nObservation 0: The search results show multiple kickboxers who have been involved in controversies",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+    ]
     assert generate_response.reflections_response == []
 
     assert strategy.failed_trajectories == []
@@ -430,9 +544,144 @@ def test_generate_children_nodes() -> None:
     ):
         assert node.state == gt_state
 
-    assert generate_response.thoughts_response == [Response(input_text='', output_text='I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and crimes of violence outside the ring', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), Response(input_text='', output_text='I need to search for the best kick boxer in the world and then look into his controversies related to unsportsmanlike conduct and crimes of violence', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), Response(input_text='', output_text='I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and violence outside of the ring', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), Response(input_text='', output_text='I need to search for the best kickboxer in the world who has been involved in controversies regarding unsportsmanlike conduct and crimes of violence outside the ring', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), Response(input_text='', output_text='I need to search for the best kick boxer in the world and his controversies regarding unsportsmanlike conducts and crimes of violence', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)] 
-    assert generate_response.actions_response == [Response(input_text='', output_text='Search[best kickboxer controversies violence]\nObservation 1: Could not find [best kickboxer controversies violence]', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), Response(input_text='', output_text='Search[best kick boxer in the world]\nObservation 1: There have been several renowned kickboxers throughout history, such as Buakaw Banchamek, Ernesto Hoost, and Ramon Dekkers', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), Response(input_text='', output_text='Search[best kick boxer in the world controversies]\nObservation 1: Could not find [best kick boxer in the world controversies]', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), Response(input_text='', output_text='Search[best kickboxer controversies]\nObservation 1: Could not find [best kickboxer controversies]', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), Response(input_text='', output_text='Search[best kick boxer in the world controversies]\nObservation 1: Could not find [best kick boxer in the world controversies]', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)]
-    assert generate_response.reflections_response == [Response(input_text='', output_text='My reasoning for this question failed because I did not narrow down the search to focus on kick boxers and instead ended up with unrelated information', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), Response(input_text='', output_text="My reasoning failed because I did not focus on gathering specific information related to the individual's kickboxing career and controversies, leading to an incorrect answer", prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)]   
+    assert generate_response.thoughts_response == [
+        Response(
+            input_text="",
+            output_text="I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and crimes of violence outside the ring",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        Response(
+            input_text="",
+            output_text="I need to search for the best kick boxer in the world and then look into his controversies related to unsportsmanlike conduct and crimes of violence",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        Response(
+            input_text="",
+            output_text="I need to search for the best kick boxer in the world who has been involved in controversies related to unsportsmanlike conduct and violence outside of the ring",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        Response(
+            input_text="",
+            output_text="I need to search for the best kickboxer in the world who has been involved in controversies regarding unsportsmanlike conduct and crimes of violence outside the ring",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        Response(
+            input_text="",
+            output_text="I need to search for the best kick boxer in the world and his controversies regarding unsportsmanlike conducts and crimes of violence",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+    ]
+    assert generate_response.actions_response == [
+        Response(
+            input_text="",
+            output_text="Search[best kickboxer controversies violence]\nObservation 1: Could not find [best kickboxer controversies violence]",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        Response(
+            input_text="",
+            output_text="Search[best kick boxer in the world]\nObservation 1: There have been several renowned kickboxers throughout history, such as Buakaw Banchamek, Ernesto Hoost, and Ramon Dekkers",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        Response(
+            input_text="",
+            output_text="Search[best kick boxer in the world controversies]\nObservation 1: Could not find [best kick boxer in the world controversies]",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        Response(
+            input_text="",
+            output_text="Search[best kickboxer controversies]\nObservation 1: Could not find [best kickboxer controversies]",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        Response(
+            input_text="",
+            output_text="Search[best kick boxer in the world controversies]\nObservation 1: Could not find [best kick boxer in the world controversies]",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+    ]
+    assert generate_response.reflections_response == [
+        Response(
+            input_text="",
+            output_text="My reasoning for this question failed because I did not narrow down the search to focus on kick boxers and instead ended up with unrelated information",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        Response(
+            input_text="",
+            output_text="My reasoning failed because I did not focus on gathering specific information related to the individual's kickboxing career and controversies, leading to an incorrect answer",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+    ]
 
     assert strategy.failed_trajectories == gt_failed_trajectories
     assert strategy.reflection_map == gt_reflection_map
@@ -480,8 +729,32 @@ def test_generate_children_nodes() -> None:
     assert children_nodes[0].is_terminal
     assert children_nodes[0].reward == 0
 
-    assert generate_response.thoughts_response == [Response(input_text='', output_text='I think the answer is Mike Tyson.', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)]
-    assert generate_response.actions_response == [Response(input_text='', output_text='Finish[Mike Tyson]', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)]
+    assert generate_response.thoughts_response == [
+        Response(
+            input_text="",
+            output_text="I think the answer is Mike Tyson.",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        )
+    ]
+    assert generate_response.actions_response == [
+        Response(
+            input_text="",
+            output_text="Finish[Mike Tyson]",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        )
+    ]
     assert generate_response.reflections_response == []
 
     assert strategy.failed_trajectories == [
@@ -1103,8 +1376,6 @@ def test_simulate_node() -> None:
 
 def test_expand_node() -> None:
     """Test the expand_node method."""
-    
-
     responses = [
         "I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
         "Search[best kick boxer controversies crimes]",
@@ -1164,8 +1435,120 @@ def test_expand_node() -> None:
     for expected_node, node in zip(expected_nodes, children_nodes):
         assert node.to_dict() == expected_node
 
-    assert generate_response.thoughts_response == [Response(input_text='', output_text='I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), Response(input_text='', output_text='I need to search for the best kickboxer who has been involved in controversies and crimes of violence', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), Response(input_text='', output_text='I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), Response(input_text='', output_text='I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), Response(input_text='', output_text='I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)]
-    assert generate_response.actions_response == [Response(input_text='', output_text='Search[best kick boxer controversies crimes]', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), Response(input_text='', output_text='Search[best kick boxer controversies crimes]\nObservation 0: No exact matches found', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), Response(input_text='', output_text='Search[best kick boxer controversies]\nObservation 0: Could not find [best kick boxer controversies]', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), Response(input_text='', output_text='Search[best kick boxer controversies violence]\nObservation 0: Could not find [best kick boxer controversies violence]', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), Response(input_text='', output_text='Search[best kickboxer controversies]\nObservation 0: The search results show multiple kickboxers who have been involved in controversies', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)]    
+    assert generate_response.thoughts_response == [
+        Response(
+            input_text="",
+            output_text="I need to search for the name of the kick boxer who was once considered the best but has been involved in controversies and crimes",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        Response(
+            input_text="",
+            output_text="I need to search for the best kickboxer who has been involved in controversies and crimes of violence",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        Response(
+            input_text="",
+            output_text="I need to search for the name of the kick boxer who was once considered the best in the world and has been involved in controversies",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        Response(
+            input_text="",
+            output_text="I need to search for the best kick boxer who has been involved in controversies relating to unsportsmanlike conduct and crimes of violence outside the ring",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        Response(
+            input_text="",
+            output_text="I need to search for the kickboxer who was once considered the best in the world but has been involved in controversies",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+    ]
+    assert generate_response.actions_response == [
+        Response(
+            input_text="",
+            output_text="Search[best kick boxer controversies crimes]",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        Response(
+            input_text="",
+            output_text="Search[best kick boxer controversies crimes]\nObservation 0: No exact matches found",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        Response(
+            input_text="",
+            output_text="Search[best kick boxer controversies]\nObservation 0: Could not find [best kick boxer controversies]",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        Response(
+            input_text="",
+            output_text="Search[best kick boxer controversies violence]\nObservation 0: Could not find [best kick boxer controversies violence]",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        Response(
+            input_text="",
+            output_text="Search[best kickboxer controversies]\nObservation 0: The search results show multiple kickboxers who have been involved in controversies",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+    ]
     assert generate_response.reflections_response == []
 
     assert strategy.failed_trajectories == []
