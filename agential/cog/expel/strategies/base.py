@@ -9,7 +9,7 @@ from agential.cog.expel.memory import (
     ExpeLInsightMemory,
 )
 from agential.cog.reflexion.agent import ReflexionReActAgent
-from agential.llm.llm import BaseLLM
+from agential.llm.llm import BaseLLM, Response
 
 
 class ExpeLBaseStrategy(BaseStrategy):
@@ -63,7 +63,7 @@ class ExpeLBaseStrategy(BaseStrategy):
         Returns:
             Tuple[str, Dict[str, str]]: The generated examples and a dictionary of additional keys.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def gather_experience(
@@ -98,16 +98,23 @@ class ExpeLBaseStrategy(BaseStrategy):
         Returns:
             List[Dict[str, Any]]: A list of experiences gathered.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
-    def extract_insights(self, experiences: List[Dict[str, Any]]) -> None:
-        """Extracts insights from the provided experiences.
+    def extract_insights(self, experiences: List[Dict[str, Any]]) -> Tuple[List[Response], List[Response]]:
+        """Extracts insights from the provided experiences and updates the `InsightMemory` accordingly.
+
+        This method is responsible for analyzing the successful and failed trials in the provided experiences, comparing them, and generating insights that are then stored in the `InsightMemory`. The insights are generated using the `get_operations_compare` and `get_operations_success` functions, and the `update_insights` method is used to apply the generated operations to the `InsightMemory`.
+        The method first categorizes the experiences into "compare" and "success" categories, and then processes the experiences in batches. For the "compare" category, it compares the successful trial with all previous failed trials and generates insights using the `get_operations_compare` function. For the "success" category, it concatenates the successful trials and generates insights using the `get_operations_success` function.
 
         Args:
-            experiences (List[Dict[str, Any]]): A list of experiences to extract insights from.
+            experiences (List[Dict[str, Any]]): A dictionary containing the experiences to be processed, including questions, trajectories, and other relevant data.
+
+        Return:
+            List[Response]: A list of compare responses.
+            List[Response]: A list of success responses.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def update_insights(self, operations: List[Tuple[str, str]]) -> None:
@@ -116,7 +123,7 @@ class ExpeLBaseStrategy(BaseStrategy):
         Args:
             operations (List[Tuple[str, str]]): A list of tuples, where each tuple contains a key and a value to update in the insight memory.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def create_output_dict(
@@ -135,4 +142,4 @@ class ExpeLBaseStrategy(BaseStrategy):
         Returns:
             Dict[str, Any]: A dictionary containing the current state of the agent, including examples, additional keys, and experience.
         """
-        pass
+        raise NotImplementedError

@@ -1,8 +1,10 @@
 """ExpeL structured output module."""
 
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from pydantic import BaseModel, Field
+
+from agential.llm.llm import Response
 
 
 class ExpeLOutput(BaseModel):
@@ -14,14 +16,16 @@ class ExpeLOutput(BaseModel):
         experience (Dict[str, Any]): The current experience.
         experience_memory (Dict[str, Any]): The experience memory.
         insight_memory (Dict[str, Any]): The insight memory.
-        prompt_metrics (Dict[str, Any]): The prompt metrics.
+        experience_memory_response (List[Response]): The experience memory responses.
+        insight_memory_response (List[Response]): The insight memory responses.
     """
 
     examples: str = Field(..., description="The examples to be included in the output.")
     insights: str = Field(
-        "", description="Additional insights to be included in the output."
+        ..., description="Additional insights to be included in the output."
     )
     experience: Dict[str, Any] = Field(..., description="The current experience.")
     experience_memory: Dict[str, Any] = Field(..., description="The experience memory.")
     insight_memory: Dict[str, Any] = Field(..., description="The insight memory.")
-    prompt_metrics: Dict[str, Any] = Field(..., description="The prompt metrics.")
+    experience_memory_response: List[Response] = Field(..., description="The experience memory responses.")
+    insight_memory_response: List[Response] = Field(..., description="The insight memory responses.")

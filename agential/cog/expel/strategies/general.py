@@ -19,20 +19,19 @@ from agential.cog.expel.memory import (
 )
 from agential.cog.expel.strategies.base import ExpeLBaseStrategy
 from agential.cog.reflexion.agent import ReflexionReActAgent
-from agential.llm.llm import BaseLLM
+from agential.llm.llm import BaseLLM, Response
 from agential.utils.general import shuffle_chunk_list
-from agential.utils.metrics import get_prompt_info
 
 
 class ExpeLStrategy(ExpeLBaseStrategy):
     """A general strategy class for the ExpeL agent.
 
     Attributes:
-    llm (BaseLLM): The language model used for generating answers and critiques.
-    reflexion_react_agent (ReflexionReActAgent): The ReflexionReAct agent.
-    experience_memory (ExpeLExperienceMemory): Memory module for storing experiences. Default is None.
-    insight_memory (ExpeLInsightMemory): Memory module for storing insights derived from experiences. Default is None.
-    success_batch_size (int): Batch size for processing success experiences in generating insights. Default is 8.
+        llm (BaseLLM): The language model used for generating answers and critiques.
+        reflexion_react_agent (ReflexionReActAgent): The ReflexionReAct agent.
+        experience_memory (ExpeLExperienceMemory): Memory module for storing experiences. Default is None.
+        insight_memory (ExpeLInsightMemory): Memory module for storing insights derived from experiences. Default is None.
+        success_batch_size (int): Batch size for processing success experiences in generating insights. Default is 8.
     """
 
     def __init__(
@@ -54,10 +53,8 @@ class ExpeLStrategy(ExpeLBaseStrategy):
             success_batch_size,
         )
 
-        self._prompt_metrics: Dict[str, Any] = {"compare": [], "success": []}
-
         if experience_memory:
-            self.extract_insights(self.experience_memory.experiences)
+            compares_response, success_response = self.extract_insights(self.experience_memory.experiences)
 
     def generate(
         self,
@@ -210,7 +207,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
         )
         return experiences
 
-    def extract_insights(self, experiences: List[Dict[str, Any]]) -> None:
+    def extract_insights(self, experiences: List[Dict[str, Any]]) -> Tuple[List[Response], List[Response]]:
         """Extracts insights from the provided experiences and updates the `InsightMemory` accordingly.
 
         This method is responsible for analyzing the successful and failed trials in the provided experiences, comparing them, and generating insights that are then stored in the `InsightMemory`. The insights are generated using the `get_operations_compare` and `get_operations_success` functions, and the `update_insights` method is used to apply the generated operations to the `InsightMemory`.
@@ -218,11 +215,17 @@ class ExpeLStrategy(ExpeLBaseStrategy):
 
         Args:
             experiences (List[Dict[str, Any]]): A dictionary containing the experiences to be processed, including questions, trajectories, and other relevant data.
+
+        Return:
+            List[Response]: A list of compare responses.
+            List[Response]: A list of success responses.
         """
         # Extract insights.
         categories = categorize_experiences(experiences)
         folds = get_folds(categories, len(experiences))
 
+        compares_response: List[Response] = []
+        successes_response: List[Response] = []
         for train_idxs in folds.values():
             train_category_idxs = {
                 category: list(set(train_idxs).intersection(set(category_idxs)))  # type: ignore
@@ -254,7 +257,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
                         failed_trial=failed_trial,
                         is_full=self.insight_memory.max_num_insights < len(insights),
                     )
-                    self._prompt_metrics["compare"].append(get_prompt_info(compare_out))
+                    compares_response.append(compare_out)
                     insights_str = compare_out.choices[0].message.content
                     insights_str = insights_str.strip("\n").strip()
 
@@ -293,7 +296,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
                         success_trajs_str=success_trials,
                         is_full=self.insight_memory.max_num_insights < len(insights),
                     )
-                    self._prompt_metrics["success"].append(get_prompt_info(success_out))
+                    successes_response.append(success_out)
                     insights_str = success_out.choices[0].message.content
                     insights_str = insights_str.strip("\n").strip()
 
@@ -304,6 +307,8 @@ class ExpeLStrategy(ExpeLBaseStrategy):
                     operations = remove_err_operations(insights, operations)
 
                     self.update_insights(operations=operations)
+
+        return compares_response, successes_response
 
     def update_insights(self, operations: List[Tuple[str, str]]) -> None:
         """Updates the insights in the `InsightMemory` based on the provided operations.
