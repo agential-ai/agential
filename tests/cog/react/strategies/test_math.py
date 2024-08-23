@@ -47,7 +47,7 @@ def test_generate_action() -> None:
     assert scratchpad == gt_scratchpad
     assert action_response == Response(
         input_text="",
-        output_text="",
+        output_text="Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_used = eggs_for_breakfast + eggs_for_muffins\neggs_remaining = eggs_laid_per_day - eggs_used\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day\n```\n]",
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,

@@ -54,7 +54,7 @@ def test_generate_action() -> None:
     assert query == gt_query
     assert action_response == Response(
         input_text="",
-        output_text="",
+        output_text="Search[best kick boxer in the world controversies crimes]",
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,
