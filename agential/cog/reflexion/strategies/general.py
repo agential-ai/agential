@@ -31,8 +31,7 @@ from agential.cog.reflexion.strategies.base import (
     ReflexionCoTBaseStrategy,
     ReflexionReActBaseStrategy,
 )
-from agential.llm.llm import BaseLLM
-from agential.utils.metrics import Response, get_prompt_info
+from agential.llm.llm import BaseLLM, Response
 from agential.utils.parse import remove_newline
 
 
@@ -111,14 +110,14 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
             # Reflect if possible.
             reflections: List[str] = []
             reflections_str = ""
-            reflection_metrics: Optional[Response] = None
+            reflection_response: Optional[Response] = None
             if self.reflect_condition(
                 idx=idx,
                 reflect_strategy=reflect_strategy,
                 key=key,
                 answer=answer,
             ):
-                reflections, reflections_str, reflection_metrics = self.reflect(
+                reflections, reflections_str, reflection_response = self.reflect(
                     scratchpad=scratchpad,
                     reflect_strategy=reflect_strategy,
                     question=question,
@@ -130,7 +129,7 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
             scratchpad = ""
 
             # Think.
-            scratchpad, thought, thought_metrics = self.generate_thought(
+            scratchpad, thought, thought_response = self.generate_thought(
                 scratchpad=scratchpad,
                 question=question,
                 examples=examples,
@@ -140,7 +139,7 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
             )
 
             # Act.
-            scratchpad, action_type, query, action_metrics = self.generate_action(
+            scratchpad, action_type, query, action_response = self.generate_action(
                 scratchpad=scratchpad,
                 question=question,
                 examples=examples,
@@ -165,9 +164,9 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
                     answer=answer,
                     is_correct=is_correct,
                     reflections=reflections,
-                    thought_metrics=thought_metrics,
-                    action_metrics=action_metrics,
-                    reflection_metrics=reflection_metrics,
+                    thought_response=thought_response,
+                    action_response=action_response,
+                    reflection_response=reflection_response,
                 )
             )
 
@@ -216,7 +215,7 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the generation process.
 
         Returns:
-            Tuple[str, str, Response]: The updated scratchpad, the generated thought, and the metrics for the thought.
+            Tuple[str, str, Response]: The updated scratchpad, the generated thought, and the responses for the thought.
         """
         scratchpad += f"\nThought: "
         out = _prompt_cot_agent(
@@ -228,11 +227,10 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        thought = out.choices[0].message.content
-        thought = remove_newline(thought).split("Action")[0].strip()
+        thought = remove_newline(out.output_text).split("Action")[0].strip()
         scratchpad += thought
 
-        return scratchpad, thought, get_prompt_info(out)
+        return scratchpad, thought, out
 
     def generate_action(
         self,
@@ -254,7 +252,7 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the generation process.
 
         Returns:
-            Tuple[str, str, str, Response]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
+            Tuple[str, str, str, Response]: The updated scratchpad, the generated action, the action type, and the responses for the action.
         """
         raise NotImplementedError
 
@@ -332,7 +330,7 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the reflection process.
 
         Returns:
-            Tuple[List[str], str, Optional[Response]]: The reflections, the reflection string, and the metrics.
+            Tuple[List[str], str, Optional[Response]]: The reflections, the reflection string, and the responses.
         """
         reflections, reflections_str, reflections_out = self.reflector.reflect(
             reflect_strategy=reflect_strategy,
@@ -342,10 +340,10 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        reflection_metrics = (
-            get_prompt_info(reflections_out) if reflections_out else None
+        reflection_response = (
+            reflections_out if reflections_out else None
         )
-        return reflections, reflections_str, reflection_metrics
+        return reflections, reflections_str, reflection_response
 
     def reset(self) -> None:
         """Resets the internal state of the strategy."""
@@ -440,7 +438,7 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
             # Reflect if possible.
             reflections: List[str] = []
             reflections_str = ""
-            reflection_metrics: Union[Response, None] = None
+            reflection_response: Union[Response, None] = None
             if self.reflect_condition(
                 answer=answer,
                 finished=finished,
@@ -453,7 +451,7 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
                 prompt=prompt,
                 additional_keys=additional_keys,
             ):
-                reflections, reflections_str, reflection_metrics = self.reflect(
+                reflections, reflections_str, reflection_response = self.reflect(
                     scratchpad=scratchpad,
                     reflect_strategy=reflect_strategy,
                     question=question,
@@ -477,7 +475,7 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
                 ReflexionReActStepOutput(
                     steps=react_steps,
                     reflections=reflections,
-                    reflection_metrics=reflection_metrics,
+                    reflection_response=reflection_response,
                 )
             )
 
@@ -544,7 +542,7 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
             additional_keys=additional_keys,
         ):
             # Think.
-            scratchpad, thought, thought_metrics = self.generate_thought(
+            scratchpad, thought, thought_response = self.generate_thought(
                 idx=step_idx,
                 scratchpad=scratchpad,
                 question=question,
@@ -555,7 +553,7 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
             )
 
             # Act.
-            scratchpad, action_type, query, action_metrics = self.generate_action(
+            scratchpad, action_type, query, action_response = self.generate_action(
                 idx=step_idx,
                 scratchpad=scratchpad,
                 question=question,
@@ -585,8 +583,8 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
                     answer=answer,
                     external_tool_info=external_tool_info,
                     is_correct=is_correct,
-                    thought_metrics=thought_metrics,
-                    action_metrics=action_metrics,
+                    thought_response=thought_response,
+                    action_response=action_response,
                 )
             )
 
@@ -616,7 +614,7 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the thought generation process.
 
         Returns:
-            Tuple[str, str, Response]: The updated scratchpad, the generated thought, and the thought metrics.
+            Tuple[str, str, Response]: The updated scratchpad, the generated thought, and the thought responses.
         """
         scratchpad += f"\nThought {idx}: "
         out = _prompt_react_agent(
@@ -629,11 +627,10 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        thought = out.choices[0].message.content
-        thought = remove_newline(thought).split("Action")[0].strip()
+        thought = remove_newline(out.output_text).split("Action")[0].strip()
         scratchpad += thought
 
-        return scratchpad, thought, get_prompt_info(out)
+        return scratchpad, thought, out
 
     def generate_action(
         self,
@@ -659,7 +656,7 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[str, str, str, Response]: A tuple containing the updated trajectory, action type, query, and the metrics.
+            Tuple[str, str, str, Response]: A tuple containing the updated trajectory, action type, query, and the responses.
         """
         raise NotImplementedError
 
@@ -797,7 +794,7 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the reflection process.
 
         Returns:
-            Tuple[List[str], str, Optional[Response]]: The reflections, reflection string, and the metrics for the reflection process.
+            Tuple[List[str], str, Optional[Response]]: The reflections, reflection string, and the responses for the reflection process.
         """
         reflections, reflections_str, reflections_out = self.reflector.reflect(
             reflect_strategy=reflect_strategy,
@@ -807,11 +804,11 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        reflection_metrics = (
-            get_prompt_info(reflections_out) if reflections_out else None
+        reflection_response = (
+            reflections_out if reflections_out else None
         )
 
-        return reflections, reflections_str, reflection_metrics
+        return reflections, reflections_str, reflection_response
 
     def reset(self) -> None:
         """Resets the internal state of the strategy."""

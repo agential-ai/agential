@@ -22,9 +22,8 @@ from agential.cog.reflexion.strategies.general import (
     ReflexionReActGeneralStrategy,
 )
 from agential.eval.em import EM
-from agential.llm.llm import BaseLLM
+from agential.llm.llm import BaseLLM, Response
 from agential.utils.general import safe_execute
-from agential.utils.metrics import Response, get_prompt_info
 
 
 class ReflexionCoTCodeStrategy(ReflexionCoTGeneralStrategy):
@@ -77,7 +76,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTGeneralStrategy):
             additional_keys (Dict[str, str]): Additional keys for the generation process.
 
         Returns:
-            Tuple[str, str, str, Response]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
+            Tuple[str, str, str, Response]: The updated scratchpad, the generated action, the action type, and the responses for the action.
         """
         scratchpad += f"\nAction: "
         out = _prompt_cot_agent(
@@ -89,12 +88,12 @@ class ReflexionCoTCodeStrategy(ReflexionCoTGeneralStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        action = out.choices[0].message.content
+        action = out.output_text
         action = action.split("Observation")[0].strip()
         action_type, query = parse_math_code_action_cot(action)
         scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
 
-        return scratchpad, action_type, query, get_prompt_info(out)
+        return scratchpad, action_type, query, out
 
     def generate_observation(
         self, scratchpad: str, action_type: str, query: str, key: str
@@ -239,7 +238,7 @@ class ReflexionReActCodeStrategy(ReflexionReActGeneralStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[str, str, str, Response]: A tuple containing the updated trajectory, action type, query, and the metrics.
+            Tuple[str, str, str, Response]: A tuple containing the updated trajectory, action type, query, and the responses.
         """
         scratchpad += f"\nAction {idx}: "
         out = _prompt_react_agent(
@@ -252,14 +251,14 @@ class ReflexionReActCodeStrategy(ReflexionReActGeneralStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        action = out.choices[0].message.content
+        action = out.output_text
         action = action.split("Observation")[0].strip()
         action_type, query = parse_math_code_action_react(
             action, ["Finish", "Test", "Implement"]
         )
         scratchpad += f"{action_type}[\n```python\n{query}\n```\n]"
 
-        return scratchpad, action_type, query, get_prompt_info(out)
+        return scratchpad, action_type, query, out
 
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str, key: str
@@ -431,7 +430,7 @@ class ReflexionCoTHEvalStrategy(ReflexionCoTCodeStrategy):
             additional_keys (Dict[str, str]): Additional keys for the generation process.
 
         Returns:
-            Tuple[str, str, str, Response]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
+            Tuple[str, str, str, Response]: The updated scratchpad, the generated action, the action type, and the responses for the action.
         """
         scratchpad += f"\nAction: "
         out = _prompt_cot_agent(
@@ -443,13 +442,13 @@ class ReflexionCoTHEvalStrategy(ReflexionCoTCodeStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        action = out.choices[0].message.content
+        action = out.output_text
         action = action.split("Observation")[0].strip()
         query = action.split("```python")[-1].split("```")[0]
         action_type = "Finish"
         scratchpad += f"{action_type}[\n```python\n{query}\n```\n]"
 
-        return scratchpad, action_type, query, get_prompt_info(out)
+        return scratchpad, action_type, query, out
 
 
 class ReflexionCoTMBPPStrategy(ReflexionCoTCodeStrategy):

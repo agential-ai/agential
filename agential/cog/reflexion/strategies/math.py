@@ -22,9 +22,8 @@ from agential.cog.reflexion.strategies.general import (
     ReflexionReActGeneralStrategy,
 )
 from agential.eval.em import EM
-from agential.llm.llm import BaseLLM
+from agential.llm.llm import BaseLLM, Response
 from agential.utils.general import safe_execute
-from agential.utils.metrics import Response, get_prompt_info
 
 
 class ReflexionCoTMathStrategy(ReflexionCoTGeneralStrategy):
@@ -89,12 +88,12 @@ class ReflexionCoTMathStrategy(ReflexionCoTGeneralStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        action = out.choices[0].message.content
+        action = out.output_text
         action = action.split("Observation")[0].strip()
         action_type, query = parse_math_code_action_cot(action)
         scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
 
-        return scratchpad, action_type, query, get_prompt_info(out)
+        return scratchpad, action_type, query, out
 
     def generate_observation(
         self, scratchpad: str, action_type: str, query: str, key: str
@@ -248,14 +247,14 @@ class ReflexionReActMathStrategy(ReflexionReActGeneralStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        action = out.choices[0].message.content
+        action = out.output_text
         action = action.split("Observation")[0].strip()
         action_type, query = parse_math_code_action_react(
             action, ["Finish", "Calculate"]
         )
         scratchpad += f"{action_type}[\n```python\n{query}\n```\n]"
 
-        return scratchpad, action_type, query, get_prompt_info(out)
+        return scratchpad, action_type, query, out
 
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str, key: str

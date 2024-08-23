@@ -94,7 +94,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTGeneralStrategy):
         scratchpad += action
         action_type, query = parse_qa_action(action)
 
-        return scratchpad, action_type, query, get_prompt_info(out)
+        return scratchpad, action_type, query, out
 
     def generate_observation(
         self, scratchpad: str, action_type: str, query: str, key: str
@@ -249,7 +249,7 @@ class ReflexionReActQAStrategy(ReflexionReActGeneralStrategy):
         scratchpad += action
         action_type, query = parse_qa_action(action)
 
-        return scratchpad, action_type, query, get_prompt_info(out)
+        return scratchpad, action_type, query, out
 
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str, key: str
