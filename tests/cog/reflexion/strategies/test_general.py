@@ -22,8 +22,7 @@ from agential.cog.reflexion.strategies.general import (
     ReflexionCoTGeneralStrategy,
     ReflexionReActGeneralStrategy,
 )
-from agential.llm.llm import BaseLLM, MockLLM
-from agential.utils.metrics import Response
+from agential.llm.llm import BaseLLM, MockLLM, Response
 
 
 def test_reflexion_cot_init() -> None:
@@ -47,7 +46,7 @@ def test_reflexion_cot_generate_thought() -> None:
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReflexionCoTGeneralStrategy(llm=llm)
-    scratchpad, out, thought_metrics = strategy.generate_thought(
+    scratchpad, out, thought_response = strategy.generate_thought(
         scratchpad="",
         question=question,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT,
@@ -57,7 +56,9 @@ def test_reflexion_cot_generate_thought() -> None:
     )
     assert out == gt_out
     assert scratchpad == gt_scratchpad
-    assert thought_metrics == Response(
+    assert thought_response == Response(
+        input_text="",
+        output_text='The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.',
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,
@@ -122,7 +123,7 @@ def test_reflexion_cot_reflect() -> None:
     strategy = ReflexionCoTGeneralStrategy(llm=llm, max_trials=3)
 
     gt_reflection_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: VIVA Media AG changed it's name in 2004. What does their new acronym stand for?\n\n(END PREVIOUS TRIAL)\n"
-    reflections, reflection_str, reflection_metrics = strategy.reflect(
+    reflections, reflection_str, reflection_response = strategy.reflect(
         scratchpad="",
         reflect_strategy="last_attempt",
         question=question,
@@ -132,13 +133,13 @@ def test_reflexion_cot_reflect() -> None:
     )
     assert reflections == [""]
     assert reflection_str == gt_reflection_str
-    assert reflection_metrics is None
+    assert reflection_response is None
 
     llm = MockLLM("gpt-3.5-turbo", responses=["1"])
     strategy = ReflexionCoTGeneralStrategy(llm=llm, max_trials=3)
 
     gt_reflection_str = "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
-    reflections, reflection_str, reflection_metrics = strategy.reflect(
+    reflections, reflection_str, reflection_response = strategy.reflect(
         scratchpad="",
         reflect_strategy="reflexion",
         question=question,
@@ -148,7 +149,9 @@ def test_reflexion_cot_reflect() -> None:
     )
     assert reflections == ["1"]
     assert reflection_str == gt_reflection_str
-    assert reflection_metrics == Response(
+    assert reflection_response == Response(
+        input_text="",
+        output_text="1",
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,
@@ -194,7 +197,7 @@ def test_reflexion_react_generate_thought() -> None:
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReflexionReActGeneralStrategy(llm=llm)
-    scratchpad, out, thought_metrics = strategy.generate_thought(
+    scratchpad, out, thought_response = strategy.generate_thought(
         idx=1,
         scratchpad="",
         question=question,
@@ -205,7 +208,9 @@ def test_reflexion_react_generate_thought() -> None:
     )
     assert out == gt_out
     assert scratchpad == gt_scratchpad
-    assert thought_metrics == Response(
+    assert thought_response == Response(
+        input_text="",
+        output_text='The question is asking for the acronym that VIVA Media AG changed its name to in 2004. Based on the context, I know that VIVA Media AG is now known as VIVA Media GmbH. Therefore, the acronym "GmbH" stands for "Gesellschaft mit beschränkter Haftung" in German, which translates to "company with limited liability" in English.',
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,
@@ -304,7 +309,7 @@ def test_reflexion_react_reflect() -> None:
     question = "VIVA Media AG changed it's name in 2004. What does their new acronym stand for?"
 
     gt_reflection_str = "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: VIVA Media AG changed it's name in 2004. What does their new acronym stand for?\n\n(END PREVIOUS TRIAL)\n"
-    reflections, reflection_str, reflection_metrics = strategy.reflect(
+    reflections, reflection_str, reflection_response = strategy.reflect(
         scratchpad="",
         reflect_strategy="last_attempt",
         question=question,
@@ -314,13 +319,13 @@ def test_reflexion_react_reflect() -> None:
     )
     assert reflections == [""]
     assert reflection_str == gt_reflection_str
-    assert reflection_metrics is None
+    assert reflection_response is None
 
     llm = MockLLM("gpt-3.5-turbo", responses=["1"])
     strategy = ReflexionReActGeneralStrategy(llm=llm, max_trials=3)
 
     gt_reflection_str = "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
-    reflections, reflection_str, reflection_metrics = strategy.reflect(
+    reflections, reflection_str, reflection_response = strategy.reflect(
         reflect_strategy="reflexion",
         question=question,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
@@ -330,7 +335,9 @@ def test_reflexion_react_reflect() -> None:
     )
     assert reflections == ["1"]
     assert reflection_str == gt_reflection_str
-    assert reflection_metrics == Response(
+    assert reflection_response == Response(
+        input_text="",
+        output_text="1",
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,

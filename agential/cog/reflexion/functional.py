@@ -724,7 +724,11 @@ def accumulate_metrics_cot(steps: List[ReflexionCoTStepOutput]) -> Dict[str, Any
         total_prompt_tokens += (
             step.thought_response.prompt_tokens
             + step.action_response.prompt_tokens
-            + (step.reflection_response.prompt_tokens if step.reflection_response else 0)
+            + (
+                step.reflection_response.prompt_tokens
+                if step.reflection_response
+                else 0
+            )
         )
         total_completion_tokens += (
             step.thought_response.completion_tokens
@@ -743,7 +747,11 @@ def accumulate_metrics_cot(steps: List[ReflexionCoTStepOutput]) -> Dict[str, Any
         total_prompt_cost += (
             step.thought_response.prompt_cost
             + step.action_response.prompt_cost
-            + (step.reflection_response.prompt_cost if step.reflection_response else 0.0)
+            + (
+                step.reflection_response.prompt_cost
+                if step.reflection_response
+                else 0.0
+            )
         )
         total_completion_cost += (
             step.thought_response.completion_cost
@@ -762,7 +770,11 @@ def accumulate_metrics_cot(steps: List[ReflexionCoTStepOutput]) -> Dict[str, Any
         total_prompt_time += (
             step.thought_response.prompt_time
             + step.action_response.prompt_time
-            + (step.reflection_response.prompt_time if step.reflection_response else 0.0)
+            + (
+                step.reflection_response.prompt_time
+                if step.reflection_response
+                else 0.0
+            )
         )
 
     return {
@@ -806,7 +818,11 @@ def accumulate_metrics_react(
         total_prompt_tokens += (
             sum([s.thought_response.prompt_tokens for s in step.steps])
             + sum([s.action_response.prompt_tokens for s in step.steps])
-            + (step.reflection_response.prompt_tokens if step.reflection_response else 0)
+            + (
+                step.reflection_response.prompt_tokens
+                if step.reflection_response
+                else 0
+            )
         )
         total_completion_tokens += (
             sum([s.thought_response.completion_tokens for s in step.steps])
@@ -825,7 +841,11 @@ def accumulate_metrics_react(
         total_prompt_cost += (
             sum([s.thought_response.prompt_cost for s in step.steps])
             + sum([s.action_response.prompt_cost for s in step.steps])
-            + (step.reflection_response.prompt_cost if step.reflection_response else 0.0)
+            + (
+                step.reflection_response.prompt_cost
+                if step.reflection_response
+                else 0.0
+            )
         )
         total_completion_cost += (
             sum([s.thought_response.completion_cost for s in step.steps])
@@ -844,7 +864,11 @@ def accumulate_metrics_react(
         total_prompt_time += (
             sum([s.thought_response.prompt_time for s in step.steps])
             + sum([s.action_response.prompt_time for s in step.steps])
-            + (step.reflection_response.prompt_time if step.reflection_response else 0.0)
+            + (
+                step.reflection_response.prompt_time
+                if step.reflection_response
+                else 0.0
+            )
         )
 
     return {
