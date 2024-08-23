@@ -2,8 +2,6 @@
 
 import joblib
 
-from litellm.types.utils import Response
-
 from agential.cog.expel.functional import (
     _build_all_success_prompt,
     _build_compare_prompt,
@@ -23,7 +21,7 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
-from agential.llm.llm import MockLLM
+from agential.llm.llm import MockLLM, Response
 
 
 def test_gather_experience() -> None:
@@ -51,6 +49,7 @@ def test_gather_experience() -> None:
             "reflections": [],
         }
     ]
+    print(repr(experiences))
     assert experiences == gt_experiences
 
 
@@ -167,7 +166,7 @@ def test__prompt_compare_critique() -> None:
         is_full=is_full,
     )
     assert isinstance(result, Response)
-    assert result.choices[0].message.content == "1"
+    assert result.output_text == "1"
 
 
 def test__prompt_all_success_critique() -> None:
@@ -188,7 +187,7 @@ def test__prompt_all_success_critique() -> None:
         is_full=is_full,
     )
     assert isinstance(result, Response)
-    assert result.choices[0].message.content == "1"
+    assert result.output_text == "1"
 
 
 def test_parse_insights() -> None:

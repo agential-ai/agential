@@ -83,7 +83,7 @@ def gather_experience(
             **kwargs,
         )
 
-        reflections = [trial.reflections for trial in trajectory if trial.reflections]
+        reflections = [trial.reflections for trial in trajectory.additional_info if trial.reflections]
         selected_reflections = list(set(list(chain.from_iterable(reflections))))  # type: ignore
         experience = {
             "question": question,
