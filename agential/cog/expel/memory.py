@@ -167,13 +167,13 @@ class ExpeLExperienceMemory(BaseMemory):
         # Update success_traj_docs.
         success_traj_idxs = []
         for idx, trajectory in enumerate(trajectories, start_idx):
-            is_correct = trajectory.addtional_info[0].steps[-1].is_correct
+            is_correct = trajectory.additional_info[0].steps[-1].is_correct
             if is_correct:
                 success_traj_idxs.append(idx)
 
         for idx in success_traj_idxs:
             question = self.experiences[idx]["question"]
-            steps = self.experiences[idx]["trajectory"].addtional_info[
+            steps = self.experiences[idx]["trajectory"].additional_info[
                 0
             ].steps  # Zero-th trial of trajectory.
 
