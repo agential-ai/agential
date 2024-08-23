@@ -50,19 +50,17 @@ class ExpeLExperienceMemory(BaseMemory):
         if len(self.experiences):
             success_traj_idxs = []
             for idx, experience in enumerate(self.experiences):
-                trajectory = experience["trajectory"]
-                is_correct = (
-                    trajectory[0].react_output[-1].is_correct
-                )  # Success on last step of the zero-th trial of this trajectory.
+                trajectory = experience["trajectory"].additional_info
+                is_correct = trajectory[0].steps[-1].is_correct  # Success on last step of the zero-th trial of this trajectory.
                 if is_correct:
                     success_traj_idxs.append(idx)
 
         self.success_traj_docs: List[Document] = []
         for idx in success_traj_idxs:
             question = self.experiences[idx]["question"]
-            steps = self.experiences[idx]["trajectory"][
+            steps = self.experiences[idx]["trajectory"].additional_info[
                 0
-            ].react_output  # Zero-th trial of trajectory.
+            ].steps  # Zero-th trial of trajectory.
 
             # Add the task.
             self.success_traj_docs.append(
@@ -132,7 +130,7 @@ class ExpeLExperienceMemory(BaseMemory):
         self,
         questions: List[str],
         keys: List[str],
-        trajectories: List[List[ReflexionReActOutput]],
+        trajectories: List[ReflexionReActOutput],
         reflections: Optional[List[List[str]]] = [],
     ) -> None:
         """Adds new experiences to the memory, including associated questions, keys, trajectories, and optional reflections.
@@ -140,7 +138,7 @@ class ExpeLExperienceMemory(BaseMemory):
         Args:
             questions (List[str]): Questions related to the experiences being added.
             keys (List[str]): Answers corresponding to the provided questions.
-            trajectories (List[List[ReflexionReActOutput]]): A list of trajectories where each
+            trajectories (List[ReflexionReActOutput]): A list of trajectories where each
                 trajectory is a list of ReflexionReActOutput; each one is a trial.
             reflections (Optional[List[List[str]]], default=[]): A list of additional reflective notes on the experiences.
         """
