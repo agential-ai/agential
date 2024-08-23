@@ -606,7 +606,18 @@ def test_generate_action() -> None:
     )
     assert action_type == "Search"
     assert query == "capital of France"
-    assert action_response == Response(input_text='', output_text='Search[capital of France]', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)
+    assert action_response == Response(
+        input_text="",
+        output_text="Search[capital of France]",
+        prompt_tokens=10,
+        completion_tokens=20,
+        total_tokens=30,
+        prompt_cost=1.5e-05,
+        completion_cost=3.9999999999999996e-05,
+        total_cost=5.4999999999999995e-05,
+        prompt_time=0.5,
+    )
+
 
 def test_generate_observation() -> None:
     """Test the generate_observation method."""
@@ -743,7 +754,17 @@ def test_evaluate_node() -> None:
     assert child2.value == 0  # Terminal node, value not updated.
 
     expected_value_response = [
-        Response(input_text='', output_text='Explanation: Good trajectory. Correctness score: 8', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5),
+        Response(
+            input_text="",
+            output_text="Explanation: Good trajectory. Correctness score: 8",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
         None,
     ]
 
@@ -777,7 +798,20 @@ def test_evaluate_node() -> None:
     empty_reflection_values, values_evaluation_response = strategy.evaluate_node(
         root, question, examples, prompt, {}
     )
-    assert values_evaluation_response.values_response == [Response(input_text='', output_text='Explanation: Good trajectory. Correctness score: 8', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), None]
+    assert values_evaluation_response.values_response == [
+        Response(
+            input_text="",
+            output_text="Explanation: Good trajectory. Correctness score: 8",
+            prompt_tokens=10,
+            completion_tokens=20,
+            total_tokens=30,
+            prompt_cost=1.5e-05,
+            completion_cost=3.9999999999999996e-05,
+            total_cost=5.4999999999999995e-05,
+            prompt_time=0.5,
+        ),
+        None,
+    ]
 
     assert empty_reflection_values == values
 
@@ -960,61 +994,170 @@ def test_simulate_node() -> None:
         for node, expected_node in zip(node_list, expected_node_list):
             assert node.to_dict() == expected_node
 
+    gt_simulation_step_thoughts_response = [
+        [
+            Response(
+                input_text="",
+                output_text="I need to search for the capital of France",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=1.5e-05,
+                completion_cost=3.9999999999999996e-05,
+                total_cost=5.4999999999999995e-05,
+                prompt_time=0.5,
+            ),
+            Response(
+                input_text="",
+                output_text="I need to search for the capital of France",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=1.5e-05,
+                completion_cost=3.9999999999999996e-05,
+                total_cost=5.4999999999999995e-05,
+                prompt_time=0.5,
+            ),
+        ],
+        [
+            Response(
+                input_text="",
+                output_text="The trajectory provided is completely incorrect as the observation received does not relate to the search query at all, indicating that the search term might have been mistyped or confused",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=1.5e-05,
+                completion_cost=3.9999999999999996e-05,
+                total_cost=5.4999999999999995e-05,
+                prompt_time=0.5,
+            ),
+            Response(
+                input_text="",
+                output_text="Search[capital of France]\nObservation 2: The capital of France is Paris, known for its art, fashion, gastronomy, and culture",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=1.5e-05,
+                completion_cost=3.9999999999999996e-05,
+                total_cost=5.4999999999999995e-05,
+                prompt_time=0.5,
+            ),
+        ],
+        [
+            Response(
+                input_text="",
+                output_text="This trajectory is incorrect as it did not provide any relevant information regarding the capital of France",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=1.5e-05,
+                completion_cost=3.9999999999999996e-05,
+                total_cost=5.4999999999999995e-05,
+                prompt_time=0.5,
+            ),
+            Response(
+                input_text="",
+                output_text="Search[similar entities to the capital of France]\nObservation 3: Similar: [Paris, Marseille, Lyon, Toulouse, Lille]\nThought 4: The capital of France is Paris",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=1.5e-05,
+                completion_cost=3.9999999999999996e-05,
+                total_cost=5.4999999999999995e-05,
+                prompt_time=0.5,
+            ),
+        ],
+    ]
+    gt_simulation_step_actions_response = [
+        [
+            Response(
+                input_text="",
+                output_text="Search[capital of France]",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=1.5e-05,
+                completion_cost=3.9999999999999996e-05,
+                total_cost=5.4999999999999995e-05,
+                prompt_time=0.5,
+            ),
+            Response(
+                input_text="",
+                output_text="Search[capital of France]",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=1.5e-05,
+                completion_cost=3.9999999999999996e-05,
+                total_cost=5.4999999999999995e-05,
+                prompt_time=0.5,
+            ),
+        ],
+        [
+            Response(
+                input_text="",
+                output_text="The search results did not return the information needed",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=1.5e-05,
+                completion_cost=3.9999999999999996e-05,
+                total_cost=5.4999999999999995e-05,
+                prompt_time=0.5,
+            ),
+            Response(
+                input_text="",
+                output_text="The search did not return relevant information",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=1.5e-05,
+                completion_cost=3.9999999999999996e-05,
+                total_cost=5.4999999999999995e-05,
+                prompt_time=0.5,
+            ),
+        ],
+        [
+            Response(
+                input_text="",
+                output_text="There seems to be an issue with the search results",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=1.5e-05,
+                completion_cost=3.9999999999999996e-05,
+                total_cost=5.4999999999999995e-05,
+                prompt_time=0.5,
+            ),
+            Response(
+                input_text="",
+                output_text="The search results seem to be incorrect",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=1.5e-05,
+                completion_cost=3.9999999999999996e-05,
+                total_cost=5.4999999999999995e-05,
+                prompt_time=0.5,
+            ),
+        ],
+    ]
+
     # Flatten the list using itertools.chain
-    for i in simulation_response.simulation_step_response:
-        assert i.generate_response.thoughts_response == [
-            Response(
-                input_text="",
-                output_text="",
-                prompt_tokens=10,
-                completion_tokens=20,
-                total_tokens=30,
-                prompt_cost=1.5e-05,
-                completion_cost=3.9999999999999996e-05,
-                total_cost=5.4999999999999995e-05,
-                prompt_time=0.5,
-            ),
-            Response(
-                input_text="",
-                output_text="",
-                prompt_tokens=10,
-                completion_tokens=20,
-                total_tokens=30,
-                prompt_cost=1.5e-05,
-                completion_cost=3.9999999999999996e-05,
-                total_cost=5.4999999999999995e-05,
-                prompt_time=0.5,
-            ),
-        ]
-        assert i.generate_response.actions_response == [
-            Response(
-                input_text="",
-                output_text="",
-                prompt_tokens=10,
-                completion_tokens=20,
-                total_tokens=30,
-                prompt_cost=1.5e-05,
-                completion_cost=3.9999999999999996e-05,
-                total_cost=5.4999999999999995e-05,
-                prompt_time=0.5,
-            ),
-            Response(
-                input_text="",
-                output_text="",
-                prompt_tokens=10,
-                completion_tokens=20,
-                total_tokens=30,
-                prompt_cost=1.5e-05,
-                completion_cost=3.9999999999999996e-05,
-                total_cost=5.4999999999999995e-05,
-                prompt_time=0.5,
-            ),
-        ]
+    for idx, i in enumerate(simulation_response.simulation_step_response):
+        assert (
+            i.generate_response.thoughts_response
+            == gt_simulation_step_thoughts_response[idx]
+        )
+        assert (
+            i.generate_response.actions_response
+            == gt_simulation_step_actions_response[idx]
+        )
         assert i.generate_response.reflections_response == []
         assert i.evaluate_response.values_response == [None, None] or [
             Response(
                 input_text="",
-                output_text="",
+                output_text="Search[capital of France Wikipedia]\nObservation 2: The capital of France is Paris, the largest city in France and its capital since the 4th century",
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -1025,7 +1168,7 @@ def test_simulate_node() -> None:
             ),
             Response(
                 input_text="",
-                output_text="",
+                output_text="The trajectory provided is incorrect because the environmental observation does not relate to the question asked",
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,

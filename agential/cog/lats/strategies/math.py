@@ -355,9 +355,7 @@ class LATSMathStrategy(LATSGeneralStrategy):
 
                     child_trajectory_cache[trajectory] = value
 
-                values_response.append(
-                    value_response if value_response else None
-                )
+                values_response.append(value_response if value_response else None)
                 values.append({"explanation": explanation, "value": value})
             else:
                 values_response.append(None)
@@ -509,7 +507,9 @@ class LATSMathStrategy(LATSGeneralStrategy):
             simulation_step_response.append(
                 LATSSimulationStepResponse(
                     generate_response=generate_response,
-                    evaluate_response=LATSEvaluateResponse(values_response=values_response),
+                    evaluate_response=LATSEvaluateResponse(
+                        values_response=values_response
+                    ),
                 )
             )
 
