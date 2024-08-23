@@ -1,7 +1,5 @@
 """Unit tests for LATS functional module."""
 
-from litellm.types.utils import Response
-
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.lats.functional import (
     _accumulate_metric,
@@ -26,12 +24,12 @@ from agential.cog.lats.functional import (
 )
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import (
-    LATSEvaluateMetrics,
-    LATSGenerateMetrics,
+    LATSEvaluateResponse,
+    LATSGenerateResponse,
     LATSReActStepOutput,
-    LATSSimulationMetrics,
     LATSSimulationOutput,
-    LATSSimulationStepMetrics,
+    LATSSimulationResponse,
+    LATSSimulationStepResponse,
     LATSStepOutput,
 )
 from agential.cog.lats.prompts import (
@@ -41,8 +39,7 @@ from agential.cog.lats.prompts import (
     LATS_REFLECT_INSTRUCTION_HOTPOTQA,
     LATS_VALUE_INSTRUCTION_HOTPOTQA,
 )
-from agential.llm.llm import MockLLM
-from agential.utils.metrics import Response
+from agential.llm.llm import MockLLM, Response
 
 
 def test__build_reflection_format() -> None:
@@ -89,7 +86,7 @@ def test__prompt_reflection() -> None:
         prompt=LATS_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, Response)
-    assert out.choices[0].message.content == "Reflection Output"
+    assert out.output_text == "Reflection Output"
 
 
 def test__build_value_prompt() -> None:
@@ -117,7 +114,7 @@ def test__prompt_value() -> None:
         prompt=LATS_VALUE_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, Response)
-    assert out.choices[0].message.content == "Value Output"
+    assert out.output_text == "Value Output"
 
 
 def test__build_agent_prompt() -> None:
@@ -145,7 +142,7 @@ def test__prompt_agent() -> None:
         prompt=LATS_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, Response)
-    assert out.choices[0].message.content == "Agent Output"
+    assert out.output_text == "Agent Output"
 
 
 def test_get_unique_trajectories() -> None:
@@ -502,9 +499,11 @@ def test__accumulate_metric() -> None:
         iteration=0,
         current_node={},
         children_nodes=[],
-        generate_metrics=LATSGenerateMetrics(
-            thoughts_metrics=[
+        generate_response=LATSGenerateResponse(
+            thoughts_response=[
                 Response(
+                    input_text="",
+                    output_text="",
                     prompt_tokens=5,
                     completion_tokens=5,
                     total_tokens=5,
@@ -514,8 +513,10 @@ def test__accumulate_metric() -> None:
                     prompt_time=5,
                 ),
             ],
-            actions_metrics=[
+            actions_response=[
                 Response(
+                    input_text="",
+                    output_text="",
                     prompt_tokens=5,
                     completion_tokens=5,
                     total_tokens=5,
@@ -525,8 +526,10 @@ def test__accumulate_metric() -> None:
                     prompt_time=5,
                 ),
             ],
-            reflections_metrics=[
+            reflections_response=[
                 Response(
+                    input_text="",
+                    output_text="",
                     prompt_tokens=5,
                     completion_tokens=5,
                     total_tokens=5,
@@ -538,10 +541,12 @@ def test__accumulate_metric() -> None:
             ],
         ),
         values=None,
-        evaluate_metrics=LATSEvaluateMetrics(
-            values_metrics=[
+        evaluate_response=LATSEvaluateResponse(
+            values_response=[
                 None,
                 Response(
+                    input_text="",
+                    output_text="",
                     prompt_tokens=5,
                     completion_tokens=5,
                     total_tokens=5,
@@ -559,12 +564,14 @@ def test__accumulate_metric() -> None:
             simulation_children_nodes=[],
             simulation_values=[],
         ),
-        simulation_metrics=LATSSimulationMetrics(
-            simulation_step_metrics=[
-                LATSSimulationStepMetrics(
-                    generate_metrics=LATSGenerateMetrics(
-                        thoughts_metrics=[
+        simulation_response=LATSSimulationResponse(
+            simulation_step_response=[
+                LATSSimulationStepResponse(
+                    generate_response=LATSGenerateResponse(
+                        thoughts_response=[
                             Response(
+                                input_text="",
+                                output_text="",
                                 prompt_tokens=5,
                                 completion_tokens=5,
                                 total_tokens=5,
@@ -574,8 +581,10 @@ def test__accumulate_metric() -> None:
                                 prompt_time=5,
                             ),
                         ],
-                        actions_metrics=[
+                        actions_response=[
                             Response(
+                                input_text="",
+                                output_text="",
                                 prompt_tokens=5,
                                 completion_tokens=5,
                                 total_tokens=5,
@@ -585,8 +594,10 @@ def test__accumulate_metric() -> None:
                                 prompt_time=5,
                             ),
                         ],
-                        reflections_metrics=[
+                        reflections_response=[
                             Response(
+                                input_text="",
+                                output_text="",
                                 prompt_tokens=5,
                                 completion_tokens=5,
                                 total_tokens=5,
@@ -597,10 +608,12 @@ def test__accumulate_metric() -> None:
                             ),
                         ],
                     ),
-                    evaluate_metrics=LATSEvaluateMetrics(
-                        values_metrics=[
+                    evaluate_response=LATSEvaluateResponse(
+                        values_response=[
                             None,
                             Response(
+                                input_text="",
+                                output_text="",
                                 prompt_tokens=5,
                                 completion_tokens=5,
                                 total_tokens=5,
@@ -638,9 +651,11 @@ def test_accumulate_metrics() -> None:
         iteration=0,
         current_node={},
         children_nodes=[],
-        generate_metrics=LATSGenerateMetrics(
-            thoughts_metrics=[
+        generate_response=LATSGenerateResponse(
+            thoughts_response=[
                 Response(
+                    input_text="",
+                    output_text="",
                     prompt_tokens=5,
                     completion_tokens=5,
                     total_tokens=5,
@@ -650,8 +665,10 @@ def test_accumulate_metrics() -> None:
                     prompt_time=5,
                 ),
             ],
-            actions_metrics=[
+            actions_response=[
                 Response(
+                    input_text="",
+                    output_text="",
                     prompt_tokens=5,
                     completion_tokens=5,
                     total_tokens=5,
@@ -661,8 +678,10 @@ def test_accumulate_metrics() -> None:
                     prompt_time=5,
                 ),
             ],
-            reflections_metrics=[
+            reflections_response=[
                 Response(
+                    input_text="",
+                    output_text="",
                     prompt_tokens=5,
                     completion_tokens=5,
                     total_tokens=5,
@@ -674,10 +693,12 @@ def test_accumulate_metrics() -> None:
             ],
         ),
         values=None,
-        evaluate_metrics=LATSEvaluateMetrics(
-            values_metrics=[
+        evaluate_response=LATSEvaluateResponse(
+            values_response=[
                 None,
                 Response(
+                    input_text="",
+                    output_text="",
                     prompt_tokens=5,
                     completion_tokens=5,
                     total_tokens=5,
@@ -695,12 +716,14 @@ def test_accumulate_metrics() -> None:
             simulation_children_nodes=[],
             simulation_values=[],
         ),
-        simulation_metrics=LATSSimulationMetrics(
-            simulation_step_metrics=[
-                LATSSimulationStepMetrics(
-                    generate_metrics=LATSGenerateMetrics(
-                        thoughts_metrics=[
+        simulation_response=LATSSimulationResponse(
+            simulation_step_response=[
+                LATSSimulationStepResponse(
+                    generate_response=LATSGenerateResponse(
+                        thoughts_response=[
                             Response(
+                                input_text="",
+                                output_text="",
                                 prompt_tokens=5,
                                 completion_tokens=5,
                                 total_tokens=5,
@@ -710,8 +733,10 @@ def test_accumulate_metrics() -> None:
                                 prompt_time=5,
                             ),
                         ],
-                        actions_metrics=[
+                        actions_response=[
                             Response(
+                                input_text="",
+                                output_text="",
                                 prompt_tokens=5,
                                 completion_tokens=5,
                                 total_tokens=5,
@@ -721,8 +746,10 @@ def test_accumulate_metrics() -> None:
                                 prompt_time=5,
                             ),
                         ],
-                        reflections_metrics=[
+                        reflections_response=[
                             Response(
+                                input_text="",
+                                output_text="",
                                 prompt_tokens=5,
                                 completion_tokens=5,
                                 total_tokens=5,
@@ -733,10 +760,12 @@ def test_accumulate_metrics() -> None:
                             ),
                         ],
                     ),
-                    evaluate_metrics=LATSEvaluateMetrics(
-                        values_metrics=[
+                    evaluate_response=LATSEvaluateResponse(
+                        values_response=[
                             None,
                             Response(
+                                input_text="",
+                                output_text="",
                                 prompt_tokens=5,
                                 completion_tokens=5,
                                 total_tokens=5,

@@ -4,8 +4,7 @@ import pytest
 
 from agential.cog.lats.node import Node
 from agential.cog.lats.strategies.general import LATSGeneralStrategy
-from agential.llm.llm import MockLLM
-from agential.utils.metrics import Response
+from agential.llm.llm import MockLLM, Response
 
 
 def test_init() -> None:
@@ -90,7 +89,7 @@ def test_generate_thought() -> None:
     prompt = "Generate a thought"
     additional_keys = {"key": "value"}
 
-    updated_trajectory, thought, thought_metrics = strategy.generate_thought(
+    updated_trajectory, thought, thought_response = strategy.generate_thought(
         question,
         examples,
         trajectory,
@@ -105,7 +104,9 @@ def test_generate_thought() -> None:
         updated_trajectory
         == "Previous thought\nThought 2: I should search for information about the topic."
     )
-    assert thought_metrics == Response(
+    assert thought_response == Response(
+        input_text="",
+        output_text="I should search for information about the topic. Action: Search[topic]",
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,
@@ -352,7 +353,7 @@ def test_reflect() -> None:
     prompt = "Reflect on the failed trajectory"
     additional_keys = {"key": "value"}
 
-    reflections, reflection_metrics = strategy.reflect(
+    reflections, reflection_response = strategy.reflect(
         question, examples, prompt, additional_keys
     )
 
@@ -363,8 +364,10 @@ def test_reflect() -> None:
     assert reflections[1]["reflection"] == "Reflection 2"
 
     assert strategy.reflection_map == reflections
-    assert reflection_metrics == [
+    assert reflection_response == [
         Response(
+            input_text="",
+            output_text="Reflection 1",
             prompt_tokens=10,
             completion_tokens=20,
             total_tokens=30,
@@ -374,6 +377,8 @@ def test_reflect() -> None:
             prompt_time=0.5,
         ),
         Response(
+            input_text="",
+            output_text="Reflection 2",
             prompt_tokens=10,
             completion_tokens=20,
             total_tokens=30,
