@@ -38,8 +38,8 @@ def test_mock_llm_call() -> None:
     mock_llm = MockLLM("gpt-3.5-turbo", ["Response 1", "Response 2"])
 
     gt_response = Response(
-        input_text="Prompt 1",
-        output_text="Response 1",
+        input_text="",
+        output_text="",
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,
@@ -54,8 +54,8 @@ def test_mock_llm_call() -> None:
     assert response1 == gt_response
 
     gt_response = Response(
-        input_text="Prompt 2",
-        output_text="Response 2",
+        input_text="",
+        output_text="",
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,
@@ -70,8 +70,8 @@ def test_mock_llm_call() -> None:
     assert response2 == gt_response
 
     gt_response = Response(
-        input_text="Prompt 3",
-        output_text="Response 1",
+        input_text="",
+        output_text="",
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,
@@ -87,8 +87,8 @@ def test_mock_llm_call() -> None:
 
     # Test call with kwargs.
     gt_response = Response(
-        input_text="Prompt 4",
-        output_text="Response 2",
+        input_text="",
+        output_text="",
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,

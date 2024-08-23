@@ -40,7 +40,7 @@ def test_generate_action() -> None:
         idx=0,
         scratchpad="",
         question=question,
-        examples="",
+        examples=MBPP_FEWSHOT_EXAMPLES_REACT,
         prompt=REACT_INSTRUCTION_MBPP,
         additional_keys={"tests": tests},
     )
@@ -48,17 +48,7 @@ def test_generate_action() -> None:
     assert query == gt_query
 
     assert scratchpad == gt_scratchpad
-    assert action_response == Response(
-        input_text='Answer a coding question with interleaving Thought, Action, Observation steps. Thought can reason about the current question and plan the retrieval steps, and Action can be three types:\n(1) Implement[code], which implements the function to answer the question.\n(2) Test[code], which implements assert statement test cases to test the implemented code.\n(3) Finish[answer], which returns the code implementation and finishes the task.\nYou have a maximum of 6 steps.\n\nHere are some examples:\n\n(END OF EXAMPLES)\n\nYou are an expert Python programmer, and here is your task: Write a python function to find the first repeated character in a given string..\nYour code should pass these tests:\n\nassert first_repeated_char("abcabc") == "a"\n    assert first_repeated_char("abc") == None\n    assert first_repeated_char("123123") == "1"\n\n\nAction 0: ',
-        output_text="Implement[\n```python\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```\n]",
-        prompt_tokens=10,
-        completion_tokens=20,
-        total_tokens=30,
-        prompt_cost=1.5e-05,
-        completion_cost=3.9999999999999996e-05,
-        total_cost=5.4999999999999995e-05,
-        prompt_time=0.5,
-    )
+    assert action_response == Response(input_text='', output_text='Implement[\n```python\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```\n]', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)
 
 
 def test_generate_observation() -> None:

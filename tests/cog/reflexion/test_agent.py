@@ -51,8 +51,7 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActHotQAStrategy,
     ReflexionReActTriviaQAStrategy,
 )
-from agential.llm.llm import BaseLLM, MockLLM
-from agential.utils.metrics import Response
+from agential.llm.llm import BaseLLM, MockLLM, Response
 
 
 def test_reflexion_cot_init() -> None:

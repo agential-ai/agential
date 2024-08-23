@@ -168,7 +168,7 @@ class MockLLM(BaseLLM):
         )
 
         return Response(
-            input_text=prompt,
+            input_text="",
             output_text=response.choices[0].message.content,
             prompt_tokens=response.usage.prompt_tokens,
             completion_tokens=response.usage.completion_tokens,

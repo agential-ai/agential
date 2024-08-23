@@ -38,7 +38,7 @@ def test_generate_action() -> None:
         idx=0,
         scratchpad="",
         question=question,
-        examples="",
+        examples=GSM8K_FEWSHOT_EXAMPLES_REACT,
         prompt=REACT_INSTRUCTION_GSM8K,
         additional_keys={},
     )
@@ -46,8 +46,8 @@ def test_generate_action() -> None:
     assert query == gt_query
     assert scratchpad == gt_scratchpad
     assert action_response == Response(
-        input_text="Answer a math question with interleaving Thought, Action, Observation steps. Thought can reason about the current question and plan the retrieval steps, and Action can be two types:\n(1) Calculate[code], which implements code to answer the math question, saving the answer as the `answer` variable.\n(2) Finish[code], which returns the code to answer the math question and finishes the task, saving the answer as the `answer` variable.\nYou have a maximum of 6 steps.\n\nHere are some examples:\n\n(END OF EXAMPLES)\n\nQuestion: Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with 4933828. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?\n\nAction 0: ",
-        output_text="Calculate[\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_used = eggs_for_breakfast + eggs_for_muffins\neggs_remaining = eggs_laid_per_day - eggs_used\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day\n```\n]",
+        input_text="",
+        output_text="",
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,
