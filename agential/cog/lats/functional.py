@@ -488,56 +488,56 @@ def _accumulate_metric(step: LATSStepOutput, metric_type: str) -> Union[int, flo
 
     out += sum(
         [
-            getattr(thought_metrics, metric_type)
-            for thought_metrics in step.generate_metrics.thoughts_metrics
+            getattr(thought_response, metric_type)
+            for thought_response in step.generate_response.thoughts_response
         ]
     )
     out += sum(
         [
-            getattr(action_metrics, metric_type)
-            for action_metrics in step.generate_metrics.actions_metrics
+            getattr(action_response, metric_type)
+            for action_response in step.generate_response.actions_response
         ]
     )
     out += sum(
         [
-            getattr(reflection_metrics, metric_type)
-            for reflection_metrics in step.generate_metrics.reflections_metrics
+            getattr(reflection_response, metric_type)
+            for reflection_response in step.generate_response.reflections_response
         ]
     )
 
-    if step.evaluate_metrics:
-        for value_metrics in step.evaluate_metrics.values_metrics:
-            if value_metrics:
-                out += getattr(value_metrics, metric_type)
+    if step.evaluate_response:
+        for value_response in step.evaluate_response.values_response:
+            if value_response:
+                out += getattr(value_response, metric_type)
 
-    if step.simulation_metrics:
-        for sim_step_metrics in step.simulation_metrics.simulation_step_metrics:
-            # generate_metrics.
+    if step.simulation_response:
+        for sim_step_response in step.simulation_response.simulation_step_response:
+            # generate_response.
             out += sum(
                 [
-                    getattr(thought_metrics, metric_type)
-                    for thought_metrics in sim_step_metrics.generate_metrics.thoughts_metrics
+                    getattr(thought_response, metric_type)
+                    for thought_response in sim_step_response.generate_response.thoughts_response
                 ]
             )
             out += sum(
                 [
-                    getattr(action_metrics, metric_type)
-                    for action_metrics in sim_step_metrics.generate_metrics.actions_metrics
+                    getattr(action_response, metric_type)
+                    for action_response in sim_step_response.generate_response.actions_response
                 ]
             )
             out += sum(
                 [
-                    getattr(reflection_metrics, metric_type)
-                    for reflection_metrics in sim_step_metrics.generate_metrics.reflections_metrics
+                    getattr(reflection_response, metric_type)
+                    for reflection_response in sim_step_response.generate_response.reflections_response
                 ]
             )
 
-            # evaluate_metrics.
+            # evaluate_response.
             out += sum(
                 [
-                    getattr(value_metrics, metric_type)
-                    for value_metrics in sim_step_metrics.evaluate_metrics.values_metrics
-                    if value_metrics
+                    getattr(value_response, metric_type)
+                    for value_response in sim_step_response.evaluate_response.values_response
+                    if value_response
                 ]
             )
 

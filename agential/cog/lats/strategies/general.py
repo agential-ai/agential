@@ -15,8 +15,8 @@ from agential.cog.lats.output import (
     LATSEvaluateResponse,
     LATSGenerateResponse,
     LATSOutput,
-    LATSSimulationResponse,
     LATSSimulationOutput,
+    LATSSimulationResponse,
     LATSStepOutput,
 )
 from agential.cog.lats.strategies.base import LATSBaseStrategy
@@ -577,7 +577,9 @@ class LATSGeneralStrategy(LATSBaseStrategy):
                 additional_keys=additional_keys,
             )
             reflection_response.append(reflection_out)
-            reflections.append({"trajectory": trajectory, "reflection":  reflection_out.output_text})
+            reflections.append(
+                {"trajectory": trajectory, "reflection": reflection_out.output_text}
+            )
 
         self.reflection_map = reflections
 

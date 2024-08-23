@@ -6,13 +6,12 @@ from typing import Any, Dict, List, Tuple
 from agential.cog.base.strategies import BaseStrategy
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import (
-    LATSEvaluateMetrics,
-    LATSGenerateMetrics,
+    LATSEvaluateResponse,
+    LATSGenerateResponse,
     LATSOutput,
-    LATSSimulationMetrics,
+    LATSSimulationResponse,
 )
-from agential.llm.llm import BaseLLM
-from agential.utils.metrics import Response
+from agential.llm.llm import BaseLLM, Response
 
 
 class LATSBaseStrategy(BaseStrategy):
@@ -96,7 +95,7 @@ class LATSBaseStrategy(BaseStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
-    ) -> Tuple[List[Node], LATSGenerateMetrics]:
+    ) -> Tuple[List[Node], LATSGenerateResponse]:
         """Generate child nodes for the given node.
 
         Args:
@@ -111,7 +110,7 @@ class LATSBaseStrategy(BaseStrategy):
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
 
         Returns:
-            Tuple[List[Node], LATSGenerateMetrics]: A list of generated child nodes, and the pydantic of corresponding metrics.
+            Tuple[List[Node], LATSGenerateResponse]: A list of generated child nodes, and the pydantic of corresponding metrics.
         """
         raise NotImplementedError
 
@@ -217,7 +216,7 @@ class LATSBaseStrategy(BaseStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
-    ) -> Tuple[List[Node], LATSGenerateMetrics]:
+    ) -> Tuple[List[Node], LATSGenerateResponse]:
         """Expand the given node by generating its child nodes.
 
         Args:
@@ -232,7 +231,7 @@ class LATSBaseStrategy(BaseStrategy):
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
 
         Returns:
-            Tuple[List[Node], LATSGenerateMetrics]: A list of generated child nodes, and the corresponding metrics.
+            Tuple[List[Node], LATSGenerateResponse]: A list of generated child nodes, and the corresponding metrics.
         """
         raise NotImplementedError
 
@@ -244,7 +243,7 @@ class LATSBaseStrategy(BaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[List[Dict[str, Any]], LATSEvaluateMetrics]:
+    ) -> Tuple[List[Dict[str, Any]], LATSEvaluateResponse]:
         """Evaluate the given node and its children.
 
         Args:
@@ -255,7 +254,7 @@ class LATSBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[List[Dict[str, Any]], LATSEvaluateMetrics]: A list of dictionaries containing evaluation results for each child node and their metrics.
+            Tuple[List[Dict[str, Any]], LATSEvaluateResponse]: A list of dictionaries containing evaluation results for each child node and their metrics.
         """
         raise NotImplementedError
 
@@ -280,7 +279,7 @@ class LATSBaseStrategy(BaseStrategy):
         List[Node],
         List[List[Node]],
         List[List[Dict[str, Any]]],
-        LATSSimulationMetrics,
+        LATSSimulationResponse,
     ]:
         """Simulate the node to estimate its value and collect information about the simulation process.
 
@@ -299,12 +298,12 @@ class LATSBaseStrategy(BaseStrategy):
             value_additional_keys (Dict[str, str]): Additional keys for value estimation prompt formatting.
 
         Returns:
-            Tuple[float, Node, List[Node], List[List[Node]], List[List[Dict[str, Any]]], LATSSimulationMetrics]:
+            Tuple[float, Node, List[Node], List[List[Node]], List[List[Dict[str, Any]]], LATSSimulationResponse]:
                 - The estimated value of the node
                 - The simulation's terminal node
                 - Each simulation iteration's children nodes
                 - Each simulation iteration's children nodes' values
-                - Metrics for the simulation process
+                - Response for the simulation process
         """
         raise NotImplementedError
 
