@@ -12,7 +12,7 @@ from agential.cog.reflexion.reflect import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )
-from agential.llm.llm import BaseLLM, MockLLM
+from agential.llm.llm import BaseLLM, MockLLM, Response
 
 
 def test_reflexion_cot_init() -> None:
@@ -59,6 +59,7 @@ def test_reflexion_cot_reflector() -> None:
         out[1]
         == "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: \n\n(END PREVIOUS TRIAL)\n"
     )
+    assert out[2] == None
 
     # Test with Reflexion.
     reflector = ReflexionCoTReflector(
@@ -81,6 +82,17 @@ def test_reflexion_cot_reflector() -> None:
         out[1]
         == "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
     )
+    assert out[2] == Response(
+        input_text="",
+        output_text="1",
+        prompt_tokens=10,
+        completion_tokens=20,
+        total_tokens=30,
+        prompt_cost=1.5e-05,
+        completion_cost=3.9999999999999996e-05,
+        total_cost=5.4999999999999995e-05,
+        prompt_time=0.5,
+    )
 
     # Test with last attempt and Reflexion.
     reflector = ReflexionCoTReflector(
@@ -101,6 +113,17 @@ def test_reflexion_cot_reflector() -> None:
     assert (
         out[1]
         == "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: \n\n(END PREVIOUS TRIAL)\n\nThe following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
+    )
+    assert out[2] == Response(
+        input_text="",
+        output_text="1",
+        prompt_tokens=10,
+        completion_tokens=20,
+        total_tokens=30,
+        prompt_cost=1.5e-05,
+        completion_cost=3.9999999999999996e-05,
+        total_cost=5.4999999999999995e-05,
+        prompt_time=0.5,
     )
 
     # Test len(self.reflections) > max_reflections.
@@ -345,6 +368,7 @@ def test_reflexion_react_reflector() -> None:
         out[1]
         == "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: \n\n(END PREVIOUS TRIAL)\n"
     )
+    assert out[2] == None
 
     # Test with Reflexion.
     reflector = ReflexionReActReflector(
@@ -367,6 +391,17 @@ def test_reflexion_react_reflector() -> None:
         out[1]
         == "You have attempted to answer following question before and failed. The following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
     )
+    assert out[2] == Response(
+        input_text="",
+        output_text="1",
+        prompt_tokens=10,
+        completion_tokens=20,
+        total_tokens=30,
+        prompt_cost=1.5e-05,
+        completion_cost=3.9999999999999996e-05,
+        total_cost=5.4999999999999995e-05,
+        prompt_time=0.5,
+    )
 
     # Test with last attempt and Reflexion.
     reflector = ReflexionReActReflector(
@@ -387,6 +422,17 @@ def test_reflexion_react_reflector() -> None:
     assert (
         out[1]
         == "You have attempted to answer the following question before and failed. Below is the last trial you attempted to answer the question.\nQuestion: \n\n(END PREVIOUS TRIAL)\n\nThe following reflection(s) give a plan to avoid failing to answer the question in the same way you did previously. Use them to improve your strategy of correctly answering the given question.\nReflections:\n- 1"
+    )
+    assert out[2] == Response(
+        input_text="",
+        output_text="1",
+        prompt_tokens=10,
+        completion_tokens=20,
+        total_tokens=30,
+        prompt_cost=1.5e-05,
+        completion_cost=3.9999999999999996e-05,
+        total_cost=5.4999999999999995e-05,
+        prompt_time=0.5,
     )
 
     # Test len(self.reflections) > max_reflections.
