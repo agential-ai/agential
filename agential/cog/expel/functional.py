@@ -117,7 +117,7 @@ def categorize_experiences(experiences: List[Dict[str, Any]]) -> Dict[str, List]
 
     for idx, experience in enumerate(experiences):
         trajectory = experience["trajectory"]
-        trials_are_correct = [trial.react_output[-1].is_correct for trial in trajectory]
+        trials_are_correct = [trial.steps[-1].is_correct for trial in trajectory.additional_info]
 
         # Success.
         if (

@@ -16,6 +16,7 @@ from agential.cog.expel.functional import (
 )
 from agential.cog.fewshots.hotpotqa import HOTPOTQA_FEWSHOT_EXAMPLES_REACT
 from agential.cog.reflexion.agent import ReflexionReActAgent
+from agential.cog.reflexion.output import ReflexionReActOutput
 from agential.cog.reflexion.prompts import (
     HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
@@ -41,15 +42,7 @@ def test_gather_experience() -> None:
         reflect_prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
         reflect_strategy="reflexion",
     )
-    gt_experiences = [
-        {
-            "question": "",
-            "key": "",
-            "trajectory": [],
-            "reflections": [],
-        }
-    ]
-    print(repr(experiences))
+    gt_experiences = [{'question': '', 'key': '', 'trajectory': ReflexionReActOutput(answer='', total_prompt_tokens=0, total_completion_tokens=0, total_tokens=0, total_prompt_cost=0.0, total_completion_cost=0.0, total_cost=0.0, total_prompt_time=0.0, total_time=0.0, additional_info=[]), 'reflections': []}]
     assert experiences == gt_experiences
 
 
