@@ -81,7 +81,9 @@ class ReflexionReActReActStepOutput(BaseModel):
     thought_response: Response = Field(
         ..., description="Prompt response for the thought."
     )
-    action_response: Response = Field(..., description="Prompt response for the thought.")
+    action_response: Response = Field(
+        ..., description="Prompt response for the thought."
+    )
 
 
 class ReflexionReActStepOutput(BaseModel):

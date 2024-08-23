@@ -340,9 +340,7 @@ class ReflexionCoTGeneralStrategy(ReflexionCoTBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        reflection_response = (
-            reflections_out if reflections_out else None
-        )
+        reflection_response = reflections_out if reflections_out else None
         return reflections, reflections_str, reflection_response
 
     def reset(self) -> None:
@@ -804,9 +802,7 @@ class ReflexionReActGeneralStrategy(ReflexionReActBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        reflection_response = (
-            reflections_out if reflections_out else None
-        )
+        reflection_response = reflections_out if reflections_out else None
 
         return reflections, reflections_str, reflection_response
 
