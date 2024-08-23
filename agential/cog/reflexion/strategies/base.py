@@ -15,8 +15,7 @@ from agential.cog.reflexion.reflect import (
     ReflexionCoTReflector,
     ReflexionReActReflector,
 )
-from agential.llm.llm import BaseLLM
-from agential.utils.metrics import Response
+from agential.llm.llm import BaseLLM, Response
 
 
 class ReflexionCoTBaseStrategy(BaseStrategy):
@@ -100,7 +99,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the generation process.
 
         Returns:
-            Tuple[str, str, Response]: The updated scratchpad, the generated thought, and the metrics for the thought.
+            Tuple[str, str, Response]: The updated scratchpad, the generated thought, and the responses for the thought.
         """
         raise NotImplementedError
 
@@ -125,7 +124,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the generation process.
 
         Returns:
-            Tuple[str, str, str, Response]: The updated scratchpad, the generated action, the action type, and the metrics for the action.
+            Tuple[str, str, str, Response]: The updated scratchpad, the generated action, the action type, and the responses for the action.
         """
         raise NotImplementedError
 
@@ -207,7 +206,7 @@ class ReflexionCoTBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the reflection process.
 
         Returns:
-            Tuple[List[str], str, Optional[Response]]: The reflections, the reflection string, and the metrics.
+            Tuple[List[str], str, Optional[Response]]: The reflections, the reflection string, and the responses.
         """
         raise NotImplementedError
 
@@ -334,7 +333,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the thought generation process.
 
         Returns:
-            Tuple[str, str, Response]: The updated scratchpad, the generated thought, and the thought metrics.
+            Tuple[str, str, Response]: The updated scratchpad, the generated thought, and the thought responses.
         """
         raise NotImplementedError
 
@@ -363,7 +362,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[str, str, str, Response]: A tuple containing the updated trajectory, action type, query, and the metrics.
+            Tuple[str, str, str, Response]: A tuple containing the updated trajectory, action type, query, and the responses.
         """
         raise NotImplementedError
 
@@ -494,7 +493,7 @@ class ReflexionReActBaseStrategy(BaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for the reflection process.
 
         Returns:
-            Tuple[List[str], str, Optional[Response]]: The reflections, reflection string, and the metrics for the reflection process.
+            Tuple[List[str], str, Optional[Response]]: The reflections, reflection string, and the responses for the reflection process.
         """
         raise NotImplementedError
 
