@@ -591,7 +591,7 @@ def test_generate_action() -> None:
     prompt = "Generate an action"
     additional_keys = {"key": "value"}
 
-    trajectory, action_type, query, action_metrics = strategy.generate_action(
+    trajectory, action_type, query, action_response = strategy.generate_action(
         question,
         examples,
         trajectory,
@@ -606,16 +606,7 @@ def test_generate_action() -> None:
     )
     assert action_type == "Search"
     assert query == "capital of France"
-    assert action_metrics == Response(
-        prompt_tokens=10,
-        completion_tokens=20,
-        total_tokens=30,
-        prompt_cost=1.5e-05,
-        completion_cost=3.9999999999999996e-05,
-        total_cost=5.4999999999999995e-05,
-        prompt_time=0.5,
-    )
-
+    assert action_response == Response(input_text='', output_text='Search[capital of France]', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5)
 
 def test_generate_observation() -> None:
     """Test the generate_observation method."""
@@ -726,7 +717,7 @@ def test_evaluate_node() -> None:
         }
     ]
 
-    values, values_evaluation_metrics = strategy.evaluate_node(
+    values, values_evaluation_response = strategy.evaluate_node(
         root, question, examples, prompt, {}
     )
 
@@ -751,31 +742,23 @@ def test_evaluate_node() -> None:
     assert child1.value == 0.8
     assert child2.value == 0  # Terminal node, value not updated.
 
-    expected_value_metric = [
-        Response(
-            prompt_tokens=10,
-            completion_tokens=20,
-            total_tokens=30,
-            prompt_cost=1.5e-05,
-            completion_cost=3.9999999999999996e-05,
-            total_cost=5.4999999999999995e-05,
-            prompt_time=0.5,
-        ),
+    expected_value_response = [
+        Response(input_text='', output_text='Explanation: Good trajectory. Correctness score: 8', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5),
         None,
     ]
 
     for i, value_met in zip(
-        values_evaluation_metrics.values_metrics, expected_value_metric
+        values_evaluation_response.values_response, expected_value_response
     ):
         assert i == value_met
 
     # Test caching.
     strategy.cache_values = True
-    cached_values, values_evaluation_metrics = strategy.evaluate_node(
+    cached_values, values_evaluation_response = strategy.evaluate_node(
         root, question, examples, prompt, {}
     )
     assert cached_values == values
-    assert values_evaluation_metrics.values_metrics == [None, None]
+    assert values_evaluation_response.values_response == [None, None]
 
     assert strategy.failed_trajectories == []
     assert strategy.reflection_map == [
@@ -791,21 +774,10 @@ def test_evaluate_node() -> None:
 
     # Test with empty reflection_map.
     strategy.reflection_map = []
-    empty_reflection_values, values_evaluation_metrics = strategy.evaluate_node(
+    empty_reflection_values, values_evaluation_response = strategy.evaluate_node(
         root, question, examples, prompt, {}
     )
-    assert values_evaluation_metrics.values_metrics == [
-        Response(
-            prompt_tokens=10,
-            completion_tokens=20,
-            total_tokens=30,
-            prompt_cost=1.5e-05,
-            completion_cost=3.9999999999999996e-05,
-            total_cost=5.4999999999999995e-05,
-            prompt_time=0.5,
-        ),
-        None,
-    ]
+    assert values_evaluation_response.values_response == [Response(input_text='', output_text='Explanation: Good trajectory. Correctness score: 8', prompt_tokens=10, completion_tokens=20, total_tokens=30, prompt_cost=1.5e-05, completion_cost=3.9999999999999996e-05, total_cost=5.4999999999999995e-05, prompt_time=0.5), None]
 
     assert empty_reflection_values == values
 
@@ -940,7 +912,7 @@ def test_simulate_node() -> None:
         simulation_current_nodes,
         simulation_children_nodes,
         simulation_values,
-        simulation_metrics,
+        simulation_response,
     ) = strategy.simulate_node(
         node=root_node,
         question=question,
@@ -989,9 +961,11 @@ def test_simulate_node() -> None:
             assert node.to_dict() == expected_node
 
     # Flatten the list using itertools.chain
-    for i in simulation_metrics.simulation_step_metrics:
-        assert i.generate_metrics.thoughts_metrics == [
+    for i in simulation_response.simulation_step_response:
+        assert i.generate_response.thoughts_response == [
             Response(
+                input_text="",
+                output_text="",
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -1001,26 +975,8 @@ def test_simulate_node() -> None:
                 prompt_time=0.5,
             ),
             Response(
-                prompt_tokens=10,
-                completion_tokens=20,
-                total_tokens=30,
-                prompt_cost=1.5e-05,
-                completion_cost=3.9999999999999996e-05,
-                total_cost=5.4999999999999995e-05,
-                prompt_time=0.5,
-            ),
-        ]
-        assert i.generate_metrics.actions_metrics == [
-            Response(
-                prompt_tokens=10,
-                completion_tokens=20,
-                total_tokens=30,
-                prompt_cost=1.5e-05,
-                completion_cost=3.9999999999999996e-05,
-                total_cost=5.4999999999999995e-05,
-                prompt_time=0.5,
-            ),
-            Response(
+                input_text="",
+                output_text="",
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -1030,9 +986,10 @@ def test_simulate_node() -> None:
                 prompt_time=0.5,
             ),
         ]
-        assert i.generate_metrics.reflections_metrics == []
-        assert i.evaluate_metrics.values_metrics == [None, None] or [
+        assert i.generate_response.actions_response == [
             Response(
+                input_text="",
+                output_text="",
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -1042,6 +999,33 @@ def test_simulate_node() -> None:
                 prompt_time=0.5,
             ),
             Response(
+                input_text="",
+                output_text="",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=1.5e-05,
+                completion_cost=3.9999999999999996e-05,
+                total_cost=5.4999999999999995e-05,
+                prompt_time=0.5,
+            ),
+        ]
+        assert i.generate_response.reflections_response == []
+        assert i.evaluate_response.values_response == [None, None] or [
+            Response(
+                input_text="",
+                output_text="",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=1.5e-05,
+                completion_cost=3.9999999999999996e-05,
+                total_cost=5.4999999999999995e-05,
+                prompt_time=0.5,
+            ),
+            Response(
+                input_text="",
+                output_text="",
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
