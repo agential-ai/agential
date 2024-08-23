@@ -35,8 +35,7 @@ from agential.cog.reflexion.strategies.qa import (
     ReflexionReActQAStrategy,
     ReflexionReActTriviaQAStrategy,
 )
-from agential.llm.llm import BaseLLM, MockLLM
-from agential.utils.metrics import Response
+from agential.llm.llm import BaseLLM, MockLLM, Response
 
 
 def test_reflexion_cot_init() -> None:
@@ -72,7 +71,9 @@ def test_reflexion_cot_generate() -> None:
                 answer="I'm sorry, I can't provide the answer as the information is not available in the provided context.",
                 is_correct=False,
                 reflections=[],
-                thought_metrics=Response(
+                thought_response=Response(
+                    input_text="",
+                    output_text="I'm not sure what VIVA Media AG changed their name to, but I can reason that the new acronym must represent their new name.\nThought 1: The new acronym is related to their new name, so let's find out what VIVA Media AG changed their name to in 2004.\nAnswer: Finish[I'm sorry, I can't provide the answer as the information is not available in the provided context.]",
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -81,7 +82,9 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=Response(
+                action_response=Response(
+                    input_text="",
+                    output_text="Finish[I'm sorry, I can't provide the answer as the information is not available in the provided context.]",
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -90,7 +93,7 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                reflection_metrics=None,
+                reflection_response=None,
             ),
             ReflexionCoTStepOutput(
                 thought='Let\'s think step by step. VIVA Media AG was a German music television channel. In 2004, they changed their name to VIVACOM. Based on industry trends and common practices, they might have chosen a name that reflects their focus on media and communication.Thought 2: By considering their core business and the importance of communication in the media industry, the new acronym might stand for something like "VIVA Communication" or "VIVA Media Communication."Finish[VIVA Communication]',
@@ -101,7 +104,9 @@ def test_reflexion_cot_generate() -> None:
                 reflections=[
                     "My reasoning for not providing an answer to the question about the new acronym for VIVA Media AG in 2004 failed because I did not attempt to deduce or estimate the new name based on the given information. In the future, I should try to make an educated guess or use logical deductions to provide a more informed response. To improve, I will try to infer potential names based on common practices in company name changes or industry trends to offer a more insightful answer."
                 ],
-                thought_metrics=Response(
+                thought_response=Response(
+                    input_text="",
+                    output_text='Let\'s think step by step. VIVA Media AG was a German music television channel. In 2004, they changed their name to VIVACOM. Based on industry trends and common practices, they might have chosen a name that reflects their focus on media and communication.\nThought 2: By considering their core business and the importance of communication in the media industry, the new acronym might stand for something like "VIVA Communication" or "VIVA Media Communication."\nFinish[VIVA Communication]',
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -110,7 +115,9 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=Response(
+                action_response=Response(
+                    input_text="",
+                    output_text="Finish[VIVA Communication]",
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -119,7 +126,9 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                reflection_metrics=Response(
+                reflection_response=Response(
+                    input_text="",
+                    output_text="My reasoning for not providing an answer to the question about the new acronym for VIVA Media AG in 2004 failed because I did not attempt to deduce or estimate the new name based on the given information. In the future, I should try to make an educated guess or use logical deductions to provide a more informed response. To improve, I will try to infer potential names based on common practices in company name changes or industry trends to offer a more insightful answer.",
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -139,7 +148,9 @@ def test_reflexion_cot_generate() -> None:
                     "My reasoning for not providing an answer to the question about the new acronym for VIVA Media AG in 2004 failed because I did not attempt to deduce or estimate the new name based on the given information. In the future, I should try to make an educated guess or use logical deductions to provide a more informed response. To improve, I will try to infer potential names based on common practices in company name changes or industry trends to offer a more insightful answer.",
                     'The reasoning for the acronym of VIVACOM being "VIVA Communication" failed because it did not consider other possible words that could fit the acronym. In the future, when attempting this question, I should broaden the scope of potential words that could be used in the acronym to avoid limiting the possibilities. New Plan: When trying to determine the acronym for VIVACOM, consider a wider range of words that could fit the letters in the acronym while also taking into account the company\'s industry, focus, and branding to ensure a more accurate answer.',
                 ],
-                thought_metrics=Response(
+                thought_response=Response(
+                    input_text="",
+                    output_text="Let's approach this systematically. Given that VIVA Media AG was a media company, the new name could potentially reflect their focus on media or communication. Considering the previous failed attempts, I should broaden my thinking to include various possibilities beyond just one interpretation. By combining industry knowledge and common naming practices, I can make an educated guess at what the new acronym might stand for.\n\nAction: Finish[Visual Interactive Video and Audio]",
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -148,7 +159,9 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                action_metrics=Response(
+                action_response=Response(
+                    input_text="",
+                    output_text="Finish[Visionary International Visual Art]",
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -157,7 +170,9 @@ def test_reflexion_cot_generate() -> None:
                     total_cost=5.4999999999999995e-05,
                     prompt_time=0.5,
                 ),
-                reflection_metrics=Response(
+                reflection_response=Response(
+                    input_text="",
+                    output_text='The reasoning for the acronym of VIVACOM being "VIVA Communication" failed because it did not consider other possible words that could fit the acronym. In the future, when attempting this question, I should broaden the scope of potential words that could be used in the acronym to avoid limiting the possibilities. \n\nNew Plan: When trying to determine the acronym for VIVACOM, consider a wider range of words that could fit the letters in the acronym while also taking into account the company\'s industry, focus, and branding to ensure a more accurate answer.',
                     prompt_tokens=10,
                     completion_tokens=20,
                     total_tokens=30,
@@ -205,7 +220,7 @@ def test_reflexion_cot_generate_action() -> None:
     responses = ["Finish[Verwaltung von Internet Video und Audio]"]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReflexionCoTQAStrategy(llm=llm)
-    scratchpad, action_type, query, action_metrics = strategy.generate_action(
+    scratchpad, action_type, query, action_response = strategy.generate_action(
         scratchpad="",
         question=question,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_COT,
@@ -216,7 +231,9 @@ def test_reflexion_cot_generate_action() -> None:
     assert action_type == "Finish"
     assert query == "Verwaltung von Internet Video und Audio"
     assert scratchpad == "\nAction: Finish[Verwaltung von Internet Video und Audio]"
-    assert action_metrics == Response(
+    assert action_response == Response(
+        input_text="",
+        output_text="Finish[Verwaltung von Internet Video und Audio]",
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,
@@ -348,7 +365,9 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=Response(
+                        thought_response=Response(
+                            input_text="",
+                            output_text="I need to search for VIVA Media AG and find out what their new acronym stands for.\nAction 1: Search[VIVA Media AG]\nObservation 1: Could not find [VIVA Media AG]. Similar: ['Viva Media']\nThought 2: I should search for Viva Media instead.\nAction 2: Search[Viva Media]\nObservation 2: Viva Media is a German multimedia company that produces and distributes music and TV programs.\nThought 3: The question mentioned that VIVA Media AG changed its name in 2004, so I need to find their new acronym.\nAction 3: Search[Viva Media new acronym]\nObservation 3: Could not find [Viva Media new acronym]. Similar: ['Viva Media AG new name', 'Viva Media AG initials', 'Viva Media AG acronym']\nThought 4: I need to instead search for Viva Media AG's new name and acronym.\nAction 4: Search[Viva Media AG new name and acronym]\nObservation 4: Viva Media AG changed its name to Viva Entertainment in 2004. The new acronym stands for Video Interactive Education and Entertainment.\nThought 5: The new acronym for Viva Media AG is Video Interactive Education and Entertainment.\nAction 5: Finish[Video Interactive Education and Entertainment]",
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -357,7 +376,9 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=Response(
+                        action_response=Response(
+                            input_text="",
+                            output_text='Search[VIVA Media]\nObservation 1: Could not find [VIVA Media]. Similar: ["Viva Media"], ["Viva Media LLC"], ["Velora Media"]\nThought 2: Since I couldn\'t find VIVA Media, I should search for VIVA Media AG.\nAction 2: Search[VIVA Media AG]\nObservation 2: VIVA Media AG was a German media company that operated TV and radio stations as well as production companies.\nThought 3: I need to find out what their new acronym stands for after changing their name in 2004.\nAction 3: Search[VIVA Media AG new acronym 2004]\nObservation 3: Could not find information on the new acronym for VIVA Media AG after changing their name in 2004.\nThought 4: I should try searching VIVA Media AG\'s new name in 2004 instead.\nAction 4: Search[VIVA Media AG new name 2004]\nObservation 4: VIVA Media AG rebranded itself as VCL Communications AG in 2004.\nThought 5: Now I need to find out what VCL Communications AG acronym stands for.\nAction 5: Search[VCL Communications AG acronym]\nObservation 5: VCL Communications AG stands for Vídeo Comunicaciones y Logística.\nThought 6: The new acronym for VIVA Media AG after changing its name in 2004 is VCL. I found it stands for Vídeo Comunicaciones y Logística.\nAction 6: Finish[VCL - Vídeo Comunicaciones y Logística]',
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -378,7 +399,9 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=Response(
+                        thought_response=Response(
+                            input_text="",
+                            output_text="The search results are not relevant to VIVA Media AG. I need to instead search for VIVA Media AG specifically.\nAction 2: Search[VIVA Media AG]\nObservation 2: VIVA Media AG was a company in the media industry in Germany, part of the VIVA TV network. In 2004, it changed its name to VIVACOM AG.\nThought 3: The new acronym for VIVACOM AG is VIVACOM. I need to find out what VIVACOM stands for.\nAction 3: Search[VIVACOM]\nObservation 3: Could not find [VIVACOM]. Similar: ['Vivacom', 'ViVaCom', 'Benrath Stables', 'Via media (philosophy)', 'Via media (anglican theology)', 'Vivaconda', 'Vivacolombia'].\nThought 4: I should instead look up VIVACOM AG abbreviation definition.\nAction 4: Lookup[VIVACOM AG abbreviation definition]",
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -387,7 +410,9 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=Response(
+                        action_response=Response(
+                            input_text="",
+                            output_text="Search[VIVA Media AG]\nObservation 2: VIVA Media AG was a German entertainment company headquartered in Unterföhring, Bavaria.\nThought 3: The information does not mention their new acronym. I need to find the information on their name change and new acronym.\nAction 3: Search[VIVA Media AG name change]\nObservation 3: VIVA Media AG changed its name to VIVA Entertainment in 2005.\nThought 4: I can now search for the meaning of VIVA.\nAction 4: Search[VIVA Entertainment]\nObservation 4: VIVA Entertainment was a German music television channel owned by VIVA Media AG.\nThought 5: Since the search for the new acronym is not giving relevant results, I need to look up the specific details of VIVA Media AG's name change and its new acronym to find the answer.\nAction 5: Lookup[VIVA Media AG name change, new acronym]\nObservation 5: (Result 1 / 1) The new acronym for VIVA Entertainment after the name change from VIVA Media AG is not readily available in the search results.\nThought 6: The specific new acronym after the name change is not easily found. I need to refine my search to find the exact answer.\nAction 6: Search[VIVA Entertainment new acronym]\nObservation 6: Unfortunately, the specific new acronym for VIVA Entertainment after the name change from VIVA Media AG is not directly provided in the search results.\nThought 7: Given the difficulty in obtaining the answer through search results, I may need to explore alternative sources or resources to find the new acronym for VIVA Entertainment after the name change from VIVA Media AG.\nAction 7: (Optional) Additional research or sources may be necessary to retrieve the exact new acronym for VIVA Entertainment after the name change from VIVA Media AG.",
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -408,7 +433,9 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=Response(
+                        thought_response=Response(
+                            input_text="",
+                            output_text="I need to refine my search and include the name change in 2004.\nAction 3: Search[VIVA Media AG name change 2004]\nObservation 3: It has been mentioned that VIVA Media AG changed its name in 2004 to something else.\nThought 4: Since the search results do not provide the acronym, I should search for the new name of VIVA Media AG and its expansion.\nAction 4: Search[new name of VIVA Media AG]\nObservation 4: (Result 1 / 1) Lookup[new name of VIVA Media AG]\nThought 5: The next step is to find out what the new acronym of VIVA Media AG stands for.\nAction 5: Finish[New acronym]\nObservation 5: (Result 1 / 1) Lookup[new acronym]\nThought 6: Now that I have the new name and acronym, I can provide the answer.\nAction 6: Finish[New Name: XXX, Acronym: YYY]",
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -417,7 +444,9 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=Response(
+                        action_response=Response(
+                            input_text="",
+                            output_text='Search[VIVA Media AG name change 2004]\nObservation 3: Could not find [VIVA Media AG name change 2004]. Similar: [\'John Zeisel\']\nThought 4: Since I can\'t find the information directly, I need to try a different approach.\nAction 4: Search[VIVA Media AG acronym]\nObservation 4: The acronym VIVA stands for "Videovertrieb in Augsburg".\nThought 5: VIVA Media AG changed its name to "Videovertrieb in Augsburg" in 2004.\nAction 5: Finish[Videovertrieb in Augsburg]',
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -438,7 +467,9 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=Response(
+                        thought_response=Response(
+                            input_text="",
+                            output_text="I need to search for VIVA Media AG name change specifically for 2004. I will try searching for VIVA Media AG new name in 2004.\nAction 4: Search[VIVA Media AG new name 2004]",
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -447,7 +478,9 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=Response(
+                        action_response=Response(
+                            input_text="",
+                            output_text="Search[VIVA Media AG new name 2004]",
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -468,7 +501,9 @@ def test_reflexion_react_generate() -> None:
                             "lookup_result": "",
                         },
                         is_correct=False,
-                        thought_metrics=Response(
+                        thought_response=Response(
+                            input_text="",
+                            output_text="I need to be more specific in my search. I will try searching for VIVA Media AG rebranding in 2004 to get the information I need.\nAction 5: Search[VIVA Media AG rebranding 2004]\nObservation 5: VIVA Media AG was rebranded as Viva Entertainment AG in 2004.\nThought 6: Their new acronym stands for Viva Entertainment AG.\nAction 6: Finish[Viva Entertainment AG]",
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -477,7 +512,9 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=Response(
+                        action_response=Response(
+                            input_text="",
+                            output_text="Search[VIVA Media AG rebranding 2004]\nObservation 5: VIVA Media AG was rebranded as VIVENDI Universal Interactive Publishing.",
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -495,7 +532,9 @@ def test_reflexion_react_generate() -> None:
                         answer="unknown",
                         external_tool_info={"search_result": "", "lookup_result": ""},
                         is_correct=False,
-                        thought_metrics=Response(
+                        thought_response=Response(
+                            input_text="",
+                            output_text="I have exhausted my search possibilities and couldn't find the information. I will finish the task with the conclusion that I couldn't determine what the new acronym for VIVA Media AG stands for. \nAction 6: Finish[Unable to determine]",
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -504,7 +543,9 @@ def test_reflexion_react_generate() -> None:
                             total_cost=5.4999999999999995e-05,
                             prompt_time=0.5,
                         ),
-                        action_metrics=Response(
+                        action_response=Response(
+                            input_text="",
+                            output_text="Finish[unknown]",
                             prompt_tokens=10,
                             completion_tokens=20,
                             total_tokens=30,
@@ -516,7 +557,7 @@ def test_reflexion_react_generate() -> None:
                     ),
                 ],
                 reflections=[],
-                reflection_metrics=None,
+                reflection_response=None,
             )
         ],
     )
@@ -558,7 +599,6 @@ def test_reflexion_react_generate() -> None:
         patience=1,
         reset=True,
     )
-
     assert out == gt_out
 
 
@@ -584,7 +624,7 @@ def test_reflexion_react_generate_react() -> None:
 
     gt_scratchpad = "\nThought 1: I need to search for VIVA Media AG and find out what their new acronym stands for.\nAction 1: Search[VIVA Media]\nObservation 1: Buakaw Banchamek has faced several controversies and legal issues.\nThought 2: The search results are not relevant to VIVA Media AG. I need to instead search for VIVA Media AG specifically.\nAction 2: Search[VIVA Media AG]\nObservation 2: Buakaw Banchamek has faced several controversies and legal issues.\nThought 3: I need to refine my search and include the name change in 2004.\nAction 3: Search[VIVA Media AG name change 2004]\nObservation 3: Buakaw Banchamek has faced several controversies and legal issues.\nThought 4: I need to search for VIVA Media AG name change specifically for 2004. I will try searching for VIVA Media AG new name in 2004.\nAction 4: Search[VIVA Media AG new name 2004]\nObservation 4: Buakaw Banchamek has faced several controversies and legal issues.\nThought 5: I need to be more specific in my search. I will try searching for VIVA Media AG rebranding in 2004 to get the information I need.\nAction 5: Search[VIVA Media AG rebranding 2004]\nObservation 5: Buakaw Banchamek has faced several controversies and legal issues.\nThought 6: I have exhausted my search possibilities and couldn't find the information. I will finish the task with the conclusion that I couldn't determine what the new acronym for VIVA Media AG stands for.\nAction 6: Finish[unknown]\nObservation 6: Answer is INCORRECT"
 
-    steps = [
+    gt_steps = [
         ReflexionReActReActStepOutput(
             thought="I need to search for VIVA Media AG and find out what their new acronym stands for.",
             action_type="Search",
@@ -596,7 +636,9 @@ def test_reflexion_react_generate_react() -> None:
                 "lookup_result": "",
             },
             is_correct=False,
-            thought_metrics=Response(
+            thought_response=Response(
+                input_text="",
+                output_text="I need to search for VIVA Media AG and find out what their new acronym stands for.\nAction 1: Search[VIVA Media AG]\nObservation 1: Could not find [VIVA Media AG]. Similar: ['Viva Media']\nThought 2: I should search for Viva Media instead.\nAction 2: Search[Viva Media]\nObservation 2: Viva Media is a German multimedia company that produces and distributes music and TV programs.\nThought 3: The question mentioned that VIVA Media AG changed its name in 2004, so I need to find their new acronym.\nAction 3: Search[Viva Media new acronym]\nObservation 3: Could not find [Viva Media new acronym]. Similar: ['Viva Media AG new name', 'Viva Media AG initials', 'Viva Media AG acronym']\nThought 4: I need to instead search for Viva Media AG's new name and acronym.\nAction 4: Search[Viva Media AG new name and acronym]\nObservation 4: Viva Media AG changed its name to Viva Entertainment in 2004. The new acronym stands for Video Interactive Education and Entertainment.\nThought 5: The new acronym for Viva Media AG is Video Interactive Education and Entertainment.\nAction 5: Finish[Video Interactive Education and Entertainment]",
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -605,7 +647,9 @@ def test_reflexion_react_generate_react() -> None:
                 total_cost=5.4999999999999995e-05,
                 prompt_time=0.5,
             ),
-            action_metrics=Response(
+            action_response=Response(
+                input_text="",
+                output_text='Search[VIVA Media]\nObservation 1: Could not find [VIVA Media]. Similar: ["Viva Media"], ["Viva Media LLC"], ["Velora Media"]\nThought 2: Since I couldn\'t find VIVA Media, I should search for VIVA Media AG.\nAction 2: Search[VIVA Media AG]\nObservation 2: VIVA Media AG was a German media company that operated TV and radio stations as well as production companies.\nThought 3: I need to find out what their new acronym stands for after changing their name in 2004.\nAction 3: Search[VIVA Media AG new acronym 2004]\nObservation 3: Could not find information on the new acronym for VIVA Media AG after changing their name in 2004.\nThought 4: I should try searching VIVA Media AG\'s new name in 2004 instead.\nAction 4: Search[VIVA Media AG new name 2004]\nObservation 4: VIVA Media AG rebranded itself as VCL Communications AG in 2004.\nThought 5: Now I need to find out what VCL Communications AG acronym stands for.\nAction 5: Search[VCL Communications AG acronym]\nObservation 5: VCL Communications AG stands for Vídeo Comunicaciones y Logística.\nThought 6: The new acronym for VIVA Media AG after changing its name in 2004 is VCL. I found it stands for Vídeo Comunicaciones y Logística.\nAction 6: Finish[VCL - Vídeo Comunicaciones y Logística]',
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -626,7 +670,9 @@ def test_reflexion_react_generate_react() -> None:
                 "lookup_result": "",
             },
             is_correct=False,
-            thought_metrics=Response(
+            thought_response=Response(
+                input_text="",
+                output_text="The search results are not relevant to VIVA Media AG. I need to instead search for VIVA Media AG specifically.\nAction 2: Search[VIVA Media AG]\nObservation 2: VIVA Media AG was a company in the media industry in Germany, part of the VIVA TV network. In 2004, it changed its name to VIVACOM AG.\nThought 3: The new acronym for VIVACOM AG is VIVACOM. I need to find out what VIVACOM stands for.\nAction 3: Search[VIVACOM]\nObservation 3: Could not find [VIVACOM]. Similar: ['Vivacom', 'ViVaCom', 'Benrath Stables', 'Via media (philosophy)', 'Via media (anglican theology)', 'Vivaconda', 'Vivacolombia'].\nThought 4: I should instead look up VIVACOM AG abbreviation definition.\nAction 4: Lookup[VIVACOM AG abbreviation definition]",
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -635,7 +681,9 @@ def test_reflexion_react_generate_react() -> None:
                 total_cost=5.4999999999999995e-05,
                 prompt_time=0.5,
             ),
-            action_metrics=Response(
+            action_response=Response(
+                input_text="",
+                output_text="Search[VIVA Media AG]\nObservation 2: VIVA Media AG was a German entertainment company headquartered in Unterföhring, Bavaria.\nThought 3: The information does not mention their new acronym. I need to find the information on their name change and new acronym.\nAction 3: Search[VIVA Media AG name change]\nObservation 3: VIVA Media AG changed its name to VIVA Entertainment in 2005.\nThought 4: I can now search for the meaning of VIVA.\nAction 4: Search[VIVA Entertainment]\nObservation 4: VIVA Entertainment was a German music television channel owned by VIVA Media AG.\nThought 5: Since the search for the new acronym is not giving relevant results, I need to look up the specific details of VIVA Media AG's name change and its new acronym to find the answer.\nAction 5: Lookup[VIVA Media AG name change, new acronym]\nObservation 5: (Result 1 / 1) The new acronym for VIVA Entertainment after the name change from VIVA Media AG is not readily available in the search results.\nThought 6: The specific new acronym after the name change is not easily found. I need to refine my search to find the exact answer.\nAction 6: Search[VIVA Entertainment new acronym]\nObservation 6: Unfortunately, the specific new acronym for VIVA Entertainment after the name change from VIVA Media AG is not directly provided in the search results.\nThought 7: Given the difficulty in obtaining the answer through search results, I may need to explore alternative sources or resources to find the new acronym for VIVA Entertainment after the name change from VIVA Media AG.\nAction 7: (Optional) Additional research or sources may be necessary to retrieve the exact new acronym for VIVA Entertainment after the name change from VIVA Media AG.",
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -656,7 +704,9 @@ def test_reflexion_react_generate_react() -> None:
                 "lookup_result": "",
             },
             is_correct=False,
-            thought_metrics=Response(
+            thought_response=Response(
+                input_text="",
+                output_text="I need to refine my search and include the name change in 2004.\nAction 3: Search[VIVA Media AG name change 2004]\nObservation 3: It has been mentioned that VIVA Media AG changed its name in 2004 to something else.\nThought 4: Since the search results do not provide the acronym, I should search for the new name of VIVA Media AG and its expansion.\nAction 4: Search[new name of VIVA Media AG]\nObservation 4: (Result 1 / 1) Lookup[new name of VIVA Media AG]\nThought 5: The next step is to find out what the new acronym of VIVA Media AG stands for.\nAction 5: Finish[New acronym]\nObservation 5: (Result 1 / 1) Lookup[new acronym]\nThought 6: Now that I have the new name and acronym, I can provide the answer.\nAction 6: Finish[New Name: XXX, Acronym: YYY]",
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -665,7 +715,9 @@ def test_reflexion_react_generate_react() -> None:
                 total_cost=5.4999999999999995e-05,
                 prompt_time=0.5,
             ),
-            action_metrics=Response(
+            action_response=Response(
+                input_text="",
+                output_text='Search[VIVA Media AG name change 2004]\nObservation 3: Could not find [VIVA Media AG name change 2004]. Similar: [\'John Zeisel\']\nThought 4: Since I can\'t find the information directly, I need to try a different approach.\nAction 4: Search[VIVA Media AG acronym]\nObservation 4: The acronym VIVA stands for "Videovertrieb in Augsburg".\nThought 5: VIVA Media AG changed its name to "Videovertrieb in Augsburg" in 2004.\nAction 5: Finish[Videovertrieb in Augsburg]',
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -686,7 +738,9 @@ def test_reflexion_react_generate_react() -> None:
                 "lookup_result": "",
             },
             is_correct=False,
-            thought_metrics=Response(
+            thought_response=Response(
+                input_text="",
+                output_text="I need to search for VIVA Media AG name change specifically for 2004. I will try searching for VIVA Media AG new name in 2004.\nAction 4: Search[VIVA Media AG new name 2004]",
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -695,7 +749,9 @@ def test_reflexion_react_generate_react() -> None:
                 total_cost=5.4999999999999995e-05,
                 prompt_time=0.5,
             ),
-            action_metrics=Response(
+            action_response=Response(
+                input_text="",
+                output_text="Search[VIVA Media AG new name 2004]",
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -716,7 +772,9 @@ def test_reflexion_react_generate_react() -> None:
                 "lookup_result": "",
             },
             is_correct=False,
-            thought_metrics=Response(
+            thought_response=Response(
+                input_text="",
+                output_text="I need to be more specific in my search. I will try searching for VIVA Media AG rebranding in 2004 to get the information I need.\nAction 5: Search[VIVA Media AG rebranding 2004]\nObservation 5: VIVA Media AG was rebranded as Viva Entertainment AG in 2004.\nThought 6: Their new acronym stands for Viva Entertainment AG.\nAction 6: Finish[Viva Entertainment AG]",
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -725,7 +783,9 @@ def test_reflexion_react_generate_react() -> None:
                 total_cost=5.4999999999999995e-05,
                 prompt_time=0.5,
             ),
-            action_metrics=Response(
+            action_response=Response(
+                input_text="",
+                output_text="Search[VIVA Media AG rebranding 2004]\nObservation 5: VIVA Media AG was rebranded as VIVENDI Universal Interactive Publishing.",
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -743,7 +803,9 @@ def test_reflexion_react_generate_react() -> None:
             answer="unknown",
             external_tool_info={"search_result": "", "lookup_result": ""},
             is_correct=False,
-            thought_metrics=Response(
+            thought_response=Response(
+                input_text="",
+                output_text="I have exhausted my search possibilities and couldn't find the information. I will finish the task with the conclusion that I couldn't determine what the new acronym for VIVA Media AG stands for. \nAction 6: Finish[Unable to determine]",
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -752,7 +814,9 @@ def test_reflexion_react_generate_react() -> None:
                 total_cost=5.4999999999999995e-05,
                 prompt_time=0.5,
             ),
-            action_metrics=Response(
+            action_response=Response(
+                input_text="",
+                output_text="Finish[unknown]",
                 prompt_tokens=10,
                 completion_tokens=20,
                 total_tokens=30,
@@ -791,7 +855,7 @@ def test_reflexion_react_generate_react() -> None:
     assert scratchpad == gt_scratchpad
     assert finished
     assert answer == "unknown"
-    assert react_steps == steps
+    assert react_steps == gt_steps
 
 
 def test_reflexion_react_generate_action() -> None:
@@ -804,7 +868,7 @@ def test_reflexion_react_generate_action() -> None:
     ]
     llm = MockLLM("gpt-3.5-turbo", responses=responses)
     strategy = ReflexionReActQAStrategy(llm=llm)
-    scratchpad, action_type, query, thought_metrics = strategy.generate_action(
+    scratchpad, action_type, query, thought_response = strategy.generate_action(
         idx=1,
         scratchpad="",
         question=question,
@@ -816,7 +880,9 @@ def test_reflexion_react_generate_action() -> None:
     assert action_type == "Search"
     assert query == "VIVA Media AG"
     assert scratchpad == gt_scratchpad
-    assert thought_metrics == Response(
+    assert thought_response == Response(
+        input_text="",
+        output_text="Search[VIVA Media AG]",
         prompt_tokens=10,
         completion_tokens=20,
         total_tokens=30,
