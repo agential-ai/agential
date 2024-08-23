@@ -138,8 +138,7 @@ class ExpeLExperienceMemory(BaseMemory):
         Args:
             questions (List[str]): Questions related to the experiences being added.
             keys (List[str]): Answers corresponding to the provided questions.
-            trajectories (List[ReflexionReActOutput]): A list of trajectories where each
-                trajectory is a list of ReflexionReActOutput; each one is a trial.
+            trajectories (List[ReflexionReActOutput]): A list of trajectories.
             reflections (Optional[List[List[str]]], default=[]): A list of additional reflective notes on the experiences.
         """
         assert len(questions) == len(keys) == len(trajectories)
@@ -168,15 +167,15 @@ class ExpeLExperienceMemory(BaseMemory):
         # Update success_traj_docs.
         success_traj_idxs = []
         for idx, trajectory in enumerate(trajectories, start_idx):
-            is_correct = trajectory[0].react_output[-1].is_correct
+            is_correct = trajectory.addtional_info[0].steps[-1].is_correct
             if is_correct:
                 success_traj_idxs.append(idx)
 
         for idx in success_traj_idxs:
             question = self.experiences[idx]["question"]
-            steps = self.experiences[idx]["trajectory"][
+            steps = self.experiences[idx]["trajectory"].addtional_info[
                 0
-            ].react_output  # Zero-th trial of trajectory.
+            ].steps  # Zero-th trial of trajectory.
 
             # Add the task.
             self.success_traj_docs.append(
