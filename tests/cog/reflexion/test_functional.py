@@ -138,7 +138,7 @@ def test__prompt_cot_agent() -> None:
         prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, Response)
-    assert out.choices[0].message.content == "1"
+    assert out.output_text == "1"
 
     # Test simple case (no reflection).
     gt_out = 'Thought: Let\'s think step by step. The new acronym for VIVA Media AG after changing its name in 2004 is "Vivendi Visual and Interactive." \nAction: Finish[Vivendi Visual and Interactive]'
@@ -156,7 +156,7 @@ def test__prompt_cot_agent() -> None:
         scratchpad="\nThought:",
         prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
     )
-    assert out.choices[0].message.content == gt_out
+    assert out.output_text == gt_out
 
     # Test simple case (reflection).
     reflections = (
@@ -189,7 +189,7 @@ def test__prompt_cot_agent() -> None:
         scratchpad=scratchpad,
         prompt=REFLEXION_COT_INSTRUCTION_HOTPOTQA,
     )
-    assert out.choices[0].message.content == gt_out
+    assert out.output_text == gt_out
 
 
 def test__build_cot_reflection_prompt() -> None:
@@ -236,7 +236,7 @@ def test__prompt_cot_reflection() -> None:
         prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, Response)
-    assert out.choices[0].message.content == "1"
+    assert out.output_text == "1"
 
     # Test with no context.
     out = _prompt_cot_reflection(
@@ -247,7 +247,7 @@ def test__prompt_cot_reflection() -> None:
         prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, Response)
-    assert out.choices[0].message.content == "1"
+    assert out.output_text == "1"
 
     # Test simple case with context.
     scratchpad = (
@@ -280,7 +280,7 @@ def test__prompt_cot_reflection() -> None:
         scratchpad=scratchpad,
         prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
-    assert out.choices[0].message.content == gt_out
+    assert out.output_text == gt_out
 
     # Test simple case with no context.
     scratchpad = (
@@ -311,7 +311,7 @@ def test__prompt_cot_reflection() -> None:
         scratchpad=scratchpad,
         prompt=REFLEXION_COT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
-    assert out.choices[0].message.content == gt_out
+    assert out.output_text == gt_out
 
 
 def test_react_reflect_last_attempt() -> None:
@@ -379,7 +379,7 @@ def test__prompt_react_agent() -> None:
         prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, Response)
-    assert out.choices[0].message.content == "1"
+    assert out.output_text == "1"
 
     # Test simple case no reflections.
     responses = [
@@ -397,7 +397,7 @@ def test__prompt_react_agent() -> None:
         max_steps=1,
         prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     )
-    assert out.choices[0].message.content == gt_out
+    assert out.output_text == gt_out
 
     # Test simple case with reflections.
     responses = [
@@ -474,7 +474,7 @@ def test__prompt_react_agent() -> None:
         max_steps=6,
         prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     )
-    assert out.choices[0].message.content == gt_out
+    assert out.output_text == gt_out
 
 
 def test__is_halted() -> None:
@@ -605,7 +605,7 @@ def test__prompt_react_reflection() -> None:
         prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
     assert isinstance(out, Response)
-    assert out.choices[0].message.content == "1"
+    assert out.output_text == "1"
 
     # Test simple case.
     scratchpad = (
@@ -641,7 +641,7 @@ def test__prompt_react_reflection() -> None:
         scratchpad=scratchpad,
         prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
     )
-    assert out.choices[0].message.content == gt_out
+    assert out.output_text == gt_out
 
 
 def test_react_reflect_last_attempt() -> None:
@@ -810,7 +810,9 @@ def test_accumulate_metrics_cot() -> None:
             answer="",
             is_correct=True,
             reflections=[],
-            thought_metrics=Response(
+            thought_response=Response(
+                input_text="",
+                output_text="",
                 prompt_tokens=15,
                 completion_tokens=25,
                 total_tokens=40,
@@ -819,7 +821,9 @@ def test_accumulate_metrics_cot() -> None:
                 total_cost=0.04,
                 prompt_time=0.75,
             ),
-            action_metrics=Response(
+            action_response=Response(
+                input_text="",
+                output_text="",
                 prompt_tokens=10,
                 completion_tokens=15,
                 total_tokens=25,
@@ -828,7 +832,7 @@ def test_accumulate_metrics_cot() -> None:
                 total_cost=0.025,
                 prompt_time=0.5,
             ),
-            reflection_metrics=None,
+            reflection_response=None,
         ),
         ReflexionCoTStepOutput(
             thought="",
@@ -837,7 +841,9 @@ def test_accumulate_metrics_cot() -> None:
             answer="",
             is_correct=True,
             reflections=[],
-            thought_metrics=Response(
+            thought_response=Response(
+                input_text="",
+                output_text="",
                 prompt_tokens=15,
                 completion_tokens=25,
                 total_tokens=40,
@@ -846,7 +852,9 @@ def test_accumulate_metrics_cot() -> None:
                 total_cost=0.04,
                 prompt_time=0.75,
             ),
-            action_metrics=Response(
+            action_response=Response(
+                input_text="",
+                output_text="",
                 prompt_tokens=10,
                 completion_tokens=15,
                 total_tokens=25,
@@ -855,7 +863,7 @@ def test_accumulate_metrics_cot() -> None:
                 total_cost=0.025,
                 prompt_time=0.5,
             ),
-            reflection_metrics=None,
+            reflection_response=None,
         ),
     ]
 
@@ -883,7 +891,9 @@ def test_accumulate_metrics_react() -> None:
             answer="",
             external_tool_info={},
             is_correct=True,
-            thought_metrics=Response(
+            thought_response=Response(
+                input_text="",
+                output_text="",
                 prompt_tokens=15,
                 completion_tokens=25,
                 total_tokens=40,
@@ -892,7 +902,9 @@ def test_accumulate_metrics_react() -> None:
                 total_cost=0.04,
                 prompt_time=0.75,
             ),
-            action_metrics=Response(
+            action_response=Response(
+                input_text="",
+                output_text="",
                 prompt_tokens=10,
                 completion_tokens=15,
                 total_tokens=25,
@@ -910,7 +922,9 @@ def test_accumulate_metrics_react() -> None:
             answer="",
             external_tool_info={},
             is_correct=True,
-            thought_metrics=Response(
+            thought_response=Response(
+                input_text="",
+                output_text="",
                 prompt_tokens=15,
                 completion_tokens=25,
                 total_tokens=40,
@@ -919,7 +933,9 @@ def test_accumulate_metrics_react() -> None:
                 total_cost=0.04,
                 prompt_time=0.75,
             ),
-            action_metrics=Response(
+            action_response=Response(
+                input_text="",
+                output_text="",
                 prompt_tokens=10,
                 completion_tokens=15,
                 total_tokens=25,
@@ -935,12 +951,12 @@ def test_accumulate_metrics_react() -> None:
         ReflexionReActStepOutput(
             steps=steps,
             reflections=[],
-            reflection_metrics=None,
+            reflection_response=None,
         ),
         ReflexionReActStepOutput(
             steps=steps,
             reflections=[],
-            reflection_metrics=None,
+            reflection_response=None,
         ),
     ]
 
