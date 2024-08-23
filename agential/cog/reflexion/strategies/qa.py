@@ -22,9 +22,8 @@ from agential.cog.reflexion.strategies.general import (
     ReflexionReActGeneralStrategy,
 )
 from agential.eval.em import EM
-from agential.llm.llm import BaseLLM
+from agential.llm.llm import BaseLLM, Response
 from agential.utils.docstore import DocstoreExplorer
-from agential.utils.metrics import Response, get_prompt_info
 from agential.utils.parse import remove_newline
 
 
@@ -90,7 +89,7 @@ class ReflexionCoTQAStrategy(ReflexionCoTGeneralStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        action = out.choices[0].message.content
+        action = out.output_text
         action = remove_newline(action).strip()
         scratchpad += action
         action_type, query = parse_qa_action(action)
@@ -245,7 +244,7 @@ class ReflexionReActQAStrategy(ReflexionReActGeneralStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        action = out.choices[0].message.content
+        action = out.output_text
         action = remove_newline(action).split("Observation")[0]
         scratchpad += action
         action_type, query = parse_qa_action(action)

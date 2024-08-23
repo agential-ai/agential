@@ -2,8 +2,6 @@
 
 import tiktoken
 
-from litellm.types.utils import Response
-
 from agential.cog.fewshots.hotpotqa import (
     HOTPOTQA_FEWSHOT_EXAMPLES_COT,
     HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
@@ -46,8 +44,7 @@ from agential.cog.reflexion.prompts import (
     REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
     REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
-from agential.llm.llm import MockLLM
-from agential.utils.metrics import Response
+from agential.llm.llm import MockLLM, Response
 
 
 def test__truncate_scratchpad() -> None:
