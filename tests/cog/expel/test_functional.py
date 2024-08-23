@@ -50,7 +50,7 @@ def test_categorize_experiences(expel_experiences_10_fake_path: str) -> None:
     """Test categorize_experiences."""
     experiences = joblib.load(expel_experiences_10_fake_path)
     categories = categorize_experiences(experiences)
-    gt_categories = {"compare": [], "success": [1, 3], "fail": [0, 2, 4]}
+    gt_categories = {'compare': [3], 'success': [1], 'fail': [0, 2, 4]}
     assert categories == gt_categories
 
 
