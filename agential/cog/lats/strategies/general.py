@@ -12,16 +12,15 @@ from agential.cog.lats.functional import (
 )
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import (
-    LATSEvaluateMetrics,
-    LATSGenerateMetrics,
+    LATSEvaluateResponse,
+    LATSGenerateResponse,
     LATSOutput,
-    LATSSimulationMetrics,
+    LATSSimulationResponse,
     LATSSimulationOutput,
     LATSStepOutput,
 )
 from agential.cog.lats.strategies.base import LATSBaseStrategy
-from agential.llm.llm import BaseLLM
-from agential.utils.metrics import Response, get_prompt_info
+from agential.llm.llm import BaseLLM, Response
 from agential.utils.parse import remove_newline
 
 
@@ -112,7 +111,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             simulation_terminal_node = None
             node = self.select_node(root)  # Selected node is always non-terminal.
 
-            (children_nodes, generate_metrics) = self.expand_node(
+            (children_nodes, generate_response) = self.expand_node(
                 node=node,
                 question=question,
                 key=key,
@@ -131,11 +130,11 @@ class LATSGeneralStrategy(LATSBaseStrategy):
                             iteration=i,
                             current_node=node.to_dict(),
                             children_nodes=[node.to_dict() for node in children_nodes],
-                            generate_metrics=generate_metrics,
+                            generate_response=generate_response,
                             values=None,
-                            evaluate_metrics=None,
+                            evaluate_response=None,
                             simulation_results=None,
-                            simulation_metrics=None,
+                            simulation_response=None,
                         )
                     )
                     simulation_terminal_node = child_node
@@ -144,7 +143,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             if simulation_terminal_node:
                 break
 
-            values, evaluate_metrics = self.evaluate_node(
+            values, evaluate_response = self.evaluate_node(
                 node=node,
                 question=question,
                 examples=value_examples,
@@ -158,7 +157,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
                 simulation_current_nodes,
                 simulation_children_nodes,
                 simulation_values,
-                simulation_metrics,
+                simulation_response,
             ) = self.simulate_node(
                 node=max(node.children, key=lambda child: child.value, default=node),
                 question=question,
@@ -179,9 +178,9 @@ class LATSGeneralStrategy(LATSBaseStrategy):
                     iteration=i,
                     current_node=node.to_dict(),
                     children_nodes=[node.to_dict() for node in children_nodes],
-                    generate_metrics=generate_metrics,
+                    generate_response=generate_response,
                     values=values,
-                    evaluate_metrics=evaluate_metrics,
+                    evaluate_response=evaluate_response,
                     simulation_results=LATSSimulationOutput(
                         simulation_reward=simulation_reward,
                         simulation_terminal_node=simulation_terminal_node.to_dict(),
@@ -194,7 +193,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
                         ],
                         simulation_values=simulation_values,
                     ),
-                    simulation_metrics=simulation_metrics,
+                    simulation_response=simulation_response,
                 )
             )
 
@@ -242,7 +241,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
-    ) -> Tuple[List[Node], LATSGenerateMetrics]:
+    ) -> Tuple[List[Node], LATSGenerateResponse]:
         """Generate child nodes for the given node.
 
         Args:
@@ -257,7 +256,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
 
         Returns:
-            Tuple[List[Node], LATSGenerateMetrics]: A list of generated child nodes, and the pydantic of corresponding metrics.
+            Tuple[List[Node], LATSGenerateResponse]: A list of generated child nodes, and the pydantic of corresponding responses.
         """
         raise NotImplementedError
 
@@ -283,7 +282,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[str, str, Response]: A tuple containing the updated trajectory, the generated thought, and the metrics.
+            Tuple[str, str, Response]: A tuple containing the updated trajectory, the generated thought, and the responses.
         """
         trajectory += f"\nThought {depth + 1}: "
         out = _prompt_agent(
@@ -295,12 +294,10 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        thought = out.choices[0].message.content
-
-        thought = remove_newline(thought).split("Action")[0].strip()
+        thought = remove_newline(out.output_text).split("Action")[0].strip()
         trajectory += thought
 
-        return trajectory, thought, get_prompt_info(out)
+        return trajectory, thought, out
 
     def generate_action(
         self,
@@ -324,7 +321,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[str, str, str, Response]: A tuple containing the updated trajectory, action type, query, and the metrics.
+            Tuple[str, str, str, Response]: A tuple containing the updated trajectory, action type, query, and the responses.
         """
         raise NotImplementedError
 
@@ -396,7 +393,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
-    ) -> Tuple[List[Node], LATSGenerateMetrics]:
+    ) -> Tuple[List[Node], LATSGenerateResponse]:
         """Expand the given node by generating its child nodes.
 
         Args:
@@ -411,17 +408,17 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
 
         Returns:
-            Tuple[List[Node], LATSGenerateMetrics]: A list of generated child nodes, and the corresponding metrics.
+            Tuple[List[Node], LATSGenerateResponse]: A list of generated child nodes, and the corresponding responses.
         """
         if node.depth >= self.depth_limit:
             node.is_terminal = True
-            return [], LATSGenerateMetrics(
-                thoughts_metrics=[],
-                actions_metrics=[],
-                reflections_metrics=[],
+            return [], LATSGenerateResponse(
+                thoughts_response=[],
+                actions_response=[],
+                reflections_response=[],
             )
 
-        children_nodes, generate_metrics = self.generate_children_nodes(
+        children_nodes, generate_response = self.generate_children_nodes(
             node=node,
             question=question,
             key=key,
@@ -434,7 +431,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         )
         node.add_children([node for node in children_nodes if node.parent])  # type: ignore
 
-        return children_nodes, generate_metrics
+        return children_nodes, generate_response
 
     def evaluate_node(
         self,
@@ -443,7 +440,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[List[Dict[str, Any]], LATSEvaluateMetrics]:
+    ) -> Tuple[List[Dict[str, Any]], LATSEvaluateResponse]:
         """Evaluate the given node and its children.
 
         Args:
@@ -454,7 +451,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[List[Dict[str, Any]], LATSEvaluateMetrics]: A list of dictionaries containing evaluation results for each child node and their metrics.
+            Tuple[List[Dict[str, Any]], LATSEvaluateResponse]: A list of dictionaries containing evaluation results for each child node and their responses.
         """
         raise NotImplementedError
 
@@ -478,7 +475,7 @@ class LATSGeneralStrategy(LATSBaseStrategy):
         List[Node],
         List[List[Node]],
         List[List[Dict[str, Any]]],
-        LATSSimulationMetrics,
+        LATSSimulationResponse,
     ]:
         """Simulate the node to estimate its value and collect information about the simulation process.
 
@@ -497,12 +494,12 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             value_additional_keys (Dict[str, str]): Additional keys for value estimation prompt formatting.
 
         Returns:
-            Tuple[float, Node, List[Node], List[List[Node]], List[List[Dict[str, Any]]], LATSSimulationMetrics]:
+            Tuple[float, Node, List[Node], List[List[Node]], List[List[Dict[str, Any]]], LATSSimulationResponse]:
                 - The estimated value of the node
                 - The simulation's terminal node
                 - Each simulation iteration's children nodes
                 - Each simulation iteration's children nodes' values
-                - Metrics for the simulation process
+                - Response for the simulation process
         """
         raise NotImplementedError
 
@@ -562,14 +559,14 @@ class LATSGeneralStrategy(LATSBaseStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[List[Dict[str, str]], List[Response]]: A list of dictionaries containing reflection results and the metrics.
+            Tuple[List[Dict[str, str]], List[Response]]: A list of dictionaries containing reflection results and the responses.
         """
         unique_trajectories = get_unique_trajectories(
             self.failed_trajectories, max_unique=self.max_unique
         )
 
         reflections: List[Dict[str, str]] = []
-        reflection_metrics: List[Response] = []
+        reflection_response: List[Response] = []
         for trajectory in unique_trajectories:
             reflection_out = _prompt_reflection(
                 self.llm,
@@ -579,14 +576,12 @@ class LATSGeneralStrategy(LATSBaseStrategy):
                 prompt=prompt,
                 additional_keys=additional_keys,
             )
-            reflection_metrics.append(get_prompt_info(reflection_out))
-            reflection = reflection_out.choices[0].message.content
-
-            reflections.append({"trajectory": trajectory, "reflection": reflection})
+            reflection_response.append(reflection_out)
+            reflections.append({"trajectory": trajectory, "reflection":  reflection_out.output_text})
 
         self.reflection_map = reflections
 
-        return reflections, reflection_metrics
+        return reflections, reflection_response
 
     def reset(self) -> None:
         """Reset the strategy to its initial state."""

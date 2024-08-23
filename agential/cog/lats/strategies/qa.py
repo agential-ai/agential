@@ -15,17 +15,16 @@ from agential.cog.lats.functional import (
 )
 from agential.cog.lats.node import Node
 from agential.cog.lats.output import (
-    LATSEvaluateMetrics,
-    LATSGenerateMetrics,
+    LATSEvaluateResponse,
+    LATSGenerateResponse,
     LATSReActStepOutput,
-    LATSSimulationMetrics,
-    LATSSimulationStepMetrics,
+    LATSSimulationResponse,
+    LATSSimulationStepResponse,
 )
 from agential.cog.lats.strategies.general import LATSGeneralStrategy
 from agential.eval.em import EM
-from agential.llm.llm import BaseLLM
+from agential.llm.llm import BaseLLM, Response
 from agential.utils.docstore import DocstoreExplorer
-from agential.utils.metrics import Response, get_prompt_info
 from agential.utils.parse import remove_newline
 
 
@@ -84,7 +83,7 @@ class LATSQAStrategy(LATSGeneralStrategy):
         reflect_prompt: str,
         additional_keys: Dict[str, str],
         reflect_additional_keys: Dict[str, str],
-    ) -> Tuple[List[Node], LATSGenerateMetrics]:
+    ) -> Tuple[List[Node], LATSGenerateResponse]:
         """Generate child nodes for the given node.
 
         Args:
@@ -99,12 +98,12 @@ class LATSQAStrategy(LATSGeneralStrategy):
             reflect_additional_keys (Dict[str, str]): Additional keys for reflection prompt formatting.
 
         Returns:
-            Tuple[List[Node], LATSGenerateMetrics]: A list of generated child nodes, and the pydantic of corresponding metrics.
+            Tuple[List[Node], LATSGenerateResponse]: A list of generated child nodes, and the pydantic of corresponding metrics.
         """
         reflections_str = ""
-        reflection_metrics: List[Response] = []
+        reflection_response: List[Response] = []
         if self.reflect_condition():
-            reflections, reflection_metrics = self.reflect(
+            reflections, reflection_response = self.reflect(
                 question=question,
                 examples=reflect_examples,
                 prompt=reflect_prompt,
@@ -122,9 +121,9 @@ class LATSQAStrategy(LATSGeneralStrategy):
         trajectory = get_node_trajectory_qa(node)
 
         unique_states = set()
-        children_nodes, thoughts_metrics, actions_metrics = [], [], []
+        children_nodes, thoughts_response, actions_response = [], [], []
         for _ in range(self.n_samples):
-            trajectory_i, thought, thought_metrics = self.generate_thought(
+            trajectory_i, thought, thought_response = self.generate_thought(
                 question=question,
                 examples=examples,
                 trajectory=trajectory,
@@ -133,7 +132,7 @@ class LATSQAStrategy(LATSGeneralStrategy):
                 prompt=prompt,
                 additional_keys=additional_keys,
             )
-            trajectory_i, action_type, query, action_metrics = self.generate_action(
+            trajectory_i, action_type, query, action_response = self.generate_action(
                 question=question,
                 examples=examples,
                 trajectory=trajectory_i,
@@ -190,14 +189,14 @@ class LATSQAStrategy(LATSGeneralStrategy):
                     ),
                 )
 
-            thoughts_metrics.append(thought_metrics)
-            actions_metrics.append(action_metrics)
+            thoughts_response.append(thought_response)
+            actions_response.append(action_response)
             children_nodes.append(new_node)
 
-        metrics = LATSGenerateMetrics(
-            thoughts_metrics=thoughts_metrics,
-            actions_metrics=actions_metrics,
-            reflections_metrics=reflection_metrics,
+        metrics = LATSGenerateResponse(
+            thoughts_response=thoughts_response,
+            actions_response=actions_response,
+            reflections_response=reflection_response,
         )
 
         return children_nodes, metrics
@@ -236,13 +235,13 @@ class LATSQAStrategy(LATSGeneralStrategy):
             prompt=prompt,
             additional_keys=additional_keys,
         )
-        action = out.choices[0].message.content
+        action = out.output_text
 
         action = remove_newline(action).split("Observation")[0]
         action_type, query = parse_qa_action(action)
         trajectory += f"{action_type}[{query}]"
 
-        return trajectory, action_type, query, get_prompt_info(out)
+        return trajectory, action_type, query, out
 
     def generate_observation(
         self,
@@ -303,7 +302,7 @@ class LATSQAStrategy(LATSGeneralStrategy):
         examples: str,
         prompt: str,
         additional_keys: Dict[str, str],
-    ) -> Tuple[List[Dict[str, Any]], LATSEvaluateMetrics]:
+    ) -> Tuple[List[Dict[str, Any]], LATSEvaluateResponse]:
         """Evaluate the given node and its children.
 
         Args:
@@ -314,9 +313,9 @@ class LATSQAStrategy(LATSGeneralStrategy):
             additional_keys (Dict[str, str]): Additional keys for prompt formatting.
 
         Returns:
-            Tuple[List[Dict[str, Any]], LATSEvaluateMetrics]: A list of dictionaries containing evaluation results for each child node and their metrics.
+            Tuple[List[Dict[str, Any]], LATSEvaluateResponse]: A list of dictionaries containing evaluation results for each child node and their metrics.
         """
-        values, values_metrics = [], []
+        values, values_response = [], []
         child_trajectory_cache = {}
         for idx, child in enumerate(node.children):
             if not child.is_terminal:
@@ -354,7 +353,7 @@ class LATSQAStrategy(LATSGeneralStrategy):
                             additional_keys=additional_keys,
                         )
                         value_response = value_str_out
-                        value_str = value_str_out.choices[0].message.content
+                        value_str = value_str_out.output_text
 
                         if self.cache_values:
                             self.value_cache[unique_key] = value_str
@@ -365,15 +364,15 @@ class LATSQAStrategy(LATSGeneralStrategy):
 
                     child_trajectory_cache[trajectory] = value
 
-                values_metrics.append(
-                    get_prompt_info(value_response) if value_response else None
+                values_response.append(
+                    value_response if value_response else None
                 )
                 values.append({"explanation": explanation, "value": value})
             else:
-                values_metrics.append(None)
+                values_response.append(None)
                 values.append({"explanation": "", "value": -1e10})
 
-        return values, LATSEvaluateMetrics(values_metrics=values_metrics)
+        return values, LATSEvaluateResponse(values_response=values_response)
 
     def simulate_node(
         self,
@@ -395,7 +394,7 @@ class LATSQAStrategy(LATSGeneralStrategy):
         List[Node],
         List[List[Node]],
         List[List[Dict[str, Any]]],
-        LATSSimulationMetrics,
+        LATSSimulationResponse,
     ]:
         """Simulate the node to estimate its value and collect information about the simulation process.
 
@@ -414,12 +413,12 @@ class LATSQAStrategy(LATSGeneralStrategy):
             value_additional_keys (Dict[str, str]): Additional keys for value estimation prompt formatting.
 
         Returns:
-            Tuple[float, Node, List[Node], List[List[Node]], List[List[Dict[str, Any]]], LATSSimulationMetrics]:
+            Tuple[float, Node, List[Node], List[List[Node]], List[List[Dict[str, Any]]], LATSSimulationResponse]:
                 - The estimated value of the node
                 - The simulation's terminal node
                 - Each simulation iteration's children nodes
                 - Each simulation iteration's children nodes' values
-                - Metrics for the simulation process
+                - Response for the simulation process
         """
         depth = node.depth
         rewards: List[int] = [0]
@@ -427,14 +426,14 @@ class LATSQAStrategy(LATSGeneralStrategy):
         simulation_current_nodes: List[Node] = []
         simulation_children_nodes: List[List[Node]] = []
         simulation_values: List[List[Dict[str, Any]]] = []
-        simulation_step_metrics: List[LATSSimulationStepMetrics] = []
+        simulation_step_response: List[LATSSimulationStepResponse] = []
         while not node.is_terminal and depth < self.depth_limit:
             simulation_current_nodes.append(node)
 
             values: List[Dict[str, Any]] = []
-            values_metrics: List[Optional[Response]] = []
+            values_response: List[Optional[Response]] = []
 
-            children_nodes, generate_metrics = self.generate_children_nodes(
+            children_nodes, generate_response = self.generate_children_nodes(
                 node=node,
                 question=question,
                 key=key,
@@ -449,17 +448,17 @@ class LATSQAStrategy(LATSGeneralStrategy):
 
             for node in children_nodes:
                 if node.is_terminal and node.parent:
-                    simulation_step_metrics.append(
-                        LATSSimulationStepMetrics(
-                            generate_metrics=generate_metrics,
-                            evaluate_metrics=LATSEvaluateMetrics(
-                                values_metrics=values_metrics
+                    simulation_step_response.append(
+                        LATSSimulationStepResponse(
+                            generate_response=generate_response,
+                            evaluate_response=LATSEvaluateResponse(
+                                values_response=values_response
                             ),
                         )
                     )
 
-                    simulation_metrics = LATSSimulationMetrics(
-                        simulation_step_metrics=simulation_step_metrics
+                    simulation_response = LATSSimulationResponse(
+                        simulation_step_response=simulation_step_response
                     )
 
                     return (
@@ -468,7 +467,7 @@ class LATSQAStrategy(LATSGeneralStrategy):
                         simulation_current_nodes,
                         simulation_children_nodes,
                         simulation_values,
-                        simulation_metrics,
+                        simulation_response,
                     )
 
             for child in children_nodes:
@@ -497,13 +496,13 @@ class LATSQAStrategy(LATSGeneralStrategy):
                         additional_keys=value_additional_keys,
                     )
 
-                    value_str = value_str_out.choices[0].message.content
+                    value_str = value_str_out.output_text
 
                     explanation, value = parse_value(value_str)  # type: ignore
-                    values_metrics.append(get_prompt_info(value_str_out))
+                    values_response.append(value_str_out)
                     values.append({"explanation": explanation, "value": value})
                 else:
-                    values_metrics.append(None)
+                    values_response.append(None)
                     values.append({"explanation": "", "value": -1e10})
 
             simulation_values.append(values)
@@ -516,15 +515,15 @@ class LATSQAStrategy(LATSGeneralStrategy):
             if depth == self.depth_limit:
                 rewards = [-1]
 
-            simulation_step_metrics.append(
-                LATSSimulationStepMetrics(
-                    generate_metrics=generate_metrics,
-                    evaluate_metrics=LATSEvaluateMetrics(values_metrics=values_metrics),
+            simulation_step_response.append(
+                LATSSimulationStepResponse(
+                    generate_response=generate_response,
+                    evaluate_response=LATSEvaluateResponse(values_response=values_response),
                 )
             )
 
-        simulation_metrics = LATSSimulationMetrics(
-            simulation_step_metrics=simulation_step_metrics
+        simulation_response = LATSSimulationResponse(
+            simulation_step_response=simulation_step_response
         )
 
         return (
@@ -533,7 +532,7 @@ class LATSQAStrategy(LATSGeneralStrategy):
             simulation_current_nodes,
             simulation_children_nodes,
             simulation_values,
-            simulation_metrics,
+            simulation_response,
         )
 
 

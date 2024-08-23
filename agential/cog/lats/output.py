@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
 
 from agential.cog.base.output import BaseOutput
-from agential.utils.metrics import Response
+from agential.llm.llm import Response
 
 
 class LATSReActStepOutput(BaseModel):
@@ -32,72 +32,72 @@ class LATSReActStepOutput(BaseModel):
     )
 
 
-class LATSGenerateMetrics(BaseModel):
-    """LATS generate metrics Pydantic output class.
+class LATSGenerateResponse(BaseModel):
+    """LATS generate responses Pydantic output class.
 
     Attributes:
-        thoughts_metrics (List[Response]): The metrics of the thoughts.
-        actions_metrics (List[Response]): The metrics of the actions.
-        reflections_metrics (List[Response]): The metrics of the reflections.
+        thoughts_response (List[Response]): The responses of the thoughts.
+        actions_response (List[Response]): The responses of the actions.
+        reflections_response (List[Response]): The responses of the reflections.
     """
 
-    thoughts_metrics: List[Response] = Field(
+    thoughts_response: List[Response] = Field(
         ...,
-        description="The metrics of the thoughts.",
+        description="The responses of the thoughts.",
     )
 
-    actions_metrics: List[Response] = Field(
+    actions_response: List[Response] = Field(
         ...,
-        description="The metrics of the actions.",
+        description="The responses of the actions.",
     )
 
-    reflections_metrics: List[Response] = Field(
+    reflections_response: List[Response] = Field(
         ...,
-        description="The metrics of the reflections.",
+        description="The responses of the reflections.",
     )
 
 
-class LATSEvaluateMetrics(BaseModel):
-    """LATS evaluate metrics Pydantic output class.
+class LATSEvaluateResponse(BaseModel):
+    """LATS evaluate responses Pydantic output class.
 
     Attributes:
-        values_metrics (List[Optional[Response]]): The metrics of the values.
+        values_response (List[Optional[Response]]): The responses of the values.
     """
 
-    values_metrics: List[Optional[Response]] = Field(
+    values_response: List[Optional[Response]] = Field(
         ...,
-        description="The metrics of the values.",
+        description="The responses of the values.",
     )
 
 
-class LATSSimulationStepMetrics(BaseModel):
-    """LATS simulation step metrics Pydantic output class.
+class LATSSimulationStepResponse(BaseModel):
+    """LATS simulation step responses Pydantic output class.
 
     Attributes:
-        generate_metrics (LATSGenerateMetrics): The metrics of the thoughts, actions, and reflections.
-        evaluate_metrics (LATSEvaluateMetrics): The metrics of the values.
+        generate_response (LATSGenerateResponse): The responses of the thoughts, actions, and reflections.
+        evaluate_response (LATSEvaluateResponse): The responses of the values.
     """
 
-    generate_metrics: LATSGenerateMetrics = Field(
+    generate_response: LATSGenerateResponse = Field(
         ...,
-        description="The metrics of the thoughts, actions, and reflections.",
+        description="The responses of the thoughts, actions, and reflections.",
     )
-    evaluate_metrics: LATSEvaluateMetrics = Field(
+    evaluate_response: LATSEvaluateResponse = Field(
         ...,
-        description="The metrics of the values.",
+        description="The responses of the values.",
     )
 
 
-class LATSSimulationMetrics(BaseModel):
-    """LATS simulation metrics Pydantic output class.
+class LATSSimulationResponse(BaseModel):
+    """LATS simulation responses Pydantic output class.
 
     Attributes:
-        simulation_step_metrics (List[LATSSimulationStepMetrics]): The metrics of the simulation.
+        simulation_step_response (List[LATSSimulationStepResponse]): The responses of the simulation.
     """
 
-    simulation_step_metrics: List[LATSSimulationStepMetrics] = Field(
+    simulation_step_response: List[LATSSimulationStepResponse] = Field(
         ...,
-        description="The metrics of the simulation.",
+        description="The responses of the simulation.",
     )
 
 
@@ -141,11 +141,11 @@ class LATSStepOutput(BaseModel):
         iteration (int): The iteration number.
         current_node (Dict[str, Any]): The current node.
         children_nodes (List[Dict[str, Any]]): The children nodes of the current node.
-        generate_metrics (LATSGenerateMetrics): The metrics of the thoughts, actions, and reflections.
+        generate_response (LATSGenerateResponse): The responses of the thoughts, actions, and reflections.
         values (Optional[List[Dict[str, Any]]]): The values of the children nodes.
-        evaluate_metrics (Optional[LATSEvaluateMetrics]): The metrics of the values.
+        evaluate_response (Optional[LATSEvaluateResponse]): The responses of the values.
         simulation_results (Optional[LATSSimulationOutput]): The results of the simulation.
-        simulation_metrics (Optional[LATSSimulationMetrics]): The metrics of the simulation.
+        simulation_response (Optional[LATSSimulationResponse]): The responses of the simulation.
     """
 
     iteration: int = Field(..., description="The iteration number.")
@@ -154,25 +154,25 @@ class LATSStepOutput(BaseModel):
         ...,
         description="The children nodes of the current node.",
     )
-    generate_metrics: LATSGenerateMetrics = Field(
+    generate_response: LATSGenerateResponse = Field(
         ...,
-        description="The metrics of the thoughts, actions, and reflections.",
+        description="The responses of the thoughts, actions, and reflections.",
     )
     values: Optional[List[Dict[str, Any]]] = Field(
         ...,
         description="The values of the children nodes.",
     )
-    evaluate_metrics: Optional[LATSEvaluateMetrics] = Field(
+    evaluate_response: Optional[LATSEvaluateResponse] = Field(
         ...,
-        description="The metrics of the values.",
+        description="The responses of the values.",
     )
     simulation_results: Optional[LATSSimulationOutput] = Field(
         ...,
         description="The results of the simulation.",
     )
-    simulation_metrics: Optional[LATSSimulationMetrics] = Field(
+    simulation_response: Optional[LATSSimulationResponse] = Field(
         ...,
-        description="The metrics of the simulation.",
+        description="The responses of the simulation.",
     )
 
 
