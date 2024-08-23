@@ -298,29 +298,6 @@ REFLEXION_REACT_STRATEGIES = {
 }
 
 
-def parse_action(string: str) -> Tuple[str, str]:
-    """Parses an action string into an action type and its argument.
-
-    This method is used in ReAct and Reflexion.
-
-    Args:
-        string (str): The action string to be parsed.
-
-    Returns:
-        Tuple[str, str]: A tuple containing the action type and argument.
-    """
-    pattern = r"^(\w+)\[(.+)\]$"
-    match = re.match(pattern, string)
-
-    if match:
-        action_type = match.group(1)
-        argument = match.group(2)
-    else:
-        action_type = ""
-        argument = ""
-    return action_type, argument
-
-
 class ReflexionCoTAgent(BaseAgent):
     """Reflexion with Chain-of-Thought actor.
 
