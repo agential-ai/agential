@@ -1,6 +1,7 @@
 """ExpeL Agent strategies for QA."""
 
 from copy import deepcopy
+import time
 from typing import Any, Dict, List, Optional, Tuple
 
 from agential.cog.expel.functional import (
@@ -12,13 +13,16 @@ from agential.cog.expel.functional import (
     parse_insights,
     remove_err_operations,
     retrieve_insight_index,
+    accumulate_metrics
 )
 from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
     ExpeLInsightMemory,
 )
+from agential.cog.expel.output import ExpeLGenerateOutput, ExpeLOutput
 from agential.cog.expel.strategies.base import ExpeLBaseStrategy
 from agential.cog.reflexion.agent import ReflexionReActAgent
+from agential.cog.reflexion.output import ReflexionReActOutput
 from agential.llm.llm import BaseLLM, Response
 from agential.utils.general import shuffle_chunk_list
 
@@ -32,6 +36,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
         experience_memory (ExpeLExperienceMemory): Memory module for storing experiences. Default is None.
         insight_memory (ExpeLInsightMemory): Memory module for storing insights derived from experiences. Default is None.
         success_batch_size (int): Batch size for processing success experiences in generating insights. Default is 8.
+        testing (bool): Whether to run in testing mode. Defaults to False.
     """
 
     def __init__(
@@ -41,56 +46,69 @@ class ExpeLStrategy(ExpeLBaseStrategy):
         experience_memory: Optional[ExpeLExperienceMemory] = None,
         insight_memory: Optional[ExpeLInsightMemory] = None,
         success_batch_size: int = 8,
+        testing: bool = False,
     ) -> None:
         """Initialization."""
+        self.starts_with_experience = experience_memory is not None
         experience_memory = experience_memory or ExpeLExperienceMemory()
         insight_memory = insight_memory or ExpeLInsightMemory()
         super().__init__(
-            llm,
-            reflexion_react_agent,
-            experience_memory,
-            insight_memory,
-            success_batch_size,
+            llm=llm,
+            reflexion_react_agent=reflexion_react_agent,
+            experience_memory=experience_memory,
+            insight_memory=insight_memory,
+            success_batch_size=success_batch_size,
+            testing=testing
         )
-
-        if experience_memory:
-            compares_response, success_response = self.extract_insights(
-                self.experience_memory.experiences
-            )
 
     def generate(
         self,
         question: str,
         key: str,
-        examples: str,
-        prompt: str,
-        reflect_examples: str,
-        reflect_prompt: str,
-        reflect_strategy: str,
-        additional_keys: Dict[str, Any],
-        reflect_additional_keys: Dict[str, Any],
-        patience: int,
-        **kwargs: Any,
-    ) -> List[Dict[str, Any]]:
-        """Generates a response based on the provided question, key, examples, prompt, reflect_examples, reflect_prompt, reflect_strategy, additional_keys, reflect_additional_keys, and patience.
+        examples: str = "",
+        prompt: str = "",
+        reflect_examples: str = "",
+        reflect_prompt: str = "",
+        reflect_strategy: str = "reflexion",
+        additional_keys: Dict[str, str] = {},
+        reflect_additional_keys: Dict[str, str] = {},
+        use_dynamic_examples: bool = True,
+        extract_insights: bool = True,
+        patience: int = 3,
+        k_docs: int = 24,
+        num_fewshots: int = 6,
+        max_fewshot_tokens: int = 1500,
+        reranker_strategy: Optional[str] = None,
+        reset: bool = False,
+    ):
+        start = time.time()
 
-        Args:
-            question (str): The question to generate a response for.
-            key (str): The key associated with the question.
-            examples (str): The examples to use for the generation.
-            prompt (str): The prompt to use for the generation.
-            reflect_examples (str): The examples to use for the reflection.
-            reflect_prompt (str): The prompt to use for the reflection.
-            reflect_strategy (str): The strategy to use for the reflection.
-            additional_keys (Dict[str, Any]): Additional keys to include in the response.
-            reflect_additional_keys (Dict[str, Any]): Additional keys to include in the reflection.
-            patience (int): The number of attempts to make before giving up.
-            **kwargs (Any): Additional keyword arguments.
+        compares_response: List[List[Response]] = []
+        successes_response: List[List[Response]] = []
+        if self.starts_with_experience:
+            compare_response, success_response = self.extract_insights(
+                self.experience_memory.experiences
+            )
+            compares_response.append(compare_response)
+            successes_response.append(success_response)
+            self.starts_with_experience = False
 
-        Returns:
-            List[Dict[str, Any]]: The generated response.
-        """
-        experiences = self.gather_experience(
+        if reset:
+            self.reset()
+
+        # User has ability to override examples.
+        if use_dynamic_examples:
+            examples, additional_keys = self.get_dynamic_examples(
+                question=question,
+                examples=examples,
+                k_docs=k_docs,
+                num_fewshots=num_fewshots,
+                max_fewshot_tokens=max_fewshot_tokens,
+                reranker_strategy=reranker_strategy,
+                additional_keys=additional_keys,
+            )
+
+        experience: List[ReflexionReActOutput] = self.gather_experience(
             questions=[question],
             keys=[key],
             examples=examples,
@@ -101,10 +119,41 @@ class ExpeLStrategy(ExpeLBaseStrategy):
             additional_keys=[additional_keys],
             reflect_additional_keys=[reflect_additional_keys],
             patience=patience,
-            **kwargs,
+        )  # A single experience.
+
+        if extract_insights:
+            compare_response, success_response = self.extract_insights(experience)
+            compares_response.append(compare_response)
+            successes_response.append(success_response)
+
+        generate_out = ExpeLGenerateOutput(
+            examples=examples,
+            insights=additional_keys.get("insights", ""),
+            experience={
+                k: v for k, v in experience[0].items() if k not in ["question", "key"]
+            },
+            experience_memory=deepcopy(self.experience_memory.show_memories()),
+            insight_memory=deepcopy(self.insight_memory.show_memories()),
+            compares_response=compares_response,
+            successes_response=successes_response,
         )
 
-        return experiences
+        total_time = time.time() - start
+        total_metrics = accumulate_metrics(generate_out, )
+        out = ExpeLOutput(
+            answer=experience[0].additional_info[-1].steps[-1].answer,
+            total_prompt_tokens=total_metrics["total_prompt_tokens"],
+            total_completion_tokens=total_metrics["total_completion_tokens"],
+            total_tokens=total_metrics["total_tokens"],
+            total_prompt_cost=total_metrics["total_prompt_cost"],
+            total_completion_cost=total_metrics["total_completion_cost"],
+            total_cost=total_metrics["total_cost"],
+            total_prompt_time=total_metrics["total_prompt_time"],
+            total_time=total_time if not self.testing else 0.5,
+            additional_info=generate_out
+        )
+
+        return out
 
     def get_dynamic_examples(
         self,
@@ -165,7 +214,6 @@ class ExpeLStrategy(ExpeLBaseStrategy):
         additional_keys: List[Dict[str, str]],
         reflect_additional_keys: List[Dict[str, str]],
         patience: int,
-        **kwargs: Any,
     ) -> List[Dict[str, Any]]:
         """Gathers experience data for the Reflexion React agent, including questions, keys, examples, prompts, and additional keys. The gathered experience is added to the experience memory and returned as a dictionary.
 
@@ -180,7 +228,6 @@ class ExpeLStrategy(ExpeLBaseStrategy):
             additional_keys (List[Dict[str, str]]): Additional keys to associate with the gathered experience.
             reflect_additional_keys (List[Dict[str, str]]): Additional keys to associate with the reflection experience.
             patience (int): The patience to use for the experience gathering.
-            **kwargs (Any): Additional keyword arguments to pass to the `gather_experience` function.
 
         Returns:
             List[Dict[str, Any]]: A list of experience outputs.
@@ -197,9 +244,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
             additional_keys=additional_keys,
             reflect_additional_keys=reflect_additional_keys,
             patience=patience,
-            **kwargs,
         )
-        self.reflexion_react_agent.reset()
 
         self.experience_memory.add_memories(
             questions=[exp["question"] for exp in experiences],
@@ -356,44 +401,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
                     [{"insight": operation_insight, "score": 2}]
                 )
 
-    def create_output_dict(
-        self,
-        examples: str,
-        additional_keys: Dict[str, str],
-        experience: List[Dict[str, Any]],
-    ) -> Dict[str, Any]:
-        """Creates and returns an output dictionary containing the current state of the agent.
-
-        Args:
-            examples (str): The examples to be included in the output.
-            additional_keys (Dict[str, str]): Additional key-value pairs to be included in the output.
-            experience (List[Dict[str, Any]]): The current experience to be included in the output.
-
-        Returns:
-            Dict[str, Any]: A dictionary containing the current state of the agent, including examples, additional keys, and experience.
-        """
-        output_dict = {
-            "examples": examples,
-            "insights": additional_keys.get("insights", ""),
-            "experience": {
-                k: v for k, v in experience[0].items() if k not in ["question", "key"]
-            },
-            "experience_memory": deepcopy(self.experience_memory.show_memories()),
-            "insight_memory": deepcopy(self.insight_memory.show_memories()),
-            "prompt_metrics": self._prompt_metrics,
-        }
-        return output_dict
-
-    def reset(self, only_reflexion: bool = False) -> None:
-        """Resets the state of the `ReflexionReactAgent` and clears the `ExperienceMemory` and `InsightMemory` if `only_reflexion` is `False`.
-
-        Args:
-            only_reflexion (bool, optional): If `True`, only the `ReflexionReactAgent` is reset. If `False`, the `ExperienceMemory` and `InsightMemory` are also cleared. Defaults to `False`.
-        """
-        if only_reflexion:
-            self.reflexion_react_agent.reset()
-        else:
-            self.reflexion_react_agent.reset()
-            self.experience_memory.clear()
-            self.insight_memory.clear()
-        self._prompt_metrics = {"compare": [], "success": []}
+    def reset(self) -> None:
+        """Resets the ExperienceMemory and InsightMemory."""
+        self.experience_memory.clear()
+        self.insight_memory.clear()

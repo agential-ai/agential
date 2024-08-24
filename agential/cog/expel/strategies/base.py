@@ -21,6 +21,7 @@ class ExpeLBaseStrategy(BaseStrategy):
         experience_memory (ExpeLExperienceMemory): Memory module for storing experiences.
         insight_memory (ExpeLInsightMemory): Memory module for storing insights derived from experiences.
         success_batch_size (int): Batch size for processing success experiences in generating insights.
+        testing (bool): Whether to run in testing mode. Defaults to False.
     """
 
     def __init__(
@@ -30,9 +31,10 @@ class ExpeLBaseStrategy(BaseStrategy):
         experience_memory: ExpeLExperienceMemory,
         insight_memory: ExpeLInsightMemory,
         success_batch_size: int,
+        testing: bool = False
     ) -> None:
         """Initialization."""
-        super().__init__(llm)
+        super().__init__(llm=llm, testing=testing)
         self.reflexion_react_agent = reflexion_react_agent
         self.success_batch_size = success_batch_size
         self.insight_memory = insight_memory
@@ -78,7 +80,6 @@ class ExpeLBaseStrategy(BaseStrategy):
         additional_keys: List[Dict[str, str]],
         reflect_additional_keys: List[Dict[str, str]],
         patience: int,
-        **kwargs: Any,
     ) -> List[Dict[str, Any]]:
         """Gathers experience by executing a series of steps.
 
@@ -93,7 +94,6 @@ class ExpeLBaseStrategy(BaseStrategy):
             additional_keys (List[Dict[str, str]]): Additional keys to associate with the gathered experiences.
             reflect_additional_keys (List[Dict[str, str]]): Additional keys to associate with the insights generated from the reflection process.
             patience (int): The number of attempts to make before giving up on gathering an experience.
-            **kwargs (Any): Additional keyword arguments to pass to the underlying methods.
 
         Returns:
             List[Dict[str, Any]]: A list of experiences gathered.
@@ -126,22 +126,7 @@ class ExpeLBaseStrategy(BaseStrategy):
             operations (List[Tuple[str, str]]): A list of tuples, where each tuple contains a key and a value to update in the insight memory.
         """
         raise NotImplementedError
-
-    @abstractmethod
-    def create_output_dict(
-        self,
-        examples: str,
-        additional_keys: Dict[str, str],
-        experience: List[Dict[str, Any]],
-    ) -> Dict[str, Any]:
-        """Creates and returns an output dictionary containing the current state of the agent.
-
-        Args:
-            examples (str): The examples to be included in the output.
-            additional_keys (Dict[str, str]): Additional key-value pairs to be included in the output.
-            experience (List[Dict[str, Any]]): The current experience to be included in the output.
-
-        Returns:
-            Dict[str, Any]: A dictionary containing the current state of the agent, including examples, additional keys, and experience.
-        """
+    
+    def reset(self) -> None:
+        """Resets the ExperienceMemory and InsightMemory."""
         raise NotImplementedError

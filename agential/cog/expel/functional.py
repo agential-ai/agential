@@ -35,7 +35,6 @@ def gather_experience(
     additional_keys: List[Dict[str, str]] = [],
     reflect_additional_keys: List[Dict[str, str]] = [],
     patience: int = 3,
-    **kwargs: Any,
 ) -> List[Dict[str, Any]]:
     """Collects and aggregates experiences from a ReflexionReActAgent by generating trajectories and reflections for a set of questions and keys.
 
@@ -53,7 +52,6 @@ def gather_experience(
         additional_keys (List[Dict[str, str]]): Additional keys for the prompt. Defaults to [].
         reflect_additional_keys (List[Dict[str, str]]): Additional keys for the reflect prompt. Defaults to [].
         patience (int, optional): The patience for the agent. Defaults to 3.
-        **kwargs (Any): Additional keyword arguments.
 
     Returns:
         List[Dict[str, Any]]: A list of dictionaries, each containing the question, key, trajectory, and reflections.
@@ -80,7 +78,6 @@ def gather_experience(
             reflect_additional_keys=reflect_keys,  # type: ignore
             patience=patience,
             reset=True,
-            **kwargs,
         )
 
         reflections = [

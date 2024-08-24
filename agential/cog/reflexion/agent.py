@@ -6,9 +6,7 @@ Paper Repositories:
     - https://github.com/noahshinn/reflexion
 """
 
-import re
-
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, Optional
 
 from agential.cog.base.agent import BaseAgent
 from agential.cog.constants import BENCHMARK_FEWSHOTS, Benchmarks, FewShotType
