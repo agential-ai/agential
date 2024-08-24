@@ -238,7 +238,7 @@ class ExpeLExperienceMemory(BaseMemory):
         """
         task_idx = fewshot_doc.metadata["task_idx"]
         trajectory = self.experiences[task_idx]["trajectory"]
-        steps = trajectory[0].react_output  # A successful trial.
+        steps = trajectory.additional_info[0].steps  # A successful trial.
         steps_str = ""
         for step in steps:
             step = f"Thought: {step.thought}\nAction: {step.action_type}[{step.query}]\nObservation: {step.observation}\n"
@@ -333,7 +333,7 @@ class ExpeLExperienceMemory(BaseMemory):
             task_idx = fewshot_doc.metadata["task_idx"]
             question = self.experiences[task_idx]["question"]
             trajectory = self.experiences[task_idx]["trajectory"]
-            steps = trajectory[0].react_output  # Zero-th successful trial.
+            steps = trajectory.additional_info[0].steps  # A successful trial.
             steps_str = ""
             for step in steps:
                 step = f"Thought: {step.thought}\nAction: {step.action_type}[{step.query}]\nObservation: {step.observation}\n"
