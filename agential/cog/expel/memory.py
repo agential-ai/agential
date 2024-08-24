@@ -51,16 +51,18 @@ class ExpeLExperienceMemory(BaseMemory):
             success_traj_idxs = []
             for idx, experience in enumerate(self.experiences):
                 trajectory = experience["trajectory"].additional_info
-                is_correct = trajectory[0].steps[-1].is_correct  # Success on last step of the zero-th trial of this trajectory.
+                is_correct = (
+                    trajectory[0].steps[-1].is_correct
+                )  # Success on last step of the zero-th trial of this trajectory.
                 if is_correct:
                     success_traj_idxs.append(idx)
 
         self.success_traj_docs: List[Document] = []
         for idx in success_traj_idxs:
             question = self.experiences[idx]["question"]
-            steps = self.experiences[idx]["trajectory"].additional_info[
-                0
-            ].steps  # Zero-th trial of trajectory.
+            steps = (
+                self.experiences[idx]["trajectory"].additional_info[0].steps
+            )  # Zero-th trial of trajectory.
 
             # Add the task.
             self.success_traj_docs.append(
@@ -173,9 +175,9 @@ class ExpeLExperienceMemory(BaseMemory):
 
         for idx in success_traj_idxs:
             question = self.experiences[idx]["question"]
-            steps = self.experiences[idx]["trajectory"].additional_info[
-                0
-            ].steps  # Zero-th trial of trajectory.
+            steps = (
+                self.experiences[idx]["trajectory"].additional_info[0].steps
+            )  # Zero-th trial of trajectory.
 
             # Add the task.
             self.success_traj_docs.append(

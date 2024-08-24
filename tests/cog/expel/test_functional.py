@@ -42,7 +42,25 @@ def test_gather_experience() -> None:
         reflect_prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
         reflect_strategy="reflexion",
     )
-    gt_experiences = [{'question': '', 'key': '', 'trajectory': ReflexionReActOutput(answer='', total_prompt_tokens=0, total_completion_tokens=0, total_tokens=0, total_prompt_cost=0.0, total_completion_cost=0.0, total_cost=0.0, total_prompt_time=0.0, total_time=0.0, additional_info=[]), 'reflections': []}]
+    gt_experiences = [
+        {
+            "question": "",
+            "key": "",
+            "trajectory": ReflexionReActOutput(
+                answer="",
+                total_prompt_tokens=0,
+                total_completion_tokens=0,
+                total_tokens=0,
+                total_prompt_cost=0.0,
+                total_completion_cost=0.0,
+                total_cost=0.0,
+                total_prompt_time=0.0,
+                total_time=0.0,
+                additional_info=[],
+            ),
+            "reflections": [],
+        }
+    ]
     assert experiences == gt_experiences
 
 
@@ -50,7 +68,7 @@ def test_categorize_experiences(expel_experiences_10_fake_path: str) -> None:
     """Test categorize_experiences."""
     experiences = joblib.load(expel_experiences_10_fake_path)
     categories = categorize_experiences(experiences)
-    gt_categories = {'compare': [3], 'success': [1], 'fail': [0, 2, 4]}
+    gt_categories = {"compare": [3], "success": [1], "fail": [0, 2, 4]}
     assert categories == gt_categories
 
 

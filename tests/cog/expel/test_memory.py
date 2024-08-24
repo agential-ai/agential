@@ -32,7 +32,7 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
     assert memory.strategy == "task"
     assert isinstance(memory.embedder, Embeddings)
     assert isinstance(memory.encoder, Encoding)
-    assert len(memory.success_traj_docs) == 23
+    assert len(memory.success_traj_docs) == 16
     assert memory.vectorstore
 
     success_traj_doc_types = [
@@ -41,10 +41,16 @@ def test_expel_experience_memory_init(expel_experiences_10_fake_path: str) -> No
         "action",
         "action",
         "action",
+        "action",
         "thought",
         "thought",
         "thought",
         "thought",
+        "thought",
+        "step",
+        "step",
+        "step",
+        "step",
         "step",
     ]
 
@@ -82,22 +88,22 @@ def test_expel_experience_memory_add_memories(
     experiences = joblib.load(expel_experiences_10_fake_path)
 
     # Successful trajectory.
-    success_questions = [experiences[3]["question"]]
-    success_keys = [experiences[3]["key"]]
-    success_trajectories = [experiences[3]["trajectory"]]
+    success_questions = [experiences[1]["question"]]
+    success_keys = [experiences[1]["key"]]
+    success_trajectories = [experiences[1]["trajectory"]]
     success_reflections = [[]]
 
     # Failed trajectories (multiple).
     fail_questions = [
         experiences[0]["question"],
-        experiences[1]["question"],
+        experiences[2]["question"],
     ]
     fail_keys = [
         experiences[0]["key"],
-        experiences[1]["key"],
+        experiences[2]["key"],
     ]
-    fail_trajectories = [experiences[0]["trajectory"], experiences[1]["trajectory"]]
-    fail_reflections = [experiences[0]["reflections"], experiences[1]["reflections"]]
+    fail_trajectories = [experiences[0]["trajectory"], experiences[2]["trajectory"]]
+    fail_reflections = [experiences[0]["reflections"], experiences[2]["reflections"]]
 
     # Test with empty memory (with and without reflection).
     memory = ExpeLExperienceMemory()
@@ -111,7 +117,7 @@ def test_expel_experience_memory_add_memories(
         "trajectory": success_trajectories[0],
         "reflections": success_reflections[0],
     }
-    assert len(memory.success_traj_docs) == 10
+    assert len(memory.success_traj_docs) == 16
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
     assert memory.vectorstore
 
@@ -126,7 +132,7 @@ def test_expel_experience_memory_add_memories(
         "trajectory": success_trajectories[0],
         "reflections": success_reflections[0],
     }
-    assert len(memory.success_traj_docs) == 20
+    assert len(memory.success_traj_docs) == 32
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
     assert memory.success_traj_docs[-1].metadata["task_idx"] == 1
     assert memory.vectorstore
@@ -141,9 +147,9 @@ def test_expel_experience_memory_add_memories(
         "trajectory": success_trajectories[0],
         "reflections": success_reflections[0],
     }
-    assert len(memory.success_traj_docs) == 30
+    assert len(memory.success_traj_docs) == 48
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
-    assert memory.success_traj_docs[20].metadata["task_idx"] == 2
+    assert memory.success_traj_docs[20].metadata["task_idx"] == 1
     assert memory.success_traj_docs[-1].metadata["task_idx"] == 2
     assert memory.vectorstore
 
@@ -161,9 +167,9 @@ def test_expel_experience_memory_add_memories(
         "trajectory": fail_trajectories[1],
         "reflections": fail_reflections[1],
     }
-    assert len(memory.success_traj_docs) == 43
+    assert len(memory.success_traj_docs) == 48
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
-    assert memory.success_traj_docs[20].metadata["task_idx"] == 2
+    assert memory.success_traj_docs[20].metadata["task_idx"] == 1
     assert memory.vectorstore
 
     # Test with a mix of failed and successful trajectories.
@@ -192,9 +198,9 @@ def test_expel_experience_memory_add_memories(
         "reflections": fail_reflections[1],
     }
 
-    assert len(memory.success_traj_docs) == 66
+    assert len(memory.success_traj_docs) == 64
     assert memory.success_traj_docs[0].metadata["task_idx"] == 0
-    assert memory.success_traj_docs[20].metadata["task_idx"] == 2
+    assert memory.success_traj_docs[20].metadata["task_idx"] == 1
     assert memory.vectorstore
 
 
@@ -207,29 +213,29 @@ def test_expel_experience_memory__fewshot_doc_token_count(
     # Testing with just experiences (1 success, a dupe).
     memory = ExpeLExperienceMemory(experiences)
     gt_token_counts = [
-        554,
-        554,
-        554,
-        554,
-        554,
-        554,
-        554,
-        554,
-        554,
-        554,
-        554,
-        554,
-        554,
-        971,
-        971,
-        971,
-        971,
-        971,
-        971,
-        971,
-        971,
-        971,
-        971,
+        545,
+        545,
+        545,
+        545,
+        545,
+        545,
+        545,
+        545,
+        545,
+        545,
+        545,
+        545,
+        545,
+        545,
+        545,
+        545,
+        545,
+        545,
+        545,
+        545,
+        545,
+        545,
+        545,
     ]
     for doc, gt_token_count in zip(memory.success_traj_docs, gt_token_counts):
         token_count = memory._fewshot_doc_token_count(doc)
@@ -265,17 +271,17 @@ def test_expel_experience_memory_load_memories(
     memory_dict = memory.load_memories(query=queries["task"])
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict["fewshots"], list)
-    assert len(memory_dict["fewshots"]) == 2
+    assert len(memory_dict["fewshots"]) == 1
 
     memory_dict = memory.load_memories(query=queries["thought"])
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict["fewshots"], list)
-    assert len(memory_dict["fewshots"]) == 2
+    assert len(memory_dict["fewshots"]) == 1
 
     memory_dict = memory.load_memories(query=queries["other"])
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict["fewshots"], list)
-    assert len(memory_dict["fewshots"]) == 2
+    assert len(memory_dict["fewshots"]) == 1
 
     # Test with every reranking strategy + error.
     with pytest.raises(NotImplementedError):
@@ -289,7 +295,7 @@ def test_expel_experience_memory_load_memories(
     )
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict["fewshots"], list)
-    assert len(memory_dict["fewshots"]) == 2
+    assert len(memory_dict["fewshots"]) == 1
 
     # Length case.
     memory_dict = memory.load_memories(
@@ -297,7 +303,7 @@ def test_expel_experience_memory_load_memories(
     )
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict["fewshots"], list)
-    assert len(memory_dict["fewshots"]) == 2
+    assert len(memory_dict["fewshots"]) == 1
 
     # Thought case.
     memory_dict = memory.load_memories(
@@ -305,13 +311,13 @@ def test_expel_experience_memory_load_memories(
     )
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict["fewshots"], list)
-    assert len(memory_dict["fewshots"]) == 2
+    assert len(memory_dict["fewshots"]) == 1
 
     # Task case.
     memory_dict = memory.load_memories(query=queries["task"], reranker_strategy="task")
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict["fewshots"], list)
-    assert len(memory_dict["fewshots"]) == 2
+    assert len(memory_dict["fewshots"]) == 1
 
     # Test with varying max_fewshot_tokens.
     memory_dict = memory.load_memories(query=queries["task"], max_fewshot_tokens=0)
@@ -323,12 +329,12 @@ def test_expel_experience_memory_load_memories(
     memory_dict = memory.load_memories(query=queries["task"], num_fewshots=3)
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict["fewshots"], list)
-    assert len(memory_dict["fewshots"]) == 2
+    assert len(memory_dict["fewshots"]) == 1
 
     memory_dict = memory.load_memories(query=queries["task"], num_fewshots=2)
     assert list(memory_dict.keys()) == ["fewshots"]
     assert isinstance(memory_dict["fewshots"], list)
-    assert len(memory_dict["fewshots"]) == 2
+    assert len(memory_dict["fewshots"]) == 1
 
     memory_dict = memory.load_memories(query=queries["task"], num_fewshots=1)
     assert list(memory_dict.keys()) == ["fewshots"]

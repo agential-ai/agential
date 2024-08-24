@@ -54,7 +54,9 @@ class ExpeLStrategy(ExpeLBaseStrategy):
         )
 
         if experience_memory:
-            compares_response, success_response = self.extract_insights(self.experience_memory.experiences)
+            compares_response, success_response = self.extract_insights(
+                self.experience_memory.experiences
+            )
 
     def generate(
         self,
@@ -207,7 +209,9 @@ class ExpeLStrategy(ExpeLBaseStrategy):
         )
         return experiences
 
-    def extract_insights(self, experiences: List[Dict[str, Any]]) -> Tuple[List[Response], List[Response]]:
+    def extract_insights(
+        self, experiences: List[Dict[str, Any]]
+    ) -> Tuple[List[Response], List[Response]]:
         """Extracts insights from the provided experiences and updates the `InsightMemory` accordingly.
 
         This method is responsible for analyzing the successful and failed trials in the provided experiences, comparing them, and generating insights that are then stored in the `InsightMemory`. The insights are generated using the `get_operations_compare` and `get_operations_success` functions, and the `update_insights` method is used to apply the generated operations to the `InsightMemory`.

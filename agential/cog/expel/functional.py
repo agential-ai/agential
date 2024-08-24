@@ -83,7 +83,11 @@ def gather_experience(
             **kwargs,
         )
 
-        reflections = [trial.reflections for trial in trajectory.additional_info if trial.reflections]
+        reflections = [
+            trial.reflections
+            for trial in trajectory.additional_info
+            if trial.reflections
+        ]
         selected_reflections = list(set(list(chain.from_iterable(reflections))))  # type: ignore
         experience = {
             "question": question,
@@ -117,7 +121,9 @@ def categorize_experiences(experiences: List[Dict[str, Any]]) -> Dict[str, List]
 
     for idx, experience in enumerate(experiences):
         trajectory = experience["trajectory"]
-        trials_are_correct = [trial.steps[-1].is_correct for trial in trajectory.additional_info]
+        trials_are_correct = [
+            trial.steps[-1].is_correct for trial in trajectory.additional_info
+        ]
 
         # Success.
         if (

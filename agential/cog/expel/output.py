@@ -27,5 +27,9 @@ class ExpeLOutput(BaseModel):
     experience: Dict[str, Any] = Field(..., description="The current experience.")
     experience_memory: Dict[str, Any] = Field(..., description="The experience memory.")
     insight_memory: Dict[str, Any] = Field(..., description="The insight memory.")
-    experience_memory_response: List[Response] = Field(..., description="The experience memory responses.")
-    insight_memory_response: List[Response] = Field(..., description="The insight memory responses.")
+    experience_memory_response: List[Response] = Field(
+        ..., description="The experience memory responses."
+    )
+    insight_memory_response: List[Response] = Field(
+        ..., description="The insight memory responses."
+    )
