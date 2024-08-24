@@ -491,25 +491,23 @@ def accumulate_metrics(
         compares_response, successes_response
     ):
         for compare in compare_response:
-            pass
-        
-        for success in success_response:
-            pass
+            total_prompt_tokens += compare.prompt_tokens
+            total_completion_tokens += compare.completion_tokens 
+            total_tokens += compare.total_tokens
+            total_prompt_cost += compare.prompt_cost 
+            total_completion_cost += compare.completion_cost 
+            total_cost += compare.total_cost 
+            total_prompt_time += compare.prompt_time
 
-        for compare, success in zip(compare_response, success_response):
-            total_prompt_tokens += (
-                compare.prompt_tokens + success.prompt_tokens
-            )
-            total_completion_tokens += (
-                compare.completion_tokens + success.completion_tokens
-            )
-            total_tokens += compare.total_tokens + success.total_tokens
-            total_prompt_cost += compare.prompt_cost + success.prompt_cost
-            total_completion_cost += (
-                compare.completion_cost + success.completion_cost
-            )
-            total_cost += compare.total_cost + success.total_cost
-            total_prompt_time += compare.prompt_time + success.prompt_time
+        for success in success_response:
+            total_prompt_tokens +=  success.prompt_tokens
+            total_completion_tokens += success.completion_tokens
+            total_tokens += success.total_tokens
+            total_prompt_cost += success.prompt_cost
+            total_completion_cost += success.completion_cost
+            total_cost += success.total_cost
+            total_prompt_time +=  success.prompt_time
+
 
     for experience in experiences:
         trajectory: ReflexionReActOutput = experience['trajectory']
