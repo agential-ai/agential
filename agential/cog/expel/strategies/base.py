@@ -60,7 +60,7 @@ class ExpeLBaseStrategy(BaseStrategy):
         num_fewshots: int,
         max_fewshot_tokens: int,
         reranker_strategy: Optional[str],
-        reset: bool,    
+        reset: bool,
     ) -> ExpeLOutput:
         """Collects and stores experiences from interactions based on specified questions and strategies.
 
@@ -86,6 +86,7 @@ class ExpeLBaseStrategy(BaseStrategy):
             max_fewshot_tokens (int): The maximum number of tokens to use for the fewshot.
             reranker_strategy (Optional[str]): The strategy to use for re-ranking the retrieved.
             reset (bool): Whether to reset the agent's state for a new problem-solving session.
+
         Returns:
             ExpeLOutput: The output of the ExpeL agent.
         """

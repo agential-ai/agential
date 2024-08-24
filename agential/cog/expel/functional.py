@@ -314,13 +314,21 @@ def _prompt_compare_critique(
         failed_trial=failed_trial,
         is_full=is_full,
     )
-    print("<PROMPT COMPARE ======================================================================>")
+    print(
+        "<PROMPT COMPARE ======================================================================>"
+    )
     print(prompt)
-    print("<PROMPT COMPARE ======================================================================>")
+    print(
+        "<PROMPT COMPARE ======================================================================>"
+    )
     out = llm(prompt)
-    print("<OUT COMPARE ======================================================================>")
+    print(
+        "<OUT COMPARE ======================================================================>"
+    )
     print(repr(out.output_text))
-    print("<OUT COMPARE ======================================================================>")
+    print(
+        "<OUT COMPARE ======================================================================>"
+    )
 
     return out
 
@@ -349,14 +357,22 @@ def _prompt_all_success_critique(
         insights=insights,
         success_trajs_str=success_trajs_str,
         is_full=is_full,
-    )    
-    print("<PROMPT SUCCESS ======================================================================>")
+    )
+    print(
+        "<PROMPT SUCCESS ======================================================================>"
+    )
     print(prompt)
-    print("<PROMPT SUCCESS ======================================================================>")
+    print(
+        "<PROMPT SUCCESS ======================================================================>"
+    )
     out = llm(prompt)
-    print("<OUT SUCCESS ======================================================================>")
+    print(
+        "<OUT SUCCESS ======================================================================>"
+    )
     print(repr(out.output_text))
-    print("<OUT SUCCESS ======================================================================>")
+    print(
+        "<OUT SUCCESS ======================================================================>"
+    )
 
     return out
 
@@ -486,31 +502,29 @@ def accumulate_metrics(
     total_cost = 0.0
     total_prompt_time = 0.0
 
-
     for compare_response, success_response in zip(
         compares_response, successes_response
     ):
         for compare in compare_response:
             total_prompt_tokens += compare.prompt_tokens
-            total_completion_tokens += compare.completion_tokens 
+            total_completion_tokens += compare.completion_tokens
             total_tokens += compare.total_tokens
-            total_prompt_cost += compare.prompt_cost 
-            total_completion_cost += compare.completion_cost 
-            total_cost += compare.total_cost 
+            total_prompt_cost += compare.prompt_cost
+            total_completion_cost += compare.completion_cost
+            total_cost += compare.total_cost
             total_prompt_time += compare.prompt_time
 
         for success in success_response:
-            total_prompt_tokens +=  success.prompt_tokens
+            total_prompt_tokens += success.prompt_tokens
             total_completion_tokens += success.completion_tokens
             total_tokens += success.total_tokens
             total_prompt_cost += success.prompt_cost
             total_completion_cost += success.completion_cost
             total_cost += success.total_cost
-            total_prompt_time +=  success.prompt_time
-
+            total_prompt_time += success.prompt_time
 
     for experience in experiences:
-        trajectory: ReflexionReActOutput = experience['trajectory']
+        trajectory: ReflexionReActOutput = experience["trajectory"]
         total_prompt_tokens += trajectory.total_prompt_tokens
         total_completion_tokens += trajectory.total_completion_tokens
         total_tokens += trajectory.total_tokens

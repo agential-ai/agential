@@ -80,7 +80,7 @@ class ExpeLGeneralStrategy(ExpeLBaseStrategy):
         num_fewshots: int,
         max_fewshot_tokens: int,
         reranker_strategy: Optional[str],
-        reset: bool,    
+        reset: bool,
     ) -> ExpeLOutput:
         """Collects and stores experiences from interactions based on specified questions and strategies.
 
@@ -106,6 +106,7 @@ class ExpeLGeneralStrategy(ExpeLBaseStrategy):
             max_fewshot_tokens (int): The maximum number of tokens to use for the fewshot.
             reranker_strategy (Optional[str]): The strategy to use for re-ranking the retrieved.
             reset (bool): Whether to reset the agent's state for a new problem-solving session.
+
         Returns:
             ExpeLOutput: The output of the ExpeL agent.
         """
@@ -168,12 +169,12 @@ class ExpeLGeneralStrategy(ExpeLBaseStrategy):
 
         total_time = time.time() - start
         total_metrics = accumulate_metrics(
-            compares_response=compares_response, 
-            successes_response=successes_response, 
-            experiences=experience
+            compares_response=compares_response,
+            successes_response=successes_response,
+            experiences=experience,
         )
         out = ExpeLOutput(
-            answer=experience[0].additional_info[-1].steps[-1].answer,
+            answer=experience[0]["trajectory"].additional_info[-1].steps[-1].answer,
             total_prompt_tokens=total_metrics["total_prompt_tokens"],
             total_completion_tokens=total_metrics["total_completion_tokens"],
             total_tokens=total_metrics["total_tokens"],
