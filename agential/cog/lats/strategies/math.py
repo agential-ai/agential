@@ -7,7 +7,7 @@ from agential.cog.lats.functional import (
     _build_reflection_format,
     _prompt_agent,
     _prompt_value,
-    get_node_trajectory_math,
+    get_node_trajectory,
     parse_math_action,
     parse_value,
 )
@@ -112,7 +112,7 @@ class LATSMathStrategy(LATSGeneralStrategy):
                     + "\n\n"
                 )
 
-        trajectory = get_node_trajectory_math(node)
+        trajectory = get_node_trajectory(node)
 
         unique_states = set()
         children_nodes, thoughts_response, actions_response = [], [], []
@@ -164,10 +164,10 @@ class LATSMathStrategy(LATSGeneralStrategy):
                 )
 
                 if new_node.is_terminal and reward == 0:
-                    traversed_nodes = get_node_trajectory_math(new_node)
+                    trajectory = get_node_trajectory(new_node)
                     self.failed_trajectories.append(
                         {
-                            "trajectory": traversed_nodes,
+                            "trajectory": trajectory,
                             "final_answer": query,
                         }
                     )
@@ -235,7 +235,7 @@ class LATSMathStrategy(LATSGeneralStrategy):
         action_type, query = parse_math_action(action)
         trajectory += f" {action_type}[\n```python\n{query}\n```\n]"
 
-        return trajectory, action_type, query, out
+        return trajectory, action_type, f"\n```python\n{query}\n```\n", out
 
     def generate_observation(
         self,
@@ -259,6 +259,7 @@ class LATSMathStrategy(LATSGeneralStrategy):
             reward, observation, done flag, and external tool information.
         """
         external_tool_info = {"execution_status": "", "code_answer": ""}
+        query = query.split("```python")[-1].split("```")[0].strip()
         code_answer, execution_status = safe_execute(query)
 
         reward, done = 0, False
@@ -310,7 +311,7 @@ class LATSMathStrategy(LATSGeneralStrategy):
         child_trajectory_cache = {}
         for idx, child in enumerate(node.children):
             if not child.is_terminal:
-                trajectory = get_node_trajectory_math(child)
+                trajectory = get_node_trajectory(child)
                 if trajectory in child_trajectory_cache:
                     value = 0
                     explanation = ""
@@ -461,7 +462,7 @@ class LATSMathStrategy(LATSGeneralStrategy):
 
             for child in children_nodes:
                 if not child.is_terminal and node.parent:
-                    child_trajectory = get_node_trajectory_math(child)
+                    child_trajectory = get_node_trajectory(child)
                     failed_trajectories = ""
                     if len(self.reflection_map) > 0:
                         for trajectory_reflection in self.reflection_map:

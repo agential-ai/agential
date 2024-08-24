@@ -105,8 +105,14 @@ def _prompt_reflection(
         prompt=prompt,
         additional_keys=additional_keys,
     )
+    print("<PROMPT REFLECT===============================================================>")
+    print(prompt)
+    print("<PROMPT REFLECT===============================================================>")
     out = llm(prompt)
-
+    print("<OUT REFLECT===============================================================>")
+    print(repr(out.output_text))
+    print("<OUT REFLECT===============================================================>")
+    
     return out
 
 
@@ -172,7 +178,15 @@ def _prompt_value(
         prompt=prompt,
         additional_keys=additional_keys,
     )
+    print("<PROMPT VALUE===============================================================>")
+    print(prompt)
+    print("<PROMPT VALUE===============================================================>")
+    
     out = llm(prompt)
+    print("<OUT VALUE===============================================================>")
+    print(repr(out.output_text))
+    print("<OUT VALUE===============================================================>")
+    
 
     return out
 
@@ -239,7 +253,15 @@ def _prompt_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
+    print("<PROMPT REFLECT===============================================================>")
+    print(prompt)
+    print("<PROMPT REFLECT===============================================================>")
+    
     out = llm(prompt)
+    print("<OUT REFLECT===============================================================>")
+    print(repr(out.output_text))
+    print("<OUT REFLECT===============================================================>")
+    
 
     return out
 
@@ -269,7 +291,7 @@ def get_unique_trajectories(
     return unique_trajectories
 
 
-def get_node_trajectory_qa(node: Node) -> str:
+def get_node_trajectory(node: Node) -> str:
     """Generates a string representation of the trajectory from the given node to the root.
 
     Args:
@@ -336,35 +358,6 @@ def parse_value(string: str) -> Tuple[str, float]:
         return explanation.strip(), score
     except Exception:
         return "Explanation not found", 0.0
-
-
-def get_node_trajectory_math(node: Node) -> str:
-    """Generates a string representation of the trajectory from the given node to the root.
-
-    Args:
-        node (Node): The current node in the tree.
-
-    Returns:
-        str: A string representation of the trajectory, including thoughts, actions, and observations.
-    """
-    trajectory = []
-
-    while node:
-        step = []
-        if node.depth > 0:
-            if node.state.thought:
-                step.append(f"Thought {node.depth}: {node.state.thought}")
-            if node.state.action_type and node.state.query:
-                step.append(
-                    f"Action {node.depth}: {node.state.action_type}[\n```python\n{node.state.query}\n```\n]"
-                )
-            if node.state.observation:
-                step.append(f"Observation {node.depth}: {node.state.observation}")
-        step_str = "\n".join(step)
-        trajectory.append(step_str)
-        node = node.parent  # type: ignore
-
-    return "\n".join(reversed(trajectory))
 
 
 def parse_math_action(action: str) -> Tuple[str, str]:

@@ -13,8 +13,7 @@ from agential.cog.lats.functional import (
     _prompt_value,
     accumulate_metrics,
     get_node_trajectory_code,
-    get_node_trajectory_math,
-    get_node_trajectory_qa,
+    get_node_trajectory,
     get_unique_trajectories,
     parse_code_action,
     parse_latest_implement,
@@ -176,8 +175,8 @@ def test_get_unique_trajectories() -> None:
     assert result == [f"Path{i}" for i in range(1, 6)]
 
 
-def test_get_node_trajectory_qa() -> None:
-    """Tests the get_node_trajectory_qa() function."""
+def test_get_node_trajectory() -> None:
+    """Tests the get_node_trajectory() function."""
     root = Node(
         state=LATSReActStepOutput(
             **{
@@ -218,11 +217,11 @@ def test_get_node_trajectory_qa() -> None:
     )
 
     expected_trajectory = "\nThought 1: Child1 thought\nAction 1: Lookup[topic]\nThought 2: Child2 thought\nAction 2: Finish[answer]\nObservation 2: Answer correct"
-    assert get_node_trajectory_qa(child2) == expected_trajectory
+    assert get_node_trajectory(child2) == expected_trajectory
 
     # Test root node.
     root = Node()
-    assert get_node_trajectory_qa(root) == ""
+    assert get_node_trajectory(root) == ""
 
 
 def test_parse_qa_action():
@@ -265,55 +264,6 @@ def test_parse_value():
         "Tricky: score.",
         7,
     )
-
-
-def test_get_node_trajectory_math() -> None:
-    """Tests the get_node_trajectory_math() function."""
-    root = Node(
-        state=LATSReActStepOutput(
-            **{
-                "thought": "Root thought",
-                "action_type": "",
-                "query": "",
-                "observation": "",
-                "answer": "",
-                "external_tool_info": {},
-            }
-        )
-    )
-    child1 = Node(
-        state=LATSReActStepOutput(
-            **{
-                "thought": "Child1 thought",
-                "action_type": "Lookup",
-                "query": "topic",
-                "observation": "",
-                "answer": "",
-                "external_tool_info": {},
-            }
-        ),
-        parent=root,
-    )
-    child2 = Node(
-        state=LATSReActStepOutput(
-            **{
-                "thought": "Child2 thought",
-                "action_type": "Finish",
-                "query": "answer",
-                "observation": "Answer correct",
-                "answer": "",
-                "external_tool_info": {},
-            }
-        ),
-        parent=child1,
-    )
-
-    expected_trajectory = "\nThought 1: Child1 thought\nAction 1: Lookup[\n```python\ntopic\n```\n]\nThought 2: Child2 thought\nAction 2: Finish[\n```python\nanswer\n```\n]\nObservation 2: Answer correct"
-    assert get_node_trajectory_math(child2) == expected_trajectory
-
-    # Test root node.
-    root = Node()
-    assert get_node_trajectory_math(root) == ""
 
 
 def test_parse_math_action():
