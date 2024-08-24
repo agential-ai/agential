@@ -266,7 +266,7 @@ class ReflexionReActCodeStrategy(ReflexionReActGeneralStrategy):
         )
         scratchpad += f"{action_type}[\n```python\n{query}\n```\n]"
 
-        return scratchpad, action_type, query, out
+        return scratchpad, action_type, f"\n```python\n{query}\n```\n", out
 
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str, key: str
@@ -290,6 +290,7 @@ class ReflexionReActCodeStrategy(ReflexionReActGeneralStrategy):
                 - The observation.
                 - A dictionary with additional information.
         """
+        query = query.split("```python")[-1].split("```")[0].strip()
         external_tool_info = {"execution_status": ""}
 
         answer = ""
@@ -329,7 +330,7 @@ class ReflexionReActCodeStrategy(ReflexionReActGeneralStrategy):
 
         return (
             scratchpad,
-            answer,
+            f"\n```python\n{answer}\n```\n",
             finished,
             EM(execution_status, "Done", normalize=False),
             obs,
@@ -352,6 +353,8 @@ class ReflexionReActCodeStrategy(ReflexionReActGeneralStrategy):
         Returns:
             bool: True if the halting condition is met, False otherwise.
         """
+        answer = answer.split("```python")[-1].split("```")[0].strip()
+        
         _, execution_status = safe_execute(f"{answer}\n\n{key}")
         return (
             EM(execution_status, "Done", normalize=False) or idx >= self.max_trials + 1
@@ -387,6 +390,9 @@ class ReflexionReActCodeStrategy(ReflexionReActGeneralStrategy):
         Returns:
             bool: True if the reflection condition is met, False otherwise. The reflection condition is met when the agent is halted, the answer is not correct, and the reflection strategy is provided.
         """
+        
+        answer = answer.split("```python")[-1].split("```")[0].strip()
+
         halted = _is_halted(
             finished=finished,
             step_idx=idx,
@@ -402,7 +408,7 @@ class ReflexionReActCodeStrategy(ReflexionReActGeneralStrategy):
         )
 
         _, execution_status = safe_execute(f"{answer}\n\n{key}")
-
+    
         return (
             halted
             and not EM(execution_status, "Done", normalize=False)
