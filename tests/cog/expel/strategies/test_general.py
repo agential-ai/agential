@@ -41,7 +41,7 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
     assert not strategy.experience_memory.success_traj_docs
     assert not strategy.experience_memory.vectorstore
     assert not strategy.insight_memory.insights
-    
+
     # Test with all parameters specified except experience memory and reflexion_react_agent.
     strategy = ExpeLGeneralStrategy(
         llm=llm,
@@ -62,7 +62,7 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
     assert not strategy.experience_memory.success_traj_docs
     assert not strategy.experience_memory.vectorstore
     assert strategy.insight_memory.insights == [{"insight": "blah blah", "score": 10}]
-   
+
     # Test with custom reflexion_react_agent (verify it overrides reflexion_react_kwargs)
     strategy = ExpeLGeneralStrategy(
         llm=llm,
@@ -72,7 +72,7 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
     )
     assert isinstance(strategy.reflexion_react_agent, ReflexionReActAgent)
     assert strategy.reflexion_react_agent.benchmark == "hotpotqa"
-   
+
     # Test with custom experience memory (verify correct initialization).
     experiences = joblib.load(expel_experiences_10_fake_path)
     experiences = experiences[:1]
@@ -84,7 +84,7 @@ def test_init(expel_experiences_10_fake_path: str) -> None:
     )
     assert strategy.experience_memory.experiences == experiences
     assert strategy.insight_memory.insights == []
-   
+
 
 def test_generate() -> None:
     """Test generate."""
@@ -812,7 +812,9 @@ def test_reset() -> None:
     """Test reset."""
     llm = MockLLM("gpt-3.5-turbo", responses=[])
     reflexion_react_agent = ReflexionReActAgent(llm=llm, benchmark="hotpotqa")
-    strategy = ExpeLGeneralStrategy(llm=llm, reflexion_react_agent=reflexion_react_agent)
+    strategy = ExpeLGeneralStrategy(
+        llm=llm, reflexion_react_agent=reflexion_react_agent
+    )
 
     strategy.experience_memory.experiences = "dog"
     strategy.insight_memory.insights = ["turtle"]
