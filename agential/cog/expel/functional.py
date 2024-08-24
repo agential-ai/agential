@@ -348,7 +348,6 @@ def _prompt_all_success_critique(
         insights (List[Dict[str, Any]]): A list of strings where each string represents an existing insight with a score. If the list is empty, it is treated as if there are no existing insights.
         success_trajs_str (str): A string concatenating descriptions of successful trials related to the task.
         is_full (bool): Indicates whether the full critique summary is to be used in the prompt.
-        additional_keys (Dict[str, str]): Additional keys to format the prompt. Defaults to {}.
 
     Returns:
         Response: The generated critique from the LLM, optionally with newline characters removed depending on the `replace_newline` parameter.

@@ -172,10 +172,18 @@ class ExpeLBaseStrategy(BaseStrategy):
 
     @abstractmethod
     def update_insights(self, operations: List[Tuple[str, str]]) -> None:
-        """Updates the insights in the insight memory based on the provided operations.
+        """Updates the insights in the `InsightMemory` based on the provided operations.
+
+        The `operations` parameter is a list of tuples, where each tuple contains an operation type and an insight. The supported operation types are:
+        - "REMOVE": Removes the insight from the `InsightMemory`.
+        - "AGREE": Increases the score of the insight in the `InsightMemory`.
+        - "EDIT": Updates the insight in the `InsightMemory` with the provided insight.
+        - "ADD": Adds a new insight to the `InsightMemory` with a score of 2.
+
+        This method is responsible for applying the various operations to the insights stored in the `InsightMemory`.
 
         Args:
-            operations (List[Tuple[str, str]]): A list of tuples, where each tuple contains a key and a value to update in the insight memory.
+            operations (List[Tuple[str, str]]): A list of tuples, where each tuple contains an operation type and an insight.
         """
         raise NotImplementedError
 
