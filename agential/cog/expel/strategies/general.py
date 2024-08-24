@@ -113,6 +113,8 @@ class ExpeLGeneralStrategy(ExpeLBaseStrategy):
 
         compares_response: List[List[Response]] = []
         successes_response: List[List[Response]] = []
+
+        # If the agent starts with experience, extract insights from the experiences.
         if self.starts_with_experience:
             compare_response, success_response = self.extract_insights(
                 self.experience_memory.experiences
