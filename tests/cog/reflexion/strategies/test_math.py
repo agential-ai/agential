@@ -255,7 +255,7 @@ def test_reflexion_react_generate() -> None:
     key = -9867630
 
     gt_out = ReflexionReActOutput(
-        answer="answer = 0",
+        answer="\n```python\nanswer = 0\n```\n",
         total_prompt_tokens=240,
         total_completion_tokens=480,
         total_tokens=720,
@@ -270,9 +270,9 @@ def test_reflexion_react_generate() -> None:
                     ReflexionReActReActStepOutput(
                         thought="First, I need to calculate the total number of eggs laid per day after Janet eats three for breakfast.",
                         action_type="Calculate",
-                        query="eggs_laid_per_day = 16\neggs_consumed = 3\neggs_remaining = eggs_laid_per_day - eggs_consumed",
+                        query="\n```python\neggs_laid_per_day = 16\neggs_consumed = 3\neggs_remaining = eggs_laid_per_day - eggs_consumed\n```\n",
                         observation="\n```python\neggs_laid_per_day = 16\neggs_consumed = 3\neggs_remaining = eggs_laid_per_day - eggs_consumed\n```\nExecution Status: Done\nOutput: answer = None",
-                        answer="eggs_laid_per_day = 16\neggs_consumed = 3\neggs_remaining = eggs_laid_per_day - eggs_consumed",
+                        answer="\n```python\neggs_laid_per_day = 16\neggs_consumed = 3\neggs_remaining = eggs_laid_per_day - eggs_consumed\n```\n",
                         external_tool_info={
                             "execution_status": "Done",
                             "code_answer": None,
@@ -304,9 +304,9 @@ def test_reflexion_react_generate() -> None:
                     ReflexionReActReActStepOutput(
                         thought="I need to calculate how much money Janet makes from selling the remaining eggs at the farmers' market daily.",
                         action_type="Calculate",
-                        query="eggs_remaining = 13  # from previous calculation\negg_price = 2\nmoney_per_day = eggs_remaining * egg_price\nanswer = money_per_day",
+                        query="\n```python\neggs_remaining = 13  # from previous calculation\negg_price = 2\nmoney_per_day = eggs_remaining * egg_price\nanswer = money_per_day\n```\n",
                         observation="\n```python\neggs_remaining = 13  # from previous calculation\negg_price = 2\nmoney_per_day = eggs_remaining * egg_price\nanswer = money_per_day\n```\nExecution Status: Done\nOutput: answer = 26",
-                        answer="eggs_remaining = 13  # from previous calculation\negg_price = 2\nmoney_per_day = eggs_remaining * egg_price\nanswer = money_per_day",
+                        answer="\n```python\neggs_remaining = 13  # from previous calculation\negg_price = 2\nmoney_per_day = eggs_remaining * egg_price\nanswer = money_per_day\n```\n",
                         external_tool_info={
                             "execution_status": "Done",
                             "code_answer": 26,
@@ -338,9 +338,9 @@ def test_reflexion_react_generate() -> None:
                     ReflexionReActReActStepOutput(
                         thought="Janet makes $26 every day at the farmers' market.",
                         action_type="Finish",
-                        query="answer = 26",
+                        query="\n```python\nanswer = 26\n```\n",
                         observation="Answer is INCORRECT",
-                        answer="answer = 26",
+                        answer="\n```python\nanswer = 26\n```\n",
                         external_tool_info={
                             "execution_status": "Done",
                             "code_answer": 26,
@@ -378,9 +378,9 @@ def test_reflexion_react_generate() -> None:
                     ReflexionReActReActStepOutput(
                         thought="First, I need to calculate how many eggs are left after Janet eats breakfast and bakes muffins for her friends.",
                         action_type="Calculate",
-                        query="eggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast - eggs_used_for_muffins",
+                        query="\n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast - eggs_used_for_muffins\n```\n",
                         observation="\n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast - eggs_used_for_muffins\n```\nExecution Status: Done\nOutput: answer = None",
-                        answer="eggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast - eggs_used_for_muffins",
+                        answer="\n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast - eggs_used_for_muffins\n```\n",
                         external_tool_info={
                             "execution_status": "Done",
                             "code_answer": None,
@@ -412,9 +412,9 @@ def test_reflexion_react_generate() -> None:
                     ReflexionReActReActStepOutput(
                         thought="There seems to be an error in the calculation of eggs remaining. I need to adjust my approach to correctly calculate the number of eggs left for Janet to sell at the farmers' market.",
                         action_type="Calculate",
-                        query="eggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast\neggs_remaining -= eggs_used_for_muffins",
+                        query="\n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast\neggs_remaining -= eggs_used_for_muffins\n```\n",
                         observation="\n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast\neggs_remaining -= eggs_used_for_muffins\n```\nExecution Status: Done\nOutput: answer = None",
-                        answer="eggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast\neggs_remaining -= eggs_used_for_muffins",
+                        answer="\n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast\neggs_remaining -= eggs_used_for_muffins\n```\n",
                         external_tool_info={
                             "execution_status": "Done",
                             "code_answer": None,
@@ -446,9 +446,9 @@ def test_reflexion_react_generate() -> None:
                     ReflexionReActReActStepOutput(
                         thought="I have successfully calculated the number of eggs Janet has left for selling. Now, I need to determine how much money she makes from selling these eggs at the farmers' market.",
                         action_type="Calculate",
-                        query="price_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day",
+                        query="\n```python\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day\n```\n",
                         observation="\n```python\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day\n```\nExecution Status: NameError(\"name 'eggs_remaining' is not defined\")\nOutput: answer = None",
-                        answer="price_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day",
+                        answer="\n```python\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day\n```\n",
                         external_tool_info={
                             "execution_status": "NameError(\"name 'eggs_remaining' is not defined\")",
                             "code_answer": None,
@@ -480,9 +480,9 @@ def test_reflexion_react_generate() -> None:
                     ReflexionReActReActStepOutput(
                         thought="I need to ensure that the variable `eggs_remaining` is defined before using it to calculate the money made at the farmers' market. I will revise my plan to include this step explicitly. Let's try again.",
                         action_type="Calculate",
-                        query="eggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast\neggs_remaining -= eggs_used_for_muffins\n\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day",
+                        query="\n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast\neggs_remaining -= eggs_used_for_muffins\n\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day\n```\n",
                         observation="\n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast\neggs_remaining -= eggs_used_for_muffins\n\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day\n```\nExecution Status: Done\nOutput: answer = -9867630",
-                        answer="eggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast\neggs_remaining -= eggs_used_for_muffins\n\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day",
+                        answer="\n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast\neggs_remaining -= eggs_used_for_muffins\n\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day\n```\n",
                         external_tool_info={
                             "execution_status": "Done",
                             "code_answer": -9867630,
@@ -514,9 +514,9 @@ def test_reflexion_react_generate() -> None:
                     ReflexionReActReActStepOutput(
                         thought="The calculation outcome is negative, which doesn't make sense as Janet is selling eggs at the market. I need to review my plan and make sure I'm correctly subtracting the consumed eggs and eggs used for muffins before calculating the money made at the farmers' market. Let's refine the approach.",
                         action_type="Calculate",
-                        query="eggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast - eggs_used_for_muffins\n\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day",
+                        query="\n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast - eggs_used_for_muffins\n\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day\n```\n",
                         observation="\n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast - eggs_used_for_muffins\n\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day\n```\nExecution Status: Done\nOutput: answer = -9867630",
-                        answer="eggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast - eggs_used_for_muffins\n\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day",
+                        answer="\n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast - eggs_used_for_muffins\n\nprice_per_egg = 2\nmoney_made_per_day = eggs_remaining * price_per_egg\nanswer = money_made_per_day\n```\n",
                         external_tool_info={
                             "execution_status": "Done",
                             "code_answer": -9867630,
@@ -548,9 +548,9 @@ def test_reflexion_react_generate() -> None:
                     ReflexionReActReActStepOutput(
                         thought="The outcome is still incorrect. I need to reevaluate my approach and ensure I am correctly calculating the remaining eggs for sale and the money made at the farmers' market. Let's revise the plan to accurately address the issue.",
                         action_type="Calculate",
-                        query="eggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast - eggs_used_for_muffins\nif eggs_remaining >= 0:\n    price_per_egg = 2\n    money_made_per_day = eggs_remaining * price_per_egg\nelse:\n    money_made_per_day = 0\nanswer = money_made_per_day",
+                        query="\n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast - eggs_used_for_muffins\nif eggs_remaining >= 0:\n    price_per_egg = 2\n    money_made_per_day = eggs_remaining * price_per_egg\nelse:\n    money_made_per_day = 0\nanswer = money_made_per_day\n```\n",
                         observation="\n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast - eggs_used_for_muffins\nif eggs_remaining >= 0:\n    price_per_egg = 2\n    money_made_per_day = eggs_remaining * price_per_egg\nelse:\n    money_made_per_day = 0\nanswer = money_made_per_day\n```\nExecution Status: Done\nOutput: answer = 0",
-                        answer="eggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast - eggs_used_for_muffins\nif eggs_remaining >= 0:\n    price_per_egg = 2\n    money_made_per_day = eggs_remaining * price_per_egg\nelse:\n    money_made_per_day = 0\nanswer = money_made_per_day",
+                        answer="\n```python\neggs_laid_per_day = 16\neggs_consumed_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_remaining = eggs_laid_per_day - eggs_consumed_for_breakfast - eggs_used_for_muffins\nif eggs_remaining >= 0:\n    price_per_egg = 2\n    money_made_per_day = eggs_remaining * price_per_egg\nelse:\n    money_made_per_day = 0\nanswer = money_made_per_day\n```\n",
                         external_tool_info={
                             "execution_status": "Done",
                             "code_answer": 0,
@@ -600,9 +600,9 @@ def test_reflexion_react_generate() -> None:
                     ReflexionReActReActStepOutput(
                         thought="I need to calculate how many eggs Janet has remaining after taking out breakfast eggs and the ones used for baking muffins before selling the rest at the market.",
                         action_type="Calculate",
-                        query="eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\nremaining_eggs = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nmoney_made_per_day = 2 * remaining_eggs if remaining_eggs >= 0 else 0\nanswer = money_made_per_day",
+                        query="\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\nremaining_eggs = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nmoney_made_per_day = 2 * remaining_eggs if remaining_eggs >= 0 else 0\nanswer = money_made_per_day\n```\n",
                         observation="\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\nremaining_eggs = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nmoney_made_per_day = 2 * remaining_eggs if remaining_eggs >= 0 else 0\nanswer = money_made_per_day\n```\nExecution Status: Done\nOutput: answer = 0",
-                        answer="eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\nremaining_eggs = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nmoney_made_per_day = 2 * remaining_eggs if remaining_eggs >= 0 else 0\nanswer = money_made_per_day",
+                        answer="\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\nremaining_eggs = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nmoney_made_per_day = 2 * remaining_eggs if remaining_eggs >= 0 else 0\nanswer = money_made_per_day\n```\n",
                         external_tool_info={
                             "execution_status": "Done",
                             "code_answer": 0,
@@ -634,9 +634,9 @@ def test_reflexion_react_generate() -> None:
                     ReflexionReActReActStepOutput(
                         thought="I correctly calculated that Janet makes zero dollars per day at the farmers' market after accounting for breakfast eggs and muffin baking eggs.",
                         action_type="Finish",
-                        query="answer = 0",
+                        query="\n```python\nanswer = 0\n```\n",
                         observation="Answer is INCORRECT",
-                        answer="answer = 0",
+                        answer="\n```python\nanswer = 0\n```\n",
                         external_tool_info={
                             "execution_status": "Done",
                             "code_answer": 0,
@@ -738,14 +738,14 @@ def test_reflexion_react_generate_react() -> None:
         False,
         "\nThought 1: First, I need to calculate the total number of eggs laid per day after Janet eats three for breakfast.\nAction 1: Calculate[\n```python\neggs_laid_per_day = 16\neggs_consumed = 3\neggs_remaining = eggs_laid_per_day - eggs_consumed\n```\n]\nObservation 1: \n```python\neggs_laid_per_day = 16\neggs_consumed = 3\neggs_remaining = eggs_laid_per_day - eggs_consumed\n```\nExecution Status: Done\nOutput: answer = None\nThought 2: I need to calculate how much money Janet makes from selling the remaining eggs at the farmers' market daily.\nAction 2: Calculate[\n```python\neggs_remaining = 13  # from previous calculation\negg_price = 2\nmoney_per_day = eggs_remaining * egg_price\nanswer = money_per_day\n```\n]\nObservation 2: \n```python\neggs_remaining = 13  # from previous calculation\negg_price = 2\nmoney_per_day = eggs_remaining * egg_price\nanswer = money_per_day\n```\nExecution Status: Done\nOutput: answer = 26\nThought 3: Janet makes $26 every day at the farmers' market.\nAction 3: Finish[\n```python\nanswer = 26\n```\n]\nObservation 3: Answer is INCORRECT",
         True,
-        "answer = 26",
+        "\n```python\nanswer = 26\n```\n",
         [
             ReflexionReActReActStepOutput(
                 thought="First, I need to calculate the total number of eggs laid per day after Janet eats three for breakfast.",
                 action_type="Calculate",
-                query="eggs_laid_per_day = 16\neggs_consumed = 3\neggs_remaining = eggs_laid_per_day - eggs_consumed",
+                query="\n```python\neggs_laid_per_day = 16\neggs_consumed = 3\neggs_remaining = eggs_laid_per_day - eggs_consumed\n```\n",
                 observation="\n```python\neggs_laid_per_day = 16\neggs_consumed = 3\neggs_remaining = eggs_laid_per_day - eggs_consumed\n```\nExecution Status: Done\nOutput: answer = None",
-                answer="eggs_laid_per_day = 16\neggs_consumed = 3\neggs_remaining = eggs_laid_per_day - eggs_consumed",
+                answer="\n```python\neggs_laid_per_day = 16\neggs_consumed = 3\neggs_remaining = eggs_laid_per_day - eggs_consumed\n```\n",
                 external_tool_info={"execution_status": "Done", "code_answer": None},
                 is_correct=False,
                 thought_response=Response(
@@ -774,9 +774,9 @@ def test_reflexion_react_generate_react() -> None:
             ReflexionReActReActStepOutput(
                 thought="I need to calculate how much money Janet makes from selling the remaining eggs at the farmers' market daily.",
                 action_type="Calculate",
-                query="eggs_remaining = 13  # from previous calculation\negg_price = 2\nmoney_per_day = eggs_remaining * egg_price\nanswer = money_per_day",
+                query="\n```python\neggs_remaining = 13  # from previous calculation\negg_price = 2\nmoney_per_day = eggs_remaining * egg_price\nanswer = money_per_day\n```\n",
                 observation="\n```python\neggs_remaining = 13  # from previous calculation\negg_price = 2\nmoney_per_day = eggs_remaining * egg_price\nanswer = money_per_day\n```\nExecution Status: Done\nOutput: answer = 26",
-                answer="eggs_remaining = 13  # from previous calculation\negg_price = 2\nmoney_per_day = eggs_remaining * egg_price\nanswer = money_per_day",
+                answer="\n```python\neggs_remaining = 13  # from previous calculation\negg_price = 2\nmoney_per_day = eggs_remaining * egg_price\nanswer = money_per_day\n```\n",
                 external_tool_info={"execution_status": "Done", "code_answer": 26},
                 is_correct=False,
                 thought_response=Response(
@@ -805,9 +805,9 @@ def test_reflexion_react_generate_react() -> None:
             ReflexionReActReActStepOutput(
                 thought="Janet makes $26 every day at the farmers' market.",
                 action_type="Finish",
-                query="answer = 26",
+                query="\n```python\nanswer = 26\n```\n",
                 observation="Answer is INCORRECT",
-                answer="answer = 26",
+                answer="\n```python\nanswer = 26\n```\n",
                 external_tool_info={"execution_status": "Done", "code_answer": 26},
                 is_correct=False,
                 thought_response=Response(
@@ -878,7 +878,7 @@ def test_reflexion_react_generate_action() -> None:
     assert action_type == "Calculate"
     assert (
         query
-        == "eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income"
+        == "\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income\n```\n"
     )
     assert scratchpad == gt_scratchpad
     assert thought_response == Response(
@@ -905,7 +905,7 @@ def test_reflexion_react_generate_observation() -> None:
             idx=0,
             scratchpad="",
             action_type="Calculate",
-            query="eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income",
+            query="\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income\n```\n",
             key=-9867630,
         )
     )
@@ -920,7 +920,7 @@ def test_reflexion_react_generate_observation() -> None:
     )
     assert (
         answer
-        == "eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income"
+        == "\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_used_in_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_used_in_muffins\nprice_per_egg = 2\ndaily_income = eggs_sold * price_per_egg\nanswer = daily_income\n```\n"
     )
     assert not finished
     assert external_tool_info == {"execution_status": "Done", "code_answer": -9867630}
@@ -931,7 +931,7 @@ def test_reflexion_react_generate_observation() -> None:
             idx=0,
             scratchpad="",
             action_type="Finish",
-            query="answer = 5",
+            query="\n```python\nanswer = 5\n```\n",
             key="key1",
         )
     )
@@ -939,7 +939,7 @@ def test_reflexion_react_generate_observation() -> None:
     assert obs == "Answer is INCORRECT"
 
     assert scratchpad == "\nObservation 0: Answer is INCORRECT"
-    assert answer == "answer = 5"
+    assert answer == "\n```python\nanswer = 5\n```\n"
     assert finished
     assert external_tool_info == {"execution_status": "Done", "code_answer": 5}
 
@@ -949,14 +949,14 @@ def test_reflexion_react_generate_observation() -> None:
             idx=0,
             scratchpad="",
             action_type="Finish",
-            query="answer = 5",
+            query="\n```python\nanswer = 5\n```\n",
             key=5,
         )
     )
     assert is_correct
     assert obs == "Answer is CORRECT"
     assert scratchpad == "\nObservation 0: Answer is CORRECT"
-    assert answer == "answer = 5"
+    assert answer == "\n```python\nanswer = 5\n```\n"
     assert finished
     assert external_tool_info == {"execution_status": "Done", "code_answer": 5}
 
@@ -966,7 +966,7 @@ def test_reflexion_react_generate_observation() -> None:
             idx=0,
             scratchpad="",
             action_type="Invalid",
-            query="answer = 5",
+            query="\n```python\nanswer = 5\n```\n",
             key=5,
         )
     )
@@ -978,7 +978,7 @@ def test_reflexion_react_generate_observation() -> None:
         scratchpad
         == "\nObservation 0: Invalid Action. Valid Actions are Calculate[code] and Finish[answer]."
     )
-    assert answer == ""
+    assert answer == "\n```python\n\n```\n"
     assert not finished
     assert external_tool_info == {"execution_status": "", "code_answer": ""}
 

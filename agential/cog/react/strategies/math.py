@@ -120,7 +120,13 @@ class ReActMathStrategy(ReActGeneralStrategy):
             )
         scratchpad += obs
 
-        return scratchpad, f"\n```python\n{answer}\n```\n", obs, finished, external_tool_info
+        return (
+            scratchpad,
+            f"\n```python\n{answer}\n```\n",
+            obs,
+            finished,
+            external_tool_info,
+        )
 
 
 class ReActGSM8KStrategy(ReActMathStrategy):

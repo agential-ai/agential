@@ -80,7 +80,10 @@ def test_generate_observation() -> None:
     assert finished is False
     assert scratchpad == gt_scratchpad
     assert external_tool_info == {"execution_status": "Done"}
-    assert strategy._answer == 'def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None'
+    assert (
+        strategy._answer
+        == "def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None"
+    )
 
     # Test test.
     gt_obs = "\n```python\n\n\ndef first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None\n```\nExecution Status: Done"
@@ -119,7 +122,10 @@ def test_generate_observation() -> None:
     assert finished is True
     assert scratchpad == gt_scratchpad
     assert external_tool_info == {"execution_status": "Done"}
-    assert strategy._answer == 'def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None'
+    assert (
+        strategy._answer
+        == "def first_repeated_char(s):\n    char_set = set()\n    for char in s:\n        if char in char_set:\n            return char\n        else:\n            char_set.add(char)\n    return None"
+    )
 
     # Test error case.
     gt_scratchpad = "\nObservation 0: Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer]."

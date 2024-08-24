@@ -123,7 +123,12 @@ class ReflexionCoTMathStrategy(ReflexionCoTGeneralStrategy):
             obs = "Invalid action type, please try again."
         scratchpad += obs
 
-        return scratchpad, f"\n```python\n{out_answer}\n```\n", EM(answer[0], key, normalize=False), obs
+        return (
+            scratchpad,
+            f"\n```python\n{out_answer}\n```\n",
+            EM(answer[0], key, normalize=False),
+            obs,
+        )
 
     def halting_condition(
         self,
@@ -257,7 +262,7 @@ class ReflexionReActMathStrategy(ReflexionReActGeneralStrategy):
         )
         scratchpad += f"{action_type}[\n```python\n{query}\n```\n]"
 
-        return scratchpad, action_type, query, out
+        return scratchpad, action_type, f"\n```python\n{query}\n```\n", out
 
     def generate_observation(
         self, idx: int, scratchpad: str, action_type: str, query: str, key: str
@@ -282,6 +287,7 @@ class ReflexionReActMathStrategy(ReflexionReActGeneralStrategy):
                 - A dictionary with additional information.
         """
         external_tool_info = {"execution_status": "", "code_answer": ""}
+        query = query.split("```python")[-1].split("```")[0].strip()
         code_answer, execution_status = safe_execute(query)
 
         answer = ""
@@ -312,7 +318,7 @@ class ReflexionReActMathStrategy(ReflexionReActGeneralStrategy):
 
         return (
             scratchpad,
-            answer,
+            f"\n```python\n{answer}\n```\n",
             finished,
             EM(code_answer[0], key, normalize=False),
             obs,
@@ -335,6 +341,7 @@ class ReflexionReActMathStrategy(ReflexionReActGeneralStrategy):
         Returns:
             bool: True if the halting condition is met, False otherwise.
         """
+        answer = answer.split("```python")[-1].split("```")[0].strip()
         code_answer, _ = safe_execute(answer)
         return EM(code_answer[0], key, normalize=False) or idx >= self.max_trials + 1
 
@@ -368,6 +375,7 @@ class ReflexionReActMathStrategy(ReflexionReActGeneralStrategy):
         Returns:
             bool: True if the reflection condition is met, False otherwise. The reflection condition is met when the agent is halted, the answer is not correct, and the reflection strategy is provided.
         """
+        answer = answer.split("```python")[-1].split("```")[0].strip()
         halted = _is_halted(
             finished=finished,
             step_idx=idx,

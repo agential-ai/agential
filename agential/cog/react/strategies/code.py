@@ -124,7 +124,13 @@ class ReActCodeStrategy(ReActGeneralStrategy):
             obs = "Invalid Action. Valid Actions are Implement[code] Test[code] and Finish[answer]."
         scratchpad += obs
 
-        return scratchpad, f"\n```python\n{self._answer}\n```\n", obs, finished, external_tool_info
+        return (
+            scratchpad,
+            f"\n```python\n{self._answer}\n```\n",
+            obs,
+            finished,
+            external_tool_info,
+        )
 
     def reset(self) -> None:
         """Resets internal state."""

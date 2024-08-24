@@ -125,7 +125,12 @@ class ReflexionCoTCodeStrategy(ReflexionCoTGeneralStrategy):
 
         scratchpad += obs
 
-        return scratchpad, f"\n```python\n{answer}\n```\n", EM(execution_status, "Done", normalize=False), obs
+        return (
+            scratchpad,
+            f"\n```python\n{answer}\n```\n",
+            EM(execution_status, "Done", normalize=False),
+            obs,
+        )
 
     def halting_condition(
         self,
