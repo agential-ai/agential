@@ -486,6 +486,7 @@ def accumulate_metrics(
     total_cost = 0.0
     total_prompt_time = 0.0
 
+
     for compare_response, success_response in zip(
         compares_response, successes_response
     ):
