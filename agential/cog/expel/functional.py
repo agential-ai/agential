@@ -462,8 +462,8 @@ def remove_err_operations(
 
 
 def accumulate_metrics(
-    compares_responses: List[List[Response]],
-    success_responses: List[List[Response]],
+    compares_response: List[List[Response]],
+    successes_response: List[List[Response]],
     experiences: List[Dict[str, Any]],
 ) -> Dict[str, Any]:
     """Accumulates various metrics from a set of responses and experiences.
@@ -471,8 +471,8 @@ def accumulate_metrics(
     This function takes in lists of comparison responses, success responses, and experiences, and calculates various metrics such as total prompt tokens, completion tokens, total tokens, prompt cost, completion cost, total cost, and prompt time. The results are returned as a dictionary.
 
     Parameters:
-        compares_responses (List[List[Response]]): A list of lists of comparison responses.
-        success_responses (List[List[Response]]): A list of lists of success responses.
+        compares_response (List[List[Response]]): A list of lists of comparison responses.
+        successes_response (List[List[Response]]): A list of lists of success responses.
         experiences (List[Dict[str, Any]]): A list of experiences.
 
     Returns:
@@ -487,22 +487,22 @@ def accumulate_metrics(
     total_prompt_time = 0.0
 
     for compare_response, success_response in zip(
-        compares_responses, success_responses
+        compares_response, successes_response
     ):
-        for single_compare, single_success in zip(compare_response, success_response):
+        for compare, success in zip(compare_response, success_response):
             total_prompt_tokens += (
-                single_compare.prompt_tokens + single_success.prompt_tokens
+                compare.prompt_tokens + success.prompt_tokens
             )
             total_completion_tokens += (
-                single_compare.completion_tokens + single_success.completion_tokens
+                compare.completion_tokens + success.completion_tokens
             )
-            total_tokens += single_compare.total_tokens + single_success.total_tokens
-            total_prompt_cost += single_compare.prompt_cost + single_success.prompt_cost
+            total_tokens += compare.total_tokens + success.total_tokens
+            total_prompt_cost += compare.prompt_cost + success.prompt_cost
             total_completion_cost += (
-                single_compare.completion_cost + single_success.completion_cost
+                compare.completion_cost + success.completion_cost
             )
-            total_cost += single_compare.total_cost + single_success.total_cost
-            total_prompt_time += single_compare.prompt_time + single_success.prompt_time
+            total_cost += compare.total_cost + success.total_cost
+            total_prompt_time += compare.prompt_time + success.prompt_time
 
     for experience in experiences:
         trajectory: ReflexionReActOutput = experience['trajectory']
