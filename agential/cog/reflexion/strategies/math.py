@@ -93,7 +93,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTGeneralStrategy):
         action_type, query = parse_math_code_action_cot(action)
         scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
 
-        return scratchpad, action_type, query, out
+        return scratchpad, action_type, f"\n```python\n{query}\n```\n", out
 
     def generate_observation(
         self, scratchpad: str, action_type: str, query: str, key: str
@@ -109,6 +109,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTGeneralStrategy):
         Returns:
             Tuple[str, str, bool, str, bool]: The updated scratchpad, the answer, a boolean indicating if the observation is correct, and the observation itself.
         """
+        query = query.split("```python")[-1].split("```")[0].strip()
         answer, _ = safe_execute(query)
         out_answer = ""
         scratchpad += f"\nObservation: "
@@ -122,7 +123,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTGeneralStrategy):
             obs = "Invalid action type, please try again."
         scratchpad += obs
 
-        return scratchpad, out_answer, EM(answer[0], key, normalize=False), obs
+        return scratchpad, f"\n```python\n{out_answer}\n```\n", EM(answer[0], key, normalize=False), obs
 
     def halting_condition(
         self,
@@ -140,6 +141,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTGeneralStrategy):
         Returns:
             bool: True if the halting condition is met, False otherwise.
         """
+        answer = answer.split("```python")[-1].split("```")[0].strip()
         answer, _ = safe_execute(answer)
         return EM(answer[0], key, normalize=False) or idx >= self.max_trials
 
@@ -161,6 +163,7 @@ class ReflexionCoTMathStrategy(ReflexionCoTGeneralStrategy):
         Returns:
             bool: True if the reflection condition is met, False otherwise.
         """
+        answer = answer.split("```python")[-1].split("```")[0].strip()
         answer, _ = safe_execute(answer)
         return (
             idx > 0

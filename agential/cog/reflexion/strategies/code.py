@@ -93,7 +93,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTGeneralStrategy):
         action_type, query = parse_math_code_action_cot(action)
         scratchpad += f" {action_type}[\n```python\n{query}\n```\n]"
 
-        return scratchpad, action_type, query, out
+        return scratchpad, action_type, f"\n```python\n{query}\n```\n", out
 
     def generate_observation(
         self, scratchpad: str, action_type: str, query: str, key: str
@@ -110,6 +110,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTGeneralStrategy):
             Tuple[str, str, bool, str]: The updated scratchpad, the answer, a boolean indicating if the observation is correct, and the observation itself.
         """
         answer = ""
+        query = query.split("```python")[-1].split("```")[0].strip()
         _, execution_status = safe_execute(f"{query}\n\n{key}")
 
         scratchpad += f"\nObservation: "
@@ -124,7 +125,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTGeneralStrategy):
 
         scratchpad += obs
 
-        return scratchpad, answer, EM(execution_status, "Done", normalize=False), obs
+        return scratchpad, f"\n```python\n{answer}\n```\n", EM(execution_status, "Done", normalize=False), obs
 
     def halting_condition(
         self,
@@ -142,6 +143,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTGeneralStrategy):
         Returns:
             bool: True if the halting condition is met, False otherwise.
         """
+        answer = answer.split("```python")[-1].split("```")[0].strip()
         _, execution_status = safe_execute(f"{answer}\n\n{key}")
         return EM(execution_status, "Done", normalize=False) or idx >= self.max_trials
 
@@ -163,6 +165,7 @@ class ReflexionCoTCodeStrategy(ReflexionCoTGeneralStrategy):
         Returns:
             bool: True if the reflection condition is met, False otherwise.
         """
+        answer = answer.split("```python")[-1].split("```")[0].strip()
         _, execution_status = safe_execute(f"{answer}\n\n{key}")
         return (
             idx > 0
@@ -448,7 +451,7 @@ class ReflexionCoTHEvalStrategy(ReflexionCoTCodeStrategy):
         action_type = "Finish"
         scratchpad += f"{action_type}[\n```python\n{query}\n```\n]"
 
-        return scratchpad, action_type, query, out
+        return scratchpad, action_type, f"\n```python\n{query}\n```\n", out
 
 
 class ReflexionCoTMBPPStrategy(ReflexionCoTCodeStrategy):

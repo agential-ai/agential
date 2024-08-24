@@ -57,7 +57,7 @@ def test_reflexion_cot_generate() -> None:
     assert first_repeated_char("123123") == "1\""""
 
     gt_out = ReflexionCoTOutput(
-        answer="def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None",
+        answer="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n",
         total_prompt_tokens=80,
         total_completion_tokens=160,
         total_tokens=240,
@@ -71,7 +71,7 @@ def test_reflexion_cot_generate() -> None:
                 thought="Let's think step by step. We need to iterate through the characters in the string and keep track of the characters we have seen so far to find the first repeated character.",
                 action_type="Finish",
                 observation="Answer is INCORRECT",
-                answer="def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None",
+                answer="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n",
                 is_correct=False,
                 reflections=[],
                 thought_response=Response(
@@ -102,7 +102,7 @@ def test_reflexion_cot_generate() -> None:
                 thought="Finish[```pythondef first_repeated_char(s):    seen = set()    for char in s:        if char in seen:            return char        seen.add(char)    return None```]",
                 action_type="Finish",
                 observation="Answer is INCORRECT",
-                answer="def first_repeated_char(input_str):\n    seen_chars = set()\n    for char in input_str:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None",
+                answer="\n```python\ndef first_repeated_char(input_str):\n    seen_chars = set()\n    for char in input_str:\n        if char in seen_chars:\n            return char\n        seen_chars.add(char)\n    return None\n```\n",
                 is_correct=False,
                 reflections=[
                     "Let's think step by step. We need to iterate through the characters in the string and keep track of the characters we have seen so far to find the first repeated character.Action: Finish[```pythondef first_repeated_char(input_str):    seen_chars = set()    for char in input_str:        if char in seen_chars:            return char        seen_chars.add(char)    return None```]"
@@ -145,7 +145,7 @@ def test_reflexion_cot_generate() -> None:
                 thought="Let's think step by step. We need to iterate through the characters in the string and keep track of the characters we have seen so far to find the first repeated character.",
                 action_type="Finish",
                 observation="Answer is INCORRECT",
-                answer="def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None",
+                answer="\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n",
                 is_correct=False,
                 reflections=[
                     "Let's think step by step. We need to iterate through the characters in the string and keep track of the characters we have seen so far to find the first repeated character.Action: Finish[```pythondef first_repeated_char(input_str):    seen_chars = set()    for char in input_str:        if char in seen_chars:            return char        seen_chars.add(char)    return None```]",
@@ -232,7 +232,7 @@ def test_reflexion_cot_generate_action() -> None:
     assert action_type == "Finish"
     assert (
         query
-        == "def first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None"
+        == "\n```python\ndef first_repeated_char(s):\n    seen = set()\n    for char in s:\n        if char in seen:\n            return char\n        seen.add(char)\n    return None\n```\n"
     )
     assert (
         scratchpad
@@ -261,10 +261,8 @@ def test_reflexion_cot_generate_action_humaneval() -> None:
         "test": "\n\nMETADATA = {\n    'author': 'jt',\n    'dataset': 'test'\n}\n\n\ndef check(candidate):\n    assert candidate([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.3) == True\n    assert candidate([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.05) == False\n    assert candidate([1.0, 2.0, 5.9, 4.0, 5.0], 0.95) == True\n    assert candidate([1.0, 2.0, 5.9, 4.0, 5.0], 0.8) == False\n    assert candidate([1.0, 2.0, 3.0, 4.0, 5.0, 2.0], 0.1) == True\n    assert candidate([1.1, 2.2, 3.1, 4.1, 5.1], 1.0) == True\n    assert candidate([1.1, 2.2, 3.1, 4.1, 5.1], 0.5) == False\n\n",
     }
     question = inst["prompt"]
-    key = f"{inst['test']}\ncheck({inst['entry_point']})"
 
-    gt_query = "\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n"
-    gt_scratchpad = "\nAction: Finish[\n```python\n\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```\n]"
+    gt_query = "\n```python\n\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n\n```\n"
     responses = [
         "To solve this problem, we need to iterate through the list of numbers and compare the absolute difference between each pair of numbers. If the absolute difference is less than the threshold, we return True. If we finish iterating through the list without finding any close elements, we return False.\n\n```python\nfrom typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    for i in range(len(numbers)):\n        for j in range(i+1, len(numbers)):\n            if abs(numbers[i] - numbers[j]) < threshold:\n                return True\n    return False\n```"
     ]
@@ -306,13 +304,13 @@ def test_reflexion_cot_generate_observation() -> None:
     scratchpad, answer, is_correct, obs = strategy.generate_observation(
         scratchpad="",
         action_type="Finish",
-        query="print('Hello World!')",
+        query="\n```python\nprint('Hello World!')\n```\n",
         key="print('Hi World!')",
     )
     assert is_correct == True
     assert obs == "Answer is CORRECT"
     assert "Observation: Answer is CORRECT" in scratchpad
-    assert answer == "print('Hello World!')"
+    assert answer == "\n```python\nprint('Hello World!')\n```\n"
 
     # Case 2: action_type is "Finish" and answer is incorrect.
     strategy = ReflexionCoTCodeStrategy(llm=llm)
@@ -325,7 +323,7 @@ def test_reflexion_cot_generate_observation() -> None:
     assert is_correct == False
     assert obs == "Answer is INCORRECT"
     assert "Observation: Answer is INCORRECT" in scratchpad
-    assert answer == "correct_answer"
+    assert answer == "\n```python\ncorrect_answer\n```\n"
 
     # Case 3: action_type is not "Finish".
     strategy = ReflexionCoTCodeStrategy(llm=llm)
@@ -341,7 +339,7 @@ def test_reflexion_cot_generate_observation() -> None:
         == "Invalid action type, please try again. Valid action is Finish[```python<code>```]"
     )
     assert "Observation: Invalid action type, please try again." in scratchpad
-    assert answer == ""
+    assert answer == "\n```python\n\n```\n"
 
 
 def test_reflexion_cot_halting_condition() -> None:

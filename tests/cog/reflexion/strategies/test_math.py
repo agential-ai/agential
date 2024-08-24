@@ -54,7 +54,7 @@ def test_reflexion_cot_generate() -> None:
     key = -9867630
 
     gt_out = ReflexionCoTOutput(
-        answer="eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nearnings_per_egg = 2\ntotal_earnings = eggs_sold * earnings_per_egg\nanswer = total_earnings",
+        answer="\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nearnings_per_egg = 2\ntotal_earnings = eggs_sold * earnings_per_egg\nanswer = total_earnings\n```\n",
         total_prompt_tokens=20,
         total_completion_tokens=40,
         total_tokens=60,
@@ -68,7 +68,7 @@ def test_reflexion_cot_generate() -> None:
                 thought="Janet's ducks lay 16 eggs per day. Subtract the eggs eaten for breakfast from the total, then subtract the eggs used to make muffins. Finally, calculate the earnings by selling the remaining eggs at $2 per egg.Answer:",
                 action_type="Finish",
                 observation="Answer is CORRECT",
-                answer="eggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nearnings_per_egg = 2\ntotal_earnings = eggs_sold * earnings_per_egg\nanswer = total_earnings",
+                answer="\n```python\neggs_laid_per_day = 16\neggs_for_breakfast = 3\neggs_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_for_breakfast - eggs_for_muffins\nearnings_per_egg = 2\ntotal_earnings = eggs_sold * earnings_per_egg\nanswer = total_earnings\n```\n",
                 is_correct=True,
                 reflections=[],
                 thought_response=Response(
@@ -139,7 +139,7 @@ def test_reflexion_cot_generate_action() -> None:
     assert action_type == "Finish"
     assert (
         query
-        == "eggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_per_day = eggs_sold * price_per_egg\nanswer = money_made_per_day"
+        == "\n```python\neggs_laid_per_day = 16\neggs_eaten_for_breakfast = 3\neggs_used_for_muffins = 4933828\neggs_sold = eggs_laid_per_day - eggs_eaten_for_breakfast - eggs_used_for_muffins\nprice_per_egg = 2\nmoney_made_per_day = eggs_sold * price_per_egg\nanswer = money_made_per_day\n```\n"
     )
     assert (
         scratchpad
@@ -172,7 +172,7 @@ def test_reflexion_cot_generate_observation() -> None:
     assert is_correct == False
     assert obs == "Answer is INCORRECT"
     assert "Observation: Answer is INCORRECT" in scratchpad
-    assert answer == "correct_answer"
+    assert answer == "\n```python\ncorrect_answer\n```\n"
 
     # Case 2: action_type is "Finish" and answer is incorrect.
     strategy = ReflexionCoTMathStrategy(llm=llm)
@@ -185,7 +185,7 @@ def test_reflexion_cot_generate_observation() -> None:
     assert is_correct == False
     assert obs == "Answer is INCORRECT"
     assert "Observation: Answer is INCORRECT" in scratchpad
-    assert answer == "incorrect_answer"
+    assert answer == "\n```python\nincorrect_answer\n```\n"
 
     # Case 3: action_type is not "Finish".
     strategy = ReflexionCoTMathStrategy(llm=llm)
@@ -198,7 +198,7 @@ def test_reflexion_cot_generate_observation() -> None:
     assert is_correct == False
     assert obs == "Invalid action type, please try again."
     assert "Observation: Invalid action type, please try again." in scratchpad
-    assert answer == ""
+    assert answer == "\n```python\n\n```\n"
 
 
 def test_reflexion_cot_halting_condition() -> None:
