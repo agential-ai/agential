@@ -7,6 +7,7 @@ from agential.cog.expel.functional import (
     _build_compare_prompt,
     _prompt_all_success_critique,
     _prompt_compare_critique,
+    accumulate_metrics,
     categorize_experiences,
     gather_experience,
     get_folds,
@@ -264,3 +265,157 @@ def test_remove_err_operations() -> None:
 
     out = remove_err_operations(rules, operations)
     assert out == expected_operations
+
+
+def test_accumulate_metrics() -> None:
+    """Test accumulate_metrics."""
+    compares_responses = [
+        [
+            Response(
+                input_text="1",
+                output_text="1",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=0.0004,
+                completion_cost=0.0008,
+                total_cost=0.0012,
+                prompt_time=0.1,
+            ),
+            Response(
+                input_text="2",
+                output_text="2",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=0.0004,
+                completion_cost=0.0008,
+                total_cost=0.0012,
+                prompt_time=0.1,
+            ),
+        ],
+        [
+            Response(
+                input_text="3",
+                output_text="3",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=0.0004,
+                completion_cost=0.0008,
+                total_cost=0.0012,
+                prompt_time=0.1,
+            ),
+        ],
+    ]
+    success_responses = [
+        [
+            Response(
+                input_text="4",
+                output_text="4",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=0.0004,
+                completion_cost=0.0008,
+                total_cost=0.0012,
+                prompt_time=0.1,
+            ),
+            Response(
+                input_text="5",
+                output_text="5",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=0.0004,
+                completion_cost=0.0008,
+                total_cost=0.0012,
+                prompt_time=0.1,
+            ),
+        ],
+        [
+            Response(
+                input_text="6",
+                output_text="6",
+                prompt_tokens=10,
+                completion_tokens=20,
+                total_tokens=30,
+                prompt_cost=0.0004,
+                completion_cost=0.0008,
+                total_cost=0.0012,
+                prompt_time=0.1,
+            )
+        ],
+    ]
+
+    experiences = [
+        ReflexionReActOutput(
+            input_text="7",
+            output_text="7",
+            prompt_tokens=10,
+            total_tokens=30,
+            completion_cost=0.0008,
+            total_cost=0.0012,
+            prompt_time=0.1,
+            answer=["7"],
+            total_prompt_tokens=10,
+            total_completion_tokens=20,
+            total_prompt_cost=0.0004,
+            total_completion_cost=0.0008,
+            total_prompt_time=0.1,
+            total_time=0.1,
+            additional_info=[],
+        ),
+        ReflexionReActOutput(
+            input_text="8",
+            output_text="8",
+            prompt_tokens=10,
+            total_tokens=30,
+            prompt_cost=0.0004,
+            completion_cost=0.0008,
+            total_cost=0.0012,
+            prompt_time=0.1,
+            answer=["8"],
+            total_prompt_tokens=10,
+            total_completion_tokens=20,
+            total_prompt_cost=0.0004,
+            total_completion_cost=0.0008,
+            total_prompt_time=0.1,
+            total_time=0.1,
+            additional_info=[],
+        ),
+        ReflexionReActOutput(
+            input_text="9",
+            output_text="9",
+            prompt_tokens=10,
+            total_tokens=30,
+            prompt_cost=0.0004,
+            completion_cost=0.0008,
+            total_cost=0.0012,
+            prompt_time=0.1,
+            answer=["9"],
+            total_prompt_tokens=10,
+            total_completion_tokens=20,
+            total_prompt_cost=0.0004,
+            total_completion_cost=0.0008,
+            total_prompt_time=0.1,
+            total_time=0.1,
+            additional_info=[],
+        ),
+    ]
+
+    out = accumulate_metrics(
+        compares_responses,
+        success_responses,
+        experiences,
+    )
+
+    assert out == {
+        "total_prompt_tokens": 90.0,
+        "total_completion_tokens": 180.0,
+        "total_tokens": 270.0,
+        "total_prompt_cost": 0.0036000000000000008,
+        "total_completion_cost": 0.0072000000000000015,
+        "total_cost": 0.010799999999999999,
+        "total_prompt_time": 0.9,
+    }

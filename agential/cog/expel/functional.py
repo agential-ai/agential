@@ -6,6 +6,7 @@ import re
 from itertools import chain
 from typing import Any, Dict, List, Tuple
 
+from agential.cog.expel.output import ExpeLGenerateOutput
 from agential.cog.expel.prompts import (
     CRITIQUE_SUMMARY_SUFFIX_FULL,
     CRITIQUE_SUMMARY_SUFFIX_NOT_FULL,
@@ -18,6 +19,7 @@ from agential.cog.expel.prompts import (
     SYSTEM_TEMPLATE,
 )
 from agential.cog.reflexion.agent import ReflexionReActAgent
+from agential.cog.reflexion.output import ReflexionReActOutput
 from agential.llm.llm import BaseLLM, Response
 
 # ============================================== Experience Gathering ==============================================
@@ -445,3 +447,66 @@ def remove_err_operations(
             corrected_operations.append((operation, text))
 
     return corrected_operations
+
+
+def accumulate_metrics(
+    compares_responses: List[List[Response]],
+    success_responses: List[List[Response]],
+    experiences: List[ReflexionReActOutput],
+) -> Dict[str, Any]:
+    """Accumulates various metrics from a set of responses and experiences.
+
+    This function takes in lists of comparison responses, success responses, and experiences, and calculates various metrics such as total prompt tokens, completion tokens, total tokens, prompt cost, completion cost, total cost, and prompt time. The results are returned as a dictionary.
+
+    Parameters:
+        compares_responses (List[List[Response]]): A list of lists of comparison responses.
+        success_responses (List[List[Response]]): A list of lists of success responses.
+        experiences (List[ReflexionReActOutput]): A list of experiences.
+
+    Returns:
+        Dict[str, Any]: A dictionary containing the accumulated metrics.
+    """
+    total_prompt_tokens = 0.0
+    total_completion_tokens = 0.0
+    total_tokens = 0.0
+    total_prompt_cost = 0.0
+    total_completion_cost = 0.0
+    total_cost = 0.0
+    total_prompt_time = 0.0
+
+    for compare_response, success_response in zip(
+        compares_responses, success_responses
+    ):
+        for single_compare, single_success in zip(compare_response, success_response):
+            total_prompt_tokens += (
+                single_compare.prompt_tokens + single_success.prompt_tokens
+            )
+            total_completion_tokens += (
+                single_compare.completion_tokens + single_success.completion_tokens
+            )
+            total_tokens += single_compare.total_tokens + single_success.total_tokens
+            total_prompt_cost += single_compare.prompt_cost + single_success.prompt_cost
+            total_completion_cost += (
+                single_compare.completion_cost + single_success.completion_cost
+            )
+            total_cost += single_compare.total_cost + single_success.total_cost
+            total_prompt_time += single_compare.prompt_time + single_success.prompt_time
+
+    for experience in experiences:
+        total_prompt_tokens += experience.total_prompt_tokens
+        total_completion_tokens += experience.total_completion_tokens
+        total_tokens += experience.total_tokens
+        total_prompt_cost += experience.total_prompt_cost
+        total_completion_cost += experience.total_completion_cost
+        total_cost += experience.total_cost
+        total_prompt_time += experience.total_prompt_time
+
+    return {
+        "total_prompt_tokens": total_prompt_tokens,
+        "total_completion_tokens": total_completion_tokens,
+        "total_tokens": total_tokens,
+        "total_prompt_cost": total_prompt_cost,
+        "total_completion_cost": total_completion_cost,
+        "total_cost": total_cost,
+        "total_prompt_time": total_prompt_time,
+    }

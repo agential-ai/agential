@@ -1,19 +1,20 @@
 """ExpeL Agent strategies for QA."""
 
-from copy import deepcopy
 import time
+
+from copy import deepcopy
 from typing import Any, Dict, List, Optional, Tuple
 
 from agential.cog.expel.functional import (
     _prompt_all_success_critique,
     _prompt_compare_critique,
+    accumulate_metrics,
     categorize_experiences,
     gather_experience,
     get_folds,
     parse_insights,
     remove_err_operations,
     retrieve_insight_index,
-    accumulate_metrics
 )
 from agential.cog.expel.memory import (
     ExpeLExperienceMemory,
@@ -58,7 +59,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
             experience_memory=experience_memory,
             insight_memory=insight_memory,
             success_batch_size=success_batch_size,
-            testing=testing
+            testing=testing,
         )
 
     def generate(
@@ -139,7 +140,9 @@ class ExpeLStrategy(ExpeLBaseStrategy):
         )
 
         total_time = time.time() - start
-        total_metrics = accumulate_metrics(generate_out, )
+        total_metrics = accumulate_metrics(
+            compares_responses=compare_response, successes_responses=success_response
+        )
         out = ExpeLOutput(
             answer=experience[0].additional_info[-1].steps[-1].answer,
             total_prompt_tokens=total_metrics["total_prompt_tokens"],
@@ -150,7 +153,7 @@ class ExpeLStrategy(ExpeLBaseStrategy):
             total_cost=total_metrics["total_cost"],
             total_prompt_time=total_metrics["total_prompt_time"],
             total_time=total_time if not self.testing else 0.5,
-            additional_info=generate_out
+            additional_info=generate_out,
         )
 
         return out
@@ -331,7 +334,9 @@ class ExpeLStrategy(ExpeLBaseStrategy):
                         f"{experiences[idx]['question']}\n"
                         + "".join(
                             f"Thought: {step.thought}\nAction: {step.action_type}[{step.query}]\nObservation: {step.observation}\n"
-                            for step in experiences[idx]["trajectory"].additional_info[0].steps
+                            for step in experiences[idx]["trajectory"]
+                            .additional_info[0]
+                            .steps
                         )
                         for idx in success_idxs
                     ]

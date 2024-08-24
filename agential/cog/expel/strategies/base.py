@@ -31,7 +31,7 @@ class ExpeLBaseStrategy(BaseStrategy):
         experience_memory: ExpeLExperienceMemory,
         insight_memory: ExpeLInsightMemory,
         success_batch_size: int,
-        testing: bool = False
+        testing: bool = False,
     ) -> None:
         """Initialization."""
         super().__init__(llm=llm, testing=testing)
@@ -126,7 +126,7 @@ class ExpeLBaseStrategy(BaseStrategy):
             operations (List[Tuple[str, str]]): A list of tuples, where each tuple contains a key and a value to update in the insight memory.
         """
         raise NotImplementedError
-    
+
     def reset(self) -> None:
         """Resets the ExperienceMemory and InsightMemory."""
         raise NotImplementedError
