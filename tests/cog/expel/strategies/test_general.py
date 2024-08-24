@@ -17,10 +17,10 @@ from agential.cog.reflexion.output import (
     ReflexionReActReActStepOutput,
     ReflexionReActStepOutput,
 )
-from agential.cog.reflexion.prompts import (
-    HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-    REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-    REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+from agential.cog.expel.prompts import (
+    HOTPOTQA_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
+    EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+    EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
 )
 from agential.llm.llm import BaseLLM, MockLLM, Response
 
@@ -454,9 +454,9 @@ def test_generate() -> None:
         question=question,
         key=key,
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-        reflect_prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+        prompt=EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
+        reflect_prompt=EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
         reflect_strategy="reflexion",
         additional_keys={},
         reflect_additional_keys={},
@@ -699,12 +699,12 @@ def test_gather_experience(hotpotqa_distractor_sample_path: str) -> None:
         questions=hotpotqa.question.values[-1:],
         keys=hotpotqa.answer.values[-1:],
         examples=HOTPOTQA_FEWSHOT_EXAMPLES_REACT,
-        prompt=REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
-        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_REFLEXION_REACT_REFLECT,
-        reflect_prompt=REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
+        prompt=EXPEL_REFLEXION_REACT_INSTRUCTION_HOTPOTQA,
+        reflect_examples=HOTPOTQA_FEWSHOT_EXAMPLES_EXPEL_REFLEXION_REACT_REFLECT,
+        reflect_prompt=EXPEL_REFLEXION_REACT_REFLECT_INSTRUCTION_HOTPOTQA,
         reflect_strategy="reflexion",
-        additional_keys={},
-        reflect_additional_keys={},
+        additional_keys=[{"insights": ""}],
+        reflect_additional_keys=[{}],
         patience=1,
     )
     assert new_experiences == gt_experience

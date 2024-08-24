@@ -173,21 +173,7 @@ def _prompt_cot_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print(
-        "<PROMPT AGENT ======================================================================>"
-    )
-    print(prompt)
-    print(
-        "<PROMPT AGENT ======================================================================>"
-    )
     out = llm(prompt)
-    print(
-        "<OUT AGENT ======================================================================>"
-    )
-    print(repr(out.output_text))
-    print(
-        "<OUT AGENT ======================================================================>"
-    )
     return out
 
 
@@ -250,22 +236,7 @@ def _prompt_cot_reflection(
         prompt=prompt,
         additional_keys=additional_keys,
     )
-    print(
-        "<PROMPT REFLECT ======================================================================>"
-    )
-    print(prompt)
-    print(
-        "<PROMPT REFLECT ======================================================================>"
-    )
     out = llm(prompt)
-    print(
-        "<OUT REFLECT ======================================================================>"
-    )
-    print(repr(out.output_text))
-    print(
-        "<OUT REFLECT ======================================================================>"
-    )
-
     return out
 
 
@@ -431,7 +402,21 @@ def _prompt_react_agent(
         prompt=prompt,
         additional_keys=additional_keys,
     )
+    print(
+        "<PROMPT AGENT ======================================================================>"
+    )
+    print(prompt)
+    print(
+        "<PROMPT AGENT ======================================================================>"
+    )
     out = llm(prompt)
+    print(
+        "<OUT AGENT ======================================================================>"
+    )
+    print(repr(out.output_text))
+    print(
+        "<OUT AGENT ======================================================================>"
+    )
     return out
 
 
@@ -549,7 +534,21 @@ def _prompt_react_reflection(
         prompt=prompt,
         additional_keys=additional_keys,
     )
+    print(
+        "<PROMPT REFLECT ======================================================================>"
+    )
+    print(prompt)
+    print(
+        "<PROMPT REFLECT ======================================================================>"
+    )
     out = llm(prompt)
+    print(
+        "<OUT REFLECT ======================================================================>"
+    )
+    print(repr(out.output_text))
+    print(
+        "<OUT REFLECT ======================================================================>"
+    )
     return out
 
 
