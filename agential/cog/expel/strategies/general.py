@@ -170,7 +170,7 @@ class ExpeLGeneralStrategy(ExpeLBaseStrategy):
         total_metrics = accumulate_metrics(
             compares_responses=compare_response, 
             successes_responses=success_response, 
-            experiences=generate_out
+            experiences=experience
         )
         out = ExpeLOutput(
             answer=experience[0].additional_info[-1].steps[-1].answer,
