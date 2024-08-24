@@ -28,7 +28,7 @@ from agential.llm.llm import MockLLM, Response
 def test_gather_experience() -> None:
     """Test gather_experience."""
     agent = ReflexionReActAgent(
-        llm=MockLLM("gpt-3.5-turbo", responses=[]), benchmark="hotpotqa"
+        llm=MockLLM("gpt-3.5-turbo", responses=[]), benchmark="hotpotqa", testing=True
     )
     questions = [""]
     keys = [""]
@@ -55,12 +55,13 @@ def test_gather_experience() -> None:
                 total_completion_cost=0.0,
                 total_cost=0.0,
                 total_prompt_time=0.0,
-                total_time=0.0,
+                total_time=0.5,
                 additional_info=[],
             ),
             "reflections": [],
         }
     ]
+    print(repr(experiences))
     assert experiences == gt_experiences
 
 
