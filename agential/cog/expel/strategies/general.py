@@ -136,6 +136,9 @@ class ExpeLGeneralStrategy(ExpeLBaseStrategy):
                 reranker_strategy=reranker_strategy,
                 additional_keys=additional_keys,
             )
+        else:
+            additional_keys = additional_keys.copy()
+            additional_keys.update({"insights": ""})
 
         experience: List[Dict[str, Any]] = self.gather_experience(
             questions=[question],
