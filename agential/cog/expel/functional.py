@@ -464,7 +464,7 @@ def remove_err_operations(
 def accumulate_metrics(
     compares_responses: List[List[Response]],
     success_responses: List[List[Response]],
-    experiences: List[ReflexionReActOutput],
+    experiences: List[Dict[str, Any]],
 ) -> Dict[str, Any]:
     """Accumulates various metrics from a set of responses and experiences.
 
@@ -473,7 +473,7 @@ def accumulate_metrics(
     Parameters:
         compares_responses (List[List[Response]]): A list of lists of comparison responses.
         success_responses (List[List[Response]]): A list of lists of success responses.
-        experiences (List[ReflexionReActOutput]): A list of experiences.
+        experiences (List[Dict[str, Any]]): A list of experiences.
 
     Returns:
         Dict[str, Any]: A dictionary containing the accumulated metrics.
@@ -505,13 +505,14 @@ def accumulate_metrics(
             total_prompt_time += single_compare.prompt_time + single_success.prompt_time
 
     for experience in experiences:
-        total_prompt_tokens += experience.total_prompt_tokens
-        total_completion_tokens += experience.total_completion_tokens
-        total_tokens += experience.total_tokens
-        total_prompt_cost += experience.total_prompt_cost
-        total_completion_cost += experience.total_completion_cost
-        total_cost += experience.total_cost
-        total_prompt_time += experience.total_prompt_time
+        trajectory: ReflexionReActOutput = experience['trajectory']
+        total_prompt_tokens += trajectory.total_prompt_tokens
+        total_completion_tokens += trajectory.total_completion_tokens
+        total_tokens += trajectory.total_tokens
+        total_prompt_cost += trajectory.total_prompt_cost
+        total_completion_cost += trajectory.total_completion_cost
+        total_cost += trajectory.total_cost
+        total_prompt_time += trajectory.total_prompt_time
 
     return {
         "total_prompt_tokens": total_prompt_tokens,

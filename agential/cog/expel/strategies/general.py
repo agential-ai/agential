@@ -136,7 +136,7 @@ class ExpeLGeneralStrategy(ExpeLBaseStrategy):
                 additional_keys=additional_keys,
             )
 
-        experience: List[ReflexionReActOutput] = self.gather_experience(
+        experience: List[Dict[str, Any]] = self.gather_experience(
             questions=[question],
             keys=[key],
             examples=examples,
