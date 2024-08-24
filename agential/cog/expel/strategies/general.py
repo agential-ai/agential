@@ -162,8 +162,8 @@ class ExpeLGeneralStrategy(ExpeLBaseStrategy):
             },
             experience_memory=deepcopy(self.experience_memory.show_memories()),
             insight_memory=deepcopy(self.insight_memory.show_memories()),
-            compares_response=compare_response,
-            successes_response=success_response,
+            compares_response=compares_response if extract_insights else None,
+            successes_response=successes_response if extract_insights else None,
         )
 
         total_time = time.time() - start

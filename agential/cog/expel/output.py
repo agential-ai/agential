@@ -1,6 +1,6 @@
 """ExpeL structured output module."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -17,8 +17,8 @@ class ExpeLGenerateOutput(BaseModel):
         experience (Dict[str, Any]): The current experience.
         experience_memory (Dict[str, Any]): The experience memory.
         insight_memory (Dict[str, Any]): The insight memory.
-        compares_response (List[List[Response]]): The insight memory comparison responses.
-        successes_response (List[List[Response]]): The insight memory successful responses.
+        compares_response (Optional[List[List[Response]]]): The insight memory comparison responses.
+        successes_response (Optional[List[List[Response]]]): The insight memory successful responses.
     """
 
     examples: str = Field(..., description="The examples to be included in the output.")
@@ -28,10 +28,10 @@ class ExpeLGenerateOutput(BaseModel):
     experience: Dict[str, Any] = Field(..., description="The current experience.")
     experience_memory: Dict[str, Any] = Field(..., description="The experience memory.")
     insight_memory: Dict[str, Any] = Field(..., description="The insight memory.")
-    compares_response: List[List[Response]] = Field(
+    compares_response: Optional[List[List[Response]]] = Field(
         ..., description="The insight memory comparison responses."
     )
-    successes_response: List[List[Response]] = Field(
+    successes_response: Optional[List[List[Response]]] = Field(
         ..., description="The insight memory successful responses."
     )
 

@@ -486,9 +486,16 @@ def accumulate_metrics(
     total_cost = 0.0
     total_prompt_time = 0.0
 
+
     for compare_response, success_response in zip(
         compares_response, successes_response
     ):
+        
+        # Loop through compare.
+        # Step 1 : Check if not None, True -> continue with the logic to add tokens.
+        # Loop through success.
+        # Step 1 : Check if not None, True -> continue with the logic to add tokens.
+
         for compare, success in zip(compare_response, success_response):
             total_prompt_tokens += (
                 compare.prompt_tokens + success.prompt_tokens
